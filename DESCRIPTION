@@ -1,0 +1,15 @@
+Package: Cardinal
+Type: Package
+Title: Mass spectrometry imaging tools
+Version: 0.5
+Date: 2013-7-5
+Author: Kyle D. Bemis
+Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
+Description: Implements statistical & computational tools for analyzing
+	mass spectrometry imaging datasets, including methods for efficient
+	pre-processing, spatial segmentation, and classification.
+License: Artistic 2.0
+LazyLoad: yes
+Depends: graphics, lattice, latticeExtra, methods, stats
+Imports: abind, fields, irlba, MASS, moments, signal, sp, utils
+Suggests: CardinaliView, rJava

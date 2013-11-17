@@ -1,0 +1,154 @@
+
+import("lattice",
+  "latticeExtra")
+
+importFrom("graphics",
+  "image",
+  "lines",
+  "locator",
+  "plot",
+  "points")
+
+importFrom("stats",
+  "approx",
+  "approxfun",
+  "filter",
+  "mad",
+  "median",
+  "pnorm",
+  "smooth.spline",
+  "sd",
+  "var")
+
+importFrom("MASS",
+  "ginv")
+
+importFrom("abind",
+  "abind")
+
+importFrom("fields",
+  "interp.surface.grid")
+
+importFrom("irlba",
+  "irlba")
+
+importFrom("moments",
+  "kurtosis")
+
+importFrom("signal",
+  "interp1",
+  "kaiser",
+  "pchip",
+  "sgolayfilt")
+
+importFrom("sp",
+  "point.in.polygon")
+
+importFrom("utils",
+  "setTxtProgressBar",
+  "txtProgressBar"
+)
+
+exportClasses("MSImageSet",
+  "MSImageSegmentation",
+  "MSPeakFrame",
+  "MSPeakList",
+  "MSPeakAlignment")
+
+export("alpha.colors",
+  "createMSImageSet",
+  "createMSPeakFrame",
+  "createMSPeakList",
+  "gradient.colors",
+  "intensity.colors",
+  "isMSImageSet",
+  "isMSImageSegmentation",
+  "isMSPeakFrame",
+  "isMSPeakList",
+  "isMSPeakAlignment",
+  "readAnalyze7.5",
+  "readImzML",
+  "risk.colors")
+
+exportMethods("$",
+  "[",
+  "[[",
+  "alignPeaks",
+  "assessQuality",
+  "binSpectra",
+  "calibrateSegmentation",
+  "coord",
+  "coord<-",
+  "coregisterImages",
+  "crop",
+  "crossValidate",
+  "detectPeaks",
+  "estimateBaseline",
+  "estimateNoise",
+  "features",
+  "featureData",
+  "featureData<-",
+  "flipHorizontal",
+  "flipVertical",
+  "generatePositionArray",
+  "image",
+  "intensities",
+  "isBinned",
+  "isBinned<-",
+  "isPeaks",
+  "isPeaks<-",
+  "isResampled",
+  "isResampled<-",
+  "likPlot",
+  "logLik",
+  "metaData",
+  "metaData<-",
+  "mergePeaks",
+  "mz",
+  "mz<-",
+  "neighbors",
+  "numFeatures",
+  "numPixels",
+  "OPLS",
+  "PCA",
+  "peaks",
+  "peaks<-",
+  "pixels",
+  "pixelData",
+  "pixelData<-",
+  "plot",
+  "PLS",
+  "poolPeaks",
+  "predict",
+  "regeneratePositions",
+  "removeBaseline",
+  "removeNoise",
+  "resampleSpectra",
+  "roiBind",
+  "rotateLeft",
+  "rotateRight",
+  "show",
+  "selectPeaks",
+  "selectPixels",
+  "selectROI",
+  "sliceBind",
+  "spatialCluster",
+  "spatialClassify",
+  "spatialSparseCluster",
+  "spatialSparseClassify",
+  "spatialKMeans",
+  "spatialSparseKMeans",
+  "spectra",
+  "spectra<-",
+  "spectralApply",
+  "standardizeTotalIonCurrent",
+  "standardizeTotalImageIntensity",
+  "summary",
+  "summaryPlot",
+  "trellisImage",
+  "trellisPlot",
+  "trellisVolume",
+  "unload",
+  "volume")
+
+useDynLib("Cardinal")

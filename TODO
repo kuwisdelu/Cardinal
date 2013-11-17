@@ -1,0 +1,15 @@
+
+TODO for Cardinal package
+-------------------------
+
+- write image3D(), trellisImage3D(), and volume()
+- write low-level smoothing functions for 3D images
+- remove 'parnames' and 'npar' from MSImageSegmentation metadata
+- add 'nsegmentations' to MSImageSegmentation
+- move 'parameters' to MSImageSegmentation (from metadata)
+- for summary(), add correlation to output and 'filter' as parameter
+- make plotting simultaneous with processing
+- add dimension names for slices
+- allow unsupervised peak alignment
+- add alignment of raw spectra
+- add optical images
