@@ -2,7 +2,9 @@
 TODO for Cardinal package
 -------------------------
 
-- write image3D(), trellisImage3D(), and volume()
+- fix gc() bug where generateHistory() captures environments
+- deprecate or delete unload() when above bug is fixed
+- write volume(), trellisVolume(), and interactiveVolume()
 - write low-level smoothing functions for 3D images
 - remove 'parnames' and 'npar' from MSImageSegmentation metadata
 - add 'nsegmentations' to MSImageSegmentation

@@ -7,7 +7,7 @@ setMethod("logLik", "MSImageSegmentation", function(object, ...) {
 		sum(log(phat))
 	} )
 	class(logLik) <- "logLik"
-	attr(logLik, "dof") <- object$dof
+	attr(logLik, "df") <- object$dof
 	attr(logLik, "nobs") <- sapply(object$classes, length)
 	attr(logLik, "names") <- metaData(object)[["parnames"]]
 	return(logLik)

@@ -10,8 +10,8 @@ setMethod("likPlot", "MSImageSegmentation", function(object,
 	s <- metaData(object)$parameters$s
 	nc <- object$nclasses
 	lik <- logLik(object)
-	aic <- -2 * lik + 2 * attr(lik, "dof")
-	bic <- -2 * lik + attr(lik, "dof") * log(attr(lik, "nobs"))
+	aic <- -2 * lik + 2 * attr(lik, "df")
+	bic <- -2 * lik + attr(lik, "df") * log(attr(lik, "nobs"))
 	if ( missing(layout) ) {
 		layout <- matrix(1:4, ncol=2, nrow=2, byrow=TRUE)
 	} else {

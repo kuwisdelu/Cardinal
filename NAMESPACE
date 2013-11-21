@@ -20,6 +20,11 @@ importFrom("stats",
   "sd",
   "var")
 
+importFrom("stats4",
+  "logLik",
+  "plot",
+  "summary")
+
 importFrom("MASS",
   "ginv")
 

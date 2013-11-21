@@ -1,255 +1,224 @@
 
 #### get/set slot methods ####
 
-if (is.null(getGeneric("spectra")))
+if (!isGeneric("spectra"))
 	setGeneric("spectra", function(object) standardGeneric("spectra"))
 
-if (is.null(getGeneric("spectra<-")))
+if (!isGeneric("spectra<-"))
 	setGeneric("spectra<-", function(object,value) standardGeneric("spectra<-"))
 
-if (is.null(getGeneric("peaks")))
+if (!isGeneric("peaks"))
 	setGeneric("peaks", function(object) standardGeneric("peaks"))
 
-if (is.null(getGeneric("peaks<-")))
+if (!isGeneric("peaks<-"))
 	setGeneric("peaks<-", function(object,value) standardGeneric("peaks<-"))
 
-if (is.null(getGeneric("featureData")))
+if (!isGeneric("featureData"))
 	setGeneric("featureData", function(object) standardGeneric("featureData"))
 
-if (is.null(getGeneric("featureData<-")))
+if (!isGeneric("featureData<-"))
 	setGeneric("featureData<-", function(object,value) standardGeneric("featureData<-"))
 
-if (is.null(getGeneric("pixelData")))
+if (!isGeneric("pixelData"))
 	setGeneric("pixelData", function(object) standardGeneric("pixelData"))
 
-if (is.null(getGeneric("pixelData<-")))
+if (!isGeneric("pixelData<-"))
 	setGeneric("pixelData<-", function(object,value) standardGeneric("pixelData<-"))
 
-if (is.null(getGeneric("metaData")))
+if (!isGeneric("metaData"))
 	setGeneric("metaData", function(object) standardGeneric("metaData"))
 
-if (is.null(getGeneric("metaData<-")))
+if (!isGeneric("metaData<-"))
 	setGeneric("metaData<-", function(object,value) standardGeneric("metaData<-"))
 
 #### all other methods ####
 
-if (is.null(getGeneric("$")))
-	setGeneric("$", function(x, name) standardGeneric("$"))
-
-if (is.null(getGeneric("$<-")))
-	setGeneric("$<-", function(x, name, value) standardGeneric("$<-"))
-
-if (is.null(getGeneric("[")))
-	setGeneric("[", function(x, i, j, drop) standardGeneric("["))
-
-if (is.null(getGeneric("[<-")))
-	setGeneric("[<-", function(x, i, j, value) standardGeneric("[<-"))
-
-if (is.null(getGeneric("[[")))
-	setGeneric("[[", function(x, i) standardGeneric("[["))
-
-if (is.null(getGeneric("[[<-")))
-	setGeneric("[[<-", function(x, i, value) standardGeneric("[[<-"))
-
-if (is.null(getGeneric("alignPeaks")))
+if (!isGeneric("alignPeaks"))
 	setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))
 
-if (is.null(getGeneric("assessQuality")))
+if (!isGeneric("assessQuality"))
 	setGeneric("assessQuality", function(object, ...) standardGeneric("assessQuality"))
 
-if (is.null(getGeneric("binSpectra")))
+if (!isGeneric("binSpectra"))
 	setGeneric("binSpectra", function(object, peaks, ...) standardGeneric("binSpectra"))
 
-if (is.null(getGeneric("calibrateSegmentation")))
+if (!isGeneric("calibrateSegmentation"))
 	setGeneric("calibrateSegmentation", function(object, reference, ...) standardGeneric("calibrateSegmentation"))
 
-if (is.null(getGeneric("coord")))
+if (!isGeneric("coord"))
 	setGeneric("coord", function(object) standardGeneric("coord"))
 
-if (is.null(getGeneric("coord<-")))
+if (!isGeneric("coord<-"))
 	setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
 
-if (is.null(getGeneric("coregisterImages")))
+if (!isGeneric("coregisterImages"))
 	setGeneric("coregisterImages", function(object, ...) standardGeneric("coregisterImages"))
 
-if (is.null(getGeneric("crop")))
+if (!isGeneric("crop"))
 	setGeneric("crop", function(object, ...) standardGeneric("crop"))
 
-if (is.null(getGeneric("crossValidate")))
+if (!isGeneric("crossValidate"))
 	setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
 
-if (is.null(getGeneric("detectPeaks")))
+if (!isGeneric("detectPeaks"))
 	setGeneric("detectPeaks", function(object, ...) standardGeneric("detectPeaks"))
 
-if (is.null(getGeneric("estimateBaseline")))
+if (!isGeneric("estimateBaseline"))
 	setGeneric("estimateBaseline", function(object, ...) standardGeneric("estimateBaseline"))
 
-if (is.null(getGeneric("estimateNoise")))
+if (!isGeneric("estimateNoise"))
     setGeneric("estimateNoise", function(object, ...) standardGeneric("estimateNoise"));
 
-if (is.null(getGeneric("features")))
+if (!isGeneric("features"))
 	setGeneric("features", function(object, mz, ...) standardGeneric("features"))
 
-if (is.null(getGeneric("flipHorizontal")))
+if (!isGeneric("flipHorizontal"))
 	setGeneric("flipHorizontal", function(object, ...) standardGeneric("flipHorizontal"))
 
-if (is.null(getGeneric("flipVertical")))
+if (!isGeneric("flipVertical"))
 	setGeneric("flipVertical", function(object, ...) standardGeneric("flipVertical"))
 
-if (is.null(getGeneric("generatePositionArray")))
+if (!isGeneric("generatePositionArray"))
 	setGeneric("generatePositionArray", function(object, ...) standardGeneric("generatePositionArray"))
 
-if (is.null(getGeneric("image")))
-	setGeneric("image", function(x, ...) standardGeneric("image"))
+if (!isGeneric("image")) setGeneric("image")
 
-if (is.null(getGeneric("intensities")))
+if (!isGeneric("intensities"))
 	setGeneric("intensities", function(object, ...) standardGeneric("intensities"))
 
-if (is.null(getGeneric("isBinned")))
+if (!isGeneric("isBinned"))
 	setGeneric("isBinned", function(object) standardGeneric("isBinned"))
 
-if (is.null(getGeneric("isBinned<-")))
+if (!isGeneric("isBinned<-"))
 	setGeneric("isBinned<-", function(object,value) standardGeneric("isBinned<-"))
 
-if (is.null(getGeneric("isPeaks")))
+if (!isGeneric("isPeaks"))
 	setGeneric("isPeaks", function(object) standardGeneric("isPeaks"))
 
-if (is.null(getGeneric("isPeaks<-")))
+if (!isGeneric("isPeaks<-"))
 	setGeneric("isPeaks<-", function(object,value) standardGeneric("isPeaks<-"))
 
-if (is.null(getGeneric("isResampled")))
+if (!isGeneric("isResampled"))
 	setGeneric("isResampled", function(object) standardGeneric("isResampled"))
 
-if (is.null(getGeneric("isResampled<-")))
+if (!isGeneric("isResampled<-"))
 	setGeneric("isResampled<-", function(object,value) standardGeneric("isResampled<-"))
 
-if (is.null(getGeneric("likPlot")))
+if (!isGeneric("likPlot"))
 	setGeneric("likPlot", function(object, ...) standardGeneric("likPlot"))
 
-if (is.null(getGeneric("logLik")))
-	setGeneric("logLik", function(object, ...) standardGeneric("logLik"))
-
-if (is.null(getGeneric("mergePeaks")))
+if (!isGeneric("mergePeaks"))
 	setGeneric("mergePeaks", function(peaks, ...) standardGeneric("mergePeaks"))
 
-if (is.null(getGeneric("mz")))
+if (!isGeneric("mz"))
 	setGeneric("mz", function(object) standardGeneric("mz"))
 
-if (is.null(getGeneric("mz<-")))
+if (!isGeneric("mz<-"))
 	setGeneric("mz<-", function(object, value) standardGeneric("mz<-"))
 
-if (is.null(getGeneric("neighbors")))
+if (!isGeneric("neighbors"))
 	setGeneric("neighbors", function(object, r, ...) standardGeneric("neighbors"))
 
-if (is.null(getGeneric("numFeatures")))
+if (!isGeneric("numFeatures"))
 	setGeneric("numFeatures", function(object) standardGeneric("numFeatures"))
 
-if (is.null(getGeneric("numPixels")))
+if (!isGeneric("numPixels"))
 	setGeneric("numPixels", function(object) standardGeneric("numPixels"))
 
-if (is.null(getGeneric("OPLS")))
+if (!isGeneric("OPLS"))
 	setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 
-if (is.null(getGeneric("PCA")))
+if (!isGeneric("PCA"))
 	setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 
-if (is.null(getGeneric("pixels")))
+if (!isGeneric("pixels"))
 	setGeneric("pixels", function(object, coord, ...) standardGeneric("pixels"))
 
-if (is.null(getGeneric("PLS")))
+if (!isGeneric("PLS"))
 	setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 
-if (is.null(getGeneric("plot")))
-	setGeneric("plot", function(x, y, ...) standardGeneric("plot"))
-
-if (is.null(getGeneric("poolPeaks")))
+if (!isGeneric("poolPeaks"))
 	setGeneric("poolPeaks", function(peaks, ...) standardGeneric("poolPeaks"))
 
-if (is.null(getGeneric("predict")))
+if (!isGeneric("predict"))
 	setGeneric("predict", function(object, ...) standardGeneric("predict"))
 
-if (is.null(getGeneric("regeneratePositions")))
+if (!isGeneric("regeneratePositions"))
 	setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 
-if (is.null(getGeneric("removeBaseline")))
+if (!isGeneric("removeBaseline"))
 	setGeneric("removeBaseline", function(object, ...) standardGeneric("removeBaseline"))
 
-if (is.null(getGeneric("removeNoise")))
+if (!isGeneric("removeNoise"))
 	setGeneric("removeNoise", function(object, ...) standardGeneric("removeNoise"))
 
-if (is.null(getGeneric("resampleSpectra")))
+if (!isGeneric("resampleSpectra"))
 	setGeneric("resampleSpectra", function(object, peaks, ...) standardGeneric("resampleSpectra"))
 
-if (is.null(getGeneric("roiBind")))
+if (!isGeneric("roiBind"))
 	setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
 
-if (is.null(getGeneric("rotateLeft")))
+if (!isGeneric("rotateLeft"))
 	setGeneric("rotateLeft", function(object, ...) standardGeneric("rotateLeft"))
 
-if (is.null(getGeneric("rotateRight")))
+if (!isGeneric("rotateRight"))
 	setGeneric("rotateRight", function(object, ...) standardGeneric("rotateRight"))
 
-if (is.null(getGeneric("show")))
-	setGeneric("show", function(object) standardGeneric("show"))
-
-if (is.null(getGeneric("selectPeaks")))
+if (!isGeneric("selectPeaks"))
 	setGeneric("selectPeaks", function(object, ...) standardGeneric("selectPeaks"))
 
-if (is.null(getGeneric("selectPixels")))
+if (!isGeneric("selectPixels"))
 	setGeneric("selectPixels", function(object, ...) standardGeneric("selectPixels"))
 
-if (is.null(getGeneric("selectROI")))
+if (!isGeneric("selectROI"))
 	setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
 
-if (is.null(getGeneric("sliceBind")))
+if (!isGeneric("sliceBind"))
     setGeneric("sliceBind", function(object, ...) standardGeneric("sliceBind"));
 
-if (is.null(getGeneric("spatialClassify")))
+if (!isGeneric("spatialClassify"))
     setGeneric("spatialClassify", function(object, ...) standardGeneric("spatialClassify"))
 
-if (is.null(getGeneric("spatialCluster")))
+if (!isGeneric("spatialCluster"))
     setGeneric("spatialCluster", function(object, ...) standardGeneric("spatialCluster"))
 
-if (is.null(getGeneric("spatialKMeans")))
+if (!isGeneric("spatialKMeans"))
     setGeneric("spatialKMeans", function(object, ...) standardGeneric("spatialKMeans"))
 
-if (is.null(getGeneric("spatialSparseClassify")))
+if (!isGeneric("spatialSparseClassify"))
     setGeneric("spatialSparseClassify", function(object, labels, ...) standardGeneric("spatialSparseClassify"))
 
-if (is.null(getGeneric("spatialSparseCluster")))
+if (!isGeneric("spatialSparseCluster"))
     setGeneric("spatialSparseCluster", function(object, ...) standardGeneric("spatialSparseCluster"))
 
-if (is.null(getGeneric("spatialSparseKMeans")))
+if (!isGeneric("spatialSparseKMeans"))
     setGeneric("spatialSparseKMeans", function(object, ...) standardGeneric("spatialSparseKMeans"))
 
-if (is.null(getGeneric("spectralApply")))
+if (!isGeneric("spectralApply"))
 	setGeneric("spectralApply", function(object, MARGIN, FUN, ...) standardGeneric("spectralApply"))
 
-if (is.null(getGeneric("standardizeTotalImageIntensity")))
+if (!isGeneric("standardizeTotalImageIntensity"))
     setGeneric("standardizeTotalImageIntensity", function(object, ...) standardGeneric("standardizeTotalImageIntensity"));
 
-if (is.null(getGeneric("standardizeTotalIonCurrent")))
+if (!isGeneric("standardizeTotalIonCurrent"))
     setGeneric("standardizeTotalIonCurrent", function(object, ...) standardGeneric("standardizeTotalIonCurrent"))
 
-if (is.null(getGeneric("summary")))
-	setGeneric("summary", function(object, ...) standardGeneric("summary"))
-
-if (is.null(getGeneric("summaryPlot")))
+if (!isGeneric("summaryPlot"))
 	setGeneric("summaryPlot", function(object, reference, ...) standardGeneric("summaryPlot"))
 
-if (is.null(getGeneric("trellisImage")))
+if (!isGeneric("trellisImage"))
 	setGeneric("trellisImage", function(x, ...) standardGeneric("trellisImage"))
 
-if (is.null(getGeneric("trellisPlot")))
+if (!isGeneric("trellisPlot"))
 	setGeneric("trellisPlot", function(x, ...) standardGeneric("trellisPlot"))
 
-if (is.null(getGeneric("trellisVolume")))
+if (!isGeneric("trellisVolume"))
 	setGeneric("trellisVolume", function(x, ...) standardGeneric("trellisVolume"))	
 
-if (is.null(getGeneric("unload")))
+if (!isGeneric("unload"))
 	setGeneric("unload", function(object, ...) standardGeneric("unload"))
 
-if (is.null(getGeneric("volume")))
+if (!isGeneric("volume"))
 	setGeneric("volume", function(x, ...) standardGeneric("volume"))
 
 #### end all generics ####
