@@ -68,7 +68,7 @@ nipals.PLS <- function(X, Y, ncomp=2, tol=1e-6, iter.max=100) {
 		Yweights[,i] <- c
 		Yscores[,i] <- u
 	}
-	H <- weights %*% ginv(crossprod(loadings, weights))
+	H <- weights %*% solve(crossprod(loadings, weights))
 	Bhat <- tcrossprod(H, Yweights)
 	Yhat <- X %*% Bhat
 	colnames(loadings) <- paste("C", 1:ncomp, sep="")

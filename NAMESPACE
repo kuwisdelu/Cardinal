@@ -1,33 +1,4 @@
 
-import("lattice",
-  "latticeExtra")
-
-importFrom("graphics",
-  "image",
-  "lines",
-  "locator",
-  "plot",
-  "points")
-
-importFrom("stats",
-  "approx",
-  "approxfun",
-  "filter",
-  "mad",
-  "median",
-  "pnorm",
-  "smooth.spline",
-  "sd",
-  "var")
-
-importFrom("stats4",
-  "logLik",
-  "plot",
-  "summary")
-
-importFrom("MASS",
-  "ginv")
-
 importFrom("abind",
   "abind")
 
@@ -37,8 +8,12 @@ importFrom("fields",
 importFrom("irlba",
   "irlba")
 
-importFrom("moments",
-  "kurtosis")
+importFrom("lattice",
+  "xyplot",
+  "levelplot")
+
+importFrom("latticeExtra",
+  "+")
 
 importFrom("signal",
   "interp1",

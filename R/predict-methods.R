@@ -93,7 +93,7 @@ setMethod("predict", "PLS", function(object, newx, newy, ncomp=object$ncomp, ...
 	coefficients <- list()
 	fitted <- list()
 	for ( i in 1:ncomp ) {
-		H <- object$weights[,1:i,drop=FALSE] %*% ginv(crossprod(object$loadings[,1:i,drop=FALSE],
+		H <- object$weights[,1:i,drop=FALSE] %*% solve(crossprod(object$loadings[,1:i,drop=FALSE],
 			object$weights[,1:i,drop=FALSE]))
 		coefficients[[i]] <- tcrossprod(H, object$Yweights[,1:i,drop=FALSE])
 		fitted[[i]] <- x %*% coefficients[[i]]

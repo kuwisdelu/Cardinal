@@ -66,6 +66,13 @@ groupVar <- function(x, f) {
 	(Sfx2 / n) - xbar^2
 }
 
+# find the kurtosis of a vector
+kurtosis <- function(x, na.rm=FALSE) {
+	if ( na.rm ) x <- x[!is.na(x)]
+	n <- length(x)
+	n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
+}
+
 # gives the L1 norm of a vector
 l1norm <- function(x) sum(abs(x))
 
