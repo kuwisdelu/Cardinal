@@ -18,7 +18,7 @@ setMethod("initialize",
 			varMetadata[["labelType"]] <- factor(rep(NA, ncol(data)), levels=reqLabelTypes)
 		if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) )
 			levels(varMetadata[["labelType"]]) <- unique(c(levels(varMetadata[["labelType"]]), reqLabelTypes))
-		if ( !"sample" %in% row.names(varMetadata) )
+		if ( !"sample" %in% row.names(varMetadata) || is.na(varMetadata["sample","labelType"]) )
 			varMetadata["sample","labelType"] <- "sample"
 		.Object <- callNextMethod(.Object,
 			data=data,
