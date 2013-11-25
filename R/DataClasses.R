@@ -1,5 +1,5 @@
 
-#### Pixel-based AnnotatedDataFrame for Imaging ####
+#### Pixel based AnnotatedDataFrame for imaging ####
 ## based on Biobase's AnnotatedDataFrame, but with 
 ## additions that reflect that each row belongs to a pixel
 ## and multiple rows may belong to the same sample
@@ -24,7 +24,7 @@
 	})
 
 #### Class for generic imaging datasets ####
-## heavily inspired by structure of eSet on Bioconductor
+## heavily inspired by structure of Biobase's eSet
 ## ------------------------------------------------
 .iSet <- setClass("iSet",
 	representation(
@@ -75,8 +75,7 @@
 ## can be reconstructed as an array on-the-fly
 ## --------------------------------------------
 .MSImageSpectra <- setClass("MSImageSpectra",
-	representation(
-		positionArray = "array"),
+	representation(positionArray = "array"),
 	contains = "ImageData",
 	prototype = prototype(
 		new("Versioned", versions=c(MSImageSpectra="0.0.1")),
@@ -86,7 +85,7 @@
 		names <- ls(object@data)
 		if ( !all(sapply(names, function(nm) is.matrix(object@data[[nm]]))) )
 			msg <- validMsg("all data elements must be a matrix")
-		if ( any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
+		if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
 			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
 		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )
 			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")

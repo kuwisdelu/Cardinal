@@ -27,14 +27,15 @@ setMethod("initialize",
 	})
 
 ImageData <- function(..., storageMode = "immutableEnvironment") {
+	if ( any(is.null(names(list(...)))) )
+		stop("all elements must be named")
 	.ImageData(..., storageMode=storageMode)
 }
 
 setMethod("storageMode", signature = signature(object = "ImageData"), function(object) object@storageMode)
 
 setReplaceMethod("storageMode",
-	signature = signature(object = "ImageData",
-							value = "character"),
+	signature = signature(object = "ImageData", value = "character"),
 	function(object, value) {
 		if ( value == object@storageMode )
 			return(object)

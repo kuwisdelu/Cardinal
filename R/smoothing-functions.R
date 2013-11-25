@@ -7,9 +7,9 @@ smoothingFunction <- function(method) {
 	} else if ( is.character(method) ) {
 		if ( length(method) > 1 ) method <- method[[1]]
 		switch(method,
-			"none" = nullSmoothing,
-			"gaussian" = gaussianSmoothing,
-			"adaptive" = adaptiveSmoothing,
+			"none" = smoothingNull,
+			"gaussian" = smoothingGaussian,
+			"adaptive" = smoothingAdaptive,
 			match.fun(method)
 		)
 	} else {
@@ -17,9 +17,9 @@ smoothingFunction <- function(method) {
 	}
 }
 
-nullSmoothing <- function(x, ...) identity(x)
+smoothingNull <- function(x, ...) identity(x)
 
-gaussianSmoothing <- function(x, sd=window/4, window=5, beta, max.intensity, .C=TRUE, ...) {
+smoothingGaussian <- function(x, sd=window/4, window=5, beta, max.intensity, .C=TRUE, ...) {
 	x.drop <- as.numeric(x)
 	r <- floor(window / 2)
 	if ( .C ) {
@@ -53,7 +53,7 @@ gaussianSmoothing <- function(x, sd=window/4, window=5, beta, max.intensity, .C=
 	x.new
 }
 
-adaptiveSmoothing <- function(x, sd=window/4, window=5, max.intensity, .C=TRUE, ...) {
+smoothingAdaptive <- function(x, sd=window/4, window=5, max.intensity, .C=TRUE, ...) {
 	x.drop <- as.numeric(x)
 	r <- floor(window / 2)
 	if ( .C ) {

@@ -3,13 +3,14 @@ Type: Package
 Title: Mass spectrometry imaging tools
 Version: 0.5.1
 Date: 2013-11-22
-Author: Kyle D. Bemis
+Author: Kyle D. Bemis <kbemis@purdue.edu>
 Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
 Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
-License: Artistic 2.0
-LazyLoad: yes
-Depends: BiocGeneric, Biobase, EBImage, MSnbase, graphics, methods, stats
+License: Artistic-2.0
+Depends: BiocGenerics, Biobase, MSnbase, graphics, methods, stats
 Imports: abind, fields, irlba, lattice, latticeExtra, signal, sp, utils
-Suggests: CardinaliView, rJava
+Suggests: CardinaliView, rJava, testthat
+biocViews: Infrastructure, Bioinformatics, Proteomics,
+	MassSpectrometry, Clustering, Classification

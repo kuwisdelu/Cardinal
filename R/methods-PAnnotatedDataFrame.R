@@ -22,8 +22,8 @@ setMethod("initialize",
 			data=data,
 			varMetadata=varMetadata,
 			...)
-		.Object@varMetadata["sample","labelType"] <- "sample"
 		.Object@varMetadata[["labelType"]][is.na(.Object@varMetadata[["labelType"]])] <- "pheno"
+
 		if ( validObject(.Object) )
 			.Object
 	})
@@ -45,3 +45,60 @@ PAnnotatedDataFrame <- function(data, varMetadata,
 		dimLabels=dimLabels,
 		...)
 }
+
+setMethod("sampleNames", "PAnnotatedDataFrame",
+	function(object) levels(object[["sample"]]))
+
+setReplaceMethod("sampleNames",
+	signature(object = "PAnnotatedDataFrame", value = "ANY"),
+	function(object, value) {
+		levels(object[["sample"]]) <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("pixelNames", "PAnnotatedDataFrame",
+	function(object) row.names(pData(object)))
+
+setReplaceMethod("pixelNames",
+	signature(object = "PAnnotatedDataFrame", value = "ANY"),
+	function(object, value) {
+		if (length(value) != dim(pData(object))[[1]])
+			stop("number of new names (", length(value), ") ",
+				"should equal number of rows in AnnotatedDataFrame (",
+				dim( object )[[1]], ")")
+		row.names(pData(object)) <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("coordNames", "PAnnotatedDataFrame",
+	function(object) {
+		coordLabelTypes <- c("spatial2d", "spatial3d", "dimension")
+		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		varLabels(object)[isCoord]
+	})
+
+setReplaceMethod("coordNames",
+	signature(object = "PAnnotatedDataFrame", value = "ANY"),
+	function(object, value) {
+		coordLabelTypes <- c("spatial2d", "spatial3d", "dimension")
+		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		varLabels(object)[isCoord] <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("coord", "PAnnotatedDataFrame",
+	function(object) pData(object)[coordNames(object)])
+
+setReplaceMethod("coord",
+	signature(object = "PAnnotatedDataFrame", value = "ANY"),
+	function(object, value) {
+		pData(object)[coordNames(object)] <- value
+		if ( validObject(object) )
+			object					
+	})
+
+
+

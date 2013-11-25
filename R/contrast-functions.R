@@ -7,9 +7,9 @@ contrastFunction <- function(method) {
 	} else if ( is.character(method) ) {
 		if ( length(method) > 1 ) method <- method[[1]]
 		switch(method,
-			"none" = nullContrast,
-			"suppress" = suppressContrast,
-			"histeq" = histeqContrast,
+			"none" = contrastNull,
+			"suppress" = contrastSuppress,
+			"histeq" = contrastHisteq,
 			match.fun(method)
 		)
 	} else {
@@ -17,16 +17,16 @@ contrastFunction <- function(method) {
 	}
 }
 
-nullContrast <- function(x, ...) identity(x)
+contrastNull <- function(x, ...) identity(x)
 
-suppressContrast <- function(x, top.percent=0.01, max.intensity, ...) {
+contrastSuppress <- function(x, top.percent=0.01, max.intensity, ...) {
 	top.x <- quantile(x, 1 - top.percent, na.rm=TRUE)
 	if ( missing(max.intensity) ) max.intensity <- top.x
 	x[x > top.x] <- top.x
 	max.intensity * x / max(x, na.rm=TRUE)
 }
 
-histeqContrast <- function(x, hist.breaks=100, min.intensity, max.intensity, ...) {
+contrastHisteq <- function(x, hist.breaks=100, min.intensity, max.intensity, ...) {
 	x.drop <- as.numeric(x)
 	breaks <- unique(quantile(x.drop, seq(from=0, to=1, length.out=hist.breaks),
 		na.rm=TRUE))
