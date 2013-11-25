@@ -34,6 +34,10 @@ test_that("MSImageSpectra manipulation", {
 	msidata1 <- MSImageSpectra(spectra=spectra1, storageMode="immutableEnvironment")
 	expect_that(spectra(msidata1), equals(spectra1))
 
+	coord1 <- expand.grid(x=1:3, y=1:3)
+	msidata1 <- MSImageSpectra(spectra=spectra1, coord=coord1, storageMode="immutableEnvironment")
+	expect_that(msidata1[], equals(spectra0))
+
 	new.values <- 101:103
 	spectra(msidata1)[,1] <- new.values
 	expect_that(spectra(msidata1)[,1], equals(new.values))

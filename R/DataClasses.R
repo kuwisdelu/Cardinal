@@ -2,48 +2,12 @@
 #### Pixel based AnnotatedDataFrame for imaging ####
 ## based on Biobase's AnnotatedDataFrame, but with 
 ## additions that reflect that each row belongs to a pixel
-## and multiple rows may belong to the same sample
+## and multiple rows will belong to the same sample
 ## ------------------------------------------------
 .PAnnotatedDataFrame <- setClass("PAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
 	prototype = prototype(
-		new("Versioned", versions=c(PAnnotatedDataFrame="0.0.1"))),
-	validity = function(object) {
-		msg <- validMsg(NULL, NULL)
-		if ( is.null(object@data[["sample"]]) )
-			msg <- validMsg(msg, "column 'sample' missing from data")
-		if ( !is.factor(object@data[["sample"]]) )
-			msg <- validMsg(msg, "column 'sample' must be a factor")
-		labelType <- object@varMetadata[["labelType"]]
-		if ( is.null(labelType) )
-			msg <- validMsg(msg, "column 'labelType' missing from varMetadata")
-		reqLabelTypes <- c("spatial2d", "spatial3d", "dimension", "sample", "pheno")
-		if ( !is.factor(labelType) || !all(reqLabelTypes %in% levels(labelType)) )
-			msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:", paste(reqLabelTypes, collapse=", ")))
-		if (is.null(msg)) TRUE else msg
-	})
-
-#### Class for generic imaging datasets ####
-## heavily inspired by structure of Biobase's eSet
-## ------------------------------------------------
-.iSet <- setClass("iSet",
-	representation(
-		imageData = "ImageData", # holds an immutable environment
-		pixelData = "PAnnotatedDataFrame", # analogous to phenoData
-		featureData = "AnnotatedDataFrame",
-		experimentData = "MIAxE",
-		protocolData = "AnnotatedDataFrame",
-		"VIRTUAL"),
-	contains = "VersionedBiobase",
-	prototype = prototype(
-		new("VersionedBiobase", versions=c(iSet="0.0.1")),
-			imageData = .ImageData(),
-			pixelData = new("AnnotatedDataFrame",
-				dimLabels = c("pixelNames", "pixelColumns")),
-			featureData = new("AnnotatedDataFrame",
-				dimLabels = c("featureNames", "featureColumns")),
-			protocolData = new("AnnotatedDataFrame",
-				dimLabels = c("sampleNames", "sampleColumns"))))
+		new("Versioned", versions=c(PAnnotatedDataFrame="0.0.1"))))
 
 #### Class for generic imaging data ###
 ## simply holds an environment and a storage mode
@@ -91,4 +55,27 @@
 			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")
 		if ( is.null(msg) ) TRUE else msg
 	})
+
+#### Class for generic imaging datasets ####
+## heavily inspired by structure of Biobase's eSet
+## ------------------------------------------------
+.iSet <- setClass("iSet",
+	representation(
+		imageData = "ImageData", # holds an immutable environment
+		pixelData = "PAnnotatedDataFrame", # analogous to phenoData
+		featureData = "AnnotatedDataFrame",
+		experimentData = "MIAxE",
+		protocolData = "AnnotatedDataFrame",
+		"VIRTUAL"),
+	contains = "VersionedBiobase",
+	prototype = prototype(
+		new("VersionedBiobase", versions=c(iSet="0.0.1")),
+			imageData = .ImageData(),
+			pixelData = .PAnnotatedDataFrame(
+				dimLabels = c("pixelNames", "pixelColumns")),
+			featureData = new("AnnotatedDataFrame",
+				dimLabels = c("featureNames", "featureColumns")),
+			protocolData = new("AnnotatedDataFrame",
+				dimLabels = c("sampleNames", "sampleColumns"))))
+
 

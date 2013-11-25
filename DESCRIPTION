@@ -10,7 +10,7 @@ Description: Implements statistical & computational tools for analyzing
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
 Depends: BiocGenerics, Biobase, MSnbase, graphics, methods, stats
-Imports: abind, fields, irlba, lattice, latticeExtra, signal, sp, utils
+Imports: abind, fields, irlba, lattice, latticeExtra, signal, sp, stats4, utils
 Suggests: CardinaliView, rJava, testthat
 biocViews: Infrastructure, Bioinformatics, Proteomics,
 	MassSpectrometry, Clustering, Classification

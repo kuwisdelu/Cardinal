@@ -10,8 +10,10 @@ setMethod("initialize",
 		if ( is.null(data[["sample"]]) )
 			data[["sample"]] <- factor(rep(1, nrow(data)))
 		reqLabelTypes <- c("spatial2d", "spatial3d", "dimension", "sample", "pheno")
-		if ( missing(varMetadata) )
-			varMetadata <- data.frame(labelType = factor(levels=reqLabelTypes), row.names=names(data))
+		if ( missing(varMetadata) ) {
+			varMetadata <- data.frame(labelType = factor(rep(NA, ncol(data)), levels=reqLabelTypes))
+			row.names(varMetadata) <- names(data)
+		}
 		if ( is.null(varMetadata[["labelType"]]) )
 			varMetadata[["labelType"]] <- factor(rep(NA, ncol(data)), levels=reqLabelTypes)
 		if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) )
@@ -23,7 +25,6 @@ setMethod("initialize",
 			varMetadata=varMetadata,
 			...)
 		.Object@varMetadata[["labelType"]][is.na(.Object@varMetadata[["labelType"]])] <- "pheno"
-
 		if ( validObject(.Object) )
 			.Object
 	})
@@ -45,6 +46,21 @@ PAnnotatedDataFrame <- function(data, varMetadata,
 		dimLabels=dimLabels,
 		...)
 }
+
+setValidity("PAnnotatedDataFrame", function(object) {
+	msg <- validMsg(NULL, NULL)
+	if ( is.null(object@data[["sample"]]) )
+		msg <- validMsg(msg, "column 'sample' missing from data")
+	if ( !is.factor(object@data[["sample"]]) )
+		msg <- validMsg(msg, "column 'sample' must be a factor")
+	labelType <- object@varMetadata[["labelType"]]
+	if ( is.null(labelType) )
+		msg <- validMsg(msg, "column 'labelType' missing from varMetadata")
+	reqLabelTypes <- c("spatial2d", "spatial3d", "dimension", "sample", "pheno")
+	if ( !is.factor(labelType) || !all(reqLabelTypes %in% levels(labelType)) )
+		msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:", paste(reqLabelTypes, collapse=", ")))
+	if (is.null(msg)) TRUE else msg
+})
 
 setMethod("sampleNames", "PAnnotatedDataFrame",
 	function(object) levels(object[["sample"]]))
@@ -97,7 +113,7 @@ setReplaceMethod("coord",
 	function(object, value) {
 		pData(object)[coordNames(object)] <- value
 		if ( validObject(object) )
-			object					
+			object
 	})
 
 

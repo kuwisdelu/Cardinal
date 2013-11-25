@@ -1,4 +1,13 @@
 
+import(
+  "graphics",
+  "methods",
+  "stats",
+  "stats4",
+  "BiocGenerics",
+  "Biobase",
+  "MSnbase")
+
 importFrom("abind",
   "abind")
 
@@ -11,9 +20,6 @@ importFrom("irlba",
 importFrom("lattice",
   "xyplot",
   "levelplot")
-
-importFrom("latticeExtra",
-  "+")
 
 importFrom("signal",
   "interp1",

@@ -38,9 +38,7 @@ setReplaceMethod("spectra",
 	})
 
 setMethod("dim", "MSImageSpectra",
-	function(x) {
-		c(Features=nrow(x[["spectra"]]), dim(x@positionArray))
-	})
+	function(x) c(Features=nrow(x[["spectra"]]), dim(x@positionArray)))
 
 setMethod("[", "MSImageSpectra", function(x, i, j, ..., drop) {
 	nargs <- nargs() - 1 - !missing(drop)

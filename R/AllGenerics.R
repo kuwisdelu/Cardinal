@@ -1,6 +1,3 @@
-
-#### get/set slot methods ####
-
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))
 setGeneric("assessQuality", function(object, ...) standardGeneric("assessQuality"))
 setGeneric("binSpectra", function(object, peaks, ...) standardGeneric("binSpectra"))

@@ -2,9 +2,16 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.5.1 [2013-11-25]
+
+- Major revision to use Bioconductor base packages
+- New dependencies on BiocGenerics, Biobase, and MSnbase
+- New virtual class iSet for generic imaging data
+
 Version 0.5 [2013-11-8]
 
 - Added image coregistration for 3D sections.
+- Added 'volume' method for 3D visualization.
 
 Version 0.4 [2013-11-7]
 
