@@ -1,14 +1,39 @@
 
+#### Pixel-based AnnotatedDataFrame for Imaging ####
+## based on Biobase's AnnotatedDataFrame, but with 
+## additions that reflect that each row belongs to a pixel
+## and multiple rows may belong to the same sample
+## ------------------------------------------------
+.PAnnotatedDataFrame <- setClass("PAnnotatedDataFrame",
+	contains = "AnnotatedDataFrame",
+	prototype = prototype(
+		new("Versioned", versions=c(PAnnotatedDataFrame="0.0.1"))),
+	validity = function(object) {
+		msg <- validMsg(NULL, NULL)
+		if ( is.null(object@data[["sample"]]) )
+			msg <- validMsg(msg, "column 'sample' missing from data")
+		if ( !is.factor(object@data[["sample"]]) )
+			msg <- validMsg(msg, "column 'sample' must be a factor")
+		labelType <- object@varMetadata[["labelType"]]
+		if ( is.null(labelType) )
+			msg <- validMsg(msg, "column 'labelType' missing from varMetadata")
+		reqLabelTypes <- c("spatial2d", "spatial3d", "dimension", "sample", "pheno")
+		if ( !is.factor(labelType) || !all(reqLabelTypes %in% levels(labelType)) )
+			msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:", paste(reqLabelTypes, collapse=", ")))
+		if (is.null(msg)) TRUE else msg
+	})
+
 #### Class for generic imaging datasets ####
 ## heavily inspired by structure of eSet on Bioconductor
-##------------------------------------------------
+## ------------------------------------------------
 .iSet <- setClass("iSet",
-	representation(imageData = "ImageData", # holds an immutable environment
-					pixelData = "AnnotatedDataFrame", # analogous to phenoData
-					featureData = "AnnotatedDataFrame",
-					experimentData = "MIAxE",
-					protocolData = "AnnotatedDataFrame",
-					"VIRTUAL"),
+	representation(
+		imageData = "ImageData", # holds an immutable environment
+		pixelData = "PAnnotatedDataFrame", # analogous to phenoData
+		featureData = "AnnotatedDataFrame",
+		experimentData = "MIAxE",
+		protocolData = "AnnotatedDataFrame",
+		"VIRTUAL"),
 	contains = "VersionedBiobase",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(iSet="0.0.1")),
@@ -24,8 +49,9 @@
 ## simply holds an environment and a storage mode
 ## --------------------------------------------
 .ImageData <- setClass("ImageData",
-	representation(data = "environment",
-				storageMode = "character"),
+	representation(
+		data = "environment",
+		storageMode = "character"),
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(ImageData="0.0.1")),
@@ -37,7 +63,7 @@
 		if ( !all(sapply(names, function(nm) is.array(object@data[[nm]]))) )
 			msg <- validMsg(msg, "all elements must be an array")
 		dims <- lapply(names, function(nm) dim(object@data[[nm]]))
-		if ( !all(lapply(dims, function(dm) all(dm == dims[[1]]))) )
+		if ( !all(sapply(dims, function(dm) all(dm == dims[[1]]))) )
 			msg <- ValidMsg(msg, "all elements must have the same dimensions")
 		if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
 			msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
@@ -49,7 +75,8 @@
 ## can be reconstructed as an array on-the-fly
 ## --------------------------------------------
 .MSImageSpectra <- setClass("MSImageSpectra",
-	representation(positionArray = "array"),
+	representation(
+		positionArray = "array"),
 	contains = "ImageData",
 	prototype = prototype(
 		new("Versioned", versions=c(MSImageSpectra="0.0.1")),
