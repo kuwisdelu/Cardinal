@@ -1,0 +1,68 @@
+
+\documentclass[a4paper]{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{CARDINAL: Tools for mass spectrometry imaging}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Data contents and structure}
+
+Testing plotting commands (without outputting the plots):
+
+<<a>>=
+x <- 1:10
+plot(x ~ x)
+@
+
+<<b>>=
+y <- 10:1
+plot(y ~ x)
+@
+
+Output the plots in a figure now:
+
+%++++++++++++++
+% FIGURE:  Test
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+\small A & B \\
+
+<<fig=TRUE, echo=FALSE>>=
+<<a>>
+@
+&
+
+<<fig=TRUE, echo=FALSE>>=
+<<b>>
+@
+\\
+
+\end{tabular}
+\end{center}
+\caption{
+\small Test caption.
+}
+\end{figure}
+% END FIGURE
+%++++++++++++++
+
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}

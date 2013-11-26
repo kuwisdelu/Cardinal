@@ -4,10 +4,10 @@
 ## additions that reflect that each row belongs to a pixel
 ## and multiple rows will belong to the same sample
 ## ------------------------------------------------
-.PAnnotatedDataFrame <- setClass("PAnnotatedDataFrame",
+.IAnnotatedDataFrame <- setClass("IAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
 	prototype = prototype(
-		new("Versioned", versions=c(PAnnotatedDataFrame="0.0.1"))))
+		new("Versioned", versions=c(IAnnotatedDataFrame="0.0.1"))))
 
 #### Class for generic imaging data ###
 ## simply holds an environment and a storage mode
@@ -62,7 +62,7 @@
 .iSet <- setClass("iSet",
 	representation(
 		imageData = "ImageData", # holds an immutable environment
-		pixelData = "PAnnotatedDataFrame", # analogous to phenoData
+		pixelData = "IAnnotatedDataFrame", # analogous to phenoData
 		featureData = "AnnotatedDataFrame",
 		experimentData = "MIAxE",
 		protocolData = "AnnotatedDataFrame",
@@ -71,7 +71,7 @@
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(iSet="0.0.1")),
 			imageData = .ImageData(),
-			pixelData = .PAnnotatedDataFrame(
+			pixelData = .IAnnotatedDataFrame(
 				dimLabels = c("pixelNames", "pixelColumns")),
 			featureData = new("AnnotatedDataFrame",
 				dimLabels = c("featureNames", "featureColumns")),
