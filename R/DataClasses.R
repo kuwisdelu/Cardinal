@@ -7,7 +7,7 @@
 .IAnnotatedDataFrame <- setClass("IAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
 	prototype = prototype(
-		new("Versioned", versions=c(IAnnotatedDataFrame="0.0.1"))))
+		new("Versioned", versions=c(IAnnotatedDataFrame="0.0.2"))))
 
 #### Class for generic imaging data ###
 ## simply holds an environment and a storage mode
@@ -18,7 +18,7 @@
 		storageMode = "character"),
 	contains = "Versioned",
 	prototype = prototype(
-		new("Versioned", versions=c(ImageData="0.0.1")),
+		new("Versioned", versions=c(ImageData="0.0.2")),
 		data = new.env(parent=emptyenv()),
 		storageMode = "immutableEnvironment"),
 	validity = function(object) {

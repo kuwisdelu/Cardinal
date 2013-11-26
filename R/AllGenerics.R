@@ -71,7 +71,5 @@ setGeneric("summary", function(object, ...) standardGeneric("summary"))
 setGeneric("summaryPlot", function(object, reference, ...) standardGeneric("summaryPlot"))
 setGeneric("trellisImage", function(x, ...) standardGeneric("trellisImage"))
 setGeneric("trellisPlot", function(x, ...) standardGeneric("trellisPlot"))
-setGeneric("trellisVolume", function(x, ...) standardGeneric("trellisVolume"))	
-setGeneric("unload", function(object, ...) standardGeneric("unload"))
 setGeneric("volume", function(x, ...) standardGeneric("volume"))
 
