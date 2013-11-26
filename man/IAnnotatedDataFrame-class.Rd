@@ -22,12 +22,12 @@
 }
 
 \usage{    
-	## Instance creation
-	IAnnotatedDataFrame(data, varMetadata,
-		dimLabels=c("pixelNames", "pixelColumns"),
-		\dots)
+## Instance creation
+IAnnotatedDataFrame(data, varMetadata,
+	dimLabels=c("pixelNames", "pixelColumns"),
+	\dots)
 
-	## Additional methods documented below
+## Additional methods documented below
 }
 
 \arguments{
@@ -84,32 +84,32 @@
 }
 
 \examples{
-	## Create an IAnnotatedDataFrame object
-	IAnnotatedDataFrame()
+## Create an IAnnotatedDataFrame object
+IAnnotatedDataFrame()
 
-	## Simple IAnnotatedDataFrame
-	df1 <- IAnnotatedDataFrame(expand.grid(x=1:3, y=1:3),
-		varMetadata=data.frame(labelType=c("spatial2d", "spatial2d")))
-	pData(df1)
-	varMetadata(df1)
+## Simple IAnnotatedDataFrame
+df1 <- IAnnotatedDataFrame(data=expand.grid(x=1:3, y=1:3),
+	varMetadata=data.frame(labelType=c("spatial2d", "spatial2d")))
+pData(df1)
+varMetadata(df1)
 
-	# Sample possible experiment
-	coord <- expand.grid(x=1:3, y=1:3)
-	df2 <- IAnnotatedDataFrame(
-		data.frame(rbind(coord, coord), sample=factor(rep(1:2, each=nrow(coord)))),
-		varMetadata=data.frame(labelType=c("spatial2d", "spatial2d")))
-	df2$diagnosis <- factor(rbinom(nrow(df2), 1, 0.5), labels=c("normal", "cancer"))
-	varMetadata(df2)["diagnosis", "labelDescription"] <- "disease pathology"
-	df2[["time", labelDescription="time measured"]] <- rep(Sys.time(), nrow(df2))
-	pData(df2)
-	varMetadata(df2)
+# Example of possible experiment data
+coord <- expand.grid(x=1:3, y=1:3)
+df2 <- IAnnotatedDataFrame(data=
+	data.frame(rbind(coord, coord), sample=factor(rep(1:2, each=nrow(coord)))),
+	varMetadata=data.frame(labelType=c("spatial2d", "spatial2d")))
+df2$diagnosis <- factor(rbinom(nrow(df2), 1, 0.5), labels=c("normal", "cancer"))
+varMetadata(df2)["diagnosis", "labelDescription"] <- "disease pathology"
+df2[["time", labelDescription="time measured"]] <- rep(Sys.time(), nrow(df2))
+pData(df2)
+varMetadata(df2)
 
-	# Change labels and pixel coord
-	coordNames(df2) <- c("x1", "x2")
-	pixelNames(df2) <- paste("p", 1:nrow(df2), sep="")
-	sampleNames(df2) <- c("subject A", "subject B")
-	coord(df2) <- coord(df2)[nrow(df2):1,]
-	pData(df2)
+# Change labels and pixel coord
+coordNames(df2) <- c("x1", "x2")
+pixelNames(df2) <- paste("p", 1:nrow(df2), sep="")
+sampleNames(df2) <- c("subject A", "subject B")
+coord(df2) <- coord(df2)[nrow(df2):1,]
+pData(df2)
 }
 
 \keyword{classes}
