@@ -153,8 +153,6 @@ exportMethods(
 	"summaryPlot",
 	"trellisImage",
 	"trellisPlot",
-	"trellisVolume",
-	"unload",
 	"volume")
 
 useDynLib("Cardinal")
