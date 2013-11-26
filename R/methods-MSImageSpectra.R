@@ -10,11 +10,13 @@ setMethod("initialize",
 	})
 
 MSImageSpectra <- function(spectra, coord,
-	storageMode = "immutableEnvironment",
+	storageMode = c("immutableEnvironment", "lockedEnvironment", "environment"),
 	positionArray = if ( !missing(coord) ) generatePositionArray(coord) else NULL,
 	...)
 {
-	if ( !is.array(spectra) || dim(spectra) < 2 ) stop("spectra must be an array or matrix")
+	storageMode <- match.arg(storageMode)
+	if ( missing(spectra) ) spectra <- matrix()
+	if ( !is.array(spectra) || length(dim(spectra)) < 2 ) stop("spectra must be an array or matrix")
 	if ( length(dim(spectra)) > 2 || is.null(positionArray) ) {
 		if ( !missing(coord) ) warning("spectra is a datacube; ignoring user-provided coord")
 		positionArray <- array(seq_len(prod(dim(spectra)[-1])), dim=dim(spectra)[-1])
@@ -29,8 +31,7 @@ MSImageSpectra <- function(spectra, coord,
 setMethod("spectra", "MSImageSpectra",
 	function(object) object[["spectra"]])
 
-setReplaceMethod("spectra",
-	signature=signature(object="MSImageSpectra", value="ANY"),
+setReplaceMethod("spectra", "MSImageSpectra",
 	function(object, value) {
 		object[["spectra"]] <- value
 		if ( validObject(object) )

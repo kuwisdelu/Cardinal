@@ -162,7 +162,7 @@
     \item{pixels}{\code{signature(object = "MSImageSet", coord = "numeric")}: 
         Returns the pixel ids of mass spectra in an \code{\linkS4class{MSImageSet}}
         within the \code{spectra} slot given input coordinates. }
-    \item{regeneratePositions}{\code{signature(object = "MSImageSet")}: 
+    \item{regeneratePositions}{\code{signature(object = "MSImageSet"{})}: 
         Regenerates the array of pixel position ids. }
     \item{rotateLeft}{\code{signature(object = "MSImageSet")}: 
         Rotates an \code{\linkS4class{MSImageSet}} to the left. }

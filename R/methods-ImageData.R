@@ -26,8 +26,12 @@ setMethod("initialize",
 			storageMode=storageMode)
 	})
 
-ImageData <- function(..., storageMode = "immutableEnvironment") {
-	if ( any(is.null(names(list(...)))) )
+ImageData <- function(..., storageMode = c("immutableEnvironment",
+	"lockedEnvironment", "environment"))
+{
+	storageMode <- match.arg(storageMode)
+	obs <- list(...)
+	if ( any(is.null(names(obs))) && length(obs) > 0 )
 		stop("all elements must be named")
 	.ImageData(..., storageMode=storageMode)
 }

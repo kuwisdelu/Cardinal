@@ -5,6 +5,7 @@ context("MSImageSpectra class")
 test_that("MSImageSpectra validity", {
 	
 	expect_true(validObject(new("MSImageSpectra")))
+	expect_true(validObject(MSImageSpectra()))
 
 	spectra0 <- array(1:27, dim=c(3,3,3))
 	msidata0 <- MSImageSpectra(spectra=spectra0)
