@@ -39,12 +39,13 @@ setGeneric("sliceBind", function(object, ...) standardGeneric("sliceBind"));
 # setGeneric("spectra", function(object) standardGeneric("spectra")) # use MSnbase generic
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
 
+setGeneric("imagingInfo", function(object) standardGeneric("imagingInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
 setGeneric("specimenType", function(object) standardGeneric("specimenType"))
 setGeneric("stainingMethod", function(object) standardGeneric("stainingMethod"))
 setGeneric("tissueThickness", function(object) standardGeneric("tissueThickness"))
-setGeneric("embeddingMethod", function(object) standardGeneric("embeddingMethod"))
 setGeneric("tissueWash", function(object) standardGeneric("tissueWash"))
+setGeneric("embeddingMethod", function(object) standardGeneric("embeddingMethod"))
 setGeneric("inSituChemistry", function(object) standardGeneric("inSituChemistry"))
 setGeneric("matrixDeposition", function(object) standardGeneric("matrixDeposition"))
 setGeneric("pixelSize", function(object) standardGeneric("pixelSize"))
