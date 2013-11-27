@@ -55,4 +55,11 @@ test_that("MSImageSpectra manipulation", {
 	storageMode(msidata1) <- "lockedEnvironment"
 	expect_error(spectra(msidata1)[,1] <- new.values)
 
+	storageMode(msidata1) <- "immutableEnvironment"
+	combdata <- combine(msidata1, msidata2)
+	expect_true(all(spectra(combdata) == cbind(spectra(msidata1), spectra(msidata2))))
+
+	multicombdata <- combine(msidata1, msidata2, msidata2)
+	expect_true(all(spectra(multicombdata) == cbind(spectra(msidata1), spectra(msidata2), spectra(msidata2))))
+
 })

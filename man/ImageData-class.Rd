@@ -8,6 +8,9 @@
 
 \alias{[[,ImageData-method}
 \alias{[[<-,ImageData-method}
+\alias{combine,ImageData,ImageData-method}
+\alias{dim,ImageData-method}
+\alias{dims,ImageData-method}
 \alias{initialize,ImageData-method}
 \alias{storageMode,ImageData-method}
 \alias{storageMode<-,ImageData,character-method}
@@ -28,7 +31,7 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
 \arguments{
     
-    \item{\dots}{Named arguments that are passed to the \code{initialize} method for instantiating the object. These must be arrays or array-like objects of equal dimension. They will be assigned into the environment in the \code{data} slot.}
+    \item{\dots}{Named arguments that are passed to the \code{initialize} method for instantiating the object. These must be arrays or array-like objects with an equal number of dimensions. They will be assigned into the environment in the \code{data} slot.}
 
     \item{storageMode}{The storage mode to use for the \code{ImageData} object for the environment in the \code{data} slot. This must be one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. See documentation on the \code{storageMode} slot below for more details.}
 
@@ -44,7 +47,7 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which may contain one or more arrays of equal dimension.}
+        \item{\code{data}:}{An \code{environment} which may contain one or more arrays with an equal number of dimensions.}
         
         \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
 
@@ -62,7 +65,11 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
     \describe{
         \item{\code{initialize(object)}:}{Initialize an \code{ImageData} object. Called by \code{new}. Not to be used by the user.}
 
-        \item{\code{validObject(object)}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal dimension, and the storage mode is a valid value.}
+        \item{\code{validObject(object)}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
+
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{rbind} for vectors, \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
+
+        \item{\code{dims(object)}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
         \item{\code{ImageData[[name]]}, \code{ImageData[[name]] <- value}:}{Access or replace an element named \code{"name"} in the environment in the \code{data} slot.}
     }

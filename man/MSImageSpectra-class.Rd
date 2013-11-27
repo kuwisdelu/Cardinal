@@ -8,6 +8,7 @@
 
 \alias{[,MSImageSpectra-method}
 \alias{dim,MSImageSpectra-method}
+\alias{dims,MSImageSpectra-method}
 \alias{initialize,MSImageSpectra-method}
 \alias{spectra,MSImageSpectra-method}
 \alias{spectra<-,MSImageSpectra-method}
@@ -68,7 +69,11 @@ MSImageSpectra(spectra, coord,
 
     Standard generic methods:
     \describe{
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageSpectra} objects. Elements of the \code{data} slot are combined as for \code{\linkS4class{ImageData}}. The \code{positionArray} slots are combined along a new dimension using \code{\link[abind]{abind}}.}
+
         \item{\code{dim(object)}:}{Return the dimensions of the (virtual) datacube. This is equal to the number of features (the number of rows in the matrix returned by \code{spectra}) and the dimensions of the \code{positionArray} slot. For a standard single mass spectrometry imaging dataset, it the the number of m/z values and followed by the spatial dimensions of the image.}
+
+        \item{\code{dims(object)}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
         \item{\code{MSImageSpectra[i, j, ..., drop]}:}{Access intensities in the (virtual) datacube of mass spectra. The datacube is reconstructed on-the-fly from the \code{spectra} matrix and the \code{positionArray}. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
     }

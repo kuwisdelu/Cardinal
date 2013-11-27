@@ -29,4 +29,10 @@ test_that("ImageData manipulation", {
 	storageMode(idata) <- "lockedEnvironment"
 	expect_error(idata[["data2"]] <- data2)
 
+	combdata <- combine(idata, idata)
+	expect_true(all(combdata[["data0"]] == cbind(data0, data0)))
+
+	multicombdata <- combine(idata, idata, idata)
+	expect_true(all(multicombdata[["data0"]] == cbind(data0, data0, data0)))
+
 })

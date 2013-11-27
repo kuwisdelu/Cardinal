@@ -100,7 +100,7 @@ df2 <- IAnnotatedDataFrame(data=
 	varMetadata=data.frame(labelType=c("spatial2d", "spatial2d")))
 df2$diagnosis <- factor(rbinom(nrow(df2), 1, 0.5), labels=c("normal", "cancer"))
 varMetadata(df2)["diagnosis", "labelDescription"] <- "disease pathology"
-df2[["time", labelDescription="time measured"]] <- rep(Sys.time(), nrow(df2))
+df2[["time", labelDescription="time measured"]] <- rep(date(), nrow(df2))
 pData(df2)
 varMetadata(df2)
 
