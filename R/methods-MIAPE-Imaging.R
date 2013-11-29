@@ -79,7 +79,7 @@ setMethod("combine",
 				collisionPressure = ,
 				collisionEnergy = ,
 				detectorType = ,
-				detectorSensitivity = 
+				detectorSensitivity = ,
 				## MIAPE-Imaging specific
 				specimenOrigin = ,
 				specimenType = ,
