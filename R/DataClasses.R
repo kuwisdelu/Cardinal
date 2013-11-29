@@ -13,7 +13,7 @@
 ## extends MIAPE from the MSnbase package with imaging information 
 ## ---------------------------------------------------------------
 setClass("MIAPE-Imaging",
-	representation(
+	slots = c(
 		## 1. Histomorphological classification
 		specimenOrigin = "character",
 		specimenType = "character",
@@ -40,7 +40,7 @@ setClass("MIAPE-Imaging",
 ## should store all of the calls and their parameters
 ## --------------------------------------------------
 setClass("MSImageProcess",
-	representation(
+	slots = c(
 		peaks = "numeric",
 		binned = "numeric",
 		resampled = "numeric",
@@ -62,7 +62,7 @@ setClass("MSImageProcess",
 ## simply holds an environment and a storage mode
 ## --------------------------------------------
 .ImageData <- setClass("ImageData",
-	representation(
+	slots = c(
 		data = "environment",
 		storageMode = "character"),
 	contains = "Versioned",
@@ -88,7 +88,7 @@ setClass("MSImageProcess",
 ## can be reconstructed as an array on-the-fly
 ## --------------------------------------------
 .MSImageSpectra <- setClass("MSImageSpectra",
-	representation(positionArray = "array"),
+	slots = c(positionArray = "array"),
 	contains = "ImageData",
 	prototype = prototype(
 		new("Versioned", versions=c(MSImageSpectra="0.0.1")),
@@ -112,14 +112,13 @@ setClass("MSImageProcess",
 ## heavily inspired by structure of Biobase's eSet
 ## ------------------------------------------------
 setClass("iSet",
-	representation(
+	slots = c(
 		imageData = "ImageData", # holds an immutable environment
 		pixelData = "IAnnotatedDataFrame", # analogous to phenoData
 		featureData = "AnnotatedDataFrame",
 		experimentData = "MIAxE",
-		protocolData = "AnnotatedDataFrame",
-		"VIRTUAL"),
-	contains = "VersionedBiobase",
+		protocolData = "AnnotatedDataFrame"),
+	contains = c("VersionedBiobase", "VIRTUAL"),
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(iSet="0.0.1")),
 		imageData = .ImageData(),
@@ -135,7 +134,7 @@ setClass("iSet",
 ## ----------------------------------------------------
 
 .MSImageSet <- setClass("MSImageSet",
-	representation(
+	slots = c(
 		imageData = "MSImageSpectra",
 		processingData = "MSImageProcess",
 		experimentData = "MIAPE-Imaging"),
