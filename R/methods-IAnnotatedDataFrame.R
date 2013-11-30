@@ -1,6 +1,5 @@
 
-setMethod("initialize",
-	signature(.Object = "IAnnotatedDataFrame"),
+setMethod("initialize", "IAnnotatedDataFrame",
 	function(.Object,
 			data = data.frame(),
 			varMetadata = data.frame(),

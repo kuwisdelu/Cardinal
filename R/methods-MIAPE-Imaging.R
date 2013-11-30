@@ -39,7 +39,7 @@ setMethod("imageShape", "MIAPE-Imaging", function(object) object@imageShape)
 
 ## adapted from combine(MIAPE, MIAPE) from MSnbase
 setMethod("combine",
-	signature = signature(x = "MIAPE", y = "MIAPE"),
+	signature = c(x = "MIAPE", y = "MIAPE"),
 	function(x, y, ...) {
 		if (identical(x,y))
 			return (x)

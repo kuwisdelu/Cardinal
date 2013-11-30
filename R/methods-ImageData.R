@@ -1,6 +1,5 @@
 
-setMethod("initialize",
-	signature(.Object = "ImageData"),
+setMethod("initialize", "ImageData",
 	function(.Object,
 			data = new.env(parent=emptyenv()),
 			storageMode = "immutableEnvironment",
@@ -17,9 +16,7 @@ setMethod("initialize",
 		if ( storageMode %in% c("lockedEnvironment", "immutableEnvironment") )
 			lockEnvironment(.Object@data, bindings=TRUE)
 		.Object@storageMode <- storageMode
-		callNextMethod(.Object,
-			data=data,
-			storageMode=storageMode)
+		callNextMethod(.Object)
 	})
 
 ImageData <- function(..., storageMode = c("immutableEnvironment",
@@ -34,7 +31,8 @@ ImageData <- function(..., storageMode = c("immutableEnvironment",
 }
 
 ## adapted from combine(AssayData, AssayData) from Biobase
-setMethod("combine", signature = signature(x = "ImageData", y = "ImageData"),
+setMethod("combine",
+	signature = c(x = "ImageData", y = "ImageData"),
 	function(x, y, ...) {
 		storageMode <- storageMode(x)
 		if ( storageMode(y) != storageMode)
@@ -71,7 +69,7 @@ setMethod("dims", "ImageData", function(object) {
 setMethod("storageMode", "ImageData", function(object) object@storageMode)
 
 setReplaceMethod("storageMode",
-	signature = signature(object = "ImageData", value = "character"),
+	signature = c(object = "ImageData", value = "character"),
 	function(object, value) {
 		if ( value == object@storageMode )
 			return(object)

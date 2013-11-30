@@ -45,7 +45,7 @@ setMethod("volume", "MSImageSet", function(x, mz, feature, values,
 	values[which.na] <- NA
 	# prepare plotting region
 	if ( !add ) {
-		.cardinalState$rot3D <- suppressWarnings(persp(0:1, 0:1,
+		.CardinalState$rot3D <- suppressWarnings(persp(0:1, 0:1,
 			matrix(0, nrow=2, ncol=2), xlim=xlim, ylim=ylim, zlim=zlim,
 			border=NA, shade=NA, xlab=xlab, ylab=ylab, zlab=zlab,
 			scale=scale, theta=theta, phi=phi, main=main,
@@ -53,13 +53,13 @@ setMethod("volume", "MSImageSet", function(x, mz, feature, values,
 	}
 	# finally, make the image
 	suppressWarnings(points(trans3d(plot.coord$x, plot.coord$y, plot.coord$z,
-		.cardinalState$rot3D), col=colors, pch=pch, cex=cex, ...))
+		.CardinalState$rot3D), col=colors, pch=pch, cex=cex, ...))
 	if ( isTRUE(colorkey) ) colorkey <- list(col=col)
 	if ( is.list(colorkey) ) {
 		legend("topright", legend=c(round(zlim[[2]], 2), rep(NA, length(colorkey$col)-2), round(zlim[[1]], 2)),
 			col=rev(colorkey$col), lwd=2, y.intersp=0.1, bg=rgb(1, 1, 1, 0.75), cex=0.6)
 	}
-	invisible(.cardinalState$rot3D)
+	invisible(.CardinalState$rot3D)
 } )
 
 #### helper functions ####

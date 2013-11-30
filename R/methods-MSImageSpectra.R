@@ -1,12 +1,10 @@
 
-setMethod("initialize",
-	signature(.Object = "MSImageSpectra"),
+setMethod("initialize", "MSImageSpectra",
 	function(.Object,
 			positionArray = array(integer(0), dim=0),
 			...) {
 		.Object@positionArray <- positionArray
-		callNextMethod(.Object,
-			...)
+		callNextMethod(.Object, ...)
 	})
 
 MSImageSpectra <- function(spectra, coord,
@@ -60,7 +58,8 @@ setMethod("dims", "MSImageSpectra",
 		}
 	})
 
-setMethod("combine", signature = signature(x = "MSImageSpectra", y = "MSImageSpectra"),
+setMethod("combine",
+	signature =c(x = "MSImageSpectra", y = "MSImageSpectra"),
 	function(x, y, ...) {
 		if ( any(dim(x)[[1]] != dim(y)[[1]]) )
 			stop(paste("MSImageSpectra have different numbers of features:",
