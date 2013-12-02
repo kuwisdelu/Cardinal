@@ -18,7 +18,7 @@
 \title{Class Containing Arrays of Imaging Data.}
 
 \description{
-    A container class for holding imaging data, designed to contain one or more arrays in an immutable environment.
+    A container class for holding imaging data, designed to contain one or more arrays in an immutable environment. It is assumed that the first dimension of each array corresponds to the features.
 }
 
 \usage{    
@@ -39,7 +39,7 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which may contain one or more arrays with an equal number of dimensions.}
+        \item{\code{data}:}{An \code{environment} which may contain one or more arrays with an equal number of dimensions. It is assumed that the first dimension corresponds to the features.}
         
         \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
 
@@ -69,6 +69,8 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{rbind} for vectors, \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
 
+        \item{\code{annotatedDataFrameFrom}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames{dims(object)}}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}.}
+
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
         \item{\code{ImageData[[name]]}, \code{ImageData[[name]] <- value}:}{Access or replace an element named \code{"name"} in the environment in the \code{data} slot.}
@@ -78,6 +80,7 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 \author{Kyle D. Bemis}
 
 \seealso{
+    \code{\link[Biobase]{AssayData}},
     \code{\linkS4class{MSImageSpectra}},
     \code{\linkS4class{MSImageSet}}
 }

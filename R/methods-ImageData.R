@@ -95,6 +95,25 @@ setReplaceMethod("storageMode",
 			object
 	})
 
+setMethod("annotatedDataFrameFrom", "ImageData",
+	function(object, byrow, ...) {
+		if ( nrow(dims(object)) == 0 ) {
+			df <- IAnnotatedDataFrame()
+		} else if ( is.null(rownames(dims(object))) ) {
+			stop("ImageData must have named dimensions")
+		} else if ( any(nchar(rownames(dims(object))) == 0) ) {
+			stop("all dimensions of ImageData must have names")
+		} else {
+			data <- rep(list(integer()), nrow(dims(object)) - 1)
+			names(data) <- rownames(dims(object))[-1]
+			data <- as.data.frame(data)
+			varMetadata <- data.frame(labelType=rep("dimension", nrow(dims(object)) - 1))
+			df <- IAnnotatedDataFrame(data=data, varMetadata=varMetadata,
+				dimLabels=c("pixelNames", "pixelColumns"))
+		}
+		df
+	})
+
 setMethod("[[", "ImageData", function(x, i, j, ..., value) x@data[[i]])
 
 setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
