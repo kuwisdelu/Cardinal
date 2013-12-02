@@ -5,7 +5,6 @@
 \alias{MSImageSpectra}
 \alias{MSImageSpectra-class}
 
-
 \alias{[,MSImageSpectra-method}
 \alias{dim,MSImageSpectra-method}
 \alias{dims,MSImageSpectra-method}

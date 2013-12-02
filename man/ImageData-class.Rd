@@ -5,7 +5,6 @@
 \alias{ImageData}
 \alias{ImageData-class}
 
-
 \alias{[[,ImageData-method}
 \alias{[[<-,ImageData-method}
 \alias{combine,ImageData,ImageData-method}
@@ -67,9 +66,9 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
         \item{\code{validObject}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
 
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{rbind} for vectors, \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
 
-        \item{\code{annotatedDataFrameFrom}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames{dims(object)}}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}.}
+        \item{\code{annotatedDataFrameFrom(object)}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames(dims(object))}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}. Additional arguments (\code{byrow}) are ignored.}
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 

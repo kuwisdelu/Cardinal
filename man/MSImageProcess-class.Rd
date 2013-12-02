@@ -5,7 +5,6 @@
 \alias{MSImageProcess}
 \alias{MSImageProcess-class}
 
-
 \alias{show,MSImageProcess-method}
 \alias{combine,MSImageProcess-method}
 \alias{initialize,MSImageProcess-method}

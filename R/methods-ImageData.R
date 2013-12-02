@@ -58,9 +58,7 @@ setMethod("combine",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
 		data <- new.env(parent=emptyenv())
-		if ( nrow(dims(x)) == 1 ) {
-			for ( nm in ls(x@data) ) data[[nm]] <- rbind(x[[nm]], y[[nm]])
-		} else if ( nrow(dims(x)) == 2 ) {
+		if ( nrow(dims(x)) %in% c(1,2) ) {
 			for ( nm in ls(x@data) ) data[[nm]] <- cbind(x[[nm]], y[[nm]])
 		} else {
 			for ( nm in ls(x@data) ) data[[nm]] <- abind(x[[nm]], y[[nm]])
