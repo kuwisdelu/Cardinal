@@ -6,19 +6,6 @@
 \alias{MIAPE-Imaging-class}
 
 \alias{show,MIAPE-Imaging-method}
-\alias{msInfo,MIAPE-Imaging-method}
-\alias{expemail,MIAPE-Imaging-method}
-\alias{exptitle,MIAPE-Imaging-method}
-\alias{ionSource,MIAPE-Imaging-method}
-\alias{ionSourceDetails,MIAPE-Imaging-method}
-\alias{analyser,MIAPE-Imaging-method}
-\alias{analyserDetails,MIAPE-Imaging-method}
-\alias{analyzer,MIAPE-Imaging-method}
-\alias{analyzerDetails,MIAPE-Imaging-method}
-\alias{detectorType,MIAPE-Imaging-method}
-\alias{instrumentModel,MIAPE-Imaging-method}
-\alias{instrumentManufacturer,MIAPE-Imaging-method}
-\alias{instrumentCustomisations,MIAPE-Imaging-method}
 \alias{abstract,MIAPE-Imaging-method}
 \alias{samples,MIAPE-Imaging-method}
 \alias{pubMedIds,MIAPE-Imaging-method}
@@ -29,103 +16,121 @@
 \alias{notes<-,MIAPE-Imaging-method}
 \alias{combine,MIAPE-Imaging,MIAPE-Imaging-method}
 
-\alias{imagingInfo}
-\alias{imagingInfo,MIAPE-Imaging-method}
+\alias{msiInfo}
+\alias{msiInfo,MIAPE-Imaging-method}
 \alias{specimenOrigin}
 \alias{specimenOrigin,MIAPE-Imaging-method}
+\alias{specimenOrigin<-}
+\alias{specimenOrigin<-,MIAPE-Imaging-method}
 \alias{specimenType}
 \alias{specimenType,MIAPE-Imaging-method}
+\alias{specimenType<-}
+\alias{specimenType<-,MIAPE-Imaging-method}
 \alias{stainingMethod}
 \alias{stainingMethod,MIAPE-Imaging-method}
+\alias{stainingMethod<-}
+\alias{stainingMethod<-,MIAPE-Imaging-method}
 \alias{tissueThickness}
 \alias{tissueThickness,MIAPE-Imaging-method}
+\alias{tissueThickness<-}
+\alias{tissueThickness<-,MIAPE-Imaging-method}
 \alias{tissueWash}
-\alias{tissueWash,MIAPE-Imaging-method}
+\alias{tissueWash<-,MIAPE-Imaging-method}
+\alias{tissueWash}
+\alias{tissueWash<-,MIAPE-Imaging-method}
 \alias{embeddingMethod}
 \alias{embeddingMethod,MIAPE-Imaging-method}
+\alias{embeddingMethod<-}
+\alias{embeddingMethod<-,MIAPE-Imaging-method}
 \alias{inSituChemistry}
-\alias{inSituChemistry,MIAPE-Imaging-method}
-\alias{matrixDeposition}
-\alias{matrixDeposition,MIAPE-Imaging-method}
+\alias{inSituChemistry<-,MIAPE-Imaging-method}
+\alias{inSituChemistry}
+\alias{inSituChemistry<-,MIAPE-Imaging-method}
+\alias{matrixApplication}
+\alias{matrixApplication,MIAPE-Imaging-method}
+\alias{matrixApplication<-}
+\alias{matrixApplication<-,MIAPE-Imaging-method}
 \alias{pixelSize}
 \alias{pixelSize,MIAPE-Imaging-method}
+\alias{pixelSize<-}
+\alias{pixelSize<-,MIAPE-Imaging-method}
+\alias{instrumentModel}
+\alias{instrumentModel,MIAPE-Imaging-method}
+\alias{instrumentModel<-}
+\alias{instrumentModel<-,MIAPE-Imaging-method}
+\alias{instrumentVendor}
+\alias{instrumentVendor,MIAPE-Imaging-method}
+\alias{instrumentVendor<-}
+\alias{instrumentVendor<-,MIAPE-Imaging-method}
+\alias{massAnalyzerType}
+\alias{massAnalyzerType,MIAPE-Imaging-method}
+\alias{massAnalyzerType<-}
+\alias{massAnalyzerType<-,MIAPE-Imaging-method}
+\alias{ionizationType}
+\alias{ionizationType,MIAPE-Imaging-method}
+\alias{ionizationType<-}
+\alias{ionizationType<-,MIAPE-Imaging-method}
+\alias{scanPolarity}
+\alias{scanPolarity,MIAPE-Imaging-method}
+\alias{scanPolarity<-}
+\alias{scanPolarity<-,MIAPE-Imaging-method}
+\alias{softwareName}
+\alias{softwareName,MIAPE-Imaging-method}
+\alias{softwareName<-}
+\alias{softwareName<-,MIAPE-Imaging-method}
+\alias{softwareVersion}
+\alias{softwareVersion,MIAPE-Imaging-method}
+\alias{softwareVersion<-}
+\alias{softwareVersion<-,MIAPE-Imaging-method}
 \alias{scanType}
 \alias{scanType,MIAPE-Imaging-method}
+\alias{scanType<-}
+\alias{scanType<-,MIAPE-Imaging-method}
 \alias{scanPattern}
 \alias{scanPattern,MIAPE-Imaging-method}
+\alias{scanPattern<-}
+\alias{scanPattern<-,MIAPE-Imaging-method}
 \alias{scanDirection}
 \alias{scanDirection,MIAPE-Imaging-method}
+\alias{scanDirection<-}
+\alias{scanDirection<-,MIAPE-Imaging-method}
 \alias{lineScanDirection}
 \alias{lineScanDirection,MIAPE-Imaging-method}
+\alias{lineScanDirection<-}
+\alias{lineScanDirection<-,MIAPE-Imaging-method}
 \alias{imageShape}
 \alias{imageShape,MIAPE-Imaging-method}
+\alias{imageShape<-}
+\alias{imageShape<-,MIAPE-Imaging-method}
 
 \title{Class for Storing Mass Spectrometry Imaging Experiment Information.}
 
 \description{
-    The Minimum Information About a Proteomics Experiment for Imaging. The current implementation is based in part on the imzML specification and on a working document for an MS imaging MIAPE (see References). Subject to change.
+    The Minimum Information About a Proteomics Experiment for Imaging. The current implementation is based in part on the imzML specification and on a working document for the MIAPE-Imaging (see References). Subject to change.
 }
 
 \section{Slots}{
     \describe{
-        \item{\code{title}:}{Object of class \code{character} containing a single-sentence experiment title. Inherited from \code{\linkS4class{MIAPE}}.}
+        \item{\code{name}:}{Object of class \code{character} containing the experimenter name}
+        
+        \item{\code{lab}:}{Object of class \code{character} containing the laboratory where the experiment was conducted.}
+        
+        \item{\code{contact}:}{Object of class \code{character} containing contact information for lab and/or experimenter.}
 
-        \item{\code{abstract}:}{Object of class \code{character} containing an abstract describing the experiment. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{url}:}{Object of class \code{character} containing a URL for the experiment. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{pubMedIds}:}{Object of class \code{character} listing strings of PubMed identifiers of papers relevant to the dataset. Inherited from \code{\linkS4class{MIAPE}}.}
+        \item{\code{title}:}{Object of class \code{character} containing a single-sentence experiment title.}
 
-        \item{\code{samples}:}{Object of class \code{list} containing information about the samples. Inherited from \code{\linkS4class{MIAPE}}.}
+        \item{\code{abstract}:}{Object of class \code{character} containing an abstract describing the experiment.}
         
-        \item{\code{preprocessing}:}{Object of class \code{list} containing information about the pre-processing steps used on the raw data from this experiment. Inherited from \code{\linkS4class{MIAPE}}.}
+        \item{\code{url}:}{Object of class \code{character} containing a URL for the experiment.}
         
-        \item{\code{other}:}{Object of class \code{list} containing other information for which none of the above slots does not applies. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{dateStamp}:}{Object of class \code{character}, giving the date on which the work described was initiated; given in the standard 'YYYY-MM-DD' format (with hyphens). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{name}:}{Object of class \code{character} containing the name of the (stable) primary contact person for this data set; this could be the experimenter, lab head, line manager, \ldots Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{lab}:}{Object of class \code{character} containing the laboratory where the experiment was conducted. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{contact}:}{Object of class \code{character} containing contact information for lab and/or experimenter. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{email}:}{Object of class \code{character} containing email contact information for the primary contact person (see \code{name} above). Inherited from \code{\linkS4class{MIAPE}}.} 
-        
-        \item{\code{instrumentModel}:}{Object of class \code{character} indicating the model of the mass spectrometer used to generate the data. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{instrumentManufacturer}:}{Object of class \code{character} indicating the manufacturing company of the mass spectrometer. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{instrumentCustomisations}:}{Object of class \code{character} describing any significant (i.e. affecting behaviour) deviations from the manufacturer's specification for the mass spectrometer. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{softwareName}:}{Object of class \code{character} with the instrument management and data analysis package(s) name(s). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{softwareVersion}:}{Object of class \code{character} with the instrument management and data analysis package(s) version(s). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{switchingCriteria}:}{Not used. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{isolationWidth}:}{Not used. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{parameterFile}:}{Object of class \code{character} giving the location and name under which the mass spectrometer's parameter settings file for the run is stored, if available. Ideally this should be a URI+filename, or most preferably an LSID, where feasible. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{ionSource}:}{Object of class \code{character} describing the ion source (MALDI, DESI, \ldots). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{ionSourceDetails}:}{Object of class \code{character} describing the relevant details about the ion source. See MIAPE-MI document for more details. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{analyser}:}{Object of class \code{character} describing the analyzer type (Quadrupole, time-of-flight, ion trap, \ldots). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{analyserDetails}:}{Object of class \code{character} describing the relevant details about the analyzer. See MIAPE-MI document for more details. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{collisionGas}:}{Object of class \code{character} describing the composition of the gas used to fragment ions in the collision cell. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{collisionPressure}:}{Object of class \code{numeric} providing the pressure (in bars) of the collision gas. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{collisionEnergy}:}{Object of class \code{character} specifying for the process of imparting a particular impetus to ions with a given m/z value, as they travel into the collision cell for fragmentation. Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{detectorType}:}{Object of class \code{character} describing the type of detector used in the machine (microchannel plate, channeltron, \ldots). Inherited from \code{\linkS4class{MIAPE}}.}
-        
-        \item{\code{detectorSensitivity}:}{Object of class \code{character} giving and appropriate measure of the sensitivity of the described detector (e.g. applied voltage). Inherited from \code{\linkS4class{MIAPE}}.}
+        \item{\code{pubMedIds}:}{Object of class \code{character} listing strings of PubMed identifiers of papers relevant to the dataset.}
 
+        \item{\code{samples}:}{Object of class \code{list} containing information about the samples.}
+        
+        \item{\code{preprocessing}:}{Object of class \code{list} containing information about the pre-processing steps used on the raw data from this experiment.}
+        
+        \item{\code{other}:}{Object of class \code{list} containing other information for which none of the above slots does not applies.}
+                
         \item{\code{specimenOrigin}:}{Object of class \code{character} describing the specimen origin (institution, \ldots).}
 
         \item{\code{specimenType}:}{Object of class \code{character} describing the specimen type (species, organ, \ldots).}
@@ -140,9 +145,23 @@
 
         \item{\code{inSituChemistry}:}{Object of class \code{character} describing any on-sample chemistry (tryptic digest, \ldots)}
 
-        \item{\code{matrixDeposition}:}{Object of class \code{character} describing how the matrix was applied, if applicable}
+        \item{\code{matrixApplication}:}{Object of class \code{character} describing how the matrix was applied, if applicable}
 
         \item{\code{pixelSize}:}{Object of class \code{numeric} describing the size of the pixels in micrometers (um).}
+
+        \item{\code{instrumentModel}:}{Object of class \code{character} indicating the instrument model used to generate the data.}
+        
+        \item{\code{instrumentVendor}:}{Object of class \code{character} indicating the mass spectrometer vendor.}
+
+        \item{\code{massAnalyzerType}:}{Object of class \code{character} describing the mass analyzer type (LTQ, TOF, \dots).}
+
+        \item{\code{ionizationType}:}{Object of class \code{character} describing the ionization type (MALDI, DESI, \dots).}
+
+        \item{\code{scanPolarity}:}{Object of class \code{character} describing the polarity (negative or positive).}
+                
+        \item{\code{softwareName}:}{Object of class \code{character} with the control and/or analysis software name.}
+        
+        \item{\code{softwareVersion}:}{Object of class \code{character} with the version of the control and/or analysis software.}
 
         \item{\code{scanType}:}{Object of class \code{character} describing the scan type. This must be either 'horizontal line scan' or 'vertical line scan'. See the imzML specifications for more details.}
 
@@ -157,19 +176,18 @@
 }
 
 \section{Extends}{
-   Class \code{\linkS4class{MIAPE}}, directly.
-   Class \code{\linkS4class{MIAxE}}, by class "MIAPE", distance 2.
-   Class \code{\linkS4class{Versioned}}, by class "MIAxE", distance 3.
+   Class \code{\linkS4class{MIAxE}}, directly,
+   Class \code{\linkS4class{Versioned}}, by class "MIAxE", distance 2.
 }
 
 \section{Creating Objects}{
-    \code{MIAPE-Imaging} instances can be created through \code{new("MIAPE-Imaging")}. In general, instances should not be created by the user, but are automatically generated when reading an external file to create an \code{\linkS4class{MSImageSet}} object.
+    \code{MIAPE-Imaging} instances can be created through \code{new("MIAPE-Imaging")}. In general, instances should not be created by the user, but are automatically generated when reading an external file to create an \code{\linkS4class{MSImageSet}} object, and then modified through the accessor and setter methods if necessary.
 }
 
 \section{Methods}{
-    Inherited from \code{\linkS4class{MIAPE}}:
+    Class-specific methods:
     \describe{
-        \item{\code{msInfo}:}{Displays 'MIAPE-MS' information.}
+        \item{\code{msiInfo}:}{Displays 'MIAPE-Imaging' information.}
 
         \item{\code{abstract}:}{An accessor function for \code{abstract}. }
         
@@ -182,59 +200,50 @@
         \item{\code{preproc}:}{An accessor function for \code{preprocessing}.} 
         
         \item{\code{pubMedIds(object), pubMedIds(object) <- value}:}{Accessor function for \code{pubMedIds}.} 
+
+        \item{code{samples}:}{An accessor function for \code{samples}.}
+
+        \item{\code{specimenOrigin(object), specimenOrigin(object) <- value}:}{Accessor and setter function for \code{specimenOrigin}.}
+
+        \item{\code{specimenType(object), specimenType(object) <- value}:}{Accessor and setter function for \code{specimenType}.}
+
+        \item{\code{stainingMethod(object), stainingMethod(object) <- value}:}{Accessor and setter function for \code{stainingMethod}.}
+
+        \item{\code{tissueThickness(object), tissueThickness(object) <- value}:}{Accessor and setter function for \code{tissueThickness}.}
+
+        \item{\code{tissueWash(object), tissueWash(object) <- value}:}{Accessor and setter function for \code{tissueWash}.}
+
+        \item{\code{embeddingMethod(object), embeddingMethod(object) <- value}:}{Accessor and setter function for \code{embeddingMethod}.}
+
+        \item{\code{inSituChemistry(object), inSituChemistry(object) <- value}:}{Accessor and setter function for \code{inSituChemistry}.}
+
+        \item{\code{matrixApplication(object), matrixApplication(object) <- value}:}{Accessor and setter function for \code{matrixApplication}.}
+
+        \item{\code{pixelSize(object), pixelSize(object) <- value}:}{Accessor and setter function for \code{pixelSize}.}
+
+        \item{\code{instrumentModel(object), instrumentModel(object) <- value}:}{Accessor and setter function for \code{instrumentModel}.}
         
-        \item{\code{expemail}:}{An accessor function for  \code{email} slot.}
+        \item{\code{instrumentVendor(object), instrumentVendor(object) <- value}:}{Accessor and setter function for \code{instrumentVendor}.}
+
+        \item{\code{massAnalyzerType(object), massAnalyzerType(object) <- value}:}{Accessor and setter function for \code{massAnalyzerType}.}
+
+        \item{\code{ionizationType(object), ionizationType(object) <- value}:}{Accessor and setter function for \code{ionizationType}.}
+
+        \item{\code{scanPolarity(object), scanPolarity(object) <- value}:}{Accessor and setter function for \code{scanPolarity}.}
+                
+        \item{\code{softwareName(object), softwareName(object) <- value}:}{Accessor and setter function for \code{softwareName}.}
         
-        \item{\code{exptitle}:}{An accessor function for \code{title} slot.}
-        
-        \item{\code{analyzer}:}{ An accessor function for \code{analyser} slot. \code{analyser} is also available.}
-        
-        \item{\code{analyzerDetails}:}{ An accessor function for \code{analyserDetails} slot. \code{analyserDetails} is also available. }
-        
-        \item{\code{detectorType}:}{ An accessor function for \code{detectorType} slot.}
-        
-        \item{\code{ionSource}:}{ An accessor function for \code{ionSource} slot.}
-        
-        \item{\code{ionSourceDetails}:}{ An accessor function for \code{ionSourceDetails} slot.}
-        
-        \item{\code{instrumentModel}:}{ An accessor function for \code{instrumentModel} slot.}
-        
-        \item{\code{instrumentManufacturer}:}{ An accessor function for \code{instrumentManufacturer} slot.}
-        
-        \item{\code{instrumentCustomisations}:}{ An accessor function for \code{instrumentCustomisations} slot.}
-    }
+        \item{\code{softwareVersion(object), softwareVersion(object) <- value}:}{Accessor and setter function for \code{softwareVersion}.}
 
-    Class-specific methods:
-    \describe{
-        \item{\code{imagingInfo}:}{Displays 'MIAPE-Imaging' information.}
+        \item{\code{scanType(object), scanType(object) <- value}:}{Accessor and setter function for \code{scanType}.}
 
-        \item{\code{specimenOrigin}:}{Accessor function for the \code{specimenOrigin} slot.}
+        \item{\code{scanPattern(object), scanPattern(object) <- value}:}{Accessor and setter function for \code{scanPattern}.}
 
-        \item{\code{specimenType}:}{Accessor function for the \code{specimenType} slot.}
+        \item{\code{scanDirection(object), scanDirection(object) <- value}:}{Accessor and setter function for \code{scanDirection}.}
 
-        \item{\code{stainingMethod}:}{Accessor function for the \code{stainingMethod} slot.}
+        \item{\code{lineScanDirection(object), lineScanDirection(object) <- value}:}{Accessor and setter function for \code{lineScanDirection}.}
 
-        \item{\code{tissueThickness}:}{Accessor function for the \code{tissueThickness} slot.}
-
-        \item{\code{tissueWash}:}{Accessor function for the \code{tissueWash} slot.}
-
-        \item{\code{embeddingMethod}:}{Accessor function for the \code{embeddingMethod} slot.}
-
-        \item{\code{inSituChemistry}:}{Accessor function for the \code{inSituChemistry} slot.}
-
-        \item{\code{matrixDeposition}:}{Accessor function for the \code{matrixDeposition} slot.}
-
-        \item{\code{pixelSize}:}{Accessor function for the \code{pixelSize} slot.}
-
-        \item{\code{scanType}:}{Accessor function for the \code{scanType} slot.}
-
-        \item{\code{scanPattern}:}{Accessor function for the \code{scanPattern} slot.}
-
-        \item{\code{scanDirection}:}{Accessor function for the \code{scanDirection} slot.}
-
-        \item{\code{lineScanDirection}:}{Accessor function for the \code{linScanDirection} slot.}
-
-        \item{\code{imageShape}:}{Accessor function for the \code{imageShape} slot.}
+        \item{\code{imageShape(object), imageShape(object) <- value}:}{Accessor and setter function for \code{imageShape}.}
     }
 
     Standard generic methods:
@@ -248,13 +257,13 @@
 \author{Kyle D. Bemis}
 
 \references{
-  Imaging MIAPE working document: \url{http://imzml.org/index.php?option=com_fireboard&Itemid=53&func=view&catid=516&id=737}
+  MIAPE-Imaging working document: \url{http://imzml.org/index.php?option=com_fireboard&Itemid=53&func=view&catid=516&id=737}
 
   imzML specification: \url{http://www.imzml.org/index.php?option=com_content&view=article&id=187&Itemid=67}
 }
 
 \seealso{
-    \code{\linkS4class{MIAPE}},
+    \code{\linkS4class{MIAxE}},
     \code{\linkS4class{MSImageSet}}
 }
 

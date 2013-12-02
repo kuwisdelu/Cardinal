@@ -55,7 +55,7 @@ setClass("MIAPE-Imaging",
 	contains = "MIAxE",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MIAxE"),
-			`MIAPE-Imaging`="0.0.1"))))
+			`MIAPE-Imaging`="0.0.2"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters
@@ -72,9 +72,7 @@ setClass("MSImageProcess",
 		CardinalVersion = "character"),
 	contains = "MSnProcess",
 	prototype = prototype(
-		new("Versioned", versions=c(classVersion("MSnProcess"),
-			MSImageProcess="0.0.2")),
-		history = list(),
+		new("Versioned", versions=c(MSImageProcess="0.0.3")),
 		CardinalVersion = character())) # set up in initialize
 
 #### Class for generic imaging data ###

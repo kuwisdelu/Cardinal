@@ -48,23 +48,23 @@ setMethod("msiInfo", "MIAPE-Imaging", function(object) {
 	cat("    Specimen origin:", specimenOrigin(object),"\n")
 	cat("    Specimen type:", specimenType(object),"\n")
 	cat("    Staining method:", stainingMethod(object),"\n")
-	cat("  Tissue preparation\n")
+	cat("  Tissue preparation:\n")
 	cat("    Tissue thickness:", tissueThickness(object)," um\n")
 	cat("    Tissue wash:", tissueWash(object),"\n")
 	cat("    Embedding method:", embeddingMethod(object),"\n")
 	cat("    In-situ chemistry:", inSituChemistry(object),"\n")
 	cat("    Matrix application:", matrixApplication(object),"\n")
-	cat("  Data acquisition (Instrument)\n")
+	cat("  Data acquisition (Instrument):\n")
 	cat("    Pixel size:", pixelSize(object)," um\n")
-	cat("    Instrument model:", instrumentModel(object)," um\n")
-	cat("    Instrument vendor:", instrumentVendor(object)," um\n")
-	cat("    Mass analyzer type:", massAnalyzerType(object)," um\n")
-	cat("    Ionization type:", ionizationType(object)," um\n")
-	cat("    Scan polarity:", scanPolarity(object)," um\n")
-	cat("  Data acquisition (Software)\n")
-	cat("    Software name:", softwareName(object)," um\n")
-	cat("    Software version:", softwareVersion(object)," um\n")
-	cat("  Data acquisition (Scan)\n")
+	cat("    Instrument model:", instrumentModel(object),"\n")
+	cat("    Instrument vendor:", instrumentVendor(object),"\n")
+	cat("    Mass analyzer type:", massAnalyzerType(object),"\n")
+	cat("    Ionization type:", ionizationType(object),"\n")
+	cat("    Scan polarity:", scanPolarity(object),"\n")
+	cat("  Data acquisition (Software):\n")
+	cat("    Software name:", softwareName(object),"\n")
+	cat("    Software version:", softwareVersion(object),"\n")
+	cat("  Data acquisition (Scan):\n")
 	cat("    Scan type:", scanType(object),"\n")
 	cat("    Scan pattern:", scanPattern(object),"\n")
 	cat("    Scan direction:", scanDirection(object),"\n")
@@ -199,6 +199,18 @@ setReplaceMethod("scanPolarity", "MIAPE-Imaging", function(object, value) {
 	object
 })
 
+setMethod("softwareName", "MIAPE-Imaging", function(object) object@softwareName)
+setReplaceMethod("softwareName", "MIAPE-Imaging", function(object, value) {
+	object@softwareName <- value
+	object
+})
+
+setMethod("softwareVersion", "MIAPE-Imaging", function(object) object@softwareVersion)
+setReplaceMethod("softwareVersion", "MIAPE-Imaging", function(object, value) {
+	object@softwareVersion <- value
+	object
+})
+
 setMethod("scanType", "MIAPE-Imaging", function(object) object@scanType)
 setReplaceMethod("scanPolarity", "MIAPE-Imaging", function(object, value) {
 	object@scanPolarity <- value
@@ -240,6 +252,7 @@ setMethod("combine",
 				next
 			slot(x, sl) <- switch(sl,
 				## multiple elements possible
+				## Experimental Info
 				title = ,
 				url = ,
 				pubMedIds = ,
@@ -263,6 +276,7 @@ setMethod("combine",
 				## Data Acquisition: Instrument Details
 				pixelSize = ,
 				instrumentModel = ,
+				instrumentVendor = ,
 				massAnalyzerType = ,
 				ionizationType = ,
 				scanPolarity = ,

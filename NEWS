@@ -5,7 +5,7 @@ NEWS for Cardinal package
 Version 0.5.1 [2013-11-25]
 
 o Major revision to use Bioconductor base packages
-o New dependencies on BiocGenerics, Biobase, and MSnbase
+o New dependencies on BiocGenerics and Biobase
 o New virtual class iSet for generic imaging data
 
 Version 0.5 [2013-11-8]
