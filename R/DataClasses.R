@@ -10,40 +10,63 @@
 		new("Versioned", versions=c(IAnnotatedDataFrame="0.0.2"))))
 
 #### 'Minimum Information About a Proteomics Experiment' - Imaging ####
-## extends MIAPE from the MSnbase package with imaging information 
+## based on working MIAPE-Imaging document and imzML specification
 ## ---------------------------------------------------------------
 setClass("MIAPE-Imaging",
 	slots = c(
-		## 1. Histomorphological classification
-		specimenOrigin = "character",
-		specimenType = "character",
-		stainingMethod = "character",
-		## 2. Tissue preparation
+		## Experimental Info
+		title = "character",
+		abstract = "character",
+		url = "character",
+		pubMedIds = "character",
+		preprocessing = "list", # pre-processing NOT performed by Cardinal
+		other = "list",
+		## Responsible Person
+		name = "character",
+		lab = "character",
+		contact = "character",
+		## Histomorphological Classification
+		samples = "list", # sample ids
+		specimenOrigin = "character", # institution
+		specimenType = "character", # species, organ, ...
+		stainingMethod = "character", # H&E, etc.
+		## Tissue Preparation
 		tissueThickness = "numeric",
 		tissueWash = "character",
 		embeddingMethod = "character",
-		inSituChemistry = "character",
-		matrixDeposition = "character",
-		## 3. Scan settings
+		inSituChemistry = "character", # tryptic digest, ...
+		matrixApplication = "character", # application method
+		## Data Acquisition: Instrument Details
 		pixelSize = "numeric",
+		instrumentModel = "character",
+		instrumentVendor = "character",
+		massAnalyzerType = "character", # TOF, LTQ, ...
+		ionizationType = "character", # MALDI, DESI, ...
+		scanPolarity = "character",
+		## Data Acquisition: Control Software
+		softwareName = "character",
+		softwareVersion = "character",
+		## Data Acquisition: Scan Settings
 		scanType = "character",
 		scanPattern = "character",
 		scanDirection = "character",
 		lineScanDirection = "character",
 		imageShape = "character"),
-	contains = "MIAPE",
+	contains = "MIAxE",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MIAxE"),
-			classVersion("MIAPE"), `MIAPE-Imaging`="0.0.1"))))
+			`MIAPE-Imaging`="0.0.1"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters
 ## --------------------------------------------------
 setClass("MSImageProcess",
 	slots = c(
-		removedBaseline = "logical",
-		binned = "logical",
-		resampled = "logical",
+		normalization = "character",
+		smoothing = "character",
+		baselineReduction = "character",
+		spectrumRepresentation = "character",
+		peakPicking = "character",
 		centroided = "logical",
 		history = "list",
 		CardinalVersion = "character"),
