@@ -15,7 +15,7 @@
 \title{Class Containing Mass Spectra Data.}
 
 \description{
-    A container class for holding imaging data, designed to contain one or more arrays in an immutable environment.
+    A container class for holding imaging mass spectra as a virtual datacube. It is assumed there will be missing pixels, so the spectra are stored as a matrix for memory efficiency, and the datacube is reconstructed on-the-fly.
 }
 
 \usage{    
@@ -44,7 +44,7 @@ MSImageSpectra(spectra, coord,
     \describe{
         \item{\code{data}:}{An \code{environment} which contains an element named \code{"spectra"}, which is a matrix with rows equal to the number of features (m/z values) and columns equal to the number of non-missing pixels. Each column is a mass spectrum. Inherited from \code{\linkS4class{ImageData}}}
 
-        \item{\code{positionArray}:}{An \code{array} with dimensions equal to the spatial dimensions of the image, which stores the column numbers of the mass spectrum corresponding to that pixel in the \code{"spectra"} element of the \code{data} slot. This allows re-construction of the imaging ``datacube'' on-the-fly.}
+        \item{\code{positionArray}:}{An \code{array} with dimensions equal to the spatial dimensions of the image, which stores the column numbers of the mass spectrum corresponding to that pixel in the \code{"spectra"} element of the \code{data} slot. This allows re-construction of the imaging "datacube" on-the-fly.}
         
         \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified. Inherited from \code{\linkS4class{ImageData}}.}
 
