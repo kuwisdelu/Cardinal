@@ -248,7 +248,7 @@
 
     Standard generic methods:
     \describe{
-        \item{\code{show}:}{Displays object content as ASCII text.}
+        \item{\code{show}:}{Displays object content.}
 
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MIAPE-Imaging} objects.}
     }

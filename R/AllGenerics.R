@@ -37,6 +37,8 @@ setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-")
 setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
 setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
 setGeneric("poolPeaks", function(peaks, ...) standardGeneric("poolPeaks"))
+setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
+setGeneric("processingData<-", function(object) standardGeneric("processingData<-")) # use MSnbase generic?
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
 setGeneric("rotateLeft", function(object, ...) standardGeneric("rotateLeft"))
@@ -88,6 +90,15 @@ setGeneric("lineScanDirection", function(object) standardGeneric("lineScanDirect
 setGeneric("lineScanDirection<-", function(object, value) standardGeneric("lineScanDirection<-"))
 setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
+
+setGeneric("exphistory", function(object) standardGeneric("exphistory"))
+setGeneric("files", function(object) standardGeneric("files"))
+setGeneric("normalization", function(object) standardGeneric("normalization"))
+setGeneric("smoothing", function(object) standardGeneric("smoothing"))
+setGeneric("baselineReduction", function(object) standardGeneric("baselineReduction"))
+setGeneric("spectrumRepresentation", function(object) standardGeneric("spectrumRepresentation"))
+setGeneric("peakPicking", function(object) standardGeneric("peakPicking"))
+setGeneric("centroided", function(object) standardGeneric("centroided")) # use mzR generic?
 
 #### Processing and data transformation ####
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))

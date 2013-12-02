@@ -8,54 +8,55 @@
 \alias{show,MSImageProcess-method}
 \alias{combine,MSImageProcess-method}
 \alias{initialize,MSImageProcess-method}
-\alias{fileNames,MSImageProcess-method}
+\alias{files}
+\alias{files,MSImageProcess-method}
+\alias{normalization}
+\alias{normalization,MSImageProcess-method}
+\alias{smoothing}
+\alias{smoothing,MSImageProcess-method}
+\alias{baselineReduction}
+\alias{baselineReduction,MSImageProcess-method}
+\alias{spectrumRepresentation}
+\alias{spectrumRepresentation,MSImageProcess-method}
+\alias{peakPicking}
+\alias{peakPicking,MSImageProcess-method}
+\alias{centroided}
 \alias{centroided,MSImageProcess-method}
+\alias{exphistory}
+\alias{exphistory,MSImageProcess-method}
 
 \title{Class Containing Mass Spectral Pre-Processing Information.}
 
 \description{
-    A class containing information about mass spectral pre-processsing operations. The \code{MSImageProcess} class extends \code{\linkS4class{MSnProcess}} with additional pre-processing steps available in \code{Cardinal}.
+    A class containing information about mass spectral pre-processsing operations.
 }
 
 \section{Slots}{
     \describe{
-    \item{\code{files}:}{Object of class \code{character} storing the raw data files used in the experiment. Inherited from \code{linkS4class{MSnProcess}}.}
-    
-    \item{\code{processing}:}{Object of class \code{character} storing all the processing steps and times. Inherited from \code{linkS4class{MSnProcess}}.}
-    
-    \item{\code{merged}:}{Object of class \code{logical} indicating whether spectra have been merged. Inherited from \code{linkS4class{MSnProcess}}. Not used.}
-    
-    \item{\code{cleaned}:}{Object of class \code{logical} indicating whether spectra have been cleaned. See \code{\link{clean}} for more details and examples. Inherited from \code{linkS4class{MSnProcess}}. Not used.}
-    
-    \item{\code{removedPeaks}:}{Object of class \code{character} describing whether peaks have been removed and which threshold was used. See \code{\link{removePeaks}} for more details and examples. Inherited from \code{linkS4class{MSnProcess}}. Not used.}
-    
-    \item{\code{smoothed}:}{Object of class \code{logical} indicating whether spectra have been smoothed. Inherited from \code{linkS4class{MSnProcess}}.}
-    
-    \item{\code{trimmed}:}{Object of class \code{"numeric"} documenting if/how the data has been trimmed. Inherited from \code{linkS4class{MSnProcess}}.}
-    
-    \item{\code{normalised}:}{Object of class \code{logical} describing whether and how data have been normalised. Inherited from \code{linkS4class{MSnProcess}}.}
+        \item{\code{files}:}{Object of class \code{character} storing the file paths to the raw data files used to create the dataset.}
 
-    \item{\code{removedBaseline}:}{Object of class \code{logical} describing whether the data have been baseline corrected.}
+        \item{\code{normalization}:}{Object of class \code{character} describing any normalization applied to the dataset.}
+        
+        \item{\code{smoothing}:}{Object of class \code{character} describing any smoothing applied to the dataset.}
+        
+        \item{\code{baselineReduction}:}{Object of class \code{character} describing baseline correction applied to the dataset.}
 
-    \item{\code{binned}:}{Object of class \code{logical} describing whether the data have been binned.}
+        \item{\code{spectrumRepresentation}:}{Object of class \code{character} describing the spectrum type (profile or centroid).}
 
-    \item{\code{resampled}:}{Object of class \code{logical} describing whether the data have been resampled.}
+        \item{\code{peakPicking}:}{Object of class \code{character} describing the peak picking applied to the dataset (area of height).}
 
-    \item{\code{centroided}:}{Object of class \code{logical} describing whether the data have been centroided.}
+        \item{\code{centroided}:}{Object of class \code{logical} describing whether the data have been centroided.}
 
-    \item{\code{history}:}{Object of class \code{list} containing specific information about the function calls applied to the \code{\linkS4class{MSImageSet} object} to produce the current instance and their parameters.}
+        \item{\code{history}:}{Object of class \code{list} containing specific information about the function calls applied to the \code{\linkS4class{MSImageSet} object} to produce the current instance and their parameters.}
 
-    \item{\code{CardinalVersion}:}{Object of class \code{character} indicating the version of Cardinal.}
-    
-    \item{\code{MSnbaseVersion}:}{Object of class \code{character} indicating the version of MSnbase. Inherited from \code{linkS4class{MSnProcess}}.}
-    
-    \item{\code{.__classVersion__}:}{Object of class \code{Versions} indicating the version of the \code{MSImageProcess} instance. Intended for developer use.}
+        \item{\code{CardinalVersion}:}{Object of class \code{character} indicating the version of Cardinal.}
+
+        \item{\code{.__classVersion__}:}{Object of class \code{Versions} indicating the version of the \code{MSImageProcess} instance. Intended for developer use.}
     }
 }
 
 \section{Extends}{
-   Class \code{\linkS4class{MSnProcess}}, directly.
-   Class \code{\linkS4class{Versioned}}, by class "MSnProcess", distance 2.
+   Class \code{\linkS4class{Versioned}}, directly.
 }
 
 \section{Creating Objects}{
@@ -65,14 +66,26 @@
 \section{Methods}{
     Class-specific methods:
     \describe{
-        \item{\code{fileNames}:}{Returns the file names used in the experiment. Inherited from \code{linkS4class{MSnProcess}}.}
+        \item{\code{exphistory}:}{Displays history of methods applied to the experiment dataset.}
 
-        \item{\code{centroided}:}{Returns whether the spectra dataset have been centroided to picked peaks.}
+        \item{\code{files}:}{Accessor function for \code{files}.}
+
+        \item{\code{normalization}:}{Accessor function for \code{normalization}.}
+        
+        \item{\code{smoothing}:}{Accessor function for \code{smoothing}.}
+        
+        \item{\code{baselineReduction}:}{Accessor function for \code{baselineReduction}.}
+
+        \item{\code{spectrumRepresentation}:}{Accessor function for \code{spectrumRepresentation}.}
+
+        \item{\code{peakPicking}:}{Accessor function for \code{peakPicking}.}
+
+        \item{\code{centroided}:}{Accessor function for \code{centroided}.}
     }
 
     Standard generic methods:
     \describe{
-        \item{\code{show}:}{Displays object content as ASCII text.}
+        \item{\code{show}:}{Displays object content.}
 
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageProcess} objects.}
     }
@@ -81,7 +94,6 @@
 \author{Kyle D. Bemis}
 
 \seealso{
-    \code{\linkS4class{MSnProcess}},
     \code{\linkS4class{MSImageSet}}
 }
 

@@ -116,130 +116,151 @@ setReplaceMethod("notes", signature = c(object="MIAPE-Imaging", value="character
 ## specific to MIAPE-Imaging
 
 setMethod("specimenOrigin", "MIAPE-Imaging", function(object) object@specimenOrigin)
-setReplaceMethod("specimenOrigin", "MIAPE-Imaging", function(object, value) {
-	object@specimenOrigin <- value
-	object
-})
+setReplaceMethod("specimenOrigin", "MIAPE-Imaging",
+	function(object, value) {
+		object@specimenOrigin <- value
+		object
+	})
 
 setMethod("specimenType", "MIAPE-Imaging", function(object) object@specimenType)
-setReplaceMethod("specimenType", "MIAPE-Imaging", function(object, value) {
-	object@specimenType <- value
-	object
-})
+setReplaceMethod("specimenType", "MIAPE-Imaging",
+	function(object, value) {
+		object@specimenType <- value
+		object
+	})
 
 setMethod("stainingMethod", "MIAPE-Imaging", function(object) object@stainingMethod)
-setReplaceMethod("stainingMethod", "MIAPE-Imaging", function(object, value) {
-	object@stainingMethod <- value
-	object
-})
+setReplaceMethod("stainingMethod", "MIAPE-Imaging",
+	function(object, value) {
+		object@stainingMethod <- value
+		object
+	})
 
 setMethod("tissueThickness", "MIAPE-Imaging", function(object) object@tissueThickness)
-setReplaceMethod("tissueThickness", "MIAPE-Imaging", function(object, value) {
-	object@tissueThickness <- value
-	object
-})
+setReplaceMethod("tissueThickness", "MIAPE-Imaging",
+	function(object, value) {
+		object@tissueThickness <- value
+		object
+	})
 
 setMethod("tissueWash", "MIAPE-Imaging", function(object) object@tissueWash)
-setReplaceMethod("tissueWash", "MIAPE-Imaging", function(object, value) {
-	object@tissueWash <- value
-	object
-})
+setReplaceMethod("tissueWash", "MIAPE-Imaging",
+	function(object, value) {
+		object@tissueWash <- value
+		object
+	})
 
 setMethod("embeddingMethod", "MIAPE-Imaging", function(object) object@embeddingMethod)
-setReplaceMethod("embeddingMethod", "MIAPE-Imaging", function(object, value) {
-	object@embeddingMethod <- value
-	object
-})
+setReplaceMethod("embeddingMethod", "MIAPE-Imaging",
+	function(object, value) {
+		object@embeddingMethod <- value
+		object
+	})
 
 setMethod("inSituChemistry", "MIAPE-Imaging", function(object) object@inSituChemistry)
-setReplaceMethod("inSituChemistry", "MIAPE-Imaging", function(object, value) {
-	object@inSituChemistry <- value
-	object
-})
+setReplaceMethod("inSituChemistry", "MIAPE-Imaging",
+	function(object, value) {
+		object@inSituChemistry <- value
+		object
+	})
 
 setMethod("matrixApplication", "MIAPE-Imaging", function(object) object@matrixApplication)
-setReplaceMethod("matrixApplication", "MIAPE-Imaging", function(object, value) {
-	object@matrixApplication <- value
-	object
-})
+setReplaceMethod("matrixApplication", "MIAPE-Imaging",
+	function(object, value) {
+		object@matrixApplication <- value
+		object
+	})
 
 setMethod("pixelSize", "MIAPE-Imaging", function(object) object@pixelSize)
-setReplaceMethod("pixelSize", "MIAPE-Imaging", function(object, value) {
-	object@pixelSize <- value
-	object
-})
+setReplaceMethod("pixelSize", "MIAPE-Imaging",
+	function(object, value) {
+		object@pixelSize <- value
+		object
+	})
 
 setMethod("instrumentModel", "MIAPE-Imaging", function(object) object@instrumentModel)
-setReplaceMethod("instrumentModel", "MIAPE-Imaging", function(object, value) {
-	object@instrumentModel <- value
-	object
-})
+setReplaceMethod("instrumentModel", "MIAPE-Imaging",
+	function(object, value) {
+		object@instrumentModel <- value
+		object
+	})
 
 setMethod("instrumentVendor", "MIAPE-Imaging", function(object) object@instrumentVendor)
-setReplaceMethod("instrumentVendor", "MIAPE-Imaging", function(object, value) {
-	object@instrumentVendor <- value
-	object
-})
+setReplaceMethod("instrumentVendor", "MIAPE-Imaging",
+	function(object, value) {
+		object@instrumentVendor <- value
+		object
+	})
 
 setMethod("massAnalyzerType", "MIAPE-Imaging", function(object) object@massAnalyzerType)
-setReplaceMethod("massAnalyzerType", "MIAPE-Imaging", function(object, value) {
-	object@massAnalyzerType <- value
-	object
-})
+setReplaceMethod("massAnalyzerType", "MIAPE-Imaging",
+	function(object, value) {
+		object@massAnalyzerType <- value
+		object
+	})
 
 setMethod("ionizationType", "MIAPE-Imaging", function(object) object@ionizationType)
-setReplaceMethod("ionizationType", "MIAPE-Imaging", function(object, value) {
-	object@ionizationType <- value
-	object
-})
+setReplaceMethod("ionizationType", "MIAPE-Imaging",
+	function(object, value) {
+		object@ionizationType <- value
+		object
+	})
 
 setMethod("scanPolarity", "MIAPE-Imaging", function(object) object@scanPolarity)
-setReplaceMethod("scanPolarity", "MIAPE-Imaging", function(object, value) {
-	object@scanPolarity <- value
-	object
-})
+setReplaceMethod("scanPolarity", "MIAPE-Imaging",
+	function(object, value) {
+		object@scanPolarity <- value
+		object
+	})
 
 setMethod("softwareName", "MIAPE-Imaging", function(object) object@softwareName)
-setReplaceMethod("softwareName", "MIAPE-Imaging", function(object, value) {
-	object@softwareName <- value
-	object
-})
+setReplaceMethod("softwareName", "MIAPE-Imaging",
+	function(object, value) {
+		object@softwareName <- value
+		object
+	})
 
 setMethod("softwareVersion", "MIAPE-Imaging", function(object) object@softwareVersion)
-setReplaceMethod("softwareVersion", "MIAPE-Imaging", function(object, value) {
-	object@softwareVersion <- value
-	object
-})
+setReplaceMethod("softwareVersion", "MIAPE-Imaging",
+	function(object, value) {
+		object@softwareVersion <- value
+		object
+	})
 
 setMethod("scanType", "MIAPE-Imaging", function(object) object@scanType)
-setReplaceMethod("scanPolarity", "MIAPE-Imaging", function(object, value) {
-	object@scanPolarity <- value
-	object
-})
+setReplaceMethod("scanPolarity", "MIAPE-Imaging",
+	function(object, value) {
+		object@scanPolarity <- value
+		object
+	})
 
 setMethod("scanPattern", "MIAPE-Imaging", function(object) object@scanPattern)
-setReplaceMethod("scanPattern", "MIAPE-Imaging", function(object, value) {
-	object@scanPattern <- value
-	object
-})
+setReplaceMethod("scanPattern", "MIAPE-Imaging",
+	function(object, value) {
+		object@scanPattern <- value
+		object
+	})
 
 setMethod("scanDirection", "MIAPE-Imaging", function(object) object@scanDirection)
-setReplaceMethod("scanDirection", "MIAPE-Imaging", function(object, value) {
-	object@scanDirection <- value
-	object
-})
+setReplaceMethod("scanDirection", "MIAPE-Imaging",
+	function(object, value) {
+		object@scanDirection <- value
+		object
+	})
 
 setMethod("lineScanDirection", "MIAPE-Imaging", function(object) object@lineScanDirection)
-setReplaceMethod("lineScanDirection", "MIAPE-Imaging", function(object, value) {
-	object@lineScanDirection <- value
-	object
-})
+setReplaceMethod("lineScanDirection", "MIAPE-Imaging",
+	function(object, value) {
+		object@lineScanDirection <- value
+		object
+	})
 
 setMethod("imageShape", "MIAPE-Imaging", function(object) object@imageShape)
-setReplaceMethod("imageShape", "MIAPE-Imaging", function(object, value) {
-	object@imageShape <- value
-	object
-})
+setReplaceMethod("imageShape", "MIAPE-Imaging",
+	function(object, value) {
+		object@imageShape <- value
+		object
+	})
 
 ## adapted from combine(MIAME, MIAME) from Biobase
 setMethod("combine",

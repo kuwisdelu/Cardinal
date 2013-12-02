@@ -54,14 +54,14 @@ setClass("MIAPE-Imaging",
 		imageShape = "character"),
 	contains = "MIAxE",
 	prototype = prototype(
-		new("Versioned", versions=c(classVersion("MIAxE"),
-			`MIAPE-Imaging`="0.0.2"))))
+		new("Versioned", versions=c(classVersion("MIAxE"), `MIAPE-Imaging`="0.0.2"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters
 ## --------------------------------------------------
 setClass("MSImageProcess",
 	slots = c(
+		files = "character",
 		normalization = "character",
 		smoothing = "character",
 		baselineReduction = "character",
@@ -70,7 +70,7 @@ setClass("MSImageProcess",
 		centroided = "logical",
 		history = "list",
 		CardinalVersion = "character"),
-	contains = "MSnProcess",
+	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(MSImageProcess="0.0.3")),
 		CardinalVersion = character())) # set up in initialize
@@ -157,8 +157,7 @@ setClass("iSet",
 		experimentData = "MIAPE-Imaging"),
 	contains = "iSet",
 	prototype = prototype(
-		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			MSImageSet="0.5.1")),
+		new("VersionedBiobase", versions=c(classVersion("iSet"), MSImageSet="0.5.1")),
 		imageData = .MSImageSpectra(),
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))

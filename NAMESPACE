@@ -155,6 +155,16 @@ exportMethods(
 	"tissueWash<-")
 
 exportMethods(
+	"baselineReduction",
+	"centroided",
+	"exphistory",
+	"files",
+	"normalization",
+	"peakPicking",
+	"smoothing",
+	"spectrumRepresentation")
+
+exportMethods(
 	"alignPeaks",
 	"assessQuality",
 	"binSpectra",
