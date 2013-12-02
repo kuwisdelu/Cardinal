@@ -63,13 +63,13 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
     Standard generic methods:
     \describe{
-        \item{\code{initialize(object)}:}{Initialize an \code{ImageData} object. Called by \code{new}. Not to be used by the user.}
+        \item{\code{initialize}:}{Initialize an \code{ImageData} object. Called by \code{new}. Not to be used by the user.}
 
-        \item{\code{validObject(object)}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
+        \item{\code{validObject}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
 
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{rbind} for vectors, \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
 
-        \item{\code{dims(object)}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
+        \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
         \item{\code{ImageData[[name]]}, \code{ImageData[[name]] <- value}:}{Access or replace an element named \code{"name"} in the environment in the \code{data} slot.}
     }
@@ -78,7 +78,6 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 \author{Kyle D. Bemis}
 
 \seealso{
-    \code{\link[Biobase]{AssayData}},
     \code{\linkS4class{MSImageSpectra}},
     \code{\linkS4class{MSImageSet}}
 }
