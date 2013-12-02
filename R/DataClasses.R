@@ -12,7 +12,7 @@
 #### 'Minimum Information About a Proteomics Experiment' - Imaging ####
 ## extends MIAPE from the MSnbase package with imaging information 
 ## ---------------------------------------------------------------
-setClass("ImagingMIAPE",
+setClass("MIAPE-Imaging",
 	slots = c(
 		## 1. Histomorphological classification
 		specimenOrigin = "character",
@@ -34,7 +34,7 @@ setClass("ImagingMIAPE",
 	contains = "MIAPE",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MIAxE"),
-			classVersion("MIAPE"), `ImagingMIAPE`="0.0.1"))))
+			classVersion("MIAPE"), `MIAPE-Imaging`="0.0.1"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters
@@ -133,14 +133,14 @@ setClass("iSet",
 	slots = c(
 		imageData = "MSImageSpectra",
 		processingData = "MSImageProcess",
-		experimentData = "ImagingMIAPE"),
+		experimentData = "MIAPE-Imaging"),
 	contains = "iSet",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
 			MSImageSet="0.5.1")),
 		imageData = .MSImageSpectra(),
 		processingData = new("MSImageProcess"),
-		experimentData = new("ImagingMIAPE")))
+		experimentData = new("MIAPE-Imaging")))
 
 
 

@@ -1,6 +1,6 @@
 
-setMethod("imagingInfo", "ImagingMIAPE", function(object) {
-	cat("ImagingMIAPE information:\n")
+setMethod("imagingInfo", "MIAPE-Imaging", function(object) {
+	cat("MIAPE-Imaging information:\n")
 	cat(" 1. Histomorphological information:\n")
 	cat("  Specimen origin:", specimenOrigin(object),"\n")
 	cat("  Specimen type:", specimenType(object),"\n")
@@ -20,26 +20,26 @@ setMethod("imagingInfo", "ImagingMIAPE", function(object) {
 	cat("  Image shape:", imageShape(object),"\n")
 })
 
-setMethod("specimenOrigin", "ImagingMIAPE", function(object) object@specimenOrigin)
-setMethod("specimenType", "ImagingMIAPE", function(object) object@specimenType)
-setMethod("stainingMethod", "ImagingMIAPE", function(object) object@stainingMethod)
+setMethod("specimenOrigin", "MIAPE-Imaging", function(object) object@specimenOrigin)
+setMethod("specimenType", "MIAPE-Imaging", function(object) object@specimenType)
+setMethod("stainingMethod", "MIAPE-Imaging", function(object) object@stainingMethod)
 
-setMethod("tissueThickness", "ImagingMIAPE", function(object) object@tissueThickness)
-setMethod("tissueWash", "ImagingMIAPE", function(object) object@tissueWash)
-setMethod("embeddingMethod", "ImagingMIAPE", function(object) object@embeddingMethod)
-setMethod("inSituChemistry", "ImagingMIAPE", function(object) object@inSituChemistry)
-setMethod("matrixDeposition", "ImagingMIAPE", function(object) object@matrixDeposition)
+setMethod("tissueThickness", "MIAPE-Imaging", function(object) object@tissueThickness)
+setMethod("tissueWash", "MIAPE-Imaging", function(object) object@tissueWash)
+setMethod("embeddingMethod", "MIAPE-Imaging", function(object) object@embeddingMethod)
+setMethod("inSituChemistry", "MIAPE-Imaging", function(object) object@inSituChemistry)
+setMethod("matrixDeposition", "MIAPE-Imaging", function(object) object@matrixDeposition)
 
-setMethod("pixelSize", "ImagingMIAPE", function(object) object@pixelSize)
-setMethod("lineScanDirection", "ImagingMIAPE", function(object) object@lineScanDirection)
-setMethod("scanDirection", "ImagingMIAPE", function(object) object@scanDirection)
-setMethod("scanPattern", "ImagingMIAPE", function(object) object@scanPattern)
-setMethod("scanType", "ImagingMIAPE", function(object) object@scanType)
-setMethod("imageShape", "ImagingMIAPE", function(object) object@imageShape)
+setMethod("pixelSize", "MIAPE-Imaging", function(object) object@pixelSize)
+setMethod("lineScanDirection", "MIAPE-Imaging", function(object) object@lineScanDirection)
+setMethod("scanDirection", "MIAPE-Imaging", function(object) object@scanDirection)
+setMethod("scanPattern", "MIAPE-Imaging", function(object) object@scanPattern)
+setMethod("scanType", "MIAPE-Imaging", function(object) object@scanType)
+setMethod("imageShape", "MIAPE-Imaging", function(object) object@imageShape)
 
 ## adapted from combine(MIAPE, MIAPE) from MSnbase
 setMethod("combine",
-	signature = c(x = "ImagingMIAPE", y = "ImagingMIAPE"),
+	signature = c(x = "MIAPE-Imaging", y = "MIAPE-Imaging"),
 	function(x, y, ...) {
 		if ( identical(x,y) )
 			return (x)
@@ -79,7 +79,7 @@ setMethod("combine",
 				collisionEnergy = ,
 				detectorType = ,
 				detectorSensitivity = ,
-				## ImagingMIAPE specific
+				## MIAPE-Imaging specific
 				specimenOrigin = ,
 				specimenType = ,
 				stainingMethod = ,
@@ -101,11 +101,11 @@ setMethod("combine",
 					paste(slot(x, sl), slot(y, sl), collapse = "\n")
 				},
 				.__classVersion__ = {
-					stop("'ImagingMIAPE' objects have different class version strings")
+					stop("'MIAPE-Imaging' objects have different class version strings")
 				},
 				## unknown
 				{
-					warning("\n  unknown or conflicting information in ImagingMIAPE field '",
+					warning("\n  unknown or conflicting information in MIAPE-Imaging field '",
 						sl,"'; using information from first object 'x'")
 					slot(x, sl)
 				})
