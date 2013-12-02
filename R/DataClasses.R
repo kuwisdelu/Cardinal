@@ -51,7 +51,7 @@ setClass("MSImageProcess",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MSnProcess"),
 			MSImageProcess="0.0.2")),
-		history = new.env(parent=emptyenv()), # re-assign in initialize
+		history = list(),
 		CardinalVersion = character())) # set up in initialize
 
 #### Class for generic imaging data ###

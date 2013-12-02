@@ -59,9 +59,7 @@ export(
 
 exportMethods(
 	"$",
-	"$<-",
 	"[",
-	"[<-",
 	"[[",
 	"[[<-",
 	"alignPeaks",
