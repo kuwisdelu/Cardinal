@@ -54,7 +54,7 @@ setMethod("dims", "MSImageSpectra",
 			}
 			dims
 		} else {
-			NULL
+			matrix(nrow=0, ncol=0)
 		}
 	})
 

@@ -30,6 +30,17 @@ ImageData <- function(..., storageMode = c("immutableEnvironment",
 	.ImageData(..., storageMode=storageMode)
 }
 
+setMethod("iData", "ImageData", function(object) object@data)
+
+setReplaceMethod("iData", "ImageData",
+	function(object, value) {
+		object@data <- value
+		if ( storageMode(object) %in% c("lockedEnvironment", "immutableEnvironment"))
+			lockEnvironment(object@data, bindings=TRUE)
+		if ( validObject(object) )
+			object
+	})
+
 ## adapted from combine(AssayData, AssayData) from Biobase
 setMethod("combine",
 	signature = c(x = "ImageData", y = "ImageData"),
@@ -62,7 +73,7 @@ setMethod("dims", "ImageData", function(object) {
 	if ( length(names) > 0 ) {
 		sapply(names, function(nm) dim(object@data[[nm]]))
 	} else {
-		NULL
+		matrix(nrow=0, ncol=0)
 	}
 })
 

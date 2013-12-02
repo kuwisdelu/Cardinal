@@ -28,9 +28,7 @@ setMethod("initialize", "IAnnotatedDataFrame",
 			.Object
 	})
 
-IAnnotatedDataFrame <- function(data, varMetadata,
-	dimLabels=c("pixelNames", "pixelColumns"),
-	...)
+IAnnotatedDataFrame <- function(data, varMetadata, ...)
 {
 	reqLabelTypes <- c("spatial2d", "spatial3d", "dimension", "sample", "pheno")
 	if ( missing(data) )
@@ -42,7 +40,6 @@ IAnnotatedDataFrame <- function(data, varMetadata,
 		varMetadata[["labelType"]] <- as.factor(varMetadata[["labelType"]])
 	.IAnnotatedDataFrame(data=data,
 		varMetadata=varMetadata,
-		dimLabels=dimLabels,
 		...)
 }
 
@@ -110,3 +107,6 @@ setReplaceMethod("coord", "IAnnotatedDataFrame",
 		if ( validObject(object) )
 			object
 	})
+
+
+

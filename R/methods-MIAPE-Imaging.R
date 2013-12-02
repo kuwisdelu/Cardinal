@@ -39,15 +39,14 @@ setMethod("imageShape", "MIAPE-Imaging", function(object) object@imageShape)
 
 ## adapted from combine(MIAPE, MIAPE) from MSnbase
 setMethod("combine",
-	signature = c(x = "MIAPE", y = "MIAPE"),
+	signature = c(x = "MIAPE-Imaging", y = "MIAPE-Imaging"),
 	function(x, y, ...) {
-		if (identical(x,y))
+		if ( identical(x,y) )
 			return (x)
-		for (sl in names(getSlots(class(x)))) {
-			if (identical(slot(x, sl),slot(y, sl)))
+		for ( sl in names(getSlots(class(x))) ) {
+			if ( identical(slot(x, sl),slot(y, sl)) )
 				next
-			slot(x, sl) <-
-				switch(sl,
+			slot(x, sl) <- switch(sl,
 				## multiple elements possible
 				## shared slots with MIAME
 				name = ,
@@ -95,20 +94,20 @@ setMethod("combine",
 				scanDirection = ,
 				lineScanDirection = ,
 				imageShape = {
-				 c(slot(x, sl), slot(y, sl))
+					c(slot(x, sl), slot(y, sl))
 				},
 				## just a single entry
 				abstract = {
-				 paste(slot(x, sl), slot(y, sl), collapse = "\n")
+					paste(slot(x, sl), slot(y, sl), collapse = "\n")
 				},
 				.__classVersion__ = {
-				 stop("'MIAPE' objects have different class version strings")
+					stop("'MIAPE-Imaging' objects have different class version strings")
 				},
 				## unknown
 				{
-				 warning("\n  unknown or conflicting information in MIAPE-Imaging field '",
-						 sl,"'; using information from first object 'x'")
-				 slot(x, sl)
+					warning("\n  unknown or conflicting information in MIAPE-Imaging field '",
+						sl,"'; using information from first object 'x'")
+					slot(x, sl)
 				})
 		}
 		if ( validObject(x) )

@@ -4,83 +4,84 @@ NEWS for Cardinal package
 
 Version 0.5.1 [2013-11-25]
 
-- Major revision to use Bioconductor base packages
-- New dependencies on BiocGenerics, Biobase, and MSnbase
-- New virtual class iSet for generic imaging data
+o Major revision to use Bioconductor base packages
+o New dependencies on BiocGenerics, Biobase, and MSnbase
+o New virtual class iSet for generic imaging data
 
 Version 0.5 [2013-11-8]
 
-- Added image coregistration for 3D sections.
-- Added 'volume' method for 3D visualization.
+o Added image coregistration for 3D sections.
+o Added 'volume' method for 3D visualization.
 
 Version 0.4 [2013-11-7]
 
-- Added 'summaryPlot' method for segmentation visualization.
-- Exposed 'calibrateSegmentation' method to calibrate colors
+o Added 'summaryPlot' method for segmentation visualization.
+o Exposed 'calibrateSegmentation' method to calibrate colors
 	between multiple MSImageSegmentation objects.
-- Added more thorough verbose output for 'spatialSparseCluster'
+o Added more thorough verbose output for 'spatialSparseCluster'
 	and 'spatialSparseKMeans' methods.
-- Improved behavior of 'intensities' method when reconstructing
+o Improved behavior of 'intensities' method when reconstructing
 	complex datacubes and with non-contiguous pixel requests.
-- Changed 'trellisImage' to plot all coordinates for dimensions
+o Changed 'trellisImage' to plot all coordinates for dimensions
 	omitted from 'fixCoord' by default.
-- Minor changes to the 'MSImageSegmentation' class structure.
-- Improved 'likPlot' method and added AIC and BIC results and
+o Minor changes to the 'MSImageSegmentation' class structure.
+o Improved 'likPlot' method and added AIC and BIC results and
 	the resulting number of classes.
 
 Version 0.3 [2013-7-5]
 
-- Improved speed of imaging processing (smoothing and interpolation)
+o Improved speed of imaging processing (smoothing and interpolation)
 	methods for use with 'image' and 'trellisImage'.
-- Added option for verbose output and hooks for GUI progress bars.
-- For prediction on 'MSImageSegmentation' objects, 'autoDimNames'
+o Added option for verbose output and hooks for GUI progress bars.
+o For prediction on 'MSImageSegmentation' objects, 'autoDimNames'
 	is now automatically passed along from the original call.
-- Changed 'MSImageSegmentation' to an S4 class derived from 'list'.
-- Added option for plotting the probabilities of an 'MSImageSegmentation'
+o Changed 'MSImageSegmentation' to an S4 class derived from 'list'.
+o Added option for plotting the probabilities of an 'MSImageSegmentation'
 	using overlaid transparency masks for improved visualization.
 
 Version 0.2 [2013-6-20]
 
-- Package renamed from internal code-name "Canary" to "Cardinal".
-- Split off GUI to a new package called "CardinaliView".
-- New GUI in "CardinaliView" now based on gWidgets and RGtk2.
-- Added slot 'peaks' to 'MSImageSet' class.
-- Changed 'MSPeakFrame' and 'MSPeakList' to S4 classes, and added
+o Package renamed from internal code-name "Canary" to "Cardinal".
+o Split off GUI to a new package called "CardinaliView".
+o New GUI in "CardinaliView" now based on gWidgets and RGtk2.
+o Added slot 'peaks' to 'MSImageSet' class.
+o Changed 'MSPeakFrame' and 'MSPeakList' to S4 classes, and added
 	new class 'MSPeak Alignment'.
-- Changed how the 'estimateNoise' method estimates noise.
-- Changed options in the 'detectPeaks' method to be more useful.
-- Changed the 'alignPeaks' methods to align to the mean spectrum
+o Changed how the 'estimateNoise' method estimates noise.
+o Changed options in the 'detectPeaks' method to be more useful.
+o Changed the 'alignPeaks' methods to align to the mean spectrum
 	as a reference when aligning a list of peaks.
-- Added 'interpolate' option for images.
-- Fixed bug where plotting mass spectra for multiple pixels fails
+o Added 'interpolate' option for images.
+o Fixed bug where plotting mass spectra for multiple pixels fails
 	on datasets with missing mass spectra.
-- Fixed bug where the 'unload' method did not remove the object.
-- Added new method "selectPeaks" for manual peak selection.
-- Modified the 'type' arguments in the plotting methods.
-- Fixed bug in the 'crossValidate' method where the dots arguments
+o Fixed bug where the 'unload' method did not remove the object.
+o Added new method "selectPeaks" for manual peak selection.
+o Modified the 'type' arguments in the plotting methods.
+o Fixed bug in the 'crossValidate' method where the dots arguments
 	were not passed to the 'predict' method.
-- Changed 'crossValidate' method to now return predictions for the
+o Changed 'crossValidate' method to now return predictions for the
 	full dataset for every fold instead of the test set only.
 
 Version 0.1 [2013-6-6]
-- First internal release for Stanford Canary Center for Cancer
+
+o First internal release for Stanford Canary Center for Cancer
 	Early Detection as primary beta testers.
-- Implementation of MSImageSet S4 class; mass spectra are stored as a
+o Implementation of MSImageSet S4 class; mass spectra are stored as a
 	flat matrix with rows as features and columns as pixels; original
 	data cube can be reconstructed dynamically using a position array;
 	spectra stored using environments to prevent redundant data copying.
-- Visualization that includes plotting ion images and mass spectra,
+o Visualization that includes plotting ion images and mass spectra,
 	using both base graphics and lattice graphics, allowing trellis
 	display of multiple ion images and multipe mass spectra.
-- Pre-processing for that includes normalization, baseline correct,
+o Pre-processing for that includes normalization, baseline correct,
 	peak-picking, peak-alignment, resampling, and binning.
-- Multivaritate statistical analysis includes PCA, PLS, and OPLS.
-- Supervised analysis includes a spatially-aware version of nearest
+o Multivaritate statistical analysis includes PCA, PLS, and OPLS.
+o Supervised analysis includes a spatially-aware version of nearest
 	shrunken centroids, PLS-DA, and OPLS-DA.
-- Unsupervised analysis includes spatially-aware clustering based on
+o Unsupervised analysis includes spatially-aware clustering based on
 	nearest shrunken centroids, and an implementation based on sparse
 	k-means.
-- GUI based on tcltk using rpanel that supports all major
+o GUI based on tcltk using rpanel that supports all major
 	processing and statistical analysis methods in the package,
 	except for PLS and OPLS.
 

@@ -41,22 +41,19 @@ setClass("MIAPE-Imaging",
 ## --------------------------------------------------
 setClass("MSImageProcess",
 	slots = c(
-		peaks = "numeric",
-		binned = "numeric",
-		resampled = "numeric",
+		removedBaseline = "logical",
+		binned = "logical",
+		resampled = "logical",
 		centroided = "logical",
-		processingActions = "list",
+		actions = "list",
+		history = "environment",
 		CardinalVersion = "character"),
 	contains = "MSnProcess",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MSnProcess"),
 			MSImageProcess="0.0.2")),
-		peaks = numeric(),
-		binned = numeric(),
-		resampled = numeric(),
-		centroided = FALSE,
-		processingActions = list(),
-		CardinalVersion = character()))
+		history = new.env(parent=emptyenv()), # re-assign in initialize
+		CardinalVersion = character())) # set up in initialize
 
 #### Class for generic imaging data ###
 ## simply holds an environment and a storage mode
@@ -68,7 +65,7 @@ setClass("MSImageProcess",
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(ImageData="0.0.2")),
-		data = new.env(parent=emptyenv()), # re-assign in initialize to be unique
+		data = new.env(parent=emptyenv()), # re-assign in initialize
 		storageMode = "immutableEnvironment"),
 	validity = function(object) {
 		msg <- validMsg(NULL, NULL)

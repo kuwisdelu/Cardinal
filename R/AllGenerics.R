@@ -2,6 +2,8 @@
 #### Basic accessor, setter, and manipulation ####
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
+setGeneric("coordinates", function(object) coord(object))
+setGeneric("coordinates<-", function(object, value) coord(object, value))
 setGeneric("coordNames", function(object) standardGeneric("coordNames"))
 setGeneric("coordNames<-", function(object, value) standardGeneric("coordNames<-"))
 setGeneric("features", function(object, mz, ...) standardGeneric("features"))
@@ -9,7 +11,9 @@ setGeneric("flipHorizontal", function(object, ...) standardGeneric("flipHorizont
 setGeneric("flipVertical", function(object, ...) standardGeneric("flipVertical"))
 setGeneric("generatePositionArray", function(object, ...) standardGeneric("generatePositionArray"))
 setGeneric("iData", function(object) standardGeneric("iData"))
+setGeneric("iData<-", function(object, value) standardGeneric("iData<-"))
 setGeneric("imageData", function(object) standardGeneric("imageData"))
+setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
 setGeneric("intensities", function(object, ...) standardGeneric("intensities"))
 setGeneric("isBinned", function(object) standardGeneric("isBinned"))
 setGeneric("isBinned<-", function(object, value) standardGeneric("isBinned<-"))
