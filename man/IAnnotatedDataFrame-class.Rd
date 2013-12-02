@@ -42,15 +42,6 @@ IAnnotatedDataFrame(data, varMetadata,
 
 }
 
-\section{Extends}{
-   Class \code{\linkS4class{AnnotatedDataFrame}}, directly.
-   Class \code{\linkS4class{Versioned}}, by class "AnnotatedDataFrame", distance 2.
-}
-
-\section{Creating Objects}{
-	\code{IAnnotatedDataFrame} instances are usually created through \code{IAnnotatedDataFrame()}.
-}
-
 \section{Slots}{
 	\describe{
 		\item{\code{data}:}{Object of class \code{data.frame} containing pixels (rows) and measured variables (columns). Contains at least one column named 'sample' which is a \code{factor} and gives the sample names for each pixel. The sample names can be set using \code{sampleNames<-}. Inherited from \linkS4class{AnnotatedDataFrame}.}
@@ -61,6 +52,15 @@ IAnnotatedDataFrame(data, varMetadata,
 
 		\item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
 	}
+}
+
+\section{Extends}{
+   Class \code{\linkS4class{AnnotatedDataFrame}}, directly.
+   Class \code{\linkS4class{Versioned}}, by class "AnnotatedDataFrame", distance 2.
+}
+
+\section{Creating Objects}{
+	\code{IAnnotatedDataFrame} instances are usually created through \code{IAnnotatedDataFrame()}.
 }
 
 \section{Methods}{

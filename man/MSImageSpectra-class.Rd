@@ -41,14 +41,6 @@ MSImageSpectra(spectra, coord,
 
 }
 
-\section{Extends}{
-   \code{\linkS4class{Versioned}}
-}
-
-\section{Creating Objects}{
-    \code{MSImageSpectra} instances are usually created through \code{MSImageSpectra()}.
-}
-
 \section{Slots}{
     \describe{
         \item{\code{data}:}{An \code{environment} which contains an element named \code{"spectra"}, which is a matrix with rows equal to the number of features (m/z values) and columns equal to the number of non-missing pixels. Each column is a mass spectrum. Inherited from \code{\linkS4class{ImageData}}}
@@ -59,6 +51,14 @@ MSImageSpectra(spectra, coord,
 
         \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
     }
+}
+
+\section{Extends}{
+   \code{\linkS4class{Versioned}}
+}
+
+\section{Creating Objects}{
+    \code{MSImageSpectra} instances are usually created through \code{MSImageSpectra()}.
 }
 
 \section{Methods}{

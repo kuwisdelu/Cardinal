@@ -1,9 +1,5 @@
 
-import(
-	"stats4",
-	"BiocGenerics",
-	"Biobase",
-	"MSnbase")
+import("stats4")
 
 importFrom("abind",
 	"abind")
@@ -29,8 +25,7 @@ importFrom("sp",
 
 importFrom("utils",
 	"setTxtProgressBar",
-	"txtProgressBar"
-)
+	"txtProgressBar")
 
 exportClasses(
 	"IAnnotatedDataFrame",

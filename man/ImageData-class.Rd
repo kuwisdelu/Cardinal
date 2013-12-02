@@ -37,14 +37,6 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
 }
 
-\section{Extends}{
-   \code{\linkS4class{Versioned}}
-}
-
-\section{Creating Objects}{
-    \code{ImageData} instances are usually created through \code{ImageData()}.
-}
-
 \section{Slots}{
     \describe{
         \item{\code{data}:}{An \code{environment} which may contain one or more arrays with an equal number of dimensions.}
@@ -53,6 +45,14 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
         \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
     }
+}
+
+\section{Extends}{
+   \code{\linkS4class{Versioned}}
+}
+
+\section{Creating Objects}{
+    \code{ImageData} instances are usually created through \code{ImageData()}.
 }
 
 \section{Methods}{
