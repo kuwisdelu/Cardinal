@@ -8,7 +8,7 @@ test_that("MSImageSpectra validity", {
 	expect_true(validObject(MSImageSpectra()))
 
 	spectra0 <- array(1:27, dim=c(3,3,3))
-	msidata0 <- MSImageSpectra(spectra=spectra0)
+	expect_warning(msidata0 <- MSImageSpectra(spectra=spectra0))
 	expect_true(validObject(msidata0))
 
 	coord <- expand.grid(x=1:3, y=1:3)
@@ -22,16 +22,16 @@ test_that("MSImageSpectra validity", {
 
 test_that("MSImageSpectra manipulation", {
 
-	spectra0 <- array(1:27, dim=c(3,3,3))
+	spectra0 <- array(1:27, dim=c(Features=3,x=3,y=3))
 	msidata0 <- MSImageSpectra(spectra=spectra0)
 	expect_equal(msidata0[], spectra0)
 	
-	expect_equal(msidata0[1,,], spectra0[1,,])
-	expect_equal(msidata0[,1,], spectra0[,1,])
-	expect_equal(msidata0[,,1], spectra0[,,1])
+	expect_equivalent(msidata0[1,,], spectra0[1,,])
+	expect_equivalent(msidata0[,1,], spectra0[,1,])
+	expect_equivalent(msidata0[,,1], spectra0[,,1])
 
 	expect_identical(dim(msidata0[1,1,,drop=TRUE]), NULL)
-	expect_equal(dim(msidata0[1,1,,drop=FALSE]), c(1,1,3))
+	expect_equivalent(dim(msidata0[1,1,,drop=FALSE]), c(1,1,3))
 
 	spectra1 <- matrix(1:27, nrow=3)
 	msidata1 <- MSImageSpectra(spectra=spectra1, storageMode="immutableEnvironment")

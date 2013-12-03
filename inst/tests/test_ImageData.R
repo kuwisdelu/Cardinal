@@ -29,10 +29,17 @@ test_that("ImageData manipulation", {
 	storageMode(idata) <- "lockedEnvironment"
 	expect_error(idata[["data2"]] <- data2)
 
+})
+
+test_that("ImageData methods", {
+
+	data0 <- matrix(1:4, nrow=2)
+	idata <- ImageData(data0=data0, storageMode="immutableEnvironment")
+
 	combdata <- combine(idata, idata)
 	expect_true(all(combdata[["data0"]] == cbind(data0, data0)))
 
 	multicombdata <- combine(idata, idata, idata)
 	expect_true(all(multicombdata[["data0"]] == cbind(data0, data0, data0)))
-
+	
 })

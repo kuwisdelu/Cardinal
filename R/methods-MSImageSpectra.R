@@ -16,8 +16,23 @@ MSImageSpectra <- function(spectra, coord,
 	if ( missing(spectra) ) spectra <- matrix(nrow=0, ncol=0)
 	if ( length(dim(spectra)) < 2 || !is.array(spectra) ) stop("spectra must be an array or matrix")
 	if ( length(dim(spectra)) > 2 || is.null(positionArray) ) {
-		if ( !missing(coord) ) warning("spectra is a datacube; ignoring user-provided coord")
-		positionArray <- array(seq_len(prod(dim(spectra)[-1])), dim=dim(spectra)[-1])
+		if ( !missing(coord) )
+			warning("spectra is a datacube; ignoring user-provided coord")
+		if ( length(dim(spectra)) == 2 ) {
+			dims <- c(x=ncol(spectra), y=ifelse(ncol(spectra) > 0, 1, 0))
+		} else {
+			dims <- dim(spectra)[-1]
+		}
+		if ( is.null(names(dims)) || any(nchar(dims) == 0) ) {
+			warning("spectra is missing dimnames; attempting to guess")
+			names(dims) <- switch(length(dims),
+				NULL, # not possible
+				c("x", "y"),
+				c("x", "y", "z"),
+				c("x", "y", "z", "t"),
+				stop("failed to provide dimnames"))
+		}
+		positionArray <- array(seq_len(prod(dim(spectra)[-1])), dim=dims)
 		dim(spectra) <- c(dim(spectra)[1], prod(dim(spectra)[-1]))
 	}
 	.MSImageSpectra(spectra=spectra,
@@ -89,6 +104,7 @@ setMethod("[", "MSImageSpectra", function(x, i, j, ..., drop) {
 	ids <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
 	arr <- x[["spectra"]][args[[1]],ids,drop=FALSE]
 	dim(arr) <- c(dim(arr)[1], dim(ids))
+	names(dim(arr)) <- c("Features", names(dim(x@positionArray)))
 	if ( drop && all(dim(arr) == 1) )
 		arr <- as.vector(arr)
 	if ( drop && any(dim(arr) == 1) )

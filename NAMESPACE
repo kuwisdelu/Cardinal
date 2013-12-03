@@ -40,8 +40,9 @@ exportClasses(
 
 export(
 	"ImageData",
-	"MSImageSpectra",
 	"IAnnotatedDataFrame",
+	"MSImageSpectra",
+	"MSImageSet",
 	"alpha.colors",
 	"createMSImageSet",
 	"createMSPeakFrame",
