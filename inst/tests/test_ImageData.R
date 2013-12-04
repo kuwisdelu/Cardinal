@@ -15,7 +15,7 @@ test_that("ImageData validity", {
 
 })
 
-test_that("ImageData manipulation", {
+test_that("ImageData accessors", {
 
 	data0 <- matrix(1:4, nrow=2)
 	idata <- ImageData(data0=data0, storageMode="immutableEnvironment")
@@ -31,7 +31,7 @@ test_that("ImageData manipulation", {
 
 })
 
-test_that("ImageData methods", {
+test_that("ImageData combine", {
 
 	data1 <- matrix(1:4, nrow=2, ncol=2, dimnames=list(1:2, 1:2))
 	idata1 <- ImageData(data0=data1, storageMode="immutableEnvironment")

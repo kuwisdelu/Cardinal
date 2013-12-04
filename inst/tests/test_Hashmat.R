@@ -2,7 +2,7 @@ require(testthat)
 
 context("Hashmat")
 
-test_that("Hashmat accessing", {
+test_that("Hashmat accessors", {
 	
 	expect_true(validObject(new("Hashmat")))
 	expect_true(validObject(Hashmat()))

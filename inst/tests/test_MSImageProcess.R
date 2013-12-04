@@ -8,7 +8,7 @@ test_that("MSImageProcess validity", {
 
 })
 
-test_that("MSImageProcess manipulation", {
+test_that("MSImageProcess combine", {
 
 	proc1 <- new("MSImageProcess")
 	proc2 <- new("MSImageProcess")

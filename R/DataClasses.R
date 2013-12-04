@@ -6,7 +6,8 @@
 ## ------------------------------------------------
 .IAnnotatedDataFrame <- setClass("IAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
-	prototype = prototype(new("Versioned", versions=c(IAnnotatedDataFrame="0.0.2"))))
+	prototype = prototype(new("Versioned",
+		versions=c(IAnnotatedDataFrame="0.0.2"))))
 
 #### 'Minimum Information About a Proteomics Experiment' - Imaging ####
 ## based on working MIAPE-Imaging document and imzML specification
@@ -53,7 +54,8 @@ setClass("MIAPE-Imaging",
 		imageShape = "character"),
 	contains = "MIAxE",
 	prototype = prototype(
-		new("Versioned", versions=c(classVersion("MIAxE"), `MIAPE-Imaging`="0.0.2"))))
+		new("Versioned", versions=c(classVersion("MIAxE"),
+			`MIAPE-Imaging`="0.0.2"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters

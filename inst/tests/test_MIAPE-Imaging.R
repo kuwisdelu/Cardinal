@@ -8,7 +8,7 @@ test_that("MIAPE-Imaging validity", {
 
 })
 
-test_that("MIAPE-Imaging manipulation", {
+test_that("MIAPE-Imaging combine", {
 
 	miape1 <- new("MIAPE-Imaging")
 	miape2 <- new("MIAPE-Imaging")

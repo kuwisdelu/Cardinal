@@ -14,7 +14,7 @@ test_that("IAnnotatedDataFrame validity", {
 
 })
 
-test_that("IAnnotatedDataFrame manipulation", {
+test_that("IAnnotatedDataFrame accessors and assignment", {
 
 	coord1 <- expand.grid(x=1:3, y=1:3)
 	df <- IAnnotatedDataFrame(coord1, data.frame(labelType=c("spatial2d", "spatial2d")))
