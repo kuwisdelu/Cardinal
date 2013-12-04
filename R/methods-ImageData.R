@@ -19,15 +19,15 @@ setMethod("initialize", "ImageData",
 		callNextMethod(.Object)
 	})
 
-ImageData <- function(..., storageMode = c("immutableEnvironment",
-	"lockedEnvironment", "environment"))
+ImageData <- function(..., data = new.env(parent=emptyenv()),
+	storageMode = c("immutableEnvironment", "lockedEnvironment", "environment"))
 {
 	storageMode <- match.arg(storageMode)
 	dots <- match.call(expand.dots=FALSE)[["..."]]
 	names <- names(dots)
 	if ( any(is.null(names)) && length(dots) > 0 )
 		stop("all elements must be named")
-	.ImageData(..., storageMode=storageMode)
+	.ImageData(..., data=data, storageMode=storageMode)
 }
 
 setMethod("iData", "ImageData", function(object) object@data)
@@ -58,11 +58,7 @@ setMethod("combine",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
 		data <- new.env(parent=emptyenv())
-		if ( nrow(dims(x)) %in% c(1,2) ) {
-			for ( nm in ls(x@data) ) data[[nm]] <- cbind(x[[nm]], y[[nm]])
-		} else {
-			for ( nm in ls(x@data) ) data[[nm]] <- abind(x[[nm]], y[[nm]])
-		}
+		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
 		new("ImageData", data=data, storageMode=storageMode)
 	})
 
@@ -115,7 +111,7 @@ setMethod("annotatedDataFrameFrom", "ImageData",
 setMethod("[[", "ImageData", function(x, i, j, ..., value) x@data[[i]])
 
 setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
-	names <- ls(x@data)
+	names <- ls(x@data, all.names=TRUE)
 	if ( storageMode(x) == "immutableEnvironment" ) {
 		data <- new.env(parent=emptyenv())
 		for ( nm in names ) data[[nm]] <- x@data[[nm]]

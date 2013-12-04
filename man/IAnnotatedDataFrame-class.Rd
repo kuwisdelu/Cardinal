@@ -21,7 +21,7 @@
 	An \code{IAnnotatedDataFrame} is an extension of an \code{\linkS4class{AnnotatedDataFrame}} as defined in the 'Biobase' package modified to reflect that individual rows in \code{data} represent pixels rather than samples, and many pixels will come from a single sample. Additionally, it keeps track of the coordinates of the pixel represented by each row.
 }
 
-\usage{    
+\usage{
 ## Instance creation
 IAnnotatedDataFrame(data, varMetadata,
 	dimLabels=c("pixelNames", "pixelColumns"),
@@ -82,6 +82,8 @@ IAnnotatedDataFrame(data, varMetadata,
 
 \seealso{
 	\code{\link[Biobase]{AnnotatedDataFrame}},
+	\code{\link{iSet}},
+	\code{\link{SImageSet}}
 	\code{\link{MSImageSet}}
 }
 

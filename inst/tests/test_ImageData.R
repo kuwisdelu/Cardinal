@@ -33,13 +33,18 @@ test_that("ImageData manipulation", {
 
 test_that("ImageData methods", {
 
-	data0 <- matrix(1:4, nrow=2)
-	idata <- ImageData(data0=data0, storageMode="immutableEnvironment")
+	data1 <- matrix(1:4, nrow=2, ncol=2, dimnames=list(1:2, 1:2))
+	idata1 <- ImageData(data0=data1, storageMode="immutableEnvironment")
 
-	combdata <- combine(idata, idata)
-	expect_true(all(combdata[["data0"]] == cbind(data0, data0)))
+	data2 <- matrix(4:7, nrow=2, ncol=2, dimnames=list(2:3, 2:3))
+	idata2 <- ImageData(data0=data2, storageMode="immutableEnvironment")
 
-	multicombdata <- combine(idata, idata, idata)
-	expect_true(all(multicombdata[["data0"]] == cbind(data0, data0, data0)))
+	combdata <- combine(idata1, idata2)
+	expect_equivalent(combdata[["data0"]], combine(data1, data2))
+
+	data3 <- matrix(4:9, nrow=2, ncol=3, dimnames=list(2:3, 2:4))
+	idata3 <- ImageData(data0=data3, storageMode="immutableEnvironment")
+	multicombdata <- combine(idata1, idata2, idata3)
+	expect_equivalent(multicombdata[["data0"]], combine(data1, data2, data3))
 	
 })

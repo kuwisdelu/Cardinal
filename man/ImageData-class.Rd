@@ -18,12 +18,14 @@
 
 \description{
     A container class for holding imaging data, designed to contain one or more arrays in an immutable environment. It is assumed that the first dimension of each array corresponds to the features.
+
+    Note that only visible objects (names not beginning with '.') are checked for validity; however, \emph{all} objects are copied if any elements in the \code{data} slot are modified when \code{data} is an "immutableEnvironment".
 }
 
-\usage{    
+\usage{
 ## Instance creation
-ImageData(\dots, storageMode = c("immutableEnvironment"
-    "lockedEnvironment", "environment"))
+ImageData(\dots, data = new.env(parent=emptyenv()),
+    storageMode = c("immutableEnvironment" "lockedEnvironment", "environment"))
 
 ## Additional methods documented below
 }
@@ -31,6 +33,8 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 \arguments{
     
     \item{\dots}{Named arguments that are passed to the \code{initialize} method for instantiating the object. These must be arrays or array-like objects with an equal number of dimensions. They will be assigned into the environment in the \code{data} slot.}
+
+    \item{data}{An environment in which to assign the previously named variables.}
 
     \item{storageMode}{The storage mode to use for the \code{ImageData} object for the environment in the \code{data} slot. This must be one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. See documentation on the \code{storageMode} slot below for more details.}
 
@@ -66,9 +70,9 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
         \item{\code{validObject}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
 
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names. Arrays are combined along their last dimension, using \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names, and are combined with calls to \code{combine}. This is not yet implemented for arrays with more than 2 dimensions.}
 
-        \item{\code{annotatedDataFrameFrom(object)}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames(dims(object))}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}. Additional arguments (\code{byrow}) are ignored.}
+        \item{\code{annotatedDataFrameFrom(object)}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames(dims(object))}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}. Additional arguments (\code{byrow}, \dots) are ignored.}
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
@@ -80,7 +84,8 @@ ImageData(\dots, storageMode = c("immutableEnvironment"
 
 \seealso{
     \code{\link[Biobase]{AssayData}},
-    \code{\linkS4class{MSImageSpectra}},
+    \code{\linkS4class{SImageData}},
+    \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}
 }
 

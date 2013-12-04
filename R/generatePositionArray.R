@@ -20,3 +20,23 @@ generatePositionArray <- function(coord, dim) {
 	positionArray
 }
 
+# pads and binds positionArrays along a new dimension
+.positionArrayBind <- function(x, y) {
+	y <- y + sum(!is.na(x))
+	ldimx <- length(dim(x))
+	ldimy <- length(dim(y))
+	if ( ldimx < ldimy )
+		dim(x) <- c(dim(x), rep(1, ldimy - ldimx))
+	if ( ldimx > ldimy )
+		dim(y) <- c(dim(y), rep(1, ldimx - ldimy))
+	dims <- pmax(dim(x), dim(y))
+	xind <- mapply(function(dx, dm) seq_len(dx)[seq_len(dm)], dim(x), dims,
+		SIMPLIFY=FALSE, USE.NAMES=FALSE)
+	yind <- mapply(function(dy, dm) seq_len(dy)[seq_len(dm)], dim(y), dims,
+		SIMPLIFY=FALSE, USE.NAMES=FALSE)
+	x <- do.call("[", c(list(x), xind))
+	y <- do.call("[", c(list(y), yind))
+	z <- c(x, y)
+	dim(z) <- c(dims, 2)
+	z
+}

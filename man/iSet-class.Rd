@@ -55,7 +55,7 @@
 \description{
     A container class for data from high-throughput imaging experiments and associated metadata. Classes derived from from \code{iSet} contain one or more arrays or array-like objects with an equal number of dimensions as \code{imageData} elements. It is assumed that the first dimension of each such element corresponds to the data features, and all other dimensions are described by associated coordinates in the \code{pixelData} slot. Otherwise, derived classes are responsible for managing how the elements of \code{imageData} behave and their relationship with the rows of \code{pixelData} and \code{featureData}.
 
-    The \code{\linkS4class{MSImageSet}} class for mass spectrometry imaging experiments is the primary derived class of \code{iSet}.
+    The \code{\linkS4class{MSImageSet}} class for mass spectrometry imaging experiments is the primary derived class of \code{iSet}. Its parent class \code{\linkS4class{SImageSet} is another derived class for more general images.}
 
     This class is based on the \code{eSet} virtual class from Biobase. However, the \code{iSet} class contains an \code{imageData} slot which is an 'immutableEnvironment' that preserves copy-on-write behavior for \code{iSet} derived classes, but only copying elements of \code{imageData} when that slot specifically is modified. In addition \code{pixelData} is an \code{\linkS4class{IAnnotatedDataFrame}} that stores pixel information such as pixel coordinates in addition to phenotypic data.
 }
@@ -98,7 +98,7 @@
 
         \item{\code{imageData(object), imageData(object) <- value}:}{Access and set the \code{imageData} slot.}
 
-        \item{\code{iData(object), iData(object) <- value}:}{Access and set the "most interesting" element of \code{imageData}. By default, this returns the first element found. Derived classes should implement more appropriate behavior.}
+        \item{\code{iData(object), iData(object) <- value}:}{Access and set the "most interesting" element of \code{imageData}. By default, this returns the first element found. Derived classes should implement more appropriate behavior. See \code{\linkS4class{SImageData}}, \code{\linkS4class{SImageSet}}, and \code{\linkS4class{MSImageSet}} for examples.}
 
         \item{\code{pixelData(object), pixelData(object) <- value}:}{Access and set the \code{pixelData} slot.}
 
@@ -129,7 +129,7 @@
 
         \item{\code{validObject}:}{Checks that there exist columns in \code{pixelData} describing the pixel coordinates, cooresponding to the dimensions of the elements of \code{imageData}. For every named dimension of the arrays on \code{imageData} there must be a \code{pData} column describing its pixel coordinates. Also checks that the \code{sampleNames} match between \code{pixelData} and \code{protocolData}.}
 
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{iSet} objects. To be combined, iSets must have identical \code{featureData} and distinct \code{pixelNames} and \code{sampleNames}. All elements of \code{imageData} must have matching names. Elements of \code{imageData} are combined along their last dimension, using \code{rbind} for vectors, \code{cbind} for matrices, and \code{\link[abind]{abind}} for higher dimensional arrays.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{iSet} objects. To be combined, iSets must have identical \code{featureData} and distinct \code{pixelNames} and \code{sampleNames}. All elements of \code{imageData} must have matching names. Elements of \code{imageData} are combined by calls for \code{combine}.}
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
@@ -146,6 +146,7 @@
 \seealso{
     \code{\linkS4class{eSet}},
     \code{\linkS4class{pSet}},
+    \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}
 }
 

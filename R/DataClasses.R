@@ -76,6 +76,7 @@ setClass("MSImageProcess",
 
 #### Class for generic imaging data ###
 ## simply holds an environment and a storage mode
+## where elements of the environment are arrays
 ## --------------------------------------------
 .ImageData <- setClass("ImageData",
 	slots = c(
@@ -89,14 +90,39 @@ setClass("MSImageProcess",
 	validity = function(object) {
 		msg <- validMsg(NULL, NULL)
 		names <- ls(object@data)
-		if ( !all(sapply(names, function(nm) is.array(object@data[[nm]]))) )
-			msg <- validMsg(msg, "all elements must be an array")
+		if ( !all(sapply(names, function(nm) !is.null(dim(object@data[[nm]])))) )
+			msg <- validMsg(msg, "all elements must be an array-like object ('dims' of positive length)")
 		ldim <- sapply(names, function(nm) length(dim(object@data[[nm]])))
 		if ( !all(sapply(ldim, function(ld) ld == ldim[[1]])) )
 			msg <- validMsg(msg, "all elements must have an equal number of dimensions")
 		if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
 			msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
 		if (is.null(msg)) TRUE else msg
+	})
+
+#### Class for holding sparse image data ####
+## feature vectors are stored as a matrix and the datacube
+## can be reconstructed as an array on-the-fly
+## --------------------------------------------
+.SImageData <- setClass("SImageData",
+	slots = c(positionArray = "array"),
+	contains = "ImageData",
+	prototype = prototype(
+		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.0.2")),
+		positionArray = array(dim=c(x=0, y=0))),
+	validity = function(object) {
+		msg <- validMsg(NULL, NULL)
+		names <- ls(object@data)
+		if ( !all(sapply(names, function(nm) length(dim(object@data[[nm]])) == 2)) )
+			msg <- validMsg(msg, "all data elements must be a matrix-like object ('dims' of length 2)")
+		ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
+		if ( !all(sapply(ncols, function(nc) nc == ncols[[1]])) )
+			msg <- validMsg(msg, "all elements must have an equal number of columns")
+		if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
+			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
+		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )
+			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")
+		if ( is.null(msg) ) TRUE else msg
 	})
 
 #### Matrix-like class for sparse signals ####
@@ -139,31 +165,6 @@ setClass("MSImageProcess",
 		if (is.null(msg)) TRUE else msg
 	})
 
-#### Class for holding imaging mass spectra ####
-## spectra are stored as a matrix and the datacube
-## can be reconstructed as an array on-the-fly
-## --------------------------------------------
-.MSImageSpectra <- setClass("MSImageSpectra",
-	slots = c(positionArray = "array"),
-	contains = "ImageData",
-	prototype = prototype(
-		new("Versioned", versions=c(MSImageSpectra="0.0.1")),
-		positionArray = array()),
-	validity = function(object) {
-		msg <- validMsg(NULL, NULL)
-		names <- ls(object@data)
-		if ( !all(sapply(names, function(nm) is.matrix(object@data[[nm]]))) )
-			msg <- validMsg(msg, "all data elements must be a matrix")
-		ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
-		if ( !all(sapply(ncols, function(nc) nc == ncols[[1]])) )
-			msg <- validMsg(msg, "all elements must have an equal number of columns")
-		if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
-			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
-		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )
-			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")
-		if ( is.null(msg) ) TRUE else msg
-	})
-
 #### Class for generic imaging datasets ####
 ## heavily inspired by structure of Biobase's eSet
 ## ------------------------------------------------
@@ -191,13 +192,13 @@ setClass("iSet",
 
 .MSImageSet <- setClass("MSImageSet",
 	slots = c(
-		imageData = "MSImageSpectra",
+		imageData = "SImageData",
 		processingData = "MSImageProcess",
 		experimentData = "MIAPE-Imaging"),
 	contains = "iSet",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"), MSImageSet="0.5.1")),
-		imageData = .MSImageSpectra(),
+		imageData = .SImageData(),
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))
 

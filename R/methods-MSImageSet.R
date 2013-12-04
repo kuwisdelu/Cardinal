@@ -1,7 +1,7 @@
 
 setMethod("initialize", "MSImageSet",
 	function(.Object,
-			imageData = MSImageSpectra(),
+			imageData = SImageData(),
 			pixelData = annotatedDataFrameFrom(imageData),
 			featureData = AnnotatedDataFrame(data.frame(mz=double())),
 			processingData = new("MSImageProcess"),
@@ -21,7 +21,7 @@ setMethod("initialize", "MSImageSet",
 	})
 
 MSImageSet <- function(spectra, mz, coord,
-	imageData = MSImageSpectra(spectra=spectra, coord=coord),
+	imageData = SImageData(data=spectra, coord=coord),
 	pixelData = IAnnotatedDataFrame(data=coord,
 		varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
 	featureData = AnnotatedDataFrame(data=data.frame(mz=mz)),
@@ -32,7 +32,7 @@ MSImageSet <- function(spectra, mz, coord,
 	...)
 {
 	if ( missing(spectra) )
-		imageData <- MSImageSpectra()
+		imageData <- SImageData()
 	if ( missing(mz) && missing(spectra) ) {
 		mz <- double()
 	} else if ( missing(mz) ) {
