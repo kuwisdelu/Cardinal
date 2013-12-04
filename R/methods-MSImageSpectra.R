@@ -26,7 +26,7 @@ MSImageSpectra <- function(spectra, coord,
 		if ( is.null(names(dims)) || any(nchar(dims) == 0) ) {
 			warning("spectra is missing dimnames; attempting to guess")
 			names(dims) <- switch(length(dims),
-				NULL, # not possible
+				NULL, # not allowed
 				c("x", "y"),
 				c("x", "y", "z"),
 				c("x", "y", "z", "t"),

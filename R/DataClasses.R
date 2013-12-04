@@ -6,8 +6,7 @@
 ## ------------------------------------------------
 .IAnnotatedDataFrame <- setClass("IAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
-	prototype = prototype(
-		new("Versioned", versions=c(IAnnotatedDataFrame="0.0.2"))))
+	prototype = prototype(new("Versioned", versions=c(IAnnotatedDataFrame="0.0.2"))))
 
 #### 'Minimum Information About a Proteomics Experiment' - Imaging ####
 ## based on working MIAPE-Imaging document and imzML specification
@@ -97,6 +96,46 @@ setClass("MSImageProcess",
 			msg <- validMsg(msg, "all elements must have an equal number of dimensions")
 		if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
 			msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
+		if (is.null(msg)) TRUE else msg
+	})
+
+#### Matrix-like class for sparse signals ####
+## implemented using lists as hash tables
+## ---------------------------------------
+.Hashmat <- setClass("Hashmat",
+	slots = c(
+		data = "list",
+		keys = "character",
+		dim = "numeric",
+		dimnames = "list"),
+	contains = "Versioned",
+	prototype = prototype(
+		new("Versioned", versions=c(Hashmat="0.0.1")),
+		data = list(),
+		keys = character(),
+		dim = c(0, 0),
+		dimnames = list(NULL, NULL)),
+	validity = function(object) {
+		msg <- validMsg(NULL, NULL)
+		if ( any(duplicated(object@keys)) )
+			msg <- validMsg(msg, "elements of keys must be unique")
+		dm <- object@dim
+		if ( dm[[1]] != length(object@keys) )
+			msg <- validMsg(msg, paste("dims [", dm[[1]], "] does not match the length of keys [",
+				length(object@data), "]", sep=""))
+		if ( dm[[2]] != length(object@data) )
+			msg <- validMsg(msg, paste("dims [", dm[[2]], "] does not match the length of data [",
+				length(object@data), "]", sep=""))
+		dmn <- object@dimnames
+		if ( length(dmn) != 2 )
+			msg <- validMsg(msg, paste("length of 'dimnames' [",
+				length(dmn), "] must match that of 'dims' [2]", sep=""))
+		if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != dm[[1]] )
+			msg <- validMsg(msg, paste("length of 'dimnames' [",
+				length(dmn[[1]]), "] not equal to array extent", sep=""))
+		if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != dm[[2]] )
+			msg <- validMsg(msg, paste("length of 'dimnames' [",
+				length(dmn[[2]]), "] not equal to array extent", sep=""))
 		if (is.null(msg)) TRUE else msg
 	})
 

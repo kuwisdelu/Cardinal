@@ -29,7 +29,7 @@ test_that("MSImageSet imageData", {
 	coord <- expand.grid(x=1:3, y=1:3)
 	msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
 
-	expect_identical(spectra(msset), spectra)
+	expect_equivalent(spectra(msset), spectra)
 	
 	dim(spectra) <- c(Features=3, x=3, y=3)
 	expect_identical(imageData(msset)[], spectra)
@@ -49,11 +49,68 @@ test_that("MSImageSet pixelData", {
 	coord <- expand.grid(x=1:3, y=1:3)
 	msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
 
+	expect_identical(colnames(spectra(msset)), pixelNames(msset))
+
 	msset[["test"]] <- rnorm(9)
 	expect_identical(pData(msset)$test, msset$test)
 
 	expect_equivalent(coord(msset), coord)
 
-	# write tests for coord<- and positionArray updating
+	msset2 <- msset
+	coord(msset2) <- coord(msset2)[9:1,]
+	expect_equal(sum(imageData(msset2)[1,,] == imageData(msset)[1,,]), 1)
+
+	coordNames(msset2) <- c("x1", "x2")
+	expect_identical(rownames(dims(msset2))[-1], c("x1", "x2"))
+
+	pixelNames(msset) <- paste("p", 1:9)
+	expect_identical(colnames(spectra(msset)), paste("p", 1:9))
+	expect_identical(pixelNames(pixelData(msset)), paste("p", 1:9))
+	expect_identical(pixelNames(msset), paste("p", 1:9))
 
 })
+
+test_that("MSImageSet featureData", {
+
+	mz <- c(101, 102, 103)
+	spectra <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
+
+	expect_identical(rownames(spectra(msset)), featureNames(msset))
+
+	expect_identical(mz(msset), mz)
+
+	mz2 <- c(1001, 1002, 1003)
+	mz(msset) <- mz2
+	expect_identical(mz(msset), mz2)
+
+	expect_error(fvarLabels(msset) <- "test")
+
+	test <- rnorm(3)
+	fData(msset)$test <- test
+	expect_identical(fData(msset)[["test"]], test)
+
+	featureNames(msset) <- paste("f", 1:3)
+	expect_identical(rownames(spectra(msset)), paste("f", 1:3))
+	expect_identical(featureNames(featureData(msset)), paste("f", 1:3))
+	expect_identical(featureNames(msset), paste("f", 1:3))
+
+})
+
+test_that("MSImageSet protocolData", {
+
+	mz <- c(101, 102, 103)
+	spectra <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
+	
+	expect_identical(sampleNames(protocolData(msset)), sampleNames(pixelData(msset)))
+
+	sampleNames(msset) <- "sample 1"
+	expect_identical(sampleNames(pixelData(msset)), "sample 1")
+	expect_identical(sampleNames(protocolData(msset)), "sample 1")
+
+})
+
+

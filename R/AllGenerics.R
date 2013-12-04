@@ -1,4 +1,8 @@
 
+#### Define new generics from base R ####
+setGeneric("rownames<-")
+setGeneric("colnames<-")
+
 #### Basic accessor, setter, and manipulation ####
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
