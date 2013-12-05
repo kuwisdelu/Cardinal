@@ -137,7 +137,7 @@ setReplaceMethod("iData", "iSet", function(object, value) {
 	if ( length(names) > 0 ) {
 		object@imageData[[names[[1]]]] <- value
 	} else {
-		stop("imageData has no elements")
+		stop("imageData has no visible elements")
 	}
 	if ( validObject(object) )
 		object

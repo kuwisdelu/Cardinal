@@ -120,7 +120,7 @@
 
         \item{\code{protocolData(object), protocolData(object) <-}:}{Access and set the \code{protocolData} slot.}
 
-        \item{\code{storageMode(object)}, \code{storageMode(object)<-}:}{Return or set the storage mode of the \code{imageData} slot. See documentation on the \code{storageMode} slot above for more details.}
+        \item{\code{storageMode(object), storageMode(object)<-}:}{Return or set the storage mode of the \code{imageData} slot. See documentation on the \code{storageMode} slot above for more details.}
     }
 
     Standard generic methods:

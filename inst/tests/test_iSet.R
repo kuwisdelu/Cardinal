@@ -8,7 +8,7 @@ test_that("iSet validity", {
 
 })
 
-test_that("iSet inheritance", {
+test_that("iSet inheritance and manipulation", {
 
 	MyImageSet <- setClass("MyImageSet", contains="iSet")
 	iset1 <- MyImageSet()

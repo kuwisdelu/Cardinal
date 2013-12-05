@@ -20,7 +20,8 @@ setMethod("initialize", "ImageData",
 	})
 
 ImageData <- function(..., data = new.env(parent=emptyenv()),
-	storageMode = c("immutableEnvironment", "lockedEnvironment", "environment"))
+	storageMode = c("immutableEnvironment",
+		"lockedEnvironment", "environment"))
 {
 	storageMode <- match.arg(storageMode)
 	dots <- match.call(expand.dots=FALSE)[["..."]]

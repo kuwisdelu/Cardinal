@@ -24,8 +24,10 @@
 
 \usage{
 ## Instance creation
-ImageData(\dots, data = new.env(parent=emptyenv()),
-    storageMode = c("immutableEnvironment" "lockedEnvironment", "environment"))
+ImageData(\dots,
+    data = new.env(parent=emptyenv()),
+    storageMode = c("immutableEnvironment"
+        "lockedEnvironment", "environment"))
 
 ## Additional methods documented below
 }

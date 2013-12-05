@@ -34,6 +34,7 @@ exportClasses(
 	"MSPeakList",
 	"MSPeakAlignment",
 	"SImageData",
+	"SImageSet",
 	"iSet")
 
 export(
@@ -42,6 +43,7 @@ export(
 	"Hashmat",
 	"MSImageSet",
 	"SImageData",
+	"SImageSet",
 	"alpha.colors",
 	"generatePositionArray",
 	"gradient.colors",

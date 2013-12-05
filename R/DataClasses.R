@@ -188,18 +188,28 @@ setClass("iSet",
 		protocolData = new("AnnotatedDataFrame",
 			dimLabels = c("sampleNames", "sampleColumns"))))
 
-#### Class for mass spectrometry imaging datasets ####
+#### Class for pixel-sparse imaging datasets ####
 ## extends iSet with metadata and methods for MS imaging
 ## ----------------------------------------------------
-
-.MSImageSet <- setClass("MSImageSet",
-	slots = c(
-		imageData = "SImageData",
-		processingData = "MSImageProcess",
-		experimentData = "MIAPE-Imaging"),
+.SImageSet <- setClass("SImageSet",
+	slots = c(imageData = "SImageData"),
 	contains = "iSet",
 	prototype = prototype(
-		new("VersionedBiobase", versions=c(classVersion("iSet"), MSImageSet="0.5.1")),
+		new("VersionedBiobase", versions=c(classVersion("iSet"),
+			SImageSet="0.0.1")),
+		imageData = .SImageData()))
+
+#### Class for mass spectrometry imaging datasets ####
+## extends SImageSet with metadata for MS imaging
+## ----------------------------------------------------
+.MSImageSet <- setClass("MSImageSet",
+	slots = c(
+		processingData = "MSImageProcess",
+		experimentData = "MIAPE-Imaging"),
+	contains = "SImageSet",
+	prototype = prototype(
+		new("VersionedBiobase", versions=c(classVersion("iSet"),
+			c(classVersion("SImageSet"), MSImageSet="0.5.2"))),
 		imageData = .SImageData(),
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))
