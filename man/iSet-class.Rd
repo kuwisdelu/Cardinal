@@ -55,7 +55,7 @@
 \description{
     A container class for data from high-throughput imaging experiments and associated metadata. Classes derived from from \code{iSet} contain one or more arrays or array-like objects with an equal number of dimensions as \code{imageData} elements. It is assumed that the first dimension of each such element corresponds to the data features, and all other dimensions are described by associated coordinates in the \code{pixelData} slot. Otherwise, derived classes are responsible for managing how the elements of \code{imageData} behave and their relationship with the rows of \code{pixelData} and \code{featureData}.
 
-    The \code{\linkS4class{MSImageSet}} class for mass spectrometry imaging experiments is the primary derived class of \code{iSet}. Its parent class \code{\linkS4class{SImageSet} is another derived class for more general images.}
+    The \code{\linkS4class{MSImageSet}} class for mass spectrometry imaging experiments is the primary derived class of \code{iSet}. Its parent class \code{\linkS4class{SImageSet}} is another derived class for more general images.
 
     This class is based on the \code{eSet} virtual class from Biobase. However, the \code{iSet} class contains an \code{imageData} slot which is an 'immutableEnvironment' that preserves copy-on-write behavior for \code{iSet} derived classes, but only copying elements of \code{imageData} when that slot specifically is modified. In addition \code{pixelData} is an \code{\linkS4class{IAnnotatedDataFrame}} that stores pixel information such as pixel coordinates in addition to phenotypic data.
 }

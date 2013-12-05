@@ -8,7 +8,7 @@ test_that("MSImageSet validity", {
 	expect_true(validObject(MSImageSet()))
 
 	spectra0 <- array(1:27, dim=c(3,3,3))
-	expect_warning(msset0 <- MSImageSet(spectra=spectra0))
+	msset0 <- MSImageSet(spectra=spectra0)
 	expect_true(validObject(msset0))
 
 	spectra1 <- matrix(1:27, nrow=3)
@@ -113,4 +113,43 @@ test_that("MSImageSet protocolData", {
 
 })
 
+test_that("MSImageSet subsetting", {
+
+	mz <- c(101, 102, 103)
+	spectra <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
+
+	expect_true(validObject(msset[1:2,1:6]))
+	expect_true(validObject(msset[1,]))
+	expect_true(validObject(msset[,1]))
+
+})
+
+mz <- 1:9000
+spectra <- matrix(1:9000, nrow=9000, ncol=100*100, dimnames=list(1:9000, 1:(100*100)))
+coord <- expand.grid(x=1:100, y=1:100)
+tracemem(spectra); gc()
+system.time(sset <- SImageSet(data=spectra, coord=coord)); gc()
+system.time(msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord))
+system.time(SImageData(data=spectra, coord=coord))
+
+system.time(sset <- SImageSet(data=matrix(1:9000, nrow=9000, ncol=100*100),
+	coord=expand.grid(x=1:100, y=1:100))); gc()
+
+system.time(sdat <- SImageData(data=matrix(1:9000, nrow=9000, ncol=100*100),
+	coord=expand.grid(x=1:100, y=1:100))); gc()
+
+# library(Biobase)
+# x <- matrix(0, nrow=9000, ncol=100*100, dimnames=list(1:9000, 1:10000))
+# y <- matrix(0, nrow=9000, ncol=100*100, dimnames=list(1:9000, 10001:20000))
+# z <- matrix(0, nrow=9000, ncol=100*100, dimnames=list(1:9000, 20001:30000))
+# t <- matrix(0, nrow=9000, ncol=100*100, dimnames=list(1:9000, 30001:40000))
+# gc()
+# tmp <- combine(x, y, z, t); gc()
+# tmp <- do.call("cbind", list(x, y, z, t)); gc()
+
+# x <- matrix(0, nrow=9000, ncol=100*100); gc()
+# dimnames(x) <- list(1:9000, 1:10000); gc()
+# rownames(x) <- 1:9000; gc()
 

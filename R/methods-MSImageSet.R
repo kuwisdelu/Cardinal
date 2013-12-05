@@ -8,8 +8,6 @@ setMethod("initialize", "MSImageSet",
 			protocolData = AnnotatedDataFrame(),
 			experimentData = new("MIAPE-Imaging"),
 			...) {
-		colnames(spectra(imageData)) <- pixelNames(pixelData)
-		rownames(spectra(imageData)) <- featureNames(featureData)
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
@@ -20,30 +18,30 @@ setMethod("initialize", "MSImageSet",
 			...)
 	})
 
-MSImageSet <- function(spectra, mz, coord,
+MSImageSet <- function(spectra = Hashmat(nrow=0, ncol=0),
+	mz = seq_len(dim(spectra)[1]),
+	coord = expand.grid(x = seq_len(prod(dim(spectra)[-1])),
+		y = seq_len(ifelse(prod(dim(spectra)[-1]) > 0, 1, 0))),
 	imageData = SImageData(data=spectra, coord=coord),
 	pixelData = IAnnotatedDataFrame(data=coord,
 		varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
-	featureData = AnnotatedDataFrame(data=data.frame(mz=mz)),
+	featureData = AnnotatedDataFrame(data.frame(mz=mz)),
 	processingData = new("MSImageProcess"),
-	protocolData = AnnotatedDataFrame(data.frame(
-		row.names=sampleNames(pixelData))),
+	protocolData = AnnotatedDataFrame(data.frame(row.names=
+		sampleNames(pixelData))),
 	experimentData = new("MIAPE-Imaging"),
 	...)
 {
-	if ( missing(spectra) )
-		imageData <- SImageData()
-	if ( missing(mz) && missing(spectra) ) {
-		mz <- double()
-	} else if ( missing(mz) ) {
-		mz <- seq_len(dim(spectra)[1])
-	}
-	if ( missing(coord) && missing(spectra) ) {
-		pixelData <- annotatedDataFrameFrom(imageData)
-	} else if ( missing(coord) || length(dim(spectra)) > 2 ) {
-		grid <- lapply(dim(spectra)[-1], function(dm) 1:dm)
-		coord <- expand.grid(grid)
-		names(coord) <- names(dim(imageData@positionArray))
+	if ( length(dim(spectra)) > 2 ) {
+		coord <- mapply(seq_len, dim(spectra)[-1], SIMPLIFY=FALSE, USE.NAMES=TRUE)
+		if ( is.null(names(coord)) || any(nchar(names(coord)) == 0) ) {
+			if ( length(coord) %in% c(2,3) ) {
+				names(coord) <- c("x", "y", "z")[seq_along(coord)]
+			} else {
+				names(coord) <- paste("dim", seq_along(coord), sep="")
+			}
+		}
+		coord <- do.call("expand.grid", coord)
 	}
 	.MSImageSet(imageData=imageData,
 		pixelData=pixelData,

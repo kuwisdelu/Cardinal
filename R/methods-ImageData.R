@@ -9,11 +9,11 @@ setMethod("initialize", "ImageData",
 		names <- names(dots)
 		if ( length(dots) > 0 ) {
 			if ( any(is.null(names)) ) stop("all elements must be named")
-			obs <- list(...) # triggers copying of all objects in ...
+			# use eval() instead of list(...) because latter triggers copying
 			for ( nm in names )
-				.Object@data[[nm]] <- obs[[nm]]
+				.Object@data[[nm]] <- eval(dots[[nm]])
 		}
-		if ( storageMode %in% c("lockedEnvironment", "immutableEnvironment") )
+		if ( storageMode == "lockedEnvironment" )
 			lockEnvironment(.Object@data, bindings=TRUE)
 		.Object@storageMode <- storageMode
 		callNextMethod(.Object)
@@ -36,7 +36,7 @@ setMethod("iData", "ImageData", function(object) object@data)
 setReplaceMethod("iData", "ImageData",
 	function(object, value) {
 		object@data <- value
-		if ( storageMode(object) %in% c("lockedEnvironment", "immutableEnvironment"))
+		if ( storageMode(object) == "lockedEnvironment" )
 			lockEnvironment(object@data, bindings=TRUE)
 		if ( validObject(object) )
 			object
@@ -82,7 +82,7 @@ setReplaceMethod("storageMode",
 		names <- ls(object@data)
 		data <- new.env(parent=emptyenv())
 		for ( nm in names ) data[[nm]] <- object@data[[nm]]
-		if ( value %in% c("lockedEnvironment", "immutableEnvironment"))
+		if ( value == "lockedEnvironment" )
 			lockEnvironment(data, bindings=TRUE)
 		object@storageMode <- value
 		object@data <- data
@@ -117,7 +117,6 @@ setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
 		data <- new.env(parent=emptyenv())
 		for ( nm in names ) data[[nm]] <- x@data[[nm]]
 		data[[i]] <- value
-		lockEnvironment(data, bindings=TRUE)
 	} else {
 		data <- x@data
 		data[[i]] <- value
