@@ -47,4 +47,12 @@ test_that("ImageData combine", {
 	multicombdata <- combine(idata1, idata2, idata3)
 	expect_equivalent(multicombdata[["data0"]], combine(data1, data2, data3))
 	
+	data4 <- array(1:27, dim=rep(3,3), dimnames=rep(list(1:3), 3))
+	idata4 <- ImageData(data0=data4)
+	data5 <- array(1:27, dim=rep(3,3), dimnames=rep(list(c(1,2,4)), 3))
+	idata5 <- ImageData(data0=data5)
+	arrcombdata <- combine(idata4, idata5)
+	expect_true(validObject(arrcombdata))
+	expect_equivalent(arrcombdata[["data0"]], combine(data4, data5))
+
 })

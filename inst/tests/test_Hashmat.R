@@ -79,3 +79,19 @@ test_that("Hashmat assignment", {
 	expect_true(all(sapply(x@data, function(xi) all(xi != 0))))
 
 })
+
+test_that("Hashmat combine", {
+
+	x <- Hashmat(data=list(c(k1=1), c(k2=2), c(k3=3)), keys=c("k1", "k2", "k3"),
+		dimnames=list(c("r1", "r2", "r3"), c("c1", "c2", "c3")))
+	y <- Hashmat(data=list(c(l2=2), c(l3=3), c(l4=4)), keys=c("l1", "l2", "l3", "l4"),
+		dimnames=list(c("r1", "r2", "r3", "r4"), c("c2", "c3", "c4")))
+	expect_true(validObject(combine(x, y)))
+
+	z <- matrix(0, nrow=4, ncol=4)
+	diag(z) <- 1:4
+	expect_equivalent(combine(x, y)[], z)
+
+})
+
+

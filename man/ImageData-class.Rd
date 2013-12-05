@@ -70,7 +70,7 @@ ImageData(\dots, data = new.env(parent=emptyenv()),
 
         \item{\code{validObject}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
 
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names, and are combined with calls to \code{combine}. This is not yet implemented for arrays with more than 2 dimensions.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names, and are combined with calls to \code{combine}. Higher dimensional arrays are combined using the same rules as for matrices. (See \code{\link[BiocGenerics]{combine}} for more details.)}
 
         \item{\code{annotatedDataFrameFrom(object)}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames(dims(object))}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}. Additional arguments (\code{byrow}, \dots) are ignored.}
 

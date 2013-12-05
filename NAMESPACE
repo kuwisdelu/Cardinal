@@ -1,9 +1,6 @@
 
 import("stats4")
 
-importFrom("abind",
-	"abind")
-
 importFrom("fields",
 	"interp.surface.grid")
 
