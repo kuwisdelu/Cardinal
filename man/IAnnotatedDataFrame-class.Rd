@@ -76,6 +76,11 @@ IAnnotatedDataFrame(data, varMetadata,
 
 		\item{\code{coordinates(object)}, \code{coordinates(object)<-}:}{An alias for the \code{coord} method.}
 	}
+
+	Standard generic methods:
+    \describe{
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{IAnnotatedDataFrame} objects. Objects are combined similarly to an \code{AnnotatedDataFrame} but with special handling so that the 'sample' column does not require identical levels to be combined successfuly.}
+    }
 }
 
 \author{Kyle D. Bemis}

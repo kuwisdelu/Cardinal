@@ -47,3 +47,14 @@ test_that("IAnnotatedDataFrame accessors and assignment", {
 	expect_true(is(combine(df, df2), "IAnnotatedDataFrame"))
 
 })
+
+test_that("IAnnotatedDataFrame combine", {
+
+	df1 <- IAnnotatedDataFrame(data.frame(sample="sample 1", row.names="1"))
+	df2 <- IAnnotatedDataFrame(data.frame(sample="sample 2", row.names="2"))
+
+	df3 <- combine(df1, df2)
+	expect_true(validObject(df3))
+	expect_equal(levels(df3$sample), c("sample 1", "sample 2"))
+
+})

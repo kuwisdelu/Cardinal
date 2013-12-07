@@ -51,7 +51,7 @@ setReplaceMethod("storageMode", "iSet",
 
 # adapted from combine(eSet, eSet) from Biobase
 setMethod("combine", signature = c(x = "iSet", y = "iSet"),
-	function(x, y) {
+	function(x, y, ...) {
 		if (class(x) != class(y))
 			stop("objects must be the same class, but are '",
 				class(x), "', '", class(y), "'")
@@ -70,7 +70,7 @@ setMethod("$", "iSet", function(x, name) pixelData(x)[[name]])
 setReplaceMethod("$", "iSet",
 	function(x, name, value) {
 		pixelData(x)[[name]] <- value
-		object
+		x
 	})
 
 setMethod("[[", "iSet", function(x, i, j, ...) pixelData(x)[[i]])
@@ -78,7 +78,7 @@ setMethod("[[", "iSet", function(x, i, j, ...) pixelData(x)[[i]])
 setReplaceMethod("[[", "iSet",
 	function(x, i, j, ..., value) {
 		pixelData(x)[[i, ...]] <- value
-		object
+		x
 	})
 
 setMethod("protocolData", "iSet", function(object) object@protocolData)

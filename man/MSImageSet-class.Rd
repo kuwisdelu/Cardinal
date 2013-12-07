@@ -98,7 +98,7 @@ MSImageSet(
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Need to implement.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageSet} objects. Unique 'sample's in \code{pixelData} are treated as a dimension.}
 
         \item{\code{MSImageSet[i, j, ..., drop]}:}{Subset an \code{SImageSet} based on the rows (featureData components) and the columns (pixelData components). The result is a new \code{MSImageSet}.}
     }
@@ -110,8 +110,7 @@ MSImageSet(
 
 \seealso{
     \code{\linkS4class{iSet}},
-    \code{\linkS4class{SImageData}},
-    \code{\linkS4class{MSImageSet}}
+    \code{\linkS4class{SImageSet}}
 }
 
 \examples{

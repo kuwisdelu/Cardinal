@@ -81,6 +81,15 @@ setReplaceMethod("spectra", "MSImageSet",
 		object
 	})
 
-
-
+setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
+	function(x, y, ...) {
+		if ( varMetadata(x)["sample", "labelType"] != "dimension" )
+			varMetadata(x)["sample", "labelType"] <- "dimension"
+		if ( varMetadata(y)["sample", "labelType"] != "dimension" )
+			varMetadata(y)["sample", "labelType"] <- "dimension"
+		pixelNames(x) <- .formatCoord(coord(x))
+		pixelNames(y) <- .formatCoord(coord(y))
+		x <- callNextMethod(x, y, ...)
+		regeneratePositions(x)
+	})
 

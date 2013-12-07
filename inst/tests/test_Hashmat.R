@@ -12,7 +12,7 @@ test_that("Hashmat accessors", {
 		c(b=6, c=7, d=8),
 		numeric(),
 		c(a=9))
-	x <- Hashmat(data=dat, keys=c("a", "b", "c", "d", "e"))
+	x <- Hashmat(data=sdat, keys=c("a", "b", "c", "d", "e"))
 	expect_true(validObject(x))
 
 	ddat <- c(c(1, 2, 3, 0, 0),

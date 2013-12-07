@@ -104,5 +104,12 @@ setReplaceMethod("coord", "IAnnotatedDataFrame",
 		object
 	})
 
-
+setMethod("combine",
+	signature = c(x = "IAnnotatedDataFrame", y = "IAnnotatedDataFrame"),
+	function(x, y, ...) {
+		samples <- union(levels(x[["sample"]]), levels(y[["sample"]]))
+		x[["sample"]] <- factor(as.character(x[["sample"]]), levels=samples)
+		y[["sample"]] <- factor(as.character(y[["sample"]]), levels=samples)
+		callNextMethod(x, y, ...)
+	})
 
