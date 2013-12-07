@@ -10,7 +10,6 @@
 \alias{[[,iSet-method}
 \alias{[[<-,iSet-method}
 \alias{initialize,iSet-method}
-\alias{dimnames,iSet-method}
 \alias{dims,iSet-method}
 \alias{storageMode,iSet-method}
 \alias{storageMode<-,iSet,character-method}
@@ -35,8 +34,8 @@
 \alias{sampleNames<-,iSet-method}
 \alias{pixelNames,iSet-method}
 \alias{pixelNames<-,iSet-method}
-\alias{coordNames,iSet-method}
-\alias{coordNames<-,iSet-method}
+\alias{coordLabels,iSet-method}
+\alias{coordLabels<-,iSet-method}
 \alias{coord,iSet-method}
 \alias{coord<-,iSet-method}
 \alias{featureData,iSet-method}
@@ -94,7 +93,7 @@
 
         \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set the pixel names in the \code{pixelData} slot.}
 
-        \item{\code{coordNames(object), coordNames(object) <- value}:}{Access and set the coordinate names described by the coordinate variables in the \code{pixelData} slot.}
+        \item{\code{coordLabels(object), coordLabels(object) <- value}:}{Access and set the coordinate names described by the coordinate variables in the \code{pixelData} slot.}
 
         \item{\code{imageData(object), imageData(object) <- value}:}{Access and set the \code{imageData} slot.}
 
@@ -132,8 +131,6 @@
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{iSet} objects. To be combined, iSets must have identical \code{featureData} and distinct \code{pixelNames} and \code{sampleNames}. All elements of \code{imageData} must have matching names. Elements of \code{imageData} are combined by calls for \code{combine}.}
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
-
-        \item{\code{dimnames(object), dimnames(object) <- value}:}{Access or set the dimnames. See \code{\link{coordNames}} for details.}
 
         \item{\code{iSet$name, iSet$name <- value}:}{Access and set the \code{name} column in \code{pixelData}.}
 

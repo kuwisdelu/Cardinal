@@ -8,6 +8,8 @@ setMethod("initialize", "MSImageSet",
 			protocolData = AnnotatedDataFrame(),
 			experimentData = new("MIAPE-Imaging"),
 			...) {
+		featureNames(featureData) <- .formatMZ(featureData[["mz"]])
+		pixelNames(pixelData) <- .formatCoord(coord(pixelData))
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
@@ -18,17 +20,23 @@ setMethod("initialize", "MSImageSet",
 			...)
 	})
 
-MSImageSet <- function(spectra = Hashmat(nrow=0, ncol=0),
+MSImageSet <- function(
+	spectra = Hashmat(nrow=0, ncol=0),
 	mz = seq_len(dim(spectra)[1]),
-	coord = expand.grid(x = seq_len(prod(dim(spectra)[-1])),
+	coord = expand.grid(
+		x = seq_len(prod(dim(spectra)[-1])),
 		y = seq_len(ifelse(prod(dim(spectra)[-1]) > 0, 1, 0))),
-	imageData = SImageData(data=spectra, coord=coord),
-	pixelData = IAnnotatedDataFrame(data=coord,
+	imageData = SImageData(
+		data=spectra,
+		coord=coord),
+	pixelData = IAnnotatedDataFrame(
+		data=coord,
 		varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
-	featureData = AnnotatedDataFrame(data.frame(mz=mz)),
+	featureData = AnnotatedDataFrame(
+		data=data.frame(mz=mz)),
 	processingData = new("MSImageProcess"),
-	protocolData = AnnotatedDataFrame(data.frame(row.names=
-		sampleNames(pixelData))),
+	protocolData = AnnotatedDataFrame(
+		data=data.frame(row.names=sampleNames(pixelData))),
 	experimentData = new("MIAPE-Imaging"),
 	...)
 {
@@ -63,8 +71,7 @@ setMethod("mz", "MSImageSet", function(object) object@featureData[["mz"]])
 setReplaceMethod("mz", "MSImageSet",
 	function(object, value) {
 		object@featureData[["mz"]] <- value
-		if ( validObject(object) )
-			object
+		object
 	})
 
 setMethod("spectra", "MSImageSet", function(object) iData(object))

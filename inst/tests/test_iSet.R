@@ -19,7 +19,7 @@ test_that("iSet inheritance and manipulation", {
 	expect_true(validObject(iset2))
 
 	df <- IAnnotatedDataFrame(data=expand.grid(x=1:3, y=1:3),
-		varMetadata=data.frame(labelType=c(x="spatial2d", y="spatial2d")))
+		varMetadata=data.frame(labelType=c(x="spatial", y="spatial")))
 	iset3 <- MyImageSet(imageData=idata, pixelData=df)
 
 	iset3$dummy1 <- 1:9

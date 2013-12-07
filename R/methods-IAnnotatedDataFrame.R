@@ -64,8 +64,7 @@ setMethod("sampleNames", "IAnnotatedDataFrame",
 setReplaceMethod("sampleNames", "IAnnotatedDataFrame",
 	function(object, value) {
 		levels(object[["sample"]]) <- value
-		if ( validObject(object) )
-			object
+		object
 	})
 
 setMethod("pixelNames", "IAnnotatedDataFrame",
@@ -78,34 +77,31 @@ setReplaceMethod("pixelNames", "IAnnotatedDataFrame",
 				"should equal number of rows in AnnotatedDataFrame (",
 				dim(object)[[1]], ")")
 		row.names(pData(object)) <- value
-		if ( validObject(object) )
-			object
+		object
 	})
 
-setMethod("coordNames", "IAnnotatedDataFrame",
+setMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object) {
 		coordLabelTypes <- c("spatial", "dimension")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
 		varLabels(object)[isCoord]
 	})
 
-setReplaceMethod("coordNames", "IAnnotatedDataFrame",
+setReplaceMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object, value) {
 		coordLabelTypes <- c("spatial", "dimension")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
 		varLabels(object)[isCoord] <- value
-		if ( validObject(object) )
-			object
+		object
 	})
 
 setMethod("coord", "IAnnotatedDataFrame",
-	function(object) pData(object)[coordNames(object)])
+	function(object) pData(object)[coordLabels(object)])
 
 setReplaceMethod("coord", "IAnnotatedDataFrame",
 	function(object, value) {
-		pData(object)[coordNames(object)] <- value
-		if ( validObject(object) )
-			object
+		pData(object)[coordLabels(object)] <- value
+		object
 	})
 
 

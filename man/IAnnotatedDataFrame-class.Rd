@@ -7,8 +7,8 @@
 
 \alias{coord,IAnnotatedDataFrame-method}
 \alias{coord<-,IAnnotatedDataFrame-method}
-\alias{coordNames,IAnnotatedDataFrame-method}
-\alias{coordNames<-,IAnnotatedDataFrame-method}
+\alias{coordLabels,IAnnotatedDataFrame-method}
+\alias{coordLabels<-,IAnnotatedDataFrame-method}
 \alias{initialize,IAnnotatedDataFrame-method}
 \alias{pixelNames,IAnnotatedDataFrame-method}
 \alias{pixelNames<-,IAnnotatedDataFrame-method}
@@ -70,7 +70,7 @@ IAnnotatedDataFrame(data, varMetadata,
 
 		\item{\code{pixelNames(object)}, \code{pixelNames(object)<-}:}{Return or set the pixel names (the rows of \code{data}).}
 
-		\item{\code{coordNames(object)}, \code{coordNames(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'spatial', or 'dimension'.}}
+		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'spatial', or 'dimension'.}}
 
 		\item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'spatial', or 'dimension'.}
 
@@ -109,7 +109,7 @@ pData(df2)
 varMetadata(df2)
 
 # Change labels and pixel coord
-coordNames(df2) <- c("x1", "x2")
+coordLabels(df2) <- c("x1", "x2")
 pixelNames(df2) <- paste("p", 1:nrow(df2), sep="")
 sampleNames(df2) <- c("subject A", "subject B")
 coord(df2) <- coord(df2)[nrow(df2):1,]

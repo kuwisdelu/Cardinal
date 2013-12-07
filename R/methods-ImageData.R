@@ -1,7 +1,7 @@
 
 setMethod("initialize", "ImageData",
 	function(.Object,
-			data = new.env(parent=emptyenv()),
+			data = new.env(parent=baseenv()),
 			storageMode = "immutableEnvironment",
 			...) {
 		.Object@data <- data
@@ -19,7 +19,7 @@ setMethod("initialize", "ImageData",
 		callNextMethod(.Object)
 	})
 
-ImageData <- function(..., data = new.env(parent=emptyenv()),
+ImageData <- function(..., data = new.env(parent=baseenv()),
 	storageMode = c("immutableEnvironment",
 		"lockedEnvironment", "environment"))
 {
@@ -30,17 +30,6 @@ ImageData <- function(..., data = new.env(parent=emptyenv()),
 		stop("all elements must be named")
 	.ImageData(..., data=data, storageMode=storageMode)
 }
-
-setMethod("iData", "ImageData", function(object) object@data)
-
-setReplaceMethod("iData", "ImageData",
-	function(object, value) {
-		object@data <- value
-		if ( storageMode(object) == "lockedEnvironment" )
-			lockEnvironment(object@data, bindings=TRUE)
-		if ( validObject(object) )
-			object
-	})
 
 ## adapted from combine(AssayData, AssayData) from Biobase
 setMethod("combine",
@@ -58,9 +47,9 @@ setMethod("combine",
 			stop(paste("ImageData have different element names:",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
-		data <- new.env(parent=emptyenv())
+		data <- new.env(parent=baseenv())
 		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
-		new("ImageData", data=data, storageMode=storageMode)
+		new(class(x), data=data, storageMode=storageMode)
 	})
 
 setMethod("dims", "ImageData", function(object) {
@@ -80,14 +69,13 @@ setReplaceMethod("storageMode",
 		if ( value == object@storageMode )
 			return(object)
 		names <- ls(object@data)
-		data <- new.env(parent=emptyenv())
+		data <- new.env(parent=baseenv())
 		for ( nm in names ) data[[nm]] <- object@data[[nm]]
 		if ( value == "lockedEnvironment" )
 			lockEnvironment(data, bindings=TRUE)
 		object@storageMode <- value
 		object@data <- data
-		if ( validObject(object) )
-			object
+		object
 	})
 
 setMethod("annotatedDataFrameFrom", "ImageData",
@@ -114,7 +102,7 @@ setMethod("[[", "ImageData", function(x, i, j, ..., value) x@data[[i]])
 setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
 	names <- ls(x@data, all.names=TRUE)
 	if ( storageMode(x) == "immutableEnvironment" ) {
-		data <- new.env(parent=emptyenv())
+		data <- new.env(parent=baseenv())
 		for ( nm in names ) data[[nm]] <- x@data[[nm]]
 		data[[i]] <- value
 	} else {

@@ -87,7 +87,7 @@ setClass("MSImageProcess",
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(ImageData="0.0.2")),
-		data = new.env(parent=emptyenv()), # re-assign in initialize
+		data = new.env(parent=baseenv()), # re-assign in initialize
 		storageMode = "immutableEnvironment"),
 	validity = function(object) {
 		msg <- validMsg(NULL, NULL)
@@ -120,6 +120,9 @@ setClass("MSImageProcess",
 		ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
 		if ( !all(sapply(ncols, function(nc) nc == ncols[[1]])) )
 			msg <- validMsg(msg, "all elements must have an equal number of columns")
+		nrows <- sapply(names, function(nm) nrow(object@data[[nm]]))
+		if ( !all(sapply(nrows, function(nr) nr == nrows[[1]])) )
+			msg <- validMsg(msg, "all elements must have an equal number of rows")
 		if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
 			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
 		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )

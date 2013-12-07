@@ -60,7 +60,7 @@ test_that("MSImageSet pixelData", {
 	coord(msset2) <- coord(msset2)[9:1,]
 	expect_equal(sum(imageData(msset2)[1,,] == imageData(msset)[1,,]), 1)
 
-	coordNames(msset2) <- c("x1", "x2")
+	coordLabels(msset2) <- c("x1", "x2")
 	expect_identical(rownames(dims(msset2))[-1], c("x1", "x2"))
 
 	pixelNames(msset) <- paste("p", 1:9)
@@ -123,6 +123,35 @@ test_that("MSImageSet subsetting", {
 	expect_true(validObject(msset[1:2,1:6]))
 	expect_true(validObject(msset[1,]))
 	expect_true(validObject(msset[,1]))
+
+})
+
+test_that("MSImageSet copying", {
+
+	mz <- 1:9000
+	coord <- expand.grid(x=1:100, y=1:100)
+	spectra1 <- matrix(0, nrow=9000, ncol=100*100)
+
+	msset1 <- MSImageSet(spectra=spectra1, mz=mz, coord=coord)
+
+	pixelNames(msset1) <- paste("p", 1:(100*100))	
+
+	dmn <- list(paste(1:9000), paste(1:(100*100)))
+	spectra2 <- matrix(0, nrow=9000, ncol=100*100, dimnames=dmn)
+	
+	tracemem(spectra1)
+	msset1 <- MSImageSet(spectra=spectra1, mz=mz, coord=coord)
+
+	pixelNames(msset1) <- paste("p", 1:(100*100))
+	colnames(iData(msset1)) <- paste("p", 1:(100*100))
+	colnames(msset1@imageData@data[["data0"]]) <- paste("p", 1:(100*100))
+
+	dimnames(msset1@imageData@data[["data0"]]) <- list(1:9000, 1:(100*100))
+
+	tracemem(spectra2)
+	msset2 <- MSImageSet(spectra=spectra2, mz=mz, coord=coord)
+
+	pixelNames(msset2) <- paste("p", 1:(100*100))
 
 })
 

@@ -9,10 +9,11 @@ generatePositionArray <- function(coord, dim) {
 		names(dim) <- names(coord)
 		return(array(1, dim=dim))
 	}
+	coord <- data.frame(lapply(coord, as.integer))
 	if ( missing(dim) ) dim <- sapply(coord, max, USE.NAMES=TRUE)
 	positionArray <- array(1:prod(dim), dim=dim)
 	f <- function(...) positionArray[...]
-	fill <- apply(coord, 1, f)
+	fill <- apply(coord, 1, function(xyz) do.call(f, as.list(xyz)))
 	positionArray <- array(NA, dim=dim)
 	positionArray[fill] <- seq_len(nrow(coord))
 	positionArray

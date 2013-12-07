@@ -5,10 +5,8 @@ Hashmat <- function(data = rep(list(numeric()), ncol), nrow = 0, ncol = 0,
 	nrow <- length(keys)
 	ncol <- length(data)
 	dim <- c(nrow, ncol)
-	if ( length(data) != ncol ) {
-		data <- rep(data, ncol)
-		data <- data[seq_len(ncol)]
-	}
+	if ( length(data) != ncol )
+		data <- rep(data, length.out=ncol)
 	names(keys) <- dimnames[[1]]
 	names(data) <- dimnames[[2]]
 	.Hashmat(data=data,
@@ -22,8 +20,7 @@ setMethod("dim", "Hashmat", function(x) x@dim)
 
 setReplaceMethod("dim", "Hashmat", function(x, value) {
 	x@dim <- value
-	if ( validObject(x) )
-		x
+	x
 })
 
 setMethod("dimnames", "Hashmat", function(x) x@dimnames)
@@ -32,8 +29,7 @@ setReplaceMethod("dimnames", "Hashmat", function(x, value) {
 	x@dimnames <- value
 	names(x@keys) <- x@dimnames[[1]]
 	names(x@data) <- x@dimnames[[2]]
-	if ( validObject(x) )
-		x
+	x
 })
 
 setMethod("rownames", "Hashmat", function(x) x@dimnames[[1]])
@@ -41,8 +37,7 @@ setMethod("rownames", "Hashmat", function(x) x@dimnames[[1]])
 setReplaceMethod("rownames", "Hashmat", function(x, value) {
 	x@dimnames[[1]] <- value
 	names(x@keys) <- x@dimnames[[1]]
-	if ( validObject(x) )
-		x
+	x
 })
 
 setMethod("colnames", "Hashmat", function(x) x@dimnames[[2]])
@@ -50,8 +45,7 @@ setMethod("colnames", "Hashmat", function(x) x@dimnames[[2]])
 setReplaceMethod("colnames", "Hashmat", function(x, value) {
 	x@dimnames[[2]] <- value
 	names(x@data) <- x@dimnames[[2]]
-	if ( validObject(x) )
-		x
+	x
 })
 
 setMethod("nrow", "Hashmat", function(x) x@dim[[1]])
@@ -98,8 +92,7 @@ setReplaceMethod("[", "Hashmat", function(x, i, j, ..., value) {
 		xi <- xi[xi != 0]
 		xi
 	}, x@data[j], value, SIMPLIFY=FALSE, USE.NAMES=FALSE)
-	if ( validObject(x) )
-		x
+	x
 })
 
 ## Adapted from combine(matrix, matrix) from BiocGenerics

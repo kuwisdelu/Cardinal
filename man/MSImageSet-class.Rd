@@ -1,197 +1,139 @@
 \name{MSImageSet-class}
-\Rdversion{1.1}
 \docType{class}
-\alias{$,MSImageSet-method}
-\alias{$<-,MSImageSet-method}
-\alias{[,MSImageSet,ANY,ANY,ANY-method}
-\alias{[,MSPeakFrame,ANY,ANY,ANY-method}
-\alias{[,MSPeakList,ANY,ANY,ANY-method}
-\alias{[<-,MSImageSet,ANY,ANY,ANY-method}
-\alias{[[,MSImageSet,character,missing-method}
-\alias{[[,MSImageSet,numeric,missing-method}
-\alias{[[<-,MSImageSet,character,missing-method}
-\alias{[[<-,MSImageSet,numeric,missing-method}
+
+\alias{class:SImageSet}
 \alias{MSImageSet}
 \alias{MSImageSet-class}
-\alias{coord}
-\alias{coord,MSImageSet-method}
-\alias{coord<-}
-\alias{coord<-,MSImageSet-method}
-\alias{featureData}
-\alias{featureData,MSImageSet-method}
-\alias{featureData<-}
-\alias{featureData<-,MSImageSet-method}
-\alias{features}
-\alias{features,MSImageSet,numeric-method}
-\alias{generatePositionArray}
-\alias{generatePositionArray,data.frame-method}
-\alias{generatePositionArray,matrix-method}
-\alias{generatePositionArray,MSImageSet-method}
-\alias{isBinned}
-\alias{isBinned,MSImageSet-method}
-\alias{isBinned<-}
-\alias{isBinned<-,MSImageSet-method}
-\alias{isPeaks}
-\alias{isPeaks,MSImageSet-method}
-\alias{isPeaks<-}
-\alias{isPeaks<-,MSImageSet-method}
-\alias{isResampled}
-\alias{isResampled,MSImageSet-method}
-\alias{isResampled<-}
-\alias{isResampled<-,MSImageSet-method}
-\alias{metaData}
-\alias{metaData,MSImageSet-method}
-\alias{metaData<-}
-\alias{metaData<-,MSImageSet-method}
-\alias{mz}
-\alias{mz,MSImageSet-method}
-\alias{mz<-}
-\alias{mz<-,MSImageSet-method}
-\alias{neighbors}
-\alias{neighbors,MSImageSet,numeric-method}
-\alias{neighbors,data.frame,numeric-method}
-\alias{neighbors,matrix,numeric-method}
-\alias{numFeatures}
-\alias{numFeatures,MSImageSet-method}
-\alias{numPixels}
-\alias{numPixels,MSImageSet-method}
-\alias{peaks}
-\alias{peaks,MSImageSet-method}
-\alias{peaks<-}
-\alias{peaks<-,MSImageSet-method}
-\alias{pixelData}
-\alias{pixelData,MSImageSet-method}
-\alias{pixelData<-}
-\alias{pixelData<-,MSImageSet-method}
-\alias{pixels}
-\alias{pixels,MSImageSet,data.frame-method}
-\alias{pixels,MSImageSet,list-method}
-\alias{pixels,MSImageSet,numeric-method}
-\alias{regeneratePositions}
-\alias{regeneratePositions,MSImageSet-method}
-\alias{show,MSImageSet-method}
-\alias{spectra}
-\alias{spectra,MSImageSet-method}
-\alias{spectra<-}
-\alias{spectra<-,MSImageSet-method}
-\alias{standardizeTotalImageIntensity}
-\alias{standardizeTotalImageIntensity,MSImageSet-method}
-\alias{standardizeTotalIonCurrent}
-\alias{standardizeTotalIonCurrent,MSImageSet-method}
 
-\title{Class \code{"MSImageSet"}}
+\alias{initialize,MSImageSet-method}
+\alias{mz,SImageSet-method}
+\alias{mz<-,SImageSet-method}
+\alias{spectra,SImageSet-method}
+\alias{spectra<-,SImageSet-method}
+
+\title{Class to Contain Mass Spectrometry Imaging Experiment Data.}
+
 \description{
-    A mass spectrometry imaging data set.
+    Container for mass spectrometry imaging experimental data and metadata. \code{MSImageSet} is derived from \code{\linkS4class{iSet}} through \code{\linkS4class{SImageSet}}. It extends these classes with information about the processing and analysis, requiring MIAPE-Imaging in its experimentData slot.
 }
-\section{Objects from the Class}{
-    A new \code{\linkS4class{MSImageSet}} can be created using the function
-    \code{\link[Cardinal]{createMSImageSet}}.
+
+\usage{
+## Instance creation
+MSImageSet(
+    spectra = Hashmat(nrow=0, ncol=0),
+    mz = seq_len(dim(spectra)[1]),
+    coord = expand.grid(
+        x = seq_len(prod(dim(spectra)[-1])),
+        y = seq_len(ifelse(prod(dim(spectra)[-1]) > 0, 1, 0))),
+    imageData = SImageData(data=spectra, coord=coord),
+    pixelData = IAnnotatedDataFrame(
+        data=coord,
+        varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
+    featureData = AnnotatedDataFrame(
+        data=data.frame(mz=mz)),
+    processingData = new("MSImageProcess"),
+    protocolData = AnnotatedDataFrame(
+        data=data.frame(row.names=sampleNames(pixelData))),
+    experimentData = new("MIAPE-Imaging"),
+    \dots)
+
+## Additional methods documented below
 }
+
+\arguments{
+    
+    \item{spectra}{A matrix-like object with number of rows equal to the number of features and number of columns equal to the number of non-missing pixels. Each column should be a mass spectrum. Alternatively, a multidimensional array that represents the datacube with the first dimension as the features (m/z values) can also be supplied. Additional dimensions could be the spatial dimensions of the image, for example.}
+
+    \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of a mass spectrum corresponding to a column in \code{spectra}. This argument is ignored if \code{spectra} is a multidimensional array rather than a matrix.}
+
+    \item{imageData}{An object of class \code{\linkS4class{SImageData}} that will contain the imaging mass spectra. Usually constructed through the \code{spectra} and \code{coord} arguments.}
+
+    \item{pixelData}{An object of class \code{\linkS4class{IAnnotatedDataFrame}} giving the information about the pixels including coordinates of the data in \code{imageData}.}
+
+    \item{featureData}{An object of class \code{\linkS4class{AnnotatedDataFrame}} giving information about the data features. Requires a column named "mz".}
+
+    \item{processingData}{An object of class \code{\linkS4class{MSImageProcess}} giving information about the pre-processing steps applied to the spectra.}
+
+    \item{protocolData}{An object of class \code{\linkS4class{AnnotatedDataFrame}} giving information about the samples. It must have one row for each of the \code{sampleNames} in \code{pixelData}.}
+
+    \item{experimentData}{An object derived from class \code{\linkS4class{MIAxE}} giving information about the imaging experiment.}
+}
+
 \section{Slots}{
-  \describe{
-    \item{\code{spectra}:}{\code{"environment"}, with a single \code{matrix} object named 'spectra' storing the intensities for each pixel}
-    \item{\code{peaks}:}{\code{"MSPeakFrame"}, data describing the peaks}
-    \item{\code{featureData}:}{\code{"data.frame"}, data describing the mass features}
-    \item{\code{pixelData}:}{\code{"data.frame"}, data describing the pixel characteristics}
-    \item{\code{metaData}:}{\code{"list"}, metadata about the mass spectra data set}
-  }
+    \describe{
+        \item{\code{imageData}:}{An instance of \code{\linkS4class{SImageData}}, which stores one or more matrices of equal number of dimensions as elements in an 'immutableEnvironment'. This slot preserves copy-on-write behavior when it is modified specifically, but is pass-by-reference otherwise, for memory efficiency.}
+
+        \item{\code{pixelData}:}{Contains pixel information in an \code{\linkS4class{IAnnotatedDataFrame}}. This includes both pixel coordinates and phenotypic and sample data. Its rows correspond to the columns in \code{imageData}.}
+
+        \item{\code{featureData}:}{Contains variables describing features. Its rows correspond to the rows in \code{imageData} in an \code{\linkS4class{IAnnotatedDataFrame}}.}
+
+        \item{\code{processingData}:}{Contains details about the pre-processing steps that have been applied to the spectra. An object of class \code{\linkS4class{MSImageProcess}}.}
+
+        \item{\code{experimentData}:}{Contains details of experimental methods. Must be \code{\linkS4class{MIAPE-Imaging}}.}
+
+        \item{\code{protocolData}:}{Contains variables describing the generation of the samples in \code{pixelData} in an \code{\linkS4class{IAnnotatedDataFrame}}.}
+
+        \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
+    }
 }
+
+\section{Extends}{
+    \code{\linkS4class{SImageSet}}, directly.
+    \code{\linkS4class{iSet}}, by class "SImageSet", distance 1.
+    \code{\linkS4class{VersionedBiobase}}, by class "iSet", distance 2.
+    \code{\linkS4class{Versioned}}, by class "VersionedBiobase", distance 3.
+}
+
+\section{Creating Objects}{
+    \code{MSImageSet} instances can be created through \code{MSImageSet()}, but are more commonly created through reading of external data files.
+}
+
 \section{Methods}{
-  \describe{
-    \item{coord}{\code{signature(object = "MSImageSet")}: 
-        Accesses the coordinates of the pixels of an \code{\linkS4class{MSImageSet}}. }
-    \item{coord<-}{\code{signature(object = "MSImageSet")}: 
-        Replaces the coordinates of the pixels of an\code{\linkS4class{MSImageSet}}. }
-    \item{crop}{\code{signature(object = "MSImageSet")}: 
-        Return a new \code{\linkS4class{MSImageSet}} retaining only a subset of the
-        original pixels and features. }
-    \item{featureData}{\code{signature(object = "MSImageSet")}: 
-        Accessor function for the \code{featureData} slot. }
-    \item{featureData<-}{\code{signature(object = "MSImageSet")}: 
-        Replacement function for the \code{featureData} slot. }
-    \item{features}{\code{signature(object = "MSImageSet")}: 
-        Returns the feature ids of masses in an \code{\linkS4class{MSImageSet}}
-        within the \code{spectra} slot given mass-to-charge ratios. }
-    \item{flipHorizontal}{\code{signature(object = "MSImageSet")}: 
-        Flips an \code{\linkS4class{MSImageSet}} horizontally. }
-    \item{flipVertical}{\code{signature(object = "MSImageSet")}: 
-        Flips an \code{\linkS4class{MSImageSet}} vertically. }
-    \item{generatePositionArray}{\code{signature(object = "MSImageSet")}: 
-        Generates an array of pixel position ids. }
-    \item{image}{\code{signature(x = "MSImageSet")}: 
-        Create an image of an \code{\linkS4class{MSImageSet}}. }
-    \item{isBinned}{\code{signature(object = "MSImageSet")}: 
-        Whether an \code{\linkS4class{MSImageSet}} has been binned or not. }
-    \item{isPeaks}{\code{signature(object = "MSImageSet")}: 
-        Whether an \code{\linkS4class{MSImageSet}} has been reduced to peaks or not. }
-    \item{isResampled}{\code{signature(object = "MSImageSet")}: 
-        Whether an \code{\linkS4class{MSImageSet}} has been resampled or not. }
-    \item{intensities}{\code{signature(object = "MSImageSet")}: 
-        Extract an array of intensities from an \code{\linkS4class{MSImageSet}}. }
-    \item{metaData}{\code{signature(object = "MSImageSet")}: 
-        Accessor function for the \code{metaData} slot. }
-    \item{metaData<-}{\code{signature(object = "MSImageSet")}: 
-        Replacement function for the \code{metaData} slot. }
-    \item{mz}{\code{signature(object = "MSImageSet")}: 
-        Accesses the masses of the mass spectra in an \code{\linkS4class{MSImageSet}}. }
-    \item{mz<-}{\code{signature(object = "MSImageSet")}: 
-        Replaces the masses of the mass spectra in an \code{\linkS4class{MSImageSet}}. }
-    \item{neighbors}{\code{signature(object = "MSImageSet", r = "numeric")}: 
-        Finds and returns the pixel ids of the neighbors of a given pixel within a
-        given neighborhood radius. }
-    \item{numFeatures}{\code{signature(object = "MSImageSet")}: 
-        Returns the number of features in an \code{\linkS4class{MSImageSet}}. }
-    \item{numPixels}{\code{signature(object = "MSImageSet")}: 
-        Returnst the nubmer of pixels in an \code{\linkS4class{MSImageSet}}. }
-    \item{peaks}{\code{signature(object = "MSImageSet")}: 
-        Accessor function for the \code{peaks} slot. }
-    \item{peaks<-}{\code{signature(object = "MSImageSet")}: 
-        Replacement function for the \code{peaks} slot. }
-    \item{pixelData}{\code{signature(object = "MSImageSet")}: 
-        Accessor function for the \code{pixelData} slot. }
-    \item{pixelData<-}{\code{signature(object = "MSImageSet")}: 
-        Replacement function for the \code{pixelData} slot. }
-    \item{plot}{\code{signature(x = "MSImageSet", y = "missing")}: 
-        Create a plot of a mass spectrum from an \code{\linkS4class{MSImageSet}}. }
-    \item{pixels}{\code{signature(object = "MSImageSet", coord = "data.frame")}: 
-        Returns the pixel ids of mass spectra in an \code{\linkS4class{MSImageSet}}
-        within the \code{spectra} slot given input coordinates. }
-    \item{pixels}{\code{signature(object = "MSImageSet", coord = "list")}: 
-        Returns the pixel ids of mass spectra in an \code{\linkS4class{MSImageSet}}
-        within the \code{spectra} slot given input coordinates. }
-    \item{pixels}{\code{signature(object = "MSImageSet", coord = "numeric")}: 
-        Returns the pixel ids of mass spectra in an \code{\linkS4class{MSImageSet}}
-        within the \code{spectra} slot given input coordinates. }
-    \item{regeneratePositions}{\code{signature(object = "MSImageSet"{})}: 
-        Regenerates the array of pixel position ids. }
-    \item{rotateLeft}{\code{signature(object = "MSImageSet")}: 
-        Rotates an \code{\linkS4class{MSImageSet}} to the left. }
-    \item{rotateRight}{\code{signature(object = "MSImageSet")}: 
-        Rotates an \code{\linkS4class{MSImageSet}} to the right. }
-    \item{sliceBind}{\code{signature(object = "MSImageSet")}:
-        Bind multiple \code{\linkS4class{MSImageSet}} objects into a single one. }
-    \item{spectra}{\code{signature(object = "MSImageSet")}: 
-        Accessor function for the \code{spectra} slot. }
-    \item{spectra<-}{\code{signature(object = "MSImageSet")}: 
-        Replacement function for the \code{spectra} slot. }
-    \item{spectralApply}{\code{signature(object = "MSImageSet")}: 
-        Apply-like functionality for an \code{\linkS4class{MSImageSet}}. }
-    \item{standardizeTotalImageIntensity}{\code{signature(object = "MSImageSet")}: 
-        Standardize the sum image intensities in an \code{\linkS4class{MSImageSet}} to a common total. }
-    \item{standardizeTotalIonCurrent}{\code{signature(object = "MSImageSet")}: 
-        Standardize all the mass spectra in an \code{\linkS4class{MSImageSet}} to a common total ion current. }
-    \item{unload}{\code{signature(object = "MSImageSet")}: 
-        Remove an \code{\linkS4class{MSImageSet}} object and free its memory. }
-	 }
+    Class-specific methods:
+    \describe{
+        \item{\code{spectra(object), spectra(object) <- value}:}{Access and set the mass spectra in \code{imageData}. This is a matrix-like object with rows corresponding to features and columns corresponding to pixels, so that each column of the returned object is a mass spectrum.}
+
+        \item{\code{mz(object), mz(object) <- value}:}{Returns and sets the common m/z values of the mass spectra in the dataset. This is a required column of \code{featureData}.}
+    }
+
+    Standard generic methods:
+    \describe{
+        \item{\code{combine(x, y, ...)}:}{Need to implement.}
+
+        \item{\code{MSImageSet[i, j, ..., drop]}:}{Subset an \code{SImageSet} based on the rows (featureData components) and the columns (pixelData components). The result is a new \code{MSImageSet}.}
+    }
+
+    See \code{\linkS4class{iSet}} and \code{\linkS4class{SImageSet}} for additional methods.
 }
-\author{
-    Kyle D. Bemis
-}
+
+\author{Kyle D. Bemis}
 
 \seealso{
-    \code{\link[Cardinal]{createMSImageSet}}
+    \code{\linkS4class{iSet}},
+    \code{\linkS4class{SImageData}},
+    \code{\linkS4class{MSImageSet}}
 }
+
 \examples{
-    ## write examples to add here
+## Create an MSImageSet object
+spectra <- matrix(1:27, nrow=3)
+mz <- 101:103
+coord <- expand.grid(x=1:3, y=1:3)
+msset <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
+
+## Access a single image corresponding to the first feature
+imageData(msset)[1,,]
+
+## Reconstruct the datacube
+imageData(msset)[]
+
+## Access the P x N matrix of column-wise mass spectra
+spectra(msset)
+
+## Subset the MSImageSet to the first 2 m/z values and first 6 mass spectra
+msset2 <- msset[1:2, 1:6]
+imageData(msset2)[]
+msset2
 }
+
 \keyword{classes}
