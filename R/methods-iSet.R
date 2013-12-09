@@ -39,48 +39,6 @@ setValidity("iSet", function(object) {
 	if (is.null(msg)) TRUE else msg
 })
 
-setMethod("dims", "iSet", function(object) dims(imageData(object)))
-
-setMethod("storageMode", "iSet", function(object) storageMode(imageData(object)))
-
-setReplaceMethod("storageMode", "iSet",
-	function(object, value) {
-		storageMode(imageData(object)) <- value
-		object
-	})
-
-# adapted from combine(eSet, eSet) from Biobase
-setMethod("combine", signature = c(x = "iSet", y = "iSet"),
-	function(x, y, ...) {
-		if (class(x) != class(y))
-			stop("objects must be the same class, but are '",
-				class(x), "', '", class(y), "'")
-		if ( !isCurrent(x)[["iSet"]] )
-			x <- updateObject(x)
-		x@imageData <- combine(x@imageData, y@imageData)
-		x@pixelData <- combine(x@pixelData, y@pixelData)
-		x@featureData <- combine(x@featureData, y@featureData)
-		x@experimentData <- combine(x@experimentData, y@experimentData)
-		x@protocolData <- combine(x@protocolData, y@protocolData)
-		x
-	})
-
-setMethod("$", "iSet", function(x, name) pixelData(x)[[name]])
-
-setReplaceMethod("$", "iSet",
-	function(x, name, value) {
-		pixelData(x)[[name]] <- value
-		x
-	})
-
-setMethod("[[", "iSet", function(x, i, j, ...) pixelData(x)[[i]])
-
-setReplaceMethod("[[", "iSet",
-	function(x, i, j, ..., value) {
-		pixelData(x)[[i, ...]] <- value
-		x
-	})
-
 setMethod("protocolData", "iSet", function(object) object@protocolData)
 
 setReplaceMethod("protocolData", "iSet",
@@ -98,7 +56,7 @@ setReplaceMethod("experimentData", "iSet",
 	})
 
 #### imageData methods ####
-##-------------------------
+## ------------------------
 
 setMethod("imageData", "iSet", function(object) object@imageData)
 
@@ -128,7 +86,7 @@ setReplaceMethod("iData", "iSet", function(object, value) {
 })
 
 #### pixelData methods ####
-##-------------------------
+## ------------------------
 
 setMethod("pixelData", "iSet", function(object) object@pixelData)
 
@@ -196,7 +154,7 @@ setReplaceMethod("coord", "iSet",
 	})
 
 #### featureData methods ####
-##---------------------------
+## --------------------------
 
 setMethod("featureData", "iSet", function(object) object@featureData)
 
@@ -236,6 +194,51 @@ setReplaceMethod("featureNames", "iSet",
 	function(object, value) {
 		featureNames(featureData(object)) <- value
 		object
+	})
+
+#### standard generic methods ####
+## -------------------------------
+
+# adapted from combine(eSet, eSet) from Biobase
+setMethod("combine", signature = c(x = "iSet", y = "iSet"),
+	function(x, y, ...) {
+		if (class(x) != class(y))
+			stop("objects must be the same class, but are '",
+				class(x), "', '", class(y), "'")
+		if ( !isCurrent(x)[["iSet"]] )
+			x <- updateObject(x)
+		x@imageData <- combine(x@imageData, y@imageData)
+		x@pixelData <- combine(x@pixelData, y@pixelData)
+		x@featureData <- combine(x@featureData, y@featureData)
+		x@experimentData <- combine(x@experimentData, y@experimentData)
+		x@protocolData <- combine(x@protocolData, y@protocolData)
+		x
+	})
+
+setMethod("dims", "iSet", function(object) dims(imageData(object)))
+
+setMethod("storageMode", "iSet", function(object) storageMode(imageData(object)))
+
+setReplaceMethod("storageMode", "iSet",
+	function(object, value) {
+		storageMode(imageData(object)) <- value
+		object
+	})
+
+setMethod("$", "iSet", function(x, name) pixelData(x)[[name]])
+
+setReplaceMethod("$", "iSet",
+	function(x, name, value) {
+		pixelData(x)[[name]] <- value
+		x
+	})
+
+setMethod("[[", "iSet", function(x, i, j, ...) pixelData(x)[[i]])
+
+setReplaceMethod("[[", "iSet",
+	function(x, i, j, ..., value) {
+		pixelData(x)[[i, ...]] <- value
+		x
 	})
 
 

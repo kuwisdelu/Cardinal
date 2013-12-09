@@ -90,6 +90,8 @@ setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 		pixelNames(x) <- .formatCoord(coord(x))
 		pixelNames(y) <- .formatCoord(coord(y))
 		x <- callNextMethod(x, y, ...)
+		x@processingData <- combine(x@processingData,
+			y@processingData)
 		regeneratePositions(x)
 	})
 

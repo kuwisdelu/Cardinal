@@ -1,5 +1,7 @@
 
 #### Define new generics from base R ####
+setGeneric("as.array")
+setGeneric("as.matrix")
 setGeneric("rownames<-")
 setGeneric("colnames<-")
 
@@ -118,6 +120,14 @@ setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
 setGeneric("spectralApply", function(object, MARGIN, FUN, ...) standardGeneric("spectralApply"))
 setGeneric("standardizeTotalImageIntensity", function(object, ...) standardGeneric("standardizeTotalImageIntensity"));
 setGeneric("standardizeTotalIonCurrent", function(object, ...) standardGeneric("standardizeTotalIonCurrent"))
+
+#### Apply-like methods ####
+setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
+setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
+setGeneric("imageApply", function(.object, .fun, ...) standardGeneric("imageApply"))
+setGeneric("mzApply", function(.object, .fun, ...) standardGeneric("mzApply"))
+setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
+setGeneric("spectrumApply", function(.object, .fun, ...) standardGeneric("spectrumApply"))
 
 #### Plotting and visualization ####
 setGeneric("summaryPlot", function(object, reference, ...) standardGeneric("summaryPlot"))
