@@ -36,6 +36,8 @@ setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-")
 setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
 setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
 setGeneric("poolPeaks", function(peaks, ...) standardGeneric("poolPeaks"))
+setGeneric("positionArray", function(object) standardGeneric("positionArray"))
+setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
 setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
 setGeneric("processingData<-", function(object) standardGeneric("processingData<-")) # use MSnbase generic?
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))

@@ -10,6 +10,7 @@
 \alias{[[,iSet-method}
 \alias{[[<-,iSet-method}
 \alias{initialize,iSet-method}
+\alias{dim,iSet-method}
 \alias{dims,iSet-method}
 \alias{storageMode,iSet-method}
 \alias{storageMode<-,iSet,character-method}
@@ -97,7 +98,9 @@
 
         \item{\code{imageData(object), imageData(object) <- value}:}{Access and set the \code{imageData} slot.}
 
-        \item{\code{iData(object), iData(object) <- value}:}{Access and set the "most interesting" element of \code{imageData}. By default, this returns the first element found. Derived classes should implement more appropriate behavior. See \code{\linkS4class{SImageData}}, \code{\linkS4class{SImageSet}}, and \code{\linkS4class{MSImageSet}} for examples.}
+        % leave iData() to derived classes to define
+
+        % \item{\code{iData(object), iData(object) <- value}:}{Access and set the "most interesting" element of \code{imageData}. By default, this returns the first element found. Derived classes should implement more appropriate behavior. See \code{\linkS4class{SImageData}}, \code{\linkS4class{SImageSet}}, and \code{\linkS4class{MSImageSet}} for examples.}
 
         \item{\code{pixelData(object), pixelData(object) <- value}:}{Access and set the \code{pixelData} slot.}
 
@@ -129,6 +132,8 @@
         \item{\code{validObject}:}{Checks that there exist columns in \code{pixelData} describing the pixel coordinates, cooresponding to the dimensions of the elements of \code{imageData}. For every named dimension of the arrays on \code{imageData} there must be a \code{pData} column describing its pixel coordinates. Also checks that the \code{sampleNames} match between \code{pixelData} and \code{protocolData}.}
 
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{iSet} objects. To be combined, iSets must have identical \code{featureData} and distinct \code{pixelNames} and \code{sampleNames}. All elements of \code{imageData} must have matching names. Elements of \code{imageData} are combined by calls for \code{combine}.}
+
+        \item{\code{dim}:}{The dimensions of the object, as determined by the number of features (rows in featureData) and the number of pixels (rows in pixelData). This may differ from the dimensions returned by \code{dims(object)} (which corresponds to the arrays in \code{data}) or returned by \code{dim(imageData(object))}. See \code{\linkS4class{SImageSet}} for an example where this is the case, due to its use of a "virtual" datacube.}
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 

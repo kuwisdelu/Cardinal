@@ -66,24 +66,26 @@ setReplaceMethod("imageData", "iSet",
 		object
 	})
 
-setMethod("iData", "iSet", function(object) {
-	names <- ls(object@imageData@data)
-	if ( length(names) > 0 ) {
-		object@imageData[[names[[1]]]]
-	} else {
-		NULL
-	}
-})
+# leave iData() to derived classes to define if needed
 
-setReplaceMethod("iData", "iSet", function(object, value) {
-	names <- ls(object@imageData@data)
-	if ( length(names) > 0 ) {
-		object@imageData[[names[[1]]]] <- value
-	} else {
-		stop("imageData has no visible elements")
-	}
-	object
-})
+# setMethod("iData", "iSet", function(object) {
+# 	names <- ls(object@imageData@data)
+# 	if ( length(names) > 0 ) {
+# 		object@imageData[[names[[1]]]]
+# 	} else {
+# 		NULL
+# 	}
+# })
+
+# setReplaceMethod("iData", "iSet", function(object, value) {
+# 	names <- ls(object@imageData@data)
+# 	if ( length(names) > 0 ) {
+# 		object@imageData[[names[[1]]]] <- value
+# 	} else {
+# 		stop("imageData has no visible elements")
+# 	}
+# 	object
+# })
 
 #### pixelData methods ####
 ## ------------------------
@@ -214,6 +216,9 @@ setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 		x@protocolData <- combine(x@protocolData, y@protocolData)
 		x
 	})
+
+setMethod("dim", "iSet", function(x)
+	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
 
 setMethod("dims", "iSet", function(object) dims(imageData(object)))
 

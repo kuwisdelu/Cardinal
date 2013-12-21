@@ -48,7 +48,7 @@ export(
 	"generatePositionArray",
 	"gradient.colors",
 	"intensity.colors",
-	"readAnalyze7.5",
+	"readAnalyze",
 	"readImzML",
 	"risk.colors")
 
