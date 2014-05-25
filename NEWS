@@ -2,11 +2,22 @@
 NEWS for Cardinal package
 -------------------------
 
-Version 0.5.1 [2013-11-25]
+Version 0.7
 
-o Major revision to use Bioconductor base packages
-o New dependencies on BiocGenerics and Biobase
-o New virtual class iSet for generic imaging data
+o First test release of the refactored package.
+
+Version 0.6 [2013-2-19]
+
+o Major revision to use Bioconductor base packages.
+o New dependencies on BiocGenerics and Biobase.
+o New virtual class iSet for generic imaging data.
+o New classes ImageSet, SImageSet, ImageData, and SImageData.
+o Revised MSImageSet that uses new parent classes.
+o New class MIAPE-Imaging for Minimum Information About
+	a Protemics Experiment - Imaging.
+o Revised functions for importing Analyze 7.5 and imzML
+o New plotting and image methods using lattice-style formula interface.
+o New pixelApply and featureApply methods.
 
 Version 0.5 [2013-11-8]
 

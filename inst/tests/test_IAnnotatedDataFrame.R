@@ -17,7 +17,7 @@ test_that("IAnnotatedDataFrame validity", {
 test_that("IAnnotatedDataFrame accessors and assignment", {
 
 	coord1 <- expand.grid(x=1:3, y=1:3)
-	df <- IAnnotatedDataFrame(coord1, data.frame(labelType=c("spatial", "spatial")))
+	df <- IAnnotatedDataFrame(coord1, data.frame(labelType=c("dim", "dim")))
 	expect_true(all(coord(df) == coord1))
 	expect_equal(names(coord(df)), names(coord1))
 	expect_equal(coordLabels(df), names(coord1))
