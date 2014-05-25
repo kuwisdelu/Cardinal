@@ -29,7 +29,7 @@ SImageSet <- function(
 		coord=coord),
 	pixelData = IAnnotatedDataFrame(
 		data=coord,
-		varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
+		varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
 	featureData = AnnotatedDataFrame(
 		data=data.frame(row.names=seq_len(nrow(data)))),
 	protocolData = AnnotatedDataFrame(
@@ -134,14 +134,14 @@ setAs("SImageSet", "data.frame",
 	function(from) data.frame(t(iData(from)), pData(from)))
 
 ## Utility function for converting pixels to pData row indices
-.match.pixels <- function(pixel, object) {
+.match.pixel <- function(pixel, object) {
 	ps <- seq_len(ncol(object))
 	names(ps) <- pixelNames(object)
 	ps[pixel]
 }
 
 ## Utility function for converting features to fData row indices
-.match.features <- function(feature, object) {
+.match.feature <- function(feature, object) {
 	fs <- seq_len(nrow(object))
 	names(fs) <- featureNames(object)
 	fs[feature]
@@ -162,13 +162,13 @@ setMethod("pixelApply", "SImageSet",
 				enclos=parent.frame(2))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
-		.pixel <- .match.pixels(.pixel, .object)
+		.pixel <- .match.pixel(.pixel, .object)
 		if ( !missing(.feature) )
 			.feature <- eval(substitute(.feature), envir=fData(.object),
 				enclos=parent.frame(2))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
-		.feature <- .match.features(.feature, .object)
+		.feature <- .match.feature(.feature, .object)
 		# set up grouping variables if not provided
 		if ( !missing(.feature.groups) )
 			.feature.groups <- eval(substitute(.feature.groups),
@@ -224,13 +224,13 @@ setMethod("featureApply", "SImageSet",
 				enclos=parent.frame(2))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
-		.feature <- .match.features(.feature, .object)
+		.feature <- .match.feature(.feature, .object)
 		if ( !missing(.pixel) )
 			.pixel <- eval(substitute(.pixel), envir=pData(.object),
 				enclos=parent.frame(2))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
-		.pixel <- .match.pixels(.pixel, .object)
+		.pixel <- .match.pixel(.pixel, .object)
 		# set up grouping variables if not provided
 		if ( !missing(.pixel.groups) )
 			.pixel.groups <- eval(substitute(.pixel.groups),

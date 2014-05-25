@@ -1,79 +1,72 @@
 \name{plot-methods}
 \docType{methods}
+
 \alias{plot}
 \alias{plot-methods}
-\alias{plot,MSImageSet,missing-method}
-\alias{plot,MSPeakFrame,missing-method}
-\alias{plot,MSPeakList,missing-method}
-\alias{plot,MSImageSegmentation,missing-method}
-\title{Display a mass spectrum or mass peak plot}
-\description{
-	Plots a mass spectrum or mass peaks for an \code{\linkS4class{MSImageSet}} mass spectrometry imaging dataset, an \code{MSPeakFrame}, \code{MSPeakList}, or an \code{MSImageSegmentation} object.
-}
-\usage{
-    \S4method{plot}{MSImageSet,missing}(x, pixel, coord,
-    main=metaData(x)[["name"]], xlab="m/z", ylab="intensity",
-    col="black", pch=20, cex=0.6,
-    type=if( isPeaks(x) ) c("h", "p") else "l", sub=formatCoord(coord),
-    col.sub="gray", fun=mean,
-    filter=c("none", "gaussian", "ma", "sgolay", "kaiser"),
-    window=5, nlabels=if( isPeaks(x) ) 6 else 0,
-    add=FALSE, \dots)
+\alias{plot,SImageSet,missing-method}
+\alias{plot,SImageSet,formula-method}
 
-    \S4method{plot}{MSImageSegmentation,missing}(x, which=1,
-    mode=c("centroids", "tstatistics"), main=metaData(x)[["name"]],
-    xlab="m/z", ylab=mode, col=rainbow(max(x[["nclasses"]][which])),
-    type=c("h", "p"), sub=attr(x, "plotnames")[[which]],
-    col.sub="gray", pch=20, cex=0.6, climits=FALSE, nlabels=6,
-    class.mask=NULL, legend=TRUE, add=FALSE, \dots)
-    
-    \S4method{plot}{MSPeakFrame,missing}(x, dist=FALSE, xlab="m/z",
-    ylab="intensity", nlabels=6, type=c("h", "p"), col="black", pch=20, cex=0.6,
-    lty.dist=1, lwd.dist=0.5, col.dist="black", add=FALSE, \dots)
-    
-    \S4method{plot}{MSPeakList,missing}(x, dist=FALSE, nlabels=0,
-    col=sample(rainbow(length(peaks(x)))), col.dist=col, add=FALSE, \dots)
+\title{Plot the Feature-Space of an Imaging Dataset}
+
+\description{
+	Create and display plots in the feature space of an imaging dataset. This uses a formula interface inspired by the \code{\link[lattice]{lattice}} graphics package.
 }
+
+\usage{
+\S4method{plot}{SImageSet,missing}(x, formula = ~ featureNames(x),
+    pixel,
+    pixel.groups,
+    groups = NULL,
+    superpose = FALSE,
+    fun = mean,
+    subset = TRUE,
+    lattice = FALSE,
+    \dots)
+
+\S4method{plot}{MSImageSet,missing}(x, \dots)
+}
+
 \arguments{
-    \item{x}{the object from which to create the plot.}
-    \item{pixel}{the pixel from which to use the mass spectrum.}
-    \item{coord}{a named vector or named \code{list}, or a \code{data.frame} giving the coordinates of the pixel to use to plot the mass spectrum.}
-    \item{main}{the overall title for the plot.}
-    \item{xlab}{\code{character} giving the label for the x-axis.}
-    \item{ylab}{\code{character} giving the label for the y-axis.}
-    \item{col}{a vector of colors to use in the plot.}
-    \item{type}{the type of plot to make, defaulting to 'l' for a mass spectrum or c('h','p') for mass peaks; this can be a single value or a pair of values.}
-    \item{sub}{the plot subtitle.}
-    \item{col.sub}{the color of the subtitle.}
-    \item{fun}{if multiple masses or mass features are given for an ion plot, the function to apply over them to create a single value for each pixel for the plot.}
-    \item{filter}{the filter function to use to smooth the mass spectrum.}
-    \item{window}{the filter window.}
-    \item{nlabels}{the number of highest-intensity peaks to label when plotting peak-picked mass spectra.}
-    \item{add}{whether the plot should create a new plot or add to a previous plot.}
-    \item{dist}{\code{logical}, whether to plot the fitted distributions for mass peaks.}
-    \item{lty.dist}{the line type to use for the fitted distributions.}
-    \item{lwd.dist}{the line width to use for the fitted distributions.}
-    \item{col.dist}{the color to use for the fitted distributions}
-    \item{which}{which segmentation(s) to use in an \code{MSImageSegmentation} if multiple segmentations were created from multiple parameters; this can either be an \code{integer}, a \code{character} giving the names of the \code{parnames} in the object's \code{metaData}, or a list specifying the names of parameters and their values.}
-    \item{mode}{what to y-values plot for an \code{MSImageSegmentation}, either the intensities, or the t-statistics.}
-    \item{pch}{the plotting symbol to use}
-    \item{cex}{\code{numeric} giving the size of the plotting symbols relative to the default size}
-    \item{climits}{\code{logical} giving whether confidence limits calculated from the pooled standard errors should be plotted for an \code{MSImageSegmentation}}
-    \item{class.mask}{a vector of numbers indicating the classes to be displayed.}
-    \item{legend}{whether a legend should be added to the plot.}
+    
+    \item{x}{An imaging dataset or results.}
+    
+    \item{formula}{A formula of the form 'y ~ x | g1 * g2 * ...' (or equivalently, 'y ~ x | g1 + g2 + ...'), indicating a LHS 'y' (on the y-axis) versus a RHS 'x' (on the x-axis) and conditioning variables 'g1, g2, ...'.
+
+    Usually, the LHS is not supplied, and the formula is of the form '~ x | g1 * g2 * ...', and the y-axis is implicityl assumed to be the feature vectors corresponding to each pixel in the imaging dataset specified by the object 'x'. However, a variable evaluating to a feature vector, or a sequence of such variables, can also be supplied.
+
+    The RHS is evaluated in \code{fData} and should provide values for the x-axis.
+
+    The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose=TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
+    
+    \item{pixel}{The pixel or vector of pixels for which to plot the feature vectors. This is an expression that evaluates to a logical or integer indexing vector.}
+
+    \item{pixel.groups}{An alternative way to express a single conditioning variable. This is a variable or expression to be evaluated in \code{pData(x)}, expected to act as a grouping variable for the pixels specified by 'pixel', typically used to distinguish different regions of the imaging data for comparison. Feature vectors from pixels in the same pixel group will have 'fun' applied over them; 'fun' will be applied to each pixel group separately, usually for averaging. If 'superpose = FALSE' then these appear on separate plots.}
+
+    \item{groups}{A variable or expression to be evaluated in \code{fData(x)}, expected to act as a grouping variable for the features in the feature vector(s) to be plotted, typically used to distinguish different groups of features by varying graphical parameters like color and line type. By default, if 'superpose = FALSE', these appear overlaid on the same plot.}
+
+    \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
+
+    \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
+
+    \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
+
+    \item{lattice}{Should lattice graphics be used to create the plot?}
+    
     \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
 }
+
 \author{
 	Kyle D. Bemis
 }
+
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{image-methods}},
-    \code{\link[Cardinal]{trellisImage-methods}},
-    \code{\link[Cardinal]{trellisPlot-methods}}
+    \code{\link[Cardinal]{image-methods}}
 }
+
 \examples{
     ## write examples to put here
 }
+
 \keyword{methods}
 

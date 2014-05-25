@@ -31,7 +31,7 @@ MSImageSet <- function(
 		coord=coord),
 	pixelData = IAnnotatedDataFrame(
 		data=coord,
-		varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
+		varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
 	featureData = AnnotatedDataFrame(
 		data=data.frame(mz=mz)),
 	processingData = new("MSImageProcess"),
@@ -83,10 +83,10 @@ setReplaceMethod("spectra", "MSImageSet",
 
 setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 	function(x, y, ...) {
-		if ( varMetadata(x)["sample", "labelType"] != "dimension" )
-			varMetadata(x)["sample", "labelType"] <- "dimension"
-		if ( varMetadata(y)["sample", "labelType"] != "dimension" )
-			varMetadata(y)["sample", "labelType"] <- "dimension"
+		if ( varMetadata(x)["sample", "labelType"] != "dim" )
+			varMetadata(x)["sample", "labelType"] <- "dim"
+		if ( varMetadata(y)["sample", "labelType"] != "dim" )
+			varMetadata(y)["sample", "labelType"] <- "dim"
 		pixelNames(x) <- .formatCoord(coord(x))
 		pixelNames(y) <- .formatCoord(coord(y))
 		x <- callNextMethod(x, y, ...)

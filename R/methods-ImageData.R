@@ -90,7 +90,7 @@ setMethod("annotatedDataFrameFrom", "ImageData",
 			data <- rep(list(integer()), nrow(dims(object)) - 1)
 			names(data) <- rownames(dims(object))[-1]
 			data <- as.data.frame(data)
-			varMetadata <- data.frame(labelType=rep("dimension", nrow(dims(object)) - 1))
+			varMetadata <- data.frame(labelType=rep("dim", nrow(dims(object)) - 1))
 			df <- IAnnotatedDataFrame(data=data, varMetadata=varMetadata,
 				dimLabels=c("pixelNames", "pixelColumns"))
 		}

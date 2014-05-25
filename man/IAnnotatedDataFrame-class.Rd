@@ -46,7 +46,7 @@ IAnnotatedDataFrame(data, varMetadata,
 	\describe{
 		\item{\code{data}:}{Object of class \code{data.frame} containing pixels (rows) and measured variables (columns). Contains at least one column named 'sample' which is a \code{factor} and gives the sample names for each pixel. The sample names can be set using \code{sampleNames<-}. Inherited from \linkS4class{AnnotatedDataFrame}.}
 
-		\item{\code{varMetadata}:}{Object of class \code{data.frame} with number of rows equal to the number of columns in \code{data}. Contains at least two columns, one named 'labelDescription' giving a textual description of each variable, and an additional one named 'labelType' describing the type of variable. The 'labelType' is a factor with levels \code{"spatial", "dimension", "sample", "pheno"}. Inherited from \linkS4class{AnnotatedDataFrame.}}
+		\item{\code{varMetadata}:}{Object of class \code{data.frame} with number of rows equal to the number of columns in \code{data}. Contains at least two columns, one named 'labelDescription' giving a textual description of each variable, and an additional one named 'labelType' describing the type of variable. The 'labelType' is a factor with levels \code{"dim", "sample", "pheno"}. Inherited from \linkS4class{AnnotatedDataFrame.}}
 		
 		\item{\code{dimLabels}:}{Object of class \code{character}  of length 2 that provides labels for the rows and columns in the \code{show} method. Inherited from \linkS4class{AnnotatedDataFrame}.}
 
@@ -70,9 +70,9 @@ IAnnotatedDataFrame(data, varMetadata,
 
 		\item{\code{pixelNames(object)}, \code{pixelNames(object)<-}:}{Return or set the pixel names (the rows of \code{data}).}
 
-		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'spatial', or 'dimension'.}}
+		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'dim'.}}
 
-		\item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'spatial', or 'dimension'.}
+		\item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'dim'.}
 
 		\item{\code{coordinates(object)}, \code{coordinates(object)<-}:}{An alias for the \code{coord} method.}
 	}
@@ -98,7 +98,7 @@ IAnnotatedDataFrame()
 
 ## Simple IAnnotatedDataFrame
 df1 <- IAnnotatedDataFrame(data=expand.grid(x=1:3, y=1:3),
-	varMetadata=data.frame(labelType=c("spatial", "spatial")))
+	varMetadata=data.frame(labelType=c("dim", "dim")))
 pData(df1)
 varMetadata(df1)
 
@@ -106,7 +106,7 @@ varMetadata(df1)
 coord <- expand.grid(x=1:3, y=1:3)
 df2 <- IAnnotatedDataFrame(data=
 	data.frame(rbind(coord, coord), sample=factor(rep(1:2, each=nrow(coord)))),
-	varMetadata=data.frame(labelType=c("spatial", "spatial")))
+	varMetadata=data.frame(labelType=c("dim", "dim")))
 df2$diagnosis <- factor(rbinom(nrow(df2), 1, 0.5), labels=c("normal", "cancer"))
 varMetadata(df2)["diagnosis", "labelDescription"] <- "disease pathology"
 df2[["time", labelDescription="time measured"]] <- rep(date(), nrow(df2))

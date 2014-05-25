@@ -1,0 +1,200 @@
+require(testthat)
+
+context("SImageSet class")
+
+test_that("SImageSet validity", {
+	
+	expect_true(validObject(new("SImageSet")))
+	expect_true(validObject(SImageSet()))
+
+	data0 <- array(1:27, dim=c(3,3,3))
+	sset0 <- SImageSet(data=data0)
+	expect_true(validObject(sset0))
+
+	data1 <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset1 <- SImageSet(data=data1, coord=coord)
+	expect_true(validObject(sset1))
+
+})
+
+test_that("SImageSet imageData", {
+
+	data <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset <- SImageSet(data=data, coord=coord)
+
+	expect_equivalent(iData(sset), data)
+	
+	dim(data) <- c(Features=3, x=3, y=3)
+	expect_identical(imageData(sset)[], data)
+
+	expect_identical(iData(sset), iData(sset))
+
+	sset2 <- sset
+	iData(sset2) <- matrix(27:1, nrow=3)
+	expect_equal(sum(iData(sset2) == iData(sset)), 1)
+
+})
+
+test_that("SImageSet pixelData", {
+
+	data <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset <- SImageSet(data=data, coord=coord)
+
+	expect_identical(colnames(iData(sset)), pixelNames(sset))
+
+	sset[["test"]] <- rnorm(9)
+	expect_identical(pData(sset)$test, sset$test)
+
+	expect_equivalent(coord(sset), coord)
+
+	sset2 <- sset
+	coord(sset2) <- coord(sset2)[9:1,]
+	expect_equal(sum(imageData(sset2)[1,,] == imageData(sset)[1,,]), 1)
+
+	coordLabels(sset2) <- c("x1", "x2")
+	expect_identical(rownames(dims(sset2))[-1], c("x1", "x2"))
+
+	pixelNames(sset) <- paste("p", 1:9)
+	expect_identical(colnames(iData(sset)), paste("p", 1:9))
+	expect_identical(pixelNames(pixelData(sset)), paste("p", 1:9))
+	expect_identical(pixelNames(sset), paste("p", 1:9))
+
+})
+
+test_that("SImageSet featureData", {
+
+	data <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset <- SImageSet(data=data, coord=coord)
+
+	expect_identical(rownames(iData(sset)), featureNames(sset))
+
+	expect_error(fvarLabels(sset) <- "test")
+
+	test <- rnorm(3)
+	fData(sset)$test <- test
+	expect_identical(fData(sset)[["test"]], test)
+
+	featureNames(sset) <- paste("f", 1:3)
+	expect_identical(rownames(iData(sset)), paste("f", 1:3))
+	expect_identical(featureNames(featureData(sset)), paste("f", 1:3))
+	expect_identical(featureNames(sset), paste("f", 1:3))
+
+})
+
+test_that("SImageSet protocolData", {
+
+	data <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset <- SImageSet(data=data, coord=coord)
+	
+	expect_identical(sampleNames(protocolData(sset)), sampleNames(pixelData(sset)))
+
+	sampleNames(sset) <- "sample 1"
+	expect_identical(sampleNames(pixelData(sset)), "sample 1")
+	expect_identical(sampleNames(protocolData(sset)), "sample 1")
+
+})
+
+test_that("SImageSet subsetting", {
+
+	data <- matrix(1:27, nrow=3)
+	coord <- expand.grid(x=1:3, y=1:3)
+	sset <- SImageSet(data=data, coord=coord)
+
+	expect_true(validObject(sset[1:2,1:6]))
+	expect_true(validObject(sset[1,]))
+	expect_true(validObject(sset[,1]))
+
+})
+
+test_that("SImageSet pixelApply", {
+
+	data <- matrix(1:256, nrow=4)
+	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
+	sset <- SImageSet(data=data, coord=coord)
+
+	fData(sset)$flag <- rep(c(TRUE, FALSE), 2)
+
+	tmp <- pixelApply(sset, max, .feature.groups=flag)
+	expect_equivalent(pixelApply(sset, max, .feature=flag), tmp["TRUE",])
+	expect_equivalent(pixelApply(sset, max, .feature=!flag), tmp["FALSE",])
+
+})
+
+test_that("SImageSet featureApply", {
+
+	data <- matrix(1:256, nrow=4)
+	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
+	sset <- SImageSet(data=data, coord=coord)
+
+	pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
+
+	tmp <- featureApply(sset, max, .pixel.groups=flag)
+	expect_equivalent(featureApply(sset, max, .pixel=flag), tmp["TRUE",])
+	expect_equivalent(featureApply(sset, max, .pixel=!flag), tmp["FALSE",])
+
+})
+
+# test_that("SImageSet apply stress test", {
+
+# 	coord <- expand.grid(x=1:100, y=1:100)
+	
+# 	data1 <- matrix(0, nrow=9000, ncol=100*100)
+# 	print(gc())
+
+# 	sset1 <- SImageSet(data=data1, coord=coord)
+# 	print(gc())
+
+# 	Rprof()
+# 	system.time(tmp <- featureApply(sset1, mean))
+# 	Rprof(NULL)
+# 	summaryRprof()
+
+# 	system.time(apply(iData(sset1), 1, mean))
+
+# })
+
+# test_that("SImageSet copying", {
+
+# 	coord <- expand.grid(x=1:100, y=1:100)
+	
+# 	data1 <- matrix(0, nrow=9000, ncol=100*100)
+# 	print(gc())
+
+# 	system.time(sset1 <- SImageSet(data=data1, coord=coord))
+# 	print(gc())
+
+# 	pixelNames(sset1) <- paste("p", 1:(100*100))
+# 	print(gc())
+
+# 	print(gc(reset=TRUE))
+
+# 	dmn <- list(paste(1:9000), paste(1:(100*100)))
+# 	data2 <- matrix(0, nrow=9000, ncol=100*100, dimnames=dmn)
+# 	print(gc())
+	
+# 	system.time(sset2 <- SImageSet(data=data2, coord=coord))
+# 	print(gc())
+
+# 	ls(); rm(data2); ls(); print(gc(reset=TRUE))
+# 	pixelNames(sset2) <- paste("p", 1:(100*100))
+# 	print(gc())
+
+# 	system.time(sset2 <- SImageSet(
+# 		data=matrix(0, nrow=9000, ncol=100*100,
+# 			dimnames=list(paste(1:9000), paste(1:(100*100)))),
+# 		coord=coord))
+# 	print(gc())
+
+# 	pixelNames(sset2) <- paste("p", 1:(100*100))
+# 	print(gc())
+
+# })
+
+
+
+

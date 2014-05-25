@@ -96,6 +96,8 @@
 
         \item{\code{coordLabels(object), coordLabels(object) <- value}:}{Access and set the coordinate names described by the coordinate variables in the \code{pixelData} slot.}
 
+        \item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'dim'.}
+
         \item{\code{imageData(object), imageData(object) <- value}:}{Access and set the \code{imageData} slot.}
 
         % leave iData() to derived classes to define

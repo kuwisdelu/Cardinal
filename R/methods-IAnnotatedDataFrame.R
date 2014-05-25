@@ -8,7 +8,7 @@ setMethod("initialize", "IAnnotatedDataFrame",
 			data <- data.frame(sample=factor())
 		if ( is.null(data[["sample"]]) )
 			data[["sample"]] <- factor(rep(1, nrow(data)))
-		reqLabelTypes <- c("spatial", "dimension", "sample", "pheno")
+		reqLabelTypes <- c("dim", "sample", "pheno")
 		if ( missing(varMetadata) ) {
 			varMetadata <- data.frame(labelType = factor(rep(NA, ncol(data)), levels=reqLabelTypes))
 			row.names(varMetadata) <- names(data)
@@ -30,7 +30,7 @@ setMethod("initialize", "IAnnotatedDataFrame",
 
 IAnnotatedDataFrame <- function(data, varMetadata, ...)
 {
-	reqLabelTypes <- c("spatial", "dimension", "sample", "pheno")
+	reqLabelTypes <- c("dim", "sample", "pheno")
 	if ( missing(data) )
 		data <- data.frame(sample=factor())
 	if ( missing(varMetadata) )
@@ -52,7 +52,7 @@ setValidity("IAnnotatedDataFrame", function(object) {
 	labelType <- object@varMetadata[["labelType"]]
 	if ( is.null(labelType) )
 		msg <- validMsg(msg, "required column 'labelType' missing from varMetadata")
-	reqLabelTypes <- c("spatial", "dimension", "sample", "pheno")
+	reqLabelTypes <- c("dim", "sample", "pheno")
 	if ( !is.factor(labelType) || !all(reqLabelTypes %in% levels(labelType)) )
 		msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:", paste(reqLabelTypes, collapse=", ")))
 	if (is.null(msg)) TRUE else msg
@@ -82,14 +82,14 @@ setReplaceMethod("pixelNames", "IAnnotatedDataFrame",
 
 setMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object) {
-		coordLabelTypes <- c("spatial", "dimension")
+		coordLabelTypes <- c("dim")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
 		varLabels(object)[isCoord]
 	})
 
 setReplaceMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object, value) {
-		coordLabelTypes <- c("spatial", "dimension")
+		coordLabelTypes <- c("dim")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
 		varLabels(object)[isCoord] <- value
 		object
