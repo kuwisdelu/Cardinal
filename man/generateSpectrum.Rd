@@ -11,7 +11,7 @@
 generateSpectrum(n, peaks = 100,
 	range = c(1001, 20000),
 	centers = runif(peaks, min=range[1], max=range[2]),
-	intensity = runif(peaks, min=0.1, max=1),
+	intensities = runif(peaks, min=0.1, max=1),
 	step = diff(range)/1e4,
 	resolution = 500,
 	noise = 0.05,
@@ -27,7 +27,7 @@ generateSpectrum(n, peaks = 100,
     
     \item{centers}{The values of the singal feature at which peaks occur.}
 
-    \item{intensity}{The values of the intensities of the peaks, which could either be heights of the peaks or their area under the curve.}
+    \item{intensities}{The values of the intensities of the peaks, which could either be heights of the peaks or their area under the curve.}
 
     \item{step}{The step size between measurements in the feature space.}
 
