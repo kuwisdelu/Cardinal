@@ -25,7 +25,7 @@
 
 \arguments{
     
-    \item{x}{An imaging dataset or results.}
+    \item{x}{An imaging dataset.}
     
     \item{formula}{A formula of the form 'z ~ x * y | g1 * g2 * ...' (or equivalently, 'z ~ x + y | g1 + g2 + ...'), indicating a LHS 'y' (on the y-axis) versus a RHS 'x' (on the x-axis) and conditioning variables 'g1, g2, ...'.
 
