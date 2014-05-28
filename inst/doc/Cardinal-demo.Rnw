@@ -1,5 +1,5 @@
 
-%\VignetteIndexEntry{CARDINAL: Tools for mass spectrometry imaging}
+%\VignetteIndexEntry{Cardinal: Tools for mass spectrometry imaging}
 %\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, Clustering, Classification}
 
 \documentclass[a4paper]{article}
@@ -8,7 +8,7 @@
 BiocStyle::latex()
 @
 
-\title{CARDINAL: Tools for mass spectrometry imaging}
+\title{Cardinal: Tools for mass spectrometry imaging}
 
 \author{Kyle D. Bemis}
 

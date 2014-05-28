@@ -45,6 +45,7 @@ export(
 	"SImageData",
 	"SImageSet",
 	"alpha.colors",
+	"generateImage",
 	"generatePositionArray",
 	"generateSpectrum",
 	"gradient.colors",

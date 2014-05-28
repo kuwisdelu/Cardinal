@@ -1,0 +1,65 @@
+
+%\VignetteIndexEntry{Cardinal development}
+%\VignettePackage{Cardinal}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal development}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+This vignette provides a brief overview of the design and hierarchy of the principle classes us \Rpackage{Cardinal}. It is only of interest to developers, and can be safely ignored by users of \Rpackage{Cardinal}.
+
+\section{iSet}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+
+Analogous to \Robject{eSet} in \Robject{Biobase} and \Robject{pSet} in \Robject{MSnbase}, the \Robject{iSet} virtual class is central to the design of \Rpackage{Cardinal}.
+\vspace{1em}
+\begin{itemize}
+\item Virtual class for imaging datasets
+\item Coordinate high-throughput pixel-based observations
+\item Coordinate high-dimensional feature vectors
+\item Coordinate multiple images (samples)
+\end{itemize}
+\vspace{1em}
+What is \Robject{iSet}?
+
+<<iSet>>=
+getClass("iSet")
+@
+
+\begin{itemize}
+\item \Robject{imageData} high-throughput high-dimensional imaging data
+\item \Robject{pixelData} pixel covariates
+\item \Robject{featureData} feature covariates
+\item \Robject{experimentData} experiment description
+\item \Robject{protocolData} experimental protocol description
+\end{itemize}
+\vspace{1em}
+See \verb|?"iSet-class"| for more information.
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}

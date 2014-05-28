@@ -1,0 +1,60 @@
+
+%\VignetteIndexEntry{Cardinal apply}
+%\VignettePackage{Cardinal}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal \texttt{pixelApply} and \texttt{featureApply}}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+
+in \Rpackage{Cardinal}, the methods \Robject{pixelApply} and \Robject{featureApply} allow \Robject{apply}-like functionality for imaging datasets.
+
+\section{\texttt{pixelApply}}
+
+The method \Robject{pixelApply} allows functions to be applied over all pixels. The function is applied to the pixel-by-pixel feature vectors.
+
+<<readAnalyze, eval=FALSE>>=
+data <- matrix(1:256, nrow=4)
+coord <- expand.grid(x=1:4, y=1:4, z=1:4)
+sset <- SImageSet(data=data, coord=coord)
+
+fData(sset)$flag <- rep(c(TRUE, FALSE), 2)
+pixelApply(sset, max, .feature.groups=flag)
+@
+
+\section{\texttt{featureApply}}
+
+The method \Robject{pixelApply} allows functions to be applied over all features. The function is applied to the false-image pixel vectors.
+
+<<readAnalyze, eval=FALSE>>=
+pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
+featureApply(sset, max, .pixel.groups=flag)
+@
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}

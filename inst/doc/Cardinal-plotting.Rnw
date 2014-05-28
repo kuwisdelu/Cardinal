@@ -1,0 +1,95 @@
+
+%\VignetteIndexEntry{Cardinal plotting}
+%\VignettePackage{Cardinal}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal plotting of ion images and mass spectra}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+
+One of the most important parts of working with mass spectrometry imaging datasets is visualization of the data by examining the ion images and mass spectra. \Rpackage{Cardinal} provides powerful functionality for plotting both ion images, mass spectra, as well as other representations of imaging data.
+
+\section{Formula interface}
+
+The plotting facilities of \Rpackage{Cardinal} are based on the powerful formula interface used by the \Robject{lattice} graphics package.
+
+\section{Plotting mass spectra}
+
+The \verb|plot| method is used to plot mass spectra.
+
+<<readAnalyze, eval=FALSE>>=
+data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+ NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+ 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+ 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+ 
+set.seed(1)
+sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
+	as="MSImageSet")
+
+pData(sset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "red"))
+fData(sset)$fg[2950 < fData(sset)$mz & fData(sset)$mz < 3050] <- "black"
+fData(sset)$fg[3950 < fData(sset)$mz & fData(sset)$mz < 4050] <- "red"
+
+plot(sset, pixel=1)
+
+plot(sset, ~ mz, pixel=1)
+
+plot(sset, ~ mz, pixel=1:ncol(sset))
+
+plot(sset, ~ mz, pixel=1:ncol(sset), fun=max)
+
+plot(sset, ~ mz | pg, pixel=1:ncol(sset), lattice=TRUE)
+
+plot(sset, pixel.groups=pg, pixel=1:ncol(sset), lattice=TRUE)
+
+plot(sset, pixel.groups=pg, pixel=1:ncol(sset), lattice=TRUE, superpose=TRUE)
+
+plot(sset, ~ mz | pg, groups=fg, pixel=1:ncol(sset), lattice=TRUE)
+@
+
+\section{Plotting ion images}
+
+The \verb|image| method is used to plot ion images.
+
+<<readAnalyze, eval=FALSE>>=
+image(sset, feature=1)
+     
+image(sset, feature=fData(sset)$fg=="black")
+
+image(sset, feature=fData(sset)$fg=="red")
+
+image(sset, ~ x * y | fg, feature=1:nrow(sset), lattice=TRUE)
+
+image(sset, feature=1:nrow(sset), feature.groups=fg, lattice=TRUE)
+@
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}

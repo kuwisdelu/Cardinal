@@ -1,0 +1,68 @@
+
+%\VignetteIndexEntry{Cardinal IO}
+%\VignettePackage{Cardinal}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal input/output}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+\Rpackage{Cardinal} input/output capabilites are described below. 
+
+\section{Input}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+
+\Rpackage{Cardinal} can read two of the most common data exchange formats in imaging mass spectrometry: Analyze 7.5 and imzML.
+
+\subsection{Analyze 7.5}
+
+Originally designed for MRI use, Analyze 7.5 is one of the oldest and most common formats still used for exchange of mass spectrometry imaging data.
+
+<<readAnalyze, eval=FALSE>>=
+name <- "Bierbaum_demo_"
+folder <- "/Users/kuwisdelu/Documents/Datasets/DESI-Imaging/Bierbaum_demo_"
+x1 <- readAnalyze(name=name, folder=folder)
+@
+
+\subsection{imzML}
+
+A newly-developed format specifically designed for interchange of mass spectrometry imaging datasets, imzML is an open XML-based format to which many other formats can be converted.
+
+<<readAnalyze, eval=FALSE>>=
+name <- "S042_Continuous"
+folder <- "/Users/kuwisdelu/Documents/Purdue/Research/Imaging/Data and Code/imzML/s042_continuous/"
+x2 <- readImzML(name=name, folder=folder)
+@
+
+\section{Output}
+
+\subsection{RData files}
+
+Any R object including \Robject{MSImageSet} datasets can be exported and saved as an \textbf{RData} file using \verb|save| and reimported using \verb|load|.
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}
