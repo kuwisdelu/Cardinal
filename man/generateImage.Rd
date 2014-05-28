@@ -8,7 +8,7 @@
 }
 
 \usage{
-generateSpectrum(data = factor(1),
+generateImage(data = factor(1),
     coord = expand.grid(
         x = 1:max(1, nrow(data)),
         y = 1:max(1, ncol(data))),

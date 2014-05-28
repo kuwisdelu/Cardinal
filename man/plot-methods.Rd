@@ -34,7 +34,7 @@
 
     Usually, the LHS is not supplied, and the formula is of the form '~ x | g1 * g2 * ...', and the y-axis is implicityl assumed to be the feature vectors corresponding to each pixel in the imaging dataset specified by the object 'x'. However, a variable evaluating to a feature vector, or a sequence of such variables, can also be supplied.
 
-    The RHS is evaluated in \code{fData} and should provide values for the x-axis.
+    The RHS is evaluated in \code{fData(x)} and should provide values for the x-axis.
 
     The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose=TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
     
