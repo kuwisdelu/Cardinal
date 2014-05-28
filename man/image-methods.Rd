@@ -62,7 +62,29 @@
 }
 
 \examples{
-    ## write examples to put here
+data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+
+set.seed(1)
+sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100)
+
+pData(sset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "red"))
+fData(sset)$fg[2950 < fData(sset)$t & fData(sset)$t < 3050] <- "black"
+fData(sset)$fg[3950 < fData(sset)$t & fData(sset)$t < 4050] <- "red"
+
+image(sset, feature=1)
+
+image(sset, feature=fData(sset)$fg=="black")
+
+image(sset, feature=fData(sset)$fg=="red")
+
+image(sset, ~ x * y | fg, feature=1:nrow(sset), lattice=TRUE)
+
+image(sset, feature=1:nrow(sset), feature.groups=fg, lattice=TRUE)
 }
 
 \keyword{methods}

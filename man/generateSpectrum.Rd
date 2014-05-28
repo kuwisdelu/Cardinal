@@ -10,8 +10,11 @@
 \usage{
 generateSpectrum(n, peaks = 100,
 	range = c(1001, 20000),
-	centers = runif(peaks, min=range[1], max=range[2]),
-	intensities = runif(peaks, min=0.1, max=1),
+	centers = seq(
+        from = range[1] + diff(range) / (peaks + 1),
+        to = range[2] - diff(range) / (peaks + 1),
+        length.out = peaks),
+    intensities = runif(length(centers), min=0.1, max=1),
 	step = diff(range)/1e4,
 	resolution = 500,
 	noise = 0.05,
@@ -22,6 +25,8 @@ generateSpectrum(n, peaks = 100,
 
 \arguments{
     \item{n}{The number of signals to simulate.}
+
+    \item{peaks}{The number of peaks in the signal.}
     
     \item{range}{A pair of numbers specifying the range of continues feature values at which the signal is measured.}
     
@@ -68,7 +73,7 @@ plot(x ~ t, type="l", data=s)
 s <- generateSpectrum(1, centers=c(2000,3000), resolution=10, baseline=3000)
 plot(x ~ t, type="l", data=s)
 
-s <- generateSpectrum(1, peaks=2, intensity=rep(1,2), auc=FALSE, baseline=0)
+s <- generateSpectrum(1, peaks=2, auc=FALSE, baseline=0)
 plot(x ~ t, type="l", data=s)
 }
 

@@ -13,7 +13,10 @@
 ##-----------------------------------------------
 generateSpectrum <- function(n, peaks = 100,
 	range = c(1001, 20000),
-	centers = runif(peaks, min=range[1], max=range[2]),
+	centers = seq(
+		from = range[1] + diff(range) / (peaks + 1),
+		to = range[2] - diff(range) / (peaks + 1),
+		length.out = peaks),
 	intensities = runif(peaks, min=0.1, max=1),
 	step = diff(range)/1e4,
 	resolution = 500,
@@ -23,6 +26,13 @@ generateSpectrum <- function(n, peaks = 100,
 	auc = TRUE)
 {
 	t <- seq(from=range[1], to=range[2], by=step)
+	if ( missing(peaks) ) {
+		if ( !missing(centers) ) {
+			peaks <- length(centers)
+		} else if ( !missing(intensities) ) {
+			peaks <- length(intensities)
+		}
+	}
 	if ( n > 1 ) {
 		x <- sapply(rep(1, n), function(ns) {
 			generateSpectrum(n=ns, peaks=peaks, range=range,
@@ -32,7 +42,7 @@ generateSpectrum <- function(n, peaks = 100,
 		} )
 	} else {
 		sigma <- (centers / resolution) / (2 * sqrt(2 * log(2)))
-		intensities <- intensities + rnorm(length(intensities), 0, sd)
+		intensities <- intensities + rnorm(peaks, 0, sd)
 		x <- mapply(function(mus, ints, sigmas) {
 			xs <- dnorm(t, mean=mus, sigmas)
 			if ( !auc ) xs <- xs / max(xs, na.rm=TRUE)

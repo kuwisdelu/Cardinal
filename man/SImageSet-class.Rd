@@ -31,7 +31,7 @@ SImageSet(
         coord=coord),
     pixelData = IAnnotatedDataFrame(
         data=coord,
-        varMetadata=data.frame(labelType=rep("spatial", ncol(coord)))),
+        varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
     featureData = AnnotatedDataFrame(
         data=data.frame(row.names=seq_len(nrow(data)))),
     protocolData = AnnotatedDataFrame(

@@ -65,7 +65,33 @@
 }
 
 \examples{
-    ## write examples to put here
+data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+
+set.seed(1)
+sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100)
+
+pData(sset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "red"))
+fData(sset)$fg[2950 < fData(sset)$t & fData(sset)$t < 3050] <- "black"
+fData(sset)$fg[3950 < fData(sset)$t & fData(sset)$t < 4050] <- "red"
+
+plot(sset, pixel=1)
+
+plot(sset, ~ t, pixel=1:ncol(sset))
+
+plot(sset, ~ t | pg, pixel=1:ncol(sset), lattice=TRUE)
+
+plot(sset, ~ t, pixel.groups=pg, pixel=1:ncol(sset), lattice=TRUE, superpose=TRUE)
+
+plot(sset, ~ t | pg, groups=fg, pixel=1:ncol(sset), lattice=TRUE)
+
+msset <- generateImage(data, as="MSImageSet", resolution=50)
+
+plot(msset, pixel=1)
 }
 
 \keyword{methods}
