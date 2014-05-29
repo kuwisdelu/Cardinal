@@ -55,7 +55,7 @@ image(data[,ncol(data):1], col=c("black", "red"))
 \caption{\small Ground truth image used to generate the simulated dataset.}
 \end{center}
 \end{figure}
-Now we generate the data as if from a mass spectrometry imaging experiment with peaks at $m/z$ 3000 and $m/z$ 4000.
+Now we generate the data as if from a mass spectrometry imaging experiment with peaks at $m/z$ 3000 (higher intensity in black pixels) and $m/z$ 4000 (higher intensity in red pixels).
 <<sim>>=
 set.seed(1)
 msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
@@ -179,7 +179,7 @@ image(msset, feature=fData(msset)$fg=="red", col=alpha.colors(100, "red"))
 \caption{\small Averaging over different sets of mass features.}
 \end{center}
 \end{figure}
-Using a \Robject{lattice}-style formula, we can condition on other variables with \verb|image| too. Here we use all of the features, but condition on which part of the mass spectrum those features come from using the variable \verb|pData(msset)$pg|. Again, since \verb|image| knows to look in \Robject{msset}, we only need to specify the variable as \Robject{fg}.
+Using a \Robject{lattice}-style formula, we can condition on other variables with \verb|image| too. Here we use all of the features, but condition on which part of the mass spectrum those features come from using the variable \verb|fData(msset)$fg|. Again, since \verb|image| knows to look in \Robject{msset}, we only need to specify the variable as \Robject{fg}.
 <<image5>>=
 print(image(msset, ~ x * y | fg, feature=1:nrow(msset), lattice=TRUE, col.regions=intensity.colors(100)))
 @

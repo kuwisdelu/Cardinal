@@ -2,6 +2,8 @@
 #### Define new generics from base R ####
 setGeneric("as.array")
 setGeneric("as.matrix")
+setGeneric("names")
+setGeneric("names<-")
 setGeneric("rownames<-")
 setGeneric("colnames<-")
 

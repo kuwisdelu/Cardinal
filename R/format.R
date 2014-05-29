@@ -10,7 +10,7 @@
 		digits <- 0
 	}
 	digits <- max(digits, 2)
-	if ( length(mz) > 1 ) {
+	if ( length(mz) > 0 ) {
 		paste("m/z", "=", round(mz, digits=digits))
 	} else {
 		character()

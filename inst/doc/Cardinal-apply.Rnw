@@ -10,7 +10,7 @@
 BiocStyle::latex()
 @
 
-\title{Cardinal \texttt{pixelApply} and \texttt{featureApply}}
+\title{Cardinal \Robject{pixelApply} and \Robject{featureApply}}
 
 \author{Kyle D. Bemis}
 
@@ -27,28 +27,69 @@ options(width=69)
 library(Cardinal)
 @ 
 
-in \Rpackage{Cardinal}, the methods \Robject{pixelApply} and \Robject{featureApply} allow \Robject{apply}-like functionality for imaging datasets.
+The \verb|apply| family of functions are a powerful feature of \R. The \verb|apply| function applies a function over margins of an array, while \verb|sapply| applies a function over every element of a vector-like object. The function \verb|tapply| applies a function over a ``ragged'' array, so that the function is applied over groups of values given by levels of another variable (usually a factor). In \Rpackage{Cardinal}, the methods \verb|pixelApply| and \verb|featureApply| allow \verb|apply|-like functionality that combine traits of each of these, tailored for imaging datasets.
 
-\section{\texttt{pixelApply}}
+\section{The \Robject{apply} family in \Rpackage{Cardinal}}
 
-The method \Robject{pixelApply} allows functions to be applied over all pixels. The function is applied to the pixel-by-pixel feature vectors.
+For the following examples, we will use a simulated dataset. The image is a cardinal with red and black feathers, where the colors represent different regions of the image. The mass spectra will have two peaks to indicate the two regions. We use \Robject{generateImage} to generate the dataset from an integer matrix where $0$ represents black regions of the image and $1$ represents the red regions of the image.
+<<data>>=
+data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+ NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+ 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+ 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+@
+We can plot the ground truth image directly.
+<<truth>>=
+image(data[,ncol(data):1], col=c("black", "red"))
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<truth>>
+@
+\caption{\small Ground truth image used to generate the simulated dataset.}
+\end{center}
+\end{figure}
+Now we generate the data as if from a mass spectrometry imaging experiment with peaks at $m/z$ 3000 (higher intensity in black pixels) and $m/z$ 4000 (higher intensity in red pixels).
+<<sim>>=
+set.seed(1)
+msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
+	as="MSImageSet")
+@
+We need to mark which pixels are black and which are red.
+<<pData>>=
+pData(msset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+@
+Then we need to mark which features (which regions of the mass spectrum) are peaks and which regions (\texttt{black} or \texttt{red}) they are associated with; the rest of the spectrum is marked as background noise (\texttt{bg}).
+<<fData>>=
+fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg", "black", "red"))
+fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
+fData(msset)$fg[3950 < fData(msset)$mz & fData(msset)$mz < 4050] <- "red"
+@
+Now we can experiment with different ways of plotting an imaging dataset.
 
-<<readAnalyze, eval=FALSE>>=
-data <- matrix(1:256, nrow=4)
-coord <- expand.grid(x=1:4, y=1:4, z=1:4)
-sset <- SImageSet(data=data, coord=coord)
+\subsection{\Robject{pixelApply}}
 
-fData(sset)$flag <- rep(c(TRUE, FALSE), 2)
-pixelApply(sset, max, .feature.groups=flag)
+The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors. Here, we used \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or red or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
+
+<<pixelApply1, results=verbatim>>=
+p1 <- pixelApply(msset, mean, .feature.groups=fg)
+p1[,1:20]
+@
+By comparing side-by-side with the ground truth (which we have stored in by \verb|pData(msset)$pg|), we see the result is as we expected. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) are higher.
+<<pixelApply2, results=verbatim>>=
+cbind(pData(msset), t(p1))[1:20,c("pg", "black", "red")]
 @
 
-\section{\texttt{featureApply}}
+\subsection{\Robject{featureApply}}
 
-The method \Robject{pixelApply} allows functions to be applied over all features. The function is applied to the false-image pixel vectors.
+The method \verb|pixelApply| allows functions to be applied over all features. The function is applied to the false-image pixel vectors.
 
-<<readAnalyze, eval=FALSE>>=
-pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
-featureApply(sset, max, .pixel.groups=flag)
+<<featureApply1>>=
+f1 <- featureApply(msset, mean, .pixel.groups=pg)
+f1[,1:20]
 @
 
 \section{Session info}
