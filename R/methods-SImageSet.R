@@ -254,7 +254,6 @@ setMethod("featureApply", "SImageSet",
 		ans <- vector("list", length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				# .fun(iData(.object)[.feature[[i]],j], ...)
 				tmpX <- iData(.object)[.feature[[i]],j]
 				attributes(tmpX) <- fData(.object)[.feature[[i]],,drop=FALSE]
 				.fun(tmpX, ...)

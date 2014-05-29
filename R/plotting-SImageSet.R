@@ -28,6 +28,7 @@ setMethod("plot",
 				envir=pData(x), enclos=parent.frame(2))
 			if ( length(pixel) != length(pixel.groups) )
 				pixel.groups <- pixel.groups[.match.pixel(pixel, x)]
+			pixel.groups <- as.factor(pixel.groups)
 			missing.pixel.groups <- FALSE
 		}
 		# parse formula and set up model for plotting
@@ -37,7 +38,7 @@ setMethod("plot",
 			values <- .calculatePlotValues(x, fun=fun, pixel=pixel,
 				pixel.groups=pixel.groups, condition=model$condition,
 				missing.pixel.groups=missing.pixel.groups)
-			condition <- do.call(expand.grid, c(list(.pixel.groups=unique(pixel.groups)),
+			condition <- do.call(expand.grid, c(list(.pixel.groups=levels(pixel.groups)),
 				lapply(model$condition, function(cond) levels(as.factor(cond)))))
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
@@ -136,6 +137,7 @@ setMethod("image",
 				envir=fData(x), enclos=parent.frame(2))
 			if ( length(feature) != length(feature.groups))
 				feature.groups <- feature.groups[.match.feature(feature, x)]
+			feature.groups <- as.factor(feature.groups)
 			missing.feature.groups <- FALSE
 		}
 		# parse formula and set up model for plotting
@@ -145,7 +147,7 @@ setMethod("image",
 			values <- .calculateImageValues(x, fun=fun, feature=feature,
 				feature.groups=feature.groups, condition=model$condition,
 				missing.feature.groups=missing.feature.groups)
-			condition <- do.call(expand.grid, c(list(.feature.groups=unique(feature.groups)),
+			condition <- do.call(expand.grid, c(list(.feature.groups=levels(feature.groups)),
 				lapply(model$condition, function(cond) levels(as.factor(cond)))))
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
@@ -166,7 +168,7 @@ setMethod("image",
 			# set up the groups and subset
 			subset <- rep(subset[positionArray(imageData(x))], ncond)
 			if ( superpose && is.null(groups) ) {
-				groups <- rep(unique(feature.groups), each=nobs)
+				groups <- rep(levels(feature.groups), each=nobs)
 			} else if ( !is.null(groups) ) {
 				groups <- rep(groups[positionArray(imageData(x))], ncond)
 			}
@@ -212,7 +214,6 @@ setMethod("image",
 			ys <- seq(from=1, to=xylim[[2]], length.out=nrow(data) / xtotticks)
 			zdim <- c(length(xs), length(ys))
 			# loop through conditions and then samples
-			par(mfrow=c(nlayers,1))
 			for ( i in ncol(values) ) {
 				for ( j in levels(data$sample) ) {
 					z <- values[data$sample == j]
@@ -228,9 +229,9 @@ setMethod("image",
 .reshapeImageValues <- function(values, object, groups, subset, lattice) {
 	if ( !lattice && !is.null(groups) ) {
 		nas <- rep(NA, nrow(values))
-		newdim <- c(nrow(values), ncol(values) * length(unique(groups)))
+		newdim <- c(nrow(values), ncol(values) * length(levels(groups)))
 		values <- apply(values, 2, function(x) {
-			sapply(unique(groups), function(g) ifelse(groups==g, x, nas))
+			sapply(levels(groups), function(g) ifelse(groups==g, x, nas))
 		})
 		dim(values) <- newdim
 	}
@@ -278,12 +279,13 @@ setMethod("image",
 
 .fastFeatureApply <- function(object, fun, pixel, pixel.groups) {
 	x <- iData(object)[,pixel,drop=FALSE]
+	pixel.groups <- as.factor(pixel.groups)
 	if ( length(pixel) == 1 ) {
 		x <- as.matrix(x)
-	} else if ( length(unique(pixel.groups)) == 1 ) {
+	} else if ( length(levels(pixel.groups)) == 1 ) {
 		x <- as.matrix(apply(x, 1, fun))
 	} else {
-		x <- sapply(unique(pixel.groups), function(g) {
+		x <- sapply(levels(pixel.groups), function(g) {
 			apply(x[,pixel.groups==g,drop=FALSE], 1, fun)
 		})
 	}
@@ -292,12 +294,13 @@ setMethod("image",
 
 .fastPixelApply <- function(object, fun, feature, feature.groups) {
 	x <- iData(object)[feature,,drop=FALSE]
+	feature.groups <- as.factor(feature.groups)
 	if ( length(feature) == 1 ) {
 		x <- t(x)
-	} else if ( length(unique(feature.groups)) == 1 ) {
+	} else if ( length(levels(feature.groups)) == 1 ) {
 		x <- as.matrix(apply(x, 2, fun))
 	} else {
-		x <- sapply(unique(feature.groups), function(g) {
+		x <- sapply(levels(feature.groups), function(g) {
 			apply(x[feature.groups==g,,drop=FALSE], 2, fun)
 		})
 	}

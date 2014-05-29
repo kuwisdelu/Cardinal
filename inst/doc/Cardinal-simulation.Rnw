@@ -1,0 +1,58 @@
+
+%\VignetteIndexEntry{Cardinal simulation}
+%\VignettePackage{Cardinal}
+%\VignetteEngine{utils::Sweave}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, Simulation}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal simulation}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+
+\Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed metholody for analyzing mass spectrometry imaging experiments.
+
+\section{Simulation of spectra}
+
+The plotting facilities of \Rpackage{Cardinal} are based on the powerful formula interface used by the \Robject{lattice} graphics package.
+
+\section{Simulation of images}
+
+The \verb|plot| method is used to plot mass spectra.
+
+<<hello, eval=FALSE>>=
+x <- paste("hello")
+@
+
+\section{Advanced simulation}
+
+The \verb|image| method is used to plot ion images.
+
+<<world, eval=FALSE>>=
+x <- paste(x, "world!")
+@
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+\end{document}
