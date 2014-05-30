@@ -2,7 +2,7 @@
 %\VignetteIndexEntry{Cardinal IO}
 %\VignettePackage{Cardinal}
 %\VignetteEngine{utils::Sweave}
-%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+%\VignetteKeyword{Infrastructure, Proteomics, MassSpectrometry, IO}
 
 \documentclass{article}
 
@@ -30,7 +30,6 @@ BiocStyle::latex()
 options(width=69)
 library(Cardinal)
 @ 
-
 \Rpackage{Cardinal} can read two of the most common data exchange formats in imaging mass spectrometry: Analyze 7.5 and imzML.
 
 \subsection{Analyze 7.5}

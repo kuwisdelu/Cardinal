@@ -7,9 +7,9 @@ setMethod("plot",
 		groups = NULL,
 		superpose = FALSE,
 		fun = mean,
+		...,
 		subset = TRUE,
-		lattice = FALSE,
-		...)
+		lattice = FALSE)
 	{
 		if ( missing(pixel) ) stop("'pixel' must be specified")
 		# add Feature to features for default plotting
@@ -102,12 +102,6 @@ setMethod("plot",
 		plot(x, formula=y, ...)
 	})
 
-setMethod("plot",
-	signature = c(x = "MSImageSet", y = "missing"),
-	function(x, formula = ~mz, ...) {
-		callNextMethod(x, formula=formula, ...)
-	})
-
 setMethod("image",
 	signature = c(x = "SImageSet"),
 	function(x, formula = ~ x * y,
@@ -116,9 +110,9 @@ setMethod("image",
 		groups = NULL,
 		superpose = FALSE,
 		fun = mean,
+		...,
 		subset = TRUE,
-		lattice = FALSE,
-		...)
+		lattice = FALSE)
 	{
 		if ( missing(feature) ) stop("'feature' must be specified")
 		# evaluated with respect to fData

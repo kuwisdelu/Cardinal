@@ -2,7 +2,7 @@
 %\VignetteIndexEntry{Cardinal apply}
 %\VignettePackage{Cardinal}
 %\VignetteEngine{utils::Sweave}
-%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+%\VignetteKeyword{Infrastructure, Proteomics, MassSpectrometry, IO}
 
 \documentclass{article}
 
@@ -26,18 +26,17 @@ BiocStyle::latex()
 options(width=69)
 library(Cardinal)
 @ 
-
 The \verb|apply| family of functions are a powerful feature of \R. The \verb|apply| function applies a function over margins of an array, while \verb|sapply| applies a function over every element of a vector-like object. The function \verb|tapply| applies a function over a ``ragged'' array, so that the function is applied over groups of values given by levels of another variable (usually a factor). In \Rpackage{Cardinal}, the methods \verb|pixelApply| and \verb|featureApply| allow \verb|apply|-like functionality that combine traits of each of these, tailored for imaging datasets.
 
 \section{The \Robject{apply} family in \Rpackage{Cardinal}}
 
 For the following examples, we will use a simulated dataset. The image is a cardinal with red and black feathers, where the colors represent different regions of the image. The mass spectra will have two peaks to indicate the two regions. We use \Robject{generateImage} to generate the dataset from an integer matrix where $0$ represents black regions of the image and $1$ represents the red regions of the image.
 <<data>>=
-data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
  NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
  1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
  1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
 @
 We can plot the ground truth image directly.
 <<truth>>=
@@ -62,7 +61,7 @@ We need to mark which pixels are black and which are red.
 <<pData>>=
 pData(msset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
 @
-Then we need to mark which features (which regions of the mass spectrum) are peaks and which regions (\texttt{black} or \texttt{red}) they are associated with; the rest of the spectrum is marked as background noise (\texttt{bg}).
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``black'' or ``red'' pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
 <<fData>>=
 fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg", "black", "red"))
 fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
@@ -72,25 +71,72 @@ Now we can experiment with different ways of plotting an imaging dataset.
 
 \subsection{\Robject{pixelApply}}
 
-The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors. Here, we used \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or red or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
+The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors (mass spectra). Here, we use \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or red or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
 
 <<pixelApply1, results=verbatim>>=
 p1 <- pixelApply(msset, mean, .feature.groups=fg)
-p1[,1:20]
+p1[,1:30]
 @
-By comparing side-by-side with the ground truth (which we have stored in by \verb|pData(msset)$pg|), we see the result is as we expected. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) are higher.
+By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
 <<pixelApply2, results=verbatim>>=
-cbind(pData(msset), t(p1))[1:20,c("pg", "black", "red")]
+cbind(pData(msset), t(p1))[1:30,c("pg", "black", "red")]
 @
+We can manually construct the images corresponding to the mean intensity of the two peaks centered at $m/z$ 3000 and $m/z$ 4000 and plot their images.
+<<pixelApply3>>=
+temp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
+image(temp1, feature=1, col=alpha.colors(100, "black"), main="black peak", sub="m/z = 3000")
+@
+<<pixelApply4>>=
+temp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
+image(temp2, feature=1, col=alpha.colors(100, "red"), main="red peak", sub="m/z = 4000")
+@
+\begin{figure}
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply3>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply4>>
+@
+\end{tabular}
+\caption{\small Mean intensites of the two peaks centered at $m/z$ 3000 and $m/z$ 4000.}
+\end{center}
+\end{figure}
+If only the plots are desired rather than the actual data, then \verb|image| can be used to perform these steps automatically while producing the plot. See \textit{Cardinal plotting} for how to do this.
 
 \subsection{\Robject{featureApply}}
 
-The method \verb|pixelApply| allows functions to be applied over all features. The function is applied to the false-image pixel vectors.
-
+The method \verb|featureApply| allows functions to be applied over all features. The function is applied to the flattened false-image vectors. The vectors are the pixel intensities of a single-feature image, disregarding missing pixels. Here, we use \verb|featureApply| to find the mean spectrum for different groups of pixels. We provide \verb|pData(msset)$pg| as a grouping variable, since it indicates the kind of pixel. We desire a mean spectrum for the black pixels and a mean spectrum for the red pixels. As before, since \verb|featureApply| knows to look in \Robject{msset}, we only need to provide \Robject{pg} to the argument \Robject{.pixel.groups}.
 <<featureApply1>>=
 f1 <- featureApply(msset, mean, .pixel.groups=pg)
-f1[,1:20]
+f1[,1:30]
 @
+Again, we can check the results by plotting them.
+<<featureApply2>>=
+plot(mz(msset), f1["black",], type="l", xlab="m/z", ylab="Intensity", main="mean spectrum of black pixels", col="black")
+@
+<<featureApply3>>=
+plot(mz(msset), f1["red",], type="l", xlab="m/z", ylab="Intensity", main="mean spectrum of red pixels", col="red")
+@
+\begin{figure}
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply2>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply3>>
+@
+\end{tabular}
+\caption{\small Mean intensites of the two peaks centered at $m/z$ 3000 and $m/z$ 4000.}
+\end{center}
+\end{figure}
+As expected, we see the mean spectrum of the black pixels has a higher peak at $m/z$ 3000 while the mean spectrum of the red pixels has a higher peak at $m/z$ 4000. As before, if only the plots are desired rather than the actual data, then \verb|plot| can be used to perform these steps automatically. See \textit{Cardinal plotting} for how to do this.
 
 \section{Session info}
 

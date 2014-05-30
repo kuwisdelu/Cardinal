@@ -9,11 +9,7 @@ setMethod("initialize", "SImageData",
 		.Object@positionArray <- positionArray
 		.Object@dim <- dim
 		.Object@dimnames <- dimnames
-		.Object <- callNextMethod(.Object, ...)
-		# the following is a hack to prevent copying when assigning 'dimnames'
-		# see 'pixelNames' and 'featureNames' for details
-		# evalq(.value <- NULL, envir=.Object@data)
-		.Object
+		callNextMethod(.Object, ...)
 	})
 
 SImageData <- function(
@@ -82,10 +78,6 @@ setMethod("featureNames", "SImageData",
 
 setReplaceMethod("featureNames", "SImageData",
 	function(object, value) {
-		# object@data$.value <- value
-		# use of evalq() prevents unnecessary copying of iData
-		# evalq(dimnames(iData)[[1]] <- .value, envir=object@data)
-		# evalq(.value <- NULL, envir=object@data)
 		object@dimnames[[1]] <- value
 		object
 	})
@@ -95,10 +87,6 @@ setMethod("pixelNames", "SImageData",
 
 setReplaceMethod("pixelNames", "SImageData",
 	function(object, value) {
-		# object@data$.value <- value
-		# use of evalq() prevents unnecessary copying of iData
-		# evalq(dimnames(iData)[[2]] <- .value, envir=object@data)
-		# evalq(.value <- NULL, envir=object@data)
 		object@dimnames[[2]] <- value
 		object
 	})

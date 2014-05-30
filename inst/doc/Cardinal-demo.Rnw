@@ -8,7 +8,7 @@
 BiocStyle::latex()
 @
 
-\title{Cardinal: Tools for mass spectrometry imaging}
+\title{Cardinal: Analytic tools for mass spectrometry imaging}
 
 \author{Kyle D. Bemis}
 
@@ -18,49 +18,13 @@ BiocStyle::latex()
 
 \tableofcontents
 
-\section{Data contents and structure}
+\section{Introduction}
 
-Testing plotting commands (without outputting the plots):
-
-<<a>>=
-x <- 1:10
-plot(x ~ x)
-@
-
-<<b>>=
-y <- 10:1
-plot(y ~ x)
-@
-
-Output the plots in a figure now:
-
-%++++++++++++++
-% FIGURE:  Test
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{figure}
-\begin{center}
-\begin{tabular}{cc}
-\small A & B \\
-
-<<fig=TRUE, echo=FALSE>>=
-<<a>>
-@
-&
-
-<<fig=TRUE, echo=FALSE>>=
-<<b>>
-@
-\\
-
-\end{tabular}
-\end{center}
-\caption{
-\small Test caption.
-}
-\end{figure}
-% END FIGURE
-%++++++++++++++
-
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+@ 
+Text text text.
 
 \section{Session info}
 

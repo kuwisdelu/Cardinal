@@ -43,7 +43,7 @@
 
         \item{\code{spectrumRepresentation}:}{Object of class \code{character} describing the spectrum type (profile or centroid).}
 
-        \item{\code{peakPicking}:}{Object of class \code{character} describing the peak picking applied to the dataset (area of height).}
+        \item{\code{peakPicking}:}{Object of class \code{character} describing the peak picking applied to the dataset (area or height).}
 
         \item{\code{centroided}:}{Object of class \code{logical} describing whether the data have been centroided.}
 

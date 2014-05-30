@@ -2,7 +2,7 @@
 %\VignetteIndexEntry{Cardinal plotting}
 %\VignettePackage{Cardinal}
 %\VignetteEngine{utils::Sweave}
-%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, IO}
+%\VignetteKeyword{Infrastructure, Proteomics, MassSpectrometry, IO}
 
 \documentclass{article}
 
@@ -36,11 +36,11 @@ The plotting facilities of \Rpackage{Cardinal} are based on the powerful formula
 
 For the following examples, we will use a simulated dataset. The image is a cardinal with red and black feathers, where the colors represent different regions of the image. The mass spectra will have two peaks to indicate the two regions. We use \Robject{generateImage} to generate the dataset from an integer matrix where $0$ represents black regions of the image and $1$ represents the red regions of the image.
 <<data>>=
-data <- structure(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
  NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
  1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
  1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), .Dim = c(9L, 9L))
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
 @
 We can plot the ground truth image directly.
 <<truth>>=
@@ -65,7 +65,7 @@ We need to mark which pixels are black and which are red.
 <<pData>>=
 pData(msset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
 @
-Then we need to mark which features (which regions of the mass spectrum) are peaks and which regions (\texttt{black} or \texttt{red}) they are associated with; the rest of the spectrum is marked as background noise (\texttt{bg}).
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``black'' or ``red'' pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
 <<fData>>=
 fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg", "black", "red"))
 fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
@@ -99,7 +99,7 @@ plot(msset, ~ mz, pixel=1)
 \end{figure}
 Specifying multiple pixels will apply a function, specified by \Robject{fun}, over those pixels. This can be used to create a plot of the mean spectrum (the default behavior). Below we obtain the mean spectrum of the red pixels, and the max spectrum of the black pixels.
 <<plot3>>=
-plot(msset, pixel=pData(msset)$pg=="red", main="Mean of red pixels")
+plot(msset, pixel=pData(msset)$pg=="red", fun=median, main="Median of red pixels")
 @
 <<plot4>>=
 plot(msset, pixel=pData(msset)$pg=="black", fun=max, main="Max of black pixels")
@@ -116,7 +116,7 @@ plot(msset, pixel=pData(msset)$pg=="black", fun=max, main="Max of black pixels")
 <<plot4>>
 @
 \end{tabular}
-\caption{\small Applying a function over pixels to plot a mean of max spectrum.}
+\caption{\small Applying a function over pixels to plot a median and max spectrum.}
 \end{center}
 \end{figure}
 Using the \Robject{lattice} graphics option allows for more complex plots to be made. Conditioning on variables in the \Robject{formula} argument allows direct comparison between regions of the image or mass spectrum. For example, by conditioning on the variable \verb|pData(msset)$pg| which specifies the color of the pixels, we can obtain mean spectra for each type of pixel in a single step; notice that the \verb|plot| method knows where to find the \Robject{pg} variable, because it is contained in \Robject{msset}. Likewise, we use the \Robject{fg} variable (which we used to mark notable $m/z$-values) with the argument \Robject{groups} to distinguish different regions of the mass spectrum with different colors.

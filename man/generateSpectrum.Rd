@@ -10,17 +10,17 @@
 \usage{
 generateSpectrum(n, peaks = 100,
 	range = c(1001, 20000),
-	centers = seq(
+    centers = seq(
         from = range[1] + diff(range) / (peaks + 1),
         to = range[2] - diff(range) / (peaks + 1),
         length.out = peaks),
     intensities = runif(length(centers), min=0.1, max=1),
-	step = diff(range)/1e4,
-	resolution = 500,
-	noise = 0.05,
+    step = diff(range)/1e4,
+    resolution = 500,
+    noise = 0.05,
     sd = 0.1,
-	baseline = 2000,
-	auc = TRUE)
+    baseline = 2000,
+    auc = TRUE)
 }
 
 \arguments{
