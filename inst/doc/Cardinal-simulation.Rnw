@@ -20,7 +20,7 @@ BiocStyle::latex()
 
 \tableofcontents
 
-\section{Introduction}q
+\section{Introduction}
 
 <<Cardinal,echo=FALSE,results=hide>>=
 options(width=69)
@@ -33,12 +33,12 @@ library(Cardinal)
 The \verb|generateSpectrum| function can be used to simulate mass spectra. Its parameters can be tuned to simulate different kinds of mass spectra from different kinds of machines, and different protein and peptide patterns.
 <<gs1>>=
 set.seed(1)
-s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000), baseline=2000, resolution=100)
+s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000), baseline=2000, resolution=100, step=3.3)
 plot(x ~ t, data=s1, type="l", xlab="m/z", ylab="Intensity")
 @
 <<gs2>>=
 set.seed(2)
-s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000), baseline=3000, resolution=50)
+s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000), baseline=3000, resolution=50, step=3.3)
 plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
 @
 \setkeys{Gin}{width=0.4\textwidth}
@@ -59,12 +59,12 @@ plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
 Above we simulated MALDI-like spectra. Below we can simulate DESI-like spectra.
 <<gs3>>=
 set.seed(3)
-s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000), baseline=0, resolution=250, noise=0.1)
+s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000), baseline=0, resolution=250, noise=0.1, step=1.2)
 plot(x ~ t, data=s3, type="l", xlab="m/z", ylab="Intensity")
 @
 <<gs4>>=
 set.seed(4)
-s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), baseline=0, resolution=500, noise=0.2)
+s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), baseline=0, resolution=500, noise=0.2, step=1.2)
 plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
 @
 \setkeys{Gin}{width=0.4\textwidth}

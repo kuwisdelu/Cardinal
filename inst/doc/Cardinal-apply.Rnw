@@ -55,7 +55,7 @@ Now we generate the data as if from a mass spectrometry imaging experiment with 
 <<sim>>=
 set.seed(1)
 msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
-	as="MSImageSet")
+	step=3.3, as="MSImageSet")
 @
 We need to mark which pixels are black and which are red.
 <<pData>>=
