@@ -54,16 +54,16 @@ test_that("SImageData accessors and assignment", {
 	storageMode(sdata1) <- "lockedEnvironment"
 	expect_error(iData(sdata1)[,1] <- new.values)
 
-	storageMode(sdata1) <- "immutableEnvironment"
-	dimnames(iData(sdata1)) <- list(1:3, 1:9)
-	dimnames(iData(sdata2)) <- list(1:3, c(10, 2:9))
-	combdata <- combine(sdata1, sdata2)
-	expect_equivalent(iData(combdata), combine(iData(sdata1), iData(sdata2)))
+	# storageMode(sdata1) <- "immutableEnvironment"
+	# dimnames(iData(sdata1)) <- list(1:3, 1:9)
+	# dimnames(iData(sdata2)) <- list(1:3, c(10, 2:9))
+	# combdata <- combine(sdata1, sdata2)
+	# expect_equivalent(iData(combdata), combine(iData(sdata1), iData(sdata2)))
 
-	sdata3 <- sdata2
-	dimnames(iData(sdata3)) <- list(1:3, 11:19)	
-	multicombdata <- combine(sdata1, sdata2, sdata3)
-	expect_equivalent(iData(multicombdata), combine(iData(sdata1), iData(sdata2), iData(sdata3)))
+	# sdata3 <- sdata2
+	# dimnames(iData(sdata3)) <- list(1:3, 11:19)	
+	# multicombdata <- combine(sdata1, sdata2, sdata3)
+	# expect_equivalent(iData(multicombdata), combine(iData(sdata1), iData(sdata2), iData(sdata3)))
 
 })
 

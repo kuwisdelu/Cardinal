@@ -35,6 +35,8 @@ test_that("SImageSet imageData", {
 	iData(sset2) <- matrix(27:1, nrow=3)
 	expect_equal(sum(iData(sset2) == iData(sset)), 1)
 
+	sset3 <- SImageSet(data=matrix(1))
+
 })
 
 test_that("SImageSet pixelData", {
@@ -43,7 +45,7 @@ test_that("SImageSet pixelData", {
 	coord <- expand.grid(x=1:3, y=1:3)
 	sset <- SImageSet(data=data, coord=coord)
 
-	expect_identical(colnames(iData(sset)), pixelNames(sset))
+	expect_identical(pixelNames(imageData(sset)), pixelNames(sset))
 
 	sset[["test"]] <- rnorm(9)
 	expect_identical(pData(sset)$test, sset$test)
@@ -58,7 +60,7 @@ test_that("SImageSet pixelData", {
 	expect_identical(rownames(dims(sset2))[-1], c("x1", "x2"))
 
 	pixelNames(sset) <- paste("p", 1:9)
-	expect_identical(colnames(iData(sset)), paste("p", 1:9))
+	expect_identical(pixelNames(imageData(sset)), paste("p", 1:9))
 	expect_identical(pixelNames(pixelData(sset)), paste("p", 1:9))
 	expect_identical(pixelNames(sset), paste("p", 1:9))
 
@@ -70,7 +72,7 @@ test_that("SImageSet featureData", {
 	coord <- expand.grid(x=1:3, y=1:3)
 	sset <- SImageSet(data=data, coord=coord)
 
-	expect_identical(rownames(iData(sset)), featureNames(sset))
+	expect_identical(featureNames(imageData(sset)), featureNames(sset))
 
 	expect_error(fvarLabels(sset) <- "test")
 
@@ -79,7 +81,7 @@ test_that("SImageSet featureData", {
 	expect_identical(fData(sset)[["test"]], test)
 
 	featureNames(sset) <- paste("f", 1:3)
-	expect_identical(rownames(iData(sset)), paste("f", 1:3))
+	expect_identical(featureNames(imageData(sset)), paste("f", 1:3))
 	expect_identical(featureNames(featureData(sset)), paste("f", 1:3))
 	expect_identical(featureNames(sset), paste("f", 1:3))
 

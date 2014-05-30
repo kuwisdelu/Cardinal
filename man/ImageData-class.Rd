@@ -78,6 +78,8 @@ ImageData(\dots,
 
         \item{\code{dims}:}{A matrix with each column corresponding to the dimensions of an element in the \code{data} slot.}
 
+        \item{\code{names(x)}, \code{names(x)<-}:}{Access or replace the array names of the elements contained in the \code{data} slot environment.}
+
         \item{\code{ImageData[[name]]}, \code{ImageData[[name]] <- value}:}{Access or replace an element named \code{"name"} in the environment in the \code{data} slot.}
     }
 }

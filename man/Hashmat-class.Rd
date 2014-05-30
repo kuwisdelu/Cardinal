@@ -54,7 +54,7 @@ Hashmat(data = rep(list(numeric()), ncol), nrow = 0, ncol = 0,
 
         \item{\code{keys}:}{A \code{character} vector providing the keys that determine the rows of the non-zero elements of the matrix.}
         
-        \item{\code{dim}:}{A length 2 integer vector analogous to the 'dims' attribute of an ordinary R matrix.}
+        \item{\code{dim}:}{A length 2 integer vector analogous to the 'dim' attribute of an ordinary R matrix.}
 
         \item{\code{dimnames}:}{A length 2 \code{list} analogous to the 'dimnames' attribute of an ordinary R matrix.}
 

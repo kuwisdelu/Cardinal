@@ -47,9 +47,13 @@ SImageData(
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which contains an element named \code{"data0"}, which is a matrix-like object with rows equal to the number of features and columns equal to the number of non-missing pixels. Each column is a feature vector.}
+        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, which is a matrix-like object with rows equal to the number of features and columns equal to the number of non-missing pixels. Each column is a feature vector.}
 
-        \item{\code{positionArray}:}{An \code{array} with dimensions equal to the spatial dimensions of the image, which stores the column numbers of the feature vectors corresponding to the pixels in the \code{"data0"} element of the \code{data} slot. This allows re-construction of the imaging "datacube" on-the-fly.}
+        \item{\code{positionArray}:}{An \code{array} with dimensions equal to the spatial dimensions of the image, which stores the column numbers of the feature vectors corresponding to the pixels in the \code{"iData"} element of the \code{data} slot. This allows re-construction of the imaging "datacube" on-the-fly.}
+
+        \item{\code{dim}:}{A length 2 integer vector analogous to the 'dim' attribute of an ordinary R matrix.}
+
+        \item{\code{dimnames}:}{A length 2 \code{list} analogous to the 'dimnames' attribute of an ordinary R matrix.}
         
         \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
 
@@ -68,13 +72,13 @@ SImageData(
 \section{Methods}{
     Class-specific methods:
     \describe{
-        \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of column-wise feature vectors; the \code{"data0"} element of the \code{data} slot.}
+        \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of column-wise feature vectors; the \code{"iData"} element of the \code{data} slot.}
 
         \item{\code{positionArray(object)}, \code{positionArray(object)<-}:}{Return or set the \code{positionArray} slot. When setting, this should be an array returned by a call to \code{generatePositionArray}.}
 
-        \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set row names of the \code{"data0"} element of \code{data}.}
+        \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set row names of the \code{"iData"} element of \code{data}.}
 
-        \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set column names of the \code{"data0"} element of \code{data}.}
+        \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set column names of the \code{"iData"} element of \code{data}.}
 
         \item{\code{storageMode(object)}, \code{storageMode(object)<-}:}{Return or set the storage mode. See documentation on the \code{storageMode} slot above for more details.}
     }
@@ -87,7 +91,7 @@ SImageData(
 
         \item{\code{dims}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
-        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly from the \code{"data0"} matrix in the \code{data} environment and the \code{positionArray}. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
+        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly from the \code{"iData"} matrix in the \code{data} environment and the \code{positionArray}. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
     }
 }
 

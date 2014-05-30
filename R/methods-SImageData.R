@@ -1,11 +1,18 @@
 
 setMethod("initialize", "SImageData",
-	function(.Object, positionArray = array(dim=c(x=0, y=0)), ...) {
+	function(.Object,
+		positionArray = array(dim=c(x=0, y=0)),
+		dim = c(0, 0),
+		dimnames = list(NULL, NULL),
+		...)
+	{
 		.Object@positionArray <- positionArray
+		.Object@dim <- dim
+		.Object@dimnames <- dimnames
 		.Object <- callNextMethod(.Object, ...)
 		# the following is a hack to prevent copying when assigning 'dimnames'
 		# see 'pixelNames' and 'featureNames' for details
-		evalq(.value <- NULL, envir=.Object@data)
+		# evalq(.value <- NULL, envir=.Object@data)
 		.Object
 	})
 
@@ -32,18 +39,30 @@ SImageData <- function(
 		positionArray <- array(seq_len(prod(dims)), dim=dims)
 		dim(data) <- c(dim(data)[1], prod(dims))
 	}
-	.SImageData(data0=data,
+	if ( is.null(dim(data)) ) {
+		dim <- c(0,0)
+	} else {
+		dim <- dim(data)
+	}
+	if ( is.null(dimnames(data)) ) {
+		dimnames <- list(NULL, NULL)
+	} else {
+		dimnames <- dimnames(data)
+	}
+	.SImageData(iData=data,
 		storageMode=storageMode,
 		positionArray=positionArray,
+		dim=dim,
+		dimnames=dimnames,
 		...)
 }
 
 setMethod("iData", "SImageData",
-	function(object) object[["data0"]])
+	function(object) object[["iData"]])
 
 setReplaceMethod("iData", "SImageData",
 	function(object, value) {
-		object[["data0"]] <- value
+		object[["iData"]] <- value
 		if ( validObject(object) )
 			object			
 	})
@@ -59,31 +78,33 @@ setReplaceMethod("positionArray", "SImageData",
 	})
 
 setMethod("featureNames", "SImageData",
-	function(object) dimnames(object[["data0"]])[[1]])
+	function(object) object@dimnames[[1]])
 
 setReplaceMethod("featureNames", "SImageData",
 	function(object, value) {
-		object@data$.value <- value
-		# use of evalq() prevents unnecessary copying of data0
-		evalq(dimnames(data0)[[1]] <- .value, envir=object@data)
-		evalq(.value <- NULL, envir=object@data)
+		# object@data$.value <- value
+		# use of evalq() prevents unnecessary copying of iData
+		# evalq(dimnames(iData)[[1]] <- .value, envir=object@data)
+		# evalq(.value <- NULL, envir=object@data)
+		object@dimnames[[1]] <- value
 		object
 	})
 
 setMethod("pixelNames", "SImageData",
-	function(object) dimnames(object[["data0"]])[[2]])
+	function(object) object@dimnames[[2]])
 
 setReplaceMethod("pixelNames", "SImageData",
 	function(object, value) {
-		object@data$.value <- value
-		# use of evalq() prevents unnecessary copying of data0
-		evalq(dimnames(data0)[[2]] <- .value, envir=object@data)
-		evalq(.value <- NULL, envir=object@data)
+		# object@data$.value <- value
+		# use of evalq() prevents unnecessary copying of iData
+		# evalq(dimnames(iData)[[2]] <- .value, envir=object@data)
+		# evalq(.value <- NULL, envir=object@data)
+		object@dimnames[[2]] <- value
 		object
 	})
 
 setMethod("dim", "SImageData",
-	function(x) c(Features=nrow(x[["data0"]]), dim(x@positionArray)))
+	function(x) c(Features=x@dim[[1]], dim(x@positionArray)))
 
 setMethod("dims", "SImageData",
 	function(object) {
@@ -120,8 +141,8 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 	}
 	inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
 	cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
-	cube[,!is.na(inds)] <- x[["data0"]][args[[1]],inds[!is.na(inds)],drop=FALSE]
-	# cube <- x[["data0"]][args[[1]],inds,drop=FALSE]
+	cube[,!is.na(inds)] <- x[["iData"]][args[[1]],inds[!is.na(inds)],drop=FALSE]
+	# cube <- x[["iData"]][args[[1]],inds,drop=FALSE]
 	dim(cube) <- c(dim(cube)[1], dim(inds))
 	names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
 	if ( drop && all(dim(cube) == 1) )
@@ -132,3 +153,14 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 		cube <- as.vector(cube)
 	cube
 })
+
+.subset.SImageData <- function(x, i, j) {
+	names <- ls(x@data)
+	for ( nm in names ) {
+		x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+	}
+	x@dim <- c(length(i), length(j))
+	x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
+	x
+}
+

@@ -9,9 +9,8 @@ setMethod("initialize", "ImageData",
 		names <- names(dots)
 		if ( length(dots) > 0 ) {
 			if ( any(is.null(names)) ) stop("all elements must be named")
-			# use eval() instead of list(...) because latter triggers copying
 			for ( nm in names )
-				.Object@data[[nm]] <- eval(dots[[nm]])
+				.Object@data[[nm]] <- eval(dots[[nm]]) # not list(...)
 		}
 		if ( storageMode == "lockedEnvironment" )
 			lockEnvironment(.Object@data, bindings=TRUE)
@@ -51,6 +50,27 @@ setMethod("combine",
 		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
 		new(class(x), data=data, storageMode=storageMode)
 	})
+
+setMethod("names", "ImageData", function(x) ls(x@data, all.names=TRUE))
+
+setReplaceMethod("names", "ImageData", function(x, value) {
+	names <- ls(x@data, all.names=TRUE)
+	if ( length(names) != length(value) ) {
+		stop(paste("'names' attribute [", length(value), "] must be",
+			"the same length as the vector [", length(names), "]", sep=""))
+	}
+	if ( storageMode(x) == "immutableEnvironment" ) {
+		data <- new.env(parent=baseenv())
+	} else {
+		data <- x@data
+	}
+	for ( i in seq_along(names) ) data[[value[[i]]]] <- x@data[[names[[i]]]]
+	if ( storageMode(x) != "immutableEnvironment" ) {
+		rm(list=setdiff(names, value), envir=data)
+	}
+	x@data <- data
+	x
+})
 
 setMethod("dims", "ImageData", function(object) {
 	names <- ls(object@data)

@@ -31,6 +31,22 @@ test_that("ImageData accessors", {
 
 })
 
+test_that("ImageData names", {
+
+	data0 <- matrix(1:4, nrow=2)
+	idata <- ImageData(data0=data0, storageMode="immutableEnvironment")
+
+	data1 <- matrix(5:8, nrow=2)
+	idata[["data1"]] <- data1
+
+	expect_equivalent(names(idata), c("data0", "data1"))
+
+	names(idata) <- c("a", "b")
+
+	expect_equivalent(names(idata), c("a", "b"))	
+
+})
+
 test_that("ImageData combine", {
 
 	data1 <- matrix(1:4, nrow=2, ncol=2, dimnames=list(1:2, 1:2))
