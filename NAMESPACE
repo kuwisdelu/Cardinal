@@ -93,6 +93,8 @@ exportMethods(
 	"imageData",
 	"imageData<-",
 	"initialize",
+	"names",
+	"names<-",
 	"ncol",
 	"nrow",
 	"pData",
