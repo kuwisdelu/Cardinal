@@ -41,7 +41,7 @@ setGeneric("poolPeaks", function(peaks, ...) standardGeneric("poolPeaks"))
 setGeneric("positionArray", function(object) standardGeneric("positionArray"))
 setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
 setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
-setGeneric("processingData<-", function(object) standardGeneric("processingData<-")) # use MSnbase generic?
+setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
 setGeneric("rotateLeft", function(object, ...) standardGeneric("rotateLeft"))
