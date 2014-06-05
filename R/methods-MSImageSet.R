@@ -64,6 +64,9 @@ setValidity("MSImageSet", function(object) {
 	msg <- validMsg(NULL, NULL)
 	if ( is.null(object@featureData[["mz"]]) )
 		msg <- validMsg(msg, "required column 'mz' missing from featureData")
+	mz <- object@featureData[["mz"]]
+	if ( !(all(cummax(mz) == mz) || all(cummin(mz) == mz)) )
+		msg <- validMsg(msg, "'mz' must be strictly increasing or decreasing")
 	if (is.null(msg)) TRUE else msg	
 })
 

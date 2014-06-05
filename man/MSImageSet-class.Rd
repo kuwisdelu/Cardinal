@@ -44,7 +44,7 @@ MSImageSet(
     
     \item{spectra}{A matrix-like object with number of rows equal to the number of features and number of columns equal to the number of non-missing pixels. Each column should be a mass spectrum. Alternatively, a multidimensional array that represents the datacube with the first dimension as the features (m/z values) can also be supplied. Additional dimensions could be the spatial dimensions of the image, for example.}
 
-    \item{mz}{A numeric vector representing the mass-to-charge ratio features (m/z values) corresponding to the rows in the \code{spectra} matrix.}
+    \item{mz}{A numeric vector representing the mass-to-charge ratio features (m/z values) corresponding to the rows in the \code{spectra} matrix. Must be strictly increasing or decreasing.}
 
     \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of a mass spectrum corresponding to a column in \code{spectra}. This argument is ignored if \code{spectra} is a multidimensional array rather than a matrix.}
 

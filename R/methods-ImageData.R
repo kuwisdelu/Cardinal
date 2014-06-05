@@ -5,7 +5,7 @@ setMethod("initialize", "ImageData",
 			storageMode = "immutableEnvironment",
 			...) {
 		.Object@data <- data
-		dots <- match.call(expand.dots=FALSE)[["..."]]
+		dots <- match.call(expand.dots=FALSE)$...
 		names <- names(dots)
 		if ( length(dots) > 0 ) {
 			if ( any(is.null(names)) ) stop("all elements must be named")
@@ -23,7 +23,7 @@ ImageData <- function(..., data = new.env(parent=baseenv()),
 		"lockedEnvironment", "environment"))
 {
 	storageMode <- match.arg(storageMode)
-	dots <- match.call(expand.dots=FALSE)[["..."]]
+	dots <- match.call(expand.dots=FALSE)$...
 	names <- names(dots)
 	if ( any(is.null(names)) && length(dots) > 0 )
 		stop("all elements must be named")

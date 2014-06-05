@@ -122,10 +122,10 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 	if ( !missing(i) ) args[[1]] <- i
 	if ( !missing(j) ) args[[2]] <- j
 	if ( nargs > 2 ) {
-		dotargs <- as.list(match.call(expand.dots=FALSE))[["..."]]
-		nonmissing <- !sapply(dotargs, is.symbol)
+		dots <- match.call(expand.dots=FALSE)$...
+		nonmissing <- !sapply(dots, is.symbol)
 		if ( sum(nonmissing) > 0 )
-			args[c(FALSE,FALSE,nonmissing)] <- dotargs[nonmissing]
+			args[c(FALSE,FALSE,nonmissing)] <- dots[nonmissing]
 	}
 	inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
 	cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
