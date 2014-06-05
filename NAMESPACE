@@ -106,6 +106,8 @@ exportMethods(
 	"pixelNames<-",
 	"positionArray",
 	"positionArray<-",
+	"processingData",
+	"processingData<-",
 	"rownames",
 	"rownames<-",
 	"sampleNames",

@@ -84,6 +84,13 @@ setReplaceMethod("spectra", "MSImageSet",
 		object
 	})
 
+setMethod("processingData", "MSImageSet", function(object) object@processingData)
+setReplaceMethod("processingData", "MSImageSet",
+	function(object, value) {
+		object@processingData <- value
+		object
+	})
+
 setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 	function(x, y, ...) {
 		if ( varMetadata(x)["sample", "labelType"] != "dim" )
