@@ -90,10 +90,6 @@ SImageSet(
     \describe{
         \item{\code{iData(object), iData(object) <- value}:}{Access and set the sparse image data in \code{imageData}. This is a matrix-like object with rows corresponding to features and columns corresponding to pixels, so that each column of the returned object is a feature vector.}
 
-        \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set the feature names in the \code{featureData} slot and the row names of the matrix returned by \code{iData}.}
-
-        \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set the pixel names in the \code{pixelData} slot and the column names of the matrix returned by \code{iData}.}
-
         \item{\code{regeneratePositions}:}{Regenerates the \code{positionArray} in \code{imageData} used to reconstruct the datacube based on the coordinates in \code{pixelData}. Normally, this should not be called by the user. However, if the coordinates are modified manually, it can be used to re-sync the data structures.}
     }
 

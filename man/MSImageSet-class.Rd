@@ -96,6 +96,10 @@ MSImageSet(
         \item{\code{spectra(object), spectra(object) <- value}:}{Access and set the mass spectra in \code{imageData}. This is a matrix-like object with rows corresponding to features and columns corresponding to pixels, so that each column of the returned object is a mass spectrum.}
 
         \item{\code{mz(object), mz(object) <- value}:}{Returns and sets the common m/z values of the mass spectra in the dataset. This is a required column of \code{featureData}.}
+
+        \item{\code{features(object, ..., mz)}:}{Access the feature indices (rows in \code{featureData}) corresponding to variables in \code{featureData}. Bisection search is used for fuzzy matching of m/z values.}
+
+        \item{\code{pixels(object, ..., coord)}:}{Access the pixel indices (rows in \code{pixelData}) corresponding to variables in \code{pixelData}. If specified, \code{coord} should be a \code{data.frame} where each row corresponds to the coordinates of a desired pixel.}
     }
 
     Standard generic methods:

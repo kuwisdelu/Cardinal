@@ -84,6 +84,42 @@ setReplaceMethod("spectra", "MSImageSet",
 		object
 	})
 
+setMethod("pixels", "MSImageSet",
+	function(object, ..., coord) {
+		if ( missing(coord) ) {
+			pixels <- callNextMethod(object, ...)
+		} else {
+			coord <- as.data.frame(coord)
+			pixels <- apply(coord, 1, function(xyz) {
+				do.call("pixels", args=c(list(object), xyz))
+			})
+			names(pixels) <- pixelNames(object)[pixels]
+			if ( length(list(...)) > 0 ) {
+				keep <- pixels %in% callNextMethod(object, ...)
+				pixels <- pixels[keep]
+			}
+		}
+		pixels
+	})
+
+setMethod("features", "MSImageSet",
+	function(object, ..., mz) {
+		if ( missing(mz) ) {
+			features <- callNextMethod(object, ...)
+		} else {
+			mz <- as.numeric(mz)
+			features <- sapply(mz, function(mzi) {
+				bisection.seq(mz(object), function(x) x - mzi)
+			})
+			names(features) <- featureNames(object)[features]
+			if ( length(list(...)) > 0 ) {
+				keep <- features %in% callNextMethod(object, ...)
+				features <- features[keep]
+			}
+		}
+		features
+	})
+
 setMethod("processingData", "MSImageSet", function(object) object@processingData)
 setReplaceMethod("processingData", "MSImageSet",
 	function(object, value) {

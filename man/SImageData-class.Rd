@@ -72,13 +72,13 @@ SImageData(
 \section{Methods}{
     Class-specific methods:
     \describe{
-        \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of column-wise feature vectors; the \code{"iData"} element of the \code{data} slot.}
+        \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of image intensities. Columns should correspond to feature vectors, and rows should correspond to pixel vectors.}
 
         \item{\code{positionArray(object)}, \code{positionArray(object)<-}:}{Return or set the \code{positionArray} slot. When setting, this should be an array returned by a call to \code{generatePositionArray}.}
 
-        \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set row names of the \code{"iData"} element of \code{data}.}
+        \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set feature names (names of the rows of the intensity matrix).}
 
-        \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set column names of the \code{"iData"} element of \code{data}.}
+        \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set the pixel names (names of the columns of the intensity matrix).}
 
         \item{\code{storageMode(object)}, \code{storageMode(object)<-}:}{Return or set the storage mode. See documentation on the \code{storageMode} slot above for more details.}
     }
@@ -91,7 +91,7 @@ SImageData(
 
         \item{\code{dims}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
-        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly from the \code{"iData"} matrix in the \code{data} environment and the \code{positionArray}. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
+        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
     }
 }
 

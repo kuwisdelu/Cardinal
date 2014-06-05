@@ -100,10 +100,6 @@
 
         \item{\code{imageData(object), imageData(object) <- value}:}{Access and set the \code{imageData} slot.}
 
-        % leave iData() to derived classes to define
-
-        % \item{\code{iData(object), iData(object) <- value}:}{Access and set the "most interesting" element of \code{imageData}. By default, this returns the first element found. Derived classes should implement more appropriate behavior. See \code{\linkS4class{SImageData}}, \code{\linkS4class{SImageSet}}, and \code{\linkS4class{MSImageSet}} for examples.}
-
         \item{\code{pixelData(object), pixelData(object) <- value}:}{Access and set the \code{pixelData} slot.}
 
         \item{\code{pData(object), pData(object) <- value}:}{Access and set the pixel information.}
@@ -119,6 +115,10 @@
         \item{\code{fvarMetadata(object), fvarMetadata(object) <- value}:}{Access and set the metadata describing the features in \code{fData}.}
 
         \item{\code{fvarLabels(object), fvarLabels(object) <- value}:}{Access and set the feature labels in \code{featureData}.}
+
+        \item{\code{features(object, ...)}:}{Access the feature indices (rows in \code{featureData}) corresponding to variables in \code{featureData}.}
+
+        \item{\code{pixels(object, ...)}:}{Access the pixel indices (rows in \code{pixelData}) corresponding to variables in \code{pixelData}.}
 
         \item{\code{experimentData(object), experimentData(object) <-}:}{Access and set the \code{experimentData} slot.}
 

@@ -66,27 +66,6 @@ setReplaceMethod("imageData", "iSet",
 		object
 	})
 
-# leave iData() to derived classes to define if needed
-
-# setMethod("iData", "iSet", function(object) {
-# 	names <- ls(object@imageData@data)
-# 	if ( length(names) > 0 ) {
-# 		object@imageData[[names[[1]]]]
-# 	} else {
-# 		NULL
-# 	}
-# })
-
-# setReplaceMethod("iData", "iSet", function(object, value) {
-# 	names <- ls(object@imageData@data)
-# 	if ( length(names) > 0 ) {
-# 		object@imageData[[names[[1]]]] <- value
-# 	} else {
-# 		stop("imageData has no visible elements")
-# 	}
-# 	object
-# })
-
 #### pixelData methods ####
 ## ------------------------
 
@@ -155,6 +134,27 @@ setReplaceMethod("coord", "iSet",
 		object
 	})
 
+setMethod("pixels", "iSet",
+	function(object, ...) {
+		dots <- list(...)
+		if ( !all(names(dots) %in% varLabels(object)) )
+			stop("all arguments must appear as variables in 'pixelData'")
+		if ( length(dots) > 0 ) {
+			pixels <- sapply(seq_along(dots), function(i) {
+				pData(object)[[names(dots)[[i]]]] %in% dots[[i]]
+			})
+			if ( is.null(dim(pixels)) ) {
+				pixels <- which(pixels)
+			} else {
+				pixels <- which(apply(pixels, 1, all))
+			}
+		} else {
+			pixels <- seq_len(nrow(pData(object)))
+		}
+		names(pixels) <- pixelNames(object)[pixels]
+		pixels
+	})
+
 #### featureData methods ####
 ## --------------------------
 
@@ -198,10 +198,31 @@ setReplaceMethod("featureNames", "iSet",
 		object
 	})
 
-#### standard generic methods ####
+setMethod("features", "iSet",
+	function(object, ...) {
+		dots <- list(...)
+		if ( !all(names(dots) %in% fvarLabels(object)) )
+			stop("all arguments must appear as variables in 'featureData'")
+		if ( length(dots) > 0 ) {
+			features <- sapply(seq_along(dots), function(i) {
+				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
+			})
+			if ( is.null(dim(features)) ) {
+				features <- which(features)
+			} else {
+				features <- which(apply(features, 1, all))
+			}	
+		} else {
+			features <- seq_len(nrow(fData(object)))
+		}
+		names(features) <- featureNames(object)[features]
+		features
+	})
+
+#### Standard generic methods ####
 ## -------------------------------
 
-# adapted from combine(eSet, eSet) from Biobase
+# Adapted from combine(eSet, eSet) from Biobase
 setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 	function(x, y, ...) {
 		if (class(x) != class(y))

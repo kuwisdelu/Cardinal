@@ -51,6 +51,12 @@ test_that("MSImageSet pixelData", {
 
 	expect_identical(pixelNames(imageData(msset)), pixelNames(msset))
 
+	expect_equivalent(pixels(msset, x=1:2, y=1:2), c(1,2,4,5))
+
+	pData(msset)$flag <- rep(c(TRUE, FALSE,FALSE), 3)
+	expect_equivalent(pixels(msset, x=1:2, y=1:2, flag=TRUE), c(1,4))
+	expect_equivalent(pixels(msset, flag=TRUE), c(1,4,7))
+
 	msset[["test"]] <- rnorm(9)
 	expect_identical(pData(msset)$test, msset$test)
 
@@ -80,6 +86,14 @@ test_that("MSImageSet featureData", {
 	expect_identical(featureNames(imageData(msset)), featureNames(msset))
 
 	expect_identical(mz(msset), mz)
+
+	expect_equivalent(features(msset, mz=102), 2)
+
+	features(msset, mz=c(101,103))
+
+	fData(msset)$flag <- c(TRUE, TRUE, FALSE)
+	expect_equivalent(features(msset, mz=c(101, 103), flag=TRUE), 1)
+	expect_equivalent(features(msset, flag=TRUE), c(1, 2))
 
 	mz2 <- c(1001, 1002, 1003)
 	mz(msset) <- mz2

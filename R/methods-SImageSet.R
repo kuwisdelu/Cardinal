@@ -135,20 +135,6 @@ setMethod("[", "SImageSet",
 setAs("SImageSet", "data.frame",
 	function(from) data.frame(t(iData(from)), pData(from)))
 
-## Utility function for converting pixels to pData row indices
-.match.pixel <- function(object, pixel) {
-	ps <- seq_len(ncol(object))
-	names(ps) <- pixelNames(object)
-	ps[pixel]
-}
-
-## Utility function for converting features to fData row indices
-.match.feature <- function(object, feature) {
-	fs <- seq_len(nrow(object))
-	names(fs) <- featureNames(object)
-	fs[feature]
-}
-
 setMethod("pixelApply", "SImageSet",
 	function(.object, .fun, ...,
 			.pixel,
