@@ -9,7 +9,7 @@ x rewrite readMSIData()
 - rewrite selectROI() and selectPixels()
 - fix plot() and image() methods (line type, orientation, etc.)
 x add replace methods for processingData
-- have readImzML add correct info to processingData
+- have readImzML parse processingData (need to write C++ functions)
 x initialize MIAPE-Imaging and MSImageProcess with non-zero length slots
 - rewrite processing methods
 - write new peak alignment method

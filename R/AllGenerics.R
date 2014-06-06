@@ -112,6 +112,8 @@ setGeneric("centroided", function(object) standardGeneric("centroided")) # use m
 setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
 #### Processing and data transformation ####
+
+#### Processing and data transformation (Old) ####
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))
 setGeneric("assessQuality", function(object, ...) standardGeneric("assessQuality"))
 setGeneric("binSpectra", function(object, peaks, ...) standardGeneric("binSpectra"))

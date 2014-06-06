@@ -1,8 +1,8 @@
 
-#### Logging and opening and closing log files ####
-## ------------------------------------------------
+#### Logging and flushing log to output files ####
+## -----------------------------------------------
 
-.log.append <- function(...) {
+.log <- function(...) {
 	.Cardinal$log <- append(.Cardinal$log, paste(..., sep=""))
 }
 
@@ -12,7 +12,7 @@
 			filename <- paste(pkgname, "log", sep=".")
 			filepath <- file.path(system.file(package=pkgname), filename)
 			sink(filepath, append=TRUE)
-			cat(paste(Sys.time()), "\n\n")
+			cat(paste(timestamp(quiet=TRUE)), "\n\n")
 			for ( m in .Cardinal$log ) {
 				cat(m, "\n\n")
 			}
@@ -23,8 +23,11 @@
 	}, error=function(e) FALSE)
 }
 
-.log <- function(..., progress=c("none", "start", "stop", "increment"), min=0, max=1) {
-	.log.append(...)
+#### User messages ####
+## --------------------
+
+.message <- function(..., progress=c("none", "start", "stop", "increment"), min=0, max=1) {
+	.log(...)
 	progress <- match.arg(progress)
 	if ( progress == "none" ) {
 		for ( f in .Cardinal$message ) {
@@ -51,7 +54,7 @@
 #### Console messages and progress bars ####
 ## -----------------------------------------
 
-.message <- function(...) {
+.console <- function(...) {
 	if ( getOption("Cardinal.verbose") ) {
 		message(...)
 		flush.console()

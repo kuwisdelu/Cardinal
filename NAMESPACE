@@ -94,6 +94,8 @@ exportMethods(
 	"imageData",
 	"imageData<-",
 	"initialize",
+	"mz",
+	"mz<-",
 	"names",
 	"names<-",
 	"ncol",
@@ -110,6 +112,7 @@ exportMethods(
 	"positionArray<-",
 	"processingData",
 	"processingData<-",
+	"regeneratePositions",
 	"rownames",
 	"rownames<-",
 	"sampleNames",
@@ -187,6 +190,12 @@ exportMethods(
 	"spectrumRepresentation",
 	"spectrumRepresentation<-")
 
+exportMethods("normalize")
+
+exportMethods(
+	"image",
+	"plot")
+
 exportMethods(
 	"alignPeaks",
 	"assessQuality",
@@ -196,25 +205,20 @@ exportMethods(
 	"estimateNoise",
 	"flipHorizontal",
 	"flipVertical",
-	"image",
 	"intensities",
 	"likPlot",
 	"logLik",
 	"metaData",
 	"metaData<-",
 	"mergePeaks",
-	"mz",
-	"mz<-",
 	"neighbors",
 	"numFeatures",
 	"numPixels",
 	"OPLS",
 	"PCA",
-	"plot",
 	"PLS",
 	"poolPeaks",
 	"predict",
-	"regeneratePositions",
 	"removeBaseline",
 	"removeNoise",
 	"resampleSpectra",

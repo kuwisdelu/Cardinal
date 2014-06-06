@@ -33,19 +33,18 @@
     .verbose = FALSE)
 }
 \arguments{
-    \item{.object}{an object of class \code{\linkS4class{SImageSet}}.}
-    \item{.fun}{the function to be applied.}
-    \item{\dots}{additional arguments passed to \code{.fun}.}
-    \item{.pixel}{a subset of pixels to use, given by an \code{integer} vector of numeric indices, a \code{character} vector of pixel names, or a \code{logical} vector indicating which pixels to use.}
-    \item{.feature}{a subset of features to use, given in the same manner as pixels.}
-    \item{.pixel.groups}{a grouping \code{factor} or a vector that can be coerced into a factor, that indicates groups of pixels over which the function should be applied. Groups pixels are treated as cells in a ragged array, by analogy to the \code{\link[base]{tapply}} function.}
-    \item{.feature.groups}{a grouping \code{factor} features, in the same manner as for pixels.}
+    \item{.object}{An object of class \code{\linkS4class{SImageSet}}.}
+    \item{.fun}{The function to be applied.}
+    \item{\dots}{Additional arguments passed to \code{.fun}.}
+    \item{.pixel}{A subset of pixels to use, given by an \code{integer} vector of numeric indices, a \code{character} vector of pixel names, or a \code{logical} vector indicating which pixels to use.}
+    \item{.feature}{A subset of features to use, given in the same manner as pixels.}
+    \item{.pixel.groups}{A grouping \code{factor} or a vector that can be coerced into a factor, that indicates groups of pixels over which the function should be applied. Groups pixels are treated as cells in a ragged array, by analogy to the \code{\link[base]{tapply}} function.}
+    \item{.feature.groups}{A grouping \code{factor} features, in the same manner as for pixels.}
     \item{.pixel.dependencies}{Not currently used. This may be used in the future to allow caching when applying functions to data on disk.}
     \item{.feature.dependencies}{Not currently used. May be used for caching in the future.}
     \item{.simplify}{Should the result be simplified into a matrix of higher-dimensional array rather than a list, if appropriate?}
     \item{.use.names}{Should the names of elements of \code{.object} (pixels, features, and grouping variables, as appropriate) be used for the names of the result?}
     \item{.verbose}{Used for debugging. Currently ignored.}
-    
 }
 \details{
     The use of \code{.pixel} and \code{.feature} can be used to apply the function over only a subset of pixels or features (or both), allowing faster computation when calculation on only a subset of data is needed.
