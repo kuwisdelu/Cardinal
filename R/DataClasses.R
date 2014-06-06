@@ -74,14 +74,7 @@ setClass("MSImageProcess",
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(MSImageProcess="0.1.0")),
-		files = "",
-		normalization = "",
-		smoothing = "",
-		baselineReduction = "",
-		spectrumRepresentation = "",
-		peakPicking = "",
-		centroided = FALSE,
-		history = list(),
+		centroided = logical(1), # set up when reading dataset
 		CardinalVersion = character())) # set up in initialize
 
 #### Class for generic imaging data ###

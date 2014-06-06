@@ -36,10 +36,10 @@
 \alias{centroided,MSImageProcess-method}
 \alias{centroided<-}
 \alias{centroided<-,MSImageProcess-method}
-\alias{exphistory}
-\alias{exphistory,MSImageProcess-method}
-\alias{exphistory<-}
-\alias{exphistory<-,MSImageProcess-method}
+\alias{prochistory}
+\alias{prochistory,MSImageProcess-method}
+\alias{prochistory<-}
+\alias{prochistory<-,MSImageProcess-method}
 
 \title{Class Containing Mass Spectral Pre-Processing Information.}
 
@@ -82,7 +82,7 @@
 \section{Methods}{
     Class-specific methods:
     \describe{
-        \item{\code{exphistory(object), exphistory(object) <- value}:}{Accessor and setter for the history of methods applied to the experiment dataset.}
+        \item{\code{prochistory(object), prochistory(object) <- value}:}{Accessor and setter for the history of methods applied to the experiment dataset.}
 
         \item{\code{files(object), files(object) <- value}:}{Accessor and setter function for \code{files}.}
 

@@ -8,10 +8,9 @@ setMethod("initialize", "MSImageProcess",
 
 setMethod("show", "MSImageProcess",
 	function(object) {
-		for ( proc in object@history )
-			cat(proc, "\n")
+		cat("Processing data\n")
 		cat("  Cardinal version:", object@CardinalVersion, "\n")
-		cat("  Files:", paste(object@files, collapse="\n        "), "\n")
+		cat("  Files:", paste(object@files, collapse="\n         "), "\n")
 		cat("  Normalization:", object@normalization, "\n")
 		cat("  Smoothing:", object@smoothing, "\n")
 		cat("  Baseline reduction:", object@baselineReduction, "\n")
@@ -68,17 +67,17 @@ setReplaceMethod("centroided", "MSImageProcess",
 		object
 	})
 
-setMethod("exphistory", "MSImageProcess", function(object) object@history)
+setMethod("prochistory", "MSImageProcess", function(object) object@history)
 
-setReplaceMethod("exphistory", signature = c(object="MSImageProcess", value="list"),
+setReplaceMethod("prochistory", signature = c(object="MSImageProcess", value="list"),
 	function(object, value) {
-		object@exphistory <- value
+		object@history <- value
 		object
 	})
 
-setReplaceMethod("exphistory", signature = c(object="MSImageProcess", value="character"),
+setReplaceMethod("prochistory", signature = c(object="MSImageProcess", value="character"),
 	function(object, value) {
-		object@exphistory <- append(object@exphistory, value)
+		object@history <- append(object@history, value)
 		object
 	})
 

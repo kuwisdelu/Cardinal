@@ -94,8 +94,8 @@ setGeneric("lineScanDirection<-", function(object, value) standardGeneric("lineS
 setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
 
-setGeneric("exphistory", function(object) standardGeneric("exphistory"))
-setGeneric("exphistory<-", function(object, value) standardGeneric("exphistory<-"))
+setGeneric("prochistory", function(object) standardGeneric("prochistory"))
+setGeneric("prochistory<-", function(object, value) standardGeneric("prochistory<-"))
 setGeneric("files", function(object) standardGeneric("files"))
 setGeneric("files<-", function(object, value) standardGeneric("files<-"))
 setGeneric("normalization", function(object) standardGeneric("normalization"))

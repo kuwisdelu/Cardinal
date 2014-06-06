@@ -29,5 +29,9 @@ readAnalyze <- function(name, folder=getwd()) {
 			y=seq_len(hdr$dime$dim[[4]]))
 	}
 	# create and return dataset
-	MSImageSet(spectra=data, mz=mz, coord=coord)
+	experimentData <- new("MIAPE-Imaging", title=name)
+	processingData <- new("MSImageProcess", files=c(hdrpath, t2mpath, imgpath))
+	MSImageSet(spectra=data, mz=mz, coord=coord,
+		processingData=processingData,
+		experimentData=experimentData)
 }
