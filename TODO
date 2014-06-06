@@ -10,11 +10,11 @@ x rewrite readMSIData()
 - fix plot() and image() methods (line type, orientation, etc.)
 x add replace methods for processingData
 - have readImzML add correct info to processingData
-- initialize MIAPE-Imaging and MSImageProcess with non-zero length slots
+x initialize MIAPE-Imaging and MSImageProcess with non-zero length slots
 - rewrite processing methods
 - write new peak alignment method
 - rewrite selectPeaks()
-- write new functions for logging and saving history to MSImageSet
+x write new functions for logging and saving history to MSImageSet
 - write new classes for storing results
 - rewrite spatial clustering and classification analysis methods
 - rewrite PCA/PLS/OPLS analysis methods
