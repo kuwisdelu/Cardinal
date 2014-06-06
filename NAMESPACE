@@ -171,13 +171,21 @@ exportMethods(
 
 exportMethods(
 	"baselineReduction",
+	"baselineReduction<-",
 	"centroided",
+	"centroided<-",
 	"exphistory",
+	"exphistory<-",
 	"files",
+	"files<-",
 	"normalization",
+	"normalization<-",
 	"peakPicking",
+	"peakPicking<-",
 	"smoothing",
-	"spectrumRepresentation")
+	"smoothing<-",
+	"spectrumRepresentation",
+	"spectrumRepresentation<-")
 
 exportMethods(
 	"alignPeaks",
