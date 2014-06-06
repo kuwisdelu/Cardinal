@@ -5,7 +5,7 @@ TODO for Cardinal package
 NEW:
 x write pixels() and features() methods
 - write documentation for missing methods (pixelNames, etc.)
-- rewrite readMSIData()
+x rewrite readMSIData()
 - rewrite selectROI() and selectPixels()
 - fix plot() and image() methods (line type, orientation, etc.)
 - rewrite transformation methods
@@ -24,6 +24,7 @@ x write pixels() and features() methods
 - rewrite combine() methods for SImageSet and MSImageSet
 - make "iData" hidden (rename ".iData") and fix anything that breaks
 - add optical images
+- add writing of imzML and Analyze formats (requires digest+uuid)
 
 OLD:
 - fix gc() bug where generateHistory() captures environments
@@ -38,4 +39,3 @@ OLD:
 - add dimension names for slices
 - allow unsupervised peak alignment
 - add alignment of raw spectra
-- add optical images

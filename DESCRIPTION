@@ -11,6 +11,6 @@ Description: Implements statistical & computational tools for analyzing
 License: Artistic-2.0
 Depends: BiocGenerics, Biobase, graphics, methods, stats
 Imports: fields, irlba, lattice, signal, sp, stats4, utils
-Suggests: CardinaliView, rJava, testthat, BiocStyle
+Suggests: CardinaliView, testthat, BiocStyle
 biocViews: Infrastructure, Bioinformatics, Proteomics,
 	MassSpectrometry, Clustering, Classification

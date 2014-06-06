@@ -1,14 +1,17 @@
 
 #### read Analyze 7.5 files ####
 
-readAnalyze <- function(name, folder=".") {
+readAnalyze <- function(name, folder=getwd()) {
 	# check for files
-	hdrpath <- file.path(folder, paste(name, ".hdr", sep=""))
+	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
+		mustWork=FALSE)
 	if ( !file.exists(hdrpath) ) stop(hdrpath, " does not exist")
-	t2mpath <- file.path(folder, paste(name, ".t2m", sep=""))
+	t2mpath <- normalizePath(file.path(folder, paste(name, ".t2m", sep="")),
+		mustWork=FALSE)
 	if ( !file.exists(t2mpath) ) stop(t2mpath, " does not exist")
-	imgpath <- file.path(folder, paste(name, ".img", sep=""))
-	if ( !file.exists(t2mpath) ) stop(imgpath, " does not exist")
+	imgpath <- normalizePath(file.path(folder, paste(name, ".img", sep="")),
+		mustWork=FALSE)
+	if ( !file.exists(imgpath) ) stop(imgpath, " does not exist")
 	# parse header
 	hdr <- .Call("readAnalyzeHDR", hdrpath)
 	dim <- as.integer(c(hdr$dime$dim[[2]], prod(hdr$dime$dim[c(3,4,5)])))

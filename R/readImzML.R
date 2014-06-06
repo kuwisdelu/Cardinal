@@ -1,11 +1,13 @@
 
 #### read imzML files ####
 
-readImzML <- function(name, folder=".") {
+readImzML <- function(name, folder=getwd()) {
 	# check for files
-	xmlpath <- file.path(folder, paste(name, ".imzML", sep=""))
+	xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
+		mustWork=FALSE)
 	if ( !file.exists(xmlpath) ) stop(hdrpath, " does not exist")
-	ibdpath <- file.path(folder, paste(name, ".ibd", sep=""))
+	ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
+		mustWork=FALSE)
 	if ( !file.exists(ibdpath) ) stop(t2mpath, " does not exist")
 	# parse imzML
 	mzml <- .Call("parseImzML", xmlpath)
