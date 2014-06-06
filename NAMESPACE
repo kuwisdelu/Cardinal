@@ -52,6 +52,7 @@ export(
 	"intensity.colors",
 	"readAnalyze",
 	"readImzML",
+	"readMSIData",
 	"risk.colors")
 
 exportMethods(

@@ -11,23 +11,76 @@ setMethod("show", "MSImageProcess",
 		for ( proc in object@history )
 			cat(proc, "\n")
 		cat("  Cardinal version:", object@CardinalVersion, "\n")
+		cat("  Files:", paste(object@files, collapse="\n        "), "\n")
+		cat("  Normalization:", object@normalization, "\n")
+		cat("  Smoothing:", object@smoothing, "\n")
+		cat("  Baseline reduction:", object@baselineReduction, "\n")
+		cat("  Spectrum representation:", object@spectrumRepresentation, "\n")
+		cat("  Peak picking:", object@peakPicking, "\n")
 	})
 
 setMethod("files", "MSImageProcess", function(object) object@files)
+setReplaceMethod("files", "MSImageProcess",
+	function(object, value) {
+		object@files <- value
+		object
+	})
 
 setMethod("normalization", "MSImageProcess", function(object) object@normalization)
+setReplaceMethod("normalization", "MSImageProcess",
+	function(object, value) {
+		object@normalization <- value
+		object
+	})
 
 setMethod("smoothing", "MSImageProcess", function(object) object@smoothing)
+setReplaceMethod("smoothing", "MSImageProcess",
+	function(object, value) {
+		object@smoothing <- value
+		object
+	})
 
 setMethod("baselineReduction", "MSImageProcess", function(object) object@baselineReduction)
+setReplaceMethod("baselineReduction", "MSImageProcess",
+	function(object, value) {
+		object@baselineReduction <- value
+		object
+	})
 
 setMethod("spectrumRepresentation", "MSImageProcess", function(object) object@spectrumRepresentation)
+setReplaceMethod("spectrumRepresentation", "MSImageProcess",
+	function(object, value) {
+		object@spectrumRepresentation <- value
+		object
+	})
 
 setMethod("peakPicking", "MSImageProcess", function(object) object@peakPicking)
+setReplaceMethod("peakPicking", "MSImageProcess",
+	function(object, value) {
+		object@peakPicking <- value
+		object
+	})
 
 setMethod("centroided", "MSImageProcess", function(object) object@centroided)
+setReplaceMethod("centroided", "MSImageProcess",
+	function(object, value) {
+		object@centroided <- value
+		object
+	})
 
 setMethod("exphistory", "MSImageProcess", function(object) object@history)
+
+setReplaceMethod("exphistory", signature = c(object="MSImageProcess", value="list"),
+	function(object, value) {
+		object@exphistory <- value
+		object
+	})
+
+setReplaceMethod("exphistory", signature = c(object="MSImageProcess", value="character"),
+	function(object, value) {
+		object@exphistory <- append(object@exphistory, value)
+		object
+	})
 
 ## Adapted from combine(MIAME, MIAME) from Biobase
 setMethod("combine",

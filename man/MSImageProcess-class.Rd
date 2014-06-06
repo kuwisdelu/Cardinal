@@ -10,25 +10,41 @@
 \alias{initialize,MSImageProcess-method}
 \alias{files}
 \alias{files,MSImageProcess-method}
+\alias{files<-}
+\alias{files<-,MSImageProcess-method}
 \alias{normalization}
 \alias{normalization,MSImageProcess-method}
+\alias{normalization<-}
+\alias{normalization<-,MSImageProcess-method}
 \alias{smoothing}
 \alias{smoothing,MSImageProcess-method}
+\alias{smoothing<-}
+\alias{smoothing<-,MSImageProcess-method}
 \alias{baselineReduction}
 \alias{baselineReduction,MSImageProcess-method}
+\alias{baselineReduction<-}
+\alias{baselineReduction<-,MSImageProcess-method}
 \alias{spectrumRepresentation}
 \alias{spectrumRepresentation,MSImageProcess-method}
+\alias{spectrumRepresentation<-}
+\alias{spectrumRepresentation<-,MSImageProcess-method}
 \alias{peakPicking}
 \alias{peakPicking,MSImageProcess-method}
+\alias{peakPicking<-}
+\alias{peakPicking<-,MSImageProcess-method}
 \alias{centroided}
 \alias{centroided,MSImageProcess-method}
+\alias{centroided<-}
+\alias{centroided<-,MSImageProcess-method}
 \alias{exphistory}
 \alias{exphistory,MSImageProcess-method}
+\alias{exphistory<-}
+\alias{exphistory<-,MSImageProcess-method}
 
 \title{Class Containing Mass Spectral Pre-Processing Information.}
 
 \description{
-    A class containing information about mass spectral pre-processsing operations.
+    A class containing information about mass spectral pre-processsing operations. These should not usually be set by the user, and are automatically updated when processing methods are applied.
 }
 
 \section{Slots}{
@@ -66,21 +82,21 @@
 \section{Methods}{
     Class-specific methods:
     \describe{
-        \item{\code{exphistory}:}{Displays history of methods applied to the experiment dataset.}
+        \item{\code{exphistory(object), exphistory(object) <- value}:}{Accessor and setter for the history of methods applied to the experiment dataset.}
 
-        \item{\code{files}:}{Accessor function for \code{files}.}
+        \item{\code{files(object), files(object) <- value}:}{Accessor and setter function for \code{files}.}
 
-        \item{\code{normalization}:}{Accessor function for \code{normalization}.}
+        \item{\code{normalization(object), normalization(object) <- value}:}{Accessor and setter function for \code{normalization}.}
         
-        \item{\code{smoothing}:}{Accessor function for \code{smoothing}.}
+        \item{\code{smoothing(object), smoothing(object) <- value}:}{Accessor and setter function for \code{smoothing}.}
         
-        \item{\code{baselineReduction}:}{Accessor function for \code{baselineReduction}.}
+        \item{\code{baselineReduction(object), baselineReduction(object) <- value}:}{Accessor and setter function for \code{baselineReduction}.}
 
-        \item{\code{spectrumRepresentation}:}{Accessor function for \code{spectrumRepresentation}.}
+        \item{\code{spectrumRepresentation(object), spectrumRepresentation(object) <- value}:}{Accessor and setter function for \code{spectrumRepresentation}.}
 
-        \item{\code{peakPicking}:}{Accessor function for \code{peakPicking}.}
+        \item{\code{peakPicking(object), peakPicking(object) <- value}:}{Accessor and setter function for \code{peakPicking}.}
 
-        \item{\code{centroided}:}{Accessor function for \code{centroided}.}
+        \item{\code{centroided(object), centroided(object) <- value}:}{Accessor and setter function for \code{centroided}.}
     }
 
     Standard generic methods:

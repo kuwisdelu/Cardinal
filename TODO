@@ -8,9 +8,7 @@ x write pixels() and features() methods
 x rewrite readMSIData()
 - rewrite selectROI() and selectPixels()
 - fix plot() and image() methods (line type, orientation, etc.)
-- rewrite transformation methods
-- add replace methods for processingData
-- add methods for MSImageSet to access processingData slots
+x add replace methods for processingData
 - have readImzML add correct info to processingData
 - initialize MIAPE-Imaging and MSImageProcess with non-zero length slots
 - rewrite processing methods

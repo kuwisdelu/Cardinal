@@ -95,13 +95,21 @@ setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
 
 setGeneric("exphistory", function(object) standardGeneric("exphistory"))
+setGeneric("exphistory<-", function(object, value) standardGeneric("exphistory<-"))
 setGeneric("files", function(object) standardGeneric("files"))
+setGeneric("files<-", function(object, value) standardGeneric("files<-"))
 setGeneric("normalization", function(object) standardGeneric("normalization"))
+setGeneric("normalization<-", function(object, value) standardGeneric("normalization<-"))
 setGeneric("smoothing", function(object) standardGeneric("smoothing"))
+setGeneric("smoothing<-", function(object, value) standardGeneric("smoothing<-"))
 setGeneric("baselineReduction", function(object) standardGeneric("baselineReduction"))
+setGeneric("baselineReduction<-", function(object, value) standardGeneric("baselineReduction<-"))
 setGeneric("spectrumRepresentation", function(object) standardGeneric("spectrumRepresentation"))
+setGeneric("spectrumRepresentation<-", function(object, value) standardGeneric("spectrumRepresentation<-"))
 setGeneric("peakPicking", function(object) standardGeneric("peakPicking"))
+setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking<-"))
 setGeneric("centroided", function(object) standardGeneric("centroided")) # use mzR generic?
+setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
 #### Processing and data transformation ####
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))

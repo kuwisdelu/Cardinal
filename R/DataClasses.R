@@ -7,7 +7,7 @@
 .IAnnotatedDataFrame <- setClass("IAnnotatedDataFrame",
 	contains = "AnnotatedDataFrame",
 	prototype = prototype(new("Versioned",
-		versions=c(IAnnotatedDataFrame="0.0.2"))))
+		versions=c(IAnnotatedDataFrame="0.1.0"))))
 
 #### 'Minimum Information About a Proteomics Experiment' - Imaging ####
 ## based on working MIAPE-Imaging document and imzML specification
@@ -55,7 +55,7 @@ setClass("MIAPE-Imaging",
 	contains = "MIAxE",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("MIAxE"),
-			`MIAPE-Imaging`="0.0.2"))))
+			`MIAPE-Imaging`="0.1.0"))))
 
 #### Class for pre-processing information for an 'MSImageSet' ####
 ## should store all of the calls and their parameters
@@ -73,7 +73,15 @@ setClass("MSImageProcess",
 		CardinalVersion = "character"),
 	contains = "Versioned",
 	prototype = prototype(
-		new("Versioned", versions=c(MSImageProcess="0.0.3")),
+		new("Versioned", versions=c(MSImageProcess="0.1.0")),
+		files = "",
+		normalization = "",
+		smoothing = "",
+		baselineReduction = "",
+		spectrumRepresentation = "",
+		peakPicking = "",
+		centroided = FALSE,
+		history = list(),
 		CardinalVersion = character())) # set up in initialize
 
 #### Class for generic imaging data ###
@@ -86,7 +94,7 @@ setClass("MSImageProcess",
 		storageMode = "character"),
 	contains = "Versioned",
 	prototype = prototype(
-		new("Versioned", versions=c(ImageData="0.0.2")),
+		new("Versioned", versions=c(ImageData="0.1.0")),
 		data = new.env(parent=baseenv()), # re-assign in initialize
 		storageMode = "immutableEnvironment"),
 	validity = function(object) {
@@ -113,7 +121,7 @@ setClass("MSImageProcess",
 		dimnames = "list"),
 	contains = "ImageData",
 	prototype = prototype(
-		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.0.2")),
+		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.1.0")),
 		positionArray = array(dim=c(x=0, y=0)),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)),
@@ -156,7 +164,7 @@ setClass("MSImageProcess",
 		dimnames = "list"),
 	contains = "Versioned",
 	prototype = prototype(
-		new("Versioned", versions=c(Hashmat="0.0.1")),
+		new("Versioned", versions=c(Hashmat="0.1.0")),
 		data = list(),
 		keys = character(),
 		dim = c(0, 0),
@@ -197,7 +205,7 @@ setClass("iSet",
 		protocolData = "AnnotatedDataFrame"),
 	contains = c("VersionedBiobase", "VIRTUAL"),
 	prototype = prototype(
-		new("VersionedBiobase", versions=c(iSet="0.0.1")),
+		new("VersionedBiobase", versions=c(iSet="0.1.0")),
 		imageData = .ImageData(),
 		pixelData = .IAnnotatedDataFrame(
 			dimLabels = c("pixelNames", "pixelColumns")),
@@ -214,7 +222,7 @@ setClass("iSet",
 	contains = "iSet",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			SImageSet="0.0.1")),
+			SImageSet="0.1.0")),
 		imageData = .SImageData()))
 
 #### Class for mass spectrometry imaging datasets ####
@@ -227,7 +235,7 @@ setClass("iSet",
 	contains = "SImageSet",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			c(classVersion("SImageSet"), MSImageSet="0.5.2"))),
+			c(classVersion("SImageSet"), MSImageSet="0.7.0"))),
 		imageData = .SImageData(),
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))

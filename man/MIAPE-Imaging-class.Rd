@@ -106,7 +106,7 @@
 \title{Class for Storing Mass Spectrometry Imaging Experiment Information.}
 
 \description{
-    The Minimum Information About a Proteomics Experiment for Imaging. The current implementation is based in part on the imzML specification and on a working document for the MIAPE-Imaging (see References). Subject to change.
+    The Minimum Information About a Proteomics Experiment for Imaging. The current implementation is based in part on the imzML specification and on a working document for the MIAPE-Imaging (see References).
 }
 
 \section{Slots}{
