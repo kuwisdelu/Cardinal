@@ -39,22 +39,6 @@ setValidity("iSet", function(object) {
 	if (is.null(msg)) TRUE else msg
 })
 
-setMethod("protocolData", "iSet", function(object) object@protocolData)
-
-setReplaceMethod("protocolData", "iSet",
-	function(object, value) {
-		object@protocolData <- value
-		object
-	})
-
-setMethod("experimentData", "iSet", function(object) object@experimentData)
-
-setReplaceMethod("experimentData", "iSet",
-	function(object, value) {
-		object@experimentData <- value
-		object
-	})
-
 #### imageData methods ####
 ## ------------------------
 
@@ -107,27 +91,6 @@ setReplaceMethod("featureNames", "iSet",
 	function(object, value) {
 		featureNames(featureData(object)) <- value
 		object
-	})
-
-setMethod("features", "iSet",
-	function(object, ...) {
-		dots <- list(...)
-		if ( !all(names(dots) %in% fvarLabels(object)) )
-			stop("all arguments must appear as variables in 'featureData'")
-		if ( length(dots) > 0 ) {
-			features <- sapply(seq_along(dots), function(i) {
-				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
-			})
-			if ( is.null(dim(features)) ) {
-				features <- which(features)
-			} else {
-				features <- which(apply(features, 1, all))
-			}	
-		} else {
-			features <- seq_len(nrow(fData(object)))
-		}
-		names(features) <- featureNames(object)[features]
-		features
 	})
 
 #### pixelData methods ####
@@ -198,6 +161,30 @@ setReplaceMethod("coord", "iSet",
 		object
 	})
 
+#### Pixel and feature lookup ####
+## -------------------------------
+
+setMethod("features", "iSet",
+	function(object, ...) {
+		dots <- list(...)
+		if ( !all(names(dots) %in% fvarLabels(object)) )
+			stop("all arguments must appear as variables in 'featureData'")
+		if ( length(dots) > 0 ) {
+			features <- sapply(seq_along(dots), function(i) {
+				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
+			})
+			if ( is.null(dim(features)) ) {
+				features <- which(features)
+			} else {
+				features <- which(apply(features, 1, all))
+			}	
+		} else {
+			features <- seq_len(nrow(fData(object)))
+		}
+		names(features) <- featureNames(object)[features]
+		features
+	})
+
 setMethod("pixels", "iSet",
 	function(object, ...) {
 		dots <- list(...)
@@ -217,6 +204,25 @@ setMethod("pixels", "iSet",
 		}
 		names(pixels) <- pixelNames(object)[pixels]
 		pixels
+	})
+
+#### Other slots ####
+## ------------------
+
+setMethod("protocolData", "iSet", function(object) object@protocolData)
+
+setReplaceMethod("protocolData", "iSet",
+	function(object, value) {
+		object@protocolData <- value
+		object
+	})
+
+setMethod("experimentData", "iSet", function(object) object@experimentData)
+
+setReplaceMethod("experimentData", "iSet",
+	function(object, value) {
+		object@experimentData <- value
+		object
 	})
 
 #### Standard generic methods ####
