@@ -155,21 +155,3 @@ test_that("MSImageSet subsetting", {
 
 # })
 
-# test_that("MSImageSet copying", {
-
-# 	mz <- 1:9000
-# 	coord <- expand.grid(x=1:100, y=1:100)
-# 	spectra1 <- matrix(0, nrow=9000, ncol=100*100)
-# 	print(gc())
-
-# 	msset1 <- MSImageSet(spectra=spectra1, mz=mz, coord=coord)
-# 	print(gc())
-
-# 	pixelNames(msset1) <- paste("p", 1:(100*100))
-# 	print(gc())
-
-# 	pixelNames(msset1) <- paste("p", 1:(100*100))
-# 	print(gc())
-
-# })
-

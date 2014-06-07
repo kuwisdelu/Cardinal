@@ -25,8 +25,7 @@ SImageData(
     coord = expand.grid(
         x = seq_len(ncol(data)),
         y = seq_len(ifelse(ncol(data) > 0, 1, 0))),
-    storageMode = c("immutableEnvironment",
-        "lockedEnvironment", "environment"),
+    storageMode = "immutableEnvironment",
     positionArray = generatePositionArray(coord),
     \dots)
 
@@ -39,7 +38,7 @@ SImageData(
 
     \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of a feature vector corresponding to a column in \code{data}. This argument is ignored if \code{data} is a multidimensional array rather than a matrix.}
 
-    \item{storageMode}{The storage mode to use for the \code{SImageData} object for the environment in the \code{data} slot. This must be one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. See documentation on the \code{storageMode} slot below for more details.}
+    \item{storageMode}{The storage mode to use for the \code{SImageData} object for the environment in the \code{data} slot. Only \code{"immutableEnvironment"} is allowed for \code{SImageData}. See documentation on the \code{storageMode} slot below for more details.}
 
     \item{\dots}{Additional Named arguments that are passed to the \code{initialize} method for instantiating the object. These must be matrices or matrix-like objects of equal dimension to \code{data}. They will be assigned into the environment in the \code{data} slot.}
 
@@ -47,7 +46,9 @@ SImageData(
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, which is a matrix-like object with rows equal to the number of features and columns equal to the number of non-missing pixels. Each column is a feature vector.}
+        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{".iData"}, which is a matrix-like object with rows equal to the number of features and columns equal to the number of non-missing pixels. Each column is a feature vector.}
+
+        \item{\code{coord}:}{An \code{data.frame} with rows giving the spatial coordinates of the pixels corresponding to the columns of \code{".iData"}.}
 
         \item{\code{positionArray}:}{An \code{array} with dimensions equal to the spatial dimensions of the image, which stores the column numbers of the feature vectors corresponding to the pixels in the \code{"iData"} element of the \code{data} slot. This allows re-construction of the imaging "datacube" on-the-fly.}
 
@@ -74,6 +75,8 @@ SImageData(
     \describe{
         \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of image intensities. Columns should correspond to feature vectors, and rows should correspond to pixel vectors.}
 
+        \item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} with each row corresponding to the spatial coordinates of a pixel.}
+
         \item{\code{positionArray(object)}, \code{positionArray(object)<-}:}{Return or set the \code{positionArray} slot. When setting, this should be an array returned by a call to \code{generatePositionArray}.}
 
         \item{\code{featureNames(object), featureNames(object) <- value}:}{Access and set feature names (names of the rows of the intensity matrix).}
@@ -85,7 +88,7 @@ SImageData(
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{SImageData} objects. Elements are combined as for \code{\linkS4class{ImageData}}. The \code{positionArray} slots are combined along a new dimension (padding with NAs if necessary).}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{SImageData} objects. Elements are combined as for \code{\linkS4class{ImageData}}. Elements with hidden names (preceded by ".") are combined separetely, and must be a matrix-like object that can be instantiated with a call of the form \code{new(<class name>, nrow, ncol)}.}
 
         \item{\code{dim}:}{Return the dimensions of the (virtual) datacube. This is equal to the number of features (the number of rows in the matrix returned by \code{iData}) and the dimensions of the \code{positionArray} slot. For a standard imaging dataset, that is the number features followed by the spatial dimensions of the image.}
 

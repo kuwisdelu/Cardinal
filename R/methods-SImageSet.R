@@ -70,8 +70,6 @@ setValidity("SImageSet", function(object) {
 			msg <- validMsg(msg, "feature names differ between imageData and featureData")
 		if ( any(colnames(iData(object@imageData)) != pixelNames(object@pixelData)) )
 			msg <- validMsg(msg, "pixel names differ between imageData and pixelData")
-		if ( !isTRUE(all.equal(positionArray(object@imageData), generatePositionArray(coord(object)))) )
-			warning("positions are out of sync; run 'object <- regeneratePositions(object)' to resync")
 	}
 	if (is.null(msg)) TRUE else msg	
 })
@@ -86,21 +84,23 @@ setReplaceMethod("iData", "SImageSet",
 
 setMethod("regeneratePositions", "SImageSet",
 	function(object) {
-		positionArray(object@imageData) <- generatePositionArray(coord(object))
+		object@imageData <- regeneratePositions(object@imageData)
 		object
 	})
 
 setReplaceMethod("coord", "SImageSet",
 	function(object, value) {
 		coord(object@pixelData) <- value
-		object <- regeneratePositions(object)
+		coord(object@imageData) <- value
+		object@imageData <- regeneratePositions(object@imageData)
 		object
 	})
 
 setReplaceMethod("coordLabels", "SImageSet",
 	function(object, value) {
 		coordLabels(object@pixelData) <- value
-		object <- regeneratePositions(object)
+		names(coord(object@imageData)) <- value
+		object@imageData <- regeneratePositions(object@imageData)
 		object
 	})
 
@@ -212,13 +212,13 @@ setMethod("featureApply", "SImageSet",
 				enclos=parent.frame(2))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
-		.feature <- features(.object, .feature)
+		.feature <- features(.object)[.feature]
 		if ( !missing(.pixel) )
 			.pixel <- eval(substitute(.pixel), envir=pData(.object),
 				enclos=parent.frame(2))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
-		.pixel <- pixels(.object, .pixel)
+		.pixel <- pixels(.object)[.pixel]
 		# set up grouping variables if not provided
 		if ( !missing(.pixel.groups) )
 			.pixel.groups <- eval(substitute(.pixel.groups),

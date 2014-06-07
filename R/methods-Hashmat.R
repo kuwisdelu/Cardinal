@@ -59,10 +59,20 @@ setReplaceMethod("dim", "Hashmat", function(x, value) {
 	x
 })
 
-setMethod("dimnames", "Hashmat", function(x) x@dimnames)
+setMethod("dimnames", "Hashmat", function(x) {
+	if ( is.null(x@dimnames[[1]]) && is.null(x@dimnames[[2]]) ) {
+		NULL
+	} else {
+		x@dimnames
+	}
+})
 
 setReplaceMethod("dimnames", "Hashmat", function(x, value) {
-	x@dimnames <- value
+	if ( is.null(value) ) {
+		x@dimnames <- list(NULL, NULL)
+	} else {
+		x@dimnames <- value
+	}
 	names(x@keys) <- x@dimnames[[1]]
 	names(x@data) <- x@dimnames[[2]]
 	x
@@ -135,9 +145,9 @@ setReplaceMethod("[", "Hashmat", function(x, i, j, ..., value) {
 setMethod("combine",
 	signature = c(x = "Hashmat", y = "Hashmat"),
 	function(x, y, ...) {
-		if ( length(y) == 0 )
+		if ( prod(dim(y)) == 0 )
 			return(x)
-		if ( length(x) == 0 )
+		if ( prod(dim(x)) == 0 )
 			return(y)
 		xdim <- dimnames(x)
 		ydim <- dimnames(y)

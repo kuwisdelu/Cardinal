@@ -109,18 +109,22 @@ setClass("MSImageProcess",
 ## --------------------------------------------
 .SImageData <- setClass("SImageData",
 	slots = c(
+		coord = "data.frame",
 		positionArray = "array",
 		dim = "numeric",
 		dimnames = "list"),
 	contains = "ImageData",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.1.0")),
+		coord = data.frame(),
 		positionArray = array(dim=c(x=0, y=0)),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)),
 	validity = function(object) {
 		msg <- validMsg(NULL, NULL)
-		names <- ls(object@data)
+		if ( object@storageMode != "immutableEnvironment" )
+			msg <- validMsg(msg, "storageMode must be 'immutableEnvironment' for an SImageData")
+		names <- c(ls(object@data), ".iData")
 		if ( !all(sapply(names, function(nm) length(dim(object@data[[nm]])) == 2)) )
 			msg <- validMsg(msg, "all data elements must be a matrix-like object ('dims' of length 2)")
 		ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
@@ -133,6 +137,8 @@ setClass("MSImageProcess",
 			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
 		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )
 			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")
+		if ( any(nrow(object@coord) != sum(!is.na(object@positionArray))) )
+			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of rows of coord")
 		dmn <- object@dimnames
 		if ( length(dmn) != 2 )
 			msg <- validMsg(msg, paste("length of 'dimnames' [",
@@ -143,6 +149,8 @@ setClass("MSImageProcess",
 		if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != ncols[[1]] )
 			msg <- validMsg(msg, paste("length of 'dimnames' [",
 				length(dmn[[2]]), "] not equal to array extent", sep=""))
+		if ( !isTRUE(all.equal(object@positionArray, generatePositionArray(object@coord))) )
+			warning("positions are out of sync; run 'object <- regeneratePositions(object)' to resync")
 		if ( is.null(msg) ) TRUE else msg
 	})
 
