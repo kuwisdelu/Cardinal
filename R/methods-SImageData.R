@@ -114,41 +114,53 @@ setMethod("dims", "SImageData",
 	})
 
 setMethod("[", "SImageData", function(x, i, j, ..., drop) {
-	nargs <- nargs() - 1 - !missing(drop)
-	if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
-		stop("incorrect number of dimensions")
-	if ( missing(drop) ) drop <- TRUE
-	args <- lapply(dim(x), function(dm) seq_len(dm))
-	if ( !missing(i) ) args[[1]] <- i
-	if ( !missing(j) ) args[[2]] <- j
-	if ( nargs > 2 ) {
-		dots <- match.call(expand.dots=FALSE)$...
-		nonmissing <- !sapply(dots, is.symbol)
-		if ( sum(nonmissing) > 0 )
-			args[c(FALSE,FALSE,nonmissing)] <- dots[nonmissing]
+	if ( !missing(drop) && is.na(drop) ) {
+		# subset like an ordinary matrix
+		names <- ls(x@data)
+		for ( nm in names ) {
+			x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+		}
+		x@dim <- c(length(i), length(j))
+		x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
+		x
+	} else {
+		# reconstruct and subset the data cube
+		nargs <- nargs() - 1 - !missing(drop)
+		if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
+			stop("incorrect number of dimensions")
+		if ( missing(drop) ) drop <- TRUE
+		args <- lapply(dim(x), function(dm) seq_len(dm))
+		if ( !missing(i) ) args[[1]] <- i
+		if ( !missing(j) ) args[[2]] <- j
+		if ( nargs > 2 ) {
+			dots <- match.call(expand.dots=FALSE)$...
+			nonmissing <- !sapply(dots, is.symbol)
+			if ( sum(nonmissing) > 0 )
+				args[c(FALSE,FALSE,nonmissing)] <- dots[nonmissing]
+		}
+		inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
+		cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
+		cube[,!is.na(inds)] <- x[["iData"]][args[[1]],inds[!is.na(inds)],drop=FALSE]
+		# cube <- x[["iData"]][args[[1]],inds,drop=FALSE]
+		dim(cube) <- c(dim(cube)[1], dim(inds))
+		names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
+		if ( drop && all(dim(cube) == 1) )
+			cube <- as.vector(cube)
+		if ( drop && any(dim(cube) == 1) )
+			dim(cube) <- dim(cube)[dim(cube) != 1]
+		if ( drop && length(dim(cube)) == 1 )
+			cube <- as.vector(cube)
+		cube
 	}
-	inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
-	cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
-	cube[,!is.na(inds)] <- x[["iData"]][args[[1]],inds[!is.na(inds)],drop=FALSE]
-	# cube <- x[["iData"]][args[[1]],inds,drop=FALSE]
-	dim(cube) <- c(dim(cube)[1], dim(inds))
-	names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
-	if ( drop && all(dim(cube) == 1) )
-		cube <- as.vector(cube)
-	if ( drop && any(dim(cube) == 1) )
-		dim(cube) <- dim(cube)[dim(cube) != 1]
-	if ( drop && length(dim(cube)) == 1 )
-		cube <- as.vector(cube)
-	cube
 })
 
-.subset.SImageData <- function(x, i, j) {
-	names <- ls(x@data)
-	for ( nm in names ) {
-		x[[nm]] <- x[[nm]][i,j,drop=FALSE]
-	}
-	x@dim <- c(length(i), length(j))
-	x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
-	x
-}
+# .subset.SImageData <- function(x, i, j) {
+# 	names <- ls(x@data)
+# 	for ( nm in names ) {
+# 		x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+# 	}
+# 	x@dim <- c(length(i), length(j))
+# 	x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
+# 	x
+# }
 

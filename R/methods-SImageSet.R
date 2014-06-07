@@ -122,9 +122,9 @@ setMethod("[", "SImageSet",
 	function(x, i, j, ..., drop) {
 		if ( missing(i) ) i <- seq_len(nrow(featureData(x)))
 		if ( missing(j) ) j <- seq_len(nrow(pixelData(x)))
-		i <- .match.feature(x, i)
-		j <- .match.pixel(x, j)
-		x@imageData <- .subset.SImageData(x@imageData, i, j)
+		i <- features(x)[i]
+		j <- pixels(x)[j]
+		x@imageData <- x@imageData[i,j,drop=NA]
 		x@featureData <- x@featureData[i,,drop=FALSE]
 		x@pixelData <- x@pixelData[j,,drop=FALSE]
 		x <- regeneratePositions(x)
@@ -150,13 +150,13 @@ setMethod("pixelApply", "SImageSet",
 				enclos=parent.frame(2))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
-		.pixel <- .match.pixel(.object, .pixel)
+		.pixel <- pixels(.object)[.pixel]
 		if ( !missing(.feature) )
 			.feature <- eval(substitute(.feature), envir=fData(.object),
 				enclos=parent.frame(2))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
-		.feature <- .match.feature(.object, .feature)
+		.feature <- features(.object)[.feature]
 		# set up grouping variables if not provided
 		if ( !missing(.feature.groups) )
 			.feature.groups <- eval(substitute(.feature.groups),
@@ -212,13 +212,13 @@ setMethod("featureApply", "SImageSet",
 				enclos=parent.frame(2))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
-		.feature <- .match.feature(.object, .feature)
+		.feature <- features(.object, .feature)
 		if ( !missing(.pixel) )
 			.pixel <- eval(substitute(.pixel), envir=pData(.object),
 				enclos=parent.frame(2))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
-		.pixel <- .match.pixel(.object, .pixel)
+		.pixel <- pixels(.object, .pixel)
 		# set up grouping variables if not provided
 		if ( !missing(.pixel.groups) )
 			.pixel.groups <- eval(substitute(.pixel.groups),

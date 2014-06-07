@@ -1,18 +1,54 @@
 
-Hashmat <- function(data = rep(list(numeric()), ncol), nrow = 0, ncol = 0,
-	dimnames = list(NULL, NULL), keys = paste(seq_len(nrow)), ...)
+
+setMethod("initialize", "Hashmat",
+	function(.Object,
+			data = list(),
+			keys = character(),
+			dim = c(0, 0),
+			dimnames = list(NULL, NULL),
+			nrow,
+			ncol,
+			...)
+	{
+		if ( missing(dim) && !missing(nrow) && !missing(ncol))
+			dim <- c(nrow, ncol)
+		if ( length(data) != dim[[2]] )
+			data <- rep(data, length.out=dim[[2]])
+		names(keys) <- dimnames[[1]]
+		names(data) <- dimnames[[2]]
+		callNextMethod(.Object,
+			data=data,
+			keys=keys,
+			dim=dim,
+			dimnames=dimnames,
+			...)
+	})
+
+Hashmat <- function(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
+	dimnames = NULL, ...)
 {
-	nrow <- length(keys)
-	ncol <- length(data)
-	dim <- c(nrow, ncol)
-	if ( length(data) != ncol )
-		data <- rep(data, length.out=ncol)
-	names(keys) <- dimnames[[1]]
-	names(data) <- dimnames[[2]]
+	if ( ncol == 0 ) {
+		data <- list(numeric())
+	} else if ( is.vector(data) && !is.list(data) ) {
+		data <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
+	}
+	if ( is.matrix(data) ) {
+		nrow <- nrow(data)
+		ncol <- ncol(data)
+		data <- lapply(seq_len(ncol(data)), function(i) {
+			key <- which(data[,i] != 0)
+			x <- data[key,i]
+			names(x) <- key
+			x
+		})
+	}
+	if ( is.null(dimnames) ) dimnames <- list(NULL, NULL)
+	keys <- as.character(seq_len(nrow))
 	.Hashmat(data=data,
 		keys=keys,
-		dim=dim,
 		dimnames=dimnames,
+		nrow=nrow,
+		ncol=ncol,
 		...)
 }
 

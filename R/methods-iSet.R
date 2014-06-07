@@ -66,6 +66,70 @@ setReplaceMethod("imageData", "iSet",
 		object
 	})
 
+#### featureData methods ####
+## --------------------------
+
+setMethod("featureData", "iSet", function(object) object@featureData)
+
+setReplaceMethod("featureData", "iSet",
+	function(object, value) {
+		object@featureData <- value
+		object
+	})
+
+setMethod("fData", "iSet", function(object) pData(featureData(object)))
+
+setReplaceMethod("fData", "iSet",
+	function(object, value) {
+		pData(featureData(object)) <- value
+		object
+	})
+
+setMethod("fvarMetadata", "iSet", function(object) varMetadata(featureData(object)))
+
+setReplaceMethod("fvarMetadata", "iSet",
+	function(object, value) {
+		varMetadata(featureData(object)) <- value
+		object
+	})
+
+setMethod("fvarLabels", "iSet", function(object) varLabels(featureData(object)))
+
+setReplaceMethod("fvarLabels", "iSet",
+	function(object, value) {
+		varLabels(featureData(object)) <- value
+		object
+	})
+
+setMethod("featureNames", "iSet", function(object) featureNames(featureData(object)))
+
+setReplaceMethod("featureNames", "iSet",
+	function(object, value) {
+		featureNames(featureData(object)) <- value
+		object
+	})
+
+setMethod("features", "iSet",
+	function(object, ...) {
+		dots <- list(...)
+		if ( !all(names(dots) %in% fvarLabels(object)) )
+			stop("all arguments must appear as variables in 'featureData'")
+		if ( length(dots) > 0 ) {
+			features <- sapply(seq_along(dots), function(i) {
+				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
+			})
+			if ( is.null(dim(features)) ) {
+				features <- which(features)
+			} else {
+				features <- which(apply(features, 1, all))
+			}	
+		} else {
+			features <- seq_len(nrow(fData(object)))
+		}
+		names(features) <- featureNames(object)[features]
+		features
+	})
+
 #### pixelData methods ####
 ## ------------------------
 
@@ -153,70 +217,6 @@ setMethod("pixels", "iSet",
 		}
 		names(pixels) <- pixelNames(object)[pixels]
 		pixels
-	})
-
-#### featureData methods ####
-## --------------------------
-
-setMethod("featureData", "iSet", function(object) object@featureData)
-
-setReplaceMethod("featureData", "iSet",
-	function(object, value) {
-		object@featureData <- value
-		object
-	})
-
-setMethod("fData", "iSet", function(object) pData(featureData(object)))
-
-setReplaceMethod("fData", "iSet",
-	function(object, value) {
-		pData(featureData(object)) <- value
-		object
-	})
-
-setMethod("fvarMetadata", "iSet", function(object) varMetadata(featureData(object)))
-
-setReplaceMethod("fvarMetadata", "iSet",
-	function(object, value) {
-		varMetadata(featureData(object)) <- value
-		object
-	})
-
-setMethod("fvarLabels", "iSet", function(object) varLabels(featureData(object)))
-
-setReplaceMethod("fvarLabels", "iSet",
-	function(object, value) {
-		varLabels(featureData(object)) <- value
-		object
-	})
-
-setMethod("featureNames", "iSet", function(object) featureNames(featureData(object)))
-
-setReplaceMethod("featureNames", "iSet",
-	function(object, value) {
-		featureNames(featureData(object)) <- value
-		object
-	})
-
-setMethod("features", "iSet",
-	function(object, ...) {
-		dots <- list(...)
-		if ( !all(names(dots) %in% fvarLabels(object)) )
-			stop("all arguments must appear as variables in 'featureData'")
-		if ( length(dots) > 0 ) {
-			features <- sapply(seq_along(dots), function(i) {
-				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
-			})
-			if ( is.null(dim(features)) ) {
-				features <- which(features)
-			} else {
-				features <- which(apply(features, 1, all))
-			}	
-		} else {
-			features <- seq_len(nrow(fData(object)))
-		}
-		names(features) <- featureNames(object)[features]
-		features
 	})
 
 #### Standard generic methods ####

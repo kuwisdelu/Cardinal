@@ -3,7 +3,8 @@
 ## -----------------------------------------------
 
 .log <- function(...) {
-	.Cardinal$log <- append(.Cardinal$log, paste(..., sep=""))
+	msg <- paste(date(), paste0(..., collapse="\n  "))
+	.Cardinal$log <- append(.Cardinal$log, msg)
 }
 
 .log.flush <- function(pkgname="Cardinal") {
@@ -87,9 +88,11 @@
 ## -------------------------------------
 
 .history <- function(which=-2) {
-	error <- paste("error in", deparse(match.call()))
+	error <- paste("Error: in", deparse(match.call()))
 	history <- tryCatch({
 		call <- sys.call(which)
+		def <- match.fun(as.character(call)[[1]])
+		call <- match.call(def, call=call)
 		history <- paste("Call:", deparse(call))
 		if ( length(call) != 1 ) {
 			args <- sapply(as.list(call)[-1], function(x) {
@@ -97,10 +100,10 @@
 					class(eval(x, envir=sys.frame(which)))
 				}, error=function(e) "unknown")
 			})
-			history <- append(history, paste(names(args), args, sep=": "))
+			history <- append(history, paste(names(args), args, sep=" = "))
 		}
 		paste(history, collapse="\n")
 	}, error=function(e) error)
-	.log.append(history)
+	.log(history)
 	history
 }

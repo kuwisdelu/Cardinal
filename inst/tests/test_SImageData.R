@@ -79,26 +79,3 @@ test_that("SImageData sparse signal", {
 
 })
 
-# test_that("SImageData copying", {
-
-# 	coord <- expand.grid(x=1:100, y=1:100)
-# 	data1 <- matrix(0, nrow=9000, ncol=100*100)
-# 	print(gc())
-
-# 	sdata1 <- SImageData(data=data1, coord=coord)
-# 	print(gc())
-
-# 	pixelNames(sdata1) <- paste("p", 1:(100*100))
-# 	print(gc())
-
-# 	pixelNames(sdata1) <- paste("p", (100*100):1)
-# 	print(gc())
-
-# 	featureNames(sdata1) <- paste("f", 1:9000)
-# 	print(gc())
-
-# 	featureNames(sdata1) <- paste("f", 9000:1)
-# 	print(gc())
-
-# })
-

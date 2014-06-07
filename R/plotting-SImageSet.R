@@ -27,7 +27,7 @@ setMethod("plot",
 			pixel.groups <- eval(substitute(pixel.groups),
 				envir=pData(x), enclos=parent.frame(2))
 			if ( length(pixel) != length(pixel.groups) )
-				pixel.groups <- pixel.groups[.match.pixel(x, pixel)]
+				pixel.groups <- pixel.groups[pixels(x)[pixel]]
 			pixel.groups <- as.factor(pixel.groups)
 			missing.pixel.groups <- FALSE
 		}
@@ -130,7 +130,7 @@ setMethod("image",
 			feature.groups <- eval(substitute(feature.groups),
 				envir=fData(x), enclos=parent.frame(2))
 			if ( length(feature) != length(feature.groups))
-				feature.groups <- feature.groups[.match.feature(x, feature)]
+				feature.groups <- feature.groups[features(x)[feature]]
 			feature.groups <- as.factor(feature.groups)
 			missing.feature.groups <- FALSE
 		}
@@ -240,7 +240,7 @@ setMethod("image",
 .calculatePlotValues <- function(object, fun, pixel, pixel.groups,
 	condition, missing.pixel.groups)
 {
-	pixel <- .match.pixel(object, pixel)
+	pixel <- pixels(object)[pixel]
 	groups <- rep(TRUE, length(pixel))
 	if ( !is.null(condition) ) {
 		condition <- lapply(condition, function(cond) cond[pixel])
@@ -257,7 +257,7 @@ setMethod("image",
 .calculateImageValues <- function(object, fun, feature, feature.groups,
 	condition, missing.feature.groups)
 {
-	feature <- .match.feature(object, feature)
+	feature <- features(object)[feature]
 	groups <- rep(TRUE, length(feature))
 	if ( !is.null(condition) ) {
 		condition <- lapply(condition, function(cond) cond[feature])

@@ -2,25 +2,33 @@ require(testthat)
 
 context("Hashmat")
 
-test_that("Hashmat accessors", {
-	
+test_that("Hashmat validity", {
+
 	expect_true(validObject(new("Hashmat")))
 	expect_true(validObject(Hashmat()))
 
-	sdat <- list(c(a=1, b=2, c=3),
+	dmat <- diag(3)
+	smat <- Hashmat(dmat)
+	expect_equivalent(dmat, smat[])
+
+})
+
+test_that("Hashmat accessors", {
+
+	smat <- list(c(a=1, b=2, c=3),
 		c(a=4, c=5),
 		c(b=6, c=7, d=8),
 		numeric(),
 		c(a=9))
-	x <- Hashmat(data=sdat, keys=c("a", "b", "c", "d", "e"))
+	x <- new("Hashmat", data=smat, keys=c("a", "b", "c", "d", "e"), dim=c(5,5))
 	expect_true(validObject(x))
 
-	ddat <- c(c(1, 2, 3, 0, 0),
+	dmat <- c(c(1, 2, 3, 0, 0),
 			c(4, 0, 5, 0, 0),
 			c(0, 6, 7, 8, 0),
 			c(0, 0, 0, 0, 0),
 			c(9, 0, 0, 0, 0))
-	y <- matrix(ddat, nrow=5, ncol=5)
+	y <- matrix(dmat, nrow=5, ncol=5)
 	expect_equivalent(x[], y)
 
 	expect_equivalent(x[2,], y[2,])
@@ -82,10 +90,10 @@ test_that("Hashmat assignment", {
 
 test_that("Hashmat combine", {
 
-	x <- Hashmat(data=list(c(k1=1), c(k2=2), c(k3=3)), keys=c("k1", "k2", "k3"),
-		dimnames=list(c("r1", "r2", "r3"), c("c1", "c2", "c3")))
-	y <- Hashmat(data=list(c(l2=2), c(l3=3), c(l4=4)), keys=c("l1", "l2", "l3", "l4"),
-		dimnames=list(c("r1", "r2", "r3", "r4"), c("c2", "c3", "c4")))
+	x <- new("Hashmat", data=list(c(k1=1), c(k2=2), c(k3=3)), keys=c("k1", "k2", "k3"),
+		dim=c(3,3), dimnames=list(c("r1", "r2", "r3"), c("c1", "c2", "c3")))
+	y <- new("Hashmat", data=list(c(l2=2), c(l3=3), c(l4=4)), keys=c("l1", "l2", "l3", "l4"),
+		dim=c(4,3), dimnames=list(c("r1", "r2", "r3", "r4"), c("c2", "c3", "c4")))
 	expect_true(validObject(combine(x, y)))
 
 	z <- matrix(0, nrow=4, ncol=4)

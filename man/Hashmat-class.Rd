@@ -26,23 +26,21 @@
 
 \usage{
 ## Instance creation
-Hashmat(data = rep(list(numeric()), ncol), nrow = 0, ncol = 0,
-    dimnames = list(NULL, NULL), keys = paste(seq_len(nrow)), \dots)
+Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
+    dimnames = NULL, \dots)
 
 ## Additional methods documented below
 }
 
 \arguments{
     
-    \item{data}{A \code{list} of named vectors representing the columns of the sparse matrix. The names of the elements in the vectors are the keys used to determine their rows. Only non-zero elements should be given.}
+    \item{data}{A \code{matrix} or a \code{vector}. If \code{data} is a \code{matrix}, then a sparse matrix is construced from matrix directly and other arguments (except for \code{dimnames}) are ignored. If \code{data} is a \code{vector}, then the behavior is the same as for ordinary matrix construction.}
 
     \item{nrow}{The number of rows in the sparse matrix.}
 
     \item{ncol}{The number of columns in the sparse matrix.}
 
-    \item{dimnames}{The 'dimnames' giving the dimension names for the matrix, analogous to the 'dimnames' attribute of an ordinary R matrix. This must be a list of length 2.}
-
-    \item{keys}{A character vector of keys that determine the rows of the matrix.}
+    \item{dimnames}{The 'dimnames' giving the dimension names for the matrix, analogous to the 'dimnames' attribute of an ordinary R matrix. This must be a list of length 2 or \code{NULL}.}
 
     \item{\dots}{Additional arguments passed to the constructor.}
 
@@ -71,11 +69,6 @@ Hashmat(data = rep(list(numeric()), ncol), nrow = 0, ncol = 0,
 }
 
 \section{Methods}{
-    Class-specific methods:
-    \describe{
-        \item{\code{setKeys(object, recursive=FALSE) <- value}:}{Needs to be implemented. Sets the keys.}
-    }
-
     Standard generic methods:
     \describe{
         \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link[BiocGeneric]{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}
@@ -109,7 +102,7 @@ Hashmat()
 
 ## Using a list of elements and keys
 dmat1 <- diag(3)
-smat1 <- Hashmat(data=list(c(a=1), c(b=1), c(c=1)), keys=c("a", "b", "c"))
+smat1 <- Hashmat(dmat1)
 all.equal(smat1[], dmat1, check.attr=FALSE)
 
 ## Filling an empty sparse matrix

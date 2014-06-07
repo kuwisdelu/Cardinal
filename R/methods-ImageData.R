@@ -30,7 +30,7 @@ ImageData <- function(..., data = new.env(parent=baseenv()),
 	.ImageData(..., data=data, storageMode=storageMode)
 }
 
-## adapted from combine(AssayData, AssayData) from Biobase
+## Adapted from combine(AssayData, AssayData) from Biobase
 setMethod("combine",
 	signature = c(x = "ImageData", y = "ImageData"),
 	function(x, y, ...) {
