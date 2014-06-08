@@ -71,7 +71,7 @@ is_a: MS:1000503 ! scan attribute */
 
 #define MS_RESOLUTION_MEASUREMENT_METHOD_ID "MS:1000012"
 #define MS_RESOLUTION_MEASUREMENT_METHOD_NAME "resolution measurement method"
-/* def: "Which of the available standard measures is used to /* define whether two peaks are separate." [PSI:MS]
+/* def: "Which of the available standard measures is used to define whether two peaks are separate." [PSI:MS]
 is_a: MS:1000596 ! measurement method */
 
 #define MS_RESOLUTION_TYPE_ID "MS:1000013"
@@ -686,7 +686,7 @@ is_a: MS:1000027 ! detector acquisition mode */
 
 #define MS_PULSE_COUNTING_ID "MS:1000118"
 #define MS_PULSE_COUNTING_NAME "pulse counting"
-/* def: "/* definition to do." [PSI:MS]
+/* def: "definition to do." [PSI:MS]
 is_a: MS:1000027 ! detector acquisition mode */
 
 #define MS_TIME_DIGITAL_CONVERTER_ID "MS:1000119"
@@ -795,7 +795,7 @@ is_a: MS:1000044 ! dissociation method */
 
 // #define MS_ELECTRON_VOLT_ID "MS:1000137"
 // #define MS_ELECTRON_VOLT_NAME "electron volt"
-/* def: "OBSOLETE A non-SI unit of energy (eV) /* defined as the energy acquired by a particle containing one unit of charge through a potential difference of one volt. An electron-volt is equal to 1.602 176 53(14) x 10^-19 J." [PSI:MS]
+/* def: "OBSOLETE A non-SI unit of energy (eV) defined as the energy acquired by a particle containing one unit of charge through a potential difference of one volt. An electron-volt is equal to 1.602 176 53(14) x 10^-19 J." [PSI:MS]
 comment: This term was made obsolete because it was redundant with the Unit Ontology term electron volt (UO:0000266).
 synonym: "eV" EXACT []
 is_obsolete: true */
@@ -1323,7 +1323,7 @@ is_obsolete: true */
 
 #define MS_PROTON_AFFINITY_ID "MS:1000233"
 #define MS_PROTON_AFFINITY_NAME "proton affinity"
-/* def: "The proton affinity of a species M is /* defined as the negative of the enthalpy change for the reaction M + H+ ->[M+H]+, where all species are in their ground rotational, vibrational and electronic states." [PSI:MS]
+/* def: "The proton affinity of a species M is defined as the negative of the enthalpy change for the reaction M + H+ ->[M+H]+, where all species are in their ground rotational, vibrational and electronic states." [PSI:MS]
 synonym: "PA" EXACT [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000507 ! ion attribute */
@@ -1351,7 +1351,7 @@ is_a: MS:1000496 ! instrument attribute */
 
 // #define MS_UNIFIED_ATOMIC_MASS_UNIT_ID "MS:1000237"
 // #define MS_UNIFIED_ATOMIC_MASS_UNIT_NAME "unified atomic mass unit"
-/* def: "OBSOLETE A non-SI unit of mass (u) /* defined as one twelfth of ^12 C in its ground state and equal to 1.660 538 86(28) x 10^-27 kg." [PSI:MS]
+/* def: "OBSOLETE A non-SI unit of mass (u) defined as one twelfth of ^12 C in its ground state and equal to 1.660 538 86(28) x 10^-27 kg." [PSI:MS]
 comment: This term was made obsolete because it was redundant with Unit Ontology dalton (UO:0000221).
 synonym: "u" EXACT []
 is_obsolete: true */
@@ -2124,7 +2124,7 @@ is_a: MS:1000508 ! ion chemical type */
 
 #define MS_PRINCIPAL_ION_ID "MS:1000373"
 #define MS_PRINCIPAL_ION_NAME "principal ion"
-/* def: "Most abundant ion of an isotope cluster, such as the 11B79Br2 81Br+ ion of m/z 250 of the cluster of isotopologue molecular ions of BBr3. The term principal ion has also been used to describe ions that have been artificially isotopically enriched in one or more positions such as CH3 13CH3+ or CH2D2 +, but those are best /* defined as isotopologue ions." [PSI:MS]
+/* def: "Most abundant ion of an isotope cluster, such as the 11B79Br2 81Br+ ion of m/z 250 of the cluster of isotopologue molecular ions of BBr3. The term principal ion has also been used to describe ions that have been artificially isotopically enriched in one or more positions such as CH3 13CH3+ or CH2D2 +, but those are best defined as isotopologue ions." [PSI:MS]
 is_a: MS:1000508 ! ion chemical type */
 
 #define MS_POSITIVE_ION_ID "MS:1000374"
@@ -3482,7 +3482,7 @@ is_a: MS:1001457 ! data processing software */
 
 #define MS_PRESET_SCAN_CONFIGURATION_ID "MS:1000616"
 #define MS_PRESET_SCAN_CONFIGURATION_NAME "preset scan configuration"
-/* def: "A user-/* defined scan configuration that specifies the instrumental settings in which a spectrum is acquired. An instrument may cycle through a list of preset scan configurations to acquire data. This is a more generic term for the Thermo \"scan event\", which is /* defined in the Thermo Xcalibur glossary as: a mass spectrometer scan that is /* defined by choosing the necessary scan parameter settings. Multiple scan events can be /* defined for each segment of time." [PSI:MS]
+/* def: "A user-defined scan configuration that specifies the instrumental settings in which a spectrum is acquired. An instrument may cycle through a list of preset scan configurations to acquire data. This is a more generic term for the Thermo \"scan event\", which is defined in the Thermo Xcalibur glossary as: a mass spectrometer scan that is defined by choosing the necessary scan parameter settings. Multiple scan events can be defined for each segment of time." [PSI:MS]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1000503 ! scan attribute */
 
@@ -4583,7 +4583,7 @@ is_a: MS:1000503 ! scan attribute */
 
 #define MS_AREA_PEAK_PICKING_ID "MS:1000801"
 #define MS_AREA_PEAK_PICKING_NAME "area peak picking"
-/* def: "Spectral peak processing conducted on the acquired data to convert profile data to centroided data. The area /* defined by all raw data points that belong to the peak is reported." [PSI:MS]
+/* def: "Spectral peak processing conducted on the acquired data to convert profile data to centroided data. The area defined by all raw data points that belong to the peak is reported." [PSI:MS]
 synonym: "sum peak picking" EXACT []
 is_a: MS:1000035 ! peak picking */
 
@@ -4742,7 +4742,7 @@ relationship: has_units UO:0000031 ! minute */
 
 #define MS_ISOLATION_WINDOW_TARGET_M_Z_ID "MS:1000827"
 #define MS_ISOLATION_WINDOW_TARGET_M_Z_NAME "isolation window target m/z"
-/* def: "The primary or reference m/z about which the isolation window is /* defined." [PSI:MS]
+/* def: "The primary or reference m/z about which the isolation window is defined." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000792 ! isolation window attribute
 relationship: has_units MS:1000040 ! m/z */
@@ -5056,7 +5056,7 @@ relationship: has_units UO:0000010 ! second */
 
 #define MS_CHEMICAL_COMPOUND_ID "MS:1000881"
 #define MS_CHEMICAL_COMPOUND_NAME "chemical compound"
-/* def: "A substance formed by chemical union of two or more elements or ingredients in /* definite proportion by weight." [PSI:MS]
+/* def: "A substance formed by chemical union of two or more elements or ingredients in definite proportion by weight." [PSI:MS]
 relationship: part_of MS:0000000 ! Proteomics Standards Initiative Mass Spectrometry Vocabularies */
 
 #define MS_PROTEIN_ID "MS:1000882"
@@ -5298,7 +5298,7 @@ is_a: MS:1000919 ! target inclusion exclusion priority */
 
 #define MS_SKYLINE_ID "MS:1000922"
 #define MS_SKYLINE_NAME "Skyline"
-/* def: "Software used to predict, select, and optimize transitions as well as analyze the results of selected reaction monitoring runs developed and distributed by the MacCoss lab at the University of Washington." [https://brendanx-uw1.gs.washington.edu/labkey/wiki/home/software/Skyline/page.view?name=/* default ""]
+/* def: "Software used to predict, select, and optimize transitions as well as analyze the results of selected reaction monitoring runs developed and distributed by the MacCoss lab at the University of Washington." [https://brendanx-uw1.gs.washington.edu/labkey/wiki/home/software/Skyline/page.view?name=default ""]
 is_a: MS:1000871 ! SRM software */
 
 #define MS_TIQAM_ID "MS:1000923"
@@ -5812,19 +5812,19 @@ is_a: MS:1001116 ! single protein result details */
 
 #define MS_CONFIDENT_DISTINCT_PEPTIDE_SEQUENCES_ID "MS:1001098"
 #define MS_CONFIDENT_DISTINCT_PEPTIDE_SEQUENCES_NAME "confident distinct peptide sequences"
-/* def: "This counts the number of distinct peptide sequences. Multiple charge states and multiple modification states do NOT count as multiple sequences. The /* definition of 'confident' must be qualified elsewhere." [PSI:PI]
+/* def: "This counts the number of distinct peptide sequences. Multiple charge states and multiple modification states do NOT count as multiple sequences. The definition of 'confident' must be qualified elsewhere." [PSI:PI]
 xref: value-type:xsd\:nonNegativeInteger "The allowed value-type for this CV term."
 is_a: MS:1001116 ! single protein result details */
 
 #define MS_CONFIDENT_PEPTIDE_QUALIFICATION_ID "MS:1001099"
 #define MS_CONFIDENT_PEPTIDE_QUALIFICATION_NAME "confident peptide qualification"
-/* def: "The point of this entry is to /* define what is meant by confident for the term Confident distinct peptide sequence and/or Confident peptides. Example 1 - metric=Paragon:Confidence value=95 sense=greater than Example 2 - metric=Mascot:Eval value=0.05 sense=less than." [PSI:PI]
+/* def: "The point of this entry is to define what is meant by confident for the term Confident distinct peptide sequence and/or Confident peptides. Example 1 - metric=Paragon:Confidence value=95 sense=greater than Example 2 - metric=Mascot:Eval value=0.05 sense=less than." [PSI:PI]
 xref: value-type:xsd\:nonNegativeInteger "The allowed value-type for this CV term."
 is_a: MS:1001116 ! single protein result details */
 
 #define MS_CONFIDENT_PEPTIDE_SEQUENCE_NUMBER_ID "MS:1001100"
 #define MS_CONFIDENT_PEPTIDE_SEQUENCE_NUMBER_NAME "confident peptide sequence number"
-/* def: "This counts the number of peptide sequences without regard to whether they are distinct. Multiple charges states and multiple modification states DO count as multiple peptides. The /* definition of 'confident' must be qualified elsewhere." [PSI:PI]
+/* def: "This counts the number of peptide sequences without regard to whether they are distinct. Multiple charges states and multiple modification states DO count as multiple peptides. The definition of 'confident' must be qualified elsewhere." [PSI:PI]
 xref: value-type:xsd\:nonNegativeInteger "The allowed value-type for this CV term."
 is_a: MS:1001116 ! single protein result details */
 
@@ -6919,7 +6919,7 @@ relationship: has_regexp MS:1001341 ! (?<=[EZ])(?!P) */
 
 #define MS_MASCOT_SIGTHRESHOLD_ID "MS:1001316"
 #define MS_MASCOT_SIGTHRESHOLD_NAME "Mascot:SigThreshold"
-/* def: "Significance threshold below which the p-value of a peptide match must lie to be considered statistically significant (/* default 0.05)." [PSI:PI]
+/* def: "Significance threshold below which the p-value of a peptide match must lie to be considered statistically significant (default 0.05)." [PSI:PI]
 xref: value-type:xsd\:double "The allowed value-type for this CV term."
 is_a: MS:1002095 ! Mascot input parameter */
 
@@ -7041,7 +7041,7 @@ is_a: MS:1001345 ! mass table source */
 
 #define MS_DATABASE_FILE_FORMATS_ID "MS:1001347"
 #define MS_DATABASE_FILE_FORMATS_NAME "database file formats"
-/* def: "The children of this term /* define file formats of the sequence database used." [PSI:PI]
+/* def: "The children of this term define file formats of the sequence database used." [PSI:PI]
 is_a: MS:1001011 ! search database details */
 
 #define MS_FASTA_FORMAT_ID "MS:1001348"
@@ -7211,7 +7211,7 @@ is_a: MS:1002097 ! Phenyx input parameter */
 
 #define MS_PHENYX____DEFAULT_PARENT_CHARGE_ID "MS:1001377"
 #define MS_PHENYX____DEFAULT_PARENT_CHARGE_NAME "Phenyx:_* default Parent Charge"
-/* def: "The /* default parent charge value in Phenyx." [PSI:PI]
+/* def: "The default parent charge value in Phenyx." [PSI:PI]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1002097 ! Phenyx input parameter */
 
@@ -7319,7 +7319,7 @@ is_a: MS:1001153 ! search engine specific score */
 
 #define MS_PHENYX_USER_ID "MS:1001394"
 #define MS_PHENYX_USER_NAME "Phenyx:User"
-/* def: "The value of the user-/* defined peptide acceptance filter in Phenyx." [PSI:PI]
+/* def: "The value of the user-defined peptide acceptance filter in Phenyx." [PSI:PI]
 xref: value-type:xsd\:boolean "The allowed value-type for this CV term."
 is_a: MS:1001143 ! search engine specific score for PSMs
 is_a: MS:1001153 ! search engine specific score */
@@ -8598,7 +8598,7 @@ is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 
 #define MS_PROTEOMEDISCOVERER_SPECTRUM_SELECTOR_UNRECOGNIZED_CHARGE_REPLACEMENTS_ID "MS:1001617"
 #define MS_PROTEOMEDISCOVERER_SPECTRUM_SELECTOR_UNRECOGNIZED_CHARGE_REPLACEMENTS_NAME "ProteomeDiscoverer:Spectrum Selector:Unrecognized Charge Replacements"
-/* def: "Specifies the charge state of the precursor ions, if it is not /* defined in the scan header." [PSI:MS]
+/* def: "Specifies the charge state of the precursor ions, if it is not defined in the scan header." [PSI:MS]
 xref: value-type:xsd\:int "The allowed value-type for this CV term."
 is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 
@@ -9864,7 +9864,7 @@ is_a: MS:1000752 ! TOPP software */
 
 #define MS_QUANTITATION_SOFTWARE_COMMENT_OR_CUSTOMIZATIONS_ID "MS:1001832"
 #define MS_QUANTITATION_SOFTWARE_COMMENT_OR_CUSTOMIZATIONS_NAME "quantitation software comment or customizations"
-/* def: "Quantitation software comment or any customizations to the /* default setup of the software." [PSI:PI]
+/* def: "Quantitation software comment or any customizations to the default setup of the software." [PSI:PI]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1001129 ! quantification information */
 
@@ -12115,7 +12115,7 @@ is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 
 #define MS_PROTEOMEDISCOVERER____DEFAULT_FDR_CALCULATOR_ID "MS:1002232"
 #define MS_PROTEOMEDISCOVERER____DEFAULT_FDR_CALCULATOR_NAME "ProteomeDiscoverer:_* default FDR calculator"
-/* def: "The /* default FDR calculator." [PSI:PI]
+/* def: "The default FDR calculator." [PSI:PI]
 is_a: MS:1002101 ! ProteomeDiscoverer input parameter
 relationship: has_regexp MS:1002231 ! ([A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}) */
 
@@ -12681,7 +12681,7 @@ is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 
 #define MS_PROTEOMEDISCOVERER_PERFORM_DEISOTOPING_ID "MS:1002328"
 #define MS_PROTEOMEDISCOVERER_PERFORM_DEISOTOPING_NAME "ProteomeDiscoverer:perform deisotoping"
-/* def: "/* defines whether a simple deisotoping shall be performed." [PSI:PI]
+/* def: "defines whether a simple deisotoping shall be performed." [PSI:PI]
 xref: value-type:xsd\:boolean "The allowed value-type for this CV term."
 is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 

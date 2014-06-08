@@ -126,10 +126,10 @@ test_that("SImageSet pixelApply", {
 	expect_equivalent(pixelApply(sset, max, .feature=fflag), tmp["TRUE",])
 	expect_equivalent(pixelApply(sset, function(x) max(x[fflag])), tmp["TRUE",])
 
-	tmp3 <- pixelApply(sset, function(x) .Index)
+	tmp2 <- pixelApply(sset, function(x) .Index)
 	expect_equivalent(tmp2, pixels(sset))
 
-	tmp4 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
+	tmp3 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
 	expect_equivalent(t(tmp3), as.matrix(coord(sset)))
 
 })

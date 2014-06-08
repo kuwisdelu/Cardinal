@@ -45,7 +45,6 @@ double score_spatial(const void * objects, int i, int c, double * centroids, dou
 	double gamma[spectra->nneighbors];
 	double dgamma = 0;
 	for ( int j = 0; j < spectra->nneighbors; ++j ) {
-		int n_i = spectra->neighbors[(j * spectra->npixels) + i];
 		gamma[j] = spectra->alpha[j] * spectra->beta[(j * spectra->npixels) + i];
 		dgamma += gamma[j];
 	}

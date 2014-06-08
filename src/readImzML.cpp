@@ -781,7 +781,7 @@ extern "C"
 					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 		}
-		else return R_NilValue;
+		return R_NilValue;
 	}
 
 	SEXP readIbdIntensityArray(SEXP filepath, SEXP ibd_binary_type, SEXP binary_data_type,
@@ -827,7 +827,7 @@ extern "C"
 					INTEGER_VALUE(external_array_count));
 			}
 		}
-		else return R_NilValue;
+		return R_NilValue;
 	}
 
 } // end extern 'C' (for calling from R)
