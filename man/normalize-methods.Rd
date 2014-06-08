@@ -23,9 +23,9 @@ normalize.tic(x, tic=length(x), \dots)
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
     \item{method}{The normalization method to use.}
-    \item{\dots}{Additional arguments passed to the normalization method.}
     \item{pixel}{The pixels to normalize. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
+    \item{\dots}{Additional arguments passed to the normalization method.}
     \item{x}{The mass spectrum to be normalized.}
     \item{tic}{The value to which to normalize the total ion current.}
 }

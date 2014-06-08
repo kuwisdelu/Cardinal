@@ -120,6 +120,8 @@ setMethod("pixels", "MSImageSet",
 		pixels
 	})
 
+setMethod("centroided", "MSImageSet", function(object) centroided(object@processingData))
+
 setMethod("processingData", "MSImageSet", function(object) object@processingData)
 setReplaceMethod("processingData", "MSImageSet",
 	function(object, value) {

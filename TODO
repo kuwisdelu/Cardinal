@@ -2,39 +2,19 @@
 TODO for Cardinal package
 -------------------------
 
-NEW:
-x write pixels() and features() methods
-- write documentation for missing methods (pixelNames, etc.)
-x rewrite readMSIData()
-- rewrite selectROI() and selectPixels()
-- fix plot() and image() methods (line type, orientation, etc.)
-x add replace methods for processingData
-- have readImzML parse processingData (need to write C++ functions)
-x initialize MIAPE-Imaging and MSImageProcess with non-zero length slots
-- rewrite processing methods
-- write new peak alignment method
-- rewrite selectPeaks()
-x write new functions for logging and saving history to MSImageSet
+- rewrite smoothing methods
+- rewrite baseline reduction methods
+- rewrite peak picking methods
+- rewrite peak alignment methods
+- rewrite binning/resampling methods
+- rewrite selectROI() and selectPixels() and selectPeaks()
 - write new classes for storing results
-- rewrite spatial clustering and classification analysis methods
-- rewrite PCA/PLS/OPLS analysis methods
+- rewrite spatial clustering and classification methods
+- rewrite PCA/PLS/OPLS methods
 - add plotting of analysis results to plot() and image() methods
-- rewrite combine() methods for SImageSet and MSImageSet
-- rename "iData" to ".iData": it should be copied but not checked
+- add options to plot() and image() methods (line type, orientation, etc.)
+- add smoothing and interpolation and contrast enhancement to image()
+- have readImzML parse processingData (need to write C++ functions)
 - add writing of imzML and Analyze formats (requires digest+uuid)
-- add optical images
-- rename Hashmat to HashMat and write EnvMat?
-
-OLD:
-- fix gc() bug where generateHistory() captures environments
-- deprecate or delete unload() when above bug is fixed
-- write volume(), trellisVolume(), and interactiveVolume()
-- write low-level smoothing functions for 3D images
-- remove 'parnames' and 'npar' from MSImageSegmentation metadata
-- add 'nsegmentations' to MSImageSegmentation
-- move 'parameters' to MSImageSegmentation (from metadata)
-- for summary(), add correlation to output and 'filter' as parameter
-- make plotting simultaneous with processing
-- add dimension names for slices
-- allow unsupervised peak alignment
-- add alignment of raw spectra
+- write documentation for missing methods (pixelNames, etc.)
+- add optical image support

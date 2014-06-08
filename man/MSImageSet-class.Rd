@@ -100,6 +100,10 @@ MSImageSet(
         \item{\code{features(object, ..., mz)}:}{Access the feature indices (rows in \code{featureData}) corresponding to variables in \code{featureData}. Bisection search is used for fuzzy matching of m/z values.}
 
         \item{\code{pixels(object, ..., coord)}:}{Access the pixel indices (rows in \code{pixelData}) corresponding to variables in \code{pixelData}. If specified, \code{coord} should be a \code{data.frame} where each row corresponds to the coordinates of a desired pixel.}
+
+        \item{\code{centroided(object)}:}{Access whether the dataset consists of profile or centroided mass spectra. This is a shortcut for \code{centroided(processingData(object))}.}
+
+        \item{\code{processingData(object), processingData(object) <-}:}{Access and set the \code{processingData} slot.}
     }
 
     Standard generic methods:
