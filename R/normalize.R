@@ -3,16 +3,24 @@
 ## ----------------------------
 
 setMethod("normalize", "MSImageSet",
-	function(object, method = "tic", ..., pixel=pixels(object), plot=TRUE)
+	function(object, method = "tic",
+		...,
+		pixel=pixels(object),
+		plot=TRUE)
 	{
 		fun <- match.method(method)
-		pixelApply(object, function(s) {
+		data <- pixelApply(object, function(s) {
 			s <- fun(s, ...)
 			if ( plot )
 				wrap(plot(mz(object), s, type="l", xlab="m/z", ylab="Intensity", ...),
 					..., signature=fun)
 			s
 		}, .pixel=pixel, ..., .use.names=FALSE)
+		object@imageData <- SImageData(data=data,
+			coord=coord(object)[pixel,],
+			storageMode=storageMode(object@imageData),
+			dimnames=list(featureNames(object), pixelNames(object)[pixel]))
+		object@pixelData <- object@pixelData[pixel,]
 		normalization(processingData(object)) <- method
 		prochistory(processingData(object)) <- .history()
 		object

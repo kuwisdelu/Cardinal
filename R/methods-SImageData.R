@@ -24,6 +24,7 @@ SImageData <- function(
 		y = seq_len(ifelse(ncol(data) > 0, 1, 0))),
 	storageMode = "immutableEnvironment",
 	positionArray = generatePositionArray(coord),
+	dimnames = NULL,
 	...)
 {
 	storageMode <- match.arg(storageMode)
@@ -46,10 +47,12 @@ SImageData <- function(
 	} else {
 		dim <- dim(data)
 	}
-	if ( is.null(dimnames(data)) ) {
-		dimnames <- list(NULL, NULL)
-	} else {
-		dimnames <- dimnames(data)
+	if ( missing(dimnames) ) {
+		if ( is.null(dimnames(data)) ) {
+			dimnames <- list(NULL, NULL)
+		} else {
+			dimnames <- dimnames(data)
+		}
 	}
 	.SImageData(.iData=data,
 		coord=coord,

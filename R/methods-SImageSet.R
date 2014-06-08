@@ -66,9 +66,9 @@ setValidity("SImageSet", function(object) {
 			msg <- validMsg(msg, "number of features differ between imageData and featureData")
 		if ( ncol(iData(object@imageData)) != nrow(object@pixelData) )
 			msg <- validMsg(msg, "number of pixels differ between imageData and pixelData")
-		if ( any(rownames(iData(object@imageData)) != featureNames(object@featureData)) )
+		if ( any(featureNames(object@imageData) != featureNames(object@featureData)) )
 			msg <- validMsg(msg, "feature names differ between imageData and featureData")
-		if ( any(colnames(iData(object@imageData)) != pixelNames(object@pixelData)) )
+		if ( any(pixelNames(object@imageData) != pixelNames(object@pixelData)) )
 			msg <- validMsg(msg, "pixel names differ between imageData and pixelData")
 	}
 	if (is.null(msg)) TRUE else msg	

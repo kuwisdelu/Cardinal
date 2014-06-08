@@ -27,6 +27,7 @@ SImageData(
         y = seq_len(ifelse(ncol(data) > 0, 1, 0))),
     storageMode = "immutableEnvironment",
     positionArray = generatePositionArray(coord),
+    dimnames = NULL,
     \dots)
 
 ## Additional methods documented below
@@ -39,6 +40,10 @@ SImageData(
     \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of a feature vector corresponding to a column in \code{data}. This argument is ignored if \code{data} is a multidimensional array rather than a matrix.}
 
     \item{storageMode}{The storage mode to use for the \code{SImageData} object for the environment in the \code{data} slot. Only \code{"immutableEnvironment"} is allowed for \code{SImageData}. See documentation on the \code{storageMode} slot below for more details.}
+
+    \item{positionArray}{The \code{positionArray} for the imaging data. This should not normally be specified the user, since it is generated automatically from the \code{coord} argument, unless for some reason \code{coord} is not specified.}
+
+    \item{dimnames}{A \code{list} of length two, giving the feature names and pixel names in that order. If missing, this is taken from the 'dimnames' of the \code{data} argument.}
 
     \item{\dots}{Additional Named arguments that are passed to the \code{initialize} method for instantiating the object. These must be matrices or matrix-like objects of equal dimension to \code{data}. They will be assigned into the environment in the \code{data} slot.}
 

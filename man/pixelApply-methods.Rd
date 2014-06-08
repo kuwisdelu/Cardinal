@@ -53,9 +53,14 @@
 
     For \code{featureApply}, the function is applied to the vector of intensity values (i.e., the flattened image) corresponding to each feature. The use of \code{.feature.groups} allows code{\link[base]{tapply}}-like functionality on the flattened image intensity vectors, applied separately to each feature.
 
-    An important aspect of these functions is that the corresponding row of \code{pixelData} or \code{featureData} is passed as an attribute of the argument of \code{.fun}. This allows, for example, the use of pixel coordinates in the function when using \code{pixelApply}, by accessing the argument's attributes.
+    The \code{fData} from \code{.object} is installed into the environment of \code{.fun} for \code{pixelApply}, and the \code{pData} from \code{.object} is installed into the environment of \code{.fun} for \code{featureApply}. This allows access to the symbols from \code{fData} or \code{pData} during the execution of \code{.fun}. If \code{.fun} already has an environment, it is retained as the parent of the installed environment.
 
-    Note that for \code{pixelApply}, arguments are evaluated in an environment that can access the symbol names in \code{featureData}, and for \code{featureApply}, arguments are evaluated in an environment that can access the symbol names in \code{pixelData}. (This may seem backward, but it allows easier reference to the more appropriate names inside \code{.fun}.)
+    Additionally, the following objects are made available by installing them into the \code{.fun} environment:
+
+    \itemize{
+        \item{\code{.Object}: The passed \code{.object}. (Note the case.)}
+        \item{\code{.Index}: The index of the current iteration.}
+    }
 
     It is expected that these methods will be expanded in the future for different types of imaging datasets (e.g., data read directly from disk).
 }
