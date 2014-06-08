@@ -119,11 +119,18 @@ test_that("SImageSet pixelApply", {
 	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
 	sset <- SImageSet(data=data, coord=coord)
 
-	fData(sset)$flag <- rep(c(TRUE, FALSE), 2)
+	fData(sset)$fflag <- rep(c(TRUE, FALSE), 2)
+	pData(sset)$pflag <- rep(c(TRUE, FALSE), 32)
 
-	tmp <- pixelApply(sset, max, .feature.groups=flag)
-	expect_equivalent(pixelApply(sset, max, .feature=flag), tmp["TRUE",])
-	expect_equivalent(pixelApply(sset, max, .feature=!flag), tmp["FALSE",])
+	tmp <- pixelApply(sset, max, .feature.groups=fflag)
+	expect_equivalent(pixelApply(sset, max, .feature=fflag), tmp["TRUE",])
+	expect_equivalent(pixelApply(sset, function(x) max(x[fflag])), tmp["TRUE",])
+
+	tmp3 <- pixelApply(sset, function(x) .Index)
+	expect_equivalent(tmp2, pixels(sset))
+
+	tmp4 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
+	expect_equivalent(t(tmp3), as.matrix(coord(sset)))
 
 })
 
@@ -133,11 +140,12 @@ test_that("SImageSet featureApply", {
 	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
 	sset <- SImageSet(data=data, coord=coord)
 
-	pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
+	fData(sset)$fflag <- rep(c(TRUE, FALSE), 2)
+	pData(sset)$pflag <- rep(c(TRUE, FALSE), 32)
 
-	tmp <- featureApply(sset, max, .pixel.groups=flag)
-	expect_equivalent(featureApply(sset, max, .pixel=flag), tmp["TRUE",])
-	expect_equivalent(featureApply(sset, max, .pixel=!flag), tmp["FALSE",])
+	tmp <- featureApply(sset, max, .pixel.groups=pflag)
+	expect_equivalent(featureApply(sset, max, .pixel=pflag), tmp["TRUE",])
+	expect_equivalent(featureApply(sset, function(x) max(x[pflag])), tmp["TRUE",])
 
 })
 

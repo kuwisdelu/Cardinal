@@ -7,7 +7,7 @@ generatePositionArray <- function(coord, dim) {
 	if ( nrow(coord) == 0 ) {
 		dim <- rep(0, ncol(coord))
 		names(dim) <- names(coord)
-		return(array(1, dim=dim))
+		return(array(0, dim=dim))
 	}
 	coord <- data.frame(lapply(coord, as.integer))
 	if ( missing(dim) ) dim <- sapply(coord, max, USE.NAMES=TRUE)

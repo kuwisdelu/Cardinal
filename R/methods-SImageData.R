@@ -1,8 +1,8 @@
 
 setMethod("initialize", "SImageData",
 	function(.Object,
-		coord = data.frame(),
-		positionArray = array(dim=c(x=0, y=0)),
+		coord = data.frame(x=numeric(), y=numeric()),
+		positionArray = array(0, dim=c(x=0, y=0)),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL),
 		...)
@@ -11,7 +11,10 @@ setMethod("initialize", "SImageData",
 		.Object@positionArray <- positionArray
 		.Object@dim <- dim
 		.Object@dimnames <- dimnames
-		callNextMethod(.Object, ...)
+		.Object <- callNextMethod(.Object, ...)
+		if ( is.null(.Object[[".iData"]]) )
+			.Object@data[[".iData"]] <- matrix(nrow=dim[[1]], ncol=dim[[2]])
+		.Object
 	})
 
 SImageData <- function(

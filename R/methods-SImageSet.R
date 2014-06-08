@@ -175,14 +175,14 @@ setMethod("pixelApply", "SImageSet",
 			parent <- baseenv()
 		env <- new.env(parent=parent)
 		multiassign(names(fData(.object)), fData(.object), envir=env)
+		assign(".Object", .object, envir=env)
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				tmpX <- iData(.object)[j,.pixel[[i]]]
-				attributes(tmpX) <- pData(.object)[.pixel[[i]],,drop=FALSE]
-				.fun(tmpX, ...)
+				assign(".Index", i, envir=env)
+				.fun(iData(.object)[j,.pixel[[i]]], ...)
 			}, simplify=.simplify, USE.NAMES=.use.names)
 		}
 		# simplify result
@@ -237,14 +237,14 @@ setMethod("featureApply", "SImageSet",
 			parent <- baseenv()
 		env <- new.env(parent=parent)
 		multiassign(names(pData(.object)), pData(.object), envir=env)
+		assign(".Object", .object, envir=env)
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				tmpX <- iData(.object)[.feature[[i]],j]
-				attributes(tmpX) <- fData(.object)[.feature[[i]],,drop=FALSE]
-				.fun(tmpX, ...)
+				assign(".Index", i, env)
+				.fun(iData(.object)[.feature[[i]],j], ...)
 			}, simplify=.simplify, USE.NAMES=.use.names)
 		}
 		# simplify result

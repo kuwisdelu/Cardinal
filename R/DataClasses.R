@@ -116,8 +116,8 @@ setClass("MSImageProcess",
 	contains = "ImageData",
 	prototype = prototype(
 		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.1.0")),
-		coord = data.frame(),
-		positionArray = array(dim=c(x=0, y=0)),
+		coord = data.frame(x=numeric(), y=numeric()),
+		positionArray = array(0, dim=c(x=0, y=0)),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)),
 	validity = function(object) {
