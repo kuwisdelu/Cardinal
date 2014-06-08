@@ -3,15 +3,16 @@
 ## ----------------------------
 
 setMethod("normalize", "MSImageSet",
-	function(object, method = "tic", ..., .plot=FALSE) {
-		fun <- .match.method(method)
+	function(object, method = "tic", ..., pixel=pixels(object), plot=TRUE)
+	{
+		fun <- match.method(method)
 		pixelApply(object, function(s) {
 			s <- fun(s, ...)
-			if ( .plot )
-				plot(mz(object), s, type="l", xlab="m/z",
-					ylab="Intensity", ...)
+			if ( plot )
+				wrap(plot(mz(object), s, type="l", xlab="m/z", ylab="Intensity", ...),
+					..., signature=fun)
 			s
-		}, ..., .use.names=FALSE)
+		}, .pixel=pixel, ..., .use.names=FALSE)
 		normalization(processingData(object)) <- method
 		prochistory(processingData(object)) <- .history()
 		object
@@ -25,3 +26,4 @@ normalize.tic <- function(x, tic=length(x), ...) {
 		rep(0, length(x))
 	}
 }
+

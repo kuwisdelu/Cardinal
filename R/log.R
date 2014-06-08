@@ -5,19 +5,21 @@
 .log <- function(...) {
 	msg <- paste(date(), paste0(..., collapse="\n  "))
 	.Cardinal$log <- append(.Cardinal$log, msg)
+	elapsed <- proc.time()[[3]] - .Cardinal$time$flush
+	if ( elapsed > getOption("Cardinal.autoflush") )
+		.log.flush()
 }
 
-.log.flush <- function(pkgname="Cardinal") {
+.log.flush <- function(e=.Cardinal) {
 	tryCatch({
-		if ( length(.Cardinal$log) != 0 ) {
-			filename <- paste(pkgname, "log", sep=".")
-			filepath <- file.path(system.file(package=pkgname), filename)
+		if ( length(e$log) != 0 ) {
+			e$time$flush <- proc.time()[[3]]
+			filepath <- file.path(system.file(package="Cardinal"), "Cardinal.log")
 			sink(filepath, append=TRUE)
-			cat(paste(timestamp(quiet=TRUE)), "\n\n")
-			for ( m in .Cardinal$log ) {
+			for ( m in e$log ) {
 				cat(m, "\n\n")
 			}
-			.Cardinal$log <- list()
+			e$log <- list()
 			sink()
 		}
 		TRUE
@@ -106,4 +108,12 @@
 	}, error=function(e) error)
 	.log(history)
 	history
+}
+
+#### Capture session info ####
+## ---------------------------
+
+.session <- function() {
+	info <- sessionInfo()
+	paste(names(info[[1]]), info[[1]], sep=" : ", collapse="\n")
 }

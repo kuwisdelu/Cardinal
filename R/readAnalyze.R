@@ -13,12 +13,15 @@ readAnalyze <- function(name, folder=getwd()) {
 		mustWork=FALSE)
 	if ( !file.exists(imgpath) ) stop(imgpath, " does not exist")
 	# parse header
+	.log("Reading header file '", hdrpath, "'")
 	hdr <- .Call("readAnalyzeHDR", hdrpath)
 	dim <- as.integer(c(hdr$dime$dim[[2]], prod(hdr$dime$dim[c(3,4,5)])))
 	datatype <- as.integer(hdr$dime$datatype)
 	# read m/z values
+	.log("Reading T2M file '", t2mpath, "'")
 	mz <- .Call("readAnalyzeT2M", t2mpath, hdr$dime$dim[[2]])
 	# read image file
+	.log("Reading IMG file '", imgpath, "'")
 	data <- .Call("readAnalyzeIMG", imgpath, dim, datatype)
 	# set up coordinates
 	if ( hdr$dime$dim[[5]] > 1 ) {

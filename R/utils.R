@@ -1,6 +1,6 @@
 
 ## Match methods to their workhorse functions
-.match.method <- function(method, which=-2) {
+match.method <- function(method, which=-2) {
 	tryCatch({
 		base <- deparse(sys.call(which)[[1]])
 		match.fun(paste(base, method, sep="."))
@@ -8,11 +8,11 @@
 }
 
 ## Evaluate a function after capturing unwanted ... arguments
-.without <- function(exprs, ..., signature) {
+wrap <- function(exprs, ..., signature) {
 	.local <- function() {
-		eval(substitute(exprs, env=parent.frame()),
-			envir=sys.frame(-2), enclos=sys.frame(-2))
+		eval(substitute(exprs, env=parent.frame()))
 	}
+	environment(.local) <- parent.frame()
 	if ( is.function(signature) ) {
 		formals(.local) <- formals(signature)
 	} else {
