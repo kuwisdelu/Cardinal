@@ -30,6 +30,19 @@ ImageData <- function(..., data = new.env(parent=baseenv()),
 	.ImageData(..., data=data, storageMode=storageMode)
 }
 
+setValidity("ImageData", function(object) {
+	msg <- validMsg(NULL, NULL)
+	names <- ls(object@data)
+	if ( !all(sapply(names, function(nm) !is.null(dim(object@data[[nm]])))) )
+		msg <- validMsg(msg, "all elements must be an array-like object ('dims' of positive length)")
+	ldim <- sapply(names, function(nm) length(dim(object@data[[nm]])))
+	if ( !all(sapply(ldim, function(ld) ld == ldim[[1]])) )
+		msg <- validMsg(msg, "all elements must have an equal number of dimensions")
+	if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
+		msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
+	if (is.null(msg)) TRUE else msg
+})
+
 ## Adapted from combine(AssayData, AssayData) from Biobase
 setMethod("combine",
 	signature = c(x = "ImageData", y = "ImageData"),

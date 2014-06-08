@@ -77,10 +77,10 @@ setReplaceMethod("mz", "MSImageSet",
 		object
 	})
 
-setMethod("spectra", "MSImageSet", function(object) iData(object))
+setMethod("spectra", "MSImageSet", function(object) iData(object@imageData))
 setReplaceMethod("spectra", "MSImageSet",
 	function(object, value) {
-		iData(object) <- value
+		iData(object@imageData) <- value
 		object
 	})
 

@@ -5,7 +5,7 @@
 setMethod("normalize", "MSImageSet",
 	function(object, method = "tic", ..., .plot=FALSE) {
 		fun <- .match.method(method)
-		spectra(object) <- pixelApply(object, function(s) {
+		pixelApply(object, function(s) {
 			s <- fun(s, ...)
 			if ( .plot )
 				plot(mz(object), s, type="l", xlab="m/z",

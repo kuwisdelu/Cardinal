@@ -89,19 +89,7 @@ setClass("MSImageProcess",
 	prototype = prototype(
 		new("Versioned", versions=c(ImageData="0.1.0")),
 		data = new.env(parent=baseenv()), # re-assign in initialize
-		storageMode = "immutableEnvironment"),
-	validity = function(object) {
-		msg <- validMsg(NULL, NULL)
-		names <- ls(object@data)
-		if ( !all(sapply(names, function(nm) !is.null(dim(object@data[[nm]])))) )
-			msg <- validMsg(msg, "all elements must be an array-like object ('dims' of positive length)")
-		ldim <- sapply(names, function(nm) length(dim(object@data[[nm]])))
-		if ( !all(sapply(ldim, function(ld) ld == ldim[[1]])) )
-			msg <- validMsg(msg, "all elements must have an equal number of dimensions")
-		if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
-			msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
-		if (is.null(msg)) TRUE else msg
-	})
+		storageMode = "immutableEnvironment"))
 
 #### Class for holding sparse image data ####
 ## feature vectors are stored as a matrix and the datacube
@@ -119,40 +107,7 @@ setClass("MSImageProcess",
 		coord = data.frame(x=numeric(), y=numeric()),
 		positionArray = array(0, dim=c(x=0, y=0)),
 		dim = c(0, 0),
-		dimnames = list(NULL, NULL)),
-	validity = function(object) {
-		msg <- validMsg(NULL, NULL)
-		if ( object@storageMode != "immutableEnvironment" )
-			msg <- validMsg(msg, "storageMode must be 'immutableEnvironment' for an SImageData")
-		names <- c(ls(object@data), ".iData")
-		if ( !all(sapply(names, function(nm) length(dim(object@data[[nm]])) == 2)) )
-			msg <- validMsg(msg, "all data elements must be a matrix-like object ('dims' of length 2)")
-		ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
-		if ( !all(sapply(ncols, function(nc) nc == ncols[[1]] && nc == object@dim[[2]])) )
-			msg <- validMsg(msg, "all elements must have an equal number of columns")
-		nrows <- sapply(names, function(nm) nrow(object@data[[nm]]))
-		if ( !all(sapply(nrows, function(nr) nr == nrows[[1]] && nr == object@dim[[1]])) )
-			msg <- validMsg(msg, "all elements must have an equal number of rows")
-		if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
-			msg <- validMsg(msg, "positionArray must contain only integers and NAs")
-		if ( any(sapply(names, function(nm) ncol(object@data[[nm]])) != sum(!is.na(object@positionArray))) )
-			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of cols of data elements")
-		if ( any(nrow(object@coord) != sum(!is.na(object@positionArray))) )
-			msg <- validMsg(msg, "number of non-NA indices in positionArray must match number of rows of coord")
-		dmn <- object@dimnames
-		if ( length(dmn) != 2 )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn), "] must match that of 'dims' [2]", sep=""))
-		if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != nrows[[1]] )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn[[1]]), "] not equal to array extent", sep=""))
-		if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != ncols[[1]] )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn[[2]]), "] not equal to array extent", sep=""))
-		if ( !isTRUE(all.equal(object@positionArray, generatePositionArray(object@coord))) )
-			warning("positions are out of sync; run 'object <- regeneratePositions(object)' to resync")
-		if ( is.null(msg) ) TRUE else msg
-	})
+		dimnames = list(NULL, NULL)))
 
 #### Matrix-like class for sparse signals ####
 ## implemented using lists as hash tables
@@ -169,30 +124,7 @@ setClass("MSImageProcess",
 		data = list(),
 		keys = character(),
 		dim = c(0, 0),
-		dimnames = list(NULL, NULL)),
-	validity = function(object) {
-		msg <- validMsg(NULL, NULL)
-		if ( any(duplicated(object@keys)) )
-			msg <- validMsg(msg, "elements of keys must be unique")
-		dm <- object@dim
-		if ( dm[[1]] != length(object@keys) )
-			msg <- validMsg(msg, paste("dims [", dm[[1]], "] does not match the length of keys [",
-				length(object@data), "]", sep=""))
-		if ( dm[[2]] != length(object@data) )
-			msg <- validMsg(msg, paste("dims [", dm[[2]], "] does not match the length of data [",
-				length(object@data), "]", sep=""))
-		dmn <- object@dimnames
-		if ( length(dmn) != 2 )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn), "] must match that of 'dims' [2]", sep=""))
-		if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != dm[[1]] )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn[[1]]), "] not equal to array extent", sep=""))
-		if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != dm[[2]] )
-			msg <- validMsg(msg, paste("length of 'dimnames' [",
-				length(dmn[[2]]), "] not equal to array extent", sep=""))
-		if (is.null(msg)) TRUE else msg
-	})
+		dimnames = list(NULL, NULL)))
 
 #### Class for generic imaging datasets ####
 ## heavily inspired by structure of Biobase's eSet

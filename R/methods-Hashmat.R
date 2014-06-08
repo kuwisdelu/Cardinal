@@ -52,6 +52,30 @@ Hashmat <- function(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 		...)
 }
 
+setValidity("Hashmat", function(object) {
+	msg <- validMsg(NULL, NULL)
+	if ( any(duplicated(object@keys)) )
+		msg <- validMsg(msg, "elements of keys must be unique")
+	dm <- object@dim
+	if ( dm[[1]] != length(object@keys) )
+		msg <- validMsg(msg, paste("dims [", dm[[1]], "] does not match the length of keys [",
+			length(object@data), "]", sep=""))
+	if ( dm[[2]] != length(object@data) )
+		msg <- validMsg(msg, paste("dims [", dm[[2]], "] does not match the length of data [",
+			length(object@data), "]", sep=""))
+	dmn <- object@dimnames
+	if ( length(dmn) != 2 )
+		msg <- validMsg(msg, paste("length of 'dimnames' [",
+			length(dmn), "] must match that of 'dims' [2]", sep=""))
+	if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != dm[[1]] )
+		msg <- validMsg(msg, paste("length of 'dimnames' [",
+			length(dmn[[1]]), "] not equal to array extent", sep=""))
+	if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != dm[[2]] )
+		msg <- validMsg(msg, paste("length of 'dimnames' [",
+			length(dmn[[2]]), "] not equal to array extent", sep=""))
+	if (is.null(msg)) TRUE else msg
+})
+
 setMethod("dim", "Hashmat", function(x) x@dim)
 
 setReplaceMethod("dim", "Hashmat", function(x, value) {
