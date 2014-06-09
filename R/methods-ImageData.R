@@ -1,7 +1,7 @@
 
 setMethod("initialize", "ImageData",
 	function(.Object,
-			data = new.env(parent=baseenv()),
+			data = new.env(parent=emptyenv()),
 			storageMode = "immutableEnvironment",
 			...) {
 		.Object@data <- data
@@ -18,7 +18,7 @@ setMethod("initialize", "ImageData",
 		callNextMethod(.Object)
 	})
 
-ImageData <- function(..., data = new.env(parent=baseenv()),
+ImageData <- function(..., data = new.env(parent=emptyenv()),
 	storageMode = c("immutableEnvironment",
 		"lockedEnvironment", "environment"))
 {
@@ -59,7 +59,7 @@ setMethod("combine",
 			stop(paste("ImageData have different element names:",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
-		data <- new.env(parent=baseenv())
+		data <- new.env(parent=emptyenv())
 		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
 		new(class(x), data=data, storageMode=storageMode)
 	})
@@ -73,7 +73,7 @@ setReplaceMethod("names", "ImageData", function(x, value) {
 			"the same length as the vector [", length(names), "]", sep=""))
 	}
 	if ( storageMode(x) == "immutableEnvironment" ) {
-		data <- new.env(parent=baseenv())
+		data <- new.env(parent=emptyenv())
 	} else {
 		data <- x@data
 	}
@@ -102,7 +102,7 @@ setReplaceMethod("storageMode",
 		if ( value == object@storageMode )
 			return(object)
 		names <- ls(object@data)
-		data <- new.env(parent=baseenv())
+		data <- new.env(parent=emptyenv())
 		for ( nm in names ) data[[nm]] <- object@data[[nm]]
 		if ( value == "lockedEnvironment" )
 			lockEnvironment(data, bindings=TRUE)
@@ -135,7 +135,7 @@ setMethod("[[", "ImageData", function(x, i, j, ..., value) x@data[[i]])
 setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
 	names <- ls(x@data, all.names=TRUE)
 	if ( storageMode(x) == "immutableEnvironment" ) {
-		data <- new.env(parent=baseenv())
+		data <- new.env(parent=emptyenv())
 		for ( nm in names ) data[[nm]] <- x@data[[nm]]
 		data[[i]] <- value
 	} else {

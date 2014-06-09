@@ -88,7 +88,7 @@ setClass("MSImageProcess",
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(ImageData="0.1.0")),
-		data = new.env(parent=baseenv()), # re-assign in initialize
+		data = new.env(parent=emptyenv()), # re-assign in initialize
 		storageMode = "immutableEnvironment"))
 
 #### Class for holding sparse image data ####
