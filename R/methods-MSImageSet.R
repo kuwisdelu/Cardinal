@@ -108,9 +108,9 @@ setMethod("pixels", "MSImageSet",
 			pixels <- callNextMethod(object, ...)
 		} else {
 			coord <- as.data.frame(as.list(coord))
-			pixels <- apply(coord, 1, function(xyz) {
+			pixels <- unlist(apply(coord, 1, function(xyz) {
 				do.call("pixels", args=c(list(object), xyz))
-			})
+			}))
 			names(pixels) <- pixelNames(object)[pixels]
 			if ( length(list(...)) > 0 ) {
 				keep <- pixels %in% callNextMethod(object, ...)

@@ -19,8 +19,23 @@
     superpose = FALSE,
     fun = mean,
     \dots,
+    xlab,
+    xlim,
+    ylab,
+    ylim,
+    zlim,
+    asp = 1,
+    col = intensity.colors(100),
+    colorkey = TRUE,
     subset = TRUE,
     lattice = FALSE)
+
+\S4method{image}{MSImageSet}(x, formula = ~ x * y,
+    feature = features(x, mz=mz),
+    mz,
+    plusminus,
+    \dots,
+    sub)
 }
 
 \arguments{
@@ -45,9 +60,31 @@
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
 
+    \item{xlab}{Character or expression giving the label for the x-axis.}
+
+    \item{ylab}{Character or expression giving the label for the x-axis.}
+
+    \item{xlim}{A numeric vector of length 2 giving the left and right limits for the x-axis.}
+
+    \item{ylim}{A numeric vector of length 2 giving the top and bottom limits for the y-axis.}
+
+    \item{zlim}{A numeric vector of length 2 giving the lower and upper limits for the z-axis (i.e., the range of colors to be plotted).}
+
+    \item{asp}{The aspect ratio of the plot.}
+
+    \item{col}{A specification for the default plotting color(s).}
+
+    \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
+
+    \item{sub}{The subtitle for the plot.}
+
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{mz}{The m/z value for which to plot the ion image.}
+
+    \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
     
     \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
 }
@@ -68,6 +105,8 @@ data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA,
  1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
  1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
 
+mycol <- gradient.colors(100, "red", "black")
+
 set.seed(1)
 sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100)
 
@@ -76,15 +115,24 @@ fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "
 fData(sset)$fg[2950 < fData(sset)$t & fData(sset)$t < 3050] <- "black"
 fData(sset)$fg[3950 < fData(sset)$t & fData(sset)$t < 4050] <- "red"
 
-image(sset, feature=1)
+image(sset, feature=1, col=mycol)
 
-image(sset, feature=fData(sset)$fg=="black")
+image(sset, feature=fData(sset)$fg=="black", col=mycol)
 
-image(sset, feature=fData(sset)$fg=="red")
+image(sset, feature=fData(sset)$fg=="red", col=mycol)
 
-image(sset, ~ x * y | fg, feature=1:nrow(sset), lattice=TRUE)
+image(sset, ~ x * y | fg, feature=1:nrow(sset), lattice=TRUE, col=mycol)
 
-image(sset, feature=1:nrow(sset), feature.groups=fg, lattice=TRUE)
+image(sset, feature=1:nrow(sset), feature.groups=fg, lattice=TRUE, col=mycol)
+
+set.seed(1)
+msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100, as="MSImageSet")
+
+image(msset, mz=3000, col=mycol)
+
+image(msset, mz=4000, col=mycol)
+
+image(msset, mz=3500, plusminus=500, col=mycol)
 }
 
 \keyword{methods}

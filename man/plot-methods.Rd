@@ -13,17 +13,29 @@
 }
 
 \usage{
-\S4method{plot}{SImageSet,missing}(x, formula = ~ featureNames(x),
+\S4method{plot}{SImageSet,missing}(x, formula = ~ Feature,
     pixel,
     pixel.groups,
     groups = NULL,
     superpose = FALSE,
     fun = mean,
     \dots,
+    xlab,
+    xlim,
+    ylab,
+    ylim,
+    col = "black",
+    type = ifelse(centroided(x), 'h', 'l'),
     subset = TRUE,
     lattice = FALSE)
 
-\S4method{plot}{MSImageSet,missing}(x, \dots)
+\S4method{plot}{MSImageSet,missing}(x, formula = ~ mz,
+    pixel = pixels(x, coord=coord),
+    coord,
+    plusminus,
+    \dots,
+    xlab,
+    sub)
 }
 
 \arguments{
@@ -48,11 +60,29 @@
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
 
+    \item{xlab}{Character or expression giving the label for the x-axis.}
+
+    \item{ylab}{Character or expression giving the label for the x-axis.}
+
+    \item{xlim}{A numeric vector of length 2 giving the left and right limits for the x-axis.}
+
+    \item{ylim}{A numeric vector of length 2 giving the lower and upper limits for the y-axis.}
+
+    \item{col}{A specification for the default plotting color(s).}
+
+    \item{type}{A character indicating the type of plotting.}
+
+    \item{sub}{The subtitle for the plot.}
+
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{coord}{A named vector or list giving the coordinate of the pixel to plot.}
+
+    \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
     
-    \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
+    \item{\dots}{Additional arguments passed to the underlying \code{\link[graphics]{plot}} or \code{\link[lattice]{xyplot}} functions.}
 }
 
 \author{
@@ -89,9 +119,16 @@ plot(sset, ~ t, pixel.groups=pg, pixel=1:ncol(sset), lattice=TRUE, superpose=TRU
 
 plot(sset, ~ t | pg, groups=fg, pixel=1:ncol(sset), lattice=TRUE)
 
+set.seed(1)
 msset <- generateImage(data, as="MSImageSet", resolution=50)
 
 plot(msset, pixel=1)
+
+plot(msset, coord=list(x=3, y=1))
+
+plot(msset, coord=list(x=3, y=1), plusminus=1)
+
+plot(msset, coord=list(x=5, y=5), plusminus=c(2, 1))
 }
 
 \keyword{methods}

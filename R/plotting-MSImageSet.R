@@ -25,9 +25,11 @@ setMethod("plot",
 			coord <- coord(x)[pixel[[1]],]
 			sub <- .formatCoord(coord(x)[pixel[[1]],])
 			if ( !missing(plusminus) ) {
-				newcoord <- mapply(function(xyz, maxidx) {
-					max(xyz[[1]]-plusminus, 1):min(xyz[[1]]+plusminus, maxidx)
-				}, coord, sapply(coord(x), max))
+				if ( length(plusminus) != length(coord) )
+					plusminus <- rep(plusminus, length.out=length(coord))
+				newcoord <- mapply(function(xyz, pm, maxidx) {
+					max(xyz[[1]]-pm, 1):min(xyz[[1]]+pm, maxidx)
+				}, coord, plusminus, sapply(coord(x), max), SIMPLIFY=FALSE)
 				coord <- expand.grid(newcoord)
 				pixel <- pixels(x, coord=coord)
 			}
