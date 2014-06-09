@@ -15,7 +15,14 @@
 	time=list(
 		start=NULL,
 		stop=NULL,
-		flush=0)))
+		flush=0),
+	plot=list(
+		xlim=NULL,
+		ylim=NULL),
+	image=list(
+		xlim=NULL,
+		ylim=NULL,
+		zlim=NULL)))
 
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=FALSE)

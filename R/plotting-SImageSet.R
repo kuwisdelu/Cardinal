@@ -67,6 +67,7 @@ setMethod("plot",
 				ylab <- names(model$left)
 			}
 		}
+		.Cardinal$plot <- list(xlim=xlim, ylim=ylim)
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
@@ -196,6 +197,7 @@ setMethod("image",
 			zlim <- range(values, na.rm=TRUE)
 		if ( is.logical(colorkey) && colorkey )
 			colorkey <- list(col=col)
+		.Cardinal$image <- list(xlim=xlim, ylim=ylim, zlim=zlim)
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE

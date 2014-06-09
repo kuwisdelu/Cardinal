@@ -5,6 +5,8 @@
 \alias{plot-methods}
 \alias{plot,SImageSet,missing-method}
 \alias{plot,SImageSet,formula-method}
+\alias{plot,MSImageSet,missing-method}
+\alias{plot,MSImageSet,formula-method}
 
 \title{Plot the Feature-Space of an Imaging Dataset}
 

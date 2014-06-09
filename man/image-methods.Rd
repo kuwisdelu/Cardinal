@@ -4,6 +4,7 @@
 \alias{image}
 \alias{image-methods}
 \alias{image,SImageSet-method}
+\alias{image,MSImageSet-method}
 
 \title{Plot the Pixel-Space of an Imaging Dataset}
 
