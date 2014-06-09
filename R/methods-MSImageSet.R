@@ -107,7 +107,7 @@ setMethod("pixels", "MSImageSet",
 		if ( missing(coord) ) {
 			pixels <- callNextMethod(object, ...)
 		} else {
-			coord <- as.data.frame(coord)
+			coord <- as.data.frame(as.list(coord))
 			pixels <- apply(coord, 1, function(xyz) {
 				do.call("pixels", args=c(list(object), xyz))
 			})

@@ -8,6 +8,12 @@ setMethod("plot",
 		superpose = FALSE,
 		fun = mean,
 		...,
+		xlab,
+		xlim,
+		ylab,
+		ylim,
+		col = "black",
+		type = ifelse(centroided(x), 'h', 'l'),
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -47,6 +53,20 @@ setMethod("plot",
 		}
 		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
+		# set up plotting parameters
+		if ( missing(xlim) )
+			xlim <- range(model$right, na.rm=TRUE)
+		if ( missing(xlab) )
+			xlab <- names(model$right)
+		if ( missing(ylim) )
+			ylim <- range(values, na.rm=TRUE)
+		if ( missing(ylab) ) {
+			if ( is.null(model$left) ) {
+				ylab <- "Intensity"
+			} else {
+				ylab <- names(model$left)
+			}
+		}
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
@@ -73,7 +93,9 @@ setMethod("plot",
 			if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 			fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
 			# plot it with lattice
-			xyplot(fm, data=data, groups=groups, subset=subset, ...)
+			xyplot(fm, data=data, groups=groups, subset=subset,
+				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim,
+				type=type, col=col, ...)
 		} else {
 			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
 			# set up the conditioning and sample variables
@@ -91,7 +113,8 @@ setMethod("plot",
 			for ( i in ncol(values) ) {
 				y <- values[,i]
 				# plot with base graphics
-				plot(xs, y, ...)
+				plot(0, 0, xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim, type='n', ...)
+				points(xs, y, type=type, col=col, ...)
 			}
 		}		
 	})
@@ -111,6 +134,14 @@ setMethod("image",
 		superpose = FALSE,
 		fun = mean,
 		...,
+		xlab,
+		xlim,
+		ylab,
+		ylim,
+		zlim,
+		asp = 1,
+		col = intensity.colors(100),
+		colorkey = TRUE,
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -152,6 +183,19 @@ setMethod("image",
 		values <- .reshapeImageValues(values, x, groups=groups, subset=subset, lattice=lattice)
 		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
+		# set up plotting parameters
+		if ( missing(xlim) )
+			xlim <- range(model$right[[1]], na.rm=TRUE) + c(-0.5, 0.5)
+		if ( missing(xlab) )
+			xlab <- names(model$right)[[1]]
+		if ( missing(ylim) )
+			ylim <- range(model$right[[2]], na.rm=TRUE) + c(-0.5, 0.5)
+		if ( missing(ylab) )
+			ylab <- names(model$right)[[2]]
+		if ( missing(zlim) )
+			zlim <- range(values, na.rm=TRUE)
+		if ( is.logical(colorkey) && colorkey )
+			colorkey <- list(col=col)
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
@@ -185,7 +229,10 @@ setMethod("image",
 			if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 			fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
 			# plot it with lattice
-			levelplot(fm, data=data, groups=groups, subset=subset, ...)
+			levelplot(fm, data=data, groups=groups, subset=subset,
+				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
+				at=seq(from=zlim[[1]], to=zlim[[2]], length.out=length(col)),
+				col.regions=col, colorkey=colorkey, ...)
 		} else {
 			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
 			# set up the conditioning and sample variables
@@ -213,7 +260,19 @@ setMethod("image",
 					z <- values[data$sample == j]
 					dim(z) <- zdim
 					# plot with base graphics
-					image(xs, ys, z, ...)
+					image(xs, ys, z, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
+						zlim=zlim, asp=asp, col=col, ...)
+					if ( is.list(colorkey) )
+						legend("topright",
+							legend=c(
+								round(zlim[[2]], 2),
+								rep(NA, length(colorkey$col)-2),
+								round(zlim[[1]], 2)),
+							col=rev(colorkey$col),
+							bg=rgb(1, 1, 1, 0.75),
+							y.intersp=0.1,
+							cex=0.6,
+							lwd=2)
 				}
 			}
 		}
