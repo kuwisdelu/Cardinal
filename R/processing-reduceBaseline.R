@@ -40,8 +40,7 @@ reduceBaseline.method <- function(method) {
 	match.fun(method)
 }
 
-reduceBaseline.interp <- function(x, blocks=500, choose=c("min", "median"), spar=1, ...)
-{
+reduceBaseline.interp <- function(x, blocks=500, choose=c("min", "median"), spar=1, ...) {
 	xint <- intervals(x, blocks=blocks)
 	choose <- match.fun(match.arg(choose))
 	baseval <- sapply(xint, choose)
@@ -57,6 +56,6 @@ reduceBaseline.interp <- function(x, blocks=500, choose=c("min", "median"), spar
 	}
 	baseval[c(1,length(baseval))] <- c(choose(xint[[1]]), choose(xint[[length(xint)]]))
 	baseidx[c(1,length(baseidx))] <- c(1, length(x))
-	baseline <- interp1(x=baseidx, y=baseval, xi=1:length(x), method="linear")
+	baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
 	pmax(x - baseline, 0)
 }

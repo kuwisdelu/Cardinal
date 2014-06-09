@@ -172,7 +172,7 @@ setMethod("pixelApply", "SImageSet",
 		# set up function environment
 		parent <- environment(.fun)
 		if ( is.null(parent) )
-			parent <- baseenv()
+			parent <- emptyenv()
 		env <- new.env(parent=parent)
 		multiassign(names(fData(.object)), fData(.object), envir=env)
 		assign(".Object", .object, envir=env)
@@ -234,7 +234,7 @@ setMethod("featureApply", "SImageSet",
 		# set up function environment
 		parent <- environment(.fun)
 		if ( is.null(parent) )
-			parent <- baseenv()
+			parent <- emptyenv()
 		env <- new.env(parent=parent)
 		multiassign(names(pData(.object)), pData(.object), envir=env)
 		assign(".Object", .object, envir=env)

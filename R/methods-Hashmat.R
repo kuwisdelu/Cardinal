@@ -118,9 +118,9 @@ setReplaceMethod("colnames", "Hashmat", function(x, value) {
 	x
 })
 
-setMethod("nrow", "Hashmat", function(x) x@dim[[1]])
+# setMethod("nrow", "Hashmat", function(x) x@dim[[1]])
 
-setMethod("ncol", "Hashmat", function(x) x@dim[[2]])
+# setMethod("ncol", "Hashmat", function(x) x@dim[[2]])
 
 setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
 	if ( missing(i) ) i <- seq_len(dim(x)[[1]])
