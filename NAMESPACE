@@ -190,7 +190,12 @@ exportMethods(
 	"spectrumRepresentation",
 	"spectrumRepresentation<-")
 
-exportMethods("normalize")
+exportMethods(
+	"normalize",
+	"smoothSignal",
+	"reduceBaseline",
+	"peakPick",
+	"peakAlign")
 
 exportMethods(
 	"image",

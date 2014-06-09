@@ -2,8 +2,8 @@
 TODO for Cardinal package
 -------------------------
 
-- rewrite smoothing methods
-- rewrite baseline reduction methods
+x rewrite smoothing methods
+x rewrite baseline reduction methods
 - rewrite peak picking methods
 - rewrite peak alignment methods
 - rewrite binning/resampling methods
@@ -18,3 +18,4 @@ TODO for Cardinal package
 - add writing of imzML and Analyze formats (requires digest+uuid)
 - write documentation for missing methods (pixelNames, etc.)
 - add optical image support
+

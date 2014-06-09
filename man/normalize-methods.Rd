@@ -3,7 +3,7 @@
 
 \alias{normalize}
 \alias{normalize-methods}
-\alias{normalize,SImageSet-method}
+\alias{normalize,MSImageSet-method}
 
 \alias{normalize.tic}
 
@@ -15,7 +15,7 @@
 \S4method{normalize}{MSImageSet}(object, method = "tic",
 	\dots,
 	pixel=pixels(object),
-	plot=TRUE)
+	plot=FALSE)
 
 ## TIC normalization
 normalize.tic(x, tic=length(x), \dots)

@@ -1,10 +1,13 @@
 
 ## Match methods to their workhorse functions
-match.method <- function(method, which=-2) {
-	tryCatch({
-		base <- deparse(sys.call(which)[[1]])
-		match.fun(paste(base, method, sep="."))
-	}, error=function(e) match.fun(method))
+match.method <- function(method) {
+	if ( is.function(method) ) {
+		deparse(substitute(method, env=parent.frame()))
+	} else if ( is.character(method) ) {
+		method[[1]]
+	} else {
+		"unknown"
+	}
 }
 
 ## Evaluate a function after capturing unwanted ... arguments

@@ -117,3 +117,17 @@
 	info <- sessionInfo()
 	paste(names(info[[1]]), info[[1]], sep=" : ", collapse="\n")
 }
+
+#### Errors and warnings ####
+## --------------------------
+
+.error <- function(...) {
+	.log(...)
+	stop(...)
+}
+
+.warning <- function(...) {
+	.log(...)
+	warning(...)
+}
+

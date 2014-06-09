@@ -112,6 +112,10 @@ setGeneric("centroided", function(object) standardGeneric("centroided")) # use m
 setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
 #### Processing and data transformation ####
+setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
+setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
+setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
+setGeneric("peakAlign", function(object, ...) standardGeneric("peakAlign"))
 
 #### Processing and data transformation (Old) ####
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))
@@ -138,10 +142,7 @@ setGeneric("standardizeTotalIonCurrent", function(object, ...) standardGeneric("
 #### Apply-like methods ####
 setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
-setGeneric("imageApply", function(.object, .fun, ...) standardGeneric("imageApply"))
-setGeneric("mzApply", function(.object, .fun, ...) standardGeneric("mzApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
-setGeneric("spectrumApply", function(.object, .fun, ...) standardGeneric("spectrumApply"))
 
 #### Plotting and visualization ####
 setGeneric("summaryPlot", function(object, reference, ...) standardGeneric("summaryPlot"))
