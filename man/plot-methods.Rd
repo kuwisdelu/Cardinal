@@ -27,7 +27,7 @@
     ylab,
     ylim,
     col = "black",
-    type = ifelse(centroided(x), 'h', 'l'),
+    type = 'l',
     subset = TRUE,
     lattice = FALSE)
 
@@ -37,6 +37,8 @@
     plusminus,
     \dots,
     xlab,
+    ylab,
+    type = ifelse(centroided(x), 'h', 'l'),
     sub)
 }
 

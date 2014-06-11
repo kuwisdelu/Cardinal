@@ -8,17 +8,19 @@ setMethod("smoothSignal", "MSImageSet",
 		pixel=pixels(object),
 		plot=FALSE)
 	{
+		if ( centroided(object) )
+			.stop("Data already centroided. Smoothing will not be performed.")
 		fun <- smoothSignal.method(method)
-		data <- pixelApply(object, function(s) {
+		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
 			if ( plot ) {
-				wrap(plot(mz(object), s, type="l", xlab="m/z", ylab="Intensity", col="gray", ...),
+				wrap(plot(object, pixel=.Index, col="gray", ...),
 					..., signature=fun)
 				wrap(lines(mz(object), sout, lwd=0.5, ...),
 					..., signature=fun)
 			}
 			sout
-		}, .pixel=pixel, ..., .use.names=FALSE)
+		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		object@imageData <- SImageData(data=data,
 			coord=coord(object)[pixel,],
 			storageMode=storageMode(object@imageData),

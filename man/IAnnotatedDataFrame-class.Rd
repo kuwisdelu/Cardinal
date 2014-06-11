@@ -73,8 +73,6 @@ IAnnotatedDataFrame(data, varMetadata,
 		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'dim'.}}
 
 		\item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'dim'.}
-
-		\item{\code{coordinates(object)}, \code{coordinates(object)<-}:}{An alias for the \code{coord} method.}
 	}
 
 	Standard generic methods:

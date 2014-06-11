@@ -4,19 +4,20 @@ setMethod("initialize", "IAnnotatedDataFrame",
 			data = data.frame(),
 			varMetadata = data.frame(),
 			...) {
-		if ( missing(data) )
+		if ( missing(data) ) {
 			data <- data.frame(sample=factor())
-		if ( is.null(data[["sample"]]) )
+		} else if ( is.null(data[["sample"]]) ) {
 			data[["sample"]] <- factor(rep(1, nrow(data)))
-		reqLabelTypes <- c("dim", "sample", "pheno")
-		if ( missing(varMetadata) ) {
-			varMetadata <- data.frame(labelType = factor(rep(NA, ncol(data)), levels=reqLabelTypes))
-			row.names(varMetadata) <- names(data)
 		}
-		if ( is.null(varMetadata[["labelType"]]) )
+		reqLabelTypes <- c("dim", "sample", "pheno")
+		if ( missing(varMetadata) )
+			varMetadata <- data.frame(labelType=factor(rep(NA, ncol(data)), levels=reqLabelTypes),
+				row.names=names(data))
+		if ( is.null(varMetadata[["labelType"]]) ) {
 			varMetadata[["labelType"]] <- factor(rep(NA, ncol(data)), levels=reqLabelTypes)
-		if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) )
-			levels(varMetadata[["labelType"]]) <- unique(c(levels(varMetadata[["labelType"]]), reqLabelTypes))
+		} else if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) ) {
+			levels(varMetadata[["labelType"]]) <- union(levels(varMetadata[["labelType"]]), reqLabelTypes)
+		}
 		if ( !"sample" %in% row.names(varMetadata) || is.na(varMetadata["sample","labelType"]) )
 			varMetadata["sample","labelType"] <- "sample"
 		.Object <- callNextMethod(.Object,
@@ -36,7 +37,7 @@ IAnnotatedDataFrame <- function(data, varMetadata, ...)
 	if ( missing(varMetadata) )
 		varMetadata <- data.frame(labelType=factor(rep(NA, ncol(data)),
 			levels=reqLabelTypes), row.names=names(data))
-	if ( !is.null(varMetadata[["labelType"]]) && !is.factor(varMetadata[["labelType"]]) )
+	if ( !is.null(varMetadata[["labelType"]]) )
 		varMetadata[["labelType"]] <- as.factor(varMetadata[["labelType"]])
 	.IAnnotatedDataFrame(data=data,
 		varMetadata=varMetadata,
@@ -54,7 +55,8 @@ setValidity("IAnnotatedDataFrame", function(object) {
 		msg <- validMsg(msg, "required column 'labelType' missing from varMetadata")
 	reqLabelTypes <- c("dim", "sample", "pheno")
 	if ( !is.factor(labelType) || !all(reqLabelTypes %in% levels(labelType)) )
-		msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:", paste(reqLabelTypes, collapse=", ")))
+		msg <- validMsg(msg, paste("column 'labelType' must be a factor with levels:",
+			paste(reqLabelTypes, collapse=", ")))
 	if (is.null(msg)) TRUE else msg
 })
 

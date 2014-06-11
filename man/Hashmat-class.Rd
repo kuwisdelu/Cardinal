@@ -69,6 +69,13 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 }
 
 \section{Methods}{
+    Class-specific methods:
+    \describe{
+        \item{\code{pData(object)}, \code{pData(object)<-}:}{Access or set the list of \code{numeric} vectors storing the column-vectors of the sparse matrix directly.}
+
+        \item{\code{keys(object)}, \code{keys(object)<-}:}{Access of set the keys for the row elements. If this is a \code{character}, it sets the \code{keys} slot directly, and hence the 'dim' is also changed. If this is a \code{list}, then the list should have length equal to the number of rows, and each element should be an \code{integer} vector of length equal to the number of non-zero row elements for the respective column. The vectors are used to index the \code{keys} slot and set the key names of the vectors, and hence change or reorder the row elements.}
+    }
+
     Standard generic methods:
     \describe{
         \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link[BiocGeneric]{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}

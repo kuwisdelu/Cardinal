@@ -33,6 +33,7 @@ exportClasses(
 	"MSPeakFrame",
 	"MSPeakList",
 	"MSPeakAlignment",
+	"RImageData",
 	"SImageData",
 	"SImageSet",
 	"iSet")
@@ -42,6 +43,7 @@ export(
 	"IAnnotatedDataFrame",
 	"Hashmat",
 	"MSImageSet",
+	"RImageData",
 	"SImageData",
 	"SImageSet",
 	"alpha.colors",
@@ -96,10 +98,16 @@ exportMethods(
 	"initialize",
 	"mz",
 	"mz<-",
+	"mzData",
+	"mzData<-",
 	"names",
 	"names<-",
 	"pData",
 	"pData<-",
+	"peaks",
+	"peaks<-",
+	"peakData",
+	"peakData<-",
 	"pixels",
 	"pixelApply",
 	"pixelData",
@@ -190,10 +198,11 @@ exportMethods(
 
 exportMethods(
 	"normalize",
-	"smoothSignal",
-	"reduceBaseline",
 	"peakPick",
-	"peakAlign")
+	"peakAlign",
+	"reduceBaseline",
+	"reduceDimension",
+	"smoothSignal")
 
 exportMethods(
 	"image",

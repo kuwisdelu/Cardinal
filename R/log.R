@@ -121,13 +121,13 @@
 #### Errors and warnings ####
 ## --------------------------
 
-.error <- function(...) {
+.stop <- function(...) {
 	.log(...)
-	stop(...)
+	stop(..., call.=FALSE)
 }
 
 .warning <- function(...) {
 	.log(...)
-	warning(...)
+	warning(..., call.=FALSE)
 }
 

@@ -122,6 +122,44 @@ setReplaceMethod("colnames", "Hashmat", function(x, value) {
 
 # setMethod("ncol", "Hashmat", function(x) x@dim[[2]])
 
+setMethod("pData", "Hashmat", function(object) object@data)
+
+setReplaceMethod("pData", "Hashmat",
+	function(object, value) {
+		object@data <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("keys", "Hashmat", function(object) object@keys)
+
+setReplaceMethod("keys", c("Hashmat", "character"), function(object, value) {
+	object@dimnames <- list(NULL, object@dimnames[[2]])
+	object@dim <- c(length(value), object@dim[[2]])
+	object@keys <- value
+	if ( validObject(object) )
+		object
+})
+
+setReplaceMethod("keys", c("Hashmat", "list"), function(object, value) {
+	object@data <- mapply(function(x, y) {
+		names(x) <- object@keys[y]
+		x
+	}, object@data, value)
+	if ( validObject(object) )
+		object
+})
+
+# setMethod("lapply", "Hashmat",
+# 	function(X, FUN, ...) {
+# 		lapply(X@data, FUN=FUN, ...)
+# 	})
+
+# setMethod("sapply", "Hashmat",
+# 	function(X, FUN, ..., simplify=TRUE, USE.NAMES=TRUE) {
+# 		sapply(X@data, FUN=FUN, ..., simplify=TRUE, USE.NAMES=TRUE)
+# 	})
+
 setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
 	if ( missing(i) ) i <- seq_len(dim(x)[[1]])
 	if ( missing(j) ) j <- seq_len(dim(x)[[2]])

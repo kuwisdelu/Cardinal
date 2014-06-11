@@ -2,16 +2,20 @@
 TODO for Cardinal package
 -------------------------
 
+x rewrite smoothing methods
+x rewrite baseline reduction methods
 x rewrite peak picking methods
-- rewrite peak alignment methods
+x rewrite peak alignment methods
 - rewrite binning/resampling methods
 - rewrite selectROI() and selectPixels() and selectPeaks()
 - write new classes for storing results
 - rewrite spatial clustering and classification methods
 - rewrite PCA/PLS/OPLS methods
 - add plotting of analysis results to plot() and image() methods
+- add options to plot() and image() methods (line type, orientation, etc.)
 - add smoothing and interpolation and contrast enhancement to image()
 - have readImzML parse processingData (need to write C++ functions)
 - add writing of imzML and Analyze formats (requires digest+uuid)
 - write documentation for missing methods (pixelNames, etc.)
+- clean up constructors with better annotatedDataFrameFrom methods
 - add optical image support

@@ -8,8 +8,8 @@ setMethod("initialize", "MSImageSet",
 			protocolData = AnnotatedDataFrame(),
 			experimentData = new("MIAPE-Imaging"),
 			...) {
-		featureNames(featureData) <- .formatMZ(featureData[["mz"]])
-		pixelNames(pixelData) <- .formatCoord(coord(pixelData))
+		featureNames(featureData) <- formatMz(featureData[["mz"]])
+		pixelNames(pixelData) <- formatCoord(coord(pixelData))
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
@@ -31,7 +31,8 @@ MSImageSet <- function(
 		coord=coord),
 	pixelData = IAnnotatedDataFrame(
 		data=coord,
-		varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
+		varMetadata=data.frame(
+			labelType=rep("dim", ncol(coord)))),
 	featureData = AnnotatedDataFrame(
 		data=data.frame(mz=mz)),
 	processingData = new("MSImageProcess"),
@@ -70,17 +71,24 @@ setValidity("MSImageSet", function(object) {
 	if (is.null(msg)) TRUE else msg	
 })
 
-setMethod("mz", "MSImageSet", function(object) object@featureData[["mz"]])
-setReplaceMethod("mz", "MSImageSet",
-	function(object, value) {
-		object@featureData[["mz"]] <- value
-		object
-	})
-
 setMethod("spectra", "MSImageSet", function(object) iData(object@imageData))
 setReplaceMethod("spectra", "MSImageSet",
 	function(object, value) {
 		iData(object@imageData) <- value
+		object
+	})
+
+setMethod("peaks", "MSImageSet", function(object) peakData(object@imageData))
+setReplaceMethod("peaks", "MSImageSet",
+	function(object, value) {
+		peakData(object@imageData) <- value
+		object
+	})
+
+setMethod("mz", "MSImageSet", function(object) object@featureData[["mz"]])
+setReplaceMethod("mz", "MSImageSet",
+	function(object, value) {
+		object@featureData[["mz"]] <- value
 		object
 	})
 
@@ -121,6 +129,11 @@ setMethod("pixels", "MSImageSet",
 	})
 
 setMethod("centroided", "MSImageSet", function(object) centroided(object@processingData))
+setReplaceMethod("centroided", "MSImageSet",
+	function(object, value) {
+		centroided(object@processingData) <- value
+		object
+	})
 
 setMethod("processingData", "MSImageSet", function(object) object@processingData)
 setReplaceMethod("processingData", "MSImageSet",
@@ -135,8 +148,8 @@ setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 			varMetadata(x)["sample", "labelType"] <- "dim"
 		if ( varMetadata(y)["sample", "labelType"] != "dim" )
 			varMetadata(y)["sample", "labelType"] <- "dim"
-		pixelNames(x) <- .formatCoord(coord(x))
-		pixelNames(y) <- .formatCoord(coord(y))
+		pixelNames(x) <- formatCoord(coord(x))
+		pixelNames(y) <- formatCoord(coord(y))
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)

@@ -103,11 +103,23 @@ setClass("MSImageProcess",
 		dimnames = "list"),
 	contains = "ImageData",
 	prototype = prototype(
-		new("Versioned", versions=c(classVersion("ImageData"), SImageData="0.1.0")),
+		new("Versioned", versions=c(classVersion("ImageData"),
+			SImageData="0.1.0")),
 		coord = data.frame(x=numeric(), y=numeric()),
 		positionArray = array(0, dim=c(x=0, y=0)),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)))
+
+#### Class for holding results of analysis on image data ####
+## holds matrices corresponding to results for pixels or features
+## --------------------------------------------------------------
+.RImageData <- setClass("RImageData",
+	slots = c(varMetadata = "list"),
+	contains = "ImageData",
+	prototype = prototype(
+		new("Versioned", versions=c(classVersion("ImageData"),
+			RImageData="0.1.0")),
+		varMetadata = list()))
 
 #### Matrix-like class for sparse signals ####
 ## implemented using lists as hash tables
@@ -158,9 +170,23 @@ setClass("iSet",
 			SImageSet="0.1.0")),
 		imageData = .SImageData()))
 
+#### Class for results of analysis of imaging datasets ####
+## extends iSet for statistical analysis results
+## ---------------------------------------------
+.RImageSet <- setClass("RImageSet",
+	slots = c(
+		pixelStats = "RImageData",
+		featureStats = "RImageData"),
+	contains = "iSet",
+	prototype = prototype(
+		new("VersionedBiobase", versions=c(classVersion("iSet"),
+			RImageSet="0.1.0")),
+		pixelStats = .RImageData(),
+		featureStats = .RImageData()))
+
 #### Class for mass spectrometry imaging datasets ####
 ## extends SImageSet with metadata for MS imaging
-## ----------------------------------------------------
+## ----------------------------------------------
 .MSImageSet <- setClass("MSImageSet",
 	slots = c(
 		processingData = "MSImageProcess",

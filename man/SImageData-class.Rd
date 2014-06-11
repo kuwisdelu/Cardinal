@@ -80,6 +80,10 @@ SImageData(
     \describe{
         \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of image intensities. Columns should correspond to feature vectors, and rows should correspond to pixel vectors.}
 
+        \item{\code{peakData(object)}, \code{peakData(object)<-}:}{Return or set the sparse matrix of peak intensities if it exists. For use with \code{\linkS4class{MSImageSet}}.}
+
+        \item{\code{mzData(object)}, \code{mzData(object)<-}:}{Return or set the sparse matrix of peak m/z values if it exists. For use with \code{\linkS4class{MSImageSet}}.}
+
         \item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} with each row corresponding to the spatial coordinates of a pixel.}
 
         \item{\code{positionArray(object)}, \code{positionArray(object)<-}:}{Return or set the \code{positionArray} slot. When setting, this should be an array returned by a call to \code{generatePositionArray}.}
@@ -99,7 +103,7 @@ SImageData(
 
         \item{\code{dims}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
-        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}.}
+        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}. Use \code{drop = NA} to subset the object ordinarily.}
     }
 }
 

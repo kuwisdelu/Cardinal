@@ -13,7 +13,7 @@ setMethod("plot",
 		ylab,
 		ylim,
 		col = "black",
-		type = ifelse(centroided(x), 'h', 'l'),
+		type = 'l',
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -181,7 +181,9 @@ setMethod("image",
 				labels=make.names(names(model$left))))
 		}
 		# shape image values into matrix with one image per column, includes NAs
-		values <- .reshapeImageValues(values, x, groups=groups, subset=subset, lattice=lattice)
+		values <- .reshapeImageValues(values, x, groups=groups, subset=subset,
+			perm=names(model$right), lattice=lattice)
+		# OKAY TO PERFORM IMAGE PROCESSING HERE
 		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
 		# set up plotting parameters
@@ -281,7 +283,7 @@ setMethod("image",
 	})
 
 ## Reorders feature vector values for plotting an image
-.reshapeImageValues <- function(values, object, groups, subset, lattice) {
+.reshapeImageValues <- function(values, object, groups, subset, perm, lattice) {
 	if ( !lattice && !is.null(groups) ) {
 		nas <- rep(NA, nrow(values))
 		newdim <- c(nrow(values), ncol(values) * length(levels(groups)))
@@ -291,6 +293,7 @@ setMethod("image",
 		dim(values) <- newdim
 	}
 	subsetPositions <- positionArray(imageData(object))
+	subsetPositions <- aperm(subsetPositions, perm=perm)
 	subsetPositions[!subset] <- NA
 	retval <- apply(values, 2, function(x) x[subsetPositions])
 	if ( !is.matrix(retval) )

@@ -29,7 +29,8 @@ SImageSet <- function(
 		coord=coord),
 	pixelData = IAnnotatedDataFrame(
 		data=coord,
-		varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
+		varMetadata=data.frame(
+			labelType=rep("dim", ncol(coord)))),
 	featureData = AnnotatedDataFrame(
 		data=data.frame(row.names=seq_len(nrow(data)))),
 	protocolData = AnnotatedDataFrame(
@@ -174,16 +175,17 @@ setMethod("pixelApply", "SImageSet",
 		if ( is.null(parent) )
 			parent <- emptyenv()
 		env <- new.env(parent=parent)
-		multiassign(names(fData(.object)), fData(.object), envir=env)
+		if ( length(fData(.object)) != 0 )
+			multiassign(names(fData(.object)), fData(.object), envir=env)
 		assign(".Object", .object, envir=env)
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				assign(".Index", i, envir=env)
-				.fun(iData(.object)[j,.pixel[[i]]], ...)
-			}, simplify=.simplify, USE.NAMES=.use.names)
+				assign(".Index", .pixel[[i]], envir=env)
+				.fun(iData(.object)[j, .pixel[[i]]], ...)
+			}, USE.NAMES=.use.names)
 		}
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.pixel)
@@ -236,16 +238,17 @@ setMethod("featureApply", "SImageSet",
 		if ( is.null(parent) )
 			parent <- emptyenv()
 		env <- new.env(parent=parent)
-		multiassign(names(pData(.object)), pData(.object), envir=env)
+		if ( length(pData(.object)) != 0 )
+			multiassign(names(pData(.object)), pData(.object), envir=env)
 		assign(".Object", .object, envir=env)
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				assign(".Index", i, env)
-				.fun(iData(.object)[.feature[[i]],j], ...)
-			}, simplify=.simplify, USE.NAMES=.use.names)
+				assign(".Index", .feature[[i]], env)
+				.fun(iData(.object)[.feature[[i]], j], ...)
+			}, USE.NAMES=.use.names)
 		}
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.feature)

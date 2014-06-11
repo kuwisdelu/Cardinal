@@ -7,6 +7,10 @@ setGeneric("names<-")
 setGeneric("rownames<-")
 setGeneric("colnames<-")
 
+#### Define new generics from graphics R ####
+setGeneric("image")
+setGeneric("plot")
+
 #### Basic accessor, setter, and manipulation ####
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
@@ -22,16 +26,22 @@ setGeneric("iData<-", function(object, value) standardGeneric("iData<-"))
 setGeneric("imageData", function(object) standardGeneric("imageData"))
 setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
 setGeneric("intensities", function(object, ...) standardGeneric("intensities"))
+setGeneric("keys", function(object) standardGeneric("keys"))
+setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
 setGeneric("mergePeaks", function(peaks, ...) standardGeneric("mergePeaks"))
 setGeneric("metaData", function(object) standardGeneric("metaData"))
 setGeneric("metaData<-", function(object, value) standardGeneric("metaData<-"))
 setGeneric("mz", function(object) standardGeneric("mz")) # use MSnbase generic?
 setGeneric("mz<-", function(object, value) standardGeneric("mz<-"))
+setGeneric("mzData", function(object) standardGeneric("mzData"))
+setGeneric("mzData<-", function(object, value) standardGeneric("mzData<-"))
 setGeneric("neighbors", function(object, r, ...) standardGeneric("neighbors"))
 setGeneric("numFeatures", function(object) standardGeneric("numFeatures"))
 setGeneric("numPixels", function(object) standardGeneric("numPixels"))
 setGeneric("peaks", function(object) standardGeneric("peaks")) # use mzR generic?
 setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
+setGeneric("peakData", function(object) standardGeneric("peakData"))
+setGeneric("peakData<-", function(object, value) standardGeneric("peakData<-"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
 setGeneric("pixelData", function(object) standardGeneric("pixelData"))
 setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-"))
@@ -50,6 +60,7 @@ setGeneric("sliceBind", function(object, ...) standardGeneric("sliceBind"));
 setGeneric("spectra", function(object) standardGeneric("spectra")) # use MSnbase generic?
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
 
+#### MIAPE - Imaging ####
 setGeneric("msiInfo", function(object) standardGeneric("msiInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
 setGeneric("specimenOrigin<-", function(object, value) standardGeneric("specimenOrigin<-"))
@@ -94,6 +105,7 @@ setGeneric("lineScanDirection<-", function(object, value) standardGeneric("lineS
 setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
 
+#### Processing information ####
 setGeneric("prochistory", function(object) standardGeneric("prochistory"))
 setGeneric("prochistory<-", function(object, value) standardGeneric("prochistory<-"))
 setGeneric("files", function(object) standardGeneric("files"))
@@ -111,13 +123,14 @@ setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking
 setGeneric("centroided", function(object) standardGeneric("centroided")) # use mzR generic?
 setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
-#### Processing and data transformation ####
+#### Pre-processing and data transformation ####
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
-setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
-setGeneric("peakAlign", function(object, ...) standardGeneric("peakAlign"))
+setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
+setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
+setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
 
-#### Processing and data transformation (Old) ####
+#### Pre-processing and data transformation (Old) ####
 setGeneric("alignPeaks", function(peaks, reference, ...) standardGeneric("alignPeaks"))
 setGeneric("assessQuality", function(object, ...) standardGeneric("assessQuality"))
 setGeneric("binSpectra", function(object, peaks, ...) standardGeneric("binSpectra"))

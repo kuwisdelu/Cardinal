@@ -95,15 +95,17 @@ MSImageSet(
     \describe{
         \item{\code{spectra(object), spectra(object) <- value}:}{Access and set the mass spectra in \code{imageData}. This is a matrix-like object with rows corresponding to features and columns corresponding to pixels, so that each column of the returned object is a mass spectrum.}
 
+        \item{\code{peaks(object), peaks(object) <- value}:}{Access and set the peaks in \code{imageData} if peak picking have been performed. This is a shortcut for \code{peakData(imageData(object))}. These are the unaligned peaks. Aligned peaks (if they exist) are accesed by spectra(object).}
+
         \item{\code{mz(object), mz(object) <- value}:}{Returns and sets the common m/z values of the mass spectra in the dataset. This is a required column of \code{featureData}.}
 
         \item{\code{features(object, ..., mz)}:}{Access the feature indices (rows in \code{featureData}) corresponding to variables in \code{featureData}. Bisection search is used for fuzzy matching of m/z values.}
 
         \item{\code{pixels(object, ..., coord)}:}{Access the pixel indices (rows in \code{pixelData}) corresponding to variables in \code{pixelData}. If specified, \code{coord} should be a \code{data.frame} where each row corresponds to the coordinates of a desired pixel.}
 
-        \item{\code{centroided(object)}:}{Access whether the dataset consists of profile or centroided mass spectra. This is a shortcut for \code{centroided(processingData(object))}.}
+        \item{\code{centroided(object), centroided(object) <- value}:}{Access whether the dataset consists of profile or centroided mass spectra. This is a shortcut for \code{centroided(processingData(object))}. A setter is also provided, and is sometimes necessary for forcing some analysis methods to accept unprocessed spectra. (This is usually a bad idea.)}
 
-        \item{\code{processingData(object), processingData(object) <-}:}{Access and set the \code{processingData} slot.}
+        \item{\code{processingData(object), processingData(object) <- value}:}{Access and set the \code{processingData} slot.}
     }
 
     Standard generic methods:

@@ -37,7 +37,8 @@ SImageData <- function(
 				names(dims) <- paste("dim", seq_along(dims), sep="")
 			}
 		}
-		positionArray <- array(seq_len(prod(dims)), dim=dims)
+		positionArray <- array(seq_len(prod(dims)), dim=dims,
+			dimnames=lapply(dims, seq_len))
 		dim(data) <- c(dim(data)[1], prod(dims))
 		coord <- expand.grid(lapply(dims, seq_len))
 		names(coord) <- names(dims)
@@ -103,6 +104,26 @@ setMethod("iData", "SImageData",
 setReplaceMethod("iData", "SImageData",
 	function(object, value) {
 		object[[".iData"]] <- value
+		if ( validObject(object) )
+			object			
+	})
+
+setMethod("peakData", "SImageData",
+	function(object) object[[".peakData"]])
+
+setReplaceMethod("peakData", "SImageData",
+	function(object, value) {
+		object[[".peakData"]] <- value
+		if ( validObject(object) )
+			object			
+	})
+
+setMethod("mzData", "SImageData",
+	function(object) object[[".mzData"]])
+
+setReplaceMethod("mzData", "SImageData",
+	function(object, value) {
+		object[[".mzData"]] <- value
 		if ( validObject(object) )
 			object			
 	})

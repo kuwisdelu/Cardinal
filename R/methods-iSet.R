@@ -30,7 +30,7 @@ setValidity("iSet", function(object) {
 	dims <- dims(object)
 	if ( ncol(dims) > 0 ) {
 		if ( (nrow(dims) - 1) != ncol(coord(object@pixelData)) ) # assume dims[1,] are features
-			msg <- validMsg(msg, "number of dimensions differ between imageData and pixelData")
+			msg <- validMsg(msg, "number of spatial dimensions differ between imageData and pixelData")
 		if ( !all(rownames(dims)[-1] == coordLabels(object@pixelData)) )
 			msg <- validMsg(msg, "dimension names differ between imageData and pixelData")
 		if ( !all(sampleNames(object@pixelData) == sampleNames(object@protocolData)) )

@@ -1,0 +1,103 @@
+
+#### Peak alignment methods ####
+## ---------------------------
+
+setMethod("peakAlign", c("MSImageSet", "numeric"),
+	function(object, ref, method = c("diff", "DP"),
+		...,
+		pixel=pixels(object),
+		plot=FALSE)
+	{
+		if ( is.null(mzData(imageData(object))) )
+			.stop("No peak picking has been applied. Nothing to align.")
+		fun <- peakAlign.method(method)
+		peaklist <- pData(mzData(imageData(object)))
+		alignment <- pixelApply(object, function(s, ...) {
+			aout <- fun(peaklist[[.Index]], ref, ...)
+			if ( plot ) {
+				wrap(plot(object, pixel=i, lwd=2, ...),
+					..., signature=fun)
+				wrap(abline(v=ref, lty=2, lwd=0.5, col="blue", ...),
+					..., signature=fun)
+				wrap(abline(v=peaklist[[i]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
+					..., signature=fun)
+			}
+			aout
+		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=FALSE)
+		alignment <- lapply(alignment, function(a) {
+			a <- unlist(a)
+			if ( length(a) == 0 ) {
+				integer()
+			} else {
+				as.integer(a)
+			}
+		})
+		feature <- features(object, mz=ref)
+		object@featureData <- object@featureData[feature,]
+		object@pixelData <- object@pixelData[pixel,]
+		peakData <- peakData(imageData(object))
+		mzData <- mzData(imageData(object))
+		keys(peakData) <- featureNames(object@featureData)
+		keys(peakData) <- alignment
+		keys(mzData) <- featureNames(object@featureData)
+		keys(mzData) <- alignment
+		object@imageData <- SImageData(data=peakData[],
+			coord=coord(object@pixelData),
+			storageMode=storageMode(imageData(object)),
+			dimnames=list(
+				featureNames(object@featureData),
+				pixelNames(object@pixelData)))
+		peakData(imageData(object)) <- peakData
+		mzData(imageData(object)) <- mzData
+		mz(object) <- ref
+		prochistory(processingData(object)) <- .history()
+		centroided(processingData(object)) <- TRUE
+		object
+	})
+
+setMethod("peakAlign", c("MSImageSet", "MSImageSet"), function(object, ref, ...) {
+		if ( is.null(mzData(imageData(object))) )
+			.stop("No peak picking has been applied. Nothing to align.")
+		spectrum <- featureApply(ref, mean)
+		peaks <- mz(object)[localMaximaLogical(spectrum, span=5)]
+		peakAlign(object, ref=peaks, ...)
+	})
+
+peakAlign.method <- function(method) {
+	if ( is.character(method) ) {
+		method <- switch(method[[1]],
+			diff = peakAlign.diff,
+			DP = peakAlign.DP,
+			match.fun(method))
+	}
+	match.fun(method)
+}
+
+peakAlign.diff <- function(x, y, diff.max=200, units=c("ppm", "mz"), ...) {
+	if ( length(x) == 0 ) return(integer())
+	units <- match.arg(units)
+	if ( units == "ppm" ) {
+		diff.max <- 1e-6 * diff.max * y
+	} else if ( length(diff.max) != length(y) ) {
+		diff.max <- rep(diff.max, length.out=length(y))
+	}
+	xmat <- matrix(x, nrow=length(y), ncol=length(x), byrow=TRUE)
+	ymat <- matrix(y, nrow=length(y), ncol=length(x), byrow=FALSE)
+	diffs <- abs(ymat - xmat)
+	mins <- apply(diffs, 1, min)
+	which <- apply(diffs, 1, which.min)
+	aligned <- data.frame(x=which, y=seq_along(y))
+	aligned <- aligned[mins <= diff.max,]
+	matched <- rep(NA, length(x))
+	matched[aligned$x] <- aligned$y
+	matched
+}
+
+peakAlign.DP <- function(x, y, gap=0, ...) {
+	if ( length(x) == 0 ) return(integer())
+	aligned <- dynamicAlign(x, y, gap=gap, ...)
+	matched <- rep(NA, length(x))
+	matched[aligned[,"x"]] <- aligned[,"y"]
+	matched
+}
+

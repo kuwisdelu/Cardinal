@@ -15,9 +15,9 @@ dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)),
 	out.align <- .C("dynamicAlign", as.double(score.mat), as.integer(tracking.mat),
 		as.double(similarity.mat), as.integer(nrow(score.mat)), as.integer(ncol(score.mat)),
 		as.double(gap), integer(length(x)), integer(length(y)))
-	x.match <- out.align[[7]]
-	y.match <- out.align[[8]]
-	matched <- cbind(y.match[y.match > 0], x.match[x.match > 0])
-	colnames(matched) <- c("x", "y")
-	return(matched)
+	x.align <- out.align[[7]]
+	y.align <- out.align[[8]]
+	aligned <- cbind(y.align[y.align > 0], x.align[x.align > 0])
+	colnames(aligned) <- c("x", "y")
+	return(aligned)
 }

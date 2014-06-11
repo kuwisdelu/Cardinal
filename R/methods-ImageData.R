@@ -9,8 +9,13 @@ setMethod("initialize", "ImageData",
 		names <- names(dots)
 		if ( length(dots) > 0 ) {
 			if ( any(is.null(names)) ) stop("all elements must be named")
-			for ( nm in names )
-				.Object@data[[nm]] <- eval(dots[[nm]]) # not list(...)
+			for ( nm in names ) {
+				tryCatch({
+					.Object@data[[nm]] <- eval(dots[[nm]])
+				}, error=function(e) {
+					.Object@data[[nm]] <- list(...)[[nm]]
+				})
+			}
 		}
 		if ( storageMode == "lockedEnvironment" )
 			lockEnvironment(.Object@data, bindings=TRUE)
@@ -130,19 +135,22 @@ setMethod("annotatedDataFrameFrom", "ImageData",
 		df
 	})
 
-setMethod("[[", "ImageData", function(x, i, j, ..., value) x@data[[i]])
+setMethod("[[", signature(x="ImageData", i="character", j="missing"),
+	function(x, i, j, ..., value) x@data[[i]])
 
-setReplaceMethod("[[", "ImageData", function(x, i, j, ..., value) {
-	names <- ls(x@data, all.names=TRUE)
-	if ( storageMode(x) == "immutableEnvironment" ) {
-		data <- new.env(parent=emptyenv())
-		for ( nm in names ) data[[nm]] <- x@data[[nm]]
-		data[[i]] <- value
-	} else {
-		data <- x@data
-		data[[i]] <- value
-	}
-	x@data <- data
-	x
-})
+setReplaceMethod("[[", signature(x="ImageData", i="character", j="missing"),
+	function(x, i, j, ..., value)
+	{
+		names <- ls(x@data, all.names=TRUE)
+		if ( storageMode(x) == "immutableEnvironment" ) {
+			data <- new.env(parent=emptyenv())
+			for ( nm in names ) data[[nm]] <- x@data[[nm]]
+			data[[i]] <- value
+		} else {
+			data <- x@data
+			data[[i]] <- value
+		}
+		x@data <- data
+		x
+	})
 

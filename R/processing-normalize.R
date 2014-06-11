@@ -9,13 +9,16 @@ setMethod("normalize", "MSImageSet",
 		plot=FALSE)
 	{
 		fun <- normalize.method(method)
-		data <- pixelApply(object, function(s) {
+		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
-			if ( plot )
-				wrap(plot(mz(object), sout, type="l", xlab="m/z", ylab="Intensity", ...),
+			if ( plot ) {
+				wrap(plot(object, pixel=.Index, col="gray", ...),
 					..., signature=fun)
+				wrap(lines(mz(object), sout, lwd=0.5, ...),
+					..., signature=fun)
+			}
 			sout
-		}, .pixel=pixel, ..., .use.names=FALSE)
+		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		object@imageData <- SImageData(data=data,
 			coord=coord(object)[pixel,],
 			storageMode=storageMode(object@imageData),

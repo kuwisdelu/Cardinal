@@ -1,7 +1,6 @@
 
-#### functions for formatting for printing and plotting ####
-
-.formatMZ <- function(mz) {
+## Format m/z values
+formatMz <- function(mz) {
 	diffmz <- diff(mz)
 	if ( length(diffmz) > 0 ) {
 		mindiff <- signif(min(diffmz), 1)
@@ -17,7 +16,8 @@
 	}
 }
 
-.formatCoord <- function(coord) {
+## Format coordinates values
+formatCoord <- function(coord) {
 	apply(coord, 1, function(xyz) {
 		paste(paste(names(xyz), "=", xyz), collapse=", ")
 	})

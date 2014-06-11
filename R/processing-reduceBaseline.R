@@ -3,24 +3,26 @@
 ## ---------------------------------
 
 setMethod("reduceBaseline", "MSImageSet",
-	function(object, method = "interp",
+	function(object, method = "median",
 		...,
 		pixel=pixels(object),
 		plot=FALSE)
 	{
+		if ( centroided(object) )
+			.stop("Data already centroided. Baseline reduction will not be performed.")
 		fun <- reduceBaseline.method(method)
-		data <- pixelApply(object, function(s) {
+		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
 			if ( plot ) {
-				wrap(plot(mz(object), s, type="l", xlab="m/z", ylab="Intensity", col="gray", ...),
+				wrap(plot(object, pixel=.Index, col="gray", ...),
 					..., signature=fun)
-				wrap(lines(mz(object), s - sout, col="red", ...),
+				wrap(lines(mz(object), s - sout, col="green", ...),
 					..., signature=fun)
 				wrap(lines(mz(object), sout, lwd=0.5, ...),
 					..., signature=fun)
 			}
 			sout
-		}, .pixel=pixel, ..., .use.names=FALSE)
+		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		object@imageData <- SImageData(data=data,
 			coord=coord(object)[pixel,],
 			storageMode=storageMode(object@imageData),
@@ -34,17 +36,16 @@ setMethod("reduceBaseline", "MSImageSet",
 reduceBaseline.method <- function(method) {
 	if ( is.character(method) ) {
 		method <- switch(method[[1]],
-			interp = reduceBaseline.interp,
+			median = reduceBaseline.median,
 			match.fun(method))
 	}
 	match.fun(method)
 }
 
-reduceBaseline.interp <- function(x, blocks=500, choose=c("min", "median"), spar=1, ...) {
+reduceBaseline.median <- function(x, blocks=500, fun=median, spar=1, ...) {
 	xint <- intervals(x, blocks=blocks)
-	choose <- match.fun(match.arg(choose))
-	baseval <- sapply(xint, choose)
-	baseidx <- sapply(xint, function(xi) which.min(abs(choose(xi) - xi)))
+	baseval <- sapply(xint, fun)
+	baseidx <- sapply(xint, function(xi) which.min(abs(fun(xi) - xi)))
 	baseidx <- baseidx + c(0, cumsum(sapply(xint, length))[-length(xint)])
 	if ( diff(range(baseval))==0 )
 		return(rep(0, length(x)))
@@ -54,7 +55,7 @@ reduceBaseline.interp <- function(x, blocks=500, choose=c("min", "median"), spar
 		baseidx <- baseidx[keep]
 		baseval <- baseval[keep]
 	}
-	baseval[c(1,length(baseval))] <- c(choose(xint[[1]]), choose(xint[[length(xint)]]))
+	baseval[c(1,length(baseval))] <- c(fun(xint[[1]]), fun(xint[[length(xint)]]))
 	baseidx[c(1,length(baseidx))] <- c(1, length(x))
 	baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
 	pmax(x - baseline, 0)
