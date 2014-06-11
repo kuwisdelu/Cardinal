@@ -11,16 +11,16 @@ setMethod("spatialKMeans",
 	ks <- sort(k)
 	w <- rep(weights, length.out=nrow(iData(x)))
 	out <- unlist(lapply(rs, function(r){
-		spatial <- .calculateSpatial(x, r=r)
-		fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=weights, ...)
+		spatial <- .calculateSpatialInfo(x, r=r, method=method)
+		fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=w, ...)
 		lapply(ks, function(k) {
 			append(.spatialKMeans(x, fastmap=fastmap, k=k, iter.max=iter.max, nstart=nstart, ...),
 				list(r=r, k=k, method=method, weights=weights))
 		})
 	}), recursive=FALSE)
 	par <- AnnotatedDataFrame(data=data.frame(
-			k=sapply(out, function(fit) fit$r),
-			s=sapply(out, function(fit) fit$s)),
+			r=sapply(out, function(fit) fit$r),
+			k=sapply(out, function(fit) fit$k)),
 		varMetadata=data.frame(
 			labelDescription=c(
 				k="Number of clusters",
@@ -46,8 +46,8 @@ setMethod("spatialKMeans",
 	list(cluster=cluster, centers=centers)
 }
 
-.calculateSpatial <- function(x, r) {
-	neighbors <- generateNeighbors(coord(x), r=r, na.rm=TRUE)
+.calculateSpatialInfo <- function(x, r, method) {
+	neighbors <- spatial.neighbors(x, r=r, na.rm=TRUE)
 	alpha <- spatial.alpha(r=r, p=length(coord(x)))
 	if ( method == "adaptive" ) {
 		beta <- spatial.beta(iData(x), neighbors)
@@ -81,3 +81,25 @@ spatial.beta <- function(x, neighbors) {
 		}, seq_len(ncol(x)), neighbors, SIMPLIFY=FALSE)
 	}
 }
+
+spatial.neighbors <- function(x, r, na.rm=FALSE) {
+	coord <- coord(x)
+	coordLabels <- names(coord)
+	if ( r == 0 )
+		return(matrix(seq_len(nrow(coord)), ncol=nrow(coord)))
+	coord <- data.frame(lapply(coord, as.integer))
+	dim <- sapply(coord, max)
+	positionArray <- generatePositionArray(coord + r, dim + (2 * r))
+	coord <- coord + r
+	f <- function(...) positionArray[...]
+	radii <- rep(list((-r):r), ncol(coord))
+	names(radii) <- names(coord)
+	radii[!names(coord) %in% coordLabels] <- 0
+	lapply(seq_len(nrow(coord)), function(i) {
+		neighbors <- do.call(f, mapply(`+`, coord[i,], radii, SIMPLIFY=FALSE))
+		if ( na.rm ) neighbors[is.na(neighbors)] <- i
+		dimnames(neighbors) <- radii[coordLabels]
+		neighbors
+	})
+}
+

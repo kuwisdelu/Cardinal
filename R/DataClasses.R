@@ -170,20 +170,6 @@ setClass("iSet",
 			SImageSet="0.1.0")),
 		imageData = .SImageData()))
 
-#### Class for results of analysis of imaging datasets ####
-## extends iSet for statistical analysis results
-## ---------------------------------------------
-# .RImageSet <- setClass("RImageSet",
-# 	slots = c(
-# 		pixelStats = "RImageData",
-# 		featureStats = "RImageData"),
-# 	contains = "iSet",
-# 	prototype = prototype(
-# 		new("VersionedBiobase", versions=c(classVersion("iSet"),
-# 			RImageSet="0.1.0")),
-# 		pixelStats = .RImageData(),
-# 		featureStats = .RImageData()))
-
 #### Class for mass spectrometry imaging datasets ####
 ## extends SImageSet with metadata for MS imaging
 ## ----------------------------------------------

@@ -10,13 +10,13 @@ setMethod("spatialShrunkenCentroids",
 	ks <- sort(k)
 	ss <- sort(s)
 	initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
-	out <- unlist(lapply(initial, function(init) {
-		spatial <- .calculateSpatial(x, r=r)
-		priors <- tabulate(init$cluster) / sum(tabulate(init$cluster))
+	out <- unlist(lapply(initial@resultData, function(init) {
+		spatial <- .calculateSpatialInfo(x, r=init$r, method=method)
 		lapply(ss, function(s) {
 			append(.clusterSpatialShrunkenCentroids(x, classes=factor(init$cluster),
-				r=r, k=k, s=s, spatial=spatial, iter.max=iter.max, tol=tol),
-				list(y=y, method=method, priors=priors))
+				centers=init$centers, r=init$r, k=init$k, s=s,
+				spatial=spatial, iter.max=iter.max, tol=tol),
+				list(method=method, r=init$r, k=init$k, s=s))
 		})
 	}), recursive=FALSE)
 	par <- AnnotatedDataFrame(data=data.frame(
@@ -30,7 +30,7 @@ setMethod("spatialShrunkenCentroids",
 				s="Sparsity parameter")))
 	featureNames(par) <- formatParam(pData(par))
 	names(out) <- formatParam(pData(par))
-	object <- new("SpatialShrunkenCentroids",
+	new("SpatialShrunkenCentroids",
 		pixelData=x@pixelData,
 		featureData=x@featureData,
 		experimentData=x@experimentData,
@@ -75,6 +75,20 @@ setMethod("spatialShrunkenCentroids",
 	predict(object, newx=x, newy=y)
 })
 
+setMethod("spatialShrunkenCentroids",
+	signature = c(x = "SImageSet", y = "integer"),
+	function(x, y, ...)
+{
+	spatialShrunkenCentroids(x, factor(y), ...)
+})
+
+setMethod("spatialShrunkenCentroids",
+	signature = c(x = "SImageSet", y = "character"),
+	function(x, y, ...)
+{
+	spatialShrunkenCentroids(x, factor(y), ...)
+})
+
 setMethod("predict",
 	signature = c(object = "SpatialShrunkenCentroids"),
 	function(object, newx, newy, ...)
@@ -82,7 +96,7 @@ setMethod("predict",
 	if ( !is(newx, "iSet") )
 		.stop("'newx' must inherit from 'iSet'")
 	out <- lapply(object@resultData, function(ob) {
-		spatial <- .calculateSpatial(newx, r=r)
+		spatial <- .calculateSpatialInfo(newx, r=ob$r, method=ob$method)
 		pred <- .calculateNearestSpatialShrunkenCentroids(newx, classes=ob$y,
 			centers=ob$centers, priors=ob$priors, spatial=spatial, sd=ob$sd)
 		ob[names(pred)] <- pred
@@ -97,28 +111,21 @@ setMethod("predict",
 		modelData=object@modelData)
 })
 
-.clusterSpatialShrunkenCentroids <- function(x, classes, r, k, s,
-	priors, spatial, iter.max, tol)
+.clusterSpatialShrunkenCentroids <- function(x, classes, centers, r, k, s,
+	spatial, iter.max, tol)
 {
-	classes.last <- sample(classes.last)
-	centers.last <- matrix(nrow=nrow(centers.last), ncol=ncol(centers.last))
+	classes.last <- sample(classes)
+	centers.last <- matrix(nrow=nrow(iData(x)), ncol=k)
 	iter <- 1
-	while ( any(classes != classes.last) &&
-		l2norm(centers - centers.last) > tol &&
-		iter <= iter.max )
+	while ( !isTRUE(all.equal(classes, classes.last)) && iter <= iter.max )
 	{
+		priors <- tabulate(classes) / sum(tabulate(classes))
 		classes.last <- classes
 		centers.last <- centers
 		fit <- .calculateSpatialShrunkenCentroids(x, classes=classes, s=s)
-		degenerates <- 0 == apply(fit$tstatistics, 2, function(t) sum(abs(t) > 0))
-		if ( any(degenerates) ) {
-			iter <- 1
-			fit$centers <- fit$centers[,!degenerates]
-			centers.last <- centers.last[,!degenerates]
-		}
-		refit <- .calculateNearestSpatialShrunkenCentroids(x=x, classes=classes,
+		pred <- .calculateNearestSpatialShrunkenCentroids(x=x, classes=classes,
 			centers=fit$centers, priors=priors, spatial=spatial, sd=fit$sd)
-		classes <- refit$classes
+		classes <- pred$classes
 		centers <- fit$centers
 		if ( ncol(centers) != ncol(centers.last) ) {
 			iter <- 1
@@ -126,8 +133,8 @@ setMethod("predict",
 		}
 		iter <- iter + 1
 	}
-	list(classes=classes, probabilities=refit$probabilities,
-		scores=refit$scores, k=k, s=s, r=r, centers=fit$centers,
+	list(classes=classes, probabilities=pred$probabilities,
+		scores=pred$scores, centers=fit$centers,
 		tstatistics=fit$tstatistics, sd=fit$sd)
 }
 

@@ -29,15 +29,16 @@ fastmap <- function(x, ncomp=20, scale=FALSE) {
 fastmap.spatial <- function(x, r=1, ncomp=20, scale=FALSE, spatial, w, ...) {
 	x <- as.matrix(x)
 	if ( scale ) x <- t(apply(x, 1, scale))
-	spatial$beta <- t(simplify2array(spatial$beta, higher=FALSE))
-	spatial$neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
+	alpha <- spatial$alpha
+	beta <- t(simplify2array(spatial$beta, higher=FALSE))
+	neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
 	ncomp <- ifelse(sum(w > 0) > ncomp, ncomp, sum(w > 0))
 	x.new <- matrix(0, nrow=ncol(x), ncol=ncomp)
 	pivot.array <- matrix(0, nrow=ncomp, ncol=2)
 	out.fastmap <- .C("fastmap_spatial", as.double(x),
 		as.integer(nrow(x)), as.integer(ncol(x)),
-		as.integer(spatial$neighbors - 1), as.integer(ncol(spatial$neighbors)),
-		as.double(w), as.double(spatial$alpha), as.double(spatial$beta),
+		as.integer(neighbors - 1), as.integer(ncol(neighbors)),
+		as.double(w), as.double(alpha), as.double(beta),
 		as.double(x.new), as.integer(pivot.array), as.integer(ncomp))
 	x.new <- matrix(out.fastmap[[9]], nrow=ncol(x), ncol=ncomp)
 	x.new <- as.data.frame(x.new)
