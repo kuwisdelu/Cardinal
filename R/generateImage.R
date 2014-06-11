@@ -24,7 +24,7 @@ generateImage <- function(data = factor(1),
 	}
 	xs <- lapply(levels(data), function(i) {
 		n <- sum(data == i)
-		intensities[which(i == levels(data))] <- intensities[[1]] + delta * sd
+		intensities[which(i == levels(data))] <- intensities[1] + delta * sd
 		generateSpectrum(n, intensities=intensities, sd=sd, ...)
 	})
 	t <- xs[[1]]$t

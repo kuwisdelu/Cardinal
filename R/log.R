@@ -5,7 +5,7 @@
 .log <- function(...) {
 	msg <- paste(date(), paste0(..., collapse="\n  "))
 	.Cardinal$log <- append(.Cardinal$log, msg)
-	elapsed <- proc.time()[[3]] - .Cardinal$time$flush
+	elapsed <- proc.time()[3] - .Cardinal$time$flush
 	if ( elapsed > getOption("Cardinal.autoflush") )
 		.log.flush()
 }
@@ -13,7 +13,7 @@
 .log.flush <- function(e=.Cardinal) {
 	tryCatch({
 		if ( length(e$log) != 0 ) {
-			e$time$flush <- proc.time()[[3]]
+			e$time$flush <- proc.time()[3]
 			filepath <- file.path(system.file(package="Cardinal"), "Cardinal.log")
 			sink(filepath, append=TRUE)
 			for ( m in e$log ) {

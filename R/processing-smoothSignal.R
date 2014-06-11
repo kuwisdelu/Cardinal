@@ -33,7 +33,7 @@ setMethod("smoothSignal", "MSImageSet",
 
 smoothSignal.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			gaussian = smoothSignal.gaussian,
 			sgolay = smoothSignal.sgolay,
 			ma = smoothSignal.ma,
@@ -46,7 +46,7 @@ smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, 
 	coef <- coef / sum(coef)
 	window <- length(coef)
 	halfWindow <- floor(window / 2)
-	xpad <- c(rep(x[[1]], halfWindow), x, rep(x[[length(x)]], halfWindow))
+	xpad <- c(rep(x[1], halfWindow), x, rep(x[length(x)], halfWindow))
 	filter(xpad, filter=coef)[(halfWindow + 1):(length(xpad) - halfWindow)]
 }
 

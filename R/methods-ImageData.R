@@ -41,7 +41,7 @@ setValidity("ImageData", function(object) {
 	if ( !all(sapply(names, function(nm) !is.null(dim(object@data[[nm]])))) )
 		msg <- validMsg(msg, "all elements must be an array-like object ('dims' of positive length)")
 	ldim <- sapply(names, function(nm) length(dim(object@data[[nm]])))
-	if ( !all(sapply(ldim, function(ld) ld == ldim[[1]])) )
+	if ( !all(sapply(ldim, function(ld) ld == ldim[1])) )
 		msg <- validMsg(msg, "all elements must have an equal number of dimensions")
 	if ( !object@storageMode %in% c("environment", "lockedEnvironment", "immutableEnvironment") )
 		msg <- validMsg(msg, "storageMode must be one of 'environment', 'lockedEnvironment', or 'immutableEnvironment'")
@@ -93,7 +93,7 @@ setReplaceMethod("names", "ImageData", function(x, value) {
 setMethod("dims", "ImageData", function(object) {
 	names <- ls(object@data)
 	if ( length(names) > 0 ) {
-		sapply(names, function(nm) dim(object@data[[nm]]))
+		sapply(names, function(nm) dim(object@data[nm]))
 	} else {
 		matrix(nrow=0, ncol=0)
 	}

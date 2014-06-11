@@ -73,7 +73,7 @@ setMethod("peakAlign", c("MSImageSet", "missing"), function(object, ...) {
 
 peakAlign.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			diff = peakAlign.diff,
 			DP = peakAlign.DP,
 			match.fun(method))

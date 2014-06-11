@@ -19,7 +19,7 @@ setMethod("plot",
 	{
 		if ( missing(pixel) ) stop("'pixel' must be specified")
 		# add Feature to features for default plotting
-		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[[1]]
+		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# evaluated with respect to pData
 		pixel <- eval(substitute(pixel), envir=pData(x), enclos=parent.frame(2))
 		# evaluated with respect to fData
@@ -235,7 +235,7 @@ setMethod("image",
 			# plot it with lattice
 			levelplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
-				at=seq(from=zlim[[1]], to=zlim[[2]], length.out=length(col)),
+				at=seq(from=zlim[1], to=zlim[2], length.out=length(col)),
 				col.regions=col, colorkey=colorkey, ...)
 		} else {
 			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
@@ -253,10 +253,10 @@ setMethod("image",
 			nlayers <- ncond * nsamples
 			# set up the x-y coordinates for reshaping z matrix
 			xylim <- dim(imageData(x))[names(model$right)]
-			xtotticks <- xylim[[1]] * nlayers # total x ticks across all image layers
-			ytotticks <- xylim[[2]] * nlayers # total y ticks across all image layers
-			xs <- seq(from=1, to=xylim[[1]], length.out=nrow(data) / ytotticks)
-			ys <- seq(from=1, to=xylim[[2]], length.out=nrow(data) / xtotticks)
+			xtotticks <- xylim[1] * nlayers # total x ticks across all image layers
+			ytotticks <- xylim[2] * nlayers # total y ticks across all image layers
+			xs <- seq(from=1, to=xylim[1], length.out=nrow(data) / ytotticks)
+			ys <- seq(from=1, to=xylim[2], length.out=nrow(data) / xtotticks)
 			zdim <- c(length(xs), length(ys))
 			# loop through conditions and then samples
 			for ( i in ncol(values) ) {
@@ -269,9 +269,9 @@ setMethod("image",
 					if ( is.list(colorkey) )
 						legend("topright",
 							legend=c(
-								round(zlim[[2]], 2),
+								round(zlim[2], 2),
 								rep(NA, length(colorkey$col)-2),
-								round(zlim[[1]], 2)),
+								round(zlim[1], 2)),
 							col=rev(colorkey$col),
 							bg=rgb(1, 1, 1, 0.75),
 							y.intersp=0.1,

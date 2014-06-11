@@ -22,3 +22,10 @@ formatCoord <- function(coord) {
 		paste(paste(names(xyz), "=", xyz), collapse=", ")
 	})
 }
+
+## Format parameters values
+formatParam <- function(param) {
+	apply(param, 1, function(par) {
+		paste(paste(names(par), "=", par), collapse=", ")
+	})
+}

@@ -2,13 +2,9 @@
 TODO for Cardinal package
 -------------------------
 
-x rewrite smoothing methods
-x rewrite baseline reduction methods
-x rewrite peak picking methods
-x rewrite peak alignment methods
-- rewrite binning/resampling methods
 - rewrite selectROI() and selectPixels() and selectPeaks()
-- write new classes for storing results
+- fix behavior of 'sample' in IAnnotatedDataFrame ('dim' or 'sample' labelType?)
+- need better behavior with combine() in SImageData for Hashmat elements
 - rewrite spatial clustering and classification methods
 - rewrite PCA/PLS/OPLS methods
 - add plotting of analysis results to plot() and image() methods

@@ -173,16 +173,16 @@ setClass("iSet",
 #### Class for results of analysis of imaging datasets ####
 ## extends iSet for statistical analysis results
 ## ---------------------------------------------
-.RImageSet <- setClass("RImageSet",
-	slots = c(
-		pixelStats = "RImageData",
-		featureStats = "RImageData"),
-	contains = "iSet",
-	prototype = prototype(
-		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			RImageSet="0.1.0")),
-		pixelStats = .RImageData(),
-		featureStats = .RImageData()))
+# .RImageSet <- setClass("RImageSet",
+# 	slots = c(
+# 		pixelStats = "RImageData",
+# 		featureStats = "RImageData"),
+# 	contains = "iSet",
+# 	prototype = prototype(
+# 		new("VersionedBiobase", versions=c(classVersion("iSet"),
+# 			RImageSet="0.1.0")),
+# 		pixelStats = .RImageData(),
+# 		featureStats = .RImageData()))
 
 #### Class for mass spectrometry imaging datasets ####
 ## extends SImageSet with metadata for MS imaging
@@ -199,5 +199,25 @@ setClass("iSet",
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))
 
+#### Classes for collections of experimental analysis results ####
+## -------------------------------------------------------------
+setClass("ResultSet",
+	slots = c(
+		resultData = "list",
+		modelData = "AnnotatedDataFrame"),
+	contains = c("iSet", "VIRTUAL"),
+	prototype = prototype(
+		new("VersionedBiobase", versions=c(classVersion("iSet"),
+			ResultSet="0.0.1"))))
 
+setClass("SpatialKMeans", contains="ResultSet")
 
+setClass("SpatialShrunkenCentroids", contains="ResultSet")
+
+setClass("PCA", contains="ResultSet")
+
+setClass("PLS", contains="ResultSet")
+
+setClass("OPLS", contains="ResultSet")
+
+####---------------------------------------------------####

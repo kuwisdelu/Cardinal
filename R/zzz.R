@@ -22,7 +22,8 @@
 	image=list(
 		xlim=NULL,
 		ylim=NULL,
-		zlim=NULL)))
+		zlim=NULL),
+	.Random.seed=NULL))
 
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=FALSE)
@@ -30,6 +31,7 @@
 	options(Cardinal.autoflush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
+	set.seed(Sys.time())
 }
 
 .onAttach <- function(libname, pkgname) {

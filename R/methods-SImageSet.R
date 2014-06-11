@@ -183,8 +183,8 @@ setMethod("pixelApply", "SImageSet",
 		ans <- vector("list", length(.pixel))
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				assign(".Index", .pixel[[i]], envir=env)
-				.fun(iData(.object)[j, .pixel[[i]]], ...)
+				assign(".Index", .pixel[i], envir=env)
+				.fun(iData(.object)[j, .pixel[i]], ...)
 			}, USE.NAMES=.use.names)
 		}
 		# simplify result
@@ -246,8 +246,8 @@ setMethod("featureApply", "SImageSet",
 		ans <- vector("list", length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
-				assign(".Index", .feature[[i]], env)
-				.fun(iData(.object)[.feature[[i]], j], ...)
+				assign(".Index", .feature[i], env)
+				.fun(iData(.object)[.feature[i], j], ...)
 			}, USE.NAMES=.use.names)
 		}
 		# simplify result

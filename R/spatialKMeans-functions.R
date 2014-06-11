@@ -18,25 +18,25 @@ spatialKMeansWarmStart <- function(x, projection, clusters, k,
 	list(clusters=clusters, centers=centers, sizes=sizes, WCSS=wcss, k=k)
 }
 
-spatial.alpha <- function(r, p=2) {
-	sigma <- ((2*r+1)/4)
-	rs <- lapply(1:p, function(i) (-r):r)
-	neighborhood <- expand.grid(rs)
-	alpha <- apply(neighborhood, 1, function(i) exp((-sum(i^2))/(2*sigma^2)))
-	alpha
-}
+# spatial.alpha <- function(r, p=2) {
+# 	sigma <- ((2*r+1)/4)
+# 	rs <- lapply(1:p, function(i) (-r):r)
+# 	neighborhood <- expand.grid(rs)
+# 	alpha <- apply(neighborhood, 1, function(i) exp((-sum(i^2))/(2*sigma^2)))
+# 	alpha
+# }
 
-spatial.beta <- function(x, neighbors) {
-	if ( ncol(neighbors) == 1 ) return(as.matrix(rep(1, nrow(neighbors))))
-	self <- (col(neighbors) + 1) / 2
-	beta <- sapply(1:ncol(x), function(i) {
-		delta <- sqrt(colSums((x[,i] - x[,neighbors[i,],drop=FALSE])^2))
-		lambda <- max(delta - min(delta)) / 2
-		lambda <- ifelse(lambda > 0, lambda, 1)
-		exp(-delta^2 / (2 * lambda^2))
-	} )
-	t(beta)
-}
+# spatial.beta <- function(x, neighbors) {
+# 	if ( ncol(neighbors) == 1 ) return(as.matrix(rep(1, nrow(neighbors))))
+# 	self <- (col(neighbors) + 1) / 2
+# 	beta <- sapply(1:ncol(x), function(i) {
+# 		delta <- sqrt(colSums((x[,i] - x[,neighbors[i,],drop=FALSE])^2))
+# 		lambda <- max(delta - min(delta)) / 2
+# 		lambda <- ifelse(lambda > 0, lambda, 1)
+# 		exp(-delta^2 / (2 * lambda^2))
+# 	} )
+# 	t(beta)
+# }
 
 initializeSeededClusters <- function(x, clusters, k, isNxP=TRUE) {
 	ninit <- length(unique(clusters))

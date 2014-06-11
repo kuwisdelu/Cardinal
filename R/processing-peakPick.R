@@ -24,7 +24,7 @@ setMethod("peakPick", "MSImageSet",
 			pout$peaks
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=FALSE)
 		peakData <- lapply(seq_along(pixel), function(i) {
-			intensityArray <- iData(object)[peaks[[i]], pixel[[i]]]
+			intensityArray <- iData(object)[peaks[[i]], pixel[i]]
 			names(intensityArray) <- featureNames(object)[peaks[[i]]]
 			intensityArray
 		})
@@ -47,7 +47,7 @@ setMethod("peakPick", "MSImageSet",
 
 peakPick.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			simple = peakPick.simple,
 			adaptive = peakPick.adaptive,
 			limpic = peakPick.limpic,

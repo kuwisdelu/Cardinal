@@ -12,8 +12,8 @@ setMethod("initialize", "Hashmat",
 	{
 		if ( missing(dim) && !missing(nrow) && !missing(ncol))
 			dim <- c(nrow, ncol)
-		if ( length(data) != dim[[2]] )
-			data <- rep(data, length.out=dim[[2]])
+		if ( length(data) != dim[2] )
+			data <- rep(data, length.out=dim[2])
 		names(keys) <- dimnames[[1]]
 		names(data) <- dimnames[[2]]
 		callNextMethod(.Object,
@@ -57,20 +57,20 @@ setValidity("Hashmat", function(object) {
 	if ( any(duplicated(object@keys)) )
 		msg <- validMsg(msg, "elements of keys must be unique")
 	dm <- object@dim
-	if ( dm[[1]] != length(object@keys) )
-		msg <- validMsg(msg, paste("dims [", dm[[1]], "] does not match the length of keys [",
+	if ( dm[1] != length(object@keys) )
+		msg <- validMsg(msg, paste("dims [", dm[1], "] does not match the length of keys [",
 			length(object@data), "]", sep=""))
-	if ( dm[[2]] != length(object@data) )
-		msg <- validMsg(msg, paste("dims [", dm[[2]], "] does not match the length of data [",
+	if ( dm[2] != length(object@data) )
+		msg <- validMsg(msg, paste("dims [", dm[2], "] does not match the length of data [",
 			length(object@data), "]", sep=""))
 	dmn <- object@dimnames
 	if ( length(dmn) != 2 )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn), "] must match that of 'dims' [2]", sep=""))
-	if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != dm[[1]] )
+	if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != dm[1] )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn[[1]]), "] not equal to array extent", sep=""))
-	if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != dm[[2]] )
+	if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != dm[2] )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn[[2]]), "] not equal to array extent", sep=""))
 	if (is.null(msg)) TRUE else msg
@@ -118,9 +118,9 @@ setReplaceMethod("colnames", "Hashmat", function(x, value) {
 	x
 })
 
-# setMethod("nrow", "Hashmat", function(x) x@dim[[1]])
+# setMethod("nrow", "Hashmat", function(x) x@dim[1])
 
-# setMethod("ncol", "Hashmat", function(x) x@dim[[2]])
+# setMethod("ncol", "Hashmat", function(x) x@dim[2])
 
 setMethod("pData", "Hashmat", function(object) object@data)
 
@@ -135,7 +135,7 @@ setMethod("keys", "Hashmat", function(object) object@keys)
 
 setReplaceMethod("keys", c("Hashmat", "character"), function(object, value) {
 	object@dimnames <- list(NULL, object@dimnames[[2]])
-	object@dim <- c(length(value), object@dim[[2]])
+	object@dim <- c(length(value), object@dim[2])
 	object@keys <- value
 	if ( validObject(object) )
 		object
@@ -161,8 +161,8 @@ setReplaceMethod("keys", c("Hashmat", "list"), function(object, value) {
 # 	})
 
 setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
-	if ( missing(i) ) i <- seq_len(dim(x)[[1]])
-	if ( missing(j) ) j <- seq_len(dim(x)[[2]])
+	if ( missing(i) ) i <- seq_len(dim(x)[1])
+	if ( missing(j) ) j <- seq_len(dim(x)[2])
 	if ( !missing(drop) && is.na(drop) ) {
 		# return a subset of class Hashmat
 		new("Hashmat",
@@ -194,8 +194,8 @@ setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
 })
 
 setReplaceMethod("[", "Hashmat", function(x, i, j, ..., value) {
-	if ( missing(i) ) i <- seq_len(dim(x)[[1]])
-	if ( missing(j) ) j <- seq_len(dim(x)[[2]])
+	if ( missing(i) ) i <- seq_len(dim(x)[1])
+	if ( missing(j) ) j <- seq_len(dim(x)[2])
 	if ( length(i) == 1 && length(j) == 1 ) {
 		value <- list(value)
 	} else if ( length(i) == 1 && length(j) != 1 ) {

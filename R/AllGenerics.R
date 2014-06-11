@@ -163,7 +163,11 @@ setGeneric("trellisImage", function(x, ...) standardGeneric("trellisImage"))
 setGeneric("trellisPlot", function(x, ...) standardGeneric("trellisPlot"))
 setGeneric("volume", function(x, ...) standardGeneric("volume"))
 
-#### Statistical analysis and tools ####
+#### Statistical analysis and tools (Old) ####
+setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
+setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
+
+#### Statistical analysis and tools (Old) ####
 setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
@@ -171,7 +175,6 @@ setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("predict", function(object, ...) standardGeneric("predict"))
 setGeneric("spatialClassify", function(object, ...) standardGeneric("spatialClassify"))
 setGeneric("spatialCluster", function(object, ...) standardGeneric("spatialCluster"))
-setGeneric("spatialKMeans", function(object, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialSparseClassify", function(object, labels, ...) standardGeneric("spatialSparseClassify"))
 setGeneric("spatialSparseCluster", function(object, ...) standardGeneric("spatialSparseCluster"))
 setGeneric("spatialSparseKMeans", function(object, ...) standardGeneric("spatialSparseKMeans"))

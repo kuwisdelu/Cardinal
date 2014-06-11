@@ -13,7 +13,7 @@ setMethod("initialize", "SImageData",
 		.Object@dimnames <- dimnames
 		.Object <- callNextMethod(.Object, ...)
 		if ( is.null(.Object[[".iData"]]) )
-			.Object@data[[".iData"]] <- matrix(nrow=dim[[1]], ncol=dim[[2]])
+			.Object@data[[".iData"]] <- matrix(nrow=dim[1], ncol=dim[2])
 		.Object
 	})
 
@@ -72,10 +72,10 @@ setValidity("SImageData", function(object) {
 	if ( !all(sapply(names, function(nm) length(dim(object@data[[nm]])) == 2)) )
 		msg <- validMsg(msg, "all data elements must be a matrix-like object ('dims' of length 2)")
 	ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
-	if ( !all(sapply(ncols, function(nc) nc == ncols[[1]] && nc == object@dim[[2]])) )
+	if ( !all(sapply(ncols, function(nc) nc == ncols[1] && nc == object@dim[2])) )
 		msg <- validMsg(msg, "all elements must have an equal number of columns")
 	nrows <- sapply(names, function(nm) nrow(object@data[[nm]]))
-	if ( !all(sapply(nrows, function(nr) nr == nrows[[1]] && nr == object@dim[[1]])) )
+	if ( !all(sapply(nrows, function(nr) nr == nrows[1] && nr == object@dim[1])) )
 		msg <- validMsg(msg, "all elements must have an equal number of rows")
 	if ( sum(!is.na(object@positionArray)) > 0 && any(!is.integer(object@positionArray[!is.na(object@positionArray)])) )
 		msg <- validMsg(msg, "positionArray must contain only integers and NAs")
@@ -87,10 +87,10 @@ setValidity("SImageData", function(object) {
 	if ( length(dmn) != 2 )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn), "] must match that of 'dims' [2]", sep=""))
-	if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != nrows[[1]] )
+	if ( !is.null(dmn[[1]]) && length(dmn[[1]]) != nrows[1] )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn[[1]]), "] not equal to array extent", sep=""))
-	if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != ncols[[1]] )
+	if ( !is.null(dmn[[2]]) && length(dmn[[2]]) != ncols[1] )
 		msg <- validMsg(msg, paste("length of 'dimnames' [",
 			length(dmn[[2]]), "] not equal to array extent", sep=""))
 	if ( !isTRUE(all.equal(object@positionArray, generatePositionArray(object@coord))) )
@@ -173,7 +173,7 @@ setReplaceMethod("pixelNames", "SImageData",
 	})
 
 setMethod("dim", "SImageData",
-	function(x) c(Features=x@dim[[1]], dim(x@positionArray)))
+	function(x) c(Features=x@dim[1], dim(x@positionArray)))
 
 setMethod("dims", "SImageData",
 	function(object) {
@@ -198,8 +198,8 @@ setMethod("dims", "SImageData",
 setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 	if ( !missing(drop) && is.na(drop) ) {
 		# return a subset of class SImageData
-		if ( missing(i) ) i <- seq_len(dim(x)[[1]])
-		if ( missing(j) ) j <- seq_len(dim(x)[[2]])
+		if ( missing(i) ) i <- seq_len(dim(x)[1])
+		if ( missing(j) ) j <- seq_len(dim(x)[2])
 		names <- ls(x@data, all.names=TRUE)
 		for ( nm in names ) {
 			if ( isS4(x[[nm]]) ) {
@@ -264,8 +264,8 @@ setMethod("combine",
 		names(unionRowIds) <- unionRows
 		unionColIds <- seq_along(unionCols)
 		names(unionColIds) <- unionCols
-		hiddennames <- setdiff(ls(x@data, all.names=TRUE), ls(x@data))
-		for ( nm in hiddennames ) {
+		hiddenNames <- setdiff(ls(x@data, all.names=TRUE), ls(x@data))
+		for ( nm in hiddenNames ) {
 			ok <- all.equal(x[[nm]][xdim[[1]] %in% sharedRows, xdim[[2]] %in% sharedCols],
 				y[[nm]][ydim[[1]] %in% sharedRows, ydim[[2]] %in% sharedCols])
 			if (!isTRUE(ok))

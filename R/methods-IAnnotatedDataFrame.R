@@ -74,10 +74,10 @@ setMethod("pixelNames", "IAnnotatedDataFrame",
 
 setReplaceMethod("pixelNames", "IAnnotatedDataFrame",
 	function(object, value) {
-		if (length(value) != dim(pData(object))[[1]])
+		if (length(value) != dim(pData(object))[1])
 			stop("number of new names (", length(value), ") ",
 				"should equal number of rows in AnnotatedDataFrame (",
-				dim(object)[[1]], ")")
+				dim(object)[1], ")")
 		row.names(pData(object)) <- value
 		object
 	})

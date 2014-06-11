@@ -9,7 +9,7 @@ setMethod("reduceDimension", c("MSImageSet", "missing"),
 		plot=FALSE)
 	{
 		fun <- reduceDimension.method(method)
-		mz <- fun(iData(object)[,pixel[[1]]], mz(object), ...)$t
+		mz <- fun(iData(object)[,pixel[1]], mz(object), ...)$t
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, mz(object), ...)
 			if ( plot ) {
@@ -54,7 +54,7 @@ setMethod("reduceDimension", c("MSImageSet", "MSImageSet"),
 
 reduceDimension.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			bin = reduceDimension.bin,
 			resample = reduceDimension.resample,
 			peaks = reduceDimension.peaks,

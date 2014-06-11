@@ -37,3 +37,13 @@ uuid <- function(uppercase=FALSE) {
 		paste0(sample(hex_digits, 12, replace=TRUE), collapse=''),
 		sep='-')
 }
+
+## Saves the current .Random.seed
+save.seed <- function() {
+	.Cardinal$.Random.seed <- get(".Random.seed", envir=globalenv())
+}
+
+## Restores the saved .Random.seed
+restore.seed <- function() {
+	assign(".Random.seed", .Cardinal$.Random.seed, envir=globalenv())
+}

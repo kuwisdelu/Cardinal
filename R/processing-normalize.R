@@ -31,7 +31,7 @@ setMethod("normalize", "MSImageSet",
 
 normalize.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			tic = normalize.tic,
 			match.fun(method))
 	}

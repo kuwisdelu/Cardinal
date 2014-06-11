@@ -29,15 +29,15 @@ setMethod("plot",
 		if ( !missing(coord) ) {
 			if ( length(pixel) > 1 ) {
 				.warning("pixel has length > 1 and only the first element will be used")
-				pixel <- pixel[[1]]
+				pixel <- pixel[1]
 			}
-			coord <- coord(x)[pixel[[1]],]
-			sub <- formatCoord(coord(x)[pixel[[1]],])
+			coord <- coord(x)[pixel[1],]
+			sub <- formatCoord(coord(x)[pixel[1],])
 			if ( !missing(plusminus) ) {
 				if ( length(plusminus) != length(coord) )
 					plusminus <- rep(plusminus, length.out=length(coord))
 				newcoord <- mapply(function(xyz, pm, maxidx) {
-					max(xyz[[1]]-pm, 1):min(xyz[[1]]+pm, maxidx)
+					max(xyz[1]-pm, 1):min(xyz[1]+pm, maxidx)
 				}, coord, plusminus, sapply(coord(x), max), SIMPLIFY=FALSE)
 				coord <- expand.grid(newcoord)
 				pixel <- pixels(x, coord=coord)
@@ -47,7 +47,7 @@ setMethod("plot",
 			if ( length(pixel) > 1 ) {
 				sub <- ""
 			} else {
-				sub <- formatCoord(coord(x)[pixel[[1]],])
+				sub <- formatCoord(coord(x)[pixel[1],])
 			}
 		}
 		callNextMethod(x,
@@ -78,16 +78,16 @@ setMethod("image",
 		if ( !missing(mz) ) {
 			if ( length(feature) > 1 ) {
 				.warning("feature has length > 1 and only the first element will be used")
-				feature <- feature[[1]]
+				feature <- feature[1]
 			}
-			mz <- mz(x)[[feature]]
-			sub <- formatMz(mz(x)[[feature]])
+			mz <- mz(x)[feature]
+			sub <- formatMz(mz(x)[feature])
 			if ( !missing(plusminus) ) {
 				plus <- feature
-				while ( mz(x)[[plus]] - mz < plusminus && plus < dim(x)[[1]] )
+				while ( mz(x)[plus] - mz < plusminus && plus < dim(x)[1] )
 					plus <- plus + 1
 				minus <- feature
-				while ( mz - mz(x)[[minus]] < plusminus && minus > 1 )
+				while ( mz - mz(x)[minus] < plusminus && minus > 1 )
 					minus <- minus - 1
 				feature <- minus:plus
 			}
@@ -96,7 +96,7 @@ setMethod("image",
 			if ( length(feature) > 1 ) {
 				sub <- ""
 			} else {
-				sub <- formatMz(mz(x)[[feature]])
+				sub <- formatMz(mz(x)[feature])
 			}
 		}
 		callNextMethod(x,

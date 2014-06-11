@@ -35,7 +35,7 @@ setMethod("reduceBaseline", "MSImageSet",
 
 reduceBaseline.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[[1]],
+		method <- switch(method[1],
 			median = reduceBaseline.median,
 			match.fun(method))
 	}

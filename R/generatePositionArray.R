@@ -21,4 +21,3 @@ generatePositionArray <- function(coord, dim, dimnames) {
 	positionArray[fill] <- seq_len(nrow(coord))
 	positionArray
 }
-

@@ -44,7 +44,7 @@ kurtosis <- function(x, na.rm=FALSE) {
 
 # bisection search along a sequence
 bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
-	if ( fun(x[[1]], ...) < fun(x[[length(x)]], ...) ) {
+	if ( fun(x[1], ...) < fun(x[length(x)], ...) ) {
 		lo <- 1
 		hi <- length(x)
 		to.lo <- floor
@@ -57,8 +57,8 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 	}
 	i <- round((lo + hi) / 2, digits=0)
 	iter <- 1
-	while ( iter <= iter.max && l2norm(fun(x[[i]], ...)) > epsilon ) {
-		if ( fun(x[[i]], ...) > 0 ) {
+	while ( iter <= iter.max && l2norm(fun(x[i], ...)) > epsilon ) {
+		if ( fun(x[i], ...) > 0 ) {
 			hi <- i
 			i <- to.lo((lo + hi) / 2)
 		} else {
