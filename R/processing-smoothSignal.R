@@ -46,7 +46,7 @@ smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, 
 	coef <- coef / sum(coef)
 	window <- length(coef)
 	halfWindow <- floor(window / 2)
-	xpad <- c(rep(0, halfWindow), x, rep(0, halfWindow))
+	xpad <- c(rep(x[[1]], halfWindow), x, rep(x[[length(x)]], halfWindow))
 	filter(xpad, filter=coef)[(halfWindow + 1):(length(xpad) - halfWindow)]
 }
 
@@ -62,5 +62,6 @@ smoothSignal.kaiser <- function(x, beta=1, window=5, ...) {
 }
 
 smoothSignal.sgolay <- function(x, order=3, window=order + 3 - order %% 2, ...) {
+	window <- window + 1 - window %% 2
 	sgolayfilt(x, p=order, n=window)
 }

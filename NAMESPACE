@@ -96,6 +96,8 @@ exportMethods(
 	"imageData",
 	"imageData<-",
 	"initialize",
+	"keys",
+	"keys<-",
 	"mz",
 	"mz<-",
 	"mzData",

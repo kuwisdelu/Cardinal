@@ -1,10 +1,6 @@
 
 #### functions for finding local maxima ####
 
-localMaxima <- function(x, window=5, .C=TRUE, ...) {
-	which(localMaximaLogical(x, window=window, .C=.C, ...))
-}
-
 localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
 	halfWindow <- floor(window / 2)
 	if ( .C ) {
@@ -19,9 +15,13 @@ localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
 	is.max
 }
 
+localMaxima <- function(x, t, ...) {
+	if ( missing(t) ) t <- seq_along(x)
+	t[localMaximaLogical(x, ...)]
+}
+
 nearestLocalMaxima <- function(x, t, tout, ...) {
-	locmax <- localMaximaLogical(x, ...)
-	locmax <- t[locmax]
+	locmax <- localMaxima(x, t, ...)
 	locmax <- unique(c(min(t), locmax, max(t)))
 	limits <- sapply(tout, function(ti) {
 		lower <- which(diff(sign(ti - locmax)) < 0)

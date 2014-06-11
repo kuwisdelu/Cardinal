@@ -15,11 +15,11 @@ setMethod("peakAlign", c("MSImageSet", "numeric"),
 		alignment <- pixelApply(object, function(s, ...) {
 			aout <- fun(peaklist[[.Index]], ref, ...)
 			if ( plot ) {
-				wrap(plot(object, pixel=i, lwd=2, ...),
+				wrap(plot(object, pixel=.Index, lwd=2, ...),
 					..., signature=fun)
 				wrap(abline(v=ref, lty=2, lwd=0.5, col="blue", ...),
 					..., signature=fun)
-				wrap(abline(v=peaklist[[i]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
+				wrap(abline(v=peaklist[[.Index]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
 					..., signature=fun)
 			}
 			aout
@@ -35,13 +35,17 @@ setMethod("peakAlign", c("MSImageSet", "numeric"),
 		feature <- features(object, mz=ref)
 		object@featureData <- object@featureData[feature,]
 		object@pixelData <- object@pixelData[pixel,]
-		peakData <- peakData(imageData(object))
-		mzData <- mzData(imageData(object))
-		keys(peakData) <- featureNames(object@featureData)
+		peakData <- new("Hashmat",
+			data=pData(peakData(imageData(object)))[pixel],
+			keys=featureNames(object@featureData),
+			dim=c(nrow(object@featureData), nrow(object@pixelData)))
+		mzData <- new("Hashmat",
+			data=pData(mzData(imageData(object)))[pixel],
+			keys=featureNames(object@featureData),
+			dim=c(nrow(object@featureData), nrow(object@pixelData)))
 		keys(peakData) <- alignment
-		keys(mzData) <- featureNames(object@featureData)
 		keys(mzData) <- alignment
-		object@imageData <- SImageData(data=peakData[],
+		object@imageData <- SImageData(data=peakData[,,drop=FALSE],
 			coord=coord(object@pixelData),
 			storageMode=storageMode(imageData(object)),
 			dimnames=list(
@@ -61,6 +65,10 @@ setMethod("peakAlign", c("MSImageSet", "MSImageSet"), function(object, ref, ...)
 		spectrum <- featureApply(ref, mean)
 		peaks <- mz(object)[localMaximaLogical(spectrum, span=5)]
 		peakAlign(object, ref=peaks, ...)
+	})
+
+setMethod("peakAlign", c("MSImageSet", "missing"), function(object, ...) {
+		peakAlign(object, ref=object, ...)
 	})
 
 peakAlign.method <- function(method) {

@@ -18,7 +18,7 @@
     plot=FALSE)
 
 ## Median baseline reduction
-reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
+reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
@@ -27,7 +27,7 @@ reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the baseline reduction method.}
     \item{x}{The mass spectrum to be baseline subtracted.}
-    \item{blocks}{The number of intervals to break the mass spectrum into in order to choose medians or minima from which to interpolate the baseline.}
+    \item{blocks}{The number of intervals to break the mass spectrum into in order to choose minima or medians from which to interpolate the baseline.}
     \item{fun}{Function used to determine the points from which the baseline will be interpolated.}
     \item{spar}{Smoothing parameter for the spline smoothing applied to the spectrum in order to decide the cutoffs for throwing away baseline references that might occur inside peaks.}
 }

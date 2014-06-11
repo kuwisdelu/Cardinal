@@ -88,6 +88,7 @@ peakPick.limpic <- function(x, SNR=3, window=5, blocks=100, thresh=0.75, ...) {
 	xint <- intervals(x, blocks=blocks)
 	# identify flat reginos of spectrum
 	kurt <- sapply(xint, kurtosis) - 3
+	kurt[is.nan(kurt)] <- -Inf
 	means <- sapply(xint, mean)
 	is.flat <- kurt < 1 & means < mean(x)
 	# estimate noise

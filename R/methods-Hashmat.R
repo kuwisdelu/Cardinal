@@ -145,7 +145,7 @@ setReplaceMethod("keys", c("Hashmat", "list"), function(object, value) {
 	object@data <- mapply(function(x, y) {
 		names(x) <- object@keys[y]
 		x
-	}, object@data, value)
+	}, object@data, value, SIMPLIFY=FALSE)
 	if ( validObject(object) )
 		object
 })
