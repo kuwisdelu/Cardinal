@@ -62,7 +62,7 @@ peakPick.simple <- function(x, SNR=3, window=5, blocks=100, ...) {
 	kurt <- sapply(xint, kurtosis) - 3
 	noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
 	noise <- rep(noise, length(x))
-	is.max <- localMaximaLogical(x, span=window)
+	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
 	list(peaks=peaks, noise=noise)
@@ -77,7 +77,7 @@ peakPick.adaptive <- function(x, SNR=3, window=5, blocks=100, spar=1, ...) {
 	cutoff <- smooth.spline(x=t, y=noise, spar=1)$y
 	noise <- interp1(t[noise <= cutoff], noise[noise <= cutoff], xi=t,
 		method="linear", extrap=median(noise, na.rm=TRUE))
-	is.max <- localMaximaLogical(x, span=window)
+	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
 	list(peaks=peaks, noise=noise)
@@ -98,7 +98,7 @@ peakPick.limpic <- function(x, SNR=3, window=5, blocks=100, thresh=0.75, ...) {
 	noiseidx <- c(1, noiseidx, length(x))
 	noise <- interp1(x=t[noiseidx], y=noiseval, xi=t, method="linear")
 	# find local maxima
-	is.max <- localMaximaLogical(x, span=window)
+	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
 	halfWindow <- floor(window / 2)

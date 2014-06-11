@@ -3,7 +3,9 @@
 
 \alias{reduceDimension}
 \alias{reduceDimension-methods}
-\alias{reduceDimension,MSImageSet-method}
+\alias{reduceDimension,MSImageSet,missing-method}
+\alias{reduceDimension,MSImageSet,numeric-method}
+\alias{reduceDimension,MSImageSet,MSImageSet-method}
 
 \alias{reduceDimension.bin}
 \alias{reduceDimension.resample}
@@ -46,6 +48,7 @@ reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
     \item{offset}{Offset from the nearest integer.}
     \item{fun}{The function to be applied to each bin.}
     \item{peaklist}{A \code{vector} of m/z values corresponding to peaks.}
+    \item{type}{Should the peak height or area under the curve be taken as the intensity value?}
 }
 \details{
     Dimension reduction is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:

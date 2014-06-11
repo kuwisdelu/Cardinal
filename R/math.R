@@ -71,15 +71,10 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 }
 
 # bin a signal
-bin <- function(x, lbound, ubound, sum=FALSE) {
-	x.new <- mapply(function(l, u) {
-		sum(x[l:u], na.rm=TRUE)
+bin <- function(x, lbound, ubound, fun=sum) {
+	mapply(function(l, u) {
+		fun(x[l:u], na.rm=TRUE)
 	}, lbound, ubound)
-	if ( sum ) {
-		x.new
-	} else {
-		x.new / abs(ubound - lbound + 1)
-	}
 }
 
 # returns a list of approximately even subsets of a vector

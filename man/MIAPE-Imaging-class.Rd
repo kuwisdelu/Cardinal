@@ -257,9 +257,9 @@
 \author{Kyle D. Bemis}
 
 \references{
-  MIAPE-Imaging working document: \url{http://imzml.org/index.php?option=com_fireboard&Itemid=53&func=view&catid=516&id=737}
+    MIAPE-Imaging working document: \url{http://imzml.org/index.php?option=com_fireboard&Itemid=53&func=view&catid=516&id=737}
 
-  imzML specification: \url{http://www.imzml.org/index.php?option=com_content&view=article&id=187&Itemid=67}
+    imzML specification: \url{http://www.imzml.org/index.php?option=com_content&view=article&id=187&Itemid=67}
 }
 
 \seealso{

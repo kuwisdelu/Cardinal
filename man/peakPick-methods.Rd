@@ -64,6 +64,9 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 \author{
 	Kyle D. Bemis
 }
+\references{
+    Mantini, D., Petrucci, F., Pieragostino, D., Del Boccio, P., Di Nicola, M., Di Ilio, C., et al. (2007). LIMPIC: a computational method for the separation of protein MALDI-TOF-MS signals from noise. BMC Bioinformatics, 8(101), 101. doi:10.1186/1471-2105-8-101
+}
 \seealso{
     \code{\linkS4class{MSImageSet}},
     \code{\link[Cardinal]{peakAlign}},

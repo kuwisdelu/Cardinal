@@ -44,7 +44,7 @@ generateSpectrum(n, peaks = 100,
 
     \item{baseline}{A value without scale that indicates the shape and size of the baseline.}
 
-    \item{auc}{Should the peak intensities be measured as the area under the curve? If 'FALSE' then the intensities correspond to peak heights instead.}
+    \item{auc}{Should the peak heights be influenced by the area under the curve? This reflects fragmentation and limited accuracy at higher mass ranges. If 'FALSE' then the peak heights correspond directly to the provided intensities.}
 }
 
 \value{

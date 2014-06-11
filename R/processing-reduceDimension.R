@@ -39,7 +39,7 @@ setMethod("reduceDimension", c("MSImageSet", "missing"),
 
 setMethod("reduceDimension", c("MSImageSet", "numeric"),
 	function(object, ref, method = "peaks", ...) {
-		if ( min(ref) < min(mz(object)) || max(ref) < max(mz(object)) )
+		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("'ref' contains m/z values outside of range")
 		reduceDimension(object, method=method, peaklist=ref, ...)
 	})
@@ -47,7 +47,7 @@ setMethod("reduceDimension", c("MSImageSet", "numeric"),
 setMethod("reduceDimension", c("MSImageSet", "MSImageSet"),
 	function(object, ref, method = "peaks", ...) {
 		if ( !centroided(ref) )
-			.stop("'ref' is not centroided. Run 'peakAlign' first on it first.")
+			.stop("'ref' is not centroided. Run 'peakAlign' on it first.")
 		reduceDimension(object, method=method, peaklist=mz(ref), ...)
 	})
 
@@ -67,9 +67,7 @@ reduceDimension.bin <- function(x, t, width=1, offset=0, fun=sum, ...) {
 	if ( length(limits) > length(t) )
 		.stop("'width' is too wide.")
 	idx <- sapply(limits, function(lim) bisection.seq(t, function(ti) ti - lim))
-	xout <- mapply(function(l, u) {
-		fun(x[l:u], na.rm=TRUE)
-	}, idx[-length(idx)], idx[-1])
+	xout <- bin(x, lbound=idx[-length(idx)], ubound=idx[-1], fun=fun)
 	tout <- limits[-length(limits)] + width / 2
 	list(x=xout, t=tout)
 }
@@ -89,15 +87,19 @@ reduceDimension.resample <- function(x, t, step=1, offset=0, ...) {
 
 reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...) {
 	type <- match.arg(type)
-	tout <- seq(from=floor(min(t)), to=ceiling(max(t)), by=step) + offset
-	if ( length(tout) > length(t) )
-		.stop("'step' is too wide.")
-	if ( offset < 0 ) {
-		tout <- tout[-1]
-	} else if ( offset > 0 ) {
-		tout <- tout[-length(tout)]
+	if ( type == "height" ) {
+		fun <- max
+	} else if ( type == "area" ) {
+		fun <- sum
 	}
-	xout <- interp1(x=t, y=x, xi=tout, method="linear", ...)
-	list(x=xout, t=tout)
+	if ( length(peaklist) > length(t) )
+		.stop("'peaklist' is too long.")
+	limits <- nearestLocalMaxima(-x, t, peaklist, ...)
+	lbound <- sapply(limits$lbound,
+		function(lim) bisection.seq(t, function(ti) ti - lim))
+	ubound <- sapply(limits$ubound,
+		function(lim) bisection.seq(t, function(ti) ti - lim))
+	xout <- bin(x, lbound=lbound, ubound=ubound, fun=fun)
+	list(x=xout, t=peaklist)
 }
 

@@ -16,19 +16,13 @@ While pre-processing steps including normalization, baseline correction, and pea
 
 Type \code{vignette("Cardinal-demo")} for a walkthrough of common workflows.
 
-To view other vignettes, type:
-
-vignette(package="Cardinal")
+To view other vignettes, \code{vignette(package="Cardinal")}.
 }
 
 \author{
 Kyle D. Bemis
 
 Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
-}
-
-\references{
-Coming soon
 }
 
 \keyword{package}
