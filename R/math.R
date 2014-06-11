@@ -111,3 +111,61 @@ affine <- function(x, translate=c(0,0), rotate=0,
 	new.x
 }
 
+# logical local maxima in a window
+localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
+	halfWindow <- floor(window / 2)
+	if ( .C ) {
+		is.max <- integer(length(x))
+		is.max <- as.logical(.C("localMaxima", as.double(x), as.integer(is.max),
+			as.integer(length(x)), as.integer(halfWindow))[[2]])
+	} else {
+		is.max <- sapply(seq(from=1+halfWindow, to=length(x)-halfWindow, by=1),
+			function(i) which.max(x[(i-halfWindow):(i+halfWindow)]) == halfWindow + 1)
+		is.max <- c(rep(FALSE, halfWindow), is.max, rep(FALSE, halfWindow))
+	}
+	is.max
+}
+
+# local maxima in a window
+localMaxima <- function(x, t, ...) {
+	if ( missing(t) ) t <- seq_along(x)
+	t[localMaximaLogical(x, ...)]
+}
+
+# returns the two nearest local maxima to the given points
+nearestLocalMaxima <- function(x, t, tout, ...) {
+	locmax <- localMaxima(x, t, ...)
+	locmax <- unique(c(min(t), locmax, max(t)))
+	limits <- sapply(tout, function(ti) {
+		lower <- which(diff(sign(ti - locmax)) < 0)
+		if ( length(lower) > 1 )
+			lower <- lower[[1]]
+		upper <- lower + 1
+		c(locmax[lower], locmax[upper])
+	})
+	list(lbound=limits[1,], ubound=limits[2,])
+}
+
+# alignment of two vectors using dynamic programming
+dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)), ... ) {
+	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
+	y.mat <- matrix(y, byrow=FALSE, ncol=length(x), nrow=length(y))
+	similarity.mat <- score(x.mat, y.mat)
+	score.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
+	score.mat[1,] <- c(0, cumsum(rep(gap, length(x))))
+	score.mat[,1] <- c(0, cumsum(rep(gap, length(y))))
+	tracking.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
+	tracking.mat[,1] <- 0
+	tracking.mat[1,] <- 1
+	tracking.mat[1,1] <- 2
+	out.align <- .C("dynamicAlign", as.double(score.mat), as.integer(tracking.mat),
+		as.double(similarity.mat), as.integer(nrow(score.mat)), as.integer(ncol(score.mat)),
+		as.double(gap), integer(length(x)), integer(length(y)))
+	x.align <- out.align[[7]]
+	y.align <- out.align[[8]]
+	aligned <- cbind(y.align[y.align > 0], x.align[x.align > 0])
+	colnames(aligned) <- c("x", "y")
+	return(aligned)
+}
+
+
