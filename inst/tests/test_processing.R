@@ -12,7 +12,7 @@ test_that("Cardinal pre-processing", {
 
 	msset <- generateImage(data, range=c(1001, 5000), step=0.5, resolution=100, as="MSImageSet")
 
-	plot <- FALSE # plot <- TRUE
+	plot <- FALSE
 
 	# normalization
 
