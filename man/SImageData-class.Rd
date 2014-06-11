@@ -103,7 +103,7 @@ SImageData(
 
         \item{\code{dims}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
-        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}. Use \code{drop = NA} to subset the object ordinarily.}
+        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}. Use \code{drop = NA} to return a subset of the same class as the object.}
     }
 }
 

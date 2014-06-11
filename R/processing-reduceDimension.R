@@ -33,7 +33,6 @@ setMethod("reduceDimension", c("MSImageSet", "missing"),
 				pixelNames(object@pixelData)))
 		mz(object) <- mz
 		prochistory(processingData(object)) <- .history()
-		centroided(processingData(object)) <- TRUE
 		object
 	})
 
@@ -41,14 +40,16 @@ setMethod("reduceDimension", c("MSImageSet", "numeric"),
 	function(object, ref, method = "peaks", ...) {
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("'ref' contains m/z values outside of range")
-		reduceDimension(object, method=method, peaklist=ref, ...)
+		object <- reduceDimension(object, method=method, peaklist=ref, ...)
+		centroided(processingData(object)) <- TRUE
 	})
 
 setMethod("reduceDimension", c("MSImageSet", "MSImageSet"),
 	function(object, ref, method = "peaks", ...) {
 		if ( !centroided(ref) )
 			.stop("'ref' is not centroided. Run 'peakAlign' on it first.")
-		reduceDimension(object, method=method, peaklist=mz(ref), ...)
+		object <- reduceDimension(object, method=method, peaklist=mz(ref), ...)
+		centroided(processingData(object)) <- TRUE
 	})
 
 reduceDimension.method <- function(method) {

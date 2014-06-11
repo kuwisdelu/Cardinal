@@ -92,7 +92,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 
         \item{\code{nrow}:}{Return the number of columns in the sparse matrix.}
 
-        \item{\code{Hashmat[i, j, ..., drop], Hashmat[i, j, ...] <- value}:}{Access and assign elements in the sparse matrix. A Hashmat sparse matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported.}
+        \item{\code{Hashmat[i, j, ..., drop], Hashmat[i, j, ...] <- value}:}{Access and assign elements in the sparse matrix. A Hashmat sparse matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Use \code{drop = NA} to return a subset of the same class as the object.}
     }
 }
 

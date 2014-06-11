@@ -197,10 +197,16 @@ setMethod("dims", "SImageData",
 
 setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 	if ( !missing(drop) && is.na(drop) ) {
-		# subset like an ordinary matrix
+		# return a subset of class SImageData
+		if ( missing(i) ) i <- seq_len(dim(x)[[1]])
+		if ( missing(j) ) j <- seq_len(dim(x)[[2]])
 		names <- ls(x@data, all.names=TRUE)
 		for ( nm in names ) {
-			x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+			if ( isS4(x[[nm]]) ) {
+				x[[nm]] <- x[[nm]][i,j,drop=NA]
+			} else {
+				x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+			}
 		}
 		x@coord <- x@coord[j,]
 		x@positionArray <- generatePositionArray(x@coord)
@@ -208,7 +214,7 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 		x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
 		x
 	} else {
-		# reconstruct and subset the data cube
+		# reconstruct the data cube and return subset as an array
 		nargs <- nargs() - 1 - !missing(drop)
 		if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
 			stop("incorrect number of dimensions")
