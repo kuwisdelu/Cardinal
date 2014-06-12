@@ -194,7 +194,7 @@ setClass("ResultSet",
 	contains = c("iSet", "VIRTUAL"),
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			ResultSet="0.0.1"))))
+			ResultSet="0.1.0"))))
 
 setClass("SpatialKMeans", contains="ResultSet")
 

@@ -21,24 +21,28 @@ setMethod("plot",
 		# add Feature to features for default plotting
 		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# evaluated with respect to pData
-		pixel <- eval(substitute(pixel), envir=pData(x), enclos=parent.frame(2))
+		pixel <- tryCatch(eval(substitute(pixel), envir=pData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel))
 		# evaluated with respect to fData
-		groups <- eval(substitute(groups), envir=fData(x), enclos=parent.frame(2))
-		subset <- eval(substitute(subset), envir=fData(x), enclos=parent.frame(2))
+		groups <- tryCatch(eval(substitute(groups), envir=fData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel)) 
+		subset <- tryCatch(eval(substitute(subset), envir=fData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel))
 		# set up pixel.groups
 		if ( missing(pixel.groups) ) {
 			pixel.groups <- factor(rep(TRUE, length(pixel)))
 			missing.pixel.groups <- TRUE
 		} else {
-			pixel.groups <- eval(substitute(pixel.groups),
-				envir=pData(x), enclos=parent.frame(2))
+			pixel.groups <- tryCatch(eval(substitute(pixel.groups),
+				envir=pData(x), enclos=environment(formula)),
+				error = function(e) eval(pixel))
 			if ( length(pixel) != length(pixel.groups) )
 				pixel.groups <- pixel.groups[pixels(x)[pixel]]
 			pixel.groups <- as.factor(pixel.groups)
 			missing.pixel.groups <- FALSE
 		}
 		# parse formula and set up model for plotting
-		model <- .parsePlotFormula(formula, object=x, enclos=parent.frame(2))
+		model <- .parsePlotFormula(formula, object=x, enclos=environment(formula))
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {
 			values <- .calculatePlotValues(x, fun=fun, pixel=pixel,
@@ -67,17 +71,20 @@ setMethod("plot",
 				ylab <- names(model$left)
 			}
 		}
-		.Cardinal$plot <- list(xlim=xlim, ylim=ylim)
 		# branch for base or lattice graphics
 		if ( lattice ) {
-			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
 			# set up the lattice data
 			condition <- sapply(condition, function(var) rep(var, each=nobs))
 			data <- data.frame(.values=as.numeric(values), condition, row.names=NULL)
 			data[[names(model$right)]] <- rep(unlist(model$right), ncond)
 			# set up the groups and subset
 			subset <- rep(subset, length.out=nrow(data))
-			if ( superpose && is.null(groups) ) {
+			if ( !is.null(groups) && !is.null(pixel.groups) && superpose ) {
+				col <- sapply(col, function(cl) {
+					gradient.colors(length(unique(groups)), "gray", cl)
+				})
+				groups <- interaction(groups, pixel.groups)
+			} else if ( superpose && is.null(groups) ) {
 				groups <- data$.pixel.groups
 			} else if ( !is.null(groups) ) {
 				groups <- rep(groups, length.out=nrow(data))
@@ -123,7 +130,7 @@ setMethod("plot",
 setMethod("plot",
 	signature = c(x = "SImageSet", y = "formula"),
 	function(x, y, ...) {
-		plot(x, formula=y, ...)
+		plot(x, formula = y, ...)
 	})
 
 setMethod("image",
@@ -148,26 +155,30 @@ setMethod("image",
 	{
 		if ( missing(feature) ) stop("'feature' must be specified")
 		# evaluated with respect to fData
-		feature <- eval(substitute(feature), envir=fData(x), enclos=parent.frame(2))
+		feature <- tryCatch(eval(substitute(feature), envir=fData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel))
 		# evaluated with respect to pData
-		groups <- eval(substitute(groups), envir=pData(x), enclos=parent.frame(2))
+		groups <- tryCatch(eval(substitute(groups), envir=pData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel))
 		if ( !is.null(groups) ) groups <- rep(groups, length.out=dim(x)[2])
-		subset <- eval(substitute(subset), envir=pData(x), enclos=parent.frame(2))
+		subset <- tryCatch(eval(substitute(subset), envir=pData(x),
+			enclos=environment(formula)), error = function(e) eval(pixel))
 		if ( !is.null(subset) ) subset <- rep(subset, length.out=dim(x)[2])
 		# set up feature.groups
 		if ( missing(feature.groups) ) {
 			feature.groups <- factor(rep(TRUE, length(feature)))
 			missing.feature.groups <- TRUE
 		} else {
-			feature.groups <- eval(substitute(feature.groups),
-				envir=fData(x), enclos=parent.frame(2))
+			feature.groups <- tryCatch(eval(substitute(feature.groups),
+				envir=fData(x), enclos=environment(formula)),
+				error = function(e) eval(pixel))
 			if ( length(feature) != length(feature.groups))
 				feature.groups <- feature.groups[features(x)[feature]]
 			feature.groups <- as.factor(feature.groups)
 			missing.feature.groups <- FALSE
 		}
 		# parse formula and set up model for plotting
-		model <- .parseImageFormula(formula, object=x, enclos=parent.frame(2))
+		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {
 			values <- .calculateImageValues(x, fun=fun, feature=feature,
@@ -199,7 +210,6 @@ setMethod("image",
 			zlim <- range(values, na.rm=TRUE)
 		if ( is.logical(colorkey) && colorkey )
 			colorkey <- list(col=col)
-		.Cardinal$image <- list(xlim=xlim, ylim=ylim, zlim=zlim)
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
@@ -210,9 +220,10 @@ setMethod("image",
 			# set up the groups and subset
 			subset <- rep(subset[positionArray(imageData(x))], ncond)
 			if ( superpose && is.null(groups) ) {
-				groups <- rep(levels(feature.groups), each=nobs)
+				groups <- factor(rep(levels(feature.groups), each=nobs, length.out=nrow(data)))
 			} else if ( !is.null(groups) ) {
-				groups <- rep(groups[positionArray(imageData(x))], ncond)
+				# what the heck is this supposed to do? need to figure out...
+				groups <- factor(rep(groups[positionArray(imageData(x))], ncond))
 			}
 			# remove NAs so groups and subset work
 			nas <- is.na(values)
@@ -236,7 +247,22 @@ setMethod("image",
 			levelplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
 				at=seq(from=zlim[1], to=zlim[2], length.out=length(col)),
-				col.regions=col, colorkey=colorkey, ...)
+				col.regions=col, colorkey=colorkey,
+				panel=function(x, y, z, col.regions, at, subscripts, ...) {
+					if ( !is.null(groups) ) {
+						for ( i in seq_along(levels(groups)) ) {
+							col <- alpha.colors(100, col.regions[i])
+							at <- seq(from=zlim[1], to=zlim[2], length.out=length(col))
+							panel.levelplot(x, y, z, col.regions=col, at=at,
+								subscripts=subscripts[groups==levels(groups)[i]],
+								...)
+						}
+					} else {
+						panel.levelplot(x, y, z, col.regions=col, at=at,
+							subscripts=subscripts,
+							...)
+					}
+				}, ...)
 		} else {
 			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
 			# set up the conditioning and sample variables

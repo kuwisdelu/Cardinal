@@ -7,15 +7,15 @@ setMethod("resultData", "ResultSet",
 
 setReplaceMethod("resultData", "ResultSet",
 	function(object, value) {
-		object@ResultData <- value
+		object@resultData <- value
 		if ( validObject(object) )
 			object			
 	})
 
-setMethod("modelData", "SImageData",
+setMethod("modelData", "ResultSet",
 	function(object) object@modelData)
 
-setReplaceMethod("modelData", "SImageData",
+setReplaceMethod("modelData", "ResultSet",
 	function(object, value) {
 		object@modelData <- value
 		if ( validObject(object) )
@@ -23,16 +23,16 @@ setReplaceMethod("modelData", "SImageData",
 	})
 
 setMethod("$", "ResultSet", function(x, name) {
-	sapply(resultData(object), function(ob) ob[[name]])
+	lapply(resultData(x), function(ob) ob[[name]])
 })
 
 setMethod("[[", "ResultSet", function(x, i, j, ...) {
-	resultData(object)[[i]]
+	resultData(x)[[i]]
 })
 
 setMethod("[", "ResultSet", function(x, i, j, ...) {
 	dots <- list(...)
-	if ( !all(names(dots) %in% varLabels(x)) )
+	if ( !all(names(dots) %in% varLabels(modelData(x))) )
 		stop("all arguments must appear in 'modelData'")
 	if ( length(dots) > 0 ) {
 		select <- sapply(seq_along(dots), function(i) {

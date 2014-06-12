@@ -9,7 +9,9 @@ importFrom("irlba",
 
 importFrom("lattice",
 	"xyplot",
-	"levelplot")
+	"levelplot",
+	"panel.xyplot",
+	"panel.levelplot")
 
 importFrom("signal",
 	"interp1",
@@ -97,6 +99,7 @@ exportMethods(
 	"keys",
 	"keys<-",
 	"modelData",
+	"modelData<-",
 	"mz",
 	"mz<-",
 	"mzData",
@@ -121,6 +124,7 @@ exportMethods(
 	"processingData<-",
 	"regeneratePositions",
 	"resultData",
+	"resultData<-",
 	"rownames",
 	"rownames<-",
 	"sampleNames",
