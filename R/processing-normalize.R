@@ -9,7 +9,9 @@ setMethod("normalize", "MSImageSet",
 		plot=FALSE)
 	{
 		fun <- normalize.method(method)
+		prochistory(processingData(object)) <- .history()
 		.message("normalize: Using method = ", match.method(method))
+		.time.start()
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
 			if ( plot ) {
@@ -26,8 +28,8 @@ setMethod("normalize", "MSImageSet",
 			dimnames=list(featureNames(object), pixelNames(object)[pixel]))
 		object@pixelData <- object@pixelData[pixel,]
 		normalization(processingData(object)) <- match.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("normalize: Done.")
+		.time.stop()
 		object
 	})
 

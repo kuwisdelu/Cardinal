@@ -11,7 +11,9 @@ setMethod("reduceBaseline", "MSImageSet",
 		if ( centroided(object) )
 			.stop("reduceBaseline: Data already centroided. Baseline reduction will not be performed.")
 		fun <- reduceBaseline.method(method)
+		prochistory(processingData(object)) <- .history()
 		.message("reduceBaseline: Using method = ", match.method(method))
+		.time.start()
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
 			if ( plot ) {
@@ -30,8 +32,8 @@ setMethod("reduceBaseline", "MSImageSet",
 			dimnames=list(featureNames(object), pixelNames(object)[pixel]))
 		object@pixelData <- object@pixelData[pixel,]
 		baselineReduction(processingData(object)) <- match.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("reduceBaseline: Done")
+		.time.stop()
 		object
 	})
 

@@ -11,7 +11,9 @@ setMethod("peakPick", "MSImageSet",
 		if ( centroided(object) )
 			.stop("peakPick: Data already centroided. Peak picking will not be performed.")
 		fun <- peakPick.method(method)
+		prochistory(processingData(object)) <- .history()
 		.message("peakPeak: Using method = ", match.method(method))
+		.time.start()
 		peaks <- pixelApply(object, function(s, ...) {
 			pout <- fun(s, ...)
 			if ( plot ) {
@@ -42,8 +44,8 @@ setMethod("peakPick", "MSImageSet",
 		peakData(imageData(object)) <- peakData
 		mzData(imageData(object)) <- mzData
 		peakPicking(processingData(object)) <- match.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("peakPick: Done.")
+		.time.stop()
 		object
 	})
 
@@ -58,7 +60,7 @@ peakPick.method <- function(method) {
 	match.fun(method)
 }
 
-peakPick.simple <- function(x, SNR=3, window=5, blocks=100, ...) {
+peakPick.simple <- function(x, SNR=6, window=5, blocks=100, ...) {
 	t <- seq_along(x)
 	xint <- intervals(x, blocks=blocks)
 	kurt <- sapply(xint, kurtosis) - 3
@@ -70,7 +72,7 @@ peakPick.simple <- function(x, SNR=3, window=5, blocks=100, ...) {
 	list(peaks=peaks, noise=noise)
 }
 
-peakPick.adaptive <- function(x, SNR=3, window=5, blocks=100, spar=1, ...) {
+peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
 	t <- seq_along(x)
 	xint <- intervals(x, blocks=blocks)
 	xlen <- sapply(xint, length)
@@ -85,7 +87,7 @@ peakPick.adaptive <- function(x, SNR=3, window=5, blocks=100, spar=1, ...) {
 	list(peaks=peaks, noise=noise)
 }
 
-peakPick.limpic <- function(x, SNR=3, window=5, blocks=100, thresh=0.75, ...) {
+peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	t <- seq_along(x)
 	xint <- intervals(x, blocks=blocks)
 	# identify flat reginos of spectrum

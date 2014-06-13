@@ -9,7 +9,9 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		plot=FALSE)
 	{
 		fun <- reduceDimension.method(method)
+		prochistory(processingData(object)) <- .history()
 		.message("reduceDimension: Using method = ", match.method(method))
+		.time.start()
 		mz <- fun(iData(object)[,pixel[1]], mz(object), ...)$t
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, mz(object), ...)
@@ -33,8 +35,10 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 				featureNames(object@featureData),
 				pixelNames(object@pixelData)))
 		mz(object) <- mz
-		prochistory(processingData(object)) <- .history()
+		if ( match.method(method) == "peaks" )
+			centroided(processingData(object)) <- TRUE
 		.message("reduceDimension: Done")
+		.time.stop()
 		object
 	})
 
@@ -42,20 +46,16 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric
 	function(object, ref, method = "peaks", ...) {
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("reduceDimension: 'ref' contains m/z values outside of range")
-		object <- reduceDimension(object, method=method, peaklist=ref, ...)
-		centroided(processingData(object)) <- TRUE
 		prochistory(processingData(object)) <- .history()
-		object
+		reduceDimension(object, method=method, peaklist=ref, ...)
 	})
 
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageSet"),
 	function(object, ref, method = "peaks", ...) {
 		if ( !centroided(ref) )
 			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
-		object <- reduceDimension(object, method=method, peaklist=mz(ref), ...)
-		centroided(processingData(object)) <- TRUE
 		prochistory(processingData(object)) <- .history()
-		object
+		reduceDimension(object, method=method, peaklist=mz(ref), ...)
 	})
 
 reduceDimension.method <- function(method) {

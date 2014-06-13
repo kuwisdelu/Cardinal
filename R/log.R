@@ -30,13 +30,15 @@
 ## --------------------
 
 .message <- function(..., progress=c("none", "start", "stop", "increment"), min=0, max=1) {
-	.log(...)
 	progress <- match.arg(progress)
 	if ( progress == "none" ) {
+		.log(...)
 		for ( f in .Cardinal$message ) {
 			f(...)
 		}
 	} else if ( progress == "start" ) {
+		if ( length(list(...)) > 1 )
+			.log(...)
 		.Cardinal$progress$i <- min
 		.Cardinal$progress$min <- min
 		.Cardinal$progress$max <- max
@@ -49,6 +51,8 @@
 			f()
 		}
 	} else if ( progress == "stop" ) {
+		if ( length(list(...)) > 1 )
+			.log(...)
 		for ( f in .Cardinal$progress$stop ) {
 			f(...)
 		}
@@ -65,13 +69,25 @@
 	}
 }
 
+.time.start <- function() {
+	.Cardinal$time$start <- proc.time()
+}
+
+.time.stop <- function() {
+	.Cardinal$time$stop <- proc.time()
+	time <- .Cardinal$time$stop - .Cardinal$time$start
+	if ( getOption("Cardinal.timing") )
+		.console("Cardinal: Operation took ", round(time[[3]], digits=1), " seconds.")
+	.log("Cardinal: Operation took ", round(time[[3]], digits=2), " seconds.")
+}
+
 .progress.start <- function(..., min=0, max=1) {
-	.message(...)
+	if ( length(list(...)) > 1 )
+		.message(...)
 	.Cardinal$progress$bar <- NULL
 	if ( getOption("Cardinal.progress") && max - min > 1 ) {
 		.Cardinal$progress$bar <- txtProgressBar(min=min, max=max, style=3)
 	}
-	.Cardinal$time$start <- proc.time()
 }
 
 .progress.increment <- function() {
@@ -81,12 +97,12 @@
 }
 
 .progress.stop <- function(...) {
-	.Cardinal$time$stop <- proc.time()
 	if ( getOption("Cardinal.progress") && !is.null(.Cardinal$progress$bar) ) {
 		close(.Cardinal$progress$bar)
 	}
 	.Cardinal$progress$bar <- NULL
-	.message(...)
+	if ( length(list(...)) > 1 )
+		.message(...)
 }
 
 #### Generate entry for history log ####

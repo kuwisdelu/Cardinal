@@ -9,6 +9,7 @@ setMethod("spatialShrunkenCentroids",
 	rs <- sort(r)
 	ks <- sort(k)
 	ss <- sort(s)
+	.time.start()
 	.message("spatialShrunkenCentroids: Initializing classes.")
 	initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
 	out <- unlist(lapply(initial@resultData, function(init) {
@@ -37,6 +38,7 @@ setMethod("spatialShrunkenCentroids",
 	featureNames(par) <- formatParam(pData(par))
 	names(out) <- formatParam(pData(par))
 	.message("spatialShrunkenCentroids: Done.")
+	.time.stop()
 	new("SpatialShrunkenCentroids",
 		pixelData=x@pixelData,
 		featureData=x@featureData,
@@ -56,6 +58,7 @@ setMethod("spatialShrunkenCentroids",
 	priors <- priors / sum(priors)
 	rs <- sort(r)
 	ss <- sort(s)
+	.time.start()
 	out <- unlist(lapply(ss, function(s) {
 		.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
 		fit <- .spatialShrunkenCentroidsFit(x, classes=y, s=s)
@@ -85,6 +88,7 @@ setMethod("spatialShrunkenCentroids",
 		protocolData=x@protocolData,
 		resultData=out,
 		modelData=par)
+	.time.stop()
 	predict(object, newx=x, newy=y)
 })
 
@@ -108,6 +112,7 @@ setMethod("predict",
 {
 	if ( !is(newx, "iSet") )
 		.stop("'newx' must inherit from 'iSet'")
+	.time.start()
 	out <- lapply(resject@resultData, function(res) {
 		spatial <- spatial.info(newx, r=res$r, method=res$method)
 		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
@@ -119,6 +124,7 @@ setMethod("predict",
 		res
 	})
 	.message("spatialShrunkenCentroids: Done.")
+	.time.stop()
 	new("SpatialShrunkenCentroids",
 		pixelData=newx@pixelData,
 		featureData=newx@featureData,

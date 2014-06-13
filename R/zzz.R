@@ -27,7 +27,8 @@
 
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=TRUE)
-	options(Cardinal.progress=FALSE)
+	options(Cardinal.progress=TRUE)
+	options(Cardinal.timing=FALSE)
 	options(Cardinal.autoflush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())

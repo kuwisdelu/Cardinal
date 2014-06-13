@@ -12,6 +12,7 @@ setMethod("spatialKMeans",
 	rs <- sort(r)
 	ks <- sort(k)
 	w <- rep(weights, length.out=nrow(iData(x)))
+	.time.start()
 	out <- unlist(lapply(rs, function(r){
 		spatial <- spatial.info(x, r=r, method=method)
 		.message("spatialKMeans: Calculating spatial information for r = ", r, ".")
@@ -37,6 +38,7 @@ setMethod("spatialKMeans",
 	featureNames(par) <- formatParam(pData(par))
 	names(out) <- formatParam(pData(par))
 	.message("spatialKMeans: Done.")
+	.time.stop()
 	new("SpatialKMeans",
 		pixelData=x@pixelData,
 		featureData=x@featureData,

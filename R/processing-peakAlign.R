@@ -11,7 +11,9 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		fun <- peakAlign.method(method)
+		prochistory(processingData(object)) <- .history()
 		.message("peakAlign: Using method = ", match.method(method))
+		.time.start()
 		peaklist <- pData(mzData(imageData(object)))
 		alignment <- pixelApply(object, function(s, ...) {
 			aout <- fun(peaklist[[.Index]], ref, ...)
@@ -55,9 +57,9 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		peakData(imageData(object)) <- peakData
 		mzData(imageData(object)) <- mzData
 		mz(object) <- ref
-		prochistory(processingData(object)) <- .history()
 		centroided(processingData(object)) <- TRUE
 		.message("peakAlign: Done.")
+		.time.stop()
 		object
 	})
 
@@ -66,18 +68,17 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 	{
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
+		prochistory(processingData(object)) <- .history()
+		.message("peakAlign: Generating reference from mean mass spectrum.")
 		spectrum <- featureApply(ref, mean)
 		peaks <- mz(object)[localMaximaLogical(spectrum, span=5)]
-		object <- peakAlign(object, ref=peaks, ...)
-		prochistory(processingData(object)) <- .history()
-		object
+		peakAlign(object, ref=peaks, ...)
 	})
 
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "missing"),
 	function(object, ...) {
-		object <- peakAlign(object, ref=object, ...)
 		prochistory(processingData(object)) <- .history()
-		object
+		peakAlign(object, ref=object, ...)
 	})
 
 peakAlign.method <- function(method) {
