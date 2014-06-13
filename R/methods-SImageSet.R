@@ -99,8 +99,9 @@ setReplaceMethod("coord", "SImageSet",
 
 setReplaceMethod("coordLabels", "SImageSet",
 	function(object, value) {
+		which <- names(coord(object@imageData)) %in% coordLabels(object@pixelData)
+		names(coord(object@imageData))[which] <- value
 		coordLabels(object@pixelData) <- value
-		names(coord(object@imageData)) <- value
 		object@imageData <- regeneratePositions(object@imageData)
 		object
 	})
@@ -181,12 +182,15 @@ setMethod("pixelApply", "SImageSet",
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
+		.message(progress="start", max=length(.pixel))
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .pixel[i], envir=env)
 				.fun(iData(.object)[j, .pixel[i]], ...)
 			}, USE.NAMES=.use.names)
+			.message(progress="increment")
 		}
+		.message(progress="stop")
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.pixel)
 		if ( .simplify ) ans <- simplify2array(ans)
@@ -244,12 +248,15 @@ setMethod("featureApply", "SImageSet",
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
+		.message(progress="start", max=length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .feature[i], env)
 				.fun(iData(.object)[.feature[i], j], ...)
 			}, USE.NAMES=.use.names)
+			.message(progress="increment")
 		}
+		.message(progress="stop")
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.feature)
 		if ( .simplify ) ans <- simplify2array(ans)

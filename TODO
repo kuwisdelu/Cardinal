@@ -3,10 +3,11 @@ TODO for Cardinal package
 -------------------------
 
 - rewrite selectROI() and selectPixels() and selectPeaks()
-- fix behavior of 'sample' in IAnnotatedDataFrame ('dim' or 'sample' labelType?)
+- write documentation for ResultSet, spatialKMeans, and spatialShrunkenCentroids
+x fix behavior of 'sample' in IAnnotatedDataFrame ('dim' or 'sample' labelType?)
 - need better behavior with combine() in SImageData for Hashmat elements
 - rewrite PCA/PLS/OPLS methods
-- add plotting of analysis results to plot() and image() methods
+x add plotting of analysis results to plot() and image() methods
 - add options to plot() and image() methods (line type, orientation, etc.)
 - add smoothing and interpolation and contrast enhancement to image()
 - have readImzML parse processingData (need to write C++ functions)
@@ -14,4 +15,3 @@ TODO for Cardinal package
 - write documentation for missing methods (pixelNames, etc.)
 - clean up constructors with better annotatedDataFrameFrom methods
 - add optical image support
-

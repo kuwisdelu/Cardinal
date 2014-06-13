@@ -94,7 +94,7 @@
 
         \item{\code{pixelNames(object), pixelNames(object) <- value}:}{Access and set the pixel names in the \code{pixelData} slot.}
 
-        \item{\code{coordLabels(object), coordLabels(object) <- value}:}{Access and set the coordinate names described by the coordinate variables in the \code{pixelData} slot.}
+        \item{\code{coordLabels(object), coordLabels(object) <- value}:}{Access and set the coordinate names described by the coordinate variables in the \code{pixelData} slot. Note that this does \emph{not} set or get coordinate names with a \code{labelType} of \code{sample}, regardless of whether they are currently being used to describe coordinates or not. Therefore, checking \code{coordLabels(object)} versus \code{names(coord(object))} is a simple way of checking whether a dataset is 2D or 3D.}
 
         \item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'dim'.}
 

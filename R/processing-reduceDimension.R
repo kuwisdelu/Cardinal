@@ -2,13 +2,14 @@
 #### Dimension reduction methods ####
 ## ----------------------------------
 
-setMethod("reduceDimension", c("MSImageSet", "missing"),
+setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing"),
 	function(object, method = c("bin", "resample"),
 		...,
 		pixel=pixels(object),
 		plot=FALSE)
 	{
 		fun <- reduceDimension.method(method)
+		.message("reduceDimension: Using method = ", match.method(method))
 		mz <- fun(iData(object)[,pixel[1]], mz(object), ...)$t
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, mz(object), ...)
@@ -33,23 +34,28 @@ setMethod("reduceDimension", c("MSImageSet", "missing"),
 				pixelNames(object@pixelData)))
 		mz(object) <- mz
 		prochistory(processingData(object)) <- .history()
+		.message("reduceDimension: Done")
 		object
 	})
 
-setMethod("reduceDimension", c("MSImageSet", "numeric"),
+setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = "peaks", ...) {
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
-			.stop("'ref' contains m/z values outside of range")
+			.stop("reduceDimension: 'ref' contains m/z values outside of range")
 		object <- reduceDimension(object, method=method, peaklist=ref, ...)
 		centroided(processingData(object)) <- TRUE
+		prochistory(processingData(object)) <- .history()
+		object
 	})
 
-setMethod("reduceDimension", c("MSImageSet", "MSImageSet"),
+setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageSet"),
 	function(object, ref, method = "peaks", ...) {
 		if ( !centroided(ref) )
-			.stop("'ref' is not centroided. Run 'peakAlign' on it first.")
+			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
 		object <- reduceDimension(object, method=method, peaklist=mz(ref), ...)
 		centroided(processingData(object)) <- TRUE
+		prochistory(processingData(object)) <- .history()
+		object
 	})
 
 reduceDimension.method <- function(method) {
@@ -64,9 +70,9 @@ reduceDimension.method <- function(method) {
 }
 
 reduceDimension.bin <- function(x, t, width=1, offset=0, fun=sum, ...) {
-	limits <- seq(from=floor(min(t)), to=ceiling(max(t)), by=width) + offset
+	limits <- seq(from=ceiling(min(t)), to=floor(max(t)), by=width) + offset
 	if ( length(limits) > length(t) )
-		.stop("'width' is too wide.")
+		.stop("reduceDimension.bin: 'width' is too wide.")
 	idx <- sapply(limits, function(lim) bisection.seq(t, function(ti) ti - lim))
 	xout <- bin(x, lbound=idx[-length(idx)], ubound=idx[-1], fun=fun)
 	tout <- limits[-length(limits)] + width / 2
@@ -74,9 +80,9 @@ reduceDimension.bin <- function(x, t, width=1, offset=0, fun=sum, ...) {
 }
 
 reduceDimension.resample <- function(x, t, step=1, offset=0, ...) {
-	tout <- seq(from=floor(min(t)), to=ceiling(max(t)), by=step) + offset
+	tout <- seq(from=ceiling(min(t)), to=floor(max(t)), by=step) + offset
 	if ( length(tout) > length(t) )
-		.stop("'step' is too wide.")
+		.stop("reduceDimension.resample: 'step' is too wide.")
 	if ( offset < 0 ) {
 		tout <- tout[-1]
 	} else if ( offset > 0 ) {
@@ -94,7 +100,7 @@ reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...)
 		fun <- sum
 	}
 	if ( length(peaklist) > length(t) )
-		.stop("'peaklist' is too long.")
+		.stop("reduceDimension.peaks: 'peaklist' is too long.")
 	limits <- nearestLocalMaxima(-x, t, peaklist, ...)
 	lbound <- sapply(limits$lbound,
 		function(lim) bisection.seq(t, function(ti) ti - lim))

@@ -6,7 +6,7 @@ l1norm <- function(x) sum(abs(x))
 l2norm <- function(x) sqrt(sum(x^2))
 
 # soft thresholding
-soft <- function(x, delta) sign(x) * pmax(0, abs(x)-delta)
+soft <- function(x, delta) sign(x) * pmax(0, abs(x) - delta)
 
 # find the combined mean deviation of multiple samples
 combinedMean <- function(xbar, n) {

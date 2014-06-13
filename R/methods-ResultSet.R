@@ -22,6 +22,10 @@ setReplaceMethod("modelData", "ResultSet",
 			object			
 	})
 
+setMethod("names", "ResultSet", function(x) {
+	sapply(resultData(x), names)
+})
+
 setMethod("$", "ResultSet", function(x, name) {
 	lapply(resultData(x), function(ob) ob[[name]])
 })
@@ -30,7 +34,7 @@ setMethod("[[", "ResultSet", function(x, i, j, ...) {
 	resultData(x)[[i]]
 })
 
-setMethod("[", "ResultSet", function(x, i, j, ...) {
+setMethod("[", "ResultSet", function(x, i, j, ..., drop=TRUE) {
 	dots <- list(...)
 	if ( !all(names(dots) %in% varLabels(modelData(x))) )
 		stop("all arguments must appear in 'modelData'")
@@ -43,7 +47,11 @@ setMethod("[", "ResultSet", function(x, i, j, ...) {
 		} else {
 			select <- which(apply(select, 1, all))
 		}
-		resultData(x)[select]
+		if ( drop && length(select) == 1 ) {
+			resultData(x)[[select]]
+		} else {
+			resultData(x)[select]
+		}
 	} else {
 		resultData(x)
 	}

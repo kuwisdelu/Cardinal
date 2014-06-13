@@ -25,9 +25,9 @@ setMethod("plot",
 			enclos=environment(formula)), error = function(e) eval(pixel))
 		# evaluated with respect to fData
 		groups <- tryCatch(eval(substitute(groups), envir=fData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel)) 
+			enclos=environment(formula)), error = function(e) eval(groups)) 
 		subset <- tryCatch(eval(substitute(subset), envir=fData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel))
+			enclos=environment(formula)), error = function(e) eval(subset))
 		# set up pixel.groups
 		if ( missing(pixel.groups) ) {
 			pixel.groups <- factor(rep(TRUE, length(pixel)))
@@ -35,7 +35,7 @@ setMethod("plot",
 		} else {
 			pixel.groups <- tryCatch(eval(substitute(pixel.groups),
 				envir=pData(x), enclos=environment(formula)),
-				error = function(e) eval(pixel))
+				error = function(e) eval(pixel.groups))
 			if ( length(pixel) != length(pixel.groups) )
 				pixel.groups <- pixel.groups[pixels(x)[pixel]]
 			pixel.groups <- as.factor(pixel.groups)
@@ -156,13 +156,13 @@ setMethod("image",
 		if ( missing(feature) ) stop("'feature' must be specified")
 		# evaluated with respect to fData
 		feature <- tryCatch(eval(substitute(feature), envir=fData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel))
+			enclos=environment(formula)), error = function(e) eval(feature))
 		# evaluated with respect to pData
 		groups <- tryCatch(eval(substitute(groups), envir=pData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel))
+			enclos=environment(formula)), error = function(e) eval(groups))
 		if ( !is.null(groups) ) groups <- rep(groups, length.out=dim(x)[2])
 		subset <- tryCatch(eval(substitute(subset), envir=pData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel))
+			enclos=environment(formula)), error = function(e) eval(subset))
 		if ( !is.null(subset) ) subset <- rep(subset, length.out=dim(x)[2])
 		# set up feature.groups
 		if ( missing(feature.groups) ) {
@@ -171,7 +171,7 @@ setMethod("image",
 		} else {
 			feature.groups <- tryCatch(eval(substitute(feature.groups),
 				envir=fData(x), enclos=environment(formula)),
-				error = function(e) eval(pixel))
+				error = function(e) eval(feature.groups))
 			if ( length(feature) != length(feature.groups))
 				feature.groups <- feature.groups[features(x)[feature]]
 			feature.groups <- as.factor(feature.groups)
@@ -216,7 +216,7 @@ setMethod("image",
 			# set up the lattice data
 			condition <- sapply(condition, function(var) rep(var, each=nobs))
 			data <- data.frame(.values=as.numeric(values), condition, row.names=NULL)
-			data[coordLabels(x)] <- expand.grid(lapply(dim(imageData(x))[-1], seq_len))
+			data[names(coord(x))] <- expand.grid(lapply(dim(imageData(x))[-1], seq_len))
 			# set up the groups and subset
 			subset <- rep(subset[positionArray(imageData(x))], ncond)
 			if ( superpose && is.null(groups) ) {
@@ -239,8 +239,8 @@ setMethod("image",
 				fm.cond <- c(fm.cond, make.names(names(model$condition)))
 			if ( !is.null(model$left) )
 				fm.cond <- c(fm.cond, ".value.groups")
-			if ( !all(coordLabels(x) %in% names(model$right)) )
-				fm.cond <- c(fm.cond, coordLabels(x)[!coordLabels(x) %in% names(model$right)])
+			if ( !all(names(coord(x)) %in% names(model$right)) )
+				fm.cond <- c(fm.cond, names(coord(x))[!names(coord(x)) %in% names(model$right)])
 			if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 			fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
 			# plot it with lattice

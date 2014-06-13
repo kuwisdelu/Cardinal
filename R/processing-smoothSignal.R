@@ -9,8 +9,9 @@ setMethod("smoothSignal", "MSImageSet",
 		plot=FALSE)
 	{
 		if ( centroided(object) )
-			.stop("Data already centroided. Smoothing will not be performed.")
+			.stop("smoothSignal: Data already centroided. Smoothing will not be performed.")
 		fun <- smoothSignal.method(method)
+		.message("smoothSignal: Using method = ", match.method(method))
 		data <- pixelApply(object, function(s, ...) {
 			sout <- fun(s, ...)
 			if ( plot ) {
@@ -28,6 +29,7 @@ setMethod("smoothSignal", "MSImageSet",
 		object@pixelData <- object@pixelData[pixel,]
 		smoothing(processingData(object)) <- match.method(method)
 		prochistory(processingData(object)) <- .history()
+		.message("smoothSignal: Done")
 		object
 	})
 

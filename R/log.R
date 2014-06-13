@@ -37,6 +37,7 @@
 			f(...)
 		}
 	} else if ( progress == "start" ) {
+		.Cardinal$progress$i <- min
 		.Cardinal$progress$min <- min
 		.Cardinal$progress$max <- max
 		for ( f in .Cardinal$progress$start ) {
@@ -66,23 +67,25 @@
 
 .progress.start <- function(..., min=0, max=1) {
 	.message(...)
-	if ( getOption("Cardinal.progress") ) {
+	.Cardinal$progress$bar <- NULL
+	if ( getOption("Cardinal.progress") && max - min > 1 ) {
 		.Cardinal$progress$bar <- txtProgressBar(min=min, max=max, style=3)
 	}
 	.Cardinal$time$start <- proc.time()
 }
 
 .progress.increment <- function() {
-	if ( getOption("Cardinal.progress") ) {
+	if ( getOption("Cardinal.progress") && !is.null(.Cardinal$progress$bar) ) {
 		setTxtProgressBar(.Cardinal$progress$bar, value=.Cardinal$progress$i)
 	}
 }
 
 .progress.stop <- function(...) {
 	.Cardinal$time$stop <- proc.time()
-	if ( getOption("Cardinal.progress") ) {
+	if ( getOption("Cardinal.progress") && !is.null(.Cardinal$progress$bar) ) {
 		close(.Cardinal$progress$bar)
 	}
+	.Cardinal$progress$bar <- NULL
 	.message(...)
 }
 

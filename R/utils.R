@@ -2,7 +2,7 @@
 ## Match methods to their workhorse functions
 match.method <- function(method) {
 	if ( is.function(method) ) {
-		deparse(substitute(method, env=parent.frame()))
+		tryCatch(deparse(substitute(method, env=parent.frame())), error = function(e) "unknown")
 	} else if ( is.character(method) ) {
 		method[[1]]
 	} else {

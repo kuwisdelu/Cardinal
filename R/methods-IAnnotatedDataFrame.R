@@ -85,24 +85,34 @@ setReplaceMethod("pixelNames", "IAnnotatedDataFrame",
 setMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object) {
 		coordLabelTypes <- c("dim")
+		sampleLabelTypes <- c("sample")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		isCoord[varLabels(object) %in% sampleLabelTypes] <- FALSE
 		varLabels(object)[isCoord]
 	})
 
 setReplaceMethod("coordLabels", "IAnnotatedDataFrame",
 	function(object, value) {
 		coordLabelTypes <- c("dim")
+		sampleLabelTypes <- c("sample")
 		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		isCoord[varLabels(object) %in% sampleLabelTypes] <- FALSE
 		varLabels(object)[isCoord] <- value
 		object
 	})
 
 setMethod("coord", "IAnnotatedDataFrame",
-	function(object) pData(object)[coordLabels(object)])
+	function(object) {
+		coordLabelTypes <- c("dim")
+		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		pData(object)[isCoord]
+	})
 
 setReplaceMethod("coord", "IAnnotatedDataFrame",
 	function(object, value) {
-		pData(object)[coordLabels(object)] <- value
+		coordLabelTypes <- c("dim")
+		isCoord <- varMetadata(object)[["labelType"]] %in% coordLabelTypes
+		pData(object)[isCoord] <- value
 		object
 	})
 

@@ -5,19 +5,17 @@ setMethod("plot",
 		mode = c("centers", "tstatistics"),
 		tmin = 0,
 		classes = unique(unlist(x$classes)),
-		col = rainbow(max(unlist(x$k))),
+		col = rainbow(length(classes)),
 		...)
 	{
 		mode <- match.arg(mode)
 		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
-		ntimes <- as.vector(mapply(function(i, Ck) rep(i, Ck),
-			seq_len(nrow(modelData(x))), nclasses))
+		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
+			seq_len(nrow(modelData(x))), nclasses)))
 		df <- pData(modelData(x))[ntimes,]
-		df$classes <- as.vector(sapply(x$classes, levels))
-		centers <- simplify2array(x$centers)
-		tstatistics <- simplify2array(x$tstatistics)
-		dim(centers) <- c(dim(centers)[1], prod(dim(centers)[-1]))
-		dim(tstatistics) <- c(dim(tstatistics)[1], prod(dim(tstatistics)[-1]))
+		df$classes <- as.vector(unlist(sapply(x$classes, levels)))
+		centers <- matrix(as.vector(unlist(x$centers)), nrow=nrow(x))
+		tstatistics <- matrix(as.vector(unlist((x$tstatistics))), nrow=nrow(x))
 		centers <- MSImageSet(spectra=centers,
 			coord=df, mz=fData(x)[["mz"]])
 		tstatistics <- MSImageSet(spectra=tstatistics,
@@ -47,19 +45,17 @@ setMethod("image",
 	function(x, parameters,
 		mode = c("probabilities", "scores"),
 		classes = unique(unlist(x$classes)),
-		col = rainbow(max(unlist(x$k))),
+		col = rainbow(length(classes)),
 		...)
 	{
 		mode <- match.arg(mode)
 		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
-		ntimes <- as.vector(mapply(function(i, Ck) rep(i, Ck),
-			seq_len(nrow(modelData(x))), nclasses))
+		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
+			seq_len(nrow(modelData(x))), nclasses)))
 		df <- pData(modelData(x))[ntimes,]
-		df$classes <- as.vector(sapply(x$classes, levels))
-		probabilities <- simplify2array(x$probabilities)
-		scores <- simplify2array(x$scores)
-		dim(probabilities) <- c(dim(probabilities)[1], prod(dim(probabilities)[-1]))
-		dim(scores) <- c(dim(scores)[1], prod(dim(scores)[-1]))
+		df$classes <- as.vector(unlist(sapply(x$classes, levels)))
+		probabilities <- matrix(as.vector(unlist(x$probabilities)), nrow=ncol(x))
+		scores <- matrix(as.vector(unlist(x$scores)), nrow=ncol(x))
 		probabilities <- MSImageSet(spectra=t(probabilities),
 			coord=coord(x))
 		scores <- MSImageSet(spectra=t(scores),

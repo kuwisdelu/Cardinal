@@ -3,22 +3,28 @@ setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "missing"),
 	function(x, y, r = 1, k = 2:5, s = seq(from=0, to=10, by=2),
 		method = c("gaussian", "adaptive"),
-		iter.max=10, tol=1e-4, ...)
+		iter.max=10, ...)
 {
 	method <- match.arg(method)
 	rs <- sort(r)
 	ks <- sort(k)
 	ss <- sort(s)
+	.message("spatialShrunkenCentroids: Initializing classes.")
 	initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
 	out <- unlist(lapply(initial@resultData, function(init) {
-		spatial <- .calculateSpatialInfo(x, r=init$r, method=method)
+		spatial <- spatial.info(x, r=init$r, method=method)
 		lapply(ss, function(s) {
-			append(.clusterSpatialShrunkenCentroids(x, classes=factor(init$cluster),
-				centers=init$centers, r=init$r, k=init$k, s=s,
-				spatial=spatial, iter.max=iter.max, tol=tol),
-				list(method=method, r=init$r, k=init$k, s=s))
+			.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
+			res <- append(.spatialShrunkenCentroidsCluster(x,
+				classes=init$cluster, centers=init$centers,
+				r=init$r, k=init$k, s=s, spatial=spatial,
+				iter.max=iter.max), list(method=method,
+					r=init$r, k=init$k, s=s))
+			class(res) <- "ResultData"
+			res
 		})
 	}), recursive=FALSE)
+	.message("spatialShrunkenCentroids: Preparing results.")
 	par <- AnnotatedDataFrame(data=data.frame(
 			r=sapply(out, function(fit) fit$r),
 			k=sapply(out, function(fit) fit$k),
@@ -30,6 +36,7 @@ setMethod("spatialShrunkenCentroids",
 				s="Sparsity parameter")))
 	featureNames(par) <- formatParam(pData(par))
 	names(out) <- formatParam(pData(par))
+	.message("spatialShrunkenCentroids: Done.")
 	new("SpatialShrunkenCentroids",
 		pixelData=x@pixelData,
 		featureData=x@featureData,
@@ -43,16 +50,22 @@ setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "factor"),
 	function(x, y, r = 1, s = seq(from=0, to=10, by=2),
 		method = c("gaussian", "adaptive"),
-		priors = tabulate(y), ...)
+		priors = table(y), ...)
 {
 	method <- match.arg(method)
 	priors <- priors / sum(priors)
 	rs <- sort(r)
 	ss <- sort(s)
 	out <- unlist(lapply(ss, function(s) {
-		fit <- .calculateSpatialShrunkenCentroids(x, classes=y, s=s)
+		.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
+		fit <- .spatialShrunkenCentroidsFit(x, classes=y, s=s)
 		fit <- append(fit, list(y=y, s=s, method=method, priors=priors))
-		lapply(rs, function(r) append(fit, list(r=r, k=length(levels(y)))))
+		lapply(rs, function(r) {
+			.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
+			res <- append(fit, list(r=r, k=length(levels(y))))
+			class(res) <- "ResultData"
+			res
+		})
 	}), recursive=FALSE)
 	par <- AnnotatedDataFrame(data=data.frame(
 			r=sapply(out, function(fit) fit$r),
@@ -95,13 +108,17 @@ setMethod("predict",
 {
 	if ( !is(newx, "iSet") )
 		.stop("'newx' must inherit from 'iSet'")
-	out <- lapply(object@resultData, function(ob) {
-		spatial <- .calculateSpatialInfo(newx, r=ob$r, method=ob$method)
-		pred <- .calculateNearestSpatialShrunkenCentroids(newx, classes=ob$y,
-			centers=ob$centers, priors=ob$priors, spatial=spatial, sd=ob$sd)
-		ob[names(pred)] <- pred
-		pred
+	out <- lapply(resject@resultData, function(res) {
+		spatial <- spatial.info(newx, r=res$r, method=res$method)
+		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
+		pred <- .spatialShrunkenCentroidsPredict(newx, classes=res$y,
+			centers=res$centers, priors=res$priors,
+			spatial=spatial, sd=res$sd)
+		res[names(pred)] <- pred
+		class(res) <- "ResultData"
+		res
 	})
+	.message("spatialShrunkenCentroids: Done.")
 	new("SpatialShrunkenCentroids",
 		pixelData=newx@pixelData,
 		featureData=newx@featureData,
@@ -111,72 +128,87 @@ setMethod("predict",
 		modelData=object@modelData)
 })
 
-.clusterSpatialShrunkenCentroids <- function(x, classes, centers, r, k, s,
-	spatial, iter.max, tol)
+.spatialShrunkenCentroidsCluster <- function(x, classes, centers, r, k, s,
+	spatial, iter.max)
 {
 	classes.last <- sample(classes)
 	centers.last <- matrix(nrow=nrow(iData(x)), ncol=k)
 	iter <- 1
-	while ( !isTRUE(all.equal(classes, classes.last)) && iter <= iter.max )
+	start.time <- proc.time()
+	while ( any(classes != classes.last, na.rm=TRUE) && iter <= iter.max )
 	{
-		priors <- tabulate(classes) / sum(tabulate(classes))
+		priors <- table(classes) / sum(table(classes))
 		classes.last <- classes
 		centers.last <- centers
-		fit <- .calculateSpatialShrunkenCentroids(x, classes=classes, s=s)
-		pred <- .calculateNearestSpatialShrunkenCentroids(x=x, classes=classes,
+		fit <- .spatialShrunkenCentroidsFit(x, classes=classes, s=s)
+		pred <- .spatialShrunkenCentroidsPredict(x=x, classes=classes,
 			centers=fit$centers, priors=priors, spatial=spatial, sd=fit$sd)
 		classes <- pred$classes
 		centers <- fit$centers
-		if ( ncol(centers) != ncol(centers.last) ) {
+		if ( length(unique(classes)) != nlevels(classes) )
 			iter <- 1
-			centers.last <- centers.last[,1:ncol(centers)]
-		}
 		iter <- iter + 1
 	}
-	list(classes=classes, probabilities=pred$probabilities,
-		scores=pred$scores, centers=fit$centers,
-		tstatistics=fit$tstatistics, sd=fit$sd)
+	list(classes=classes, probabilities=pred$probabilities, scores=pred$scores,
+		centers=fit$centers, tstatistics=fit$tstatistics, sd=fit$sd,
+		iter=iter, time=proc.time() - start.time)
 }
 
-.calculateSpatialShrunkenCentroids <- function(x, classes, s, sd, s0=median(sd)) {
+.spatialShrunkenCentroidsFit <- function(x, classes, s, s0) {
+	start.time <- proc.time()
 	xbar <- rowMeans(iData(x))
 	xbar.k <- sapply(levels(classes), function(Ck) {
-		rowMeans(iData(x)[,classes==Ck,drop=FALSE])
+		rowMeans(iData(x)[,classes==Ck,drop=FALSE]) # may introduce NaNs
 	})
-	m.k <- sqrt((1 / tabulate(classes)) - (1 / length(classes)))
-	if ( missing(sd) )
-		sd <- .calculateWithinClassPooledSD(x, classes=classes, centroid=xbar)
-	xdiff <- xbar.k - xbar # matrix - vector
-	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
-	dim(se) <- dim(xbar.k)
+	sd <- calculateWithinClassPooledSD(x, classes=classes, centroid=xbar)
+	if ( missing(s0) ) s0 <- median(sd)
+	xdiff <- xbar.k - xbar
+	se <- calculateWithinClassPooledSE(x, classes=classes, centroid=xbar,
+		sd=sd, s0=s0)
 	tstatistics.k <- xdiff / se
 	tstatistics <- soft(tstatistics.k, s)
-	centers <- xbar + se * tstatistics
-	list(centers=centers,
-		tstatistics=tstatistics,
-		sd=sd)
+	tstatistics[is.na(tstatistics)] <- 0  # NaNs -> 0
+	centers <- xbar + se * tstatistics # NaNs kept for missing class levels
+	rownames(centers) <- featureNames(x)
+	colnames(centers) <- levels(classes)
+	rownames(tstatistics) <- featureNames(x)
+	colnames(tstatistics) <- levels(classes)
+	names(sd) <- featureNames(x)
+	list(centers=centers, tstatistics=tstatistics,
+		sd=sd, time=proc.time() - start.time)
 }
 
-.calculateNearestSpatialShrunkenCentroids <- function(x, classes, centers,
+.spatialShrunkenCentroidsPredict <- function(x, classes, centers,
 	priors, spatial, sd, s0=median(sd), .C=TRUE)
 {
-	scores <- .calculateSpatialDiscriminantScores(x, centers=centers,
-		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C)
-	probabilities <- .calculateClassProbabilities(scores)
-	classes <- factor(apply(probabilities, 1, which.max))
-	levels(classes) <- levels(classes)
-	list(classes=classes,
-		probabilities=probabilities,
-		scores=scores)
+	start.time <- proc.time()
+	scores <- calculateSpatialDiscriminantScores(x, centers=centers,
+		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
+	probabilities <- calculateClassProbabilities(scores) # NaNs -> 0
+	classes <- factor(apply(probabilities, 1, which.max),
+		levels=levels(classes)) # doesn't care about NaNs
+	names(classes) <- pixelNames(x)
+	rownames(probabilities) <- pixelNames(x)
+	colnames(probabilities) <- levels(classes)
+	rownames(scores) <- pixelNames(x)
+	colnames(scores) <- levels(classes)
+	list(classes=classes, probabilities=probabilities,
+		scores=scores, time=proc.time() - start.time)
 }
 
-.calculateWithinClassPooledSD <- function(x, classes, centroid) {
-	K <- length(levels(classes))
-	wcss <- sqrt(rowSums(.calculateFeaturewiseWCSS(x, classes, centroid)))
-	wcss / sqrt(length(classes) - K)
+calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
+	m.k <- sqrt((1 / table(classes)) - (1 / length(classes)))
+	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
+	dim(se) <- c(nrow(x), nlevels(classes))
+	se
 }
 
-.calculateFeaturewiseWCSS <- function(x, classes, centroid) {
+calculateWithinClassPooledSD <- function(x, classes, centroid) {
+	wcss <- sqrt(rowSums(calculateFeaturewiseWCSS(x, classes, centroid)))
+	wcss / sqrt(length(classes) - nlevels(classes))
+}
+
+calculateFeaturewiseWCSS <- function(x, classes, centroid) {
 	sapply(levels(classes), function(Ck) {
 		ok <- classes == Ck
 		if ( any(ok) ) {
@@ -187,11 +219,13 @@ setMethod("predict",
 	})
 }
 
-.calculateSpatialDiscriminantScores <- function(x, centers,
+calculateSpatialDiscriminantScores <- function(x, centers,
 	priors, spatial, sd, s0=median(si), .C=TRUE)
 {
 	if ( .C ) {
 		w <- rep(1, nrow(iData(x)))
+		na.centers <- apply(centers, 2, function(x.k) any(is.na(x.k)))
+		if ( any(na.centers) ) centers[,na.centers] <- 0 # handle NaNs
 		spatial$beta <- t(simplify2array(spatial$beta, higher=FALSE))
 		spatial$neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
 		scores <- matrix(0, nrow=ncol(x), ncol=ncol(centers))
@@ -202,12 +236,17 @@ setMethod("predict",
 			as.double(centers), as.integer(ncol(centers)),
 			as.double(sd + s0), as.double(scores))[[12]]
 		dim(scores) <- c(ncol(iData(x)), ncol(centers))
+		if ( any(na.centers) ) scores[,na.centers] <- Inf # handle NaNs
 	} else {
 		scores <- mapply(function(i, nb, b) {
 			gamma <- (spatial$alpha * b) / sum(gamma)
 			gamma <- rep(gamma, each=nrow(iData(x)))
 			apply(centers, 2, function(x.k) {
-				sum(gamma * (x[,nb,drop=FALSE] - x.k)^2 / (sd + s0)^2)
+				if ( any(is.na(x.k)) ) {
+					Inf  # handle NaNs
+				} else {
+					sum(gamma * (x[,nb,drop=FALSE] - x.k)^2 / (sd + s0)^2)
+				}
 			})
 		}, seq_len(ncol(iData(x))), spatial$neighbors, spatial$beta)
 		scores <- t(scores)
@@ -215,7 +254,7 @@ setMethod("predict",
 	scores - 2 * log(rep(priors, each=ncol(iData(x))))
 }
 
-.calculateClassProbabilities <- function(scores) {
+calculateClassProbabilities <- function(scores) {
 	t(apply(scores, 1, function(s) {
 		exp(-0.5 * s) / sum(exp(-0.5 * s))
 	}))

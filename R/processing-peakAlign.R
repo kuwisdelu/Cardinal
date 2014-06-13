@@ -2,15 +2,16 @@
 #### Peak alignment methods ####
 ## ---------------------------
 
-setMethod("peakAlign", c("MSImageSet", "numeric"),
+setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = c("diff", "DP"),
 		...,
 		pixel=pixels(object),
 		plot=FALSE)
 	{
 		if ( is.null(mzData(imageData(object))) )
-			.stop("No peak picking has been applied. Nothing to align.")
+			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		fun <- peakAlign.method(method)
+		.message("peakAlign: Using method = ", match.method(method))
 		peaklist <- pData(mzData(imageData(object)))
 		alignment <- pixelApply(object, function(s, ...) {
 			aout <- fun(peaklist[[.Index]], ref, ...)
@@ -56,19 +57,27 @@ setMethod("peakAlign", c("MSImageSet", "numeric"),
 		mz(object) <- ref
 		prochistory(processingData(object)) <- .history()
 		centroided(processingData(object)) <- TRUE
+		.message("peakAlign: Done.")
 		object
 	})
 
-setMethod("peakAlign", c("MSImageSet", "MSImageSet"), function(object, ref, ...) {
+setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
+	function(object, ref, ...)
+	{
 		if ( is.null(mzData(imageData(object))) )
-			.stop("No peak picking has been applied. Nothing to align.")
+			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		spectrum <- featureApply(ref, mean)
 		peaks <- mz(object)[localMaximaLogical(spectrum, span=5)]
-		peakAlign(object, ref=peaks, ...)
+		object <- peakAlign(object, ref=peaks, ...)
+		prochistory(processingData(object)) <- .history()
+		object
 	})
 
-setMethod("peakAlign", c("MSImageSet", "missing"), function(object, ...) {
-		peakAlign(object, ref=object, ...)
+setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "missing"),
+	function(object, ...) {
+		object <- peakAlign(object, ref=object, ...)
+		prochistory(processingData(object)) <- .history()
+		object
 	})
 
 peakAlign.method <- function(method) {

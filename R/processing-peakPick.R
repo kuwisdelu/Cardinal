@@ -9,8 +9,9 @@ setMethod("peakPick", "MSImageSet",
 		plot=FALSE)
 	{
 		if ( centroided(object) )
-			.stop("Data already centroided. Peak picking will not be performed.")
+			.stop("peakPick: Data already centroided. Peak picking will not be performed.")
 		fun <- peakPick.method(method)
+		.message("peakPeak: Using method = ", match.method(method))
 		peaks <- pixelApply(object, function(s, ...) {
 			pout <- fun(s, ...)
 			if ( plot ) {
@@ -42,6 +43,7 @@ setMethod("peakPick", "MSImageSet",
 		mzData(imageData(object)) <- mzData
 		peakPicking(processingData(object)) <- match.method(method)
 		prochistory(processingData(object)) <- .history()
+		.message("peakPick: Done.")
 		object
 	})
 

@@ -3,7 +3,7 @@
 
 .Cardinal <- list2env(list(
 	log=list(),
-	message=list(.message),
+	message=list(.console),
 	progress=list(
 		bar=NULL,
 		min=numeric(),
@@ -26,7 +26,7 @@
 	.Random.seed=NULL))
 
 .onLoad <- function(libname, pkgname) {
-	options(Cardinal.verbose=FALSE)
+	options(Cardinal.verbose=TRUE)
 	options(Cardinal.progress=FALSE)
 	options(Cardinal.autoflush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
