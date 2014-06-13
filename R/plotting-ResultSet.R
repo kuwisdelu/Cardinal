@@ -3,7 +3,7 @@ setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
 	function(x, parameters,
 		mode = c("centers", "tstatistics"),
-		tmin = 0,
+		threshold = 0,
 		classes = unique(unlist(x$classes)),
 		col = rainbow(length(classes)),
 		...)
@@ -13,15 +13,19 @@ setMethod("plot",
 		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
 			seq_len(nrow(modelData(x))), nclasses)))
 		df <- pData(modelData(x))[ntimes,]
-		df$classes <- as.vector(unlist(sapply(x$classes, levels)))
+		df$classes <- factor(as.vector(unlist(sapply(x$classes, levels))),
+			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
 		centers <- matrix(as.vector(unlist(x$centers)), nrow=nrow(x))
 		tstatistics <- matrix(as.vector(unlist((x$tstatistics))), nrow=nrow(x))
 		centers <- MSImageSet(spectra=centers,
 			coord=df, mz=fData(x)[["mz"]])
 		tstatistics <- MSImageSet(spectra=tstatistics,
 			coord=df, mz=fData(x)[["mz"]])
-		pData(centers)$model <- names(resultData(x))[ntimes]
-		pData(tstatistics)$model <- names(resultData(x))[ntimes]
+		model <- factor(names(resultData(x))[ntimes],
+			levels=names(resultData(x)),
+			labels=names(resultData(x)))
+		pData(centers)$model <- model
+		pData(tstatistics)$model <- model
 		if ( !missing(parameters) ) {
 			subset <- do.call("pixels", c(list(centers), parameters))
 			centers <- centers[,subset]
@@ -33,12 +37,12 @@ setMethod("plot",
 			obj <- tstatistics
 		}
 		pixel <- pixels(obj, classes=classes)
-		significant <- as.vector(abs(unlist(spectra(tstatistics)[,pixel])) > tmin)
+		significant <- as.vector(apply(iData(tstatistics)[,pixel], 2,
+			function(t) abs(t) > threshold))
 		plot(obj, ~ mz | model, pixel=pixel, pixel.groups=classes,
 			groups=significant, col=col, type='h', superpose=TRUE,
 			lattice=TRUE, ...)
 	})
-
 
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids"),
@@ -53,17 +57,21 @@ setMethod("image",
 		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
 			seq_len(nrow(modelData(x))), nclasses)))
 		df <- pData(modelData(x))[ntimes,]
-		df$classes <- as.vector(unlist(sapply(x$classes, levels)))
+		df$classes <- factor(as.vector(unlist(sapply(x$classes, levels))),
+			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
 		probabilities <- matrix(as.vector(unlist(x$probabilities)), nrow=ncol(x))
 		scores <- matrix(as.vector(unlist(x$scores)), nrow=ncol(x))
 		probabilities <- MSImageSet(spectra=t(probabilities),
 			coord=coord(x))
 		scores <- MSImageSet(spectra=t(scores),
 			coord=coord(x))
+		model <- factor(names(resultData(x))[ntimes],
+			levels=names(resultData(x)),
+			labels=names(resultData(x)))
 		fData(probabilities) <- df
-		fData(probabilities)$model <- names(resultData(x))[ntimes]
+		fData(probabilities)$model <- model
 		fData(scores) <- df
-		fData(scores)$model <- names(resultData(x))[ntimes]
+		fData(scores)$model <- model
 		if ( !missing(parameters) ) {
 			subset <- do.call("features", c(list(probabilities), parameters))
 			probabilities <- probabilities[subset,]

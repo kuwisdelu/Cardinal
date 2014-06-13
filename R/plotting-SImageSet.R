@@ -17,12 +17,19 @@ setMethod("plot",
 		subset = TRUE,
 		lattice = FALSE)
 	{
-		if ( missing(pixel) ) stop("'pixel' must be specified")
+		# parse formula and set up model for plotting
+		model <- .parsePlotFormula(formula, object=x, enclos=environment(formula))
+		if ( missing(pixel) && is.null(model$left) )
+			.stop("plot: 'pixel' must be specified")
 		# add Feature to features for default plotting
 		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# evaluated with respect to pData
-		pixel <- tryCatch(eval(substitute(pixel), envir=pData(x),
-			enclos=environment(formula)), error = function(e) eval(pixel))
+		if ( is.null(model$left) ) {
+			pixel <- tryCatch(eval(substitute(pixel), envir=pData(x),
+				enclos=environment(formula)), error = function(e) eval(pixel))
+		} else {
+			pixel <- seq_along(model$left)
+		}
 		# evaluated with respect to fData
 		groups <- tryCatch(eval(substitute(groups), envir=fData(x),
 			enclos=environment(formula)), error = function(e) eval(groups)) 
@@ -41,15 +48,13 @@ setMethod("plot",
 			pixel.groups <- as.factor(pixel.groups)
 			missing.pixel.groups <- FALSE
 		}
-		# parse formula and set up model for plotting
-		model <- .parsePlotFormula(formula, object=x, enclos=environment(formula))
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {
 			values <- .calculatePlotValues(x, fun=fun, pixel=pixel,
 				pixel.groups=pixel.groups, condition=model$condition,
 				missing.pixel.groups=missing.pixel.groups)
-			condition <- do.call(expand.grid, c(list(.pixel.groups=levels(pixel.groups)),
-				lapply(model$condition, function(cond) levels(as.factor(cond)))))
+			condition <- data.frame(.pixel.groups=pixel.groups,
+				lapply(model$condition, function(cond) cond[pixel]))
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
@@ -79,15 +84,13 @@ setMethod("plot",
 			data[[names(model$right)]] <- rep(unlist(model$right), ncond)
 			# set up the groups and subset
 			subset <- rep(subset, length.out=nrow(data))
+			if ( !is.null(groups) )
+				groups <- rep(groups, length.out=nrow(data))
 			if ( !is.null(groups) && !is.null(pixel.groups) && superpose ) {
-				col <- sapply(col, function(cl) {
-					gradient.colors(length(unique(groups)), "gray", cl)
-				})
-				groups <- interaction(groups, pixel.groups)
+				col <- sapply(col, function(cl) gradient.colors(length(unique(groups)), "gray", cl))
+				groups <- interaction(groups, data$.pixel.groups, drop=TRUE)
 			} else if ( superpose && is.null(groups) ) {
 				groups <- data$.pixel.groups
-			} else if ( !is.null(groups) ) {
-				groups <- rep(groups, length.out=nrow(data))
 			}
 			# set up the lattice formula
 			fm.side <- paste(".values ~", names(model$right))
@@ -153,10 +156,17 @@ setMethod("image",
 		subset = TRUE,
 		lattice = FALSE)
 	{
-		if ( missing(feature) ) stop("'feature' must be specified")
+		# parse formula and set up model for plotting
+		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
+		if ( missing(feature) && is.null(model$left) )
+			.stop("image: either 'feature' or LHS to formula must be specified")
 		# evaluated with respect to fData
-		feature <- tryCatch(eval(substitute(feature), envir=fData(x),
-			enclos=environment(formula)), error = function(e) eval(feature))
+		if ( is.null(model$left) ) {
+			feature <- tryCatch(eval(substitute(feature), envir=fData(x),
+				enclos=environment(formula)), error = function(e) eval(feature))
+		} else {
+			feature <- seq_along(model$left)
+		}
 		# evaluated with respect to pData
 		groups <- tryCatch(eval(substitute(groups), envir=pData(x),
 			enclos=environment(formula)), error = function(e) eval(groups))
@@ -177,15 +187,13 @@ setMethod("image",
 			feature.groups <- as.factor(feature.groups)
 			missing.feature.groups <- FALSE
 		}
-		# parse formula and set up model for plotting
-		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {
 			values <- .calculateImageValues(x, fun=fun, feature=feature,
 				feature.groups=feature.groups, condition=model$condition,
 				missing.feature.groups=missing.feature.groups)
-			condition <- do.call(expand.grid, c(list(.feature.groups=levels(feature.groups)),
-				lapply(model$condition, function(cond) levels(as.factor(cond)))))
+			condition <- data.frame(.feature.groups=feature.groups,
+				lapply(model$condition, function(cond) cond[feature]))
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
@@ -334,12 +342,12 @@ setMethod("image",
 	groups <- rep(TRUE, length(pixel))
 	if ( !is.null(condition) ) {
 		condition <- lapply(condition, function(cond) cond[pixel])
-		groups <- do.call(interaction, condition)
+		groups <- do.call(interaction, c(condition, list(drop=TRUE)))
 	}
 	if ( !missing.pixel.groups ) {
 		if ( length(pixel.groups) != length(pixel) )
 			pixel.groups <- pixel.groups[pixel]
-		groups <- interaction(pixel.groups, groups)
+		groups <- interaction(pixel.groups, groups, drop=TRUE)
 	}
 	.fastFeatureApply(object, fun=fun, pixel=pixel, pixel.groups=groups)
 }
@@ -351,12 +359,12 @@ setMethod("image",
 	groups <- rep(TRUE, length(feature))
 	if ( !is.null(condition) ) {
 		condition <- lapply(condition, function(cond) cond[feature])
-		groups <- do.call(interaction, condition)
+		groups <- do.call(interaction, c(condition, list(drop=TRUE)))
 	}
 	if ( !missing.feature.groups ) {
 		if ( length(feature.groups) != length(feature) )
 			feature.groups <- feature.groups[feature]
-		groups <- interaction(feature.groups, groups)
+		groups <- interaction(feature.groups, groups, drop=TRUE)
 	}
 	.fastPixelApply(object, fun=fun, feature=feature, feature.groups=groups)
 }
