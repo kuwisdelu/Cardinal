@@ -1,6 +1,5 @@
 
-#### color functions ####
-
+## Colors for image intensities
 intensity.colors <- function(n, alpha=1) {
 	col2 <- rainbow(3*n, alpha=alpha)[(2*n):1]
 	f <- colorRamp(c("black", rainbow(3*n)[2*n]))
@@ -11,11 +10,13 @@ intensity.colors <- function(n, alpha=1) {
 	cols[seq(from=1, to=3*n, by=3)]
 }
 
+## Colors for image intensities (alternative)
 intensity.colors2 <- function(n, alpha=1) {
 	cols <- rainbow(3*n, alpha=alpha)[(2*n):1]
 	cols[round(seq(from=1, to=2*n, length.out=n))]
 }
 
+## Colors for risk ranging blue to red through white
 risk.colors <- function(n, alpha=1) {
 	alpha <- round(alpha * 255)
 	f1 <- colorRamp(c("blue", "white"))
@@ -28,6 +29,7 @@ risk.colors <- function(n, alpha=1) {
 	cols[seq(from=1, to=2*n, by=2)]
 }
 
+## Gradient of two colors
 gradient.colors <- function(n, start="white", end="black", alpha=1) {
 	alpha <- round(alpha * 255)
 	f <- colorRamp(c(start, end))
@@ -36,6 +38,7 @@ gradient.colors <- function(n, start="white", end="black", alpha=1) {
 	cols
 }
 
+## Convert a color or vector of colors to be translucent
 alpha.colors <- function(n, col="red", ramp=c("linear","power"), range=c(0,1)) {
 	ramp <- match.arg(ramp)
 	if ( missing(n) ) n <- length(col)

@@ -15,8 +15,9 @@
 \alias{colnames<-,Hashmat-method}
 \alias{rownames,Hashmat-method}
 \alias{rownames<-,Hashmat-method}
-\alias{nrow,Hashmat-method}
-\alias{ncol,Hashmat-method}
+\alias{keys,Hashmat-method}
+\alias{keys<-,Hashmat-method}
+\alias{combine,Hashmat,Hashmat-method}
 
 \title{Sparse Matrix Class Using Lists as Hash Tables.}
 

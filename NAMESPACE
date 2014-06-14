@@ -30,6 +30,7 @@ exportClasses(
 	"Hashmat",
 	"IAnnotatedDataFrame",
 	"ImageData",
+	"ResultData",
 	"MIAPE-Imaging",
 	"MSImageProcess",
 	"MSImageSet",
@@ -58,6 +59,27 @@ export(
 	"risk.colors")
 
 exportMethods(
+	"as.array",
+	"as.matrix",
+	"names",
+	"names<-",
+	"rownames",
+	"rownames<-",
+	"colnames",
+	"colnames<-",
+	"summary")
+
+exportMethods(
+	"image",
+	"plot")
+
+exportMethods(
+	"fitted",
+	"predict",
+	"residuals",
+	"coef")
+
+exportMethods(
 	"$",
 	"$<-",
 	"[",
@@ -65,8 +87,6 @@ exportMethods(
 	"[[",
 	"[[<-",
 	"annotatedDataFrameFrom",
-	"colnames",
-	"colnames<-",
 	"combine",
 	"coord",
 	"coord<-",
@@ -104,8 +124,6 @@ exportMethods(
 	"mz<-",
 	"mzData",
 	"mzData<-",
-	"names",
-	"names<-",
 	"pData",
 	"pData<-",
 	"peaks",
@@ -125,8 +143,6 @@ exportMethods(
 	"regeneratePositions",
 	"resultData",
 	"resultData<-",
-	"rownames",
-	"rownames<-",
 	"sampleNames",
 	"sampleNames<-",
 	"show",
@@ -211,20 +227,10 @@ exportMethods(
 	"smoothSignal")
 
 exportMethods(
-	"image",
-	"plot")
-
-exportMethods(
 	"OPLS",
 	"PCA",
 	"PLS",
-	"predict",
 	"spatialKMeans",
-	"spatialShrunkenCentroids",
-	"summary",
-	"summaryPlot",
-	"trellisImage",
-	"trellisPlot",
-	"volume")
+	"spatialShrunkenCentroids")
 
 useDynLib("Cardinal")

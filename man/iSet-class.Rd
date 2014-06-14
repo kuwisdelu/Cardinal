@@ -162,9 +162,6 @@ try(new("iSet"))
 MyImageSet <- setClass("MyImageSet", contains="iSet")
 MyImageSet()
 
-idata <- ImageData(data0=array(1:27, dim=c(Features=3, x=3, y=3)))
-MyImageSet(imageData=idata)
-
 removeClass("MyImageSet")
 }
 

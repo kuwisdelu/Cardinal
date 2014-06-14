@@ -19,6 +19,8 @@
     groups = NULL,
     superpose = FALSE,
     fun = mean,
+    contrast.enhance = identity,
+    smooth.image = identity,
     \dots,
     xlab,
     xlim,
@@ -60,6 +62,10 @@
     \item{superpose}{Should feature vectors from different feature groups specified by 'feature.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
+
+    \item{contrast.enhance}{Contrast enhancement function to be applied to each image. The function can be user-supplied, or one of 'none', 'histogram', or 'suppression'. The 'histogram' equalization method flatterns the distribution of intensities. The hotspot 'suppression' method uses thresholding to reduce the intensities of hotspots.}
+
+    \item{smooth.image}{Image smoothing function to be applied to each image. The function can be user-supplied, or one of 'none', 'gaussian', or 'adaptive'. The 'gaussian' smoothing method smooths images with a simple gaussian kernel. The 'adaptive' method uses bilateral filtering to preserve edges.}
 
     \item{xlab}{Character or expression giving the label for the x-axis.}
 

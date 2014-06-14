@@ -1,32 +1,32 @@
 
-# gives the L1 norm of a vector
+# L1 norm of a vector
 l1norm <- function(x) sum(abs(x))
 
-# gives the L2 norm of a vector
+# L2 norm of a vector
 l2norm <- function(x) sqrt(sum(x^2))
 
-# soft thresholding
+# Soft thresholding
 soft <- function(x, delta) sign(x) * pmax(0, abs(x) - delta)
 
-# find the combined mean deviation of multiple samples
+# Combined mean deviation of multiple samples
 combinedMean <- function(xbar, n) {
 	sum(xbar * n) / sum(n)
 }
 
-# find the combined mean deviation of multiple samples
+# Combined mean deviation of multiple samples
 combinedVar <- function(xbar, var, n) {
 	xc <- combinedMean(xbar, n)
 	(sum(n * var) + sum(n * (xbar - xc)^2)) / sum(n)
 }
 
-# find the grouped mean, e.g., of a histogram
+# Grouped mean, e.g., of a histogram
 groupMean <- function(x, f) {
 	if ( any(f < 0) ) f[f < 0] <- 0
 	n <- sum(f)
 	sum(f * x) / n
 }
 
-# find the grouped variance, e.g., of a histogram
+# Grouped variance, e.g., of a histogram
 groupVar <- function(x, f) {
 	if ( any(f < 0) ) f[f < 0] <- 0
 	n <- sum(f)
@@ -35,14 +35,14 @@ groupVar <- function(x, f) {
 	(Sfx2 / n) - xbar^2
 }
 
-# find the kurtosis of a vector
+# Kurtosis of a vector
 kurtosis <- function(x, na.rm=FALSE) {
 	if ( na.rm ) x <- x[!is.na(x)]
 	n <- length(x)
 	n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
 }
 
-# bisection search along a sequence
+# Bisection search along a sequence
 bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 	if ( fun(x[1], ...) < fun(x[length(x)], ...) ) {
 		lo <- 1
@@ -70,14 +70,14 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 	i
 }
 
-# bin a signal
+# Bin a signal
 bin <- function(x, lbound, ubound, fun=sum) {
 	mapply(function(l, u) {
 		fun(x[l:u], na.rm=TRUE)
 	}, lbound, ubound)
 }
 
-# returns a list of approximately even subsets of a vector
+# Returns a list of approximately even subsets of a vector
 intervals <- function(x, blocks) {
 	ints <- floor(seq(from=1, to=length(x)+1, length.out=blocks))
 	begin <- ints[-length(ints)]
@@ -85,7 +85,7 @@ intervals <- function(x, blocks) {
 	apply(cbind(begin, end), 1, function(i) x[i[1]:i[2]])
 }
 
-# affine transformation on a data.frame of coordinates
+# Affine transformation on a data.frame of coordinates
 affine <- function(x, translate=c(0,0), rotate=0,
 	angle=c("degrees", "radians"), grid=TRUE)
 {
@@ -111,7 +111,7 @@ affine <- function(x, translate=c(0,0), rotate=0,
 	new.x
 }
 
-# logical local maxima in a window
+# Logical local maxima in a window
 localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
 	halfWindow <- floor(window / 2)
 	if ( .C ) {
@@ -126,13 +126,13 @@ localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
 	is.max
 }
 
-# local maxima in a window
+# Local maxima in a window
 localMaxima <- function(x, t, ...) {
 	if ( missing(t) ) t <- seq_along(x)
 	t[localMaximaLogical(x, ...)]
 }
 
-# returns the two nearest local maxima to the given points
+# Returns the two nearest local maxima to the given points
 nearestLocalMaxima <- function(x, t, tout, ...) {
 	locmax <- localMaxima(x, t, ...)
 	locmax <- unique(c(min(t), locmax, max(t)))
@@ -146,7 +146,7 @@ nearestLocalMaxima <- function(x, t, tout, ...) {
 	list(lbound=limits[1,], ubound=limits[2,])
 }
 
-# alignment of two vectors using dynamic programming
+# Alignment of two vectors using dynamic programming
 dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)), ... ) {
 	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
 	y.mat <- matrix(y, byrow=FALSE, ncol=length(x), nrow=length(y))
@@ -167,5 +167,3 @@ dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)),
 	colnames(aligned) <- c("x", "y")
 	return(aligned)
 }
-
-

@@ -1,10 +1,12 @@
 
+#### Fastmap algorithm for dimension reduction ####
+
 ## Fastmap for euclidean distances
 ## 'x' is a N x P matrix
 ## 'ncomp' is the number of fastmap components to calculate
 ## 'scale' indicates whether the x should be standardized
 ## -----------------------------------------------------
-fastmap <- function(x, ncomp=20, scale=FALSE) {
+fastmap <- function(x, ncomp=1, scale=FALSE, ...) {
 	x <- as.matrix(x)
 	if ( scale ) x <- scale(x, scale=scale)
 	x.new <- matrix(0, nrow=nrow(x), ncol=ncomp)
@@ -17,16 +19,16 @@ fastmap <- function(x, ncomp=20, scale=FALSE) {
 	return(list(scores=x.new, pivot.array=pivot.array))	
 }
 
-## Fastmap for SA and SASA clustering
+## Fastmap for spatially-aware clustering
 ## 'x' is a P x N matrix
 ## 'coord' is a data.frame of coordinates
 ## 'r' is the neighborhood radius
 ## 'ncomp' is the number of fastmap components to calculate
 ## 'scale' indicates whether the x should be standardized
-## 'spatial' is spatial info
+## 'spatial' is spatial info (see spatial.info())
 ## 'w' is the feature weights
 ## ------------------------------------
-fastmap.spatial <- function(x, r=1, ncomp=20, scale=FALSE, spatial, w, ...) {
+fastmap.spatial <- function(x, r=1, ncomp=1, scale=FALSE, spatial, w, ...) {
 	x <- as.matrix(x)
 	if ( scale ) x <- t(apply(x, 1, scale))
 	alpha <- spatial$alpha
@@ -35,6 +37,7 @@ fastmap.spatial <- function(x, r=1, ncomp=20, scale=FALSE, spatial, w, ...) {
 	ncomp <- ifelse(sum(w > 0) > ncomp, ncomp, sum(w > 0))
 	x.new <- matrix(0, nrow=ncol(x), ncol=ncomp)
 	pivot.array <- matrix(0, nrow=ncomp, ncol=2)
+	start.time <- proc.time()
 	out.fastmap <- .C("fastmap_spatial", as.double(x),
 		as.integer(nrow(x)), as.integer(ncol(x)),
 		as.integer(neighbors - 1), as.integer(ncol(neighbors)),
@@ -46,5 +49,7 @@ fastmap.spatial <- function(x, r=1, ncomp=20, scale=FALSE, spatial, w, ...) {
 	pivot.array <- matrix(out.fastmap[[10]] + 1, nrow=ncomp, ncol=2)
 	pivot.array <- as.data.frame(pivot.array)
 	names(pivot.array) <- c("Oa", "Ob")
-	return(list(scores=x.new, pivot.array=pivot.array))
+	list(scores=x.new, pivot.array=pivot.array,
+		time=proc.time() - start.time)
 }
+

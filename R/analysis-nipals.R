@@ -1,6 +1,11 @@
 
-#### functions for NIPALS algorithm -- expects centered matrices X and Y ####
+#### NIPALS algorithm ####
 
+## Principal components calculated using NIPALS
+## 'X' is a _centered_ N x P matrix
+## 'ncomp' is the number of components to calculate
+## 'tol' is the tolerance for the convergence criterion
+## 'iter.max' is the number of iterations
 nipals.PCA <- function(X, ncomp=2, tol=1e-6, iter.max=100) {
 	if ( ncomp > ncol(X) ) ncomp <- ncol(X)
 	loadings <- matrix(nrow=ncol(X), ncol=ncomp)
@@ -30,6 +35,12 @@ nipals.PCA <- function(X, ncomp=2, tol=1e-6, iter.max=100) {
 	list(scores=scores, loadings=loadings, sdev=apply(scores, 2, sd))
 }
 
+## Partial least squares using NIPALS
+## 'X' is a _centered_ N x P matrix
+## 'Y' is a _centered_ N x D matrix
+## 'ncomp' is the number of components to calculate
+## 'tol' is the tolerance for the convergence criterion
+## 'iter.max' is the number of iterations
 nipals.PLS <- function(X, Y, ncomp=2, tol=1e-6, iter.max=100) {
 	if ( ncomp > ncol(X) ) ncomp <- ncol(X)
 	if ( nrow(X) != nrow(Y) ) stop("'X' and 'Y' must have the same number of rows")
@@ -80,6 +91,12 @@ nipals.PLS <- function(X, Y, ncomp=2, tol=1e-6, iter.max=100) {
 		Yscores=Yscores, projection=H, coefficients=Bhat, fitted=Yhat)
 }
 
+## Orthogonal partial least squares using NIPALS
+## 'X' is a _centered_ N x P matrix
+## 'Y' is a _centered_ N x D matrix
+## 'ncomp' is the number of components to calculate
+## 'tol' is the tolerance for the convergence criterion
+## 'iter.max' is the number of iterations
 nipals.OPLS <- function(X, Y, ncomp=2, tol=1e-6, iter.max=100) {
 	if ( ncomp > ncol(X) ) ncomp <- ncol(X)
 	if ( nrow(X) != nrow(Y) ) stop("'X' and 'Y' must have the same number of rows")

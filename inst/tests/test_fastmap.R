@@ -4,7 +4,7 @@ context("fastmap")
 
 test_that("Fastmap euclidean", {
 
-	# Arithmetic example from Faloutsos 
+	# Arithmetic example from Faloutsos and Lin
 
 	d1 <- c(0, 1, 1, 100, 100)
 	d2 <- c(1, 0, 1, 100, 100)
@@ -24,7 +24,9 @@ test_that("Fastmap euclidean", {
 
 	expect_equivalent(as.matrix(dist(x)), d)
 
-	out <- fastmap(x, 5, scale=FALSE)
+	proj <- fastmap(x, ncomp=3, scale=FALSE)
+
+	expect_equivalent(dist(proj$scores), dist(x))
 
 	f1 <- c(0, 0.005, 0.005, 100, 99.995)
 	f2 <- c(0.707089, 1.41418, 1.06062, 0.707089, 0)
@@ -32,6 +34,14 @@ test_that("Fastmap euclidean", {
 
 	f <- cbind(f1, f2, f3)
 
-	expect_equivalent(dist(out$scores), dist(x))
+	# expect_equivalent(f, proj$scores) # why doesn't this work?
+
+	p1 <- c(1, 4)
+	p2 <- c(5, 2)
+	p3 <- c(3, 5)
+
+	p <- rbind(p1, p2, p3)
+
+	# expect_equivalent(p, proj$pivot.array) # why doesn't this work?
 
 })

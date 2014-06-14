@@ -11,6 +11,10 @@
 \alias{initialize,SImageData-method}
 \alias{iData,SImageData-method}
 \alias{iData<-,SImageData-method}
+\alias{peakData,SImageData-method}
+\alias{peakData<-,SImageData-method}
+\alias{mzData,SImageData-method}
+\alias{mzData<-,SImageData-method}
 
 \title{Class Containing Sparse Image Data.}
 

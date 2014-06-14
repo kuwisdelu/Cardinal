@@ -16,7 +16,7 @@ setMethod("spatialShrunkenCentroids",
 		spatial <- spatial.info(x, r=init$r, method=method)
 		lapply(ss, function(s) {
 			.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
-			res <- append(.spatialShrunkenCentroidsCluster(x,
+			res <- append(.spatialShrunkenCentroids.cluster(x,
 				classes=init$cluster, centers=init$centers,
 				r=init$r, k=init$k, s=s, spatial=spatial,
 				iter.max=iter.max), list(method=method,
@@ -61,7 +61,7 @@ setMethod("spatialShrunkenCentroids",
 	.time.start()
 	out <- unlist(lapply(ss, function(s) {
 		.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
-		fit <- .spatialShrunkenCentroidsFit(x, classes=y, s=s)
+		fit <- .spatialShrunkenCentroids.fit(x, classes=y, s=s)
 		fit <- append(fit, list(y=y, s=s, method=method, priors=priors))
 		lapply(rs, function(r) {
 			.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
@@ -116,7 +116,7 @@ setMethod("predict",
 	out <- lapply(resject@resultData, function(res) {
 		spatial <- spatial.info(newx, r=res$r, method=res$method)
 		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
-		pred <- .spatialShrunkenCentroidsPredict(newx, classes=res$y,
+		pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
 			centers=res$centers, priors=res$priors,
 			spatial=spatial, sd=res$sd)
 		res[names(pred)] <- pred
@@ -134,7 +134,21 @@ setMethod("predict",
 		modelData=object@modelData)
 })
 
-.spatialShrunkenCentroidsCluster <- function(x, classes, centers, r, k, s,
+setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
+	logp <- sapply(object$probabilities, function(prob) {
+		phat <- apply(prob, 1, max)
+		sum(log(phat))
+	})
+	class(logp) <- "logLik"
+	attr(logp, "df") <- sapply(object$tstatistics, function(t) {
+		sum(abs(t) > 0) + length(features(object))
+	})
+	attr(logp, "nobs") <- length(pixels(object))
+	attr(logp, "names") <- names(resultData(object))
+	lik
+} )
+
+.spatialShrunkenCentroids.cluster <- function(x, classes, centers, r, k, s,
 	spatial, iter.max)
 {
 	classes.last <- sample(classes)
@@ -146,8 +160,8 @@ setMethod("predict",
 		priors <- table(classes) / sum(table(classes))
 		classes.last <- classes
 		centers.last <- centers
-		fit <- .spatialShrunkenCentroidsFit(x, classes=classes, s=s)
-		pred <- .spatialShrunkenCentroidsPredict(x=x, classes=classes,
+		fit <- .spatialShrunkenCentroids.fit(x, classes=classes, s=s)
+		pred <- .spatialShrunkenCentroids.predict(x=x, classes=classes,
 			centers=fit$centers, priors=priors, spatial=spatial, sd=fit$sd)
 		classes <- pred$classes
 		centers <- fit$centers
@@ -160,16 +174,16 @@ setMethod("predict",
 		iter=iter, time=proc.time() - start.time)
 }
 
-.spatialShrunkenCentroidsFit <- function(x, classes, s, s0) {
+.spatialShrunkenCentroids.fit <- function(x, classes, s, s0) {
 	start.time <- proc.time()
 	xbar <- rowMeans(iData(x))
 	xbar.k <- sapply(levels(classes), function(Ck) {
 		rowMeans(iData(x)[,classes==Ck,drop=FALSE]) # may introduce NaNs
 	})
-	sd <- calculateWithinClassPooledSD(x, classes=classes, centroid=xbar)
+	sd <- .calculateWithinClassPooledSD(x, classes=classes, centroid=xbar)
 	if ( missing(s0) ) s0 <- median(sd)
 	xdiff <- xbar.k - xbar
-	se <- calculateWithinClassPooledSE(x, classes=classes, centroid=xbar,
+	se <- .calculateWithinClassPooledSE(x, classes=classes, centroid=xbar,
 		sd=sd, s0=s0)
 	tstatistics.k <- xdiff / se
 	tstatistics <- soft(tstatistics.k, s)
@@ -184,13 +198,13 @@ setMethod("predict",
 		sd=sd, time=proc.time() - start.time)
 }
 
-.spatialShrunkenCentroidsPredict <- function(x, classes, centers,
+.spatialShrunkenCentroids.predict <- function(x, classes, centers,
 	priors, spatial, sd, s0=median(sd), .C=TRUE)
 {
 	start.time <- proc.time()
-	scores <- calculateSpatialDiscriminantScores(x, centers=centers,
+	scores <- .calculateSpatialDiscriminantScores(x, centers=centers,
 		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
-	probabilities <- calculateClassProbabilities(scores) # NaNs -> 0
+	probabilities <- .calculateClassProbabilities(scores) # NaNs -> 0
 	classes <- factor(apply(probabilities, 1, which.max),
 		levels=levels(classes)) # doesn't care about NaNs
 	names(classes) <- pixelNames(x)
@@ -202,19 +216,19 @@ setMethod("predict",
 		scores=scores, time=proc.time() - start.time)
 }
 
-calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
+.calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
 	m.k <- sqrt((1 / table(classes)) - (1 / length(classes)))
 	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
 	dim(se) <- c(nrow(x), nlevels(classes))
 	se
 }
 
-calculateWithinClassPooledSD <- function(x, classes, centroid) {
-	wcss <- sqrt(rowSums(calculateFeaturewiseWCSS(x, classes, centroid)))
+.calculateWithinClassPooledSD <- function(x, classes, centroid) {
+	wcss <- sqrt(rowSums(.calculateFeaturewiseWCSS(x, classes, centroid)))
 	wcss / sqrt(length(classes) - nlevels(classes))
 }
 
-calculateFeaturewiseWCSS <- function(x, classes, centroid) {
+.calculateFeaturewiseWCSS <- function(x, classes, centroid) {
 	sapply(levels(classes), function(Ck) {
 		ok <- classes == Ck
 		if ( any(ok) ) {
@@ -225,7 +239,7 @@ calculateFeaturewiseWCSS <- function(x, classes, centroid) {
 	})
 }
 
-calculateSpatialDiscriminantScores <- function(x, centers,
+.calculateSpatialDiscriminantScores <- function(x, centers,
 	priors, spatial, sd, s0=median(si), .C=TRUE)
 {
 	if ( .C ) {
@@ -251,7 +265,7 @@ calculateSpatialDiscriminantScores <- function(x, centers,
 				if ( any(is.na(x.k)) ) {
 					Inf  # handle NaNs
 				} else {
-					sum(gamma * (x[,nb,drop=FALSE] - x.k)^2 / (sd + s0)^2)
+					sum(gamma * (iData(x)[,nb,drop=FALSE] - x.k)^2 / (sd + s0)^2)
 				}
 			})
 		}, seq_len(ncol(iData(x))), spatial$neighbors, spatial$beta)
@@ -260,7 +274,7 @@ calculateSpatialDiscriminantScores <- function(x, centers,
 	scores - 2 * log(rep(priors, each=ncol(iData(x))))
 }
 
-calculateClassProbabilities <- function(scores) {
+.calculateClassProbabilities <- function(scores) {
 	t(apply(scores, 1, function(s) {
 		exp(-0.5 * s) / sum(exp(-0.5 * s))
 	}))

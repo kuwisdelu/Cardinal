@@ -53,8 +53,12 @@ setMethod("plot",
 			values <- .calculatePlotValues(x, fun=fun, pixel=pixel,
 				pixel.groups=pixel.groups, condition=model$condition,
 				missing.pixel.groups=missing.pixel.groups)
-			condition <- data.frame(.pixel.groups=pixel.groups,
-				lapply(model$condition, function(cond) cond[pixel]))
+			if ( is.null(model$condition) ) {
+				condition <- data.frame(.pixel.groups=pixel.groups)
+			} else {
+				condition <- data.frame(.pixel.groups=pixel.groups,
+					lapply(model$condition, function(cond) cond[pixel]))
+			}
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
@@ -144,6 +148,8 @@ setMethod("image",
 		groups = NULL,
 		superpose = FALSE,
 		fun = mean,
+		contrast.enhance = identity,
+		smooth.image = identity,
 		...,
 		xlab,
 		xlim,
@@ -192,8 +198,12 @@ setMethod("image",
 			values <- .calculateImageValues(x, fun=fun, feature=feature,
 				feature.groups=feature.groups, condition=model$condition,
 				missing.feature.groups=missing.feature.groups)
-			condition <- data.frame(.feature.groups=feature.groups,
-				lapply(model$condition, function(cond) cond[feature]))
+			if ( is.null(model$condition) ) {
+				condition <- data.frame(.feature.groups=feature.groups)
+			} else {
+				condition <- data.frame(.feature.groups=feature.groups,
+					lapply(model$condition, function(cond) cond[feature]))
+			}
 		} else {
 			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
@@ -202,7 +212,10 @@ setMethod("image",
 		# shape image values into matrix with one image per column, includes NAs
 		values <- .reshapeImageValues(values, x, groups=groups, subset=subset,
 			perm=names(model$right), lattice=lattice)
-		# OKAY TO PERFORM IMAGE PROCESSING HERE
+		# perform image processing
+		values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
+			function(x) smooth.image(contrast.enhance(x)))
+		# get the number of rows and conditions
 		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
 		# set up plotting parameters
@@ -228,7 +241,7 @@ setMethod("image",
 			# set up the groups and subset
 			subset <- rep(subset[positionArray(imageData(x))], ncond)
 			if ( superpose && is.null(groups) ) {
-				groups <- factor(rep(levels(feature.groups), each=nobs, length.out=nrow(data)))
+				groups <- factor(rep(unique(feature.groups), each=nobs, length.out=nrow(data)))
 			} else if ( !is.null(groups) ) {
 				# what the heck is this supposed to do? need to figure out...
 				groups <- factor(rep(groups[positionArray(imageData(x))], ncond))
@@ -258,11 +271,11 @@ setMethod("image",
 				col.regions=col, colorkey=colorkey,
 				panel=function(x, y, z, col.regions, at, subscripts, ...) {
 					if ( !is.null(groups) ) {
-						for ( i in seq_along(levels(groups)) ) {
+						for ( i in seq_along(unique(groups)) ) {
 							col <- alpha.colors(100, col.regions[i])
 							at <- seq(from=zlim[1], to=zlim[2], length.out=length(col))
 							panel.levelplot(x, y, z, col.regions=col, at=at,
-								subscripts=subscripts[groups==levels(groups)[i]],
+								subscripts=subscripts[groups==unique(groups)[i]],
 								...)
 						}
 					} else {
@@ -283,7 +296,7 @@ setMethod("image",
 			# stop if conditioning variables found
 			if ( ncond > 1 ) stop("conditioning variables not allowed for lattice = FALSE")
 			# calculate the total number of plotting layers required
-			nsamples <- length(levels(data$sample))
+			nsamples <- length(unique(data$sample))
 			nlayers <- ncond * nsamples
 			# set up the x-y coordinates for reshaping z matrix
 			xylim <- dim(imageData(x))[names(model$right)]
@@ -294,7 +307,7 @@ setMethod("image",
 			zdim <- c(length(xs), length(ys))
 			# loop through conditions and then samples
 			for ( i in ncol(values) ) {
-				for ( j in levels(data$sample) ) {
+				for ( j in unique(data$sample) ) {
 					z <- values[data$sample == j]
 					dim(z) <- zdim
 					# plot with base graphics
@@ -320,19 +333,18 @@ setMethod("image",
 .reshapeImageValues <- function(values, object, groups, subset, perm, lattice) {
 	if ( !lattice && !is.null(groups) ) {
 		nas <- rep(NA, nrow(values))
-		newdim <- c(nrow(values), ncol(values) * length(levels(groups)))
+		newdim <- c(nrow(values), ncol(values) * length(unique(groups)))
 		values <- apply(values, 2, function(x) {
-			sapply(levels(groups), function(g) ifelse(groups==g, x, nas))
+			sapply(unique(groups), function(g) ifelse(groups==g, x, nas))
 		})
 		dim(values) <- newdim
 	}
 	subsetPositions <- positionArray(imageData(object))
 	subsetPositions <- aperm(subsetPositions, perm=perm)
 	subsetPositions[!subset] <- NA
-	retval <- apply(values, 2, function(x) x[subsetPositions])
-	if ( !is.matrix(retval) )
-		retval <- as.matrix(retval)
-	retval
+	retvals <- apply(values, 2, function(x) x[subsetPositions])
+	dim(retvals) <- c(dim(subsetPositions), ncol(values))
+	retvals
 }
 
 .calculatePlotValues <- function(object, fun, pixel, pixel.groups,
@@ -374,10 +386,10 @@ setMethod("image",
 	pixel.groups <- as.factor(pixel.groups)
 	if ( length(pixel) == 1 ) {
 		x <- as.matrix(x)
-	} else if ( length(levels(pixel.groups)) == 1 ) {
+	} else if ( length(unique(pixel.groups)) == 1 ) {
 		x <- as.matrix(apply(x, 1, fun))
 	} else {
-		x <- sapply(levels(pixel.groups), function(g) {
+		x <- sapply(unique(pixel.groups), function(g) {
 			apply(x[,pixel.groups==g,drop=FALSE], 1, fun)
 		})
 	}
@@ -389,10 +401,10 @@ setMethod("image",
 	feature.groups <- as.factor(feature.groups)
 	if ( length(feature) == 1 ) {
 		x <- t(x)
-	} else if ( length(levels(feature.groups)) == 1 ) {
+	} else if ( length(unique(feature.groups)) == 1 ) {
 		x <- as.matrix(apply(x, 2, fun))
 	} else {
-		x <- sapply(levels(feature.groups), function(g) {
+		x <- sapply(unique(feature.groups), function(g) {
 			apply(x[feature.groups==g,,drop=FALSE], 2, fun)
 		})
 	}

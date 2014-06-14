@@ -5,7 +5,8 @@ setMethod("spatialKMeans",
 		method = c("gaussian", "adaptive"),
 		weights = 1, iter.max = 100, nstart = 100,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
-			"MacQueen"), ...)
+			"MacQueen"),
+		ncomp = 20, ...)
 {
 	method <- match.arg(method)
 	save.seed()
@@ -16,7 +17,7 @@ setMethod("spatialKMeans",
 	out <- unlist(lapply(rs, function(r){
 		spatial <- spatial.info(x, r=r, method=method)
 		.message("spatialKMeans: Calculating spatial information for r = ", r, ".")
-		fastmap <- spatial.fastmap(x, r=r, spatial=spatial, w=w, ...)
+		fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=w, ncomp=ncomp)
 		lapply(ks, function(k) {
 			.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
 			res <- append(.spatialKMeans(x, fastmap=fastmap, k=k,
@@ -63,85 +64,3 @@ setMethod("spatialKMeans",
 	colnames(centers) <- levels(x)
 	list(cluster=cluster, centers=centers, time=proc.time() - start.time)
 }
-
-spatial.info <- function(x, r, method) {
-	neighbors <- spatial.neighbors(x, r=r, na.rm=TRUE)
-	alpha <- spatial.alpha(r=r, p=length(coordLabels(x)))
-	if ( method == "adaptive" ) {
-		beta <- spatial.beta(iData(x), neighbors)
-	} else {
-		beta <- rep(list(matrix(1, nrow=nrow(alpha), ncol=nrow(alpha))), ncol(iData(x)))
-	}
-	list(neighbors=neighbors, alpha=alpha, beta=beta)
-}
-
-spatial.alpha <- function(r, p) {
-	sigma <- ((2 * r) + 1) / 4
-	radii <- lapply(1:p, function(i) (-r):r)
-	neighborhood <- expand.grid(radii)
-	alpha <- apply(neighborhood, 1, function(i) exp((-sum(i^2))/(2 * sigma^2)))
-	dim(alpha) <- rep((2 * r) + 1, p)
-	alpha
-}
-
-spatial.beta <- function(x, neighbors) {
-	if ( length(neighbors[[1]]) == 1 ) {
-		matrix(1, ncol=length(neighbors))
-	} else {
-		mapply(function(i, nb) {
-			delta <- sqrt(colSums((x[,i] - x[,nb,drop=FALSE])^2))
-			lambda <- max(delta - min(delta)) / 2
-			lambda <- ifelse(lambda > 0, lambda, 1)
-			beta <- exp(-delta^2 / (2 * lambda^2))
-			dim(beta) <- dim(nb)
-			dimnames(beta) <- dimnames(nb)
-			beta
-		}, seq_len(ncol(x)), neighbors, SIMPLIFY=FALSE)
-	}
-}
-
-spatial.neighbors <- function(x, r, na.rm=FALSE) {
-	coord <- coord(x)
-	if ( r == 0 )
-		return(matrix(seq_len(nrow(coord)), ncol=nrow(coord)))
-	coord <- data.frame(lapply(coord, as.integer))
-	dim <- sapply(coord, max)
-	positionArray <- generatePositionArray(coord + r, dim + (2 * r))
-	coord <- coord + r
-	f <- function(...) positionArray[...]
-	radii <- rep(list((-r):r), ncol(coord))
-	names(radii) <- names(coord)
-	radii[!names(coord) %in% coordLabels(x)] <- 0
-	lapply(seq_len(nrow(coord)), function(i) {
-		neighbors <- do.call(f, mapply(`+`, coord[i,], radii, SIMPLIFY=FALSE))
-		if ( na.rm ) neighbors[is.na(neighbors)] <- i
-		dimnames(neighbors) <- radii[names(coord)]
-		neighbors
-	})
-}
-
-spatial.fastmap <- function(x, r=1, ncomp=20, scale=FALSE, spatial, w, ...) {
-	x <- as.matrix(iData(x))
-	if ( scale ) x <- t(apply(x, 1, scale))
-	alpha <- spatial$alpha
-	beta <- t(simplify2array(spatial$beta, higher=FALSE))
-	neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
-	ncomp <- ifelse(sum(w > 0) > ncomp, ncomp, sum(w > 0))
-	x.new <- matrix(0, nrow=ncol(x), ncol=ncomp)
-	pivot.array <- matrix(0, nrow=ncomp, ncol=2)
-	start.time <- proc.time()
-	out.fastmap <- .C("fastmap_spatial", as.double(x),
-		as.integer(nrow(x)), as.integer(ncol(x)),
-		as.integer(neighbors - 1), as.integer(ncol(neighbors)),
-		as.double(w), as.double(alpha), as.double(beta),
-		as.double(x.new), as.integer(pivot.array), as.integer(ncomp))
-	x.new <- matrix(out.fastmap[[9]], nrow=ncol(x), ncol=ncomp)
-	x.new <- as.data.frame(x.new)
-	names(x.new) <- paste("FC", 1:ncomp, sep="")
-	pivot.array <- matrix(out.fastmap[[10]] + 1, nrow=ncomp, ncol=2)
-	pivot.array <- as.data.frame(pivot.array)
-	names(pivot.array) <- c("Oa", "Ob")
-	list(scores=x.new, pivot.array=pivot.array,
-		time=proc.time() - start.time)
-}
-

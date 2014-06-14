@@ -10,6 +10,8 @@
 \alias{mz<-,SImageSet-method}
 \alias{spectra,SImageSet-method}
 \alias{spectra<-,SImageSet-method}
+\alias{peaks,SImageSet-method}
+\alias{peaks<-,SImageSet-method}
 
 \title{Class to Contain Mass Spectrometry Imaging Experiment Data.}
 

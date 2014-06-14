@@ -148,21 +148,21 @@ setMethod("pixelApply", "SImageSet",
 			.verbose = FALSE) {
 		# set up subset variables if not provided
 		if ( !missing(.pixel) )
-			.pixel <- eval(substitute(.pixel), envir=pData(.object),
-				enclos=parent.frame(2))
+			.pixel <- tryCatch(eval(substitute(.pixel), envir=pData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.pixel))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
 		.pixel <- pixels(.object)[.pixel]
 		if ( !missing(.feature) )
-			.feature <- eval(substitute(.feature), envir=fData(.object),
-				enclos=parent.frame(2))
+			.feature <- tryCatch(eval(substitute(.feature), envir=fData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.feature))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
 		.feature <- features(.object)[.feature]
 		# set up grouping variables if not provided
 		if ( !missing(.feature.groups) )
-			.feature.groups <- eval(substitute(.feature.groups),
-				envir=fData(.object), enclos=parent.frame(2))
+			.feature.groups <- tryCatch(eval(substitute(.pixel.groups), envir=pData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.pixel.groups))
 		if ( missing(.feature.groups) || is.null(.feature.groups) )
 			.feature.groups <- factor(integer(length(.feature)), labels="")
 		.feature.groups <- as.factor(.feature.groups)
@@ -214,21 +214,21 @@ setMethod("featureApply", "SImageSet",
 			.verbose = FALSE) {
 		# set up subset variables if not provided
 		if ( !missing(.feature) )
-			.feature <- eval(substitute(.feature), envir=fData(.object),
-				enclos=parent.frame(2))
+			.feature <- tryCatch(eval(substitute(.feature), envir=fData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.feature))
 		if ( missing(.feature) || is.null(.feature) )
 			.feature <- rep(TRUE, nrow(.object@featureData))
 		.feature <- features(.object)[.feature]
 		if ( !missing(.pixel) )
-			.pixel <- eval(substitute(.pixel), envir=pData(.object),
-				enclos=parent.frame(2))
+			.pixel <- tryCatch(eval(substitute(.pixel), envir=pData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.pixel))
 		if ( missing(.pixel) || is.null(.pixel) )
 			.pixel <- rep(TRUE, nrow(.object@pixelData))
 		.pixel <- pixels(.object)[.pixel]
 		# set up grouping variables if not provided
 		if ( !missing(.pixel.groups) )
-			.pixel.groups <- eval(substitute(.pixel.groups),
-				envir=pData(.object), enclos=parent.frame(2))
+			.pixel.groups <- tryCatch(eval(substitute(.pixel.groups), envir=pData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.pixel.groups))
 		if ( missing(.pixel.groups) || is.null(.pixel.groups) )
 			.pixel.groups <- factor(integer(length(.pixel)), labels="")
 		.pixel.groups <- as.factor(.pixel.groups)

@@ -8,7 +8,7 @@
 \alias{peakAlign,MSImageSet,missing-method}
 
 \alias{peakAlign.diff}
-\alias{peakAlign.dp}
+\alias{peakAlign.DP}
 
 \title{Peak Align an Imaging Dataset}
 \description{

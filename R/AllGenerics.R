@@ -1,17 +1,28 @@
 
 #### Define new generics from base R ####
+## -------------------------------------
 setGeneric("as.array")
 setGeneric("as.matrix")
 setGeneric("names")
 setGeneric("names<-")
 setGeneric("rownames<-")
 setGeneric("colnames<-")
+setGeneric("summary")
+
+#### Define new generics from stats R ####
+## ---------------------------------------
+setGeneric("fitted")
+setGeneric("predict")
+setGeneric("residuals")
+setGeneric("coef")
 
 #### Define new generics from graphics R ####
-setGeneric("image")
+## ------------------------------------------
 setGeneric("plot")
+setGeneric("image")
 
 #### Basic accessor, setter, and manipulation ####
+## -----------------------------------------------
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
 setGeneric("coordinates", function(object) coord(object))
@@ -53,6 +64,7 @@ setGeneric("spectra", function(object) standardGeneric("spectra")) # use MSnbase
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
 
 #### MIAPE - Imaging ####
+## ----------------------
 setGeneric("msiInfo", function(object) standardGeneric("msiInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
 setGeneric("specimenOrigin<-", function(object, value) standardGeneric("specimenOrigin<-"))
@@ -98,6 +110,7 @@ setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
 
 #### Processing information ####
+## -----------------------------
 setGeneric("prochistory", function(object) standardGeneric("prochistory"))
 setGeneric("prochistory<-", function(object, value) standardGeneric("prochistory<-"))
 setGeneric("files", function(object) standardGeneric("files"))
@@ -115,42 +128,27 @@ setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking
 setGeneric("centroided", function(object) standardGeneric("centroided")) # use mzR generic?
 setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
+#### Apply-like methods ####
+## ------------------------
+setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
+setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
+setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
+
 #### Pre-processing and data transformation ####
+## ---------------------------------------------
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
 
-#### Pre-processing and data transformation (Old) ####
-setGeneric("calibrateSegmentation", function(object, reference, ...) standardGeneric("calibrateSegmentation"))
-setGeneric("coregisterImages", function(object, ...) standardGeneric("coregisterImages"))
-setGeneric("likPlot", function(object, ...) standardGeneric("likPlot"))
-setGeneric("logLik", function(object, ...) standardGeneric("logLik"))
-setGeneric("selectPeaks", function(object, ...) standardGeneric("selectPeaks"))
-setGeneric("selectPixels", function(object, ...) standardGeneric("selectPixels"))
-setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
-
-#### Apply-like methods ####
-setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
-setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
-setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
-
-#### Plotting and visualization ####
-setGeneric("summaryPlot", function(object, reference, ...) standardGeneric("summaryPlot"))
-setGeneric("trellisImage", function(x, ...) standardGeneric("trellisImage"))
-setGeneric("trellisPlot", function(x, ...) standardGeneric("trellisPlot"))
-setGeneric("volume", function(x, ...) standardGeneric("volume"))
-
 #### Statistical analysis and tools ####
+## -------------------------------------
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 
-#### Statistical analysis and tools (Old) ####
-setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
-setGeneric("predict", function(object, ...) standardGeneric("predict"))
-setGeneric("summary", function(object, ...) standardGeneric("summary"))
+####-----------------------------------------------------------####
 

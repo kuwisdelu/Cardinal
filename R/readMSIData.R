@@ -1,5 +1,6 @@
 
-#### read any MS imaging data file ####
+#### Read any MS imaging data file ####
+## -----------------------------------
 
 readMSIData <- function(file) {
 	path <- normalizePath(file)
