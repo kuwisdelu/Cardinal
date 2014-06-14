@@ -150,5 +150,10 @@ setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 
+#### Other ####
+## ------------------------
+setGeneric("select", function(x, ...) standardGeneric("select"))
+setGeneric("image3d", function(x, ...) standardGeneric("image3d"))
+
 ####-----------------------------------------------------------####
 

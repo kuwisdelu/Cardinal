@@ -233,4 +233,8 @@ exportMethods(
 	"spatialKMeans",
 	"spatialShrunkenCentroids")
 
+exportMethods(
+	"select",
+	"image3d")
+
 useDynLib("Cardinal")

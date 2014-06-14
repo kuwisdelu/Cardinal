@@ -24,6 +24,8 @@ readAnalyze(name, folder=getwd())
 }
 \details{
 	In the current implementation, the file extensions must match exactly: '.imzML' and '.ibd' for imzML and '.hdr', '.t2m', and '.img' for Analyze 7.5.
+
+	The \code{readImzML} function currently only supports reading and returning the 'continuous' format. Support for 'processed' format is in development.
 }
 \value{
 	A \code{\linkS4class{MSImageSet}} object.

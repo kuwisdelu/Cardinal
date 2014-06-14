@@ -57,6 +57,36 @@ SEXP readContinuousIntensityArray(const char * filename, int offset, int nrow, i
 	return data;
 }
 
+template<typename CType, typename RType>
+SEXP readProcessedIbdArray(const char * filename, int * offset, int * length, int count)
+{
+	FILE * pfile = fopen(filename, "r");
+	if ( pfile == NULL ) return R_NilValue;
+	SEXP list;
+	PROTECT(list = NEW_LIST(count));
+	SEXP data;
+	RType * pdata;
+	CType * tmp;
+	for ( int j = 0; j < count; j++ )
+	{
+		tmp = (CType *) Calloc(length[j], CType);
+		fseek(pfile, offset[j], SEEK_SET);
+		fread(tmp, sizeof(CType), length[j], pfile);
+		PROTECT(data = allocVector(DataType<RType>(), length[j]));
+		pdata = DataPtr<RType>(data);
+		for ( int i = 0; i < length[j]; i++ )
+		{
+			pdata[i] = (RType) tmp[i];
+		}
+		SET_VECTOR_ELT(list, j, data);
+		UNPROTECT(1);
+		Free(tmp);
+	}
+	fclose(pfile);
+	UNPROTECT(1);
+	return list;
+}
+
 // utility functions for parsing imzML
 
 void insert_referenceableParamGroup(pugi::xml_node node)
@@ -745,7 +775,7 @@ extern "C"
 	}
 
 	SEXP readIbdMzArray(SEXP filepath, SEXP ibd_binary_type, SEXP binary_data_type,
-		SEXP external_offset, SEXP external_array_length)
+		SEXP external_offset, SEXP external_array_length, SEXP external_array_count)
 	{
 		const char * data_type = CHARACTER_VALUE(binary_data_type);
 		if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_CONTINUOUS_NAME) == 0 )
@@ -779,6 +809,45 @@ extern "C"
 			{
 				return readContinuousMzArray<long, int>(CHARACTER_VALUE(filepath),
 					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+			}
+		}
+		else if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_PROCESSED_NAME) == 0 )
+		{
+			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
+			{
+				return readProcessedIbdArray<float, double>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
+			{
+				return readProcessedIbdArray<double, double>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
 			}
 		}
 		return R_NilValue;
@@ -824,6 +893,45 @@ extern "C"
 			{
 				return readContinuousIntensityArray<long, int>(CHARACTER_VALUE(filepath),
 					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+		}
+		else if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_PROCESSED_NAME) == 0 )
+		{
+			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
+			{
+				return readProcessedIbdArray<float, double>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
+			{
+				return readProcessedIbdArray<double, double>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 		}

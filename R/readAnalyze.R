@@ -6,13 +6,13 @@ readAnalyze <- function(name, folder=getwd()) {
 	# check for files
 	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(hdrpath) ) stop(hdrpath, " does not exist")
+	if ( !file.exists(hdrpath) ) .stop("readAnalyze: ", hdrpath, " does not exist")
 	t2mpath <- normalizePath(file.path(folder, paste(name, ".t2m", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(t2mpath) ) stop(t2mpath, " does not exist")
+	if ( !file.exists(t2mpath) ) .stop("readAnalyze: ", t2mpath, " does not exist")
 	imgpath <- normalizePath(file.path(folder, paste(name, ".img", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(imgpath) ) stop(imgpath, " does not exist")
+	if ( !file.exists(imgpath) ) .stop("readAnalyze: ", imgpath, " does not exist")
 	# parse header
 	.log("readAnalyze: Reading header file '", hdrpath, "'")
 	hdr <- .Call("readAnalyzeHDR", hdrpath)
@@ -33,7 +33,7 @@ readAnalyze <- function(name, folder=getwd()) {
 			y=seq_len(hdr$dime$dim[[4]]))
 	}
 	# create and return dataset
-	experimentData <- new("MIAPE-Imaging", title=name)
+	experimentData <- new("MIAPE-Imaging")
 	processingData <- new("MSImageProcess", files=c(hdrpath, t2mpath, imgpath))
 	MSImageSet(spectra=data, mz=mz, coord=coord,
 		processingData=processingData,
