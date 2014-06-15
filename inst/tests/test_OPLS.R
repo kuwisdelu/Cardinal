@@ -19,4 +19,6 @@ test_that("Orthogonal partial least squares", {
 
 	expect_equal(apply(opls$fitted[[1]], 1, which.max), as.integer(y))
 
+	expect_error(OPLS(sset, y, ncomp=1000))
+
 })

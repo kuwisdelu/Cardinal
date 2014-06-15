@@ -7,6 +7,9 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		iter.max = 100, ...)
 {
 	method <- match.arg(method)
+	ncomps <- sort(ncomp)
+	if ( max(ncomps) > nrow(x) )
+		.stop("PLS: Can't fit more components than extent of dataset")
 	.time.start()
 	.message("PLS: Centering data.")
 	Xt <- as.matrix(iData(x))
@@ -16,16 +19,15 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		scale <- attr(Xt, "scaled:scale")
 		Yscale <- attr(Y, "scaled:scale")
 	} else {
-		Yscale <- 1
+		Yscale <- rep(1, nrow(Y))
 	}
 	center <- attr(Xt, "scaled:center")
 	Ycenter <- attr(Y, "scaled:center")
-	ncomps <- sort(ncomp)
 	.message("PLS: Fitting partial least squares components.")
 	fit <- .PLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 	out <- lapply(ncomps, function(ncomp) {
 		res <- append(fit, list(y=y, ncomp=ncomp,
-			scale=scale, center=center,
+			method=method, scale=scale, center=center,
 			Yscale=Yscale, Ycenter=Ycenter))
 		class(res) <- "ResultData"
 		res
@@ -58,12 +60,6 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "factor"),
 {
 	y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
 	PLS(x, y, ...)
-})
-
-setMethod("PLS", signature = c(x = "SImageSet", y = "integer"), 
-	function(x, y, ...)
-{
-	PLS(x, factor(y), ...)
 })
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "character"), 

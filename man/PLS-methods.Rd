@@ -1,55 +1,76 @@
 \name{PLS-methods}
 \docType{methods}
 \alias{PLS}
+
 \alias{PLS-methods}
-\alias{PLS,matrix-method}
-\alias{PLS,MSImageSet-method}
-\title{Partial least squares}
+\alias{PLS,SImageSet,matrix-method}
+\alias{PLS,SImageSet,numeric-method}
+\alias{PLS,SImageSet,factor-method}
+\alias{PLS,SImageSet,character-method}
+
+\title{Partial Least Squares}
 \description{
-	Performs partial least squares (also called projection to latent structures).
+	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform a variant of discriminant analysis (PLS-DA) if the response is a \code{factor}.
 }
 \usage{
-    \S4method{PLS}{MSImageSet}(x, y, ncomp=2, standardize=FALSE, method="nipals", \dots)
+    \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 20,
+        method = "nipals", scale = FALSE,
+        iter.max = 100, \dots)
     
-    \S4method{PLS}{matrix}(x, y, ncomp=2, isNxP=TRUE, standardize=FALSE, method="nipals", \dots)
+    \S4method{PLS}{SImageSet,numeric}(x, y, \dots)
+
+    \S4method{PLS}{SImageSet,factor}(x, y, \dots)
+
+    \S4method{PLS}{SImageSet,character}(x, y, \dots)
+
+    \S4method{predict}{PLS}(object, newx, newy, \dots)
 }
 \arguments{
-    \item{x}{the data on which to perform partial least squares.}
-    \item{y}{the response variable, which can be a \code{numeric} vector, a \code{matrix}, or a \code{factor}.}
-    \item{ncomp}{the number of components to calculate.}
-    \item{isNxP}{whether the data matrix is n x p, i.e., whether the each row corresponds to an observation.}
-    \item{standardize}{whether the data should be standardized.}
-    \item{method}{the method to use to calculate the components}
-    \item{\dots}{additional arguments to pass to specified method.}
+    \item{x}{The imaging dataset on which to perform partial least squares.}
+    \item{y}{The response variable, which can be a \code{matrix} or a \code{numeric} for ordinary PLS, or a \code{factor} or a \code{character} for PLS-DA.}
+    \item{ncomp}{The number of PLS components to calculate.}
+    \item{method}{The function used to calculate the projection.}
+    \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
+    \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
+    \item{\dots}{Ignored.}
+    \item{object}{The result of a previous call to \code{\link[Cardinal]{PLS}}.}
+    \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link[Cardinal]{PLS}} object.}
+    \item{newy}{Optionally, a new response from which residuals should be calcualted.}
 }
 \value{
-    An object of class \code{PLS} with componenets:
-    \item{scores}{a \code{matrix} with the component scores for the explanatary variable.}
-    \item{loadings}{a \code{matrix} with the explanatory variable loadings.}
-    \item{weights}{a \code{matrix} with the explanatory variable weights.}
-    \item{Yscores}{a \code{matrix} objects with the component scores for the response variable.}
-    \item{Yweights}{a \code{matrix} objects with the response variable weights.}
-    \item{projection}{the projection \code{matrix}.}
-    \item{coefficients}{a \code{list} of the vectors of variable coefficients for the regression.}
-    \item{ncomp}{the number of components.}
-    \item{coefficients}{a \code{list} of the vectors of variable coefficients for the regression.}
-    \item{method}{the method.}
-    \item{fitted}{a \code{list} of fitted values.}
-    \item{classes}{a \code{list} of predicted classes if 'y' was a \code{factor}.}
-    \item{residuals}{a \code{list} of residuals.}
-    \item{misclassified}{a \code{list} of which observations were misclassified if 'y' was a \code{factor}.}
-    \item{MSEP}{the mean squared error of prediction.}
-    \item{metadata}{a \code{list} of metadata used for prediction}
+    An object of class \code{PCS}, which is an \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+
+    \itemize{
+        \item{scores}{A \code{matrix} with the component scores for the explanatary variable.}
+        \item{loadings}{A \code{matrix} with the explanatory variable loadings.}
+        \item{weights}{A \code{matrix} with the explanatory variable weights.}
+        \item{Yscores}{A \code{matrix} objects with the component scores for the response variable.}
+        \item{Yweights}{A \code{matrix} objects with the response variable weights.}
+        \item{projection}{The projection \code{matrix}.}
+        \item{coefficients}{The \code{matrix} of the regression coefficients.}
+        \item{ncomp}{The number of PLS components.}
+        \item{method}{The method used to calculate the projection.}
+        \item{center}{The center of the dataset. Used for calculating PLS scores on new data.}
+        \item{scale}{The scaling factors for the dataset. Used for PLS scores on new data.}
+        \item{Ycenter}{The centers of the response variables. Used for predicting new observations.}
+        \item{Yscale}{The scaling factors for the response variables. Used for predicting new observation.}
+        \item{fitted}{The fitted response.}
+    }
 }
 \author{
 	Kyle D. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{OPLS-methods}}
+    \code{\link[Cardinal]{OPLS}},
+    \code{\link[Cardinal]{PCA}},
+    \code{\link[Cardinal]{spatialShrunkenCentroids}},
 }
 \examples{
-    ## write examples to put here
+sset <- generateImage(diag(4), range=c(200, 300), step=1)
+
+y <- factor(diag(4))
+
+pls <- PLS(sset, y, ncomp=1:2)
 }
 \keyword{methods}
 

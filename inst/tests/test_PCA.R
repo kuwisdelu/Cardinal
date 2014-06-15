@@ -21,4 +21,6 @@ test_that("Principal components analysis", {
 
 	expect_equal(abs(pca$loadings[[1]]), abs(prcomp), tolerance=0.1)
 
+	expect_error(PCA(sset, ncomp=1000))
+
 })

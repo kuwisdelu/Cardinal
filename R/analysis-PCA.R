@@ -7,9 +7,13 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		scale = FALSE, ...)
 {
 	method <- match.arg(method)
+	ncomps <- sort(ncomp)
+	if ( max(ncomps) > nrow(x) )
+		.stop("PCA: Can't fit more components than extent of dataset")
 	.time.start()
 	.message("PCA: Fitting principal components.")
-	ncomps <- sort(ncomp)
+	if ( max(ncomps) > nrow(x) )
+		.stop("PCA: Can't fit more components than extent of dataset")
 	fit <- .PCA.fit(x, ncomp=max(ncomps), method=method, scale=scale)
 	out <- lapply(ncomps, function(ncomp) {
 		loadings <- fit$loadings[,1:ncomp,drop=FALSE]

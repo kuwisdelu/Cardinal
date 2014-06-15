@@ -19,4 +19,6 @@ test_that("Partial least squares", {
 
 	expect_equal(apply(pls$fitted[[1]], 1, which.max), as.integer(y))
 
+	expect_error(PLS(sset, y, ncomp=1000))
+
 })

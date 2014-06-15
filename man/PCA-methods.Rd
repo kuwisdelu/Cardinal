@@ -2,39 +2,55 @@
 \docType{methods}
 \alias{PCA}
 \alias{PCA-methods}
-\alias{PCA,matrix-method}
-\alias{PCA,MSImageSet-method}
-\title{Principal components analysis}
+\alias{PCA,SImageSet-method}
+\alias{predict,PCA-method}
+
+\title{Principal Components Analysis}
 \description{
 	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
 }
 \usage{
-    \S4method{PCA}{MSImageSet}(x, ncomp=2, standardize=FALSE, method=c("irlba", "svd", "nipals"), \dots)
+    \S4method{PCA}{SImageSet}(x, ncomp = 20,
+        method = c("irlba", "svd"),
+        scale = FALSE, \dots)
     
-    \S4method{PCA}{matrix}(x, ncomp=2, isNxP=TRUE, standardize=FALSE, method=c("irlba", "svd", "nipals"), \dots)
+    \S4method{predict}{PCA}(object, newx=2, \dots)
 }
 \arguments{
-    \item{x}{the data on which to perform principal components analysis.}
-    \item{ncomp}{the number of principal components to calculate.}
-    \item{isNxP}{whether the data matrix is n x p, i.e., whether the each row corresponds to an observation.}
-    \item{standardize}{whether the data should be standardized.}
-    \item{method}{the method to use to calculate the components}
-    \item{\dots}{additional arguments to pass to specified method.}
+    \item{x}{The imaging dataset for which to calculate the principal components.}
+    \item{ncomp}{The number of principal components to calculate.}
+    \item{method}{The function used to calculate the singular value decomposition.}
+    \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
+    \item{\dots}{Ignored.}
+    \item{object}{The result of a previous call to \code{\link[Cardinal]{PCA}}.}
+    \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
 }
 \value{
-    An object of class \code{PCA} with componets:
-    \item{scores}{a \code{matrix} with the principal component scores.}
-    \item{loadings}{a \code{matrix} with the principal component loadings.}
+    An object of class \code{PCA}, which is an \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+
+    \itemize{
+        \item{scores}{A \code{matrix} with the principal component scores.}
+        \item{loadings}{A \code{matrix} with the principal component loadings.}
+        \item{sdev}{The standard deviations of the principal components.}
+        \item{method}{The method used to calculate the principal components.}
+        \item{ncomp}{The number of principal components calculated.}
+        \item{center}{The center of the dataset. Used for calculating principal components scores on new data.}
+        \item{scale}{The scaling factors for the dataset. Used for calculating principal components scores on new data.}
+    }
 }
 \author{
 	Kyle D. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
-    \code{\link[irlba]{irlba}}
+    \code{\link[Cardinal]{OPLS}},
+    \code{\link[Cardinal]{PLS}},
+    \code{\link[irlba]{irlba}},
+    \code{\link[base]{svd}}
 }
 \examples{
-    ## write examples to put here
+sset <- generateImage(diag(4), range=c(200, 300), step=1)
+
+pca <- PCA(sset, ncomp=2)
 }
 \keyword{methods}
 

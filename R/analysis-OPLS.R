@@ -7,6 +7,9 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		iter.max = 100, ...)
 {
 	method <- match.arg(method)
+	ncomps <- sort(ncomp)
+	if ( max(ncomps) > nrow(x) )
+		.stop("OPLS: Can't fit more components than extent of dataset")
 	.time.start()
 	.message("OPLS: Centering data.")
 	Xt <- as.matrix(iData(x))
@@ -16,16 +19,15 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		scale <- attr(Xt, "scaled:scale")
 		Yscale <- attr(Y, "scaled:scale")
 	} else {
-		Yscale <- FALSE
+		Yscale <- rep(1, nrow(Y))
 	}
 	center <- attr(Xt, "scaled:center")
 	Ycenter <- attr(Y, "scaled:center")
-	ncomps <- sort(ncomp)
 	.message("OPLS: Fitting orthogonal partial least squares components.")
 	fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 	out <- lapply(ncomps, function(ncomp) {
 		res <- append(fit, list(y=y, ncomp=ncomp,
-			scale=scale, center=center,
+			method=method, scale=scale, center=center,
 			Yscale=Yscale, Ycenter=Ycenter))
 		class(res) <- "ResultData"
 		res
@@ -50,26 +52,20 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"), 
 	function(x, y,  ...)
 {
-	PLS(x, as.matrix(y), ...)
+	OPLS(x, as.matrix(y), ...)
 })
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 {
 	y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-	PLS(x, y, ...)
-})
-
-setMethod("OPLS", signature = c(x = "SImageSet", y = "integer"), 
-	function(x, y, ...)
-{
-	PLS(x, factor(y), ...)
+	OPLS(x, y, ...)
 })
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "character"), 
 	function(x, y, ...)
 {
-	PLS(x, factor(y), ...)
+	OPLS(x, factor(y), ...)
 })
 
 setMethod("predict", "OPLS",
@@ -79,7 +75,8 @@ setMethod("predict", "OPLS",
 		.stop("'newx' must inherit from 'iSet'")
 	.time.start()
 	Xt <- as.matrix(iData(newx))
-	Xt <- scale(t(Xt), scale=scale)
+	Xt <- scale(t(Xt), scale=object$scale[[1]])
+	Y <- object$y[[1]]
 	if ( missing(newy) ) {
 		missing.newy <- TRUE
 	} else {
@@ -87,9 +84,8 @@ setMethod("predict", "OPLS",
 	}
 	out <- lapply(object@resultData, function(res) {
 		.message("OPLS: Predicting for ncomp = ", res$ncomp, ".")
-		pred <- .OPLS.predict(Xt, ncomp=res$ncomp,
-			Oloadings=res$Oloadings, Oweights=res$Oweights,
-			method=res$method)
+		pred <- .OPLS.predict(Xt, Y, ncomp=res$ncomp, method=res$method,
+			Oloadings=res$Oloadings, Oweights=res$Oweights)
 		pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
 		res[names(pred)] <- pred
 		if ( !missing.newy )
@@ -116,14 +112,14 @@ setMethod("predict", "OPLS",
 	}
 }
 
-.OPLS.predict <- function(X, Y, ncomp, Oloadings, Oweights, method) {
+.OPLS.predict <- function(X, Y, ncomp, method, Oloadings, Oweights, iter.max) {
 	Oloadings <- Oloadings[,1:ncomp,drop=FALSE]
 	Oweights <- Oweights[,1:ncomp,drop=FALSE]
 	Oscores <- X %*% Oweights
 	Xortho <- tcrossprod(Oscores, Oloadings)
 	Xnew <- X - Xortho
 	if ( method == "nipals" ) {
-		fit <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
+		fit <- nipals.PLS(Xnew, Y, ncomp=1)
 	} else {
 		stop("PLS method ", method, " not found")
 	}
