@@ -89,7 +89,7 @@ setMethod("spatialShrunkenCentroids",
 		resultData=out,
 		modelData=par)
 	.time.stop()
-	predict(object, newx=x, newy=y)
+	predict(object, newx=x)
 })
 
 setMethod("spatialShrunkenCentroids",
@@ -113,13 +113,15 @@ setMethod("predict",
 	if ( !is(newx, "iSet") )
 		.stop("'newx' must inherit from 'iSet'")
 	.time.start()
-	out <- lapply(resject@resultData, function(res) {
+	out <- lapply(object@resultData, function(res) {
 		spatial <- spatial.info(newx, r=res$r, method=res$method)
 		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
 		pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
 			centers=res$centers, priors=res$priors,
 			spatial=spatial, sd=res$sd)
 		res[names(pred)] <- pred
+		if ( !missing(newy) )
+			res$y <- newy
 		class(res) <- "ResultData"
 		res
 	})

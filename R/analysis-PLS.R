@@ -3,133 +3,121 @@
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"), 
 	function(x, y, ncomp = 20,
-		method = "nipals",
-		scale = FALSE, ...)
+		method = "nipals", scale = FALSE,
+		iter.max = 100, ...)
 {
-	# do stuff
-} )
+	.time.start()
+	.message("PLS: Centering data.")
+	Xt <- as.matrix(iData(x))
+	Xt <- scale(t(Xt), scale=scale)
+	Y <- scale(y, scale=scale)
+	if ( scale ) {
+		scale <- attr(Xt, "scaled:scale")
+		Yscale <- attr(Y, "scaled:scale")
+	} else {
+		Yscale <- FALSE
+	}
+	center <- attr(Xt, "scaled:center")
+	Ycenter <- attr(Y, "scaled:center")
+	ncomps <- sort(ncomp)
+	.message("PLS: Fitting partial least squares components.")
+	fit <- .PLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
+	out <- lapply(ncomps, function(ncomp) {
+		res <- append(fit, list(y=y, ncomp=ncomp,
+			scale=scale, center=center,
+			Yscale=Yscale, Ycenter=Ycenter))
+		class(res) <- "ResultData"
+		res
+	})
+	par <- AnnotatedDataFrame(
+		data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
+		varMetadata=data.frame(
+			labelDescription=c(ncomp="Number of PLS Components")))
+	featureNames(par) <- formatParam(pData(par))
+	names(out) <- formatParam(pData(par))
+	object <- new("PLS",
+		pixelData=x@pixelData,
+		featureData=x@featureData,
+		experimentData=x@experimentData,
+		protocolData=x@protocolData,
+		resultData=out,
+		modelData=par)
+	.time.stop()
+	predict(object, newx=x)
+})
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "numeric"), 
 	function(x, y,  ...)
 {
-	# do stuff
-} )
+	PLS(x, as.matrix(y), ...)
+})
+
+setMethod("PLS", signature = c(x = "SImageSet", y = "factor"), 
+	function(x, y, ...)
+{
+	PLS(x, sapply(levels(y), function(Ck) as.integer(y == Ck)))
+})
+
+setMethod("PLS", signature = c(x = "SImageSet", y = "integer"), 
+	function(x, y, ...)
+{
+	PLS(x, factor(y), ...)
+})
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "character"), 
 	function(x, y, ...)
 {
-	# do stuff
-} )
+	PLS(x, factor(y), ...)
+})
 
-setMethod("PLS", "MSImageSet", function(x, y, ncomp=2, standardize=FALSE,
-	method="nipals", ...)
+setMethod("predict", "PLS",
+	function(object, newx, newy, ...)
 {
-	x <- as.matrix(spectra(x))
-	outlist <- PLS(x, y=y, ncomp=ncomp, isNxP=FALSE, standardize=standardize,
-		method=method, ...)
-	return(outlist)
-} )
+	if ( !is(newx, "iSet") )
+		.stop("'newx' must inherit from 'iSet'")
+	.time.start()
+	Xt <- as.matrix(iData(newx))
+	Xt <- scale(t(Xt), scale=scale)
+	out <- lapply(object@resultData, function(res) {
+		.message("PLS: Predicting for ncomp = ", res$ncomp, ".")
+		pred <- .PLS.predict(Xt, ncomp=res$ncomp,
+			loadings=res$loadings, weights=res$weights,
+			Yweights=res$Yweights)
+		pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
+		res[names(pred)] <- pred
+		if ( !missing(newy) )
+			res$y <- newy
+		class(res) <- "ResultData"
+		res
+	})
+	.message("PLS: Done.")
+	.time.stop()
+	new("PLS",
+		pixelData=newx@pixelData,
+		featureData=newx@featureData,
+		experimentData=newx@experimentData,
+		protocolData=newx@protocolData,
+		resultData=out,
+		modelData=object@modelData)
+})
 
-setMethod("PLS", "matrix", function(x, y, ncomp=2, isNxP=TRUE, standardize=FALSE,
-	method="nipals", ...)
-{
-	predx <- x
-	predy <- y
-	method <- match.arg(method)
-	if ( is.factor(y) ) y <- calculateClassMasks(y)
-	if ( !is.matrix(y) ) y <- as.matrix(y)
-	nonmissing <- apply(y, 1, function(yi) all(is.finite(yi)))
-	y <- y[nonmissing,,drop=FALSE]
-	y <- scale(y, scale=standardize)
-	tryVerboseMessage("Centering data...", precedes.progress.output=FALSE)
-	if ( isNxP ) {
-		x <- scale(x[nonmissing,], scale=standardize)
-	} else {
-		x <- scale(t(x[,nonmissing]), scale=standardize)
-	}
-	if ( ncomp > ncol(x) ) stop("more components than variables")
-	tryVerboseMessage("Projecting to latent structures...", precedes.progress.output=FALSE)
+.PLS.fit <- function(X, Y, ncomp, method, iter.max) {
 	if ( method == "nipals" ) {
-		fit <- nipals.PLS(x, y, ncomp=ncomp, ...)
+		nipals.PLS(X, Y, ncomp=ncomp, iter.max=iter.max)
 	} else {
-		stop("method ", method, " not recognized")
+		stop("PLS method ", method, " not found")
 	}
-	fit <- c(fit, list(ncomp=ncomp, isNxP=isNxP, standardize=standardize,
-		method=method, metadata=list(isfactor=is.factor(predy))))
-	if ( is.factor(predy) ) {
-		fit$metadata$levels <- 1:ncol(y)
-		fit$metadata$labels <- levels(predy)
-	}
-	class(fit) <- "PLS"
-	attr(fit, "scaled:center") <- attr(x, "scaled:center")
-	attr(fit, "scaled:scale") <- attr(x, "scaled:scale")
-	attr(fit, "Yscaled:center") <- attr(y, "scaled:center")
-	attr(fit, "Yscaled:scale") <- attr(y, "scaled:scale")
-	outlist <- predict(fit, newx=predx, newy=predy)
-	return(outlist)
-} )
+}
 
-setMethod("predict", "PLS", function(object, newx, newy, ncomp=object$ncomp, ...) {
-	if ( isMSImageSet(newx) ) newx <- as.matrix(spectra(newx))
-	tryVerboseMessage("Predicting...", precedes.progress.output=FALSE)
-	if ( ncomp > object$ncomp ) stop("too many components")
-	if ( object$standardize ) {
-		standardize <- attr(object, "scaled:scale")
-	} else {
-		standardize <- FALSE
-	}
-	tryVerboseMessage("Centering data...", precedes.progress.output=FALSE)
-	if ( object$isNxP ) {
-		x <- scale(newx, center=attr(object, "scaled:center"), scale=standardize)
-	} else {
-		x <- scale(t(newx), center=attr(object, "scaled:center"), scale=standardize)
-	}
-	tryVerboseMessage("Calculating new scores and fitted values...", precedes.progress.output=FALSE)
-	scores <- x %*% object$projection[,1:ncomp,drop=FALSE]
-	colnames(scores) <- paste("C", 1:ncomp, sep="")
-	coefficients <- list()
-	fitted <- list()
-	for ( i in 1:ncomp ) {
-		H <- object$weights[,1:i,drop=FALSE] %*% solve(crossprod(object$loadings[,1:i,drop=FALSE],
-			object$weights[,1:i,drop=FALSE]))
-		coefficients[[i]] <- tcrossprod(H, object$Yweights[,1:i,drop=FALSE])
-		fitted[[i]] <- x %*% coefficients[[i]]
-		if ( object$standardize ) {
-			Yscale <- attr(object, "Yscaled:scale")
-		} else {
-			Yscale <- 1
-		}
-		fitted[[i]] <- Yscale * fitted[[i]] + attr(object, "Yscaled:center")
-	}
-	names(coefficients) <- paste(1:ncomp, "components")
-	names(fitted) <- paste(1:ncomp, "components")
-	outlist <- object
-	outlist$scores <- scores
-	outlist$coefficients <- coefficients
-	outlist$fitted <- fitted
-	if ( outlist$metadata$isfactor ) {
-		outlist$classes <- list()
-		for ( i in seq_along(outlist$fitted) ) {
-			temp <- apply(outlist$fitted[[i]], 1, which.max)
-			outlist$classes[[i]] <- factor(temp,
-				levels=outlist$metadata$levels,
-				labels=outlist$metadata$labels)
-		}
-	}
-	if ( !missing(newy) ) {
-		tryVerboseMessage("Calculating residuals...", precedes.progress.output=FALSE)
-		if ( outlist$metadata$isfactor ) {
-			outlist$misclassified <- lapply(outlist$classes, function(yhat) newy != yhat)
-			error <- outlist$misclassified
-			names(outlist$misclassified) <- paste(1:ncomp, "components")
-		} else {
-			outlist$residuals <- lapply(outlist$fitted, function(yhat) newy - yhat)
-			error <- outlist$residuals
-			names(outlist$residuals) <- paste(1:ncomp, "components")
-		}
-		outlist$MSEP <- sapply(error, function(e) sum(e^2,
-			na.rm=TRUE) / sum(is.finite(as.numeric(e))))
-		names(outlist$MSEP) <- paste(1:ncomp, "components")
-	}
-	return(outlist)
-} )
+.PLS.predict <- function(X, ncomp, loadings, weights, Yweights) {
+	loadings <- loadings[,1:ncomp,drop=FALSE]
+	weights <- weights[,1:ncomp,drop=FALSE]
+	Yweights <- Yweights[,1:ncomp,drop=FALSE]
+	projection <- weights %*% solve(crossprod(loadings, weights))
+	coefficients <- tcrossprod(projection, Yweights)
+	scores <- X %*% projection
+	fitted <- X %*% coefficients
+	list(scores=scores, loadings=loadings, weights=weights, Yweights=Yweights,
+		projection=projection, coefficients=coefficients, fitted=fitted)
+}
+

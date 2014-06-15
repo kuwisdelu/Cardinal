@@ -3,145 +3,125 @@
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"), 
 	function(x, y, ncomp = 20,
-		method = "nipals",
-		scale = FALSE, ...)
+		method = "nipals", scale = FALSE,
+		iter.max = 100, ...)
 {
-	# do stuff
-} )
+	.time.start()
+	.message("OPLS: Centering data.")
+	Xt <- as.matrix(iData(x))
+	Xt <- scale(t(Xt), scale=scale)
+	Y <- scale(y, scale=scale)
+	if ( scale ) {
+		scale <- attr(Xt, "scaled:scale")
+		Yscale <- attr(Y, "scaled:scale")
+	} else {
+		Yscale <- FALSE
+	}
+	center <- attr(Xt, "scaled:center")
+	Ycenter <- attr(Y, "scaled:center")
+	ncomps <- sort(ncomp)
+	.message("OPLS: Fitting orthogonal partial least squares components.")
+	fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
+	out <- lapply(ncomps, function(ncomp) {
+		res <- append(fit, list(y=y, ncomp=ncomp,
+			scale=scale, center=center,
+			Yscale=Yscale, Ycenter=Ycenter))
+		class(res) <- "ResultData"
+		res
+	})
+	par <- AnnotatedDataFrame(
+		data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
+		varMetadata=data.frame(
+			labelDescription=c(ncomp="Number of PLS Components")))
+	featureNames(par) <- formatParam(pData(par))
+	names(out) <- formatParam(pData(par))
+	object <- new("OPLS",
+		pixelData=x@pixelData,
+		featureData=x@featureData,
+		experimentData=x@experimentData,
+		protocolData=x@protocolData,
+		resultData=out,
+		modelData=par)
+	.time.stop()
+	predict(object, newx=x)
+})
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"), 
+	function(x, y,  ...)
+{
+	PLS(x, as.matrix(y), ...)
+})
+
+setMethod("OPLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 {
-	# do stuff
-} )
+	PLS(x, sapply(levels(y), function(Ck) as.integer(y == Ck)))
+})
+
+setMethod("OPLS", signature = c(x = "SImageSet", y = "integer"), 
+	function(x, y, ...)
+{
+	PLS(x, factor(y), ...)
+})
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "character"), 
 	function(x, y, ...)
 {
-	# do stuff
-} )
+	PLS(x, factor(y), ...)
+})
 
-setMethod("OPLS", "MSImageSet", function(x, y, ncomp=1, acomp=1, standardize=FALSE,
-	method="nipals", ...)
+setMethod("predict", "OPLS",
+	function(object, newx, newy, ...)
 {
-	x <- as.matrix(spectra(x))
-	outlist <- OPLS(x, y=y, ncomp=ncomp, acomp=acomp, isNxP=FALSE,
-		standardize=standardize, method=method, ...)
-	return(outlist)
-} )
+	if ( !is(newx, "iSet") )
+		.stop("'newx' must inherit from 'iSet'")
+	.time.start()
+	Xt <- as.matrix(iData(newx))
+	Xt <- scale(t(Xt), scale=scale)
+	out <- lapply(object@resultData, function(res) {
+		.message("OPLS: Predicting for ncomp = ", res$ncomp, ".")
+		pred <- .OPLS.predict(Xt, ncomp=res$ncomp,
+			Oloadings=res$Oloadings, Oweights=res$Oweights,
+			method=res$method)
+		pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
+		res[names(pred)] <- pred
+		if ( !missing(newy) )
+			res$y <- newy
+		class(res) <- "ResultData"
+		res
+	})
+	.message("PLS: Done.")
+	.time.stop()
+	new("PLS",
+		pixelData=newx@pixelData,
+		featureData=newx@featureData,
+		experimentData=newx@experimentData,
+		protocolData=newx@protocolData,
+		resultData=out,
+		modelData=object@modelData)
+})
 
-setMethod("OPLS", "matrix", function(x, y, ncomp=1, acomp=1, isNxP=TRUE,
-	standardize=FALSE, method="nipals", ...)
-{
-	predx <- x
-	predy <- y
-	method <- match.arg(method)
-	if ( is.factor(y) ) y <- calculateClassMasks(y)
-	if ( !is.matrix(y) ) y <- as.matrix(y)
-	nonmissing <- apply(y, 1, function(yi) all(is.finite(yi)))
-	y <- y[nonmissing,,drop=FALSE]
-	y <- scale(y, scale=standardize)
-	tryVerboseMessage("Centering data...", precedes.progress.output=FALSE)
-	if ( isNxP ) {
-		x <- scale(x[nonmissing,], scale=standardize)
-	} else {
-		x <- scale(t(x[,nonmissing]), scale=standardize)
-	}
-	if ( ncomp > ncol(x) ) stop("more components than variables")
-	tryVerboseMessage("Removing orthogonal variation...", precedes.progress.output=FALSE)
+.OPLS.fit <- function(X, Y, ncomp, method, iter.max) {
 	if ( method == "nipals" ) {
-		fit <- nipals.OPLS(x, y, ncomp=ncomp, ...)
+		nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
 	} else {
-		stop("method ", method, " not recognized")
+		stop("OPLS method ", method, " not found")
 	}
-	coefficients <- list()
-	weights <- list()
-	loadings <- list()
-	scores <- list()
-	tryVerboseMessage("Performing PLS on processed data...", precedes.progress.output=FALSE)
-	for ( i in 1:ncomp) {
-		x <- x - tcrossprod(fit$Oscores[,i], fit$Oloadings[,i])
-		temp <- PLS(x, y, ncomp=acomp, method=method)
-		coefficients[[i]] <- temp$coefficients[[acomp]]
-		weights[[i]] <- temp$weights
-		loadings[[i]] <- temp$loadings
-		scores[[i]] <- temp$scores
-	}
-	names(coefficients) <- paste(1:ncomp, "+", acomp, "components")
-	fit <- c(fit, list(coefficients=coefficients, weights=weights, loadings=loadings,
-		scores=scores, ncomp=ncomp, acomp=acomp, isNxP=isNxP, standardize=standardize,
-		method=method, metadata=list(isfactor=is.factor(predy))))
-	if ( is.factor(predy) ) {
-		fit$metadata$levels <- 1:ncol(y)
-		fit$metadata$labels <- levels(predy)
-	}
-	class(fit) <- "OPLS"
-	attr(fit, "scaled:center") <- attr(x, "scaled:center")
-	attr(fit, "scaled:scale") <- attr(x, "scaled:scale")
-	attr(fit, "Yscaled:center") <- attr(y, "scaled:center")
-	attr(fit, "Yscaled:scale") <- attr(y, "scaled:scale")
-	outlist <- predict(fit, newx=predx, newy=predy)
-	return(outlist)
-} )
+}
 
-setMethod("predict", "OPLS", function(object, newx, newy, ncomp=object$ncomp, ...) {
-	if ( isMSImageSet(newx) ) newx <- as.matrix(spectra(newx))
-	tryVerboseMessage("Predicting...", precedes.progress.output=FALSE)
-	if ( ncomp > object$ncomp ) stop("too many components")
-	if ( object$standardize ) {
-		standardize <- attr(object, "scaled:scale")
+.OPLS.predict <- function(X, Y, ncomp, Oloadings, Oweights, method) {
+	Oloadings <- Oloadings[,1:ncomp,drop=FALSE]
+	Oweights <- Oweights[,1:ncomp,drop=FALSE]
+	Oscores <- X %*% Oweights
+	Xortho <- tcrossprod(Oscores, Oloadings)
+	Xnew <- X - Xortho
+	if ( method == "nipals" ) {
+		fit <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
 	} else {
-		standardize <- FALSE
+		stop("PLS method ", method, " not found")
 	}
-	tryVerboseMessage("Centering data...", precedes.progress.output=FALSE)
-	if ( object$isNxP ) {
-		x <- scale(newx, center=attr(object, "scaled:center"), scale=standardize)
-	} else {
-		x <- scale(t(newx), center=attr(object, "scaled:center"), scale=standardize)
-	}
-	tryVerboseMessage("Calculating new scores and fitted values...", precedes.progress.output=FALSE)
-	scores <- matrix(nrow=nrow(x), ncol=ncomp)
-	fitted <- list()
-	for ( i in 1:ncomp) {
-		scores[,i] <- x %*% object$Oweights[,i]
-		x <- x - tcrossprod(scores[,i], object$Oloadings[,i])
-		fitted[[i]] <- x %*% object$coefficients[[i]]
-		if ( object$standardize ) {
-			Yscale <- attr(object, "Yscaled:scale")
-		} else {
-			Yscale <- 1
-		}
-		fitted[[i]] <- Yscale * fitted[[i]] + attr(object, "Yscaled:center")
-	}
-	names(fitted) <- paste(1:ncomp, "+", object$acomp, "components")
-	outlist <- object
-	outlist$Xnew <- x
-	outlist$Oscores <- scores
-	outlist$fitted <- fitted
-	if ( outlist$metadata$isfactor ) {
-		outlist$classes <- list()
-		for ( i in seq_along(outlist$fitted) ) {
-			temp <- apply(outlist$fitted[[i]], 1, which.max)
-			outlist$classes[[i]] <- factor(temp,
-				levels=outlist$metadata$levels,
-				labels=outlist$metadata$labels)
-		}
-	}
-	if ( !missing(newy) ) {
-		tryVerboseMessage("Calculating residuals...", precedes.progress.output=FALSE)
-		if ( outlist$metadata$isfactor ) {
-			outlist$misclassified <- lapply(outlist$classes, function(yhat) newy != yhat)
-			error <- outlist$misclassified
-			names(outlist$misclassified) <- paste(1:ncomp, "components")
-		} else {
-			outlist$residuals <- lapply(outlist$fitted, function(yhat) newy - yhat)
-			error <- outlist$residuals
-			names(outlist$residuals) <- paste(1:ncomp, "components")
-		}
-		outlist$MSEP <- sapply(error, function(e) sum(e^2,
-			na.rm=TRUE) / sum(is.finite(as.numeric(e))))
-		names(outlist$MSEP) <- paste(1:ncomp, "components")
-	}
-	return(outlist)
-} )
+	append(fit, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
+		Oloadings=Oloadings, Oweights=Oweights))
+}
+
 

@@ -21,7 +21,7 @@ setMethod("spatialKMeans",
 		lapply(ks, function(k) {
 			.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
 			res <- append(.spatialKMeans(x, fastmap=fastmap, k=k,
-				iter.max=iter.max, nstart=nstart, algorithm=algorithm, ...),
+				iter.max=iter.max, nstart=nstart, algorithm=algorithm),
 				list(r=r, k=k, method=method, weights=weights,
 					fastmap=fastmap))
 			class(res) <- "ResultData"
@@ -49,7 +49,7 @@ setMethod("spatialKMeans",
 		modelData=par)
 })
 
-.spatialKMeans <- function(x, fastmap, k, iter.max, nstart, algorithm, ...) {
+.spatialKMeans <- function(x, fastmap, k, iter.max, nstart, algorithm) {
 	restore.seed()
 	start.time <- proc.time()
 	cluster <- kmeans(fastmap$scores, centers=k,
