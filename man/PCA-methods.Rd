@@ -1,8 +1,11 @@
 \name{PCA-methods}
 \docType{methods}
 \alias{PCA}
+\alias{class:PCA}
+\alias{PCA-class}
 \alias{PCA-methods}
 \alias{PCA,SImageSet-method}
+\alias{predict,PCA-method}
 \alias{predict,PCA-method}
 
 \title{Principal Components Analysis}
@@ -29,8 +32,8 @@
     An object of class \code{PCA}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
 
     \describe{
-        \item{\code{scores}:}{A \code{matrix} with the principal component scores.}
-        \item{\code{loadings}:}{A \code{matrix} with the principal component loadings.}
+        \item{\code{scores}:}{A matrix with the principal component scores.}
+        \item{\code{loadings}:}{A matrix with the principal component loadings.}
         \item{\code{sdev}:}{The standard deviations of the principal components.}
         \item{\code{method}:}{The method used to calculate the principal components.}
         \item{\code{ncomp}:}{The number of principal components calculated.}

@@ -93,13 +93,6 @@ setMethod("spatialShrunkenCentroids",
 })
 
 setMethod("spatialShrunkenCentroids",
-	signature = c(x = "SImageSet", y = "integer"),
-	function(x, y, ...)
-{
-	spatialShrunkenCentroids(x, factor(y), ...)
-})
-
-setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "character"),
 	function(x, y, ...)
 {
