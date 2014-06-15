@@ -50,7 +50,7 @@
 \alias{featureNames,iSet-method}
 \alias{featureNames<-,iSet-method}
 
-\title{Class to Contain High-Throughput Imaging Experiment Data and Metadata.}
+\title{Class to Contain High-Throughput Imaging Experiment Data and Metadata}
 
 \description{
     A container class for data from high-throughput imaging experiments and associated metadata. Classes derived from from \code{iSet} contain one or more arrays or array-like objects with an equal number of dimensions as \code{imageData} elements. It is assumed that the first dimension of each such element corresponds to the data features, and all other dimensions are described by associated coordinates in the \code{pixelData} slot. Otherwise, derived classes are responsible for managing how the elements of \code{imageData} behave and their relationship with the rows of \code{pixelData} and \code{featureData}.

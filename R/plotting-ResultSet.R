@@ -4,9 +4,11 @@ setMethod("plot",
 	function(x, formula = ~ Feature,
 		parameters = pData(modelData(x)),
 		mode = c("centers", "tstatistics"),
-		threshold = 0,
 		classes = levels(unlist(x$classes)),
+		threshold = 0,
+		superpose = TRUE,
 		...,
+		type = 'h',
 		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
@@ -47,7 +49,7 @@ setMethod("plot",
 		significant <- as.vector(apply(iData(tstatistics)[,pixel], 2,
 			function(t) abs(t) > threshold))
 		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
-			groups=significant, col=col, type='h', superpose=TRUE,
+			groups=significant, col=col, type=type, superpose=superpose,
 			lattice=lattice, ...)
 	})
 
@@ -59,12 +61,13 @@ setMethod("plot",
 
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids"),
-	function(x, formula = ~ x * y | model,
+	function(x, formula = ~ x * y,
 		parameters = pData(modelData(x)),
 		mode = c("probabilities", "scores"),
 		classes = unique(unlist(x$classes)),
+		superpose = TRUE,
 		...,
-		col = rainbow(length(classes)),
+		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
 		mode <- match.arg(mode)
@@ -102,7 +105,7 @@ setMethod("image",
 		}
 		feature <- features(obj, classes=classes)
 		image(obj, formula=formula, feature=feature, feature.groups=classes,
-			col=col, superpose=TRUE, lattice=lattice, ...)
+			col=col, superpose=superpose, lattice=lattice, ...)
 	})
 
 

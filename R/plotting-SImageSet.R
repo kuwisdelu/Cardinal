@@ -134,13 +134,13 @@ setMethod("plot",
 						ylab=ylab, ylim=ylim, ...)
 				} else {
 					if ( !superposed[ci] )
-						plot(0, 0, xlab=xlab, xlim=xlim,
-							ylab=ylab, ylim=ylim, type='n', ...)
+						plot(0, 0, type='n', xlab=xlab, xlim=xlim,
+							ylab=ylab, ylim=ylim, ...)
 					subgroups <- which(levels(groups) %in% groups[subscripts])
 					for ( gi in subgroups ) {
-						ysg <- ys
-						ysg[groups[subscripts] != levels(groups)[gi]] <- NA
-						points(xs, ysg, type=type, col=col[gi], ...)
+						ys.g <- ys
+						ys.g[groups[subscripts] != levels(groups)[gi]] <- NA
+						points(xs, ys.g, type=type, col=col[gi], ...)
 					}
 				}
 			}
@@ -289,14 +289,16 @@ setMethod("image",
 				col.regions=col.regions, colorkey=colorkey,
 				panel=function(x, y, z, col.regions, subscripts, ...) {
 					if ( is.null(groups) ) {
-						panel.levelplot(x, y, z, col.regions=col.regions,
-							subscripts=subscripts, ...)
+						panel.levelplot(x, y, z,
+							subscripts=subscripts,
+							col.regions=col.regions, ...)
 					} else {
 						subgroups <- which(levels(groups) %in% groups[subscripts])
 						for ( gi in subgroups ) {
 							col.g <- alpha.colors(length(col.regions), col[gi])
-							panel.levelplot(x, y, z, col.regions=col.g,
-								subscripts=subscripts[groups==levels(groups)[gi]], ...)
+							panel.levelplot(x, y, z,
+								subscripts=subscripts[groups==levels(groups)[gi]],
+								col.regions=col.g, ...)
 						}
 					}
 				}, ...)
@@ -323,38 +325,36 @@ setMethod("image",
 				zs <- data[subscripts, ".values"]
 				dim(zs) <- c(length(xs), length(ys))
 				if ( is.null(groups) ) {
-					image(xs, ys, zs, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
-						zlim=zlim, asp=asp, col=col.regions, ...)
+					image(xs, ys, zs, xlab=xlab, xlim=xlim,
+						ylab=ylab, ylim=rev(ylim), zlim=zlim,
+						asp=asp, col=col.regions, ...)
 					if ( is.list(colorkey) )
-						.colorkey(col.regions, zlim)
+						legend("topright",
+							legend=c(
+								round(range[2], 2),
+								rep(NA, length(col)-2),
+								round(range[1], 2)),
+							col=rev(col),
+							bg=rgb(1, 1, 1, 0.75),
+							y.intersp=0.1,
+							cex=0.6,
+							lwd=2)
 				} else {
 					add <- superposed[ci]
 					subgroups <- which(levels(groups) %in% groups[subscripts])
 					for ( gi in subgroups ) {
-						zsg <- zs
+						zs.g <- zs
 						add.g <- add || gi != subgroups[1]
 						col.g <- alpha.colors(length(col.regions), col[gi])
-						zsg[groups[subscripts] != levels(groups)[gi]] <- NA
-						image(xs, ys, zsg, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
-							zlim=zlim, asp=asp, col=col.g, add=add.g, ...)
+						zs.g[groups[subscripts] != levels(groups)[gi]] <- NA
+						image(xs, ys, zs.g, xlab=xlab, xlim=xlim,
+							ylab=ylab, ylim=rev(ylim), zlim=zlim,
+							asp=asp, col=col.g, add=add.g, ...)
 					}
 				}
 			}
 		}
 	})
-
-.colorkey <- function(col, range)  {
-	legend("topright",
-		legend=c(
-			round(range[2], 2),
-			rep(NA, length(col)-2),
-			round(range[1], 2)),
-		col=rev(col),
-		bg=rgb(1, 1, 1, 0.75),
-		y.intersp=0.1,
-		cex=0.6,
-		lwd=2)
-}
 
 .calculatePlotValues <- function(object, fun, pixel, pixel.groups,
 	condition, missing.pixel.groups)

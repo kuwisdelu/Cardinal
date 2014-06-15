@@ -14,7 +14,7 @@
 \alias{storageMode,ImageData-method}
 \alias{storageMode<-,ImageData,character-method}
 
-\title{Class Containing Arrays of Imaging Data.}
+\title{Class Containing Arrays of Imaging Data}
 
 \description{
     A container class for holding imaging data, designed to contain one or more arrays in an immutable environment. It is assumed that the first dimension of each array corresponds to the features.

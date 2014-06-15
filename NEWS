@@ -7,10 +7,13 @@ Version 0.7 [2014-6-2]
 o Refactored version of the package prepared for internal testing.
 o New processing methods, renamed to 'normalize', 'smoothSignal',
 	'reduceBaseline', 'peakPick', 'peakAlign', 'reduceDimension'.
-o New classes 'RImageData' and 'RImageSet' for analysis results.
 o New function 'readMSIData' for reading supported formats.
+o Native support for imzML added (no longer requires Java).
 o Methods 'pixels' and 'features' replaced with updated versions.
 o In 'features' method, m/z matching now done using bisection search.
+o New analysis method, renamed to spatialShrunkenCentroids.
+o Analysis methods now return a new class: 'ResultSet'.
+o New method 'select' to replace 'selectROI' and 'selectPixels'.
 
 Version 0.6 [2013-2-19]
 

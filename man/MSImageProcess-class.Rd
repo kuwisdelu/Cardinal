@@ -41,7 +41,7 @@
 \alias{prochistory<-}
 \alias{prochistory<-,MSImageProcess-method}
 
-\title{Class Containing Mass Spectral Pre-Processing Information.}
+\title{Class Containing Mass Spectral Pre-Processing Information}
 
 \description{
     A class containing information about mass spectral pre-processsing operations. These should not usually be set by the user, and are automatically updated when processing methods are applied.

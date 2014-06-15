@@ -206,7 +206,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
 	probabilities <- .calculateClassProbabilities(scores) # NaNs -> 0
 	classes <- factor(apply(probabilities, 1, which.max), # doesn't care about NaNs
-		labels=levels(classes))
+		levels=seq_len(nlevels(classes)), labels=levels(classes))
 	names(classes) <- pixelNames(x)
 	rownames(probabilities) <- pixelNames(x)
 	colnames(probabilities) <- levels(classes)

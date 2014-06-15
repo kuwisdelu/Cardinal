@@ -30,10 +30,10 @@ exportClasses(
 	"Hashmat",
 	"IAnnotatedDataFrame",
 	"ImageData",
-	"ResultData",
 	"MIAPE-Imaging",
 	"MSImageProcess",
 	"MSImageSet",
+	"ResultData",
 	"ResultSet",
 	"SImageData",
 	"SImageSet",
@@ -45,11 +45,11 @@ export(
 	"Hashmat",
 	"MSImageSet",
 	"SImageData",
-	"SImageSet",
+	"SImageSet")
+
+export(
 	"alpha.colors",
-	"fastmap",
 	"generateImage",
-	"generatePositionArray",
 	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",

@@ -13,7 +13,7 @@
 \alias{peaks,SImageSet-method}
 \alias{peaks<-,SImageSet-method}
 
-\title{Class to Contain Mass Spectrometry Imaging Experiment Data.}
+\title{Class to Contain Mass Spectrometry Imaging Experiment Data}
 
 \description{
     Container for mass spectrometry imaging experimental data and metadata. \code{MSImageSet} is derived from \code{\linkS4class{iSet}} through \code{\linkS4class{SImageSet}}. It extends these classes with information about the processing and analysis, requiring MIAPE-Imaging in its experimentData slot.
