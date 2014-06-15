@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
 
-- rewrite PCA/PLS/OPLS methods
 - FIX plotting of analysis results to plot() and image() methods
 - write documentation for ResultSet, spatialKMeans, and spatialShrunkenCentroids
 - need better behavior with combine() in SImageData for Hashmat elements?

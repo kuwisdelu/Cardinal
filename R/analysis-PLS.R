@@ -6,6 +6,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		method = "nipals", scale = FALSE,
 		iter.max = 100, ...)
 {
+	method <- match.arg(method)
 	.time.start()
 	.message("PLS: Centering data.")
 	Xt <- as.matrix(iData(x))
@@ -15,7 +16,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		scale <- attr(Xt, "scaled:scale")
 		Yscale <- attr(Y, "scaled:scale")
 	} else {
-		Yscale <- FALSE
+		Yscale <- 1
 	}
 	center <- attr(Xt, "scaled:center")
 	Ycenter <- attr(Y, "scaled:center")
@@ -55,7 +56,8 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "numeric"),
 setMethod("PLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 {
-	PLS(x, sapply(levels(y), function(Ck) as.integer(y == Ck)))
+	y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
+	PLS(x, y, ...)
 })
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "integer"), 
@@ -77,7 +79,12 @@ setMethod("predict", "PLS",
 		.stop("'newx' must inherit from 'iSet'")
 	.time.start()
 	Xt <- as.matrix(iData(newx))
-	Xt <- scale(t(Xt), scale=scale)
+	Xt <- scale(t(Xt), scale=object$scale[[1]])
+	if ( missing(newy) ) {
+		missing.newy <- TRUE
+	} else {
+		missing.newy <- TRUE
+	}
 	out <- lapply(object@resultData, function(res) {
 		.message("PLS: Predicting for ncomp = ", res$ncomp, ".")
 		pred <- .PLS.predict(Xt, ncomp=res$ncomp,
@@ -85,7 +92,7 @@ setMethod("predict", "PLS",
 			Yweights=res$Yweights)
 		pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
 		res[names(pred)] <- pred
-		if ( !missing(newy) )
+		if ( !missing.newy )
 			res$y <- newy
 		class(res) <- "ResultData"
 		res

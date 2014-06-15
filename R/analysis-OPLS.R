@@ -6,6 +6,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		method = "nipals", scale = FALSE,
 		iter.max = 100, ...)
 {
+	method <- match.arg(method)
 	.time.start()
 	.message("OPLS: Centering data.")
 	Xt <- as.matrix(iData(x))
@@ -55,7 +56,8 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"),
 setMethod("OPLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 {
-	PLS(x, sapply(levels(y), function(Ck) as.integer(y == Ck)))
+	y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
+	PLS(x, y, ...)
 })
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "integer"), 

@@ -6,6 +6,7 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		method = c("irlba", "svd"),
 		scale = FALSE, ...)
 {
+	method <- match.arg(method)
 	.time.start()
 	.message("PCA: Fitting principal components.")
 	ncomps <- sort(ncomp)
@@ -15,7 +16,8 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		scores <- fit$scores[,1:ncomp,drop=FALSE]
 		sdev <- fit$sdev[1:ncomp]
 		res <- list(scores=scores, loadings=loadings, sdev=sdev,
-			method=method, center=fit$center, scale=fit$scale)
+			method=method, ncomp=ncomp,
+			center=fit$center, scale=fit$scale)
 		class(res) <- "ResultData"
 		res
 	})
@@ -67,9 +69,9 @@ setMethod("predict", "PCA",
 		scale <- attr(Xt, "scaled:scale")
 	center <- attr(Xt, "scaled:center")
 	if ( method == "irlba" ) {
-		svd <- irlba(Xt, nu=0, nv=ncomp, ...)
+		svd <- irlba(Xt, nu=0, nv=ncomp)
 	} else {
-		svd <- svd(Xt, nu=0, nv=ncomp, ...)
+		svd <- svd(Xt, nu=0, nv=ncomp)
 	}
 	sdev <- svd$d[1:ncomp] / sqrt(max(1, nrow(Xt) - 1))
 	loadings <- svd$v
