@@ -37,7 +37,8 @@ setMethod("smoothSignal", "MSImageSet",
 
 smoothSignal.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[1],
+		method <- match.method(method, c("gaussian", "sgolay", "ma"))
+		method <- switch(method,
 			gaussian = smoothSignal.gaussian,
 			sgolay = smoothSignal.sgolay,
 			ma = smoothSignal.ma,

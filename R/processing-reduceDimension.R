@@ -60,7 +60,8 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageS
 
 reduceDimension.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[1],
+		method <- match.method(method, c("bin", "resample", "peaks"))
+		method <- switch(method,
 			bin = reduceDimension.bin,
 			resample = reduceDimension.resample,
 			peaks = reduceDimension.peaks,

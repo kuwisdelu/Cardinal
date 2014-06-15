@@ -1,6 +1,17 @@
 
 #### Contrast enhancement for an N-dimensional image ####
 
+contrast.enhance.method <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method, c("suppression", "histogram"))
+		method <- switch(method,
+			suppression = contrast.enhance.suppression,
+			histogram = contrast.enhance.histogram,
+			match.fun(method))
+	}
+	match.fun(method)
+}
+
 contrast.enhance.suppression <- function(x, top.percent=0.01, ...) {
 	max.intensity <- max(x, na.rm=TRUE)
 	cutoff <- quantile(x, 1 - top.percent, na.rm=TRUE)

@@ -51,7 +51,8 @@ setMethod("peakPick", "MSImageSet",
 
 peakPick.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- switch(method[1],
+		method <- match.method(method, c("simple", "adaptive", "limpic"))
+		method <- switch(method,
 			simple = peakPick.simple,
 			adaptive = peakPick.adaptive,
 			limpic = peakPick.limpic,

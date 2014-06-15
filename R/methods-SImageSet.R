@@ -161,8 +161,8 @@ setMethod("pixelApply", "SImageSet",
 		.feature <- features(.object)[.feature]
 		# set up grouping variables if not provided
 		if ( !missing(.feature.groups) )
-			.feature.groups <- tryCatch(eval(substitute(.pixel.groups), envir=pData(.object),
-				enclos=environment(.fun)), error=function(e) eval(.pixel.groups))
+			.feature.groups <- tryCatch(eval(substitute(.feature.groups), envir=fData(.object),
+				enclos=environment(.fun)), error=function(e) eval(.feature.groups))
 		if ( missing(.feature.groups) || is.null(.feature.groups) )
 			.feature.groups <- factor(integer(length(.feature)), labels="")
 		.feature.groups <- as.factor(.feature.groups)

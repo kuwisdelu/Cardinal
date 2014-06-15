@@ -24,7 +24,7 @@ test_that("Fastmap euclidean", {
 
 	expect_equivalent(as.matrix(dist(x)), d)
 
-	proj <- fastmap(x, ncomp=3, scale=FALSE)
+	proj <- fastmap(x, ncomp=5, scale=FALSE)
 
 	expect_equivalent(dist(proj$scores), dist(x))
 
@@ -34,7 +34,7 @@ test_that("Fastmap euclidean", {
 
 	f <- cbind(f1, f2, f3)
 
-	# expect_equivalent(f, proj$scores) # why doesn't this work?
+	# expect_equivalent(f, proj$scores[,1:3]) # why doesn't this work?
 
 	p1 <- c(1, 4)
 	p2 <- c(5, 2)
@@ -42,6 +42,6 @@ test_that("Fastmap euclidean", {
 
 	p <- rbind(p1, p2, p3)
 
-	# expect_equivalent(p, proj$pivot.array) # why doesn't this work?
+	# expect_equivalent(p, proj$pivot.array[1:3,]) # why doesn't this work?
 
 })

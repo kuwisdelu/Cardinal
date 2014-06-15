@@ -11,11 +11,11 @@ test_that("Principal components analysis", {
 		1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
 		1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
 
-	msset <- generateImage(data, range=c(1001, 5000), step=100)
+	sset <- generateImage(data, range=c(1001, 5000), step=100)
 
 	pca <- PCA(sset, ncomp=c(10,20))
 
-	prcomp <- prcomp(t(iData(msset)))$rotation[,1:10]
+	prcomp <- prcomp(t(iData(sset)))$rotation[,1:10]
 
 	dimnames(prcomp) <- dimnames(pca$loadings[[1]])
 

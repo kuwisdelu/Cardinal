@@ -213,6 +213,8 @@ setMethod("image",
 		values <- .reshapeImageValues(values, x, groups=groups, subset=subset,
 			perm=names(model$right), lattice=lattice)
 		# perform image processing
+		contrast.enhance <- contrast.enhance.method(contrast.enhance)
+		smooth.image <- smooth.image.method(smooth.image)
 		values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
 			function(x) smooth.image(contrast.enhance(x)))
 		# get the number of rows and conditions

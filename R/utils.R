@@ -1,10 +1,17 @@
 
 ## Match methods to their workhorse functions
-match.method <- function(method) {
+match.method <- function(method, options) {
 	if ( is.function(method) ) {
 		tryCatch(deparse(substitute(method, env=parent.frame())), error = function(e) "unknown")
+	} else if ( is.character(method) && missing(options) ) {
+		method[1]
 	} else if ( is.character(method) ) {
-		method[[1]]
+		matched <- pmatch(method[1], options)
+		if ( is.na(matched) ) {
+			method[1]
+		} else {
+			options[matched]
+		}
 	} else {
 		"unknown"
 	}

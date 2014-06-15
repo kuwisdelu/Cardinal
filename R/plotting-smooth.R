@@ -1,6 +1,17 @@
 
 #### Smoothing for a 2D image ####
 
+smooth.image.method <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method, c("gaussian", "adaptive"))
+		method <- switch(method,
+			gaussian = smooth.image.gaussian,
+			adaptive = smooth.image.adaptive,
+			match.fun(method))
+	}
+	match.fun(method)
+}
+
 smooth.image.gaussian <- function(x, window=5, ...) {
 	r <- floor(window / 2)
 	sd <- window / 4

@@ -15,6 +15,8 @@ test_that("Cardinal pre-processing", {
 
 	plot <- FALSE
 
+	options(Cardinal.progress=FALSE)
+
 	# normalization
 
 	tmp <- normalize(msset, method="tic", pixel=c(1,10), plot=plot)
