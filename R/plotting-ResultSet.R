@@ -1,14 +1,19 @@
 
 setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
-	function(x, parameters,
+	function(x, formula = ~ Feature,
+		parameters = pData(modelData(x)),
 		mode = c("centers", "tstatistics"),
 		threshold = 0,
-		classes = unique(unlist(x$classes)),
-		col = rainbow(length(classes)),
-		...)
+		classes = levels(unlist(x$classes)),
+		...,
+		col = rainbow(nlevels(unlist(x$classes))),
+		lattice = FALSE)
 	{
 		mode <- match.arg(mode)
+		model <- .parseFormula(formula)
+		formula <- paste(" ~ ", names(model$right))
+		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
 		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
 		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
 			seq_len(nrow(modelData(x))), nclasses)))
@@ -17,10 +22,12 @@ setMethod("plot",
 			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
 		centers <- matrix(as.vector(unlist(x$centers)), nrow=nrow(x))
 		tstatistics <- matrix(as.vector(unlist((x$tstatistics))), nrow=nrow(x))
-		centers <- MSImageSet(spectra=centers,
-			coord=df, mz=fData(x)[["mz"]])
-		tstatistics <- MSImageSet(spectra=tstatistics,
-			coord=df, mz=fData(x)[["mz"]])
+		centers <- SImageSet(data=centers,
+			coord=df)
+		tstatistics <- SImageSet(data=tstatistics,
+			coord=df)
+		fData(centers) <- fData(x)
+		fData(tstatistics) <- fData(x)
 		model <- factor(names(resultData(x))[ntimes],
 			levels=names(resultData(x)),
 			labels=names(resultData(x)))
@@ -39,20 +46,31 @@ setMethod("plot",
 		pixel <- pixels(obj, classes=classes)
 		significant <- as.vector(apply(iData(tstatistics)[,pixel], 2,
 			function(t) abs(t) > threshold))
-		plot(obj, ~ mz | model, pixel=pixel, pixel.groups=classes,
+		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
 			groups=significant, col=col, type='h', superpose=TRUE,
-			lattice=TRUE, ...)
+			lattice=lattice, ...)
+	})
+
+setMethod("plot",
+	signature = c(x = "SpatialShrunkenCentroids", y = "formula"),
+	function(x, y, ...) {
+		plot(x, formula = y, ...)
 	})
 
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids"),
-	function(x, parameters,
+	function(x, formula = ~ x * y | model,
+		parameters = pData(modelData(x)),
 		mode = c("probabilities", "scores"),
 		classes = unique(unlist(x$classes)),
+		...,
 		col = rainbow(length(classes)),
-		...)
+		lattice = FALSE)
 	{
 		mode <- match.arg(mode)
+		model <- .parseFormula(formula)
+		formula <- paste(" ~ ", paste(names(model$right), collapse="*"))
+		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
 		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
 		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
 			seq_len(nrow(modelData(x))), nclasses)))
@@ -61,9 +79,9 @@ setMethod("image",
 			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
 		probabilities <- matrix(as.vector(unlist(x$probabilities)), nrow=ncol(x))
 		scores <- matrix(as.vector(unlist(x$scores)), nrow=ncol(x))
-		probabilities <- MSImageSet(spectra=t(probabilities),
+		probabilities <- SImageSet(data=t(probabilities),
 			coord=coord(x))
-		scores <- MSImageSet(spectra=t(scores),
+		scores <- SImageSet(data=t(scores),
 			coord=coord(x))
 		model <- factor(names(resultData(x))[ntimes],
 			levels=names(resultData(x)),
@@ -83,8 +101,8 @@ setMethod("image",
 			obj <- scores
 		}
 		feature <- features(obj, classes=classes)
-		image(obj, ~ x * y | model, feature=feature, feature.groups=classes,
-			col=col, superpose=TRUE, lattice=TRUE, ...)
+		image(obj, formula=formula, feature=feature, feature.groups=classes,
+			col=col, superpose=TRUE, lattice=lattice, ...)
 	})
 
 

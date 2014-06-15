@@ -12,8 +12,9 @@ setMethod("plot",
 		xlim,
 		ylab,
 		ylim,
-		col = "black",
 		type = 'l',
+		col = "black",
+		col.groups = "gray",
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -64,8 +65,7 @@ setMethod("plot",
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
 				labels=make.names(names(model$left))))
 		}
-		nobs <- prod(dim(values)[-length(dim(values))])
-		ncond <- nrow(condition)
+		condition <- unique(condition)
 		# set up plotting parameters
 		if ( missing(xlim) )
 			xlim <- range(model$right, na.rm=TRUE)
@@ -80,22 +80,27 @@ setMethod("plot",
 				ylab <- names(model$left)
 			}
 		}
+		# set up the lattice data
+		nobs <- nrow(values)
+		ncond <- nrow(condition)
+		cond <- lapply(condition, function(var) rep(var, each=nobs))
+		data <- data.frame(.values=as.numeric(values), cond, row.names=NULL)
+		data[[names(model$right)]] <- rep(unlist(model$right), ncond)
+		# set up the groups and subset
+		subset <- rep(subset, length.out=nrow(data))
+		if ( !is.null(groups) )
+			groups <- as.factor(rep(groups, length.out=nrow(data)))
+		if ( !is.null(groups) && !is.null(pixel.groups) && superpose ) {
+			groups <- as.factor(rep(groups, length.out=nrow(data)))
+			col <- sapply(col, function(cl) {
+				gradient.colors(nlevels(groups), col.groups, cl)
+			})
+			groups <- interaction(groups, data$.pixel.groups)
+		} else if ( superpose && is.null(groups) ) {
+			groups <- data$.pixel.groups
+		}
 		# branch for base or lattice graphics
 		if ( lattice ) {
-			# set up the lattice data
-			condition <- sapply(condition, function(var) rep(var, each=nobs))
-			data <- data.frame(.values=as.numeric(values), condition, row.names=NULL)
-			data[[names(model$right)]] <- rep(unlist(model$right), ncond)
-			# set up the groups and subset
-			subset <- rep(subset, length.out=nrow(data))
-			if ( !is.null(groups) )
-				groups <- rep(groups, length.out=nrow(data))
-			if ( !is.null(groups) && !is.null(pixel.groups) && superpose ) {
-				col <- sapply(col, function(cl) gradient.colors(length(unique(groups)), "gray", cl))
-				groups <- interaction(groups, data$.pixel.groups, drop=TRUE)
-			} else if ( superpose && is.null(groups) ) {
-				groups <- data$.pixel.groups
-			}
 			# set up the lattice formula
 			fm.side <- paste(".values ~", names(model$right))
 			fm.cond <- NULL
@@ -112,24 +117,32 @@ setMethod("plot",
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim,
 				type=type, col=col, ...)
 		} else {
-			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
-			# set up the conditioning and sample variables
-			data <- expand.grid(lapply(dim(imageData(x))[-1], seq_len))
-			if ( !"sample" %in% names(data) ) {
-				data$sample <- factor(1)
-			} else {
-				data$sample <- as.factor(data$sample)
+			# check which conditions should create new plots
+			if ( superpose ) {
+				superposed <- which(names(condition) == ".pixel.groups")
+				superposed <- duplicated(condition[,-superposed,drop=FALSE])
 			}
-			# stop if conditioning variables found
-			if ( ncond > 1 ) stop("conditioning variables not allowed for lattice = FALSE")
-			# set up the x coordinate
+			# set up the plotting coordinates
 			xs <- unlist(model$right)
 			# loop through conditions
-			for ( i in ncol(values) ) {
-				y <- values[,i]
-				# plot with base graphics
-				plot(0, 0, xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim, type='n', ...)
-				points(xs, y, type=type, col=col, ...)
+			for ( ci in seq_len(nrow(condition)) ) {
+				subscripts <- subrows(data, condition[ci,,drop=FALSE])
+				ys <- data[subscripts, ".values"]
+				ys[!subset[subscripts]] <- NA
+				if ( is.null(groups) ) {
+					plot(xs, ys, type=type, col=col, xlab=xlab, xlim=xlim,
+						ylab=ylab, ylim=ylim, ...)
+				} else {
+					if ( !superposed[ci] )
+						plot(0, 0, xlab=xlab, xlim=xlim,
+							ylab=ylab, ylim=ylim, type='n', ...)
+					subgroups <- which(levels(groups) %in% groups[subscripts])
+					for ( gi in subgroups ) {
+						ysg <- ys
+						ysg[groups[subscripts] != levels(groups)[gi]] <- NA
+						points(xs, ysg, type=type, col=col[gi], ...)
+					}
+				}
 			}
 		}		
 	})
@@ -157,7 +170,8 @@ setMethod("image",
 		ylim,
 		zlim,
 		asp = 1,
-		col = intensity.colors(100),
+		col = rainbow(nlevels(groups)),
+		col.regions = intensity.colors(100),
 		colorkey = TRUE,
 		subset = TRUE,
 		lattice = FALSE)
@@ -209,17 +223,19 @@ setMethod("image",
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
 				labels=make.names(names(model$left))))
 		}
-		# shape image values into matrix with one image per column, includes NAs
-		values <- .reshapeImageValues(values, x, groups=groups, subset=subset,
-			perm=names(model$right), lattice=lattice)
-		# perform image processing
+		condition <- unique(condition)
+		# shape image values into matrix with 1 hyper-image per column, includes NAs
+		coordNames <- union(names(model$right), names(coord(x)))
+		subsetPositions <- positionArray(imageData(x))
+		subsetPositions[!subset] <- NA
+		subsetPositions <- aperm(subsetPositions, perm=coordNames)
+		values <- values[subsetPositions,,drop=FALSE]
+		dim(values) <- c(dim(subsetPositions), nrow(condition))
+		# perform image processing (contrast enhancement + spatial smoothing)
 		contrast.enhance <- contrast.enhance.method(contrast.enhance)
 		smooth.image <- smooth.image.method(smooth.image)
 		values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
 			function(x) smooth.image(contrast.enhance(x)))
-		# get the number of rows and conditions
-		nobs <- prod(dim(values)[-length(dim(values))])
-		ncond <- nrow(condition)
 		# set up plotting parameters
 		if ( missing(xlim) )
 			xlim <- range(model$right[[1]], na.rm=TRUE) + c(-0.5, 0.5)
@@ -232,22 +248,22 @@ setMethod("image",
 		if ( missing(zlim) )
 			zlim <- range(values, na.rm=TRUE)
 		if ( is.logical(colorkey) && colorkey )
-			colorkey <- list(col=col)
+			colorkey <- list(col=col.regions)
+		# set up the plotting data
+		nobs <- nrow(values)
+		ncond <- nrow(condition)
+		cond <- lapply(condition, function(var) rep(var, each=nobs))
+		data <- data.frame(.values=as.numeric(values), cond, row.names=NULL)
+		data[coordNames] <- expand.grid(lapply(dim(imageData(x))[coordNames], seq_len))
+		# set up the groups and subset
+		subset <- rep(subset[subsetPositions], ncond)
+		if ( superpose && is.null(groups) ) {
+			groups <- factor(rep(feature.groups, each=nobs, length.out=nrow(data)))
+		} else if ( !is.null(groups) ) {
+			groups <- factor(rep(groups[subsetPositions], ncond))
+		}
 		# branch for base or lattice graphics
 		if ( lattice ) {
-			# STILL NEED TO IMPLEMENT for groups=TRUE && superpose=FALSE
-			# set up the lattice data
-			condition <- sapply(condition, function(var) rep(var, each=nobs))
-			data <- data.frame(.values=as.numeric(values), condition, row.names=NULL)
-			data[names(coord(x))] <- expand.grid(lapply(dim(imageData(x))[-1], seq_len))
-			# set up the groups and subset
-			subset <- rep(subset[positionArray(imageData(x))], ncond)
-			if ( superpose && is.null(groups) ) {
-				groups <- factor(rep(unique(feature.groups), each=nobs, length.out=nrow(data)))
-			} else if ( !is.null(groups) ) {
-				# what the heck is this supposed to do? need to figure out...
-				groups <- factor(rep(groups[positionArray(imageData(x))], ncond))
-			}
 			# remove NAs so groups and subset work
 			nas <- is.na(values)
 			data <- data[!nas,,drop=FALSE]
@@ -263,90 +279,81 @@ setMethod("image",
 			if ( !is.null(model$left) )
 				fm.cond <- c(fm.cond, ".value.groups")
 			if ( !all(names(coord(x)) %in% names(model$right)) )
-				fm.cond <- c(fm.cond, names(coord(x))[!names(coord(x)) %in% names(model$right)])
+				fm.cond <- c(fm.cond, setdiff(names(coord(x)), names(model$right)))
 			if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 			fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
 			# plot it with lattice
 			levelplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
-				at=seq(from=zlim[1], to=zlim[2], length.out=length(col)),
-				col.regions=col, colorkey=colorkey,
-				panel=function(x, y, z, col.regions, at, subscripts, ...) {
-					if ( !is.null(groups) ) {
-						for ( i in seq_along(unique(groups)) ) {
-							col <- alpha.colors(100, col.regions[i])
-							at <- seq(from=zlim[1], to=zlim[2], length.out=length(col))
-							panel.levelplot(x, y, z, col.regions=col, at=at,
-								subscripts=subscripts[groups==unique(groups)[i]],
-								...)
-						}
+				at=seq(from=zlim[1], to=zlim[2], length.out=length(col.regions)),
+				col.regions=col.regions, colorkey=colorkey,
+				panel=function(x, y, z, col.regions, subscripts, ...) {
+					if ( is.null(groups) ) {
+						panel.levelplot(x, y, z, col.regions=col.regions,
+							subscripts=subscripts, ...)
 					} else {
-						panel.levelplot(x, y, z, col.regions=col, at=at,
-							subscripts=subscripts,
-							...)
+						subgroups <- which(levels(groups) %in% groups[subscripts])
+						for ( gi in subgroups ) {
+							col.g <- alpha.colors(length(col.regions), col[gi])
+							panel.levelplot(x, y, z, col.regions=col.g,
+								subscripts=subscripts[groups==levels(groups)[gi]], ...)
+						}
 					}
 				}, ...)
 		} else {
-			# STILL NEED TO IMPLEMENT for conditioning and grouping variables
-			# set up the conditioning and sample variables
-			data <- expand.grid(lapply(dim(imageData(x))[-1], seq_len))
-			if ( !"sample" %in% names(data) ) {
-				data$sample <- factor(1)
-			} else {
-				data$sample <- as.factor(data$sample)
+			# pad condition with any missing dimensions
+			if ( !all(names(coord(x)) %in% names(model$right)) ) {
+				coordNeed <- setdiff(names(coord(x)), names(model$right))
+				coordExtra <- expand.grid(lapply(dim(imageData(x))[coordNeed], seq_len))
+				condition <- rep(list(condition), nrow(coordExtra))
+				condition <- do.call("rbind", condition)
+				condition[coordNeed] <- coordExtra
 			}
-			# stop if conditioning variables found
-			if ( ncond > 1 ) stop("conditioning variables not allowed for lattice = FALSE")
-			# calculate the total number of plotting layers required
-			nsamples <- length(unique(data$sample))
-			nlayers <- ncond * nsamples
-			# set up the x-y coordinates for reshaping z matrix
-			xylim <- dim(imageData(x))[names(model$right)]
-			xtotticks <- xylim[1] * nlayers # total x ticks across all image layers
-			ytotticks <- xylim[2] * nlayers # total y ticks across all image layers
-			xs <- seq(from=1, to=xylim[1], length.out=nrow(data) / ytotticks)
-			ys <- seq(from=1, to=xylim[2], length.out=nrow(data) / xtotticks)
-			zdim <- c(length(xs), length(ys))
-			# loop through conditions and then samples
-			for ( i in ncol(values) ) {
-				for ( j in unique(data$sample) ) {
-					z <- values[data$sample == j]
-					dim(z) <- zdim
-					# plot with base graphics
-					image(xs, ys, z, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
-						zlim=zlim, asp=asp, col=col, ...)
+			# check which conditions should create new plots
+			if ( superpose ) {
+				superposed <- which(names(condition) == ".feature.groups")
+				superposed <- duplicated(condition[,-superposed,drop=FALSE])
+			}
+			# set up the plotting coordinates
+			xs <- seq_len(max(model$right[[1]]))
+			ys <- seq_len(max(model$right[[2]]))
+			# loop through conditions + dimensions
+			for ( ci in seq_len(nrow(condition)) ) {
+				subscripts <- subrows(data, condition[ci,,drop=FALSE])
+				zs <- data[subscripts, ".values"]
+				dim(zs) <- c(length(xs), length(ys))
+				if ( is.null(groups) ) {
+					image(xs, ys, zs, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
+						zlim=zlim, asp=asp, col=col.regions, ...)
 					if ( is.list(colorkey) )
-						legend("topright",
-							legend=c(
-								round(zlim[2], 2),
-								rep(NA, length(colorkey$col)-2),
-								round(zlim[1], 2)),
-							col=rev(colorkey$col),
-							bg=rgb(1, 1, 1, 0.75),
-							y.intersp=0.1,
-							cex=0.6,
-							lwd=2)
+						.colorkey(col.regions, zlim)
+				} else {
+					add <- superposed[ci]
+					subgroups <- which(levels(groups) %in% groups[subscripts])
+					for ( gi in subgroups ) {
+						zsg <- zs
+						add.g <- add || gi != subgroups[1]
+						col.g <- alpha.colors(length(col.regions), col[gi])
+						zsg[groups[subscripts] != levels(groups)[gi]] <- NA
+						image(xs, ys, zsg, xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
+							zlim=zlim, asp=asp, col=col.g, add=add.g, ...)
+					}
 				}
 			}
 		}
 	})
 
-## Reorders feature vector values for plotting an image
-.reshapeImageValues <- function(values, object, groups, subset, perm, lattice) {
-	if ( !lattice && !is.null(groups) ) {
-		nas <- rep(NA, nrow(values))
-		newdim <- c(nrow(values), ncol(values) * length(unique(groups)))
-		values <- apply(values, 2, function(x) {
-			sapply(unique(groups), function(g) ifelse(groups==g, x, nas))
-		})
-		dim(values) <- newdim
-	}
-	subsetPositions <- positionArray(imageData(object))
-	subsetPositions <- aperm(subsetPositions, perm=perm)
-	subsetPositions[!subset] <- NA
-	retvals <- apply(values, 2, function(x) x[subsetPositions])
-	dim(retvals) <- c(dim(subsetPositions), ncol(values))
-	retvals
+.colorkey <- function(col, range)  {
+	legend("topright",
+		legend=c(
+			round(range[2], 2),
+			rep(NA, length(col)-2),
+			round(range[1], 2)),
+		col=rev(col),
+		bg=rgb(1, 1, 1, 0.75),
+		y.intersp=0.1,
+		cex=0.6,
+		lwd=2)
 }
 
 .calculatePlotValues <- function(object, fun, pixel, pixel.groups,
@@ -388,10 +395,10 @@ setMethod("image",
 	pixel.groups <- as.factor(pixel.groups)
 	if ( length(pixel) == 1 ) {
 		x <- as.matrix(x)
-	} else if ( length(unique(pixel.groups)) == 1 ) {
+	} else if ( nlevels(pixel.groups) == 1 ) {
 		x <- as.matrix(apply(x, 1, fun))
 	} else {
-		x <- sapply(unique(pixel.groups), function(g) {
+		x <- sapply(levels(pixel.groups), function(g) {
 			apply(x[,pixel.groups==g,drop=FALSE], 1, fun)
 		})
 	}
@@ -403,10 +410,10 @@ setMethod("image",
 	feature.groups <- as.factor(feature.groups)
 	if ( length(feature) == 1 ) {
 		x <- t(x)
-	} else if ( length(unique(feature.groups)) == 1 ) {
+	} else if ( nlevels(feature.groups) == 1 ) {
 		x <- as.matrix(apply(x, 2, fun))
 	} else {
-		x <- sapply(unique(feature.groups), function(g) {
+		x <- sapply(levels(feature.groups), function(g) {
 			apply(x[feature.groups==g,,drop=FALSE], 2, fun)
 		})
 	}

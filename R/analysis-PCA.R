@@ -5,66 +5,66 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 	function(x, ncomp = 20,
 		method = c("irlba", "svd"),
 		scale = FALSE, ...)
-{
-	method <- match.arg(method)
-	ncomps <- sort(ncomp)
-	if ( max(ncomps) > nrow(x) )
-		.stop("PCA: Can't fit more components than extent of dataset")
-	.time.start()
-	.message("PCA: Fitting principal components.")
-	if ( max(ncomps) > nrow(x) )
-		.stop("PCA: Can't fit more components than extent of dataset")
-	fit <- .PCA.fit(x, ncomp=max(ncomps), method=method, scale=scale)
-	out <- lapply(ncomps, function(ncomp) {
-		loadings <- fit$loadings[,1:ncomp,drop=FALSE]
-		scores <- fit$scores[,1:ncomp,drop=FALSE]
-		sdev <- fit$sdev[1:ncomp]
-		res <- list(scores=scores, loadings=loadings, sdev=sdev,
-			method=method, ncomp=ncomp,
-			center=fit$center, scale=fit$scale)
-		class(res) <- "ResultData"
-		res
+	{
+		method <- match.arg(method)
+		ncomps <- sort(ncomp)
+		if ( max(ncomps) > nrow(x) )
+			.stop("PCA: Can't fit more components than extent of dataset")
+		.time.start()
+		.message("PCA: Fitting principal components.")
+		if ( max(ncomps) > nrow(x) )
+			.stop("PCA: Can't fit more components than extent of dataset")
+		fit <- .PCA.fit(x, ncomp=max(ncomps), method=method, scale=scale)
+		out <- lapply(ncomps, function(ncomp) {
+			loadings <- fit$loadings[,1:ncomp,drop=FALSE]
+			scores <- fit$scores[,1:ncomp,drop=FALSE]
+			sdev <- fit$sdev[1:ncomp]
+			res <- list(scores=scores, loadings=loadings, sdev=sdev,
+				method=method, ncomp=ncomp,
+				center=fit$center, scale=fit$scale)
+			class(res) <- "ResultData"
+			res
+		})
+		par <- AnnotatedDataFrame(
+			data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
+			varMetadata=data.frame(
+				labelDescription=c(ncomp="Number of Principal Components")))
+		featureNames(par) <- formatParam(pData(par))
+		names(out) <- formatParam(pData(par))
+		.message("PCA: Done.")
+		.time.stop()
+		new("PCA",
+			pixelData=x@pixelData,
+			featureData=x@featureData,
+			experimentData=x@experimentData,
+			protocolData=x@protocolData,
+			resultData=out,
+			modelData=par)
 	})
-	par <- AnnotatedDataFrame(
-		data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
-		varMetadata=data.frame(
-			labelDescription=c(ncomp="Number of Principal Components")))
-	featureNames(par) <- formatParam(pData(par))
-	names(out) <- formatParam(pData(par))
-	.message("PCA: Done.")
-	.time.stop()
-	new("PCA",
-		pixelData=x@pixelData,
-		featureData=x@featureData,
-		experimentData=x@experimentData,
-		protocolData=x@protocolData,
-		resultData=out,
-		modelData=par)
-})
 
 setMethod("predict", "PCA",
 	function(object, newx, ...)
-{
-	.time.start()
-	.message("PCA: Predicting principal components scores.")
-	out <- lapply(object@resultData, function(res) {
-		.message("PCA: Predicting scores for ncomp = ", res$ncomp, ".")
-		pred <- .PCA.predict(newx, ncomp=res$ncomp, loadings=res$loadings,
-			center=res$center, scale=res$scale)
-		res[names(pred)] <- pred
-		class(res) <- "ResultData"
-		res
+	{
+		.time.start()
+		.message("PCA: Predicting principal components scores.")
+		out <- lapply(object@resultData, function(res) {
+			.message("PCA: Predicting scores for ncomp = ", res$ncomp, ".")
+			pred <- .PCA.predict(newx, ncomp=res$ncomp, loadings=res$loadings,
+				center=res$center, scale=res$scale)
+			res[names(pred)] <- pred
+			class(res) <- "ResultData"
+			res
+		})
+		.message("PCA: Done.")
+		.time.stop()
+		new("PCA",
+			pixelData=x@pixelData,
+			featureData=x@featureData,
+			experimentData=x@experimentData,
+			protocolData=x@protocolData,
+			resultData=out,
+			modelData=par)
 	})
-	.message("PCA: Done.")
-	.time.stop()
-	new("PCA",
-		pixelData=x@pixelData,
-		featureData=x@featureData,
-		experimentData=x@experimentData,
-		protocolData=x@protocolData,
-		resultData=out,
-		modelData=par)
-})
 
 .PCA.fit <- function(x, ncomp, method, scale) {
 	Xt <- as.matrix(iData(x))

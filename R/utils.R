@@ -2,7 +2,8 @@
 ## Match methods to their workhorse functions
 match.method <- function(method, options) {
 	if ( is.function(method) ) {
-		tryCatch(deparse(substitute(method, env=parent.frame())), error = function(e) "unknown")
+		tryCatch(deparse(substitute(method, env=parent.frame())),
+			error = function(e) "unknown")
 	} else if ( is.character(method) && missing(options) ) {
 		method[1]
 	} else if ( is.character(method) ) {
@@ -14,6 +15,24 @@ match.method <- function(method, options) {
 		}
 	} else {
 		"unknown"
+	}
+}
+
+## Programmatic friendly version of base::subset
+subdata <- function(data, subset, select, drop=FALSE) {
+	subset <- subrows(data, subset=subset)
+	data[subset,select,drop=drop]
+}
+
+## Programmatic friendly version of base::subset (only return row indices)
+subrows <- function(data, subset) {
+	subset <- sapply(seq_along(subset), function(i) {
+		data[[names(subset)[[i]]]] %in% subset[[i]]
+	})
+	if ( is.null(dim(subset)) ) {
+		which(subset)
+	} else {
+		which(apply(subset, 1, all))
 	}
 }
 

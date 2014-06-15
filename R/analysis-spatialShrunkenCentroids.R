@@ -4,135 +4,135 @@ setMethod("spatialShrunkenCentroids",
 	function(x, y, r = 1, k = 2:5, s = seq(from=0, to=10, by=2),
 		method = c("gaussian", "adaptive"),
 		iter.max=10, ...)
-{
-	method <- match.arg(method)
-	rs <- sort(r)
-	ks <- sort(k)
-	ss <- sort(s)
-	.time.start()
-	.message("spatialShrunkenCentroids: Initializing classes.")
-	initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
-	out <- unlist(lapply(initial@resultData, function(init) {
-		spatial <- spatial.info(x, r=init$r, method=method)
-		lapply(ss, function(s) {
-			.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
-			res <- append(.spatialShrunkenCentroids.cluster(x,
-				classes=init$cluster, centers=init$centers,
-				r=init$r, k=init$k, s=s, spatial=spatial,
-				iter.max=iter.max), list(method=method,
-					r=init$r, k=init$k, s=s))
-			class(res) <- "ResultData"
-			res
-		})
-	}), recursive=FALSE)
-	.message("spatialShrunkenCentroids: Preparing results.")
-	par <- AnnotatedDataFrame(data=data.frame(
-			r=sapply(out, function(fit) fit$r),
-			k=sapply(out, function(fit) fit$k),
-			s=sapply(out, function(fit) fit$s)),
-		varMetadata=data.frame(
-			labelDescription=c(
-				r="Neighborhood radius",
-				k="Number of classes",
-				s="Sparsity parameter")))
-	featureNames(par) <- formatParam(pData(par))
-	names(out) <- formatParam(pData(par))
-	.message("spatialShrunkenCentroids: Done.")
-	.time.stop()
-	new("SpatialShrunkenCentroids",
-		pixelData=x@pixelData,
-		featureData=x@featureData,
-		experimentData=x@experimentData,
-		protocolData=x@protocolData,
-		resultData=out,
-		modelData=par)
-})
+	{
+		method <- match.arg(method)
+		rs <- sort(r)
+		ks <- sort(k)
+		ss <- sort(s)
+		.time.start()
+		.message("spatialShrunkenCentroids: Initializing classes.")
+		initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
+		out <- unlist(lapply(initial@resultData, function(init) {
+			spatial <- spatial.info(x, r=init$r, method=method)
+			lapply(ss, function(s) {
+				.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
+				res <- append(.spatialShrunkenCentroids.cluster(x,
+					classes=init$cluster, centers=init$centers,
+					r=init$r, k=init$k, s=s, spatial=spatial,
+					iter.max=iter.max), list(method=method,
+						r=init$r, k=init$k, s=s))
+				class(res) <- "ResultData"
+				res
+			})
+		}), recursive=FALSE)
+		.message("spatialShrunkenCentroids: Preparing results.")
+		par <- AnnotatedDataFrame(data=data.frame(
+				r=sapply(out, function(fit) fit$r),
+				k=sapply(out, function(fit) fit$k),
+				s=sapply(out, function(fit) fit$s)),
+			varMetadata=data.frame(
+				labelDescription=c(
+					r="Neighborhood radius",
+					k="Number of classes",
+					s="Sparsity parameter")))
+		featureNames(par) <- formatParam(pData(par))
+		names(out) <- formatParam(pData(par))
+		.message("spatialShrunkenCentroids: Done.")
+		.time.stop()
+		new("SpatialShrunkenCentroids",
+			pixelData=x@pixelData,
+			featureData=x@featureData,
+			experimentData=x@experimentData,
+			protocolData=x@protocolData,
+			resultData=out,
+			modelData=par)
+	})
 
 setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "factor"),
 	function(x, y, r = 1, s = seq(from=0, to=10, by=2),
 		method = c("gaussian", "adaptive"),
 		priors = table(y), ...)
-{
-	method <- match.arg(method)
-	priors <- priors / sum(priors)
-	rs <- sort(r)
-	ss <- sort(s)
-	.time.start()
-	out <- unlist(lapply(ss, function(s) {
-		.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
-		fit <- .spatialShrunkenCentroids.fit(x, classes=y, s=s)
-		fit <- append(fit, list(y=y, s=s, method=method, priors=priors))
-		lapply(rs, function(r) {
-			.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
-			res <- append(fit, list(r=r, k=length(levels(y))))
-			class(res) <- "ResultData"
-			res
-		})
-	}), recursive=FALSE)
-	par <- AnnotatedDataFrame(data=data.frame(
-			r=sapply(out, function(fit) fit$r),
-			k=sapply(out, function(fit) fit$k),
-			s=sapply(out, function(fit) fit$s)),
-		varMetadata=data.frame(
-			labelDescription=c(
-				r="Neighborhood radius",
-				k="Number of classes",
-				s="Sparsity parameter")))
-	featureNames(par) <- formatParam(pData(par))
-	names(out) <- formatParam(pData(par))
-	object <- new("SpatialShrunkenCentroids",
-		pixelData=x@pixelData,
-		featureData=x@featureData,
-		experimentData=x@experimentData,
-		protocolData=x@protocolData,
-		resultData=out,
-		modelData=par)
-	.time.stop()
-	predict(object, newx=x)
-})
+	{
+		method <- match.arg(method)
+		priors <- priors / sum(priors)
+		rs <- sort(r)
+		ss <- sort(s)
+		.time.start()
+		out <- unlist(lapply(ss, function(s) {
+			.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
+			fit <- .spatialShrunkenCentroids.fit(x, classes=y, s=s)
+			fit <- append(fit, list(y=y, s=s, method=method, priors=priors))
+			lapply(rs, function(r) {
+				.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
+				res <- append(fit, list(r=r, k=length(levels(y))))
+				class(res) <- "ResultData"
+				res
+			})
+		}), recursive=FALSE)
+		par <- AnnotatedDataFrame(data=data.frame(
+				r=sapply(out, function(fit) fit$r),
+				k=sapply(out, function(fit) fit$k),
+				s=sapply(out, function(fit) fit$s)),
+			varMetadata=data.frame(
+				labelDescription=c(
+					r="Neighborhood radius",
+					k="Number of classes",
+					s="Sparsity parameter")))
+		featureNames(par) <- formatParam(pData(par))
+		names(out) <- formatParam(pData(par))
+		object <- new("SpatialShrunkenCentroids",
+			pixelData=x@pixelData,
+			featureData=x@featureData,
+			experimentData=x@experimentData,
+			protocolData=x@protocolData,
+			resultData=out,
+			modelData=par)
+		.time.stop()
+		predict(object, newx=x)
+	})
 
 setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "character"),
 	function(x, y, ...)
-{
-	spatialShrunkenCentroids(x, factor(y), ...)
-})
+	{
+		spatialShrunkenCentroids(x, factor(y), ...)
+	})
 
 setMethod("predict",
 	signature = c(object = "SpatialShrunkenCentroids"),
 	function(object, newx, newy, ...)
-{
-	if ( !is(newx, "iSet") )
-		.stop("'newx' must inherit from 'iSet'")
-	.time.start()
-	if ( missing(newy) ) {
-		missing.newy <- TRUE
-	} else {
-		missing.newy <- FALSE
-	}
-	out <- lapply(object@resultData, function(res) {
-		spatial <- spatial.info(newx, r=res$r, method=res$method)
-		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
-		pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
-			centers=res$centers, priors=res$priors,
-			spatial=spatial, sd=res$sd)
-		res[names(pred)] <- pred
-		if ( !missing.newy )
-			res$y <- newy
-		class(res) <- "ResultData"
-		res
+	{
+		if ( !is(newx, "iSet") )
+			.stop("'newx' must inherit from 'iSet'")
+		.time.start()
+		if ( missing(newy) ) {
+			missing.newy <- TRUE
+		} else {
+			missing.newy <- FALSE
+		}
+		out <- lapply(object@resultData, function(res) {
+			spatial <- spatial.info(newx, r=res$r, method=res$method)
+			.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
+			pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
+				centers=res$centers, priors=res$priors,
+				spatial=spatial, sd=res$sd)
+			res[names(pred)] <- pred
+			if ( !missing.newy )
+				res$y <- newy
+			class(res) <- "ResultData"
+			res
+		})
+		.message("spatialShrunkenCentroids: Done.")
+		.time.stop()
+		new("SpatialShrunkenCentroids",
+			pixelData=newx@pixelData,
+			featureData=newx@featureData,
+			experimentData=newx@experimentData,
+			protocolData=newx@protocolData,
+			resultData=out,
+			modelData=object@modelData)
 	})
-	.message("spatialShrunkenCentroids: Done.")
-	.time.stop()
-	new("SpatialShrunkenCentroids",
-		pixelData=newx@pixelData,
-		featureData=newx@featureData,
-		experimentData=newx@experimentData,
-		protocolData=newx@protocolData,
-		resultData=out,
-		modelData=object@modelData)
-})
 
 setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	logp <- sapply(object$probabilities, function(prob) {
