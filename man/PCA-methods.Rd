@@ -14,7 +14,7 @@
         method = c("irlba", "svd"),
         scale = FALSE, \dots)
     
-    \S4method{predict}{PCA}(object, newx=2, \dots)
+    \S4method{predict}{PCA}(object, newx, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset for which to calculate the principal components.}
@@ -26,16 +26,16 @@
     \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
 }
 \value{
-    An object of class \code{PCA}, which is an \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{PCA}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
 
-    \itemize{
-        \item{scores}{A \code{matrix} with the principal component scores.}
-        \item{loadings}{A \code{matrix} with the principal component loadings.}
-        \item{sdev}{The standard deviations of the principal components.}
-        \item{method}{The method used to calculate the principal components.}
-        \item{ncomp}{The number of principal components calculated.}
-        \item{center}{The center of the dataset. Used for calculating principal components scores on new data.}
-        \item{scale}{The scaling factors for the dataset. Used for calculating principal components scores on new data.}
+    \describe{
+        \item{\code{scores}:}{A \code{matrix} with the principal component scores.}
+        \item{\code{loadings}:}{A \code{matrix} with the principal component loadings.}
+        \item{\code{sdev}:}{The standard deviations of the principal components.}
+        \item{\code{method}:}{The method used to calculate the principal components.}
+        \item{\code{ncomp}:}{The number of principal components calculated.}
+        \item{\code{center}:}{The center of the dataset. Used for calculating principal components scores on new data.}
+        \item{\code{scale}:}{The scaling factors for the dataset. Used for calculating principal components scores on new data.}
     }
 }
 \author{

@@ -3,7 +3,8 @@
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"), 
 	function(x, y, ncomp = 20,
-		method = "nipals", scale = FALSE,
+		method = "nipals",
+		scale = FALSE,
 		iter.max = 100, ...)
 {
 	method <- match.arg(method)

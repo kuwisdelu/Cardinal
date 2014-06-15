@@ -14,7 +14,8 @@
 }
 \usage{
     \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 20,
-        method = "nipals", scale = FALSE,
+        method = "nipals",
+        scale = FALSE,
         iter.max = 100, \dots)
     
     \S4method{PLS}{SImageSet,numeric}(x, y, \dots)
@@ -32,29 +33,29 @@
     \item{method}{The function used to calculate the projection.}
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
-    \item{\dots}{Ignored.}
+    \item{\dots}{Passed to the next PLS method.}
     \item{object}{The result of a previous call to \code{\link[Cardinal]{PLS}}.}
     \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link[Cardinal]{PLS}} object.}
     \item{newy}{Optionally, a new response from which residuals should be calcualted.}
 }
 \value{
-    An object of class \code{PCS}, which is an \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{PLS}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
 
-    \itemize{
-        \item{scores}{A \code{matrix} with the component scores for the explanatary variable.}
-        \item{loadings}{A \code{matrix} with the explanatory variable loadings.}
-        \item{weights}{A \code{matrix} with the explanatory variable weights.}
-        \item{Yscores}{A \code{matrix} objects with the component scores for the response variable.}
-        \item{Yweights}{A \code{matrix} objects with the response variable weights.}
-        \item{projection}{The projection \code{matrix}.}
-        \item{coefficients}{The \code{matrix} of the regression coefficients.}
-        \item{ncomp}{The number of PLS components.}
-        \item{method}{The method used to calculate the projection.}
-        \item{center}{The center of the dataset. Used for calculating PLS scores on new data.}
-        \item{scale}{The scaling factors for the dataset. Used for PLS scores on new data.}
-        \item{Ycenter}{The centers of the response variables. Used for predicting new observations.}
-        \item{Yscale}{The scaling factors for the response variables. Used for predicting new observation.}
-        \item{fitted}{The fitted response.}
+    \describe{
+        \item{\code{scores}:}{A \code{matrix} with the component scores for the explanatary variable.}
+        \item{\code{loadings}:}{A \code{matrix} with the explanatory variable loadings.}
+        \item{\code{weights}:}{A \code{matrix} with the explanatory variable weights.}
+        \item{\code{Yscores}:}{A \code{matrix} objects with the component scores for the response variable.}
+        \item{\code{Yweights}:}{A \code{matrix} objects with the response variable weights.}
+        \item{\code{projection}:}{The projection \code{matrix}.}
+        \item{\code{coefficients}:}{The \code{matrix} of the regression coefficients.}
+        \item{\code{ncomp}:}{The number of PLS components.}
+        \item{\code{method}:}{The method used to calculate the projection.}
+        \item{\code{center}:}{The center of the dataset. Used for calculating PLS scores on new data.}
+        \item{\code{scale}:}{The scaling factors for the dataset. Used for PLS scores on new data.}
+        \item{\code{Ycenter}:}{The centers of the response variables. Used for predicting new observations.}
+        \item{\code{Yscale}:}{The scaling factors for the response variables. Used for predicting new observation.}
+        \item{\code{fitted}:}{The fitted response.}
     }
 }
 \author{
