@@ -11,7 +11,7 @@ test_that("Principal components analysis", {
 		1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
 		1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
 
-	sset <- generateImage(data, range=c(1001, 5000), step=100)
+	sset <- generateImage(data, range=c(200, 300), step=1)
 
 	pca <- PCA(sset, ncomp=c(10,20))
 

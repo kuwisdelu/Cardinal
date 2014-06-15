@@ -113,6 +113,11 @@ setMethod("predict",
 	if ( !is(newx, "iSet") )
 		.stop("'newx' must inherit from 'iSet'")
 	.time.start()
+	if ( missing(newy) ) {
+		missing.newy <- TRUE
+	} else {
+		missing.newy <- FALSE
+	}
 	out <- lapply(object@resultData, function(res) {
 		spatial <- spatial.info(newx, r=res$r, method=res$method)
 		.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
@@ -120,7 +125,7 @@ setMethod("predict",
 			centers=res$centers, priors=res$priors,
 			spatial=spatial, sd=res$sd)
 		res[names(pred)] <- pred
-		if ( !missing(newy) )
+		if ( !missing.newy )
 			res$y <- newy
 		class(res) <- "ResultData"
 		res
@@ -147,7 +152,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	})
 	attr(logp, "nobs") <- length(pixels(object))
 	attr(logp, "names") <- names(resultData(object))
-	lik
+	logp
 } )
 
 .spatialShrunkenCentroids.cluster <- function(x, classes, centers, r, k, s,
@@ -207,8 +212,8 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	scores <- .calculateSpatialDiscriminantScores(x, centers=centers,
 		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
 	probabilities <- .calculateClassProbabilities(scores) # NaNs -> 0
-	classes <- factor(apply(probabilities, 1, which.max),
-		levels=levels(classes)) # doesn't care about NaNs
+	classes <- factor(apply(probabilities, 1, which.max), # doesn't care about NaNs
+		labels=levels(classes))
 	names(classes) <- pixelNames(x)
 	rownames(probabilities) <- pixelNames(x)
 	colnames(probabilities) <- levels(classes)

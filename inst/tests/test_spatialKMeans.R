@@ -1,8 +1,8 @@
 require(testthat)
 
-context("OPLS")
+context("SpatialKMeans")
 
-test_that("Orthogonal partial least squares", {
+test_that("Spatially-aware k-means", {
 
 	set.seed(1)
 	data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
@@ -15,8 +15,14 @@ test_that("Orthogonal partial least squares", {
 
 	y <- factor(data[!is.na(data)], labels=c("black", "red"))
 
-	opls <- OPLS(sset, y, ncomp=c(10,20))
+	set.seed(1)
+	gkmeans <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="gaussian")
 
-	expect_equal(apply(opls$fitted[[1]], 1, which.max), as.integer(y))
+	expect_true(validObject(gkmeans))
+
+	set.seed(1)
+	akmeans <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="adaptive")
+
+	expect_true(validObject(akmeans))
 
 })

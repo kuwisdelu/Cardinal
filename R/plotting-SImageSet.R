@@ -17,12 +17,12 @@ setMethod("plot",
 		subset = TRUE,
 		lattice = FALSE)
 	{
+		# add Feature to features for default plotting
+		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# parse formula and set up model for plotting
 		model <- .parsePlotFormula(formula, object=x, enclos=environment(formula))
 		if ( missing(pixel) && is.null(model$left) )
 			.stop("plot: 'pixel' must be specified")
-		# add Feature to features for default plotting
-		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# evaluated with respect to pData
 		if ( is.null(model$left) ) {
 			pixel <- tryCatch(eval(substitute(pixel), envir=pData(x),

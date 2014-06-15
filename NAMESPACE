@@ -79,6 +79,8 @@ exportMethods(
 	"residuals",
 	"coef")
 
+exportMethods("logLik")
+
 exportMethods(
 	"$",
 	"$<-",

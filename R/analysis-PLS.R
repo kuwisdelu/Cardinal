@@ -83,7 +83,7 @@ setMethod("predict", "PLS",
 	if ( missing(newy) ) {
 		missing.newy <- TRUE
 	} else {
-		missing.newy <- TRUE
+		missing.newy <- FALSE
 	}
 	out <- lapply(object@resultData, function(res) {
 		.message("PLS: Predicting for ncomp = ", res$ncomp, ".")

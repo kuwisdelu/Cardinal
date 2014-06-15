@@ -80,6 +80,11 @@ setMethod("predict", "OPLS",
 	.time.start()
 	Xt <- as.matrix(iData(newx))
 	Xt <- scale(t(Xt), scale=scale)
+	if ( missing(newy) ) {
+		missing.newy <- TRUE
+	} else {
+		missing.newy <- FALSE
+	}
 	out <- lapply(object@resultData, function(res) {
 		.message("OPLS: Predicting for ncomp = ", res$ncomp, ".")
 		pred <- .OPLS.predict(Xt, ncomp=res$ncomp,
@@ -87,7 +92,7 @@ setMethod("predict", "OPLS",
 			method=res$method)
 		pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
 		res[names(pred)] <- pred
-		if ( !missing(newy) )
+		if ( !missing.newy )
 			res$y <- newy
 		class(res) <- "ResultData"
 		res
