@@ -5,7 +5,6 @@ setMethod("plot",
 		parameters = pData(modelData(x)),
 		mode = c("centers", "tstatistics"),
 		classes = levels(unlist(x$classes)),
-		threshold = 0,
 		superpose = TRUE,
 		...,
 		type = 'h',
@@ -47,7 +46,7 @@ setMethod("plot",
 		}
 		pixel <- pixels(obj, classes=classes)
 		significant <- as.vector(apply(iData(tstatistics)[,pixel], 2,
-			function(t) abs(t) > threshold))
+			function(t) abs(t) > 0))
 		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
 			groups=significant, col=col, type=type, superpose=superpose,
 			lattice=lattice, ...)

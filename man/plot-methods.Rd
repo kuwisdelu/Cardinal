@@ -7,6 +7,8 @@
 \alias{plot,SImageSet,formula-method}
 \alias{plot,MSImageSet,missing-method}
 \alias{plot,MSImageSet,formula-method}
+\alias{plot,SpatialShrunkenCentroids,missing-method}
+\alias{plot,SpatialShrunkenCentroids,formula-method}
 
 \title{Plot the Feature-Space of an Imaging Dataset}
 
@@ -27,6 +29,7 @@
     ylab,
     ylim,
     col = "black",
+    col.groups = "gray",
     type = 'l',
     subset = TRUE,
     lattice = FALSE)
@@ -40,6 +43,16 @@
     ylab,
     type = ifelse(centroided(x), 'h', 'l'),
     sub)
+
+\S4method{plot}{SpatialShrunkenCentroids,missing}(x, formula = ~ Feature,
+    parameters = pData(modelData(x)),
+    mode = c("centers", "tstatistics"),
+    classes = levels(unlist(x$classes)),
+    superpose = TRUE,
+    \dots,
+    type = 'h',
+    col = rainbow(nlevels(unlist(x$classes))),
+    lattice = FALSE)
 }
 
 \arguments{
@@ -60,7 +73,7 @@
 
     \item{groups}{A variable or expression to be evaluated in \code{fData(x)}, expected to act as a grouping variable for the features in the feature vector(s) to be plotted, typically used to distinguish different groups of features by varying graphical parameters like color and line type. By default, if 'superpose = FALSE', these appear overlaid on the same plot.}
 
-    \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
+    \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot?}
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
 
@@ -74,6 +87,8 @@
 
     \item{col}{A specification for the default plotting color(s).}
 
+    \item{col.groups}{If both 'pixel.groups' and 'groups' are specified while 'superpose = TRUE', then this argument is used to expand the plotting colors.}
+
     \item{type}{A character indicating the type of plotting.}
 
     \item{sub}{The subtitle for the plot.}
@@ -82,11 +97,17 @@
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
 
+    \item{\dots}{Additional arguments passed to the underlying \code{\link[graphics]{plot}} or \code{\link[lattice]{xyplot}} functions.}
+
     \item{coord}{A named vector or list giving the coordinate of the pixel to plot.}
 
     \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
-    
-    \item{\dots}{Additional arguments passed to the underlying \code{\link[graphics]{plot}} or \code{\link[lattice]{xyplot}} functions.}
+
+    \item{parameters}{A \code{list} specifying the values of model parameters from which to choose the analysis results to plot.}
+
+    \item{mode}{What kind of results should be plotted.}
+
+    \item{classes}{What classes to plot for analysis results.}
 }
 
 \author{
@@ -94,7 +115,6 @@
 }
 
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\link[Cardinal]{image-methods}}
 }
 

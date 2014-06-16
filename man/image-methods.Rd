@@ -5,6 +5,7 @@
 \alias{image-methods}
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
+\alias{image,SpatialShrunkenCentroids-method}
 
 \title{Plot the Pixel-Space of an Imaging Dataset}
 
@@ -28,7 +29,8 @@
     ylim,
     zlim,
     asp = 1,
-    col = intensity.colors(100),
+    col = rainbow(nlevels(groups)),
+    col.regions = intensity.colors(100),
     colorkey = TRUE,
     subset = TRUE,
     lattice = FALSE)
@@ -39,6 +41,15 @@
     plusminus,
     \dots,
     sub)
+
+\S4method{image}{SpatialShrunkenCentroids}(x, formula = ~ x * y,
+    parameters = pData(modelData(x)),
+    mode = c("probabilities", "scores"),
+    classes = unique(unlist(x$classes)),
+    superpose = TRUE,
+    \dots,
+    col = rainbow(nlevels(unlist(x$classes))),
+    lattice = FALSE)
 }
 
 \arguments{
@@ -79,7 +90,9 @@
 
     \item{asp}{The aspect ratio of the plot.}
 
-    \item{col}{A specification for the default plotting color(s).}
+    \item{col}{A specification for the default plotting color(s) for groups.}
+
+    \item{col.regions}{The default plotting color(s) for the z-axis of image intensities.}
 
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
@@ -88,12 +101,18 @@
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+    
+    \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
 
     \item{mz}{The m/z value for which to plot the ion image.}
 
     \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
-    
-    \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
+
+    \item{parameters}{A \code{list} specifying the values of model parameters from which to choose the analysis results to plot.}
+
+    \item{mode}{What kind of results should be plotted.}
+
+    \item{classes}{What classes to plot for analysis results.}
 }
 
 \author{
@@ -101,8 +120,8 @@
 }
 
 \seealso{
-    \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{image-methods}}
+    \code{\link[Cardinal]{plot-methods}},
+    \code{\link[Cardinal]{select-methods}}
 }
 
 \examples{
