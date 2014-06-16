@@ -2,6 +2,10 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.8.0 [2014-6-16]
+
+o First public beta available for ASMS 2014.
+
 Version 0.7 [2014-6-2]
 
 o Refactored version of the package prepared for internal testing.
