@@ -23,8 +23,194 @@ BiocStyle::latex()
 <<Cardinal,echo=FALSE,results=hide>>=
 options(width=69)
 library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
 @ 
-Text text text.
+This will be a brief walkthrough of some of the basic functionality of Cardinal.
+
+\section{Setup}
+
+For the following examples, we will use a simulated dataset. The image is a cardinal with red and black feathers, where the colors represent different regions of the image. The mass spectra will have two peaks to indicate the two regions. We use \Robject{generateImage} to generate the dataset from an integer matrix where $0$ represents black regions of the image and $1$ represents the red regions of the image.
+<<data>>=
+data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+ NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+ 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+ 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+@
+We can plot the ground truth image directly.
+<<truth>>=
+image(data[,ncol(data):1], col=c("black", "red"))
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<truth>>
+@
+\caption{\small Ground truth image used to generate the simulated dataset.}
+\end{center}
+\end{figure}
+Now we generate the data as if from a mass spectrometry imaging experiment with peaks at $m/z$ 3000 (higher intensity in black pixels) and $m/z$ 4000 (higher intensity in red pixels).
+<<sim>>=
+set.seed(1)
+msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
+	step=3.3, as="MSImageSet")
+@
+We need to mark which pixels are black and which are red.
+<<pData>>=
+pData(msset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+@
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``black'' or ``red'' pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
+<<fData>>=
+fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg", "black", "red"))
+fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
+fData(msset)$fg[3950 < fData(msset)$mz & fData(msset)$mz < 4050] <- "red"
+@
+Now we can experiment with different ways of working with a mass spectrometry imaging dataset in \Rpackage{Cardinal}.
+
+\section{Pre-processing}
+
+\subsection{Normalization}
+
+Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC). In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results. In the second, we perform normalization on the whole dataset.
+<<normalizetic>>=
+temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
+@
+<<normalize>>=
+msset2 <- normalize(msset, method="tic")
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<normalizetic>>
+@
+\caption{\small Total ion current (TIC) normalization.}
+\end{center}
+\end{figure}
+
+\subsection{Smoothing}
+
+Smoothing the mass spectra is useful for removing noise, which can improve detection of peaks. \Rpackage{Cardinal} provides several common methods for smoothing mass spectra, including Gaussian kernel smoothing, Savitsky-Golay smoothing, and a simple moving average filter.
+<<smoothgaus>>=
+temp <- smoothSignal(msset2, pixel=1, method="gaussian", window=9, plot=TRUE)
+@
+<<smoothsgolay>>=
+temp <- smoothSignal(msset2, pixel=1, method="sgolay", window=15, plot=TRUE)
+@
+<<smooth>>=
+msset3 <- smoothSignal(msset2, method="gaussian", window=9)
+@
+\begin{figure}
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{center}
+\begin{tabular}{ccc}
+<<fig=TRUE, echo=FALSE>>=
+<<smoothgaus>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<smoothsgolay>>
+@
+\end{tabular}
+\caption{\small Gaussian smoothing and Savitsky-Golay smoothing.}
+\end{center}
+\end{figure}
+
+\subsection{Baseline reduction}
+
+Baseline reduction is often necessary for many datasets, and \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks.
+<<baselinemedian>>=
+temp <- reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
+@
+<<baseline>>=
+msset4 <- reduceBaseline(msset3, method="median", blocks=50)
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<baselinemedian>>
+@
+\caption{\small Baseline reduction using interpolation from medians.}
+\end{center}
+\end{figure}
+
+\subsection{Peak picking}
+
+Peak picking is a common form of data reduction that reduces the signal to relevant data peaks. \Rpackage{Cardinal} implements three varieties based on a user-specified signal-to-noise ratio (SNR). The ``simple'' version interpolates a constant noise pattern, the ``adaptive'' version interpolates an adaptive noise pattern, and ``limpic'' implements the LIMPIC algorithm for peak detection.
+<<peakpickadaptive>>=
+temp <- peakPick(msset4, pixel=1, method="adaptive", SNR=3, plot=TRUE)
+@
+<<peakpicklimpic>>=
+temp <- peakPick(msset4, pixel=1, method="limpic", SNR=3, plot=TRUE)
+@
+<<peakpick>>=
+msset5 <- peakPick(msset4, method="simple", SNR=3)
+@
+\begin{figure}
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<peakpickadaptive>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<peakpicklimpic>>
+@
+\end{tabular}
+\caption{\small Peak picking with adaptive noise and LIMPIC.}
+\end{center}
+\end{figure}
+
+\subsection{Peak alignment}
+
+Peak alignment is necessary to account for possible inaccuracy in m/z measurements. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum.
+<<peakaligndiff>>=
+temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
+@
+<<peakalign>>=
+msset6 <- peakAlign(msset5, method="diff")
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<peakaligndiff>>
+@
+\caption{\small Peak alignment to the local maxima of the mean spectrum.}
+\end{center}
+\end{figure}
+
+\subsection{Data reduction}
+
+Other common forms of data reduction include resampling and binning.
+<<reducedimbin>>=
+temp <- reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
+@
+<<reducedimresample>>=
+temp <- reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
+@
+<<reducedim>>=
+msset7 <- reduceDimension(msset4, method="resample", step=25)
+@
+\begin{figure}
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<reducedimbin>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<reducedimresample>>
+@
+\end{tabular}
+\caption{\small Data reduction via binning and resampling.}
+\end{center}
+\end{figure}
 
 \section{Session info}
 

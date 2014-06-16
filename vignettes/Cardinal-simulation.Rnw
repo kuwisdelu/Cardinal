@@ -25,6 +25,8 @@ BiocStyle::latex()
 <<Cardinal,echo=FALSE,results=hide>>=
 options(width=69)
 library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
 @ 
 \Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed metholody for analyzing mass spectrometry imaging experiments.
 

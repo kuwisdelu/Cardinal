@@ -33,10 +33,10 @@ alpha.colors(n, col="red", ramp=c("linear", "power"), range=c(0,1))
 	Kyle D. Bemis
 }
 \examples{
-	col <- intensity.colors(100^2)
-	if ( interactive() ) {
-		image(matrix(1:(100^2), nrow=100), col=col)
-	}
+col <- intensity.colors(100^2)
+if ( interactive() ) {
+	image(matrix(1:(100^2), nrow=100), col=col)
+}
 }
 
 \keyword{color}
