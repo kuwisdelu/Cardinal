@@ -55,6 +55,6 @@ reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 }
 \examples{
 data <- generateImage(as="MSImageSet")
-reduceBaseline(data, method="interp", plot=interactive())
+reduceBaseline(data, method="median", plot=interactive())
 }
 \keyword{methods}

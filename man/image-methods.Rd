@@ -161,5 +161,5 @@ image(msset, mz=4000, col=mycol)
 image(msset, mz=3500, plusminus=500, col=mycol)
 }
 
-\keyword{methods}
+\keyword{hplot}
 

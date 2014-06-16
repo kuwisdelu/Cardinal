@@ -22,7 +22,7 @@
 
 \S4method{peakAlign}{MSImageSet,MSImageSet}(object, ref, \dots)
 
-\S4method{peakAlign}{MSImageSet,missing}(object, \dots)
+\S4method{peakAlign}{MSImageSet,missing}(object, ref, \dots)
 
 ## Absolute difference alignment
 peakAlign.diff(x, y, diff.max=200, units=c("ppm", "mz"), \dots)

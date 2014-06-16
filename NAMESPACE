@@ -1,4 +1,10 @@
 
+import("Biobase")
+
+import("BiocGenerics")
+
+import("methods")
+
 import("stats4")
 
 importFrom("fields",
@@ -23,6 +29,7 @@ importFrom("sp",
 	"point.in.polygon")
 
 importFrom("utils",
+	"sessionInfo",
 	"setTxtProgressBar",
 	"txtProgressBar")
 

@@ -7,12 +7,18 @@
 
 \alias{[[,ImageData-method}
 \alias{[[<-,ImageData-method}
+\alias{[[,ImageData,character,missing-method}
+\alias{[[<-,ImageData,character,missing-method}
+\alias{annotatedDataFrameFrom,ImageData-method}
 \alias{combine,ImageData,ImageData-method}
+\alias{combine,array,array-method}
 \alias{dim,ImageData-method}
 \alias{dims,ImageData-method}
 \alias{initialize,ImageData-method}
 \alias{storageMode,ImageData-method}
 \alias{storageMode<-,ImageData,character-method}
+\alias{names,ImageData-method}
+\alias{names<-,ImageData-method}
 
 \title{Class Containing Arrays of Imaging Data}
 
@@ -26,7 +32,7 @@
 ## Instance creation
 ImageData(\dots,
     data = new.env(parent=emptyenv()),
-    storageMode = c("immutableEnvironment"
+    storageMode = c("immutableEnvironment",
         "lockedEnvironment", "environment"))
 
 ## Additional methods documented below

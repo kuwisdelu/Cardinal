@@ -6,33 +6,17 @@ setMethod("plot",
 		coord,
 		plusminus,
 		...,
-		xlab,
-		ylab,
 		type = ifelse(centroided(x), 'h', 'l'),
 		sub)
 	{
 		model <- .parseFormula(formula)
-		if ( missing(xlab) ) {
-			if ( names(model$right) == "mz" ) {
-				xlab <- expression(italic(m/z))
-			} else {
-				xlab <- names(model$right)
-			}
-		}
-		if ( missing(ylab) ) {
-			if ( is.null(model$left) ) {
-				ylab <- "Intensity"
-			} else {
-				ylab <- names(model$left)
-			}
-		}
 		if ( !missing(coord) ) {
 			if ( length(pixel) > 1 ) {
 				.warning("pixel has length > 1 and only the first element will be used")
 				pixel <- pixel[1]
 			}
 			coord <- coord(x)[pixel[1],]
-			sub <- formatCoord(coord(x)[pixel[1],])
+			sub <- .format.list(coord(x)[pixel[1],])
 			if ( !missing(plusminus) ) {
 				if ( length(plusminus) != length(coord) )
 					plusminus <- rep(plusminus, length.out=length(coord))
@@ -47,15 +31,13 @@ setMethod("plot",
 			if ( length(pixel) > 1 ) {
 				sub <- ""
 			} else {
-				sub <- formatCoord(coord(x)[pixel[1],])
+				sub <- .format.list(coord(x)[pixel,])
 			}
 		}
 		callNextMethod(x,
 			formula=formula,
 			pixel=pixel,
 			...,
-			xlab=xlab,
-			ylab=ylab,
 			sub=sub,
 			type=type)
 	})
@@ -81,7 +63,7 @@ setMethod("image",
 				feature <- feature[1]
 			}
 			mz <- mz(x)[feature]
-			sub <- formatMz(mz(x)[feature])
+			sub <- .format.mz(mz(x)[feature])
 			if ( !missing(plusminus) ) {
 				plus <- feature
 				while ( mz(x)[plus] - mz < plusminus && plus < dim(x)[1] )
@@ -96,7 +78,7 @@ setMethod("image",
 			if ( length(feature) > 1 ) {
 				sub <- ""
 			} else {
-				sub <- formatMz(mz(x)[feature])
+				sub <- .format.mz(mz(x)[feature])
 			}
 		}
 		callNextMethod(x,

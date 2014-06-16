@@ -9,11 +9,14 @@
 \alias{$<-,iSet-method}
 \alias{[[,iSet-method}
 \alias{[[<-,iSet-method}
+\alias{[[,iSet,ANY,ANY-method}
+\alias{[[<-,iSet,ANY,ANY-method}
 \alias{initialize,iSet-method}
 \alias{dim,iSet-method}
 \alias{dims,iSet-method}
 \alias{storageMode,iSet-method}
 \alias{storageMode<-,iSet,character-method}
+\alias{storageMode<-,iSet,ANY-method}
 \alias{combine,iSet,iSet-method}
 \alias{protocolData,iSet-method}
 \alias{protocolData<-,iSet-method}
@@ -27,12 +30,15 @@
 \alias{pixelData<-,iSet-method}
 \alias{pData,iSet-method}
 \alias{pData<-,iSet-method}
+\alias{pData<-,iSet,ANY-method}
 \alias{varMetadata,iSet-method}
 \alias{varMetadata<-,iSet-method}
+\alias{varMetadata<-,iSet,ANY-method}
 \alias{varLabels,iSet-method}
 \alias{varLabels<-,iSet-method}
 \alias{sampleNames,iSet-method}
 \alias{sampleNames<-,iSet-method}
+\alias{sampleNames<-,iSet,ANY-method}
 \alias{pixelNames,iSet-method}
 \alias{pixelNames<-,iSet-method}
 \alias{coordLabels,iSet-method}
@@ -41,14 +47,21 @@
 \alias{coord<-,iSet-method}
 \alias{featureData,iSet-method}
 \alias{featureData<-,iSet-method}
+\alias{featureData<-,iSet,ANY-method}
 \alias{fData,iSet-method}
 \alias{fData<-,iSet-method}
+\alias{fData<-,iSet,ANY-method}
 \alias{fvarMetadata,iSet-method}
 \alias{fvarMetadata<-,iSet-method}
+\alias{fvarMetadata<-,iSet,ANY-method}
 \alias{fvarLabels,iSet-method}
 \alias{fvarLabels<-,iSet-method}
 \alias{featureNames,iSet-method}
 \alias{featureNames<-,iSet-method}
+\alias{pixels,iSet-method}
+\alias{pixels<-,iSet-method}
+\alias{features,iSet-method}
+\alias{features<-,iSet-method}
 
 \title{Class to Contain High-Throughput Imaging Experiment Data and Metadata}
 
@@ -149,7 +162,6 @@
 
 \seealso{
     \code{\linkS4class{eSet}},
-    \code{\linkS4class{pSet}},
     \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}
 }

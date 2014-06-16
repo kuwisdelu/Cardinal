@@ -6,10 +6,15 @@
 \alias{SImageSet-class}
 
 \alias{[,SImageSet-method}
+\alias{[,SImageSet,ANY,ANY,ANY-method}
 \alias{initialize,SImageSet-method}
 \alias{iData,SImageSet-method}
 \alias{iData<-,SImageSet-method}
 \alias{regeneratePositions,SImageSet-method}
+\alias{coord<-,SImageSet-method}
+\alias{coordLabels<-,SImageSet-method}
+\alias{featureNames<-,SImageSet-method}
+\alias{pixelNames<-,SImageSet-method}
 
 \title{Class to Contain Pixel-Sparse Imaging Data}
 
@@ -57,6 +62,9 @@ SImageSet(
     \item{protocolData}{An object of class \code{\linkS4class{AnnotatedDataFrame}} giving information about the samples. It must have one row for each of the \code{sampleNames} in \code{pixelData}.}
 
     \item{experimentData}{An object derived from class \code{\linkS4class{MIAxE}} giving information about the imaging experiment.}
+
+    \item{\dots}{Additional arguments passed to the initializer.}
+    
 }
 
 \section{Slots}{

@@ -33,6 +33,10 @@ readAnalyze(name, folder=getwd())
 \author{
 	Kyle D. Bemis
 }
+\references{
+    Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
+}
 \seealso{
 	\code{\linkS4class{MSImageSet}}
 }
+\keyword{IO}

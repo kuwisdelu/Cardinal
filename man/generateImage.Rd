@@ -4,7 +4,7 @@
 \title{Generate a Simulated Image}
 
 \description{
-	This is a function for generating a simulated image of spectral signals.
+	Generates a simulated image of spectral signals.
 }
 
 \usage{
@@ -21,7 +21,7 @@ generateImage(data = factor(1),
 \arguments{
     \item{data}{Either a \code{factor} or an integer matrix. If a \code{factor} is used, the \code{coord} argument should be specified with \code{data} to indicate the arrangement of regions in the image. If a matrix is given, \code{coord} should not be specified. The image will automatically be generated with different regions corresponding to unique integers in the matrix.}
     
-    \item{coord}{A ‘data.frame’ with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of an element of \code{data} if \code{data} is a factor.}
+    \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of an element of \code{data} if \code{data} is a factor.}
     
     \item{peaks}{The number of peaks in the signal.}
 
@@ -69,4 +69,4 @@ plot(x, pixel=1)
 image(x2, feature=1)
 }
 
-\keyword{methods}
+\keyword{datagen}

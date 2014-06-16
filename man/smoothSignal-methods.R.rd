@@ -23,10 +23,10 @@
 smoothSignal.gaussian(x, sd=window/4, window=5, \dots)
 
 ## Savitsky-Golay smoothing
-smoothSignal.sgolay(x, order=3, window=order + 3 - order %% 2, \dots)
+smoothSignal.sgolay(x, order=3, window=order + 3 - order \%\% 2, \dots)
 
 ## Moving average smoothing
-smoothSignal.ma(x, coef=rep(1, window + 1 - window %% 2), window=5, \dots)
+smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}

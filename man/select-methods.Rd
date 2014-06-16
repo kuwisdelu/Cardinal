@@ -35,4 +35,4 @@
 \seealso{
     \code{\link[Cardinal]{image}}
 }
-\keyword{methods}
+\keyword{iplot}

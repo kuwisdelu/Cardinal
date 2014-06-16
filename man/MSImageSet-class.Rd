@@ -1,17 +1,24 @@
 \name{MSImageSet-class}
 \docType{class}
 
-\alias{class:SImageSet}
+\alias{class:MSImageSet}
 \alias{MSImageSet}
 \alias{MSImageSet-class}
 
 \alias{initialize,MSImageSet-method}
-\alias{mz,SImageSet-method}
-\alias{mz<-,SImageSet-method}
-\alias{spectra,SImageSet-method}
-\alias{spectra<-,SImageSet-method}
-\alias{peaks,SImageSet-method}
-\alias{peaks<-,SImageSet-method}
+\alias{combine,MSImageSet,MSImageSet-method}
+\alias{mz,MSImageSet-method}
+\alias{mz<-,MSImageSet-method}
+\alias{spectra,MSImageSet-method}
+\alias{spectra<-,MSImageSet-method}
+\alias{peaks,MSImageSet-method}
+\alias{peaks<-,MSImageSet-method}
+\alias{processingData,MSImageSet-method}
+\alias{processingData<-,MSImageSet-method}
+\alias{centroided,MSImageSet-method}
+\alias{centroided<-,MSImageSet-method}
+\alias{pixels,MSImageSet-method}
+\alias{features,MSImageSet-method}
 
 \title{Class to Contain Mass Spectrometry Imaging Experiment Data}
 
@@ -61,6 +68,9 @@ MSImageSet(
     \item{protocolData}{An object of class \code{\linkS4class{AnnotatedDataFrame}} giving information about the samples. It must have one row for each of the \code{sampleNames} in \code{pixelData}.}
 
     \item{experimentData}{An object derived from class \code{\linkS4class{MIAxE}} giving information about the imaging experiment.}
+
+    \item{\dots}{Additional arguments passed to the initializer.}
+    
 }
 
 \section{Slots}{

@@ -194,8 +194,7 @@ setClassUnion("ResultData", c("list", "environment"))
 setClass("ResultSet",
 	slots = c(
 		resultData = "list",
-		modelData = "AnnotatedDataFrame",
-		metaData = "list"),
+		modelData = "AnnotatedDataFrame"),
 	contains = c("iSet", "VIRTUAL"),
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),

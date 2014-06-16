@@ -35,16 +35,16 @@
 \alias{tissueThickness<-}
 \alias{tissueThickness<-,MIAPE-Imaging-method}
 \alias{tissueWash}
-\alias{tissueWash<-,MIAPE-Imaging-method}
-\alias{tissueWash}
+\alias{tissueWash,MIAPE-Imaging-method}
+\alias{tissueWash<-}
 \alias{tissueWash<-,MIAPE-Imaging-method}
 \alias{embeddingMethod}
 \alias{embeddingMethod,MIAPE-Imaging-method}
 \alias{embeddingMethod<-}
 \alias{embeddingMethod<-,MIAPE-Imaging-method}
 \alias{inSituChemistry}
-\alias{inSituChemistry<-,MIAPE-Imaging-method}
-\alias{inSituChemistry}
+\alias{inSituChemistry,MIAPE-Imaging-method}
+\alias{inSituChemistry<-}
 \alias{inSituChemistry<-,MIAPE-Imaging-method}
 \alias{matrixApplication}
 \alias{matrixApplication,MIAPE-Imaging-method}
@@ -106,7 +106,7 @@
 \title{Class for Storing Mass Spectrometry Imaging Experiment Information}
 
 \description{
-    The Minimum Information About a Proteomics Experiment for Imaging. The current implementation is based in part on the imzML specification and on a working document for the MIAPE-Imaging (see References).
+    The Minimum Information About a Proteomics Experiment for MS Imaging. The current implementation is based on the imzML specification.
 }
 
 \section{Slots}{
@@ -257,9 +257,7 @@
 \author{Kyle D. Bemis}
 
 \references{
-    MIAPE-Imaging working document: \url{http://imzml.org/index.php?option=com_fireboard&Itemid=53&func=view&catid=516&id=737}
-
-    imzML specification: \url{http://www.imzml.org/index.php?option=com_content&view=article&id=187&Itemid=67}
+    Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
 }
 
 \seealso{

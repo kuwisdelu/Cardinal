@@ -35,8 +35,8 @@ setMethod("spatialShrunkenCentroids",
 					r="Neighborhood radius",
 					k="Number of classes",
 					s="Sparsity parameter")))
-		featureNames(par) <- formatParam(pData(par))
-		names(out) <- formatParam(pData(par))
+		featureNames(par) <- .format.list(pData(par))
+		names(out) <- .format.list(pData(par))
 		.message("spatialShrunkenCentroids: Done.")
 		.time.stop()
 		new("SpatialShrunkenCentroids",
@@ -79,8 +79,8 @@ setMethod("spatialShrunkenCentroids",
 					r="Neighborhood radius",
 					k="Number of classes",
 					s="Sparsity parameter")))
-		featureNames(par) <- formatParam(pData(par))
-		names(out) <- formatParam(pData(par))
+		featureNames(par) <- .format.list(pData(par))
+		names(out) <- .format.list(pData(par))
 		object <- new("SpatialShrunkenCentroids",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
@@ -240,7 +240,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 }
 
 .calculateSpatialDiscriminantScores <- function(x, centers,
-	priors, spatial, sd, s0=median(si), .C=TRUE)
+	priors, spatial, sd, s0=median(sd), .C=TRUE)
 {
 	if ( .C ) {
 		w <- rep(1, nrow(iData(x)))

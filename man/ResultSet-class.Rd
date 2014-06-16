@@ -7,7 +7,9 @@
 
 \alias{$,ResultSet-method}
 \alias{[,ResultSet-method}
+\alias{[,ResultSet,ANY,ANY,ANY-method}
 \alias{[[,ResultSet-method}
+\alias{[[,ResultSet,ANY,ANY-method}
 \alias{resultData}
 \alias{resultData,ResultSet-method}
 \alias{resultData<-,ResultSet-method}
@@ -28,7 +30,7 @@
 
         \item{\code{pixelData}:}{The \code{pixelData} from the analyzed dataset.}
 
-        \item{\code{pixelData}:}{The \code{featureData} from the analyzed dataset.}
+        \item{\code{featureData}:}{The \code{featureData} from the analyzed dataset.}
 
         \item{\code{experimentData}:}{The \code{experimentData} from the analyzed dataset.}
 

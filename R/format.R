@@ -1,6 +1,22 @@
 
+## Format a list of arguments
+.format.list <- function(args) {
+	apply(args, 1, function(a) {
+		paste(paste(names(a), "=", a), collapse=", ")
+	})
+}
+
+## Format plotting labels
+.format.label <- function(label) {
+	if ( label == "mz" ) {
+		expression(italic(m/z))
+	} else {
+		parse(text=paste0("italic(", label, ")"))
+	}
+}
+
 ## Format m/z values
-formatMz <- function(mz) {
+.format.mz <- function(mz) {
 	diffmz <- diff(mz)
 	if ( length(diffmz) > 0 ) {
 		mindiff <- signif(min(diffmz), 1)
@@ -14,18 +30,4 @@ formatMz <- function(mz) {
 	} else {
 		character()
 	}
-}
-
-## Format coordinates values
-formatCoord <- function(coord) {
-	apply(coord, 1, function(xyz) {
-		paste(paste(names(xyz), "=", xyz), collapse=", ")
-	})
-}
-
-## Format parameters values
-formatParam <- function(param) {
-	apply(param, 1, function(par) {
-		paste(paste(names(par), "=", par), collapse=", ")
-	})
 }

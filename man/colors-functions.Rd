@@ -39,5 +39,5 @@ alpha.colors(n, col="red", ramp=c("linear", "power"), range=c(0,1))
 	}
 }
 
-\keyword{methods}
+\keyword{color}
 

@@ -70,7 +70,7 @@ setMethod("plot",
 		if ( missing(xlim) )
 			xlim <- range(model$right, na.rm=TRUE)
 		if ( missing(xlab) )
-			xlab <- names(model$right)
+			xlab <- .format.label(names(model$right))
 		if ( missing(ylim) )
 			ylim <- range(values, na.rm=TRUE)
 		if ( missing(ylab) ) {
@@ -79,6 +79,7 @@ setMethod("plot",
 			} else {
 				ylab <- names(model$left)
 			}
+			ylab <- .format.label(ylab)
 		}
 		# set up the lattice data
 		nobs <- nrow(values)
@@ -240,11 +241,11 @@ setMethod("image",
 		if ( missing(xlim) )
 			xlim <- range(model$right[[1]], na.rm=TRUE) + c(-0.5, 0.5)
 		if ( missing(xlab) )
-			xlab <- names(model$right)[[1]]
+			xlab <- .format.label(names(model$right)[[1]])
 		if ( missing(ylim) )
 			ylim <- range(model$right[[2]], na.rm=TRUE) + c(-0.5, 0.5)
 		if ( missing(ylab) )
-			ylab <- names(model$right)[[2]]
+			ylab <- .format.label(names(model$right)[[2]])
 		if ( missing(zlim) )
 			zlim <- range(values, na.rm=TRUE)
 		if ( is.logical(colorkey) && colorkey )

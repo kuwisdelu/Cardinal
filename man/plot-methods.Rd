@@ -28,9 +28,9 @@
     xlim,
     ylab,
     ylim,
+    type = 'l',
     col = "black",
     col.groups = "gray",
-    type = 'l',
     subset = TRUE,
     lattice = FALSE)
 
@@ -39,8 +39,6 @@
     coord,
     plusminus,
     \dots,
-    xlab,
-    ylab,
     type = ifelse(centroided(x), 'h', 'l'),
     sub)
 
@@ -155,5 +153,5 @@ plot(msset, coord=list(x=3, y=1), plusminus=1)
 plot(msset, coord=list(x=5, y=5), plusminus=c(2, 1))
 }
 
-\keyword{methods}
+\keyword{hplot}
 

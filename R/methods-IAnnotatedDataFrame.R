@@ -29,7 +29,8 @@ setMethod("initialize", "IAnnotatedDataFrame",
 			.Object
 	})
 
-IAnnotatedDataFrame <- function(data, varMetadata, ...)
+IAnnotatedDataFrame <- function(data, varMetadata,
+	dimLabels=c("pixelNames", "pixelColumns"), ...)
 {
 	reqLabelTypes <- c("dim", "sample", "pheno")
 	if ( missing(data) )
@@ -41,6 +42,7 @@ IAnnotatedDataFrame <- function(data, varMetadata, ...)
 		varMetadata[["labelType"]] <- as.factor(varMetadata[["labelType"]])
 	.IAnnotatedDataFrame(data=data,
 		varMetadata=varMetadata,
+		dimLabels=dimLabels,
 		...)
 }
 

@@ -12,7 +12,7 @@
 
 \title{Partial Least Squares}
 \description{
-	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform a variant of discriminant analysis (PLS-DA) if the response is a \code{factor}.
+	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform discriminant analysis (PLS-DA) if the response is a \code{factor}.
 }
 \usage{
     \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 20,
@@ -64,7 +64,7 @@
 	Kyle D. Bemis
 }
 \references{
-    Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119–128. doi:10.1002/cem.695
+    Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695
 }
 \seealso{
     \code{\link[Cardinal]{OPLS}},
@@ -78,5 +78,5 @@ y <- factor(diag(4))
 
 pls <- PLS(sset, y, ncomp=1:2)
 }
-\keyword{methods}
-
+\keyword{multivariate}
+\keyword{classif}

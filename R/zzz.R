@@ -16,13 +16,6 @@
 		start=NULL,
 		stop=NULL,
 		flush=0),
-	plot=list(
-		xlim=NULL,
-		ylim=NULL),
-	image=list(
-		xlim=NULL,
-		ylim=NULL,
-		zlim=NULL),
 	.Random.seed=NULL))
 
 .onLoad <- function(libname, pkgname) {

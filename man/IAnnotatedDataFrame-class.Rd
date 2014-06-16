@@ -14,6 +14,7 @@
 \alias{pixelNames<-,IAnnotatedDataFrame-method}
 \alias{sampleNames,IAnnotatedDataFrame-method}
 \alias{sampleNames<-,IAnnotatedDataFrame-method}
+\alias{sampleNames<-,IAnnotatedDataFrame,ANY-method}
 \alias{combine,IAnnotatedDataFrame,IAnnotatedDataFrame-method}
 
 \title{Class Containing Measured Variables and Their Meta-Data Description for Imaging Experiments}
@@ -47,7 +48,7 @@ IAnnotatedDataFrame(data, varMetadata,
 	\describe{
 		\item{\code{data}:}{Object of class \code{data.frame} containing pixels (rows) and measured variables (columns). Contains at least one column named 'sample' which is a \code{factor} and gives the sample names for each pixel. The sample names can be set using \code{sampleNames<-}. Inherited from \linkS4class{AnnotatedDataFrame}.}
 
-		\item{\code{varMetadata}:}{Object of class \code{data.frame} with number of rows equal to the number of columns in \code{data}. Contains at least two columns, one named 'labelDescription' giving a textual description of each variable, and an additional one named 'labelType' describing the type of variable. The 'labelType' is a factor with levels \code{"dim", "sample", "pheno"}. Inherited from \linkS4class{AnnotatedDataFrame.}}
+		\item{\code{varMetadata}:}{Object of class \code{data.frame} with number of rows equal to the number of columns in \code{data}. Contains at least two columns, one named 'labelDescription' giving a textual description of each variable, and an additional one named 'labelType' describing the type of variable. The 'labelType' is a factor with levels \code{"dim", "sample", "pheno"}. Inherited from \linkS4class{AnnotatedDataFrame}}
 		
 		\item{\code{dimLabels}:}{Object of class \code{character}  of length 2 that provides labels for the rows and columns in the \code{show} method. Inherited from \linkS4class{AnnotatedDataFrame}.}
 

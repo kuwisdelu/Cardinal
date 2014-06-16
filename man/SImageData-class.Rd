@@ -6,6 +6,8 @@
 \alias{SImageData-class}
 
 \alias{[,SImageData-method}
+\alias{[,SImageData,ANY,ANY,ANY-method}
+\alias{combine,SImageData,SImageData-method}
 \alias{dim,SImageData-method}
 \alias{dims,SImageData-method}
 \alias{initialize,SImageData-method}
@@ -15,6 +17,15 @@
 \alias{peakData<-,SImageData-method}
 \alias{mzData,SImageData-method}
 \alias{mzData<-,SImageData-method}
+\alias{coord,SImageData-method}
+\alias{coord<-,SImageData-method}
+\alias{featureNames,SImageData-method}
+\alias{featureNames<-,SImageData-method}
+\alias{pixelNames,SImageData-method}
+\alias{pixelNames<-,SImageData-method}
+\alias{positionArray,SImageData-method}
+\alias{positionArray<-,SImageData-method}
+\alias{regeneratePositions,SImageData-method}
 
 \title{Class Containing Sparse Image Data}
 
@@ -114,7 +125,6 @@ SImageData(
 \author{Kyle D. Bemis}
 
 \seealso{
-    \code{\link{generatePositionArray}},
     \code{\linkS4class{ImageData}},
     \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}

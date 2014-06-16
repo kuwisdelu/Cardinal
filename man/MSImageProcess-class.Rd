@@ -6,7 +6,7 @@
 \alias{MSImageProcess-class}
 
 \alias{show,MSImageProcess-method}
-\alias{combine,MSImageProcess-method}
+\alias{combine,MSImageProcess,MSImageProcess-method}
 \alias{initialize,MSImageProcess-method}
 \alias{files}
 \alias{files,MSImageProcess-method}
@@ -40,6 +40,8 @@
 \alias{prochistory,MSImageProcess-method}
 \alias{prochistory<-}
 \alias{prochistory<-,MSImageProcess-method}
+\alias{prochistory<-,MSImageProcess,character-method}
+\alias{prochistory<-,MSImageProcess,list-method}
 
 \title{Class Containing Mass Spectral Pre-Processing Information}
 

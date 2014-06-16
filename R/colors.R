@@ -47,6 +47,8 @@ alpha.colors <- function(n, col="red", ramp=c("linear","power"), range=c(0,1)) {
 	alpha.ramp <- seq(from=range[[1]], to=range[[2]], length.out=n)
 	if ( ramp == "power" ) alpha.ramp <- alpha.ramp^2
 	alphas <- 255 * alpha.ramp
-	cols <- rgb(cols[1,], cols[2,], cols[3,], alpha=as.integer(alphas), max=255)
+	cols <- rgb(cols[1,], cols[2,], cols[3,],
+		alpha=as.integer(alphas),
+		maxColorValue=255)
 	cols
 }

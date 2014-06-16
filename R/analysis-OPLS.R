@@ -37,8 +37,8 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 			data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of PLS Components")))
-		featureNames(par) <- formatParam(pData(par))
-		names(out) <- formatParam(pData(par))
+		featureNames(par) <- .format.list(pData(par))
+		names(out) <- .format.list(pData(par))
 		object <- new("OPLS",
 			pixelData=x@pixelData,
 			featureData=x@featureData,

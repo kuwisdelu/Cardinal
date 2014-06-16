@@ -26,7 +26,7 @@
     \item{weights}{An optional vector of feature weights to be applied to the features during the clustering.}
     \item{iter.max}{The maximum number of k-means iterations.}
     \item{nstart}{The number of restarts for the k-means algorithm.}
-    \item{algoirthm}{The k-means algorithm to use. See \code{\link[stats]{kmeans}} for details.}
+    \item{algorithm}{The k-means algorithm to use. See \code{\link[stats]{kmeans}} for details.}
     \item{ncomp}{The number of fastmap components to calculate.}
     \item{\dots}{Ignored.}
 }
@@ -48,7 +48,7 @@
     Kyle D. Bemis
 }
 \references{
-    Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230–i238. doi:10.1093/bioinformatics/btr246
+    Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230-i238. doi:10.1093/bioinformatics/btr246
 
     Faloutsos, C., & Lin, D. (1995). FastMap: A Fast Algorithm for Indexing, Data-Mining and Visualization of Traditional and Multimedia Datasets. Presented at the Proceedings of the 1995 ACM SIGMOD international conference on Management of data.
 }
@@ -69,4 +69,6 @@ clust1 <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="gaussian")
 
 clust2 <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="adaptive")
 }
-\keyword{methods}
+
+\keyword{spatial}
+\keyword{clustering}

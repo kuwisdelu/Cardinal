@@ -55,5 +55,5 @@ sset <- generateImage(diag(4), range=c(200, 300), step=1)
 
 pca <- PCA(sset, ncomp=2)
 }
-\keyword{methods}
+\keyword{multivariate}
 

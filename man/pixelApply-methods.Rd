@@ -84,5 +84,5 @@ pixelApply(sset, max, .feature.groups=flag)
 pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
 featureApply(sset, max, .pixel.groups=flag)
 }
-\keyword{methods}
+\keyword{manip}
 

@@ -12,7 +12,7 @@
 
 \title{Orthogonal Partial Least Squares}
 \description{
-    Performs orthogonal partial least squares (also called orthogonal projection to latent structures or O-PLS) on an imaging dataset. This will also perform a variant of discriminant analysis (O-PLS-DA) if the response is a \code{factor}.
+    Performs orthogonal partial least squares (also called orthogonal projection to latent structures or O-PLS) on an imaging dataset. This will also perform discriminant analysis (O-PLS-DA) if the response is a \code{factor}.
 }
 \usage{
 \S4method{OPLS}{SImageSet,matrix}(x, y, ncomp = 20,
@@ -38,7 +38,7 @@
     \item{\dots}{Passed to the next OPLS method.}
     \item{object}{The result of a previous call to \code{\link[Cardinal]{OPLS}}.}
     \item{newx}{An imaging dataset for which to calculate their OPLS projection and predict a response from an already-calculated \code{\link[Cardinal]{OPLS}} object.}
-    \item{newy}{Optionally, a new response from which residuals should be calcualted.}
+    \item{newy}{Optionally, a new response from which residuals should be calculated.}
 }
 \value{
     An object of class \code{OPLS}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
@@ -69,7 +69,7 @@
     Kyle D. Bemis
 }
 \references{
-    Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119–128. doi:10.1002/cem.695
+    Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695
 }
 \seealso{
     \code{\link[Cardinal]{PLS}},
@@ -83,4 +83,5 @@ y <- factor(diag(4))
 
 opls <- OPLS(sset, y, ncomp=1:2)
 }
-\keyword{methods}
+\keyword{multivariate}
+\keyword{classif}

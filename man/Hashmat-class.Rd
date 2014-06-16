@@ -7,17 +7,26 @@
 
 \alias{[,Hashmat-method}
 \alias{[<-,Hashmat-method}
+\alias{[,Hashmat,ANY,ANY,ANY-method}
+\alias{[<-,Hashmat,ANY,ANY,ANY-method}
 \alias{dim,Hashmat-method}
 \alias{dim<-,Hashmat-method}
 \alias{dimnames,Hashmat-method}
 \alias{dimnames<-,Hashmat-method}
+\alias{dimnames<-,Hashmat,ANY-method}
 \alias{colnames,Hashmat-method}
 \alias{colnames<-,Hashmat-method}
 \alias{rownames,Hashmat-method}
 \alias{rownames<-,Hashmat-method}
+\alias{pData,Hashmat-method}
+\alias{pData<-,Hashmat-method}
+\alias{pData<-,Hashmat,ANY-method}
 \alias{keys,Hashmat-method}
 \alias{keys<-,Hashmat-method}
+\alias{keys<-,Hashmat,character-method}
+\alias{keys<-,Hashmat,list-method}
 \alias{combine,Hashmat,Hashmat-method}
+\alias{initialize,Hashmat-method}
 
 \title{Sparse Matrix Class Using Lists as Hash Tables}
 
@@ -40,6 +49,8 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
     \item{nrow}{The number of rows in the sparse matrix.}
 
     \item{ncol}{The number of columns in the sparse matrix.}
+
+    \item{byrow}{If 'FALSE', the matrix is filled by columns. If 'TRUE', it is filled by rows.}
 
     \item{dimnames}{The 'dimnames' giving the dimension names for the matrix, analogous to the 'dimnames' attribute of an ordinary R matrix. This must be a list of length 2 or \code{NULL}.}
 
@@ -79,7 +90,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link[BiocGeneric]{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}
+        \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link[BiocGenerics]{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}
 
         \item{\code{dim(x), dim(x) <- value}:}{Return or set the dimensions of the sparse matrix.}
 
@@ -127,3 +138,4 @@ all.equal(dmat2[500,], smat2[500,], , check.attr=FALSE)
 }
 
 \keyword{classes}
+\keyword{array}

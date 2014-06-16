@@ -36,8 +36,8 @@ setMethod("spatialKMeans",
 				labelDescription=c(
 					k="Number of clusters",
 					r="Neighborhood radius")))
-		featureNames(par) <- formatParam(pData(par))
-		names(out) <- formatParam(pData(par))
+		featureNames(par) <- .format.list(pData(par))
+		names(out) <- .format.list(pData(par))
 		.message("spatialKMeans: Done.")
 		.time.stop()
 		new("SpatialKMeans",

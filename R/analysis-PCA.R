@@ -29,8 +29,8 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of Principal Components")))
-		featureNames(par) <- formatParam(pData(par))
-		names(out) <- formatParam(pData(par))
+		featureNames(par) <- .format.list(pData(par))
+		names(out) <- .format.list(pData(par))
 		.message("PCA: Done.")
 		.time.stop()
 		new("PCA",

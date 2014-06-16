@@ -36,7 +36,7 @@ generateSpectrum <- function(n, peaks = 100,
 	if ( n > 1 ) {
 		x <- sapply(rep(1, n), function(ns) {
 			generateSpectrum(n=ns, peaks=peaks, range=range,
-				center=force(centers), intensities=force(intensities),
+				centers=force(centers), intensities=force(intensities),
 				step=step, resolution=resolution, noise=noise,
 				sd=sd, baseline=baseline, auc=auc)$x
 		} )
