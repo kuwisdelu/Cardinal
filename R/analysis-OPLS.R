@@ -24,28 +24,28 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		}
 		center <- attr(Xt, "scaled:center")
 		Ycenter <- attr(Y, "scaled:center")
-		.message("OPLS: Fitting orthogonal partial least squares components.")
+		.message("OPLS: Fitting orthogonal modeltial least squares components.")
 		fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
-		out <- lapply(ncomps, function(ncomp) {
+		result <- lapply(ncomps, function(ncomp) {
 			res <- append(fit, list(y=y, ncomp=ncomp,
 				method=method, scale=scale, center=center,
 				Yscale=Yscale, Ycenter=Ycenter))
 			class(res) <- "ResultData"
 			res
 		})
-		par <- AnnotatedDataFrame(
-			data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
+		model <- AnnotatedDataFrame(
+			data=data.frame(ncomp=sapply(result, function(fit) fit$ncomp)),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of PLS Components")))
-		featureNames(par) <- .format.list(pData(par))
-		names(out) <- .format.list(pData(par))
+		featureNames(model) <- .format.list(pData(model))
+		names(result) <- .format.list(pData(model))
 		object <- new("OPLS",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
 			experimentData=x@experimentData,
 			protocolData=x@protocolData,
-			resultData=out,
-			modelData=par)
+			resultData=result,
+			modelData=model)
 		.time.stop()
 		predict(object, newx=x)
 	})
@@ -83,7 +83,7 @@ setMethod("predict", "OPLS",
 		} else {
 			missing.newy <- FALSE
 		}
-		out <- lapply(object@resultData, function(res) {
+		result <- lapply(object@resultData, function(res) {
 			.message("OPLS: Predicting for ncomp = ", res$ncomp, ".")
 			pred <- .OPLS.predict(Xt, Y, ncomp=res$ncomp, method=res$method,
 				Oloadings=res$Oloadings, Oweights=res$Oweights)
@@ -101,7 +101,7 @@ setMethod("predict", "OPLS",
 			featureData=newx@featureData,
 			experimentData=newx@experimentData,
 			protocolData=newx@protocolData,
-			resultData=out,
+			resultData=result,
 			modelData=object@modelData)
 	})
 

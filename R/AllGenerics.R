@@ -134,13 +134,19 @@ setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
 
-#### Pre-processing and data transformation ####
-## ---------------------------------------------
+#### Pre-processing ####
+## ---------------------
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
+
+#### Data transformation and alignment ####
+## ---------------------------------------
+setGeneric("as2D", function(object) standardGeneric("as2D"))
+setGeneric("as3D", function(object) standardGeneric("as3D"))
+setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
@@ -150,8 +156,8 @@ setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 
-#### Other ####
-## ------------------------
+#### Plotting ####
+## ---------------
 setGeneric("select", function(x, ...) standardGeneric("select"))
 setGeneric("image3d", function(x, ...) standardGeneric("image3d"))
 

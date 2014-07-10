@@ -5,22 +5,22 @@
 setMethod("resultData", "ResultSet",
 	function(object) object@resultData)
 
-# setReplaceMethod("resultData", "ResultSet",
-# 	function(object, value) {
-# 		object@resultData <- value
-# 		if ( validObject(object) )
-# 			object			
-# 	})
+setReplaceMethod("resultData", "ResultSet",
+	function(object, value) {
+		object@resultData <- value
+		if ( validObject(object) )
+			object			
+	})
 
 setMethod("modelData", "ResultSet",
 	function(object) object@modelData)
 
-# setReplaceMethod("modelData", "ResultSet",
-# 	function(object, value) {
-# 		object@modelData <- value
-# 		if ( validObject(object) )
-# 			object			
-# 	})
+setReplaceMethod("modelData", "ResultSet",
+	function(object, value) {
+		object@modelData <- value
+		if ( validObject(object) )
+			object			
+	})
 
 setMethod("names", "ResultSet", function(x) {
 	sapply(resultData(x), names)

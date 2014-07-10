@@ -3,42 +3,24 @@ setMethod("plot",
 	signature = c(x = "MSImageSet", y = "missing"),
 	function(x, formula = ~ mz,
 		pixel = pixels(x, coord=coord),
+		pixel.groups = pixelNames(x)[pixel],
 		coord,
 		plusminus,
 		...,
-		type = ifelse(centroided(x), 'h', 'l'),
-		sub)
+		type = ifelse(centroided(x), 'h', 'l'))
 	{
-		model <- .parseFormula(formula)
-		if ( !missing(coord) ) {
-			if ( length(pixel) > 1 ) {
-				.warning("pixel has length > 1 and only the first element will be used")
-				pixel <- pixel[1]
-			}
-			coord <- coord(x)[pixel[1],]
-			sub <- .format.list(coord(x)[pixel[1],])
-			if ( !missing(plusminus) ) {
-				if ( length(plusminus) != length(coord) )
-					plusminus <- rep(plusminus, length.out=length(coord))
-				newcoord <- mapply(function(xyz, pm, maxidx) {
-					max(xyz[1]-pm, 1):min(xyz[1]+pm, maxidx)
-				}, coord, plusminus, sapply(coord(x), max), SIMPLIFY=FALSE)
-				coord <- expand.grid(newcoord)
-				pixel <- pixels(x, coord=coord)
-			}
-		} else if ( missing(sub) ) {
-			coord <- NULL
-			if ( length(pixel) > 1 ) {
-				sub <- ""
-			} else {
-				sub <- .format.list(coord(x)[pixel,])
-			}
+		if ( !missing(plusminus) && plusminus != 0 ) {
+			newpixels <- spatial.neighbors(x, r=plusminus,
+				indices=pixel, na.rm=TRUE)
+			pixel.groups <- rep(pixel.groups,
+				each=length(newpixels[[1]]))
+			pixel <- unlist(newpixels)
 		}
 		callNextMethod(x,
 			formula=formula,
 			pixel=pixel,
+			pixel.groups=pixel.groups,
 			...,
-			sub=sub,
 			type=type)
 	})
 
@@ -52,39 +34,25 @@ setMethod("image",
 	signature = c(x = "MSImageSet"),
 	function(x, formula = ~ x * y,
 		feature = features(x, mz=mz),
+		feature.groups = featureNames(x)[feature],
 		mz,
 		plusminus,
-		...,
-		sub)
+		...)
 	{
-		if ( !missing(mz) ) {
-			if ( length(feature) > 1 ) {
-				.warning("feature has length > 1 and only the first element will be used")
-				feature <- feature[1]
-			}
-			mz <- mz(x)[feature]
-			sub <- .format.mz(mz(x)[feature])
-			if ( !missing(plusminus) ) {
-				plus <- feature
-				while ( mz(x)[plus] - mz < plusminus && plus < dim(x)[1] )
-					plus <- plus + 1
-				minus <- feature
-				while ( mz - mz(x)[minus] < plusminus && minus > 1 )
-					minus <- minus - 1
-				feature <- minus:plus
-			}
-		} else if ( missing(sub) ) {
-			mz <- NULL
-			if ( length(feature) > 1 ) {
-				sub <- ""
-			} else {
-				sub <- .format.mz(mz(x)[feature])
-			}
+		if ( !missing(plusminus) && plusminus != 0 ) {
+			newfeatures <- lapply(mz, function(mzi) {
+				seq(from=features(x, mz=mzi-plusminus),
+					to=features(x, mz=mzi+plusminus),
+					by=sign(plusminus))
+			})
+			feature.groups <- unlist(mapply(function(group, feature) {
+				rep(group, length(feature))
+			}, feature.groups, newfeatures))
+			feature <- unlist(newfeatures)
 		}
 		callNextMethod(x,
 			formula=formula,
 			feature=feature,
-			...,
-			sub=sub)
+			feature.groups=feature.groups,
+			...)
 	})
-

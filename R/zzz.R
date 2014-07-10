@@ -22,7 +22,7 @@
 	options(Cardinal.verbose=TRUE)
 	options(Cardinal.progress=TRUE)
 	options(Cardinal.timing=FALSE)
-	options(Cardinal.autoflush=60)
+	options(Cardinal.flush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
 	set.seed(Sys.time())

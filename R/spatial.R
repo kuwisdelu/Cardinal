@@ -50,8 +50,9 @@ spatial.beta <- function(x, neighbors) {
 ## Find neighboring pixels within a given radius
 ## 'x' is an SImageSet object
 ## 'r' is the neighborhood radius
+## 'indices' is the pixels for which to find the neighborhood
 ## 'na.rm' replaces out-of-bound indices with a pixel's own index
-spatial.neighbors <- function(x, r, na.rm=FALSE) {
+spatial.neighbors <- function(x, r, indices, na.rm=FALSE) {
 	coord <- coord(x)
 	if ( r == 0 )
 		return(matrix(seq_len(nrow(coord)), ncol=nrow(coord)))
@@ -63,7 +64,9 @@ spatial.neighbors <- function(x, r, na.rm=FALSE) {
 	radii <- rep(list((-r):r), ncol(coord))
 	names(radii) <- names(coord)
 	radii[!names(coord) %in% coordLabels(x)] <- 0
-	lapply(seq_len(nrow(coord)), function(i) {
+	if ( missing(indices) )
+		indices <- seq_len(nrow(coord))
+	lapply(indices, function(i) {
 		neighbors <- do.call(f, mapply(`+`, coord[i,], radii, SIMPLIFY=FALSE))
 		if ( na.rm ) neighbors[is.na(neighbors)] <- i
 		dimnames(neighbors) <- radii[names(coord)]

@@ -17,7 +17,8 @@ importFrom("lattice",
 	"xyplot",
 	"levelplot",
 	"panel.xyplot",
-	"panel.levelplot")
+	"panel.levelplot",
+	"simpleKey")
 
 importFrom("signal",
 	"interp1",
@@ -234,6 +235,11 @@ exportMethods(
 	"reduceBaseline",
 	"reduceDimension",
 	"smoothSignal")
+
+exportMethods(
+	"as2D",
+	"as3D",
+	"coregister")
 
 exportMethods(
 	"OPLS",

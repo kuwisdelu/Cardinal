@@ -12,7 +12,7 @@ smooth.image.method <- function(method) {
 	match.fun(method)
 }
 
-smooth.image.gaussian <- function(x, window=5, ...) {
+smooth.image.gaussian <- function(x, window=3, ...) {
 	r <- floor(window / 2)
 	sd <- window / 4
 	beta <- matrix(1, nrow=((2 * r) + 1)^2, ncol=length(x))
@@ -28,7 +28,7 @@ smooth.image.gaussian <- function(x, window=5, ...) {
 	x.new
 }
 
-smooth.image.adaptive <- function(x, window=5, ...) {
+smooth.image.adaptive <- function(x, window=3, ...) {
 	r <- floor(window / 2)
 	sd <- window / 4
 	beta <- matrix(1, nrow=((2 * r) + 1)^2, ncol=length(x))

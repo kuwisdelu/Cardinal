@@ -14,7 +14,7 @@ setMethod("spatialKMeans",
 		ks <- sort(k)
 		w <- rep(weights, length.out=nrow(iData(x)))
 		.time.start()
-		out <- unlist(lapply(rs, function(r){
+		result <- unlist(lapply(rs, function(r){
 			spatial <- spatial.info(x, r=r, method=method)
 			.message("spatialKMeans: Calculating spatial information for r = ", r, ".")
 			fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=w, ncomp=ncomp)
@@ -29,15 +29,15 @@ setMethod("spatialKMeans",
 			})
 		}), recursive=FALSE)
 		.message("spatialKMeans: Preparing results.")
-		par <- AnnotatedDataFrame(data=data.frame(
-				r=sapply(out, function(fit) fit$r),
-				k=sapply(out, function(fit) fit$k)),
+		model <- AnnotatedDataFrame(data=data.frame(
+				r=sapply(result, function(fit) fit$r),
+				k=sapply(result, function(fit) fit$k)),
 			varMetadata=data.frame(
 				labelDescription=c(
 					k="Number of clusters",
 					r="Neighborhood radius")))
-		featureNames(par) <- .format.list(pData(par))
-		names(out) <- .format.list(pData(par))
+		featureNames(model) <- .format.list(pData(model))
+		names(result) <- .format.list(pData(model))
 		.message("spatialKMeans: Done.")
 		.time.stop()
 		new("SpatialKMeans",
@@ -45,8 +45,8 @@ setMethod("spatialKMeans",
 			featureData=x@featureData,
 			experimentData=x@experimentData,
 			protocolData=x@protocolData,
-			resultData=out,
-			modelData=par)
+			resultData=result,
+			modelData=model)
 	})
 
 .spatialKMeans <- function(x, fastmap, k, iter.max, nstart, algorithm) {

@@ -6,7 +6,7 @@
 	msg <- paste(date(), paste0(..., collapse="\n  "))
 	.Cardinal$log <- append(.Cardinal$log, msg)
 	elapsed <- proc.time()[3] - .Cardinal$time$flush
-	if ( elapsed > getOption("Cardinal.autoflush") )
+	if ( elapsed > getOption("Cardinal.flush") )
 		.log.flush()
 }
 

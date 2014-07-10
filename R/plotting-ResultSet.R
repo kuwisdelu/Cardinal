@@ -2,15 +2,21 @@
 setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
 	function(x, formula = ~ Feature,
-		parameters = pData(modelData(x)),
+		model = pData(modelData(x)),
+		superpose = TRUE,
+		auto.key = TRUE,
+		...,
 		mode = c("centers", "tstatistics"),
 		classes = levels(unlist(x$classes)),
-		superpose = TRUE,
-		...,
 		type = 'h',
 		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
+		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
+			parameters <- model
+		} else {
+			parameters <- pData(modelData(x))[model,,drop=FALSE]
+		}
 		mode <- match.arg(mode)
 		model <- .parseFormula(formula)
 		formula <- paste(" ~ ", names(model$right))
@@ -34,11 +40,15 @@ setMethod("plot",
 			labels=names(resultData(x)))
 		pData(centers)$model <- model
 		pData(tstatistics)$model <- model
-		if ( !missing(parameters) ) {
-			subset <- do.call("pixels", c(list(centers), parameters))
-			centers <- centers[,subset]
-			tstatistics <- tstatistics[,subset]
+		if ( is.data.frame(parameters) ) {
+			which <- unlist(apply(parameters, 1, function(par) {
+				do.call("pixels", c(list(centers), par))
+			}))
+		} else {
+			which <- do.call("pixels", c(list(centers), parameters))
 		}
+		centers <- centers[,which]
+		tstatistics <- tstatistics[,which]
 		if ( mode == "centers" ) {
 			obj <- centers
 		} else if ( mode == "tstatistics" ) {
@@ -49,7 +59,7 @@ setMethod("plot",
 			function(t) abs(t) > 0))
 		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
 			groups=significant, col=col, type=type, superpose=superpose,
-			lattice=lattice, ...)
+			auto.key=auto.key, fun=identity, lattice=lattice, ...)
 	})
 
 setMethod("plot",
@@ -61,14 +71,20 @@ setMethod("plot",
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids"),
 	function(x, formula = ~ x * y,
-		parameters = pData(modelData(x)),
+		model = pData(modelData(x)),
+		superpose = TRUE,
+		auto.key = TRUE,
+		...,
 		mode = c("probabilities", "scores"),
 		classes = unique(unlist(x$classes)),
-		superpose = TRUE,
-		...,
 		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
+		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
+			parameters <- model
+		} else {
+			parameters <- pData(modelData(x))[model,,drop=FALSE]
+		}
 		mode <- match.arg(mode)
 		model <- .parseFormula(formula)
 		formula <- paste(" ~ ", paste(names(model$right), collapse="*"))
@@ -92,11 +108,15 @@ setMethod("image",
 		fData(probabilities)$model <- model
 		fData(scores) <- df
 		fData(scores)$model <- model
-		if ( !missing(parameters) ) {
-			subset <- do.call("features", c(list(probabilities), parameters))
-			probabilities <- probabilities[subset,]
-			scores <- scores[subset,]
+		if ( is.data.frame(parameters) ) {
+			which <- unlist(apply(parameters, 1, function(par) {
+				do.call("features", c(list(probabilities), par))
+			}))
+		} else {
+			which <- do.call("features", c(list(probabilities), parameters))
 		}
+		probabilities <- probabilities[which,]
+		scores <- scores[which,]
 		if ( mode == "probabilities" ) {
 			obj <- probabilities
 		} else if ( mode == "scores" ) {
@@ -104,7 +124,8 @@ setMethod("image",
 		}
 		feature <- features(obj, classes=classes)
 		image(obj, formula=formula, feature=feature, feature.groups=classes,
-			col=col, superpose=superpose, lattice=lattice, ...)
+			col=col, superpose=superpose, auto.key=auto.key,
+			fun=identity, lattice=lattice, ...)
 	})
 
 

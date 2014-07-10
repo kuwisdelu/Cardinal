@@ -15,7 +15,7 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		if ( max(ncomps) > nrow(x) )
 			.stop("PCA: Can't fit more components than extent of dataset")
 		fit <- .PCA.fit(x, ncomp=max(ncomps), method=method, scale=scale)
-		out <- lapply(ncomps, function(ncomp) {
+		result <- lapply(ncomps, function(ncomp) {
 			loadings <- fit$loadings[,1:ncomp,drop=FALSE]
 			scores <- fit$scores[,1:ncomp,drop=FALSE]
 			sdev <- fit$sdev[1:ncomp]
@@ -25,12 +25,12 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			class(res) <- "ResultData"
 			res
 		})
-		par <- AnnotatedDataFrame(
-			data=data.frame(ncomp=sapply(out, function(fit) fit$ncomp)),
+		model <- AnnotatedDataFrame(
+			data=data.frame(ncomp=sapply(result, function(fit) fit$ncomp)),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of Principal Components")))
-		featureNames(par) <- .format.list(pData(par))
-		names(out) <- .format.list(pData(par))
+		featureNames(model) <- .format.list(pData(model))
+		names(result) <- .format.list(pData(model))
 		.message("PCA: Done.")
 		.time.stop()
 		new("PCA",
@@ -38,8 +38,8 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			featureData=x@featureData,
 			experimentData=x@experimentData,
 			protocolData=x@protocolData,
-			resultData=out,
-			modelData=par)
+			resultData=result,
+			modelData=model)
 	})
 
 setMethod("predict", "PCA",
@@ -47,7 +47,7 @@ setMethod("predict", "PCA",
 	{
 		.time.start()
 		.message("PCA: Predicting principal components scores.")
-		out <- lapply(object@resultData, function(res) {
+		result <- lapply(object@resultData, function(res) {
 			.message("PCA: Predicting scores for ncomp = ", res$ncomp, ".")
 			pred <- .PCA.predict(newx, ncomp=res$ncomp, loadings=res$loadings,
 				center=res$center, scale=res$scale)
@@ -62,8 +62,8 @@ setMethod("predict", "PCA",
 			featureData=x@featureData,
 			experimentData=x@experimentData,
 			protocolData=x@protocolData,
-			resultData=out,
-			modelData=par)
+			resultData=result,
+			modelData=model)
 	})
 
 .PCA.fit <- function(x, ncomp, method, scale) {
