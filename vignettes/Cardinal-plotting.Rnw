@@ -139,10 +139,10 @@ print(plot(msset, ~ mz | pg, pixel=1:ncol(msset), groups=fg, lattice=TRUE, col=c
 
 The \verb|image| method is used to plot images. The \Robject{feature} argument is used to specify the feature to use to create the image. For a mass spectrometry imaging dataset, the features are the $m/z$-values corresponding to single-ion images. As before, if no conditioning is desired, the formula does not need to be specified explicitly.
 <<image1>>=
-image(msset, feature=1, col=gradient.colors(100, "red", "black"))
+image(msset, feature=1, col.regions=gradient.colors(100, "red", "black"))
 @
 <<image2>>=
-image(msset, ~ x * y, feature=1, col=gradient.colors(100, "red", "black"))
+image(msset, ~ x * y, feature=1, col.regions=gradient.colors(100, "red", "black"))
 @
 \begin{figure}
 \setkeys{Gin}{width=0.4\textwidth}
@@ -161,10 +161,10 @@ image(msset, ~ x * y, feature=1, col=gradient.colors(100, "red", "black"))
 \end{figure}
 Like with the \verb|plot| method, the \verb|image| method can apply functions over features ($m/z$-values) when multiple features are specified. By default, \verb|mean| is used to average the images over the features. In the following example, we specify two plots, first using the features from the peak that has a higher intensity associated with black pixels, and then using the features from the peak that has a higher intensity associated with red pixels.
 <<image3>>=
-image(msset, feature=fData(msset)$fg=="black", col=alpha.colors(100, "black"))
+image(msset, feature=fData(msset)$fg=="black", col.regions=alpha.colors(100, "black"))
 @
 <<image4>>=
-image(msset, feature=fData(msset)$fg=="red", col=alpha.colors(100, "red"))
+image(msset, feature=fData(msset)$fg=="red", col.regions=alpha.colors(100, "red"))
 @
 \begin{figure}
 \setkeys{Gin}{width=0.4\textwidth}
@@ -183,7 +183,7 @@ image(msset, feature=fData(msset)$fg=="red", col=alpha.colors(100, "red"))
 \end{figure}
 Using a \Robject{lattice}-style formula, we can condition on other variables with \verb|image| too. Here we use all of the features, but condition on which part of the mass spectrum those features come from using the variable \verb|fData(msset)$fg|. Again, since \verb|image| knows to look in \Robject{msset}, we only need to specify the variable as \Robject{fg}.
 <<image5>>=
-print(image(msset, ~ x * y | fg, feature=1:nrow(msset), lattice=TRUE, col.regions=intensity.colors(100)))
+print(image(msset, ~ x * y | fg, feature=1:nrow(msset), col.regions=intensity.colors(100), lattice=TRUE))
 @
 \begin{figure}
 \setkeys{Gin}{width=0.8\textwidth}

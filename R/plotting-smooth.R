@@ -3,8 +3,9 @@
 
 smooth.image.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- match.method(method, c("gaussian", "adaptive"))
+		method <- match.method(method, c("none", "gaussian", "adaptive"))
 		method <- switch(method,
+			none = identity,
 			gaussian = smooth.image.gaussian,
 			adaptive = smooth.image.adaptive,
 			match.fun(method))

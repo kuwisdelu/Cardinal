@@ -19,9 +19,10 @@
 	.Random.seed=NULL))
 
 .onLoad <- function(libname, pkgname) {
-	options(Cardinal.verbose=TRUE)
-	options(Cardinal.progress=TRUE)
-	options(Cardinal.timing=FALSE)
+	options(Cardinal.verbose=interactive())
+	options(Cardinal.progress=interactive())
+	options(Cardinal.time=FALSE)
+	options(Cardinal.log=FALSE)
 	options(Cardinal.flush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())

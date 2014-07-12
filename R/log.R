@@ -11,19 +11,23 @@
 }
 
 .log.flush <- function(e=.Cardinal) {
-	tryCatch({
-		if ( length(e$log) != 0 ) {
-			e$time$flush <- proc.time()[3]
-			filepath <- file.path(system.file(package="Cardinal"), "Cardinal.log")
-			sink(filepath, append=TRUE)
-			for ( m in e$log ) {
-				cat(m, "\n\n")
+	if ( getOption("Cardinal.log") ) {
+		tryCatch({
+			if ( length(e$log) != 0 ) {
+				e$time$flush <- proc.time()[3]
+				filepath <- file.path(system.file(package="Cardinal"), "Cardinal.log")
+				sink(filepath, append=TRUE)
+				for ( m in e$log ) {
+					cat(m, "\n\n")
+				}
+				e$log <- list()
+				sink()
 			}
-			e$log <- list()
-			sink()
-		}
-		TRUE
-	}, error=function(e) FALSE)
+			TRUE
+		}, error=function(e) FALSE)
+	} else {
+		FALSE
+	}
 }
 
 #### User messages ####
@@ -76,7 +80,7 @@
 .time.stop <- function() {
 	.Cardinal$time$stop <- proc.time()
 	time <- .Cardinal$time$stop - .Cardinal$time$start
-	if ( getOption("Cardinal.timing") )
+	if ( getOption("Cardinal.time") )
 		.console("Cardinal: Operation took ", round(time[[3]], digits=1), " seconds.")
 	.log("Cardinal: Operation took ", round(time[[3]], digits=2), " seconds.")
 }

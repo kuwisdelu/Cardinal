@@ -29,6 +29,7 @@ setMethod("plot",
 		if ( is.null(model$left) ) {
 			pixel <- tryCatch(eval(substitute(pixel), envir=pData(x),
 				enclos=environment(formula)), error = function(e) eval(pixel))
+			pixel <- pixels(x)[pixel]
 		} else {
 			pixel <- seq_along(model$left)
 		}
@@ -45,10 +46,15 @@ setMethod("plot",
 			pixel.groups <- tryCatch(eval(substitute(pixel.groups),
 				envir=pData(x), enclos=environment(formula)),
 				error = function(e) eval(pixel.groups))
-			if ( length(pixel) != length(pixel.groups) )
-				pixel.groups <- pixel.groups[pixels(x)[pixel]]
-			pixel.groups <- as.factor(pixel.groups)
-			missing.pixel.groups <- FALSE
+			if ( is.null(pixel.groups) ) {
+				pixel.groups <- factor(rep(TRUE, length(pixel)))
+				missing.pixel.groups <- TRUE
+			} else {
+				if ( length(pixel) != length(pixel.groups) )
+					pixel.groups <- pixel.groups[pixel]
+				pixel.groups <- as.factor(pixel.groups)
+				missing.pixel.groups <- FALSE
+			}
 		}
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {
@@ -199,8 +205,8 @@ setMethod("image",
 		superpose = FALSE,
 		auto.key = FALSE,
 		fun = mean,
-		contrast.enhance = identity,
-		smooth.image = identity,
+		contrast.enhance = c("none", "suppression", "histogram"),
+	    smooth.image = c("none", "gaussian", "adaptive"),
 		...,
 		xlab,
 		xlim,
@@ -222,6 +228,7 @@ setMethod("image",
 		if ( is.null(model$left) ) {
 			feature <- tryCatch(eval(substitute(feature), envir=fData(x),
 				enclos=environment(formula)), error = function(e) eval(feature))
+			feature <- features(x)[feature]
 		} else {
 			feature <- seq_along(model$left)
 		}
@@ -240,10 +247,15 @@ setMethod("image",
 			feature.groups <- tryCatch(eval(substitute(feature.groups),
 				envir=fData(x), enclos=environment(formula)),
 				error = function(e) eval(feature.groups))
-			if ( length(feature) != length(feature.groups))
-				feature.groups <- feature.groups[features(x)[feature]]
-			feature.groups <- as.factor(feature.groups)
-			missing.feature.groups <- FALSE
+			if ( is.null(feature.groups) ) {
+				feature.groups <- factor(rep(TRUE, length(feature)))
+				missing.feature.groups <- TRUE
+			} else {
+				if ( length(feature) != length(feature.groups))
+					feature.groups <- feature.groups[feature]
+				feature.groups <- as.factor(feature.groups)
+				missing.feature.groups <- FALSE
+			}
 		}
 		# calculate the plotting values and their conditioning variables
 		if ( is.null(model$left) ) {

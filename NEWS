@@ -5,12 +5,12 @@ NEWS for Cardinal package
 Version 0.8.1 [2014-7-10]
 
 o Changed 'parameters' argument to 'model' for ResultSet plot and image
-o Added 'key' to plot and image for when 'groups' are specified
+o Added 'auto.key' to plot and image for when 'groups' are specified
 o Added strip labels to plot and image when using base graphics
 o Added 'coregister' method for 'SpatialShrunkenCentroids'
 o Method 'image' is now vectorized for argument 'mz'
 o Method 'plot' is now vectorized for argument 'coord'
-o Fixed (hopefully) bug where conditions are plotted in incorrect order
+o Fixed a bug where conditions are plotted in an incorrect order
 
 Version 0.8.0 [2014-6-16]
 

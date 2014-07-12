@@ -22,6 +22,7 @@
     pixel.groups,
     groups = NULL,
     superpose = FALSE,
+    auto.key = FALSE,
     fun = mean,
     \dots,
     xlab,
@@ -36,18 +37,19 @@
 
 \S4method{plot}{MSImageSet,missing}(x, formula = ~ mz,
     pixel = pixels(x, coord=coord),
+    pixel.groups,
     coord,
     plusminus,
     \dots,
-    type = ifelse(centroided(x), 'h', 'l'),
-    sub)
+    type = ifelse(centroided(x), 'h', 'l'))
 
 \S4method{plot}{SpatialShrunkenCentroids,missing}(x, formula = ~ Feature,
-    parameters = pData(modelData(x)),
+    model = pData(modelData(x)),
+    superpose = TRUE,
+    auto.key = TRUE,
+    \dots,
     mode = c("centers", "tstatistics"),
     classes = levels(unlist(x$classes)),
-    superpose = TRUE,
-    \dots,
     type = 'h',
     col = rainbow(nlevels(unlist(x$classes))),
     lattice = FALSE)
@@ -63,7 +65,9 @@
 
     The RHS is evaluated in \code{fData(x)} and should provide values for the x-axis.
 
-    The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose=TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
+    The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose = TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
+
+    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
     
     \item{pixel}{The pixel or vector of pixels for which to plot the feature vectors. This is an expression that evaluates to a logical or integer indexing vector.}
 
@@ -72,6 +76,8 @@
     \item{groups}{A variable or expression to be evaluated in \code{fData(x)}, expected to act as a grouping variable for the features in the feature vector(s) to be plotted, typically used to distinguish different groups of features by varying graphical parameters like color and line type. By default, if 'superpose = FALSE', these appear overlaid on the same plot.}
 
     \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot?}
+
+    \item{auto.key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' (\emph{not} 'auto.key') if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
 
@@ -89,8 +95,6 @@
 
     \item{type}{A character indicating the type of plotting.}
 
-    \item{sub}{The subtitle for the plot.}
-
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
@@ -100,8 +104,6 @@
     \item{coord}{A named vector or list giving the coordinate of the pixel to plot.}
 
     \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
-
-    \item{parameters}{A \code{list} specifying the values of model parameters from which to choose the analysis results to plot.}
 
     \item{mode}{What kind of results should be plotted.}
 

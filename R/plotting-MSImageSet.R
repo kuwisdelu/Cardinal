@@ -3,18 +3,23 @@ setMethod("plot",
 	signature = c(x = "MSImageSet", y = "missing"),
 	function(x, formula = ~ mz,
 		pixel = pixels(x, coord=coord),
-		pixel.groups = pixelNames(x)[pixel],
+		pixel.groups,
 		coord,
 		plusminus,
 		...,
 		type = ifelse(centroided(x), 'h', 'l'))
 	{
-		if ( !missing(plusminus) && plusminus != 0 ) {
-			newpixels <- spatial.neighbors(x, r=plusminus,
-				indices=pixel, na.rm=TRUE)
-			pixel.groups <- rep(pixel.groups,
-				each=length(newpixels[[1]]))
-			pixel <- unlist(newpixels)
+		if ( !missing(coord) && missing(pixel.groups) ) {
+			 pixel.groups <- pixelNames(x)[pixel]
+			 if ( !missing(plusminus) && plusminus != 0 ) {
+				newpixels <- spatial.neighbors(x, r=plusminus,
+					indices=pixel, na.rm=TRUE)
+				pixel.groups <- rep(pixel.groups,
+					each=length(newpixels[[1]]))
+				pixel <- unlist(newpixels)
+			}
+		} else if ( missing(pixel.groups) ) {
+			pixel.groups <- NULL
 		}
 		callNextMethod(x,
 			formula=formula,
@@ -34,21 +39,26 @@ setMethod("image",
 	signature = c(x = "MSImageSet"),
 	function(x, formula = ~ x * y,
 		feature = features(x, mz=mz),
-		feature.groups = featureNames(x)[feature],
+		feature.groups,
 		mz,
 		plusminus,
 		...)
 	{
-		if ( !missing(plusminus) && plusminus != 0 ) {
-			newfeatures <- lapply(mz, function(mzi) {
-				seq(from=features(x, mz=mzi-plusminus),
-					to=features(x, mz=mzi+plusminus),
-					by=sign(plusminus))
-			})
-			feature.groups <- unlist(mapply(function(group, feature) {
-				rep(group, length(feature))
-			}, feature.groups, newfeatures))
-			feature <- unlist(newfeatures)
+		if ( !missing(mz) && missing(feature.groups) ) {
+			feature.groups <- featureNames(x)[feature]
+			if ( !missing(plusminus) && plusminus != 0 ) {
+				newfeatures <- lapply(mz, function(mzi) {
+					seq(from=features(x, mz=mzi-plusminus),
+						to=features(x, mz=mzi+plusminus),
+						by=sign(plusminus))
+				})
+				feature.groups <- unlist(mapply(function(group, feature) {
+					rep(group, length(feature))
+				}, feature.groups, newfeatures))
+				feature <- unlist(newfeatures)
+			}
+		} else if ( missing(feature.groups) ) {
+			feature.groups <- NULL
 		}
 		callNextMethod(x,
 			formula=formula,

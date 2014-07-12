@@ -3,8 +3,9 @@
 
 contrast.enhance.method <- function(method) {
 	if ( is.character(method) ) {
-		method <- match.method(method, c("suppression", "histogram"))
+		method <- match.method(method, c("none", "suppression", "histogram"))
 		method <- switch(method,
+			none = identity,
 			suppression = contrast.enhance.suppression,
 			histogram = contrast.enhance.histogram,
 			match.fun(method))

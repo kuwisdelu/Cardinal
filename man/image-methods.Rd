@@ -19,9 +19,10 @@
     feature.groups,
     groups = NULL,
     superpose = FALSE,
+    auto.key = FALSE,
     fun = mean,
-    contrast.enhance = identity,
-    smooth.image = identity,
+    contrast.enhance = c("none", "suppression", "histogram"),
+    smooth.image = c("none", "gaussian", "adaptive"),
     \dots,
     xlab,
     xlim,
@@ -37,17 +38,18 @@
 
 \S4method{image}{MSImageSet}(x, formula = ~ x * y,
     feature = features(x, mz=mz),
+    feature.groups,
     mz,
     plusminus,
-    \dots,
-    sub)
+    \dots)
 
 \S4method{image}{SpatialShrunkenCentroids}(x, formula = ~ x * y,
-    parameters = pData(modelData(x)),
+    model = pData(modelData(x)),
+    superpose = TRUE,
+    auto.key = TRUE,
+    \dots,
     mode = c("probabilities", "scores"),
     classes = unique(unlist(x$classes)),
-    superpose = TRUE,
-    \dots,
     col = rainbow(nlevels(unlist(x$classes))),
     lattice = FALSE)
 }
@@ -62,7 +64,9 @@
 
     The RHS is evaluated in \code{pData(x)} and should provide values for the xy-axes. These must be spatial coordinates.
 
-    The conditioning variables are evaluated in \code{fData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'feature.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose=TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
+    The conditioning variables are evaluated in \code{fData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'feature.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose = TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
+
+    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
     
     \item{feature}{The feature or vector of features for which to plot the image. This is an expression that evaluates to a logical or integer indexing vector.}
 
@@ -71,6 +75,8 @@
     \item{groups}{A variable or expression to be evaluated in \code{pData(x)}, expected to act as a grouping variable for the pixel regions in the image(s) to be plotted, typically used to distinguish different image regions by varying graphical parameters like color and line type. By default, if 'superpose = FALSE', these appear overlaid on the same plot.}
 
     \item{superpose}{Should feature vectors from different feature groups specified by 'feature.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
+
+    \item{auto.key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' (\emph{not} 'auto.key') if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
 
@@ -96,8 +102,6 @@
 
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
-    \item{sub}{The subtitle for the plot.}
-
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
@@ -107,8 +111,6 @@
     \item{mz}{The m/z value for which to plot the ion image.}
 
     \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
-
-    \item{parameters}{A \code{list} specifying the values of model parameters from which to choose the analysis results to plot.}
 
     \item{mode}{What kind of results should be plotted.}
 
