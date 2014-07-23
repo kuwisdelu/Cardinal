@@ -146,8 +146,11 @@ setMethod("plot",
 		} else {
 			# check which conditions should create new plots
 			if ( superpose ) {
-				superposed <- which(names(condition) == ".pixel.groups")
-				superposed <- duplicated(condition[,-superposed,drop=FALSE])
+				if ( ncol(condition) > 1 ) {
+					superposed <- duplicated(condition[,-superposed,drop=FALSE])
+				} else {
+					superposed <- c(FALSE, rep(TRUE, ncond - 1))
+				}
 			} else {
 				superposed <- logical(ncond)
 			}
@@ -214,7 +217,7 @@ setMethod("image",
 		ylim,
 		zlim,
 		asp = 1,
-		col = rainbow(nlevels(groups)),
+		col = rainbow(nlevels(feature.groups)),
 		col.regions = intensity.colors(100),
 		colorkey = TRUE,
 		subset = TRUE,
@@ -352,7 +355,7 @@ setMethod("image",
 			groups <- groups[!nas]
 			# plot it with lattice
 			levelplot(fm, data=data, groups=groups, subset=subset,
-				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim),
+				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim), aspect="iso",
 				at=seq(from=zlim[1], to=zlim[2], length.out=length(col.regions)),
 				col.regions=col.regions, colorkey=colorkey, key=key,
 				panel=function(x, y, z, col.regions, subscripts, ...) {
@@ -382,7 +385,11 @@ setMethod("image",
 			# check which conditions should create new plots
 			if ( superpose ) {
 				superposed <- which(names(condition) == ".feature.groups")
-				superposed <- duplicated(condition[,-superposed,drop=FALSE])
+				if ( ncol(condition) > 1 ) {
+					superposed <- duplicated(condition[,-superposed,drop=FALSE])
+				} else {
+					superposed <- c(FALSE, rep(TRUE, ncond - 1))
+				}
 			} else {
 				superposed <- logical(ncond)
 			}
