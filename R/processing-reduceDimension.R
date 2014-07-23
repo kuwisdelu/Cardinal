@@ -5,8 +5,8 @@
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing"),
 	function(object, method = c("bin", "resample"),
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		fun <- reduceDimension.method(method)
 		prochistory(processingData(object)) <- .history()
@@ -45,7 +45,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = "peaks", ...) {
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
-			.stop("reduceDimension: 'ref' contains m/z values outside of range")
+			.stop("reduceDimension: 'ref' contains m/z values outside of mass range.")
 		prochistory(processingData(object)) <- .history()
 		reduceDimension(object, method=method, peaklist=ref, ...)
 	})

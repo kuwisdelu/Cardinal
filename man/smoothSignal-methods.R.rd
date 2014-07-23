@@ -16,8 +16,8 @@
 \usage{
 \S4method{smoothSignal}{MSImageSet}(object, method = c("gaussian", "sgolay", "ma"),
     \dots,
-    pixel=pixels(object),
-    plot=FALSE)
+    pixel = pixels(object),
+    plot = FALSE)
 
 ## Gaussian smoothing
 smoothSignal.gaussian(x, sd=window/4, window=5, \dots)

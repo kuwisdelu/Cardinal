@@ -18,8 +18,8 @@
 \usage{
 \S4method{reduceDimension}{MSImageSet,missing}(object, method = c("bin", "resample"),
     \dots,
-    pixel=pixels(object),
-    plot=FALSE)
+    pixel = pixels(object),
+    plot = FALSE)
 
 \S4method{reduceDimension}{MSImageSet,numeric}(object, ref, method = "peaks", \dots)
 

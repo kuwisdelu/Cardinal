@@ -5,8 +5,8 @@
 setMethod("reduceBaseline", "MSImageSet",
 	function(object, method = "median",
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		if ( centroided(object) )
 			.stop("reduceBaseline: Data already centroided. Baseline reduction will not be performed.")

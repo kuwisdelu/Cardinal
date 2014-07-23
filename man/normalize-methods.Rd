@@ -14,8 +14,8 @@
 \usage{
 \S4method{normalize}{MSImageSet}(object, method = "tic",
 	\dots,
-	pixel=pixels(object),
-	plot=FALSE)
+	pixel = pixels(object),
+	plot = FALSE)
 
 ## TIC normalization
 normalize.tic(x, tic=length(x), \dots)

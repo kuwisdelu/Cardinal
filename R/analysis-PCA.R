@@ -26,7 +26,7 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			res
 		})
 		model <- AnnotatedDataFrame(
-			data=data.frame(ncomp=sapply(result, function(fit) fit$ncomp)),
+			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of Principal Components")))
 		featureNames(model) <- .format.list(pData(model))

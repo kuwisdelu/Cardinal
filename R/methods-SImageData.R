@@ -255,7 +255,7 @@ generatePositionArray <- function(coord, dim, dimnames) {
 		dim <- sapply(coord, max)
 	if ( missing(dimnames) )
 		dimnames <- lapply(dim, seq_len)
-	positionArray <- array(1:prod(dim), dim=dim)
+	positionArray <- array(1:prod(dim), dim=dim, dimnames=dimnames)
 	f <- function(...) positionArray[...]
 	fill <- apply(coord, 1, function(xyz) do.call(f, as.list(xyz)))
 	positionArray <- array(NA, dim=dim, dimnames=dimnames)

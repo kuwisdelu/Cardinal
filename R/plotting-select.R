@@ -21,13 +21,15 @@ setMethod("select",
 			subset <- rep(subset, length.out=ncol(x))
 		.message("Select pixels and press ESC or second mouse button when done")
 		if ( mode == "region" ) {
-			loc <- locator(type="o", pch=20, col="white", lwd=1.5)	
+			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
+			if ( is.null(loc) ) return(NULL)
 			coord <- coord(x)[subset, names(model$right)]
 			selected <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
 			selected <- selected > 0
 			names(selected) <- pixelNames(x)
 		} else {
 			loc <- locator(type="p", pch=4, col="white")
+			if ( is.null(loc) ) return(NULL)
 			coord <- data.frame(round(loc$x), round(loc$y))
 			names(coord) <- names(model$right)
 			ok <- logical(ncol(x))

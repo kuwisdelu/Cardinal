@@ -232,6 +232,7 @@ exportMethods(
 	"normalize",
 	"peakPick",
 	"peakAlign",
+	"peakFilter",
 	"reduceBaseline",
 	"reduceDimension",
 	"smoothSignal")

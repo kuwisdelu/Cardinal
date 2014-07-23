@@ -5,8 +5,8 @@
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = c("diff", "DP"),
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")

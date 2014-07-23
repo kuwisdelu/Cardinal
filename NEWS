@@ -2,6 +2,11 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.8.2 [2014-7-23]
+
+o Added 'peakFilter' method
+o Minor fixes to documentation
+
 Version 0.8.1 [2014-7-10]
 
 o Changed 'parameters' argument to 'model' for ResultSet plot and image

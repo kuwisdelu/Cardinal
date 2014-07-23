@@ -5,8 +5,8 @@
 setMethod("smoothSignal", "MSImageSet",
 	function(object, method = c("gaussian", "sgolay", "ma"),
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		if ( centroided(object) )
 			.stop("smoothSignal: Data already centroided. Smoothing will not be performed.")

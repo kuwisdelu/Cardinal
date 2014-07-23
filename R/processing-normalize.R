@@ -5,8 +5,8 @@
 setMethod("normalize", "MSImageSet",
 	function(object, method = "tic",
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		fun <- normalize.method(method)
 		prochistory(processingData(object)) <- .history()

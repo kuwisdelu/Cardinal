@@ -139,6 +139,7 @@ setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelAppl
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
+setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
 

@@ -5,8 +5,8 @@
 setMethod("peakPick", "MSImageSet",
 	function(object, method = c("simple", "adaptive", "limpic"),
 		...,
-		pixel=pixels(object),
-		plot=FALSE)
+		pixel = pixels(object),
+		plot = FALSE)
 	{
 		if ( centroided(object) )
 			.stop("peakPick: Data already centroided. Peak picking will not be performed.")

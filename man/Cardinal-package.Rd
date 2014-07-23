@@ -16,7 +16,7 @@ While pre-processing steps including normalization, baseline correction, and pea
 
 Type \code{vignette("Cardinal-demo")} for a brief walkthrough of common workflows.
 
-To view other vignettes, type \code{vignette(package="Cardinal")}.
+To view other vignettes, type \code{browseVignettes("Cardinal")}.
 }
 
 \author{

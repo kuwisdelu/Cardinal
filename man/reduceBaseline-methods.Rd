@@ -14,8 +14,8 @@
 \usage{
 \S4method{reduceBaseline}{MSImageSet}(object, method = "median",
     \dots,
-    pixel=pixels(object),
-    plot=FALSE)
+    pixel = pixels(object),
+    plot = FALSE)
 
 ## Median baseline reduction
 reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
