@@ -167,7 +167,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 			centers=fit$centers, priors=priors, spatial=spatial, sd=fit$sd)
 		classes <- pred$classes
 		centers <- fit$centers
-		if ( length(unique(classes)) != nlevels(classes) )
+		if ( length(unique(classes)) != length(unique(classes.last)) )
 			iter <- 1
 		iter <- iter + 1
 	}
