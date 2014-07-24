@@ -18,8 +18,14 @@ setMethod("initialize", "IAnnotatedDataFrame",
 		} else if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) ) {
 			levels(varMetadata[["labelType"]]) <- union(levels(varMetadata[["labelType"]]), reqLabelTypes)
 		}
-		if ( !"sample" %in% row.names(varMetadata) || is.na(varMetadata["sample","labelType"]) )
-			varMetadata["sample","labelType"] <- "sample"
+		if ( !"sample" %in% row.names(varMetadata) || is.na(varMetadata["sample","labelType"]) ) {
+			if ( isTRUE(any(varMetadata[["labelType"]] == "sample")) ) {
+				isSample <- which(varMetadata[["labelType"]] == "sample")
+				row.names(varMetadata)[isSample] <- "sample"
+			} else {
+				varMetadata["sample","labelType"] <- "sample"
+			}
+		}
 		.Object <- callNextMethod(.Object,
 			data=data,
 			varMetadata=varMetadata,

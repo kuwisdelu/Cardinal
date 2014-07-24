@@ -2,6 +2,12 @@
 TODO for Cardinal package
 -------------------------
 
+Urgent:
+- Clean up plotting commands
+- Add plotting for other analysis types
+- Add summary for analysis results
+
+Long term:
 - fix behavior of combine() for MSImageSet, SImageData, and Hashmat
 - add interpolating smoothing options to image()
 - make readImzML parse more metadata (requires C++)

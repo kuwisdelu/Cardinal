@@ -12,6 +12,7 @@ setMethod("plot",
 		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
+		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
 			parameters <- model
 		} else {
@@ -55,7 +56,7 @@ setMethod("plot",
 			obj <- tstatistics
 		}
 		pixel <- pixels(obj, classes=classes)
-		significant <- as.vector(apply(iData(tstatistics)[,pixel], 2,
+		significant <- as.vector(apply(iData(tstatistics)[,pixel,drop=FALSE], 2,
 			function(t) abs(t) > 0))
 		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
 			groups=significant, col=col, type=type, superpose=superpose,
@@ -80,6 +81,7 @@ setMethod("image",
 		col = rainbow(nlevels(unlist(x$classes))),
 		lattice = FALSE)
 	{
+		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
 			parameters <- model
 		} else {

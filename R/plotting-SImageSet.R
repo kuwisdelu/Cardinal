@@ -146,6 +146,7 @@ setMethod("plot",
 		} else {
 			# check which conditions should create new plots
 			if ( superpose ) {
+				superposed <- which(names(condition) == ".pixel.groups")
 				if ( ncol(condition) > 1 ) {
 					superposed <- duplicated(condition[,-superposed,drop=FALSE])
 				} else {
