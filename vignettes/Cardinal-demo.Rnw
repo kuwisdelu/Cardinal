@@ -3,6 +3,9 @@
 %\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, Clustering, Classification}
 
 \documentclass[a4paper]{article}
+\usepackage{caption}
+\usepackage{subcaption}
+
 
 <<eval=TRUE, echo=FALSE, results=tex>>=
 BiocStyle::latex()
@@ -27,11 +30,22 @@ library(Cardinal)
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
 @ 
-This will be a brief walkthrough of some of the basic functionality of Cardinal.
+
+
+The \R  package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source, tool for the analysis of imaging data, specifically of the mass spectrometry variety. 
+
+Cardinal is built according to Bioconductor (website) standards for data classes. 
+
+Analysis in imaging data includes many things, including visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised methods are supported, including image segmentation (clustering), principle compontent analysis, and classification techniques such as Partial Least Squares Discriminant Analysis.
+
+This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R help file.
+
+
 
 \section{Input/Output}
 \subsection{Input}
-\Rpackage{Cardinal} can read two of the most common data exchange formats in imaging mass spectrometry: Analyze 7.5 and imzML.
+
+In order to be analyzed in \Rpackage{Cardinal}, data must be in either Analyze 7.5 and imzML format. These are two of the most common data exchange formats in imaging mass spectrometry.
 
 \subsubsection{Analyze 7.5}
 
@@ -51,7 +65,8 @@ For more information on reading Analyze files, type \verb|?readAnalyze|.
 
 \subsubsection{imzML}
 
-A more recently-developed format specifically designed for interchange of mass spectrometry imaging datasets, imzML is an open XML-based format to which many other formats can be converted.
+
+The open XML-based format imzML is more recently-developed format specifically designed for interchange of mass spectrometry imaging datasets. Many other formats can be converted to imzML for free with the help of free applications availible online.
 
 The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. Both files must be present in the same folder and have the same name (again, except for the file extension) for the data to be read properly.
 
@@ -67,7 +82,7 @@ For more information on reading imzML files, type \verb|?readImzML|.
 
 \subsubsection{readMSIData}
 
-\Rpackage{Cardinal} also provides the convenience function \verb|readMSIData|, which can automatically recognize the data format based on the extension. The same rules as above about naming conventions applies, but one need only provide the path to any of the data files. For example, to read an Analyze file, providing the path to any of the `.hdr', `.img', or `.t2m' will work. Likewise, providing the path to either the `.imzML' or `.ibd' file will work for reading data stored in the imzML format.
+\Rpackage{Cardinal} also provides the convenience function \verb|readMSIData|, which can automatically recognize the whether the data format is Analyze or imzML based file extensions. The same rules for naming conventions apply as described above, but one need only provide the path to any of the data files. For example, to read an Analyze file, providing the path to any of the `.hdr', `.img', or `.t2m' will work. Likewise, providing the path to either the `.imzML' or `.ibd' file will work for reading data stored in the imzML format.
 
 <<eval=FALSE>>=
 file <- "/This/is/the/path/to/an/imaging/data/file.extension"
@@ -78,24 +93,21 @@ data <- readMSIData(file)
 
 \subsubsection{RData files}
 
-Any R object including those created by \Rpackage{Cardinal} can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function.
-
+Any \R object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
 <<eval=FALSE>>=
 save(data, file="/Where/to/save/the/data.RData")
 load("/Where/to/save/the/data.RData")
 @
 
-These functions are part of \R. See \verb|?save| and \verb|?load| for more details.
+When an \textbf{RData} file is loaded the saved object appears in the global environment and is available for access by name, just as it was in the \R session during which it was saved. This functionality is part of \R, see \verb|?save| and \verb|?load| for more details.
 
 \section{Data exploration and visualization}
 
-Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects.
-
-\textit{Technical note: \Robject{MSImageSet} is an S4 class. It inherits from the more general \Robject{SImageSet} class, which itself inherits from the \Robject{iSet} virtual class. The \Robject{iSet} virtual class is designed around the same design principles as the \Robject{eSet} class provided by \Rpackage{Biobase}. See the ``Cardinal development'' vignette for more information.}
+Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects. This allows \Rpackage{Cardinal} to keep track of the spectra, pixel coordinates, m/z values and more in one place for the dataset. The \Robject{MSImageSet} object is described in more detail below. There are many methods for both creating and manipulating \Robject{MSImageSet} objects in \Rpackage{Cardinal}. We now describe some of these methods.
 
 \subsection{An example dataset}
 
-For the sake of the following sections, we will create a simple simulated example dataset using the \Rpackage{Cardinal} function \verb|generateImage|.
+To illustrate methods for the \Robject{MSImageSet} objects, we begin by creating a simple, simulated dataset using the \Rpackage{Cardinal} function \verb|generateImage|. This dataset will be the running example for this section. For more details on simulating mass spectrometry images, see \verb|?generateImage|, or the sections ``Advanced: Simulation of spectra'' and ``Advanced: Simulation of images''.
 
 <<>>=
 set.seed(1)
@@ -110,11 +122,11 @@ msset <- generateImage(pattern, coord=expand.grid(x=1:9, y=1:9),
 	resolution=100, step=3.3, as="MSImageSet")
 @
 
-The above code creates a simulated MS imaging dataset \Robject{msset}, which is $9x9$ pixels, with a mass range from $m/z 1000$ to $m/z 5000$, with three peaks occurding at $m/z 2000$, $m/z 3000$, and $m/z 4000$, each corresponding to three distinct regions of interest (specified by our desired pattern).
+The above code creates a simulated MS imaging dataset called \Robject{msset}, which is $9 \times 9$ pixels, with a mass range from $m/z 1000$ to $m/z 5000$. There are three peaks, occuring at $m/z 2000$, $m/z 3000$, and $m/z 4000$. Each of these peaks corresponds to a distinct region of interest. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R. All pixels with \Robject{pattern} equal to zero correspond to the region with peak at $m/z 2000$, \Robject{pattern} = 1 corresponds to the peak at $m/z 3000$, and \Robject{pattern} = 2 corresponds to $m/z 4000$.
 
-(We'll call these regions of interest ``blue'', ``black'', and ``red'' for reasons that will become clear later. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R.)
+We'll call these regions of interest ``blue'', ``black'', and ``red'', respectively, for reasons that will become clear later. 
 
-See \verb|?generateImage| for more details, or see the sections ``Advanced: Simulation of spectra'' and ``Advanced: Simulation of images''.
+
 
 \subsection{The \Robject{MSImageSet} object}
 
@@ -128,7 +140,7 @@ head(coord(msset), n=10) # first 10 pixel coordinates
 head(spectra(msset)[,1], n=10) # first 10 intensities in the first mass spectrum
 @
 
-The methods \verb|nrow|, \verb|ncol|, \verb|dim|, and \verb|dims| can be used to retrive the dimensions of the dataset.
+The methods \verb|nrow| and \verb|ncol| can be used to retrive the number of features and number of pixels in an object, respectively. The method \verb|dim| gives both number of features and number of pixels, while \verb|dims| gives number of features as well as spatial dimensions of the image.  
 
 <<>>=
 nrow(msset)
@@ -137,7 +149,7 @@ dim(msset)
 dims(msset)
 @
 
-Two other helpful methods are \verb|features| and \verb|pixels|. These are useful for retrieving the feature \# and pixel \# (i.e., the row and column in the \Robject{spectra(msset)} matrix) corresponding to items of interest like specific $m/z$-values or pixel coordinates.
+Two other helpful methods are \verb|features| and \verb|pixels|. These are useful for retrieving the feature \# and pixel \# (i.e., the row and column in the \Robject{spectra(msset)} matrix) corresponding to items of interest such as specific $m/z$-values or pixel coordinates.
 
 <<>>=
 features(msset, mz=3000) # returns the feature most closely matching m/z 3000
@@ -146,6 +158,9 @@ pixels(msset, x=5, y=5) # returns the pixel for x = 5, y = 5
 @
 
 See \verb|?MSImageSet| for more details and additional methods.
+
+\textit{Technical note: \Robject{MSImageSet} is an S4 class. It inherits from the more general \Robject{SImageSet} class, which itself inherits from the \Robject{iSet} virtual class. The \Robject{iSet} virtual class is designed around the same design principles as the \Robject{eSet} class provided by \Rpackage{Biobase}. See the ``Cardinal development'' vignette for more information.}
+
 
 \subsection{Subsetting a \Robject{MSImageSet}}
 
@@ -179,104 +194,153 @@ It is also possible to manually select a region of interest and use it to subset
 
 \subsection{Plotting mass spectra}
 
-Mass spectra from an \Robject{MSImageSet} can be plotted using the \verb|plot| method.
+Mass spectra from an \Robject{MSImageSet} can be plotted using the \verb|plot| method. To plot the mass spectrum at the first pixel of our \Robject{MSImageSet}, we do the following:
 
 <<plot1>>=
 plot(msset, pixel=1)
 @
 
+The result of which is shown in Figure \ref{fig:plotPixel1}.
+
+Instead of pixel number, we can specify a set of coordinates corresponding to the mass spectrum we want to plot. The following produces Figure \ref{fig:plotx5y5}, which is the mean spectrum for the pixel at spatial location $(5,5)$, and all other spectra within a 2 pixel neighborhood of that location.
+
+
 <<plot2>>=
 plot(msset, coord=list(x=5, y=5), plusminus=2)
 @
+
+
+Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. As shown in the code below, this is done by specifying a vector for the \verb|pixel| argument. The plots are overlayed by setting \verb|superpose = TRUE| and \verb|auto.key = TRUE| generates a legend.
 
 <<plot3>>=
 mycol <- c("blue", "black", "red")
 plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, auto.key=TRUE, col=mycol)
 @
 
-\setkeys{Gin}{width=0.3\textwidth}
+\setkeys{Gin}{width=\textwidth}
 \begin{figure}
-\begin{center}
-\begin{tabular}{ccc}
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<plot1>>
 @
-&
+\caption{blah}
+\label{fig:plotPixel1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<plot2>>
 @
-&
+\caption{blah}
+\label{fig:plotx5y5}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<plot3>>
 @
-\end{tabular}
+\caption{blah}
+\label{fig:plotVector}
+\end{subfigure}
 \caption{\small Plotting mass spectra.}
-\end{center}
+\label{fig:plotMethod}
 \end{figure}
 
 \subsection{Plotting ion images}
 
 Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method.
 
+To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeature}
 <<image1>>=
 image(msset, feature=1)
 @
 
+
+Figure \ref{fig:imNeighborhood}
 <<image2>>=
 image(msset, mz=4000, plusminus=10)
 @
 
+Figure \ref{fig:imMulti}
 <<image3>>=
 mycol <- c("blue", "black", "red")
 image(msset, mz=c(2000, 3000, 4000), col=mycol, superpose=TRUE)
 @
 
+Figure \ref{fig:imSup}
 <<image4>>=
 mycol <- gradient.colors(100, start="white", end="blue")
 image(msset, mz=2000, col.regions=mycol, contrast.enhance="suppress")
 @
 
+
+Figure \ref{fig:imSmooth}
 <<image5>>=
 mycol <- gradient.colors(100, start="white", end="black")
 image(msset, mz=3000, col.regions=mycol, smooth.image="gaussian")
 @
 
+Figure \ref{fig:imRegions}
 <<image6>>=
 msset2 <- msset[,pattern == "black" | pattern == "red"]
 mycol <- gradient.colors(100, start="black", end="red")
 image(msset2, mz=4000, col.regions=mycol)
 @
 
+\setkeys{Gin}{width=\textwidth}
 \begin{figure}
-\setkeys{Gin}{width=0.3\textwidth}
-\begin{center}
-\begin{tabular}{ccc}
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image1>>
 @
-&
+\caption{blah}
+\label{fig:imSingleFeature}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image2>>
 @
-&
+\caption{blah}
+\label{fig:imNeighborhood}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image3>>
 @
-\\
+\caption{blah}
+\label{fig:imMulti}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image4>>
 @
-&
+\caption{blah}
+\label{fig:imSup}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image5>>
 @
-&
+\caption{blah}
+\label{fig:imSmooth}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image6>>
 @
-\end{tabular}
+\caption{blah}
+\label{fig:imRegions}
+\end{subfigure}
 \caption{\small Plotting ion images.}
-\end{center}
 \end{figure}
 
 
