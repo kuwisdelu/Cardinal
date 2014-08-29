@@ -18,14 +18,15 @@ setMethod("initialize", "IAnnotatedDataFrame",
 		} else if ( !all(reqLabelTypes %in% levels(varMetadata[["labelType"]])) ) {
 			levels(varMetadata[["labelType"]]) <- union(levels(varMetadata[["labelType"]]), reqLabelTypes)
 		}
-		if ( !"sample" %in% row.names(varMetadata) || is.na(varMetadata["sample","labelType"]) ) {
-			if ( isTRUE(any(varMetadata[["labelType"]] == "sample")) ) {
-				isSample <- which(varMetadata[["labelType"]] == "sample")
-				row.names(varMetadata)[isSample] <- "sample"
-			} else {
+		if ( !"sample" %in% row.names(varMetadata) ) {
+			if ( nrow(varMetadata) < ncol(data) ) {
 				varMetadata["sample","labelType"] <- "sample"
+			} else if ( !all(row.names(varMetadata) == names(data)) ) {
+				row.names(varMetadata) <- names(data)
 			}
 		}
+		if ( is.na(varMetadata["sample","labelType"]) )
+			varMetadata["sample","labelType"] <- "sample"
 		.Object <- callNextMethod(.Object,
 			data=data,
 			varMetadata=varMetadata,
@@ -42,10 +43,8 @@ IAnnotatedDataFrame <- function(data, varMetadata,
 	if ( missing(data) )
 		data <- data.frame(sample=factor())
 	if ( missing(varMetadata) )
-		varMetadata <- data.frame(labelType=factor(rep(NA, ncol(data)),
-			levels=reqLabelTypes), row.names=names(data))
-	if ( !is.null(varMetadata[["labelType"]]) )
-		varMetadata[["labelType"]] <- as.factor(varMetadata[["labelType"]])
+		varMetadata <- data.frame(labelType=factor(rep(NA, ncol(data)), levels=reqLabelTypes),
+			row.names=names(data))
 	.IAnnotatedDataFrame(data=data,
 		varMetadata=varMetadata,
 		dimLabels=dimLabels,

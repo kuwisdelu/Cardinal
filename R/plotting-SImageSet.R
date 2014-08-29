@@ -181,7 +181,7 @@ setMethod("plot",
 				}
 				if ( last ) {
 					if ( length(fm.cond != 0 ) ) {
-						strip <- as.character(unlist(condition[ci,fm.cond,drop=FALSE]))
+						strip <- as.character(unlist(condition[ci,,drop=FALSE]))
 						legend("top", legend=strip, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}
@@ -310,7 +310,13 @@ setMethod("image",
 		ncond <- nrow(condition)
 		cond <- lapply(condition, function(var) rep(var, each=nobs))
 		data <- data.frame(.values=as.numeric(values), cond, row.names=NULL)
-		data[coordNames] <- expand.grid(lapply(dim(imageData(x))[coordNames], seq_len))
+		data[coordNames] <- expand.grid(lapply(coordNames, function(nm) {
+			if ( is.factor(coord(x)[[nm]]) ) {
+				unique(coord(x)[[nm]])
+			} else {
+				seq_len(dim(imageData(x))[[nm]])
+			}
+		}))
 		# set up the groups and subset
 		subset <- rep(subset[subsetPositions], ncond)
 		if ( superpose && is.null(groups) ) {
@@ -378,10 +384,17 @@ setMethod("image",
 			# pad condition with any missing dimensions
 			if ( !all(names(coord(x)) %in% names(model$right)) ) {
 				coordNeed <- setdiff(names(coord(x)), names(model$right))
-				coordExtra <- expand.grid(lapply(dim(imageData(x))[coordNeed], seq_len))
+				coordExtra <- expand.grid(lapply(coordNeed, function(nm) {
+					if ( is.factor(coord(x)[[nm]]) ) {
+						unique(coord(x)[[nm]])
+					} else {
+						seq_len(dim(imageData(x))[[nm]])
+					}
+				}))
 				condition <- rep(list(condition), nrow(coordExtra))
 				condition <- do.call("rbind", condition)
 				condition[coordNeed] <- coordExtra
+				ncond <- nrow(condition)
 			}
 			# check which conditions should create new plots
 			if ( superpose ) {
@@ -433,7 +446,7 @@ setMethod("image",
 				}
 				if ( last ) {
 					if ( length(fm.cond != 0 ) ) {
-						strip <- as.character(unlist(condition[ci,fm.cond,drop=FALSE]))
+						strip <- as.character(unlist(condition[ci,,drop=FALSE]))
 						legend("top", legend=strip, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}

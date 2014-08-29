@@ -69,7 +69,7 @@ spatial.neighbors <- function(x, r, indices, na.rm=FALSE) {
 	lapply(indices, function(i) {
 		neighbors <- do.call(f, mapply(`+`, coord[i,], radii, SIMPLIFY=FALSE))
 		if ( na.rm ) neighbors[is.na(neighbors)] <- i
-		dimnames(neighbors) <- radii[names(coord)]
+		dimnames(neighbors) <- radii[coordLabels(x)]
 		neighbors
 	})
 }

@@ -72,7 +72,7 @@ IAnnotatedDataFrame(data, varMetadata,
 
 		\item{\code{pixelNames(object)}, \code{pixelNames(object)<-}:}{Return or set the pixel names (the rows of \code{data}).}
 
-		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'dim'.}}
+		\item{\code{coordLabels(object)}, \code{coordLabels(object)<-}:}{Return or set the names of the pixel coodinates. These are the subset of \code{varLabels(object) for which the corresponding variables have a 'labelType' of 'dim'.} Note that this will \emph{never} include 'sample', even if the 'sample' variable has type 'dim'. (See details.)}
 
 		\item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} containing the subset of columns of \code{data} for which the variables have a 'labelType' of 'dim'.}
 	}
@@ -81,6 +81,16 @@ IAnnotatedDataFrame(data, varMetadata,
     \describe{
         \item{\code{combine(x, y, ...)}:}{Combine two or more \code{IAnnotatedDataFrame} objects. Objects are combined similarly to an \code{AnnotatedDataFrame} but with special handling so that the 'sample' column does not require identical levels to be combined successfuly.}
     }
+}
+
+\details{
+	The key difference between a \code{IAnnotatedDataFrame} and a \code{AnnotatedDataFrame} is that an \code{IAnnotatedDataFrame} makes a distinction between samples and pixels, recognizing that rows belong to pixels, many of which may belong to the same sample. Therefore, \code{data} contains a required column called 'sample', which indicates the sample to which the pixel belongs, and \code{varMetadata} contains an additional required column called 'labelType', which indicates whether a variable is a spatial dimensions ('dim') or a phenotype ('pheno'). The 'labelType' of the 'sample' variable depends on the structure of the experiment. See below for details.
+
+	The 'labelType' for 'sample' will be 'sample' in the case of a 2D imaging experiment with a single sample. The 'labelType' for 'sample' will be 'dim' in the case of a 2D imaging experiment with multiple samples, since the 'sample' will be acting as a proxy spatial coordinate. Note however that in this case, the result of a call to \code{coordLabels} will \emph{not} include 'sample'.
+
+	It is possible to compare the results of \code{names(coord(object))} and \code{coordLabels(object)} to distinguish between coordinate types that should be considered independent. It will be assumed a spatial relationship exists for all variables returned by \code{coordLabels(object)}, but this is not necessarily true for all variables returned by \code{names(coord(object))}. This is required, because every row in the \code{data.frame} returned by \code{coord(object)} should be unique and correspond to a unique pixel.
+
+	The suggested structure for 3D imaging experiments is to create an additional variable solely to refer to the spatial dimension (e.g., 'z') and treat it separately from the 'sample'. Therefore, in a 3D imaging experiment with a single sample, the 'labelType' for 'sample' would be 'sample'.
 }
 
 \author{Kyle D. Bemis}

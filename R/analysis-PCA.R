@@ -58,12 +58,12 @@ setMethod("predict", "PCA",
 		.message("PCA: Done.")
 		.time.stop()
 		new("PCA",
-			pixelData=x@pixelData,
-			featureData=x@featureData,
-			experimentData=x@experimentData,
-			protocolData=x@protocolData,
+			pixelData=newx@pixelData,
+			featureData=newx@featureData,
+			experimentData=newx@experimentData,
+			protocolData=newx@protocolData,
 			resultData=result,
-			modelData=model)
+			modelData=object@modelData)
 	})
 
 .PCA.fit <- function(x, ncomp, method, scale) {

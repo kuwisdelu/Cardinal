@@ -11,6 +11,14 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		ncomps <- sort(ncomp)
 		if ( max(ncomps) > nrow(x) )
 			.stop("PLS: Can't fit more components than extent of dataset")
+		nas <- apply(y, 1, function(yi) any(is.na(yi)))
+		newx <- x
+		newy <- y
+		if ( any(nas) ) {
+			.message("PLS: Removing missing observations.")
+			x <- x[,!nas]
+			y <- y[!nas,]
+		}
 		.time.start()
 		.message("PLS: Centering data.")
 		Xt <- as.matrix(iData(x))
@@ -20,7 +28,10 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 			scale <- attr(Xt, "scaled:scale")
 			Yscale <- attr(Y, "scaled:scale")
 		} else {
-			Yscale <- rep(1, nrow(Y))
+			scale <- rep(1, ncol(Xt))
+			names(scale) <- colnames(Xt)
+			Yscale <- rep(1, ncol(Y))
+			names(Yscale) <- colnames(Y)
 		}
 		center <- attr(Xt, "scaled:center")
 		Ycenter <- attr(Y, "scaled:center")
@@ -47,7 +58,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 			resultData=result,
 			modelData=model)
 		.time.stop()
-		predict(object, newx=x)
+		predict(object, newx=newx, newy=newy)
 	})
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "numeric"), 
@@ -87,7 +98,7 @@ setMethod("predict", "PLS",
 			pred <- .PLS.predict(Xt, ncomp=res$ncomp,
 				loadings=res$loadings, weights=res$weights,
 				Yweights=res$Yweights)
-			pred$fitted <- res$Yscale * pred$fitted + res$Ycenter
+			pred$fitted <- t(res$Yscale * t(pred$fitted) + res$Ycenter)
 			res[names(pred)] <- pred
 			if ( !missing.newy )
 				res$y <- newy
