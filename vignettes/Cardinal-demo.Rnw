@@ -218,14 +218,14 @@ plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, auto.key=
 @
 
 \setkeys{Gin}{width=\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
 <<fig=TRUE, echo=FALSE>>=
 <<plot1>>
 @
-\caption{blah}
+\caption{Pixel 1 mass spectrum}
 \label{fig:plotPixel1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -233,7 +233,7 @@ plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, auto.key=
 <<fig=TRUE, echo=FALSE>>=
 <<plot2>>
 @
-\caption{blah}
+\caption{Mean spectrum over neighborhood of pixel $(5,5)$}
 \label{fig:plotx5y5}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -241,7 +241,7 @@ plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, auto.key=
 <<fig=TRUE, echo=FALSE>>=
 <<plot3>>
 @
-\caption{blah}
+\caption{Simultaneous plot of 3 mass spectra}
 \label{fig:plotVector}
 \end{subfigure}
 \caption{\small Plotting mass spectra.}
@@ -257,32 +257,33 @@ To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeat
 image(msset, feature=1)
 @
 
-
-Figure \ref{fig:imNeighborhood}
+The mean ion image for the neighborhood of m/z4000 with radius 10, i.e. m/z$[3990,4010]$ is show in Figure \ref{fig:imNeighborhood}.
 <<image2>>=
 image(msset, mz=4000, plusminus=10)
 @
 
-Figure \ref{fig:imMulti}
+
+In Figure \ref{fig:imMulti} the single ion images for m/z2000, m/z3000, and m/z4000 are overlaid.
+
 <<image3>>=
 mycol <- c("blue", "black", "red")
 image(msset, mz=c(2000, 3000, 4000), col=mycol, superpose=TRUE)
 @
 
-Figure \ref{fig:imSup}
+The ion image for m/z2000 is shown in Figure \ref{fig:imSup}, with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
 <<image4>>=
 mycol <- gradient.colors(100, start="white", end="blue")
 image(msset, mz=2000, col.regions=mycol, contrast.enhance="suppress")
 @
 
-
-Figure \ref{fig:imSmooth}
+A smoothed ion image for mz3000 with a custom color scale from white to black is presented in Figure \ref{fig:imSmooth}.
 <<image5>>=
 mycol <- gradient.colors(100, start="white", end="black")
 image(msset, mz=3000, col.regions=mycol, smooth.image="gaussian")
 @
 
-Figure \ref{fig:imRegions}
+Finally, for only those pixels defined as being from the ``black" and ``red" regions, we plot the ion image of mz4000 with a custom color scale from black to red in Figure \ref{fig:imRegions}.
+
 <<image6>>=
 msset2 <- msset[,pattern == "black" | pattern == "red"]
 mycol <- gradient.colors(100, start="black", end="red")
@@ -290,14 +291,14 @@ image(msset2, mz=4000, col.regions=mycol)
 @
 
 \setkeys{Gin}{width=\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
 <<fig=TRUE, echo=FALSE>>=
 <<image1>>
 @
-\caption{blah}
+\caption{Single m/z feature}
 \label{fig:imSingleFeature}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -305,7 +306,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image2>>
 @
-\caption{blah}
+\caption{Mean over m/z neighborhood}
 \label{fig:imNeighborhood}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -313,7 +314,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image3>>
 @
-\caption{blah}
+\caption{Multiple overlaid}
 \label{fig:imMulti}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -321,7 +322,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image4>>
 @
-\caption{blah}
+\caption{Hotspot suppressed}
 \label{fig:imSup}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -329,7 +330,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image5>>
 @
-\caption{blah}
+\caption{Gaussian smoothed}
 \label{fig:imSmooth}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -337,7 +338,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image6>>
 @
-\caption{blah}
+\caption{Selected regions}
 \label{fig:imRegions}
 \end{subfigure}
 \caption{\small Plotting ion images.}
@@ -347,7 +348,7 @@ image(msset2, mz=4000, col.regions=mycol)
 \section{Pre-processing}
 
 \setkeys{Gin}{width=\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \includegraphics{preprocessingRoughDraft.pdf}
 \caption{\small Preprocessing steps}
@@ -357,7 +358,7 @@ image(msset2, mz=4000, col.regions=mycol)
 
 \subsection{Normalization}
 
-Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC). In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results. In the second, we perform normalization on the whole dataset.
+Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to so-called total ion current (TIC), commonly used in MSI analysis \textcolor{red}{(see SOURCES)}. In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
 <<normalizetic>>=
 temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
 @
@@ -365,18 +366,19 @@ temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
 msset2 <- normalize(msset, method="tic")
 @
 \setkeys{Gin}{width=0.4\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 <<fig=TRUE, echo=FALSE>>=
 <<normalizetic>>
 @
 \caption{\small Total ion current (TIC) normalization.}
+\label{fig:TICpix}
 \end{center}
 \end{figure}
 
 \subsection{Smoothing}
 
-Smoothing the mass spectra is useful for removing noise, which can improve detection of peaks. \Rpackage{Cardinal} provides several common methods for smoothing mass spectra, including Gaussian kernel smoothing, Savitsky-Golay smoothing, and a simple moving average filter.
+Smoothing the mass spectra is useful for removing noise, which can improve detection of peaks. \Rpackage{Cardinal} provides several common methods for smoothing mass spectra, including Gaussian kernel smoothing (Figure \ref{fig:gauSmo}), Savitsky-Golay smoothing (Figure \ref{fig:sgolSmo}), and a simple moving average filter. \textcolor{red}{(See SOURCES)}
 <<smoothgaus>>=
 temp <- smoothSignal(msset2, pixel=1, method="gaussian", window=9, plot=TRUE)
 @
@@ -386,44 +388,58 @@ temp <- smoothSignal(msset2, pixel=1, method="sgolay", window=15, plot=TRUE)
 <<smooth>>=
 msset3 <- smoothSignal(msset2, method="gaussian", window=9)
 @
-\begin{figure}
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{center}
-\begin{tabular}{ccc}
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<smoothgaus>>
 @
-&
+\caption{Gaussian Kernel Smoothing}
+\label{fig:gauSmo}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+\centering
 <<fig=TRUE, echo=FALSE>>=
 <<smoothsgolay>>
 @
-\end{tabular}
-\caption{\small Gaussian smoothing and Savitsky-Golay smoothing.}
-\end{center}
+\caption{Savitsky-Golay smoothing}
+\label{fig:sgolSmo}
+\end{subfigure}
+\caption{\small Smoothing techniques.}
+\label{fig:Smoothing}
 \end{figure}
 
 \subsection{Baseline reduction}
 
-Baseline reduction is often necessary for many datasets, and \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks.
+Baseline reduction is often necessary for many datasets, especially those obtained through Matrix-assisted methods \textcolor{red}{(see SOURCES)}. \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks. Figure \ref{fig:baseline} shows median baseline reduction for a single pixel, where the green curve represents the estimated baseline and the baseline-reduced spectrum is plotted in black. 
 <<baselinemedian>>=
 temp <- reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
 @
+
+We can also reduce baseline across all pixels in the image.
+
 <<baseline>>=
 msset4 <- reduceBaseline(msset3, method="median", blocks=50)
 @
 \setkeys{Gin}{width=0.4\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 <<fig=TRUE, echo=FALSE>>=
 <<baselinemedian>>
 @
 \caption{\small Baseline reduction using interpolation from medians.}
+\label{fig:baseline}
 \end{center}
 \end{figure}
 
 \subsection{Peak picking}
 
-Peak picking is a common form of data reduction that reduces the signal to relevant data peaks. \Rpackage{Cardinal} implements three varieties based on a user-specified signal-to-noise ratio (SNR). The ``simple'' version interpolates a constant noise pattern, the ``adaptive'' version interpolates an adaptive noise pattern, and ``limpic'' implements the LIMPIC algorithm for peak detection.
+Peak picking is a common form of data reduction that reduces the signal to relevant data peaks. \Rpackage{Cardinal} implements three varieties based on a user-specified signal-to-noise ratio (SNR). The ``simple'' version interpolates a constant noise pattern \textcolor{red}{as in SOURCE}, the ``adaptive'' version interpolates an adaptive noise pattern  \textcolor{red}{as in SOURCE} Figure \ref{fig:adPeakPick}, and ``limpic'' implements the LIMPIC algorithm for peak detection  \textcolor{red}{as in SOURCE} Figure \ref{fig:LIMPIC}.
+
 <<peakpickadaptive>>=
 temp <- peakPick(msset4, pixel=1, method="adaptive", SNR=3, plot=TRUE)
 @
@@ -433,25 +449,33 @@ temp <- peakPick(msset4, pixel=1, method="limpic", SNR=3, plot=TRUE)
 <<peakpick>>=
 msset5 <- peakPick(msset4, method="simple", SNR=3)
 @
-\begin{figure}
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{center}
-\begin{tabular}{cc}
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<peakpickadaptive>>
 @
-&
+\caption{Adaptive}
+\label{fig:adPeakPick}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+\centering
 <<fig=TRUE, echo=FALSE>>=
 <<peakpicklimpic>>
 @
-\end{tabular}
-\caption{\small Peak picking with adaptive noise and LIMPIC.}
-\end{center}
+\caption{LIMPIC}
+\label{fig:LIMPIC}
+\end{subfigure}
+\caption{\small Peak picking techniques.}
 \end{figure}
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in m/z measurements. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum.
+Peak alignment is necessary to account for possible inaccuracy in m/z measurements, as explained by \textcolor{red}{SOURCE, ALEXANDROV I BELIEVE}. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
+
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
 @
@@ -459,41 +483,57 @@ temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
 msset6 <- peakAlign(msset5, method="diff")
 @
 \setkeys{Gin}{width=0.4\textwidth}
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 <<fig=TRUE, echo=FALSE>>=
 <<peakaligndiff>>
 @
 \caption{\small Peak alignment to the local maxima of the mean spectrum.}
+\label{fig:align}
 \end{center}
 \end{figure}
 
 \subsection{Data reduction}
 
-Other common forms of data reduction include resampling and binning.
+Other common forms of data reduction include resampling and binning. Discussions of these methods can be found in \textcolor{red}{SOURCES}.
+
+\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same m/z bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version overlaid in red.
 <<reducedimbin>>=
 temp <- reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
 @
+
+There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 on pixel 1 is plotted in Figure \ref{fig:resample}. The orignal spectrum is plotted in black, with the resampled version overlaid in red.
+
 <<reducedimresample>>=
 temp <- reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
 @
+
+Data reduction can be done on the whole dataset at once.
 <<reducedim>>=
 msset7 <- reduceDimension(msset4, method="resample", step=25)
 @
-\begin{figure}
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{center}
-\begin{tabular}{cc}
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<reducedimbin>>
 @
-&
+\caption{Binning}
+\label{fig:bin}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<reducedimresample>>
 @
-\end{tabular}
+\caption{Resampling}
+\label{fig:resample}
+\end{subfigure}
 \caption{\small Data reduction via binning and resampling.}
-\end{center}
 \end{figure}
 
 
@@ -508,40 +548,17 @@ msset7 <- reduceDimension(msset4, method="resample", step=25)
 \subsection{Apply}
 The \verb|apply| family of functions are a powerful feature of \R. The \verb|apply| function applies a function over margins of an array, while \verb|sapply| applies a function over every element of a vector-like object. The function \verb|tapply| applies a function over a ``ragged'' array, so that the function is applied over groups of values given by levels of another variable (usually a factor). In \Rpackage{Cardinal}, the methods \verb|pixelApply| and \verb|featureApply| allow \verb|apply|-like functionality that combine traits of each of these, tailored for imaging datasets.
 
-For the following examples, we will use a simulated dataset. The image is a cardinal with red and black feathers, where the colors represent different regions of the image. The mass spectra will have two peaks to indicate the two regions. We use \Robject{generateImage} to generate the dataset from an integer matrix where $0$ represents black regions of the image and $1$ represents the red regions of the image.
-<<data>>=
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
- NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
- 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
- 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
-@
-We can plot the ground truth image directly.
-<<truth>>=
-image(data[,ncol(data):1], col=c("black", "red"))
-@
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{figure}
-\begin{center}
-<<fig=TRUE, echo=FALSE>>=
-<<truth>>
-@
-\caption{\small Ground truth image used to generate the simulated dataset.}
-\end{center}
-\end{figure}
-Now we generate the data as if from a mass spectrometry imaging experiment with peaks at $m/z$ 3000 (higher intensity in black pixels) and $m/z$ 4000 (higher intensity in red pixels).
-<<sim>>=
-set.seed(1)
-msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100,
-  step=3.3, as="MSImageSet")
-@
-We need to mark which pixels are black and which are red.
+
+We need to mark which pixels are blue, black, and which are red.
 <<pData>>=
-pData(msset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
+pData(msset)$pg <- pattern
 @
-Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``black'' or ``red'' pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
+
+
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``blue", ``black'', or ``red'' pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
 <<fData>>=
-fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg", "black", "red"))
+fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg","blue", "black", "red"))
+fData(msset)$fg[1950 < fData(msset)$mz & fData(msset)$mz < 2050] <- "blue"
 fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
 fData(msset)$fg[3950 < fData(msset)$mz & fData(msset)$mz < 4050] <- "red"
 @
@@ -549,40 +566,67 @@ Now we can experiment with different ways of plotting an imaging dataset.
 
 \subsubsection{\Robject{pixelApply}}
 
-The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors (mass spectra). Here, we use \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or red or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
+The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors (mass spectra). Here, we use \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or blue, red, or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
 
 <<pixelApply1, results=verbatim>>=
 p1 <- pixelApply(msset, mean, .feature.groups=fg)
 p1[,1:30]
 @
-By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
+By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``blue'' pixels, the mean intensity of features belonging to the ``blue''-associated peak ($m/z$ 2000),  ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
+
 <<pixelApply2, results=verbatim>>=
-cbind(pData(msset), t(p1))[1:30,c("pg", "black", "red")]
+cbind(pData(msset), t(p1))[1:30,c("pg","blue", "black", "red")]
 @
-We can manually construct the images corresponding to the mean intensity of the two peaks centered at $m/z$ 3000 and $m/z$ 4000 and plot their images.
+
+We can manually construct the images corresponding to the mean intensity of the three peaks centered at $m/z$ 2000, $m/z$ 3000, and $m/z$ 4000 and plot their images. This is shown in Figure \ref{fig:meanInt}
+
 <<pixelApply3>>=
-temp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
-image(temp1, feature=1, col=alpha.colors(100, "black"), main="black peak", sub="m/z = 3000")
+temp1 <- MSImageSet(spectra=t(as.vector(p1["blue",])), coord=coord(msset), mz=2000)
+image(temp1, feature=1, col=alpha.colors(100, "blue"), sub="m/z = 2000")
 @
+
 <<pixelApply4>>=
-temp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
-image(temp2, feature=1, col=alpha.colors(100, "red"), main="red peak", sub="m/z = 4000")
+temp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
+image(temp1, feature=1, col=alpha.colors(100, "black"), sub="m/z = 3000")
 @
-\begin{figure}
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{center}
-\begin{tabular}{cc}
+<<pixelApply5>>=
+temp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
+image(temp2, feature=1, col=alpha.colors(100, "red"),  sub="m/z = 4000")
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<pixelApply3>>
 @
-&
+\caption{Blue Peak}
+\label{fig:bluePix}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<pixelApply4>>
 @
-\end{tabular}
-\caption{\small Mean intensites of the two peaks centered at $m/z$ 3000 and $m/z$ 4000.}
-\end{center}
+\caption{Black Peak}
+\label{fig:blackPix}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply5>>
+@
+\caption{Red Peak}
+\label{fig:redPix}
+\end{subfigure}
+\caption{\small Mean intensites of the three peaks centered at $m/z$ 2000, $m/z$ 3000 and $m/z$ 4000.}
+\label{fig:meanInt}
 \end{figure}
+
+
+
 If only the plots are desired rather than the actual data, then \verb|image| can be used to perform these steps automatically while producing the plot. See \textit{Cardinal plotting} for how to do this.
 
 \subsubsection{\Robject{featureApply}}
@@ -592,29 +636,49 @@ The method \verb|featureApply| allows functions to be applied over all features.
 f1 <- featureApply(msset, mean, .pixel.groups=pg)
 f1[,1:30]
 @
-Again, we can check the results by plotting them.
+Again, we can check the results by plotting them in Figure \ref{fig:meanCenters}.
 <<featureApply2>>=
-plot(mz(msset), f1["black",], type="l", xlab="m/z", ylab="Intensity", main="mean spectrum of black pixels", col="black")
+plot(mz(msset), f1["blue",], type="l", xlab="m/z", ylab="Intensity", col="blue")
 @
 <<featureApply3>>=
-plot(mz(msset), f1["red",], type="l", xlab="m/z", ylab="Intensity", main="mean spectrum of red pixels", col="red")
+plot(mz(msset), f1["black",], type="l", xlab="m/z", ylab="Intensity", col="black")
 @
-\begin{figure}
-\setkeys{Gin}{width=0.4\textwidth}
-\begin{center}
-\begin{tabular}{cc}
+<<featureApply4>>=
+plot(mz(msset), f1["red",], type="l", xlab="m/z", ylab="Intensity", col="red")
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<featureApply2>>
 @
-&
+\caption{Blue Pixels}
+\label{fig:blueSpec}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
 <<fig=TRUE, echo=FALSE>>=
 <<featureApply3>>
 @
-\end{tabular}
-\caption{\small Mean intensites of the two peaks centered at $m/z$ 3000 and $m/z$ 4000.}
-\end{center}
+\caption{Black Pixels}
+\label{fig:blackSpec}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply4>>
+@
+\caption{Red Pixels}
+\label{fig:redSpec}
+\end{subfigure}
+\caption{\small Mean spectra of blue, black, and red regions.}
+\label{fig:meanCenters}
 \end{figure}
-As expected, we see the mean spectrum of the black pixels has a higher peak at $m/z$ 3000 while the mean spectrum of the red pixels has a higher peak at $m/z$ 4000. As before, if only the plots are desired rather than the actual data, then \verb|plot| can be used to perform these steps automatically. See \textit{Cardinal plotting} for how to do this.
+As expected,we see the mean spectrum of the blue pixels has a higher peak at $m/z$ 2000,  we see the mean spectrum of the black pixels has a higher peak at $m/z$ 3000, while the mean spectrum of the red pixels has a higher peak at $m/z$ 4000. As before, if only the plots are desired rather than the actual data, then \verb|plot| can be used to perform these steps automatically. See \textit{Cardinal plotting} for how to do this.
 
 
 \subsection{Simulation}
