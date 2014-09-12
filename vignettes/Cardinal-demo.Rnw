@@ -683,8 +683,295 @@ As expected,we see the mean spectrum of the blue pixels has a higher peak at $m/
 
 \subsection{Simulation}
 
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+@ 
+\Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed metholody for analyzing mass spectrometry imaging experiments.
+
+\subsubsection{Simulation of spectra}
+
+The \verb|generateSpectrum| function can be used to simulate mass spectra. Its parameters can be tuned to simulate different kinds of mass spectra from different kinds of machines, and different protein and peptide patterns.
+<<gs1>>=
+set.seed(1)
+s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000), baseline=2000, resolution=100, step=3.3)
+plot(x ~ t, data=s1, type="l", xlab="m/z", ylab="Intensity")
+@
+<<gs2>>=
+set.seed(2)
+s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000), baseline=3000, resolution=50, step=3.3)
+plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs1>>
+@
+\caption{blah}
+\label{fig:gs1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs2>>
+@
+\caption{blah}
+\label{fig:gs2}
+\end{subfigure}
+\caption{\small MALDI-like simulated spectra.}
+\label{fig:gs}
+\end{figure}
 
 
+Above we simulated MALDI-like spectra. Below we can simulate DESI-like spectra.
+<<gs3>>=
+set.seed(3)
+s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000), baseline=0, resolution=250, noise=0.1, step=1.2)
+plot(x ~ t, data=s3, type="l", xlab="m/z", ylab="Intensity")
+@
+<<gs4>>=
+set.seed(4)
+s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), baseline=0, resolution=500, noise=0.2, step=1.2)
+plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs3>>
+@
+\caption{blah}
+\label{fig:gs3}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs4>>
+@
+\caption{blah}
+\label{fig:gs4}
+\end{subfigure}
+\caption{\small DESI-like simulated spectra.}
+\label{fig:gsp}
+\end{figure}
+
+
+
+\subsubsection{Simulation of images}
+
+The \verb|generateImage| function can be used to simulate mass spectral images. This is a simple wrapper for \verb|generateSpectra| that will generate unique spectral patterns based on a spatial pattern. The generated mass spectra will have a unique peak associated with each region. The pattern must have discrete regions, most easily given in the form of an integer matrix. We use a matrix in the pattern of a cardinal.
+
+<<data>>=
+data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+ NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+ 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+ 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+@
+We can plot the ground truth image directly.
+<<truth>>=
+image(data[,ncol(data):1], col=c("black", "red"))
+@
+
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<truth>>
+@
+\caption{\small Ground truth image used to generate the simulated dataset.}
+\end{center}
+\end{figure}
+
+
+Now we generate the dataset. To make it easy to visualize, we set up the \Robject{range} and \Robject{step} size so that the feature indices correspond directly to their values. We create two peaks at $m/z$ 100 and $m/z$ 200, one of which is associated with each region in the image.
+<<img1>>=
+set.seed(1)
+img1 <- generateImage(data, range=c(1,1000), centers=c(100,200), step=1, as="MSImageSet")
+@
+Now to confirm the reasonability of our simulated dataset, we plot images corresponding to the two peaks associated with each region. (Note that rows in the original matrix correspond to the x-axis in the image and the columns correspond to the y-axis.)
+<<gi1>>=
+image(img1, feature=100, col.regions=alpha.colors(100, "black"))
+@
+<<gi2>>=
+image(img1, feature=200, col.regions=alpha.colors(100, "red"))
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi1>>
+@
+\caption{Black Peak}
+\label{fig:gi1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi2>>
+@
+\caption{Red Peak}
+\label{fig:gi2}
+\end{subfigure}
+\caption{\small Generated image from an integer matrix.}
+\end{figure}
+
+
+
+We can generate the same kind of dataset using a \Robject{factor} and a \Robject{data.frame} of coordinates, as is done in the running example for earlier sections of this vignette.
+
+
+
+<<img2, results=verbatim>>=
+pattern <- factor(c(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 0,
+  0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 1, 1, 2,
+  2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 2, 2,
+	2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2,
+	2, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0),
+	levels=c(0,1,2), labels=c("blue", "black", "red"))
+coord <- expand.grid(x=1:9, y=1:9)
+set.seed(2)
+msset <- generateImage(pattern, coord=coord,
+                                  range=c(1000, 5000), centers=c(2000, 3000, 4000),
+	                             resolution=100, step=3.3, as="MSImageSet")
+@
+
+Again, we can plot the images to see that the simulated dataset is the same pattern as before (though the exact intensities will differ, because we have used a different seed for the random number generator).
+
+<<gi3>>=
+image(msset, feature=200, col.regions=alpha.colors(100, "blue"))
+@
+<<gi4>>=
+image(msset, feature=300, col.regions=alpha.colors(100, "black"))
+@
+<<gi5>>=
+image(msset, feature=400, col.regions=alpha.colors(100, "red"))
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi3>>
+@
+\caption{Blue Peak}
+\label{fig:gi3}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi4>>
+@
+\caption{Black Peak}
+\label{fig:gi4}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi5>>
+@
+\caption{Red Peak}
+\label{fig:gi5}
+\end{subfigure}
+\caption{\small Generated images from factor and coordinates}
+\label{fig:gI}
+\end{figure}
+
+\subsubsection{Advanced simulation}
+
+The \verb|generateImage| function provides a straightforward method for rapid simulation of many kinds of images to test classification and clustering models, but suppose we wish to simulate a more complex dataset with spatial correlations. Below we simulate a dataset with two overlapping regions.
+<<adv1>>=
+x1 <- apply(expand.grid(x=1:10, y=1:10), 1, function(z) 1/(1 + ((4-z[[1]])/2)^2 + ((4-z[[2]])/2)^2))
+dim(x1) <- c(10,10)
+image(x1[,ncol(x1):1])
+@
+<<adv2>>=
+x2 <- apply(expand.grid(x=1:10, y=1:10), 1, function(z) 1/(1 + ((6-z[[1]])/2)^2 + ((6-z[[2]])/2)^2))
+dim(x2) <- c(10,10)
+image(x2[,ncol(x2):1])
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<adv1>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<adv2>>
+@
+\end{tabular}
+\caption{\small Ground truth images of a dataset with overlapping regions.}
+\end{center}
+\end{figure}
+We generate the image by using \verb|generateSpectrum| with the calculated mean intensities. We use two peaks for the two regions with nearly overlapping peaks at $m/z$ 500 and $m/z$ 510.
+<<advsim>>=
+set.seed(1)
+x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), intensities=c(z1, z2), range=c(1,1000), resolution=100, baseline=0, step=1)$x, as.vector(x1), as.vector(x2))
+img3 <- MSImageSet(x3, coord=expand.grid(x=1:10, y=1:10), mz=1:1000)
+@
+Now we can plot the ion images for each of the two peaks.
+<<advimg1>>=
+image(img3, feature=500, col=intensity.colors(100))
+@
+<<advimg2>>=
+image(img3, feature=510, col=intensity.colors(100))
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<advimg1>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<advimg2>>
+@
+\end{tabular}
+\caption{\small Simulated mass spectral images at the two peaks.}
+\end{center}
+\end{figure}
+Finally, we also plot the mass spectra.
+<<advplot1>>=
+plot(img3, pixel=34, type="l")
+@
+<<advplot2>>=
+plot(img3, pixel=56, type="l")
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+<<fig=TRUE, echo=FALSE>>=
+<<advplot1>>
+@
+&
+<<fig=TRUE, echo=FALSE>>=
+<<advplot2>>
+@
+\end{tabular}
+\caption{\small Simulated mass spectra from each of the two regions.}
+\end{center}
+\end{figure}
+By creating spatial correlation patterns and combining them with the \Robject{intensities}, \Robject{sd}, and \Robject{noise} arguments in \verb|generateSpectrum|, it is possible to simulate more complex mass spectrometry imaging datasets.
 
 
 \section{Session info}
