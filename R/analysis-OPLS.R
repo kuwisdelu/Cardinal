@@ -15,7 +15,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		newx <- x
 		newy <- y
 		if ( any(nas) ) {
-			.message("PLS: Removing missing observations.")
+			.message("OPLS: Removing missing observations.")
 			x <- x[,!nas]
 			y <- y[!nas,]
 		}
@@ -35,10 +35,10 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		}
 		center <- attr(Xt, "scaled:center")
 		Ycenter <- attr(Y, "scaled:center")
-		.message("OPLS: Fitting orthogonal modeltial least squares components.")
+		.message("OPLS: Fitting orthogonal partial least squares components.")
 		fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 		result <- lapply(ncomps, function(ncomp) {
-			res <- append(fit, list(y=y, ncomp=ncomp,
+			res <- append(fit, list(y=newy, ncomp=ncomp,
 				method=method, scale=scale, center=center,
 				Yscale=Yscale, Ycenter=Ycenter))
 			class(res) <- "ResultData"
@@ -105,9 +105,9 @@ setMethod("predict", "OPLS",
 			class(res) <- "ResultData"
 			res
 		})
-		.message("PLS: Done.")
+		.message("OPLS: Done.")
 		.time.stop()
-		new("PLS",
+		new("OPLS",
 			pixelData=newx@pixelData,
 			featureData=newx@featureData,
 			experimentData=newx@experimentData,
@@ -130,13 +130,15 @@ setMethod("predict", "OPLS",
 	Oscores <- X %*% Oweights
 	Xortho <- tcrossprod(Oscores, Oloadings)
 	Xnew <- X - Xortho
+	nas <- apply(Y, 1, function(yi) any(is.na(yi)))
 	if ( method == "nipals" ) {
-		fit <- nipals.PLS(Xnew, Y, ncomp=1)
+		fit <- nipals.PLS(Xnew[!nas,], Y[!nas,], ncomp=1)
 	} else {
 		stop("PLS method ", method, " not found")
 	}
-	append(fit, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
+	pred <- .PLS.predict(X, ncomp=1, loadings=fit$loadings,
+		weights=fit$weights, Yweights=fit$Yweights)
+	append(pred, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
 		Oloadings=Oloadings, Oweights=Oweights))
 }
-
 

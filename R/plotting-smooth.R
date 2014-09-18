@@ -14,6 +14,7 @@ smooth.image.method <- function(method) {
 }
 
 smooth.image.gaussian <- function(x, window=3, ...) {
+	if ( all(is.na(x)) ) return(x)
 	r <- floor(window / 2)
 	sd <- window / 4
 	beta <- matrix(1, nrow=((2 * r) + 1)^2, ncol=length(x))
@@ -30,6 +31,7 @@ smooth.image.gaussian <- function(x, window=3, ...) {
 }
 
 smooth.image.adaptive <- function(x, window=3, ...) {
+	if ( all(is.na(x)) ) return(x)
 	r <- floor(window / 2)
 	sd <- window / 4
 	beta <- matrix(1, nrow=((2 * r) + 1)^2, ncol=length(x))

@@ -112,7 +112,6 @@ exportMethods(
 	"features",
 	"fData",
 	"fData<-",
-	"featureApply",
 	"featureData",
 	"featureData<-",
 	"featureNames",
@@ -141,7 +140,6 @@ exportMethods(
 	"peakData",
 	"peakData<-",
 	"pixels",
-	"pixelApply",
 	"pixelData",
 	"pixelData<-",
 	"pixelNames",
@@ -229,6 +227,11 @@ exportMethods(
 	"spectrumRepresentation<-")
 
 exportMethods(
+	"cvApply",
+	"featureApply",
+	"pixelApply")
+
+exportMethods(
 	"normalize",
 	"peakPick",
 	"peakAlign",
@@ -248,6 +251,9 @@ exportMethods(
 	"PLS",
 	"spatialKMeans",
 	"spatialShrunkenCentroids")
+
+exportMethods(
+	"topIons")
 
 exportMethods(
 	"select",

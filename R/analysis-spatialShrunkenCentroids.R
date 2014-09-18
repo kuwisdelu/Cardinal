@@ -1,7 +1,7 @@
 
 setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "missing"),
-	function(x, y, r = 1, k = 2:5, s = seq(from=0, to=10, by=2),
+	function(x, y, r = 1, k = 2, s = 0,
 		method = c("gaussian", "adaptive"),
 		iter.max=10, ...)
 	{
@@ -52,19 +52,27 @@ setMethod("spatialShrunkenCentroids",
 
 setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "factor"),
-	function(x, y, r = 1, s = seq(from=0, to=10, by=2),
+	function(x, y, r = 1, s = 0,
 		method = c("gaussian", "adaptive"),
-		priors = table(y), ...)
+		priors = tabulate(y), ...)
 	{
 		method <- match.arg(method)
 		priors <- priors / sum(priors)
 		rs <- sort(r)
 		ss <- sort(s)
+		nas <- is.na(y)
+		newx <- x
+		newy <- y
+		if ( any(nas) ) {
+			.message("spatialShrunkenCentroids: Removing missing observations.")
+			x <- x[,!nas]
+			y <- y[!nas]
+		}
 		.time.start()
 		result <- unlist(lapply(ss, function(s) {
 			.message("spatialShrunkenCentroids: Calculating shrunken centroids for s = ", s, ".")
 			fit <- .spatialShrunkenCentroids.fit(x, classes=y, s=s)
-			fit <- append(fit, list(y=y, s=s, method=method, priors=priors))
+			fit <- append(fit, list(y=newy, s=s, method=method, priors=priors))
 			lapply(rs, function(r) {
 				.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
 				res <- append(fit, list(r=r, k=length(levels(y))))
@@ -91,7 +99,7 @@ setMethod("spatialShrunkenCentroids",
 			resultData=result,
 			modelData=model)
 		.time.stop()
-		predict(object, newx=x)
+		predict(object, newx=newx, newy=newy)
 	})
 
 setMethod("spatialShrunkenCentroids",
@@ -159,7 +167,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	start.time <- proc.time()
 	while ( any(classes != classes.last, na.rm=TRUE) && iter <= iter.max )
 	{
-		priors <- table(classes) / sum(table(classes))
+		priors <- tabulate(classes) / sum(tabulate(classes))
 		classes.last <- classes
 		centers.last <- centers
 		fit <- .spatialShrunkenCentroids.fit(x, classes=classes, s=s)
@@ -238,7 +246,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 }
 
 .calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
-	m.k <- sqrt((1 / table(classes)) - (1 / length(classes)))
+	m.k <- sqrt((1 / tabulate(classes)) - (1 / length(classes)))
 	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
 	dim(se) <- c(nrow(x), nlevels(classes))
 	se

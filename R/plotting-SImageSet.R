@@ -6,7 +6,8 @@ setMethod("plot",
 		pixel.groups,
 		groups = NULL,
 		superpose = FALSE,
-		auto.key = FALSE,
+		strip = TRUE,
+		key = FALSE,
 		fun = mean,
 		...,
 		xlab,
@@ -15,7 +16,6 @@ setMethod("plot",
 		ylim,
 		type = 'l',
 		col = "black",
-		col.groups = "gray",
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -98,24 +98,20 @@ setMethod("plot",
 		data[[names(model$right)]] <- rep(unlist(model$right), ncond)
 		# set up the groups and subset
 		subset <- rep(subset, length.out=nrow(data))
-		if ( !is.null(groups) ) {
-			groups <- as.factor(rep(groups, length.out=nrow(data)))
-			key <- list(text=levels(groups), col=col)
-		}
-		if ( !is.null(groups) && !is.null(pixel.groups) && superpose ) {
-			groups <- as.factor(rep(groups, length.out=nrow(data)))
-			key <- list(text=levels(data$.pixel.groups), col=col)
-			col <- sapply(col, function(cl) {
-				gradient.colors(nlevels(groups), col.groups, cl)
-			})
-			groups <- interaction(groups, data$.pixel.groups)
-		} else if ( superpose && is.null(groups) ) {
+		if ( superpose && is.null(groups) ) {
 			groups <- data$.pixel.groups
-			key <- list(text=levels(groups), col=col)
+			groupkey <- list(text=levels(groups), col=col)
+		} else if ( !is.null(groups) ) {
+			groups <- factor(rep(groups, ncond) ,levels=levels(groups))
+			groupkey <- list(text=levels(groups), col=col)
+		} else {
+			groupkey <- NULL
 		}
-		if ( is.list(auto.key) || is.null(auto.key) ) {
-			key <- auto.key
-		} else if ( !auto.key ) {
+		if ( isTRUE(key) ) {
+			key <- groupkey
+		} else if ( is.list(key) ) {
+			key <- key
+		} else {
 			key <- NULL
 		}
 		# set up the plotting formula
@@ -142,7 +138,7 @@ setMethod("plot",
 			# plot it with lattice
 			xyplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim,
-				type=type, col=col, key=key, ...)
+				type=type, col=col, key=key, strip=strip, ...)
 		} else {
 			# check which conditions should create new plots
 			if ( superpose ) {
@@ -164,28 +160,33 @@ setMethod("plot",
 				subscripts <- subrows(data, condition[ci,,drop=FALSE])
 				ys <- data[subscripts, ".values"]
 				ys[!subset[subscripts]] <- NA
-				if ( is.null(groups) ) {
-					plot(xs, ys, type=type, col=col, xlab=xlab, xlim=xlim,
-						ylab=ylab, ylim=ylim, ...)
-				} else {
-					if ( !add ) {
-						plot(0, 0, type='n', xlab=xlab, xlim=xlim,
+				if ( !all(is.na(ys)) ) {
+					if ( is.null(groups) ) {
+						plot(xs, ys, type=type, col=col, xlab=xlab, xlim=xlim,
 							ylab=ylab, ylim=ylim, ...)
-					}
-					subgroups <- which(levels(groups) %in% groups[subscripts])
-					for ( gi in subgroups ) {
-						ys.g <- ys
-						ys.g[groups[subscripts] != levels(groups)[gi]] <- NA
-						points(xs, ys.g, type=type, col=col[gi], ...)
+					} else {
+						if ( !add ) {
+							plot(0, 0, type='n', xlab=xlab, xlim=xlim,
+								ylab=ylab, ylim=ylim, ...)
+						}
+						subgroups <- which(levels(groups) %in% groups[subscripts])
+						for ( gi in subgroups ) {
+							ys.g <- ys
+							ys.g[groups[subscripts] != levels(groups)[gi]] <- NA
+							points(xs, ys.g, type=type, col=col[gi], ...)
+						}
 					}
 				}
 				if ( last ) {
-					if ( length(fm.cond != 0 ) ) {
-						strip <- as.character(unlist(condition[ci,,drop=FALSE]))
-						legend("top", legend=strip, x.intersp=0,
+					if ( strip && length(fm.cond != 0 ) ) {
+						labels <- names(condition)
+						if ( superpose || missing.pixel.groups )
+							labels <- setdiff(labels, ".pixel.groups")
+						strip.labels <- as.character(unlist(condition[ci,labels,drop=FALSE]))
+						legend("top", legend=strip.labels, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}
-					if ( auto.key ) {
+					if ( !is.null(key) ) {
 						legend("topright", legend=key$text, fill=key$col,
 							bg=rgb(1, 1, 1, 0.75))
 					}
@@ -207,7 +208,8 @@ setMethod("image",
 		feature.groups,
 		groups = NULL,
 		superpose = FALSE,
-		auto.key = FALSE,
+		strip = TRUE,
+		key = FALSE,
 		fun = mean,
 		contrast.enhance = c("none", "suppression", "histogram"),
 	    smooth.image = c("none", "gaussian", "adaptive"),
@@ -280,9 +282,11 @@ setMethod("image",
 		# needed to remove missing levels and correct ordering of conditions
 		condition <- unique(condition)
 		condition <- condition[do.call(order, rev(condition)),,drop=FALSE]
-		# shape image values into matrix with 1 hyper-image per column, includes NAs
+		# shape values into matrix with 1 hyper-image per column, includes NAs
 		coordNames <- union(names(model$right), names(coord(x)))
 		subsetPositions <- positionArray(imageData(x))
+		subset <- subset[subsetPositions]
+		groups <- groups[subsetPositions]
 		subsetPositions[!subset] <- NA
 		subsetPositions <- aperm(subsetPositions, perm=coordNames)
 		values <- values[subsetPositions,,drop=FALSE]
@@ -306,29 +310,33 @@ setMethod("image",
 		if ( is.logical(colorkey) && colorkey )
 			colorkey <- list(col=col.regions)
 		# set up the plotting data
-		nobs <- nrow(values)
+		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
 		cond <- lapply(condition, function(var) rep(var, each=nobs))
 		data <- data.frame(.values=as.numeric(values), cond, row.names=NULL)
 		data[coordNames] <- expand.grid(lapply(coordNames, function(nm) {
 			if ( is.factor(coord(x)[[nm]]) ) {
-				unique(coord(x)[[nm]])
+				levels(coord(x)[[nm]])
 			} else {
 				seq_len(dim(imageData(x))[[nm]])
 			}
 		}))
 		# set up the groups and subset
-		subset <- rep(subset[subsetPositions], ncond)
+		subset <- rep(subset, ncond)
 		if ( superpose && is.null(groups) ) {
-			key <- list(text=levels(feature.groups), col=col)
-			groups <- factor(rep(feature.groups, each=nobs, length.out=nrow(data)))
+			groups <- data$.feature.groups
+			groupkey <- list(text=levels(feature.groups), col=col)
 		} else if ( !is.null(groups) ) {
-			key <- list(text=levels(groups), col=col)
-			groups <- factor(rep(groups[subsetPositions], ncond))
+			groups <- factor(rep(groups, ncond), levels=levels(groups))
+			groupkey <- list(text=levels(groups), col=col)
+		} else {
+			groupkey <- NULL
 		}
-		if ( is.list(auto.key) || is.null(auto.key) ) {
-			key <- auto.key
-		} else if ( !auto.key ) {
+		if ( isTRUE(key) ) {
+			key <- groupkey
+		} else if ( is.list(key) ) {
+			key <- key
+		} else {
 			key <- NULL
 		}
 		# set up the plotting formula
@@ -364,7 +372,7 @@ setMethod("image",
 			levelplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim), aspect="iso",
 				at=seq(from=zlim[1], to=zlim[2], length.out=length(col.regions)),
-				col.regions=col.regions, colorkey=colorkey, key=key,
+				col.regions=col.regions, colorkey=colorkey, key=key, strip=strip,
 				panel=function(x, y, z, col.regions, subscripts, ...) {
 					if ( is.null(groups) ) {
 						panel.levelplot(x, y, z,
@@ -381,19 +389,29 @@ setMethod("image",
 					}
 				}, ...)
 		} else {
-			# pad condition with any missing dimensions
+			# pad data and condition with any missing dimensions
 			if ( !all(names(coord(x)) %in% names(model$right)) ) {
+				# correct data, groups, and subset
+				neworder <- aperm(array(seq_len(nrow(data)), dim=dim(values)),
+					perm=c(1, length(dim(values)), 2:(length(dim(values))-1)))
+				data <- data[neworder,,drop=FALSE]
+				subset <- subset[neworder]
+				groups <- groups[neworder]
+				# correct condition
 				coordNeed <- setdiff(names(coord(x)), names(model$right))
 				coordExtra <- expand.grid(lapply(coordNeed, function(nm) {
 					if ( is.factor(coord(x)[[nm]]) ) {
-						unique(coord(x)[[nm]])
+						levels(coord(x)[[nm]])
 					} else {
 						seq_len(dim(imageData(x))[[nm]])
 					}
 				}))
-				condition <- rep(list(condition), nrow(coordExtra))
+				coordCond <- do.call("rbind", apply(coordExtra, 1, function(extra) {
+					data.frame(do.call("rbind", rep(list(extra), times=nrow(condition))))
+				}))
+				condition <- rep(list(condition), each=nrow(coordExtra))
 				condition <- do.call("rbind", condition)
-				condition[coordNeed] <- coordExtra
+				condition[coordNeed] <- coordCond
 				ncond <- nrow(condition)
 			}
 			# check which conditions should create new plots
@@ -414,43 +432,50 @@ setMethod("image",
 			for ( ci in seq_len(ncond) ) {
 				add <- superposed[ci]
 				last <- c(!superposed[-1], TRUE)[ci]
-				subscripts <- seq(from=1 + (ci - 1) * nobs, by=1, length.out=nobs)
+				subscripts <- seq(from=1 + (ci - 1) * nrow(data) / ncond,
+					by=1, length.out=nrow(data) / ncond)
 				zs <- data[subscripts, ".values"]
 				dim(zs) <- c(length(xs), length(ys))
-				if ( is.null(groups) ) {
-					image(xs, ys, zs, xlab=xlab, xlim=xlim,
-						ylab=ylab, ylim=rev(ylim), zlim=zlim,
-						asp=asp, col=col.regions, ...)
-					if ( is.list(colorkey) )
-						legend("topright",
-							legend=c(
-								round(zlim[2], 2),
-								rep(NA, length(col.regions)-2),
-								round(zlim[1], 2)),
-							col=rev(col.regions),
-							bg=rgb(1, 1, 1, 0.75),
-							y.intersp=0.1,
-							cex=0.6,
-							lwd=2)
-				} else {
-					subgroups <- which(levels(groups) %in% groups[subscripts])
-					for ( gi in subgroups ) {
-						zs.g <- zs
-						add.g <- add || gi != subgroups[1]
-						col.g <- alpha.colors(length(col.regions), col[gi])
-						zs.g[groups[subscripts] != levels(groups)[gi]] <- NA
-						image(xs, ys, zs.g, xlab=xlab, xlim=xlim,
+				if ( !all(is.na(zs)) ) {
+					if ( is.null(groups) ) {
+						image(xs, ys, zs, xlab=xlab, xlim=xlim,
 							ylab=ylab, ylim=rev(ylim), zlim=zlim,
-							asp=asp, col=col.g, add=add.g, ...)
+							asp=asp, col=col.regions, ...)
+						if ( is.list(colorkey) )
+							legend("topright",
+								legend=c(
+									round(zlim[2], 2),
+									rep(NA, length(col.regions)-2),
+									round(zlim[1], 2)),
+								col=rev(col.regions),
+								bg=rgb(1, 1, 1, 0.75),
+								y.intersp=0.1,
+								cex=0.6,
+								lwd=2)
+					} else {
+						subgroups <- which(levels(groups) %in% groups[subscripts])
+						for ( gi in subgroups ) {
+							zs.g <- zs
+							add.g <- add || gi != subgroups[1]
+							col.g <- alpha.colors(length(col.regions), col[gi])
+							zs.g[groups[subscripts] != levels(groups)[gi]] <- NA
+							if ( all(is.na(zs.g)) ) next
+							image(xs, ys, zs.g, xlab=xlab, xlim=xlim,
+								ylab=ylab, ylim=rev(ylim), zlim=zlim,
+								asp=asp, col=col.g, add=add.g, ...)
+						}
 					}
 				}
 				if ( last ) {
-					if ( length(fm.cond != 0 ) ) {
-						strip <- as.character(unlist(condition[ci,,drop=FALSE]))
-						legend("top", legend=strip, x.intersp=0,
+					if ( strip && length(fm.cond != 0 ) ) {
+						labels <- names(condition)
+						if ( superpose || missing.feature.groups )
+							labels <- setdiff(labels, ".feature.groups")
+						strip.labels <- as.character(unlist(condition[ci,labels,drop=FALSE]))
+						legend("top", legend=strip.labels, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}
-					if ( auto.key ) {
+					if ( !is.null(key) ) {
 						legend("topright", legend=key$text, fill=key$col,
 							bg=rgb(1, 1, 1, 0.75))
 					}
@@ -558,6 +583,8 @@ setMethod("image",
 .parseSide <- function(formula) {
 	if ( length(formula) == 1 ) {
 		paste(formula)
+	} else if ( paste(formula[[1]]) %in% c("[", "[[", "$") ) {
+		deparse(formula)
 	} else if ( length(formula) == 2  && paste(formula[[1]]) == "I" ) {
 		paste(formula)[[2]]
 	} else if ( length(formula[[2]]) == 3 ) {

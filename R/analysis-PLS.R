@@ -38,7 +38,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		.message("PLS: Fitting partial least squares components.")
 		fit <- .PLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 		result <- lapply(ncomps, function(ncomp) {
-			res <- append(fit, list(y=y, ncomp=ncomp,
+			res <- append(fit, list(y=newy, ncomp=ncomp,
 				method=method, scale=scale, center=center,
 				Yscale=Yscale, Ycenter=Ycenter))
 			class(res) <- "ResultData"
@@ -115,6 +115,24 @@ setMethod("predict", "PLS",
 			resultData=result,
 			modelData=object@modelData)
 	})
+
+setMethod("fitted", "PLS",
+	function(object, ...) {
+		object$fitted	
+	})
+
+setMethod("coef", "PLS",
+	function(object, ...) {
+		object$coefficients	
+	})
+
+setMethod("residuals", "PLS",
+	function(object, ...) {
+		y <- object$y[[1]]
+		y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
+		lapply(fitted(object), function(yi) yi - y)
+	})
+
 
 .PLS.fit <- function(X, Y, ncomp, method, iter.max) {
 	if ( method == "nipals" ) {

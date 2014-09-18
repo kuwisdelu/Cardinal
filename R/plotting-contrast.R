@@ -14,6 +14,7 @@ contrast.enhance.method <- function(method) {
 }
 
 contrast.enhance.suppression <- function(x, top.percent=0.01, ...) {
+	if ( all(is.na(x)) ) return(x)
 	max.intensity <- max(x, na.rm=TRUE)
 	cutoff <- quantile(x, 1 - top.percent, na.rm=TRUE)
 	x[x > cutoff] <- cutoff
@@ -21,6 +22,7 @@ contrast.enhance.suppression <- function(x, top.percent=0.01, ...) {
 }
 
 contrast.enhance.histogram <- function(x, blocks=100, ...) {
+	if ( all(is.na(x)) ) return(x)
 	breaks <- unique(quantile(x, seq(from=0, to=1, length.out=blocks), na.rm=TRUE))
 	x.cut <- cut(x, breaks, include.lowest=TRUE)
 	x.new <- as.numeric(x.cut) / length(levels(x.cut))

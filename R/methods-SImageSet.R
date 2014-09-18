@@ -269,4 +269,27 @@ setMethod("featureApply", "SImageSet",
 		ans
 	})
 
+setMethod("cvApply", "SImageSet",
+	function(x, y, .fun, .fold = sample, ...) {
+		# get x, y, and cv folds
+		.fold <- tryCatch(eval(substitute(.fold), envir=pData(x),
+			enclos=environment(.fun)), error=function(e) eval(.fold))
+		# loop through folds
+		cv <- lapply(sort(unique(.fold)), function(k) {
+			.message("!!---- Fold ", k, " ----!!")
+			if ( is.vector(y) || is.factor(y) ) {
+				fit <- .fun(x[,k!=.fold], y[k!=.fold], ...)
+				predict(fit,
+					newx=x[,k==.fold],
+					newy=y[k==.fold])
+			} else {
+				fit <- .fun(x[,k!=.fold], y[k!=.fold,,drop=FALSE], ...)
+				predict(fit,
+					newx=x[,k==.fold],
+					newy=y[k==.fold,,drop=FALSE])
+			}
+		})
+		names(cv) <- levels(as.factor(.fold))
+		cv
+	})
 

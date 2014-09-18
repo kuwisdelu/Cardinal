@@ -1,133 +1,267 @@
 
+#### Plotting for ResultSet ####
+
 setMethod("plot",
-	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
-	function(x, formula = ~ Feature,
+	signature = c(x = "ResultSet", y = "missing"),
+	function(x, formula,
 		model = pData(modelData(x)),
+		pixel,
+		pixel.groups,
 		superpose = TRUE,
-		auto.key = TRUE,
+		strip = TRUE,
+		key = superpose,
 		...,
-		mode = c("centers", "tstatistics"),
-		classes = levels(unlist(x$classes)),
-		type = 'h',
-		col = rainbow(nlevels(unlist(x$classes))),
+		xlab,
+		ylab,
+		column,
+		col = if (superpose) rainbow(nlevels(pixel.groups)) else "black",
 		lattice = FALSE)
 	{
 		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
-			parameters <- model
+			model <- model
 		} else {
-			parameters <- pData(modelData(x))[model,,drop=FALSE]
+			model <- pData(modelData(x))[model,,drop=FALSE]
 		}
-		mode <- match.arg(mode)
-		model <- .parseFormula(formula)
-		formula <- paste(" ~ ", names(model$right))
+		# parse formula and result data to be plotted
+		fm <- .parseFormula(formula)
+		formula <- paste("~", paste(names(fm$right), collapse="*"))
 		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
-		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
-		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
-			seq_len(nrow(modelData(x))), nclasses)))
-		df <- pData(modelData(x))[ntimes,]
-		df$classes <- factor(as.vector(unlist(sapply(x$classes, levels))),
-			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
-		centers <- matrix(as.vector(unlist(x$centers)), nrow=nrow(x))
-		tstatistics <- matrix(as.vector(unlist((x$tstatistics))), nrow=nrow(x))
-		centers <- SImageSet(data=centers,
-			coord=df)
-		tstatistics <- SImageSet(data=tstatistics,
-			coord=df)
-		fData(centers) <- fData(x)
-		fData(tstatistics) <- fData(x)
-		model <- factor(names(resultData(x))[ntimes],
+		data <- lapply(resultData(x), function(ob) ob[[names(fm$left)]])
+		# set up model data.frame
+		if ( is.matrix(data[[1]]) ) {
+			ntimes <- mapply(rep,
+				seq_len(nrow(modelData(x))),
+				sapply(data, ncol))	
+		} else {
+			ntimes <- 1
+		}
+		ntimes <- as.vector(unlist(ntimes))
+		df <- pData(modelData(x))[ntimes,,drop=FALSE]
+		if ( !is.null(dim(data[[1]])) ) {
+			if ( is.null(colnames(data[[1]])) ) {
+				df$column <- as.vector(unlist(sapply(sapply(data, ncol),
+					function(times) seq_len(times))))
+			} else {
+				df$column <- as.vector(unlist(sapply(data, colnames)))
+			}
+			df$column <- factor(df$column, levels=unique(df$column))
+		} else {
+			df$column <- factor(rep(TRUE, nrow(df)))
+		}
+		# set up SImageSet to be plotted
+		data <- SImageSet(data=matrix(as.vector(unlist(data)),
+			nrow=nrow(x)), coord=df)
+		fData(data) <- fData(x)
+		pData(data)$model <- factor(names(resultData(x))[ntimes],
 			levels=names(resultData(x)),
 			labels=names(resultData(x)))
-		pData(centers)$model <- model
-		pData(tstatistics)$model <- model
-		if ( is.data.frame(parameters) ) {
-			which <- unlist(apply(parameters, 1, function(par) {
-				do.call("pixels", c(list(centers), par))
+		# get which models should be plotted
+		if ( is.data.frame(model) ) {
+			which <- unlist(apply(model, 1, function(par) {
+				do.call("pixels", c(list(data), par))
 			}))
 		} else {
-			which <- do.call("pixels", c(list(centers), parameters))
+			which <- do.call("pixels", c(list(data), model))
 		}
-		centers <- centers[,which]
-		tstatistics <- tstatistics[,which]
-		if ( mode == "centers" ) {
-			obj <- centers
-		} else if ( mode == "tstatistics" ) {
-			obj <- tstatistics
+		data <- data[,which]
+		if ( missing(column) ) {
+			column <- list(column=unique(df$column))
+		} else if ( is.numeric(column) ) {
+			column <- list(column=levels(df$column)[column])
+		} else {
+			column <- list(column=as.factor(column))
 		}
-		pixel <- pixels(obj, classes=classes)
-		significant <- as.vector(apply(iData(tstatistics)[,pixel,drop=FALSE], 2,
-			function(t) abs(t) > 0))
-		plot(obj, formula=formula, pixel=pixel, pixel.groups=classes,
-			groups=significant, col=col, type=type, superpose=superpose,
-			auto.key=auto.key, fun=identity, lattice=lattice, ...)
+		if ( missing(xlab) )
+			xlab <- .format.label(names(fm$right))
+		if ( missing(ylab) )
+			ylab <- .format.label(names(fm$left))
+		if ( missing(pixel) )
+			pixel <- do.call("pixels", c(list(data), column))
+		if ( missing(pixel.groups) )
+			pixel.groups <- factor(pData(data)$column[pixel], levels=levels(df$column))
+		plot(data, formula=formula, pixel=pixel, pixel.groups=pixel.groups,
+			superpose=superpose, key=key, strip=strip, col=col,
+			xlab=xlab, ylab=ylab, lattice=lattice, ...)
 	})
 
 setMethod("plot",
-	signature = c(x = "SpatialShrunkenCentroids", y = "formula"),
+	signature = c(x = "ResultSet", y = "formula"),
 	function(x, y, ...) {
 		plot(x, formula = y, ...)
 	})
 
 setMethod("image",
-	signature = c(x = "SpatialShrunkenCentroids"),
-	function(x, formula = ~ x * y,
+	signature = c(x = "ResultSet"),
+	function(x, formula,
 		model = pData(modelData(x)),
+		feature,
+		feature.groups,
 		superpose = TRUE,
-		auto.key = TRUE,
+		strip = TRUE,
+		key = superpose,
 		...,
-		mode = c("probabilities", "scores"),
-		classes = unique(unlist(x$classes)),
-		col = rainbow(nlevels(unlist(x$classes))),
+		column,
+		col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
 		lattice = FALSE)
 	{
 		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
-			parameters <- model
+			model <- model
 		} else {
-			parameters <- pData(modelData(x))[model,,drop=FALSE]
+			model <- pData(modelData(x))[model,,drop=FALSE]
 		}
-		mode <- match.arg(mode)
-		model <- .parseFormula(formula)
-		formula <- paste(" ~ ", paste(names(model$right), collapse="*"))
+		# parse formula and result data to be plotted
+		fm <- .parseFormula(formula)
+		formula <- paste("~", paste(names(fm$right), collapse="*"))
 		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
-		nclasses <- sapply(x$classes, function(Ck) length(levels(Ck)))
-		ntimes <- as.vector(unlist(mapply(function(i, Ck) rep(i, Ck),
-			seq_len(nrow(modelData(x))), nclasses)))
-		df <- pData(modelData(x))[ntimes,]
-		df$classes <- factor(as.vector(unlist(sapply(x$classes, levels))),
-			levels=levels(unlist(x$classes)), labels=levels(unlist(x$classes)))
-		probabilities <- matrix(as.vector(unlist(x$probabilities)), nrow=ncol(x))
-		scores <- matrix(as.vector(unlist(x$scores)), nrow=ncol(x))
-		probabilities <- SImageSet(data=t(probabilities),
-			coord=coord(x))
-		scores <- SImageSet(data=t(scores),
-			coord=coord(x))
-		model <- factor(names(resultData(x))[ntimes],
+		data <- lapply(resultData(x), function(ob) ob[[names(fm$left)]])
+		# set up model data.frame
+		if ( is.matrix(data[[1]]) ) {
+			ntimes <- mapply(rep,
+				seq_len(nrow(modelData(x))),
+				sapply(data, ncol))	
+		} else {
+			ntimes <- seq_len(nrow(modelData(x)))
+		}
+		ntimes <- as.vector(unlist(ntimes))
+		df <- pData(modelData(x))[ntimes,,drop=FALSE]
+		if ( !is.null(dim(data[[1]])) ) {
+			if ( is.null(colnames(data[[1]])) ) {
+				df$column <- as.vector(unlist(sapply(sapply(data, ncol),
+					function(times) seq_len(times))))
+			} else {
+				df$column <- as.vector(unlist(sapply(data, colnames)))
+			}
+			df$column <- factor(df$column, levels=unique(df$column))
+		} else {
+			df$column <- factor(rep(TRUE, nrow(df)))
+		}
+		data <- SImageSet(data=matrix(as.vector(unlist(data)),
+			ncol=ncol(x), byrow=TRUE), coord=coord(x))
+		fData(data) <- df
+		fData(data)$model <- factor(names(resultData(x))[ntimes],
 			levels=names(resultData(x)),
 			labels=names(resultData(x)))
-		fData(probabilities) <- df
-		fData(probabilities)$model <- model
-		fData(scores) <- df
-		fData(scores)$model <- model
-		if ( is.data.frame(parameters) ) {
-			which <- unlist(apply(parameters, 1, function(par) {
-				do.call("features", c(list(probabilities), par))
+		# get which models should be plotted
+		if ( is.data.frame(model) ) {
+			which <- unlist(apply(model, 1, function(par) {
+				do.call("features", c(list(data), par))
 			}))
 		} else {
-			which <- do.call("features", c(list(probabilities), parameters))
+			which <- do.call("features", c(list(data), model))
 		}
-		probabilities <- probabilities[which,]
-		scores <- scores[which,]
-		if ( mode == "probabilities" ) {
-			obj <- probabilities
-		} else if ( mode == "scores" ) {
-			obj <- scores
+		data <- data[which,]
+		if ( missing(column) ) {
+			column <- list(column=unique(df$column))
+		} else if ( is.numeric(column) ) {
+			column <- list(column=levels(df$column)[column])
+		} else {
+			column <- list(column=as.factor(column))
 		}
-		feature <- features(obj, classes=classes)
-		image(obj, formula=formula, feature=feature, feature.groups=classes,
-			col=col, superpose=superpose, auto.key=auto.key,
-			fun=identity, lattice=lattice, ...)
+		if ( missing(feature) )
+			feature <- do.call("features", c(list(data), column))
+		if ( missing(feature.groups) )
+			feature.groups <- factor(fData(data)$column[feature], levels=levels(df$column))
+		image(data, formula=formula, feature=feature, feature.groups=feature.groups,
+			superpose=superpose, key=key, strip=strip, col=col,
+			lattice=lattice, ...)
 	})
 
 
+#### Plotting for PCA ####
+
+setMethod("plot",
+	signature = c(x = "PCA", y = "missing"),
+	function(x,
+		formula = as.formula(paste(mode, "~ mz")),
+		mode = "loadings",
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image",
+	signature = c(x = "PCA"),
+	function(x,
+		formula = as.formula(paste(mode, "~ x * y")),
+		mode = "scores",
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+#### Plotting for PLS ####
+
+setMethod("plot",
+	signature = c(x = "PLS", y = "missing"),
+	function(x,
+		formula = as.formula(paste(mode, "~ mz")),
+		mode = c("coefficients", "loadings", "weights", "projection"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image",
+	signature = c(x = "PLS"),
+	function(x,
+		formula = as.formula(paste(mode, "~ x * y")),
+		mode = c("fitted", "scores", "y"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+#### Plotting for OPLS ####
+
+setMethod("plot",
+	signature = c(x = "OPLS", y = "missing"),
+	function(x,
+		formula = as.formula(paste(mode, "~ mz")),
+		mode = c("coefficients", "loadings", "Oloadings",
+			"weights", "Oweights", "projection"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image",
+	signature = c(x = "OPLS"),
+	function(x,
+		formula = as.formula(paste(mode, "~ x * y")),
+		mode = c("fitted", "scores", "Oscores", "y"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+#### Plotting for SpatialShrunkenCentroids ####
+
+setMethod("plot",
+	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
+	function(x,
+		formula = as.formula(paste(mode, "~ mz")),
+		mode = c("centers", "tstatistics"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image",
+	signature = c(x = "SpatialShrunkenCentroids"),
+	function(x,
+		formula = as.formula(paste(mode, "~ x * y")),
+		mode = c("probabilities", "scores"),
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})

@@ -11,8 +11,8 @@ setGeneric("summary")
 
 #### Define new generics from stats R ####
 ## ---------------------------------------
-setGeneric("fitted")
 setGeneric("predict")
+setGeneric("fitted")
 setGeneric("residuals")
 setGeneric("coef")
 
@@ -130,7 +130,7 @@ setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-
 
 #### Apply-like methods ####
 ## ------------------------
-setGeneric("cvApply", function(.object, .fun, ...) standardGeneric("cvApply"))
+setGeneric("cvApply", function(x, y, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
 
@@ -156,6 +156,10 @@ setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
+
+#### Results ####
+## --------------
+setGeneric("topIons", function(object, ...) standardGeneric("topIons"))
 
 #### Plotting ####
 ## ---------------

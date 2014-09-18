@@ -200,14 +200,14 @@ setClass("ResultSet",
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
 			ResultSet="0.1.0"))))
 
-setClass("SpatialKMeans", contains="ResultSet")
-
-setClass("SpatialShrunkenCentroids", contains="ResultSet")
-
 setClass("PCA", contains="ResultSet")
 
 setClass("PLS", contains="ResultSet")
 
 setClass("OPLS", contains="ResultSet")
+
+setClass("SpatialKMeans", contains="ResultSet")
+
+setClass("SpatialShrunkenCentroids", contains="ResultSet")
 
 ####---------------------------------------------------####
