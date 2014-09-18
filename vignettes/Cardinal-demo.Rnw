@@ -476,7 +476,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
+Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)\cite{Alexandrov:2011ta}}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
 
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
@@ -1035,5 +1035,9 @@ By creating spatial correlation patterns and combining them with the \Robject{in
 <<results=tex, echo=FALSE>>=
 toLatex(sessionInfo())
 @
+
+
+\bibliographystyle{unsrt}
+\bibliography{Cardinal}
 
 \end{document}
