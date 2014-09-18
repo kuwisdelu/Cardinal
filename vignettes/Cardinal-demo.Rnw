@@ -191,7 +191,7 @@ plot(msset, coord=list(x=5, y=5), plusminus=2)
 
 <<plot3>>=
 mycol <- c("blue", "black", "red")
-plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, auto.key=TRUE, col=mycol)
+plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, key=TRUE, col=mycol)
 @
 
 \setkeys{Gin}{width=0.3\textwidth}

@@ -14,6 +14,7 @@ setMethod("plot",
 		xlim,
 		ylab,
 		ylim,
+		layout,
 		type = 'l',
 		col = "black",
 		subset = TRUE,
@@ -90,6 +91,8 @@ setMethod("plot",
 			}
 			ylab <- .format.label(ylab)
 		}
+		if ( missing(layout) )
+			layout <- NULL
 		# set up the lattice data
 		nobs <- nrow(values)
 		ncond <- nrow(condition)
@@ -138,8 +141,11 @@ setMethod("plot",
 			# plot it with lattice
 			xyplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim,
-				type=type, col=col, key=key, strip=strip, ...)
+				type=type, col=col, key=key, strip=strip,
+				layout=layout, ...)
 		} else {
+			# setup plotting layout
+			if ( !is.null(layout) ) .setup.layout(layout)
 			# check which conditions should create new plots
 			if ( superpose ) {
 				superposed <- which(names(condition) == ".pixel.groups")
@@ -219,6 +225,7 @@ setMethod("image",
 		ylab,
 		ylim,
 		zlim,
+		layout,
 		asp = 1,
 		col = rainbow(nlevels(feature.groups)),
 		col.regions = intensity.colors(100),
@@ -309,6 +316,8 @@ setMethod("image",
 			zlim <- range(values, na.rm=TRUE)
 		if ( is.logical(colorkey) && colorkey )
 			colorkey <- list(col=col.regions)
+		if ( missing(layout) )
+			layout <- NULL
 		# set up the plotting data
 		nobs <- prod(dim(values)[-length(dim(values))])
 		ncond <- nrow(condition)
@@ -369,7 +378,7 @@ setMethod("image",
 			subset <- subset[!nas]
 			groups <- groups[!nas]
 			# plot it with lattice
-			levelplot(fm, data=data, groups=groups, subset=subset,
+			levelplot(fm, data=data, groups=groups, subset=subset, layout=layout,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim), aspect="iso",
 				at=seq(from=zlim[1], to=zlim[2], length.out=length(col.regions)),
 				col.regions=col.regions, colorkey=colorkey, key=key, strip=strip,
@@ -414,6 +423,8 @@ setMethod("image",
 				condition[coordNeed] <- coordCond
 				ncond <- nrow(condition)
 			}
+			# setup plotting layout
+			if ( !is.null(layout) ) .setup.layout(layout)
 			# check which conditions should create new plots
 			if ( superpose ) {
 				superposed <- which(names(condition) == ".feature.groups")
@@ -483,6 +494,14 @@ setMethod("image",
 			}
 		}
 	})
+
+.setup.layout <- function(layout) {
+	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
+		cex.axis=0.8, cex.lab=0.8)
+	layout(matrix(seq_len(prod(layout)),
+		ncol=layout[1], nrow=layout[2],
+		byrow=TRUE))
+}
 
 .calculatePlotValues <- function(object, fun, pixel, pixel.groups,
 	condition, missing.pixel.groups)
