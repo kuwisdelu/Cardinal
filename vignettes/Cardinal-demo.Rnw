@@ -75,7 +75,7 @@ For more information on reading Analyze files, type \verb|?readAnalyze|.
 \subsubsection{imzML}
 
 
-The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets. Many other formats can be converted to imzML with the help of free applications available online.
+The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online.
 
 The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. To read datasets stored in the imzML format, use the \verb|readImzML| function. Both files must be present in the same folder and have the same name (again, except for the file extension) for the data to be read properly.
 
@@ -476,7 +476,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)\cite{Alexandrov:2011ta}}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
+Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
 
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
