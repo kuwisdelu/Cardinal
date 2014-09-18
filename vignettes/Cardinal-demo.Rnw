@@ -34,7 +34,7 @@ options(Cardinal.progress=FALSE)
 
 The \R package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
 
-Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle compontent analysis, and classification techniques such as Partial Least Squares Discriminant Analysis.
+Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle components analysis, and classification techniques such as partial least Squares discriminant analysis.
 
 \setkeys{Gin}{width=\textwidth}
 \begin{figure}[h]
@@ -148,7 +148,7 @@ head(coord(msset), n=10) # first 10 pixel coordinates
 head(spectra(msset)[,1], n=10) # first 10 intensities in the first mass spectrum
 @
 
-The methods \verb|nrow| and \verb|ncol| can be used to retrive the number of features and number of pixels in an object, respectively. The method \verb|dim| gives both number of features and number of pixels, while \verb|dims| gives number of features as well as spatial dimensions of the image.  
+The methods \verb|nrow| and \verb|ncol| can be used to retrieve the number of features and number of pixels in an object, respectively. The method \verb|dim| gives both number of features and number of pixels, while \verb|dims| gives number of features as well as spatial dimensions of the image.  
 
 <<>>=
 nrow(msset)
@@ -161,8 +161,10 @@ Two other helpful methods are \verb|features| and \verb|pixels|. These are usefu
 
 <<>>=
 features(msset, mz=3000) # returns the feature number most closely matching m/z 3000
+mz(msset)[607]
 pixels(msset, coord=list(x=5, y=5)) # returns the pixel number for x = 5, y = 5
 pixels(msset, x=5, y=5) # also returns the pixel number for x = 5, y = 5
+coord(msset)[41,]
 @
 
 See \verb|?MSImageSet| for more details and additional methods.
@@ -185,7 +187,7 @@ range(mz(tmp))
 Alternatively, we can subset by pixel coordinates. To keep only pixels with $x$-coordinates greater than 5, we can do the following.
 
 <<>>=
-tmp <- msset[,coord(msset)$x >5]
+tmp <- msset[,coord(msset)$x > 5]
 range(coord(msset)$x)
 range(coord(tmp)$x)
 @
@@ -193,7 +195,7 @@ range(coord(tmp)$x)
 We can also subset in both ways at once.
 
 <<>>=
-tmp <- msset[2500 < mz(msset) & mz(msset) < 4500, coord(msset)$x >5]
+tmp <- msset[2500 < mz(msset) & mz(msset) < 4500, coord(msset)$x > 5]
 range(mz(tmp))
 range(coord(tmp)$x)
 @
@@ -218,7 +220,9 @@ plot(msset, coord=list(x=5, y=5), plusminus=2)
 @
 
 
-Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. This is done below by specifying a vector for the \verb|pixel| argument. The plots are displayed simultaneously by setting \verb|superpose = TRUE| and \verb|auto.key = TRUE| generates a legend.
+Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. This is done below by specifying a vector for the \verb|pixel| argument. The plots are displayed simultaneously by setting \verb|superpose = TRUE| and \verb|key = TRUE| generates a legend.
+
+\textcolor{red}{NOTE: Explain the 'pixel.groups' argument.}
 
 <<plot3>>=
 mycol <- c("blue", "black", "red")
@@ -258,39 +262,37 @@ plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, key=TRUE,
 
 \subsection{Plotting ion images}
 \label{sec:plotIon}
-Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method.
-
-To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeature}
+Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method. To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeature}, we use:
 <<image1>>=
 image(msset, feature=1)
 @
 
-The mean ion image for the neighborhood of m/z4000 with radius 10, i.e. m/z$[3990,4010]$ is show in Figure \ref{fig:imNeighborhood}.
+In Figure \ref{fig:imNeighborhood}, we plot the mean ion image for the neighborhood of m/z4000 with radius 10, i.e. m/z$[3990,4010]$.
 <<image2>>=
 image(msset, mz=4000, plusminus=10)
 @
 
 
-In Figure \ref{fig:imMulti} the single ion images for m/z2000, m/z3000, and m/z4000 are displayed simultaneously.
+In Figure \ref{fig:imMulti}, the single ion images for m/z2000, m/z3000, and m/z4000 are displayed simultaneously.
 
 <<image3>>=
 mycol <- c("blue", "black", "red")
 image(msset, mz=c(2000, 3000, 4000), col=mycol, superpose=TRUE)
 @
 
-The ion image for m/z2000 is shown in Figure \ref{fig:imSup}, with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
+In Figure \ref{fig:imSup}, the ion image for m/z2000 is shown with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
 <<image4>>=
 mycol <- gradient.colors(100, start="white", end="blue")
 image(msset, mz=2000, col.regions=mycol, contrast.enhance="suppress")
 @
 
-A smoothed ion image for mz3000 with a custom color scale from white to black is presented in Figure \ref{fig:imSmooth}.
+In Figure \ref{fig:imSmooth}, a smoothed ion image for mz3000 with a custom color scale from white to black is presented.
 <<image5>>=
 mycol <- gradient.colors(100, start="white", end="black")
 image(msset, mz=3000, col.regions=mycol, smooth.image="gaussian")
 @
 
-Finally, for only those pixels defined as being from the ``black" and ``red" regions, we plot the ion image of mz4000 with a custom color scale from black to red in Figure \ref{fig:imRegions}.
+Finally, in Figure \ref{fig:imRegions}, for only those pixels defined as being from the ``black" and ``red" regions, we plot the ion image of mz4000 with a custom color scale from black to red.
 
 <<image6>>=
 msset2 <- msset[,pattern == "black" | pattern == "red"]
@@ -360,7 +362,7 @@ image(msset2, mz=4000, col.regions=mycol)
 
 \subsection{Normalization}
 
-Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to so-called total ion current (TIC), commonly used in MSI analysis \textcolor{red}{(see SOURCES)}. In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
+Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC), commonly used in MSI analysis \textcolor{red}{(see SOURCES)}. In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
 <<normalizetic>>=
 temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
 @
@@ -417,7 +419,7 @@ msset3 <- smoothSignal(msset2, method="gaussian", window=9)
 
 \subsection{Baseline reduction}
 
-Baseline reduction is often necessary for many datasets, especially those obtained through Matrix-assisted methods \textcolor{red}{(see SOURCES)}. \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks. Figure \ref{fig:baseline} shows median baseline reduction for a single pixel, where the green curve represents the estimated baseline and the baseline-reduced spectrum is plotted in black. 
+Baseline reduction is often necessary for many datasets, especially those obtained through matrix-assisted methods such as MALDI \textcolor{red}{(see SOURCES)}. \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks. Figure \ref{fig:baseline} shows baseline reduction for a single pixel, where the green curve represents the estimated baseline and the baseline-reduced spectrum is plotted in black. 
 <<baselinemedian>>=
 temp <- reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
 @
@@ -476,7 +478,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in m/z measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
+Peak alignment is necessary to account for possible inaccuracy in m/z measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the reference peaks (calculated empirically from the mean spectrum) by red vertical lines, and aligns the peaks from an single pixel to these reference peaks.
 
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
@@ -499,12 +501,12 @@ msset6 <- peakAlign(msset5, method="diff")
 
 Other common forms of data reduction include resampling and binning. Discussions of these methods can be found in \textcolor{red}{SOURCES}.
 
-\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same m/z bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
+\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 $m/z$ in this example. The mean intensity or sum intensity of ions located in the same m/z bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
 <<reducedimbin>>=
 temp <- reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
 @
 
-There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 on pixel 1 is plotted in Figure \ref{fig:resample}. The orignal spectrum is plotted in black, with the resampled version displayed simultaneously in red.
+There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 $m/z$ on pixel 1 is plotted in Figure \ref{fig:resample}. The original spectrum is plotted in black, with the resampled version displayed simultaneously in red.
 
 <<reducedimresample>>=
 temp <- reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
@@ -543,7 +545,7 @@ msset7 <- reduceDimension(msset4, method="resample", step=25)
 
 
 \section{Analysis}
-\textcolor{red}{Segmentation, Classification, etc go here}
+\textcolor{red}{Reference to Segmentation, Classification, etc., workflows go here}
 
 \section{Advanced Topics}
 
@@ -577,7 +579,7 @@ The method \verb|pixelApply| allows functions to be applied over all pixels. The
 p1 <- pixelApply(msset, mean, .feature.groups=fg)
 p1[,1:30]
 @
-By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``blue'' pixels, the mean intensity of features belonging to the ``blue''-associated peak ($m/z$ 2000),  ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher, while for the ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
+By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``blue'' pixels, the mean intensity of features belonging to the ``blue''-associated peak ($m/z$ 2000) is higher. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher. Finally, for ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
 
 <<pixelApply2, results=verbatim>>=
 cbind(pData(msset), t(p1))[1:30,c("pg","blue", "black", "red")]
@@ -636,7 +638,7 @@ If only the plots are desired rather than the actual data, then \verb|image| can
 
 \subsubsection{\Robject{featureApply}}
 
-The method \verb|featureApply| allows functions to be applied over all features. The function is applied to the flattened false-image vectors. The vectors are the pixel intensities of a single-feature image, disregarding missing pixels. Here, we use \verb|featureApply| to find the mean spectrum for different groups of pixels. We provide \verb|pData(msset)$pg| as a grouping variable, since it indicates the kind of pixel. We desire a mean spectrum for the black pixels and a mean spectrum for the red pixels. As before, since \verb|featureApply| knows to look in \Robject{msset}, we only need to provide \Robject{pg} to the argument \Robject{.pixel.groups}.
+The method \verb|featureApply| allows functions to be applied over all features. The function is applied to the flattened false-image vectors. These vectors are the pixel-by-pixel intensities of a single-feature image, not including missing pixels. Here, we use \verb|featureApply| to find the mean spectrum for different groups of pixels. We provide \verb|pData(msset)$pg| as a grouping variable, since it indicates the kind of pixel. We desire mean spectra for the black pixels, the red pixels, and the blue pixels. As before, since \verb|featureApply| knows to look in \Robject{msset}, we only need to provide \Robject{pg} to the argument \Robject{.pixel.groups}.
 <<featureApply1>>=
 f1 <- featureApply(msset, mean, .pixel.groups=pg)
 f1[,1:30]
@@ -697,7 +699,7 @@ library(Cardinal)
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
 @ 
-\Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed metholody for analyzing mass spectrometry imaging experiments.
+\Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed methodology for analyzing mass spectrometry imaging experiments.
 
 \subsubsection{Simulation of spectra}
 
@@ -711,7 +713,7 @@ s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000),
 plot(x ~ t, data=s1, type="l", xlab="m/z", ylab="Intensity")
 @
 
-An example with fewer peaks, larger baseline, and higher resolution (Figure \ref{fig:gs2}):
+An example with fewer peaks, larger baseline, and lower resolution (Figure \ref{fig:gs2}):
 <<gs2>>=
 set.seed(2)
 s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000),
@@ -766,7 +768,7 @@ plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
 <<fig=TRUE, echo=FALSE>>=
 <<gs3>>
 @
-\caption{\small blah}
+\caption{\small }
 \label{fig:gs3}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -774,7 +776,7 @@ plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
 <<fig=TRUE, echo=FALSE>>=
 <<gs4>>
 @
-\caption{\small blah}
+\caption{\small }
 \label{fig:gs4}
 \end{subfigure}
 \caption{\small DESI-like simulated spectra.}

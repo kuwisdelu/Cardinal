@@ -54,7 +54,7 @@ setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "factor"),
 	function(x, y, r = 1, s = 0,
 		method = c("gaussian", "adaptive"),
-		priors = tabulate(y), ...)
+		priors = table(y), ...)
 	{
 		method <- match.arg(method)
 		priors <- priors / sum(priors)
@@ -167,7 +167,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	start.time <- proc.time()
 	while ( any(classes != classes.last, na.rm=TRUE) && iter <= iter.max )
 	{
-		priors <- tabulate(classes) / sum(tabulate(classes))
+		priors <- table(classes) / sum(table(classes))
 		classes.last <- classes
 		centers.last <- centers
 		fit <- .spatialShrunkenCentroids.fit(x, classes=classes, s=s)
@@ -246,7 +246,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 }
 
 .calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
-	m.k <- sqrt((1 / tabulate(classes)) - (1 / length(classes)))
+	m.k <- sqrt((1 / table(classes)) - (1 / length(classes)))
 	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
 	dim(se) <- c(nrow(x), nlevels(classes))
 	se
