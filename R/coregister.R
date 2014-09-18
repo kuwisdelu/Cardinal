@@ -25,6 +25,22 @@ setMethod("coregister",
 		object
 	})
 
+setMethod("coregister",
+	signature = c(object = "SpatialKMeans", ref = "missing"),
+	function(object, ...) {
+		ks <- unlist(object$k)
+		regorder <- order(ks)
+		result <- resultData(object)
+		for ( i in seq_along(regorder[-1]) ) {
+			j <- regorder[i+1]
+			k <- regorder[i]
+			ref <- .coregisterCenters(result[[j]], result[[k]])$ref
+			result[[j]] <- .spatialKMeans.reclass(result[[j]], ref)
+		}
+		resultData(object) <- result
+		object
+	})
+
 .coregisterCenters <- function(object, ref) {
 	extant <- apply(object$centers, 2, function(o) all(is.finite(o)))
 	dists <- apply(object$centers, 2, function(o) colSums((o - ref$centers)^2))

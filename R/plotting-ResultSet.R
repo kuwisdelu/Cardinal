@@ -29,6 +29,12 @@ setMethod("plot",
 		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
 		data <- lapply(resultData(x), function(ob) ob[[names(fm$left)]])
 		# set up model data.frame
+		if ( is.factor(data[[1]]) ) {
+			data <- lapply(data, function(class) {
+				sapply(levels(class),
+					function(Ck) as.integer(class == Ck))
+			})
+		}
 		if ( is.matrix(data[[1]]) ) {
 			ntimes <- mapply(rep,
 				seq_len(nrow(modelData(x))),
@@ -117,10 +123,16 @@ setMethod("image",
 		formula <- as.formula(paste(c(formula, "model"), collapse="|"))
 		data <- lapply(resultData(x), function(ob) ob[[names(fm$left)]])
 		# set up model data.frame
+		if ( is.factor(data[[1]]) ) {
+			data <- lapply(data, function(class) {
+				sapply(levels(class),
+					function(Ck) as.integer(class == Ck))
+			})
+		}
 		if ( is.matrix(data[[1]]) ) {
 			ntimes <- mapply(rep,
 				seq_len(nrow(modelData(x))),
-				sapply(data, ncol))	
+				sapply(data, ncol))
 		} else {
 			ntimes <- seq_len(nrow(modelData(x)))
 		}
@@ -173,19 +185,18 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "PCA", y = "missing"),
-	function(x,
-		formula = as.formula(paste(mode, "~ mz")),
+	function(x, formula = substitute(mode ~ mz),
 		mode = "loadings",
+		type = 'h',
 		...)
 	{
 		mode <- match.arg(mode)
-		callNextMethod(x, formula=formula, ...)
+		callNextMethod(x, formula=formula, type=type, ...)
 	})
 
 setMethod("image",
 	signature = c(x = "PCA"),
-	function(x,
-		formula = as.formula(paste(mode, "~ x * y")),
+	function(x, formula = substitute(mode ~ x * y),
 		mode = "scores",
 		...)
 	{
@@ -197,19 +208,19 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "PLS", y = "missing"),
-	function(x,
-		formula = as.formula(paste(mode, "~ mz")),
-		mode = c("coefficients", "loadings", "weights", "projection"),
+	function(x, formula = substitute(mode ~ mz),
+		mode = c("coefficients", "loadings",
+			"weights", "projection"),
+		type = 'h',
 		...)
 	{
 		mode <- match.arg(mode)
-		callNextMethod(x, formula=formula, ...)
+		callNextMethod(x, formula=formula, type=type, ...)
 	})
 
 setMethod("image",
 	signature = c(x = "PLS"),
-	function(x,
-		formula = as.formula(paste(mode, "~ x * y")),
+	function(x, formula = substitute(mode ~ x * y),
 		mode = c("fitted", "scores", "y"),
 		...)
 	{
@@ -221,20 +232,19 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "OPLS", y = "missing"),
-	function(x,
-		formula = as.formula(paste(mode, "~ mz")),
+	function(x, formula = substitute(mode ~ mz),
 		mode = c("coefficients", "loadings", "Oloadings",
 			"weights", "Oweights", "projection"),
+		type = 'h',
 		...)
 	{
 		mode <- match.arg(mode)
-		callNextMethod(x, formula=formula, ...)
+		callNextMethod(x, formula=formula, type=type, ...)
 	})
 
 setMethod("image",
 	signature = c(x = "OPLS"),
-	function(x,
-		formula = as.formula(paste(mode, "~ x * y")),
+	function(x, formula = substitute(mode ~ x * y),
 		mode = c("fitted", "scores", "Oscores", "y"),
 		...)
 	{
@@ -246,20 +256,42 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids", y = "missing"),
-	function(x,
-		formula = as.formula(paste(mode, "~ mz")),
+	function(x, formula = substitute(mode ~ mz),
 		mode = c("centers", "tstatistics"),
+		type = 'h',
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, type=type, ...)
+	})
+
+setMethod("image",
+	signature = c(x = "SpatialShrunkenCentroids"),
+	function(x, formula = substitute(mode ~ x * y),
+		mode = c("probabilities", "cluster", "scores"),
 		...)
 	{
 		mode <- match.arg(mode)
 		callNextMethod(x, formula=formula, ...)
 	})
 
+#### Plotting for SpatialKMeans ####
+
+setMethod("plot",
+	signature = c(x = "SpatialKMeans", y = "missing"),
+	function(x, formula = substitute(mode ~ mz),
+		mode = "centers",
+		type = 'h',
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, type=type, ...)
+	})
+
 setMethod("image",
-	signature = c(x = "SpatialShrunkenCentroids"),
-	function(x,
-		formula = as.formula(paste(mode, "~ x * y")),
-		mode = c("probabilities", "scores"),
+	signature = c(x = "SpatialKMeans"),
+	function(x, formula = substitute(mode ~ x * y),
+		mode = "cluster",
 		...)
 	{
 		mode <- match.arg(mode)

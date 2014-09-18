@@ -7,7 +7,7 @@ setMethod("plot",
 		coord,
 		plusminus,
 		...,
-		type = ifelse(centroided(x), 'h', 'l'))
+		type = if (centroided(x)) 'h' else 'l')
 	{
 		if ( !missing(coord) && missing(pixel.groups) ) {
 			 pixel.groups <- pixelNames(x)[pixel]

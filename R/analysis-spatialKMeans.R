@@ -38,15 +38,17 @@ setMethod("spatialKMeans",
 					r="Neighborhood radius")))
 		featureNames(model) <- .format.list(pData(model))
 		names(result) <- .format.list(pData(model))
-		.message("spatialKMeans: Done.")
-		.time.stop()
-		new("SpatialKMeans",
+		object <- new("SpatialKMeans",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
 			experimentData=x@experimentData,
 			protocolData=x@protocolData,
 			resultData=result,
 			modelData=model)
+		object <- coregister(object)
+		.message("spatialKMeans: Done.")
+		.time.stop()
+		object
 	})
 
 .spatialKMeans <- function(x, fastmap, k, iter.max, nstart, algorithm) {
@@ -63,4 +65,15 @@ setMethod("spatialKMeans",
 	rownames(centers) <- featureNames(x)
 	colnames(centers) <- levels(x)
 	list(cluster=cluster, centers=centers, time=proc.time() - start.time)
+}
+
+.spatialKMeans.reclass <- function(x, ref) {
+	relevel <- x$cluster
+	levels(relevel) <- levels(x$cluster)[ref]
+	x$cluster <- factor(relevel,
+		levels=levels(x$cluster),
+		labels=levels(x$cluster))
+	x$centers <- x$centers[,order(ref)]
+	colnames(x$centers) <- levels(x$cluster)
+	x
 }

@@ -168,22 +168,30 @@ setMethod("plot",
 				ys[!subset[subscripts]] <- NA
 				if ( !all(is.na(ys)) ) {
 					if ( is.null(groups) ) {
-						plot(xs, ys, type=type, col=col, xlab=xlab, xlim=xlim,
+						plot(0, 0, type='n',
+							xlab=xlab, xlim=xlim,
 							ylab=ylab, ylim=ylim, ...)
+						abline(h=0, lwd=0.2)
+						for ( tpi in type ) {
+							points(xs, ys, type=tpi, col=col, ...)
+						}
 					} else {
 						if ( !add ) {
 							plot(0, 0, type='n', xlab=xlab, xlim=xlim,
 								ylab=ylab, ylim=ylim, ...)
+							abline(h=0, lwd=0.2)
 						}
 						subgroups <- which(levels(groups) %in% groups[subscripts])
 						for ( gi in subgroups ) {
 							ys.g <- ys
 							ys.g[groups[subscripts] != levels(groups)[gi]] <- NA
-							points(xs, ys.g, type=type, col=col[gi], ...)
+							for ( tpi in type ) {
+								points(xs, ys.g, type=tpi, col=col[gi], ...)
+							}
 						}
 					}
 				}
-				if ( last ) {
+				if ( last && any(subset[subscripts], na.rm=TRUE) ) {
 					if ( strip && length(fm.cond != 0 ) ) {
 						labels <- names(condition)
 						if ( superpose || missing.pixel.groups )
@@ -477,7 +485,7 @@ setMethod("image",
 						}
 					}
 				}
-				if ( last ) {
+				if ( last && any(subset[subscripts], na.rm=TRUE) ) {
 					if ( strip && length(fm.cond != 0 ) ) {
 						labels <- names(condition)
 						if ( superpose || missing.feature.groups )
