@@ -180,6 +180,21 @@ setMethod("image",
 			lattice=lattice, ...)
 	})
 
+#### Plotting for CrossValidated ####
+
+setMethod("plot",
+	signature = c(x = "CrossValidated", y = "missing"),
+	function(x, fold, ...)
+	{
+		for (i in fold) plot(resultData(x)[[i]], ...)
+	})
+
+setMethod("image",
+	signature = c(x = "CrossValidated"),
+	function(x, fold, ...)
+	{
+		for (i in fold) image(resultData(x)[[i]], ...)
+	})
 
 #### Plotting for PCA ####
 

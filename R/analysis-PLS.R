@@ -70,8 +70,9 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "numeric"),
 setMethod("PLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 	{
-		y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-		PLS(x, y, ...)
+		newy <- sapply(levels(y), function(Ck) as.integer(y == Ck))
+		attr(newy, "PLS:y") <- y
+		PLS(x, newy, ...)
 	})
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "character"), 
@@ -87,7 +88,8 @@ setMethod("predict", "PLS",
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
 		Xt <- as.matrix(iData(newx))
-		Xt <- scale(t(Xt), scale=object$scale[[1]])
+		Xt <- scale(t(Xt), center=object$center[[1]],
+			scale=object$scale[[1]])
 		if ( missing(newy) ) {
 			missing.newy <- TRUE
 		} else {
@@ -99,6 +101,15 @@ setMethod("predict", "PLS",
 				loadings=res$loadings, weights=res$weights,
 				Yweights=res$Yweights)
 			pred$fitted <- t(res$Yscale * t(pred$fitted) + res$Ycenter)
+			if ( is.factor(object$y) || !missing.newy ) {
+				pred$classes <- factor(apply(pred$fitted, 1, which.max))
+				if ( !is.null(attr(newy, "PLS:y")) ) {
+					newy <- attr(newy, "PLS:y")
+					levels(pred$classes) <- levels(newy)
+				} else {
+					levels(pred$classes) <- levels(object$y[[1]])
+				}	
+			}
 			res[names(pred)] <- pred
 			if ( !missing.newy )
 				res$y <- newy
@@ -115,24 +126,6 @@ setMethod("predict", "PLS",
 			resultData=result,
 			modelData=object@modelData)
 	})
-
-setMethod("fitted", "PLS",
-	function(object, ...) {
-		object$fitted	
-	})
-
-setMethod("coef", "PLS",
-	function(object, ...) {
-		object$coefficients	
-	})
-
-setMethod("residuals", "PLS",
-	function(object, ...) {
-		y <- object$y[[1]]
-		y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-		lapply(fitted(object), function(yi) yi - y)
-	})
-
 
 .PLS.fit <- function(X, Y, ncomp, method, iter.max) {
 	if ( method == "nipals" ) {

@@ -271,11 +271,12 @@ setMethod("featureApply", "SImageSet",
 
 setMethod("cvApply", "SImageSet",
 	function(x, y, .fun, .fold = sample, ...) {
-		# get x, y, and cv folds
+		# get cv folds and method
+		.fun <- match.fun(.fun)
 		.fold <- tryCatch(eval(substitute(.fold), envir=pData(x),
 			enclos=environment(.fun)), error=function(e) eval(.fold))
 		# loop through folds
-		cv <- lapply(sort(unique(.fold)), function(k) {
+		result <- lapply(sort(unique(.fold)), function(k) {
 			.message("!!---- Fold ", k, " ----!!")
 			if ( is.vector(y) || is.factor(y) ) {
 				fit <- .fun(x[,k!=.fold], y[k!=.fold], ...)
@@ -289,7 +290,18 @@ setMethod("cvApply", "SImageSet",
 					newy=y[k==.fold,,drop=FALSE])
 			}
 		})
-		names(cv) <- levels(as.factor(.fold))
-		cv
+		names(result) <- levels(as.factor(.fold))
+		model <- AnnotatedDataFrame(data=data.frame(
+				fold=.fold),
+			varMetadata=data.frame(
+				labelDescription=c(
+					fold="Fold")))
+		new("CrossValidated",
+			pixelData=x@pixelData,
+			featureData=x@featureData,
+			experimentData=x@experimentData,
+			protocolData=x@protocolData,
+			resultData=result,
+			modelData=model)
 	})
 

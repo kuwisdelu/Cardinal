@@ -70,8 +70,9 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"),
 setMethod("OPLS", signature = c(x = "SImageSet", y = "factor"), 
 	function(x, y, ...)
 	{
-		y <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-		OPLS(x, y, ...)
+		newy <- sapply(levels(y), function(Ck) as.integer(y == Ck))
+		attr(newy, "OPLS:y") <- y
+		OPLS(x, newy, ...)
 	})
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "character"), 
@@ -87,7 +88,8 @@ setMethod("predict", "OPLS",
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
 		Xt <- as.matrix(iData(newx))
-		Xt <- scale(t(Xt), scale=object$scale[[1]])
+		Xt <- scale(t(Xt), center=object$center[[1]],
+			scale=object$scale[[1]])
 		Y <- object$y[[1]]
 		if ( missing(newy) ) {
 			missing.newy <- TRUE
@@ -97,8 +99,19 @@ setMethod("predict", "OPLS",
 		result <- lapply(object@resultData, function(res) {
 			.message("OPLS: Predicting for ncomp = ", res$ncomp, ".")
 			pred <- .OPLS.predict(Xt, Y, ncomp=res$ncomp, method=res$method,
-				Oloadings=res$Oloadings, Oweights=res$Oweights)
+				loadings=res$loadings, Oloadings=res$Oloadings,
+				weights=res$weights, Oweights=res$Oweights,
+				Yweights=res$Yweights)
 			pred$fitted <- t(res$Yscale * t(pred$fitted) + res$Ycenter)
+			if ( is.factor(object$y) || !missing.newy ) {
+				pred$classes <- factor(apply(pred$fitted, 1, which.max))
+				if ( !is.null(attr(newy, "OPLS:y")) ) {
+					newy <- attr(newy, "OPLS:y")
+					levels(pred$classes) <- levels(newy)
+				} else {
+					levels(pred$classes) <- levels(object$y[[1]])
+				}	
+			}
 			res[names(pred)] <- pred
 			if ( !missing.newy )
 				res$y <- newy
@@ -124,19 +137,25 @@ setMethod("predict", "OPLS",
 	}
 }
 
-.OPLS.predict <- function(X, Y, ncomp, method, Oloadings, Oweights, iter.max) {
+.OPLS.predict <- function(X, Y, ncomp, method, loadings, Oloadings,
+	weights, Oweights, Yweights, iter.max)
+{
 	Oloadings <- Oloadings[,1:ncomp,drop=FALSE]
 	Oweights <- Oweights[,1:ncomp,drop=FALSE]
 	Oscores <- X %*% Oweights
 	Xortho <- tcrossprod(Oscores, Oloadings)
 	Xnew <- X - Xortho
-	nas <- apply(Y, 1, function(yi) any(is.na(yi)))
-	if ( method == "nipals" ) {
-		fit <- nipals.PLS(Xnew[!nas,], Y[!nas,], ncomp=1)
+	if ( is.null(loadings) || is.null(weights) || is.null(Yweights) ) {
+		nas <- apply(Y, 1, function(yi) any(is.na(yi)))
+		if ( method == "nipals" ) {
+			fit <- nipals.PLS(Xnew[!nas,], Y[!nas,], ncomp=1)
+		} else {
+			stop("PLS method ", method, " not found")
+		}
 	} else {
-		stop("PLS method ", method, " not found")
+		fit <- list(loadings=loadings, weights=weights, Yweights=Yweights)
 	}
-	pred <- .PLS.predict(X, ncomp=1, loadings=fit$loadings,
+	pred <- .PLS.predict(Xnew, ncomp=1, loadings=fit$loadings,
 		weights=fit$weights, Yweights=fit$Yweights)
 	append(pred, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
 		Oloadings=Oloadings, Oweights=Oweights))

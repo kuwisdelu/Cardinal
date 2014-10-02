@@ -200,6 +200,8 @@ setClass("ResultSet",
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
 			ResultSet="0.1.0"))))
 
+setClass("CrossValidated", contains="ResultSet")
+
 setClass("PCA", contains="ResultSet")
 
 setClass("PLS", contains="ResultSet")
