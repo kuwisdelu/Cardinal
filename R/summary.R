@@ -114,6 +114,8 @@ setMethod("summary", "SpatialKMeans",
 			data.frame(r=x$r, k=x$k,
 				cluster=cluster,
 				centers=as.vector(x$centers),
+				withinss=as.vector(x$withinss),
+				betweenss=as.vector(x$betweenss),
 				row.names=seq_len(k * nrow(object)))
 		}))
 		row.names(summary) <- NULL

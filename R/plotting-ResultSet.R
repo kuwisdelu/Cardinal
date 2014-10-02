@@ -295,7 +295,7 @@ setMethod("image",
 setMethod("plot",
 	signature = c(x = "SpatialKMeans", y = "missing"),
 	function(x, formula = substitute(mode ~ mz),
-		mode = "centers",
+		mode = c("centers", "betweenss", "withinss"),
 		type = 'h',
 		...)
 	{

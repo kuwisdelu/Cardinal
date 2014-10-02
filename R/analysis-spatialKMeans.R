@@ -61,10 +61,22 @@ setMethod("spatialKMeans",
 		rowMeans(iData(x)[,cluster==Ck,drop=FALSE])
 	})
 	cluster <- factor(cluster)
+	withinss <- sapply(levels(cluster), function(Ck) {
+		apply(scale(t(iData(x)[,cluster==Ck]), scale=FALSE)^2, 2, sum)
+	})
+	totss <- apply(scale(t(iData(x)), scale=FALSE)^2, 2, sum)
+	betweenss <- totss - withinss
 	names(cluster) <- pixelNames(x)
 	rownames(centers) <- featureNames(x)
-	colnames(centers) <- levels(x)
-	list(cluster=cluster, centers=centers, time=proc.time() - start.time)
+	colnames(centers) <- levels(cluster)
+	rownames(withinss) <- featureNames(x)
+	colnames(withinss) <- levels(cluster)
+	rownames(betweenss) <- featureNames(x)
+	colnames(betweenss) <- levels(cluster)
+	names(totss) <- featureNames(x)
+	list(cluster=cluster, centers=centers, totss=totss,
+		withinss=withinss, betweenss=betweenss,
+		time=proc.time() - start.time)
 }
 
 .spatialKMeans.reclass <- function(x, ref) {
