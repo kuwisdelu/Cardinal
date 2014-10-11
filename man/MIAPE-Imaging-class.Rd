@@ -201,7 +201,7 @@
         
         \item{\code{pubMedIds(object), pubMedIds(object) <- value}:}{Accessor function for \code{pubMedIds}.} 
 
-        \item{code{samples}:}{An accessor function for \code{samples}.}
+        \item{\code{samples}:}{An accessor function for \code{samples}.}
 
         \item{\code{specimenOrigin(object), specimenOrigin(object) <- value}:}{Accessor and setter function for \code{specimenOrigin}.}
 

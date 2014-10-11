@@ -123,6 +123,13 @@ setReplaceMethod("coord", "IAnnotatedDataFrame",
 		object
 	})
 
+setMethod("[", "IAnnotatedDataFrame",
+	function(x, i, j, ..., drop = FALSE) {
+		x <- callNextMethod(x, i, j, ..., drop=drop)
+		pData(x)$sample <- factor(pData(x)$sample)
+		x
+	})
+
 setMethod("combine",
 	signature = c(x = "IAnnotatedDataFrame", y = "IAnnotatedDataFrame"),
 	function(x, y, ...) {

@@ -23,9 +23,11 @@ setMethod("initialize", "ImageData",
 		callNextMethod(.Object)
 	})
 
-ImageData <- function(..., data = new.env(parent=emptyenv()),
+ImageData <- function(...,
+	data = new.env(parent=emptyenv()),
 	storageMode = c("immutableEnvironment",
-		"lockedEnvironment", "environment"))
+		"lockedEnvironment",
+		"environment"))
 {
 	storageMode <- match.arg(storageMode)
 	dots <- match.call(expand.dots=FALSE)$...

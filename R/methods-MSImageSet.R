@@ -9,7 +9,7 @@ setMethod("initialize", "MSImageSet",
 			experimentData = new("MIAPE-Imaging"),
 			...) {
 		featureNames(featureData) <- .format.mz(featureData[["mz"]])
-		pixelNames(pixelData) <- .format.list(coord(pixelData))
+		pixelNames(pixelData) <- .format.data.frame(coord(pixelData))
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
@@ -148,8 +148,8 @@ setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 			varMetadata(x)["sample", "labelType"] <- "dim"
 		if ( varMetadata(y)["sample", "labelType"] != "dim" )
 			varMetadata(y)["sample", "labelType"] <- "dim"
-		pixelNames(x) <- .format.list(coord(x))
-		pixelNames(y) <- .format.list(coord(y))
+		pixelNames(x) <- .format.data.frame(coord(x))
+		pixelNames(y) <- .format.data.frame(coord(y))
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)

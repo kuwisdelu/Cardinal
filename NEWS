@@ -2,6 +2,21 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.8.4 [2014-10-9]
+
+o Changed 'topIons' to 'topLabels' method for summarization
+
+Version 0.8.3 [2014-9-18]
+
+o Added 'coregistration' for SpatialKMeans
+o Added 'summary' methods for all ResultSet subclasses
+o Added 'topIons' method for summarization
+o Added plotting methods for 'ResultSet' classes
+o Added 'cvApply' method for cross-validation
+o Fixed bug in spatialShrunkenCentroids with prior probabilties
+o Fixed bug in OPLS with proper scaling of data matrices during prediction
+o Added additional statistics to SpatialKmeans class results
+
 Version 0.8.2 [2014-7-23]
 
 o Added 'peakFilter' method

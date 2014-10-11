@@ -140,9 +140,12 @@ setMethod("plot",
 			}
 			# plot it with lattice
 			xyplot(fm, data=data, groups=groups, subset=subset,
-				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim,
-				type=type, col=col, key=key, strip=strip,
-				layout=layout, ...)
+				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim, type=type,
+				col=col, key=key, strip=strip, layout=layout,
+				panel=function(x, y, col, ...) {
+					panel.abline(h=0, lwd=0.2)
+					panel.xyplot(x, y, col=col, ...)
+				}, ...)
 		} else {
 			# setup plotting layout
 			if ( !is.null(layout) ) .setup.layout(layout)
@@ -290,7 +293,8 @@ setMethod("image",
 					lapply(model$condition, function(cond) cond[feature]))
 			}
 		} else {
-			values <- matrix(unlist(model$left), nrow=length(model$left[[1]]))
+			values <- matrix(as.numeric(unlist(model$left)),
+				nrow=length(model$left[[1]]))
 			condition <- data.frame(.value.groups=factor(seq_along(model$left),
 				labels=make.names(names(model$left))))
 		}
@@ -501,6 +505,49 @@ setMethod("image",
 				}
 			}
 		}
+	})
+
+setMethod("select",
+	signature = c(x = "SImageSet"),
+	function(x, formula = ~ x * y,
+		mode = c("region", "pixel"),
+		...,
+		main,
+		subset = TRUE,
+		lattice = FALSE)
+	{
+		mode <- match.arg(mode)
+		if ( missing(main) )
+			main <- paste("Select", mode)
+		if ( lattice )
+			.stop("select: Selection not currently supported for lattice graphics.")
+		image(x, formula=formula, ..., main=main, subset=subset, lattice=lattice)
+		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
+		subset <- tryCatch(eval(substitute(subset), envir=pData(x),
+			enclos=environment(formula)), error = function(e) eval(subset))
+		if ( length(subset) < ncol(x) )
+			subset <- rep(subset, length.out=ncol(x))
+		.message("Select pixels and press ESC or second mouse button when done")
+		if ( mode == "region" ) {
+			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
+			if ( is.null(loc) ) return(NULL)
+			coord <- coord(x)[subset, names(model$right)]
+			selected <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
+			selected <- selected > 0
+			names(selected) <- pixelNames(x)
+		} else {
+			loc <- locator(type="p", pch=4, col="white")
+			if ( is.null(loc) ) return(NULL)
+			coord <- data.frame(round(loc$x), round(loc$y))
+			names(coord) <- names(model$right)
+			ok <- logical(ncol(x))
+			ok[subset] <- TRUE
+			selected <- logical(ncol(x))
+			selected[pixels(x, coord=coord)] <- TRUE
+			selected <- selected & ok
+			names(selected) <- pixelNames(x)
+		}
+		selected
 	})
 
 .setup.layout <- function(layout) {

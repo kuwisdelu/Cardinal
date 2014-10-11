@@ -48,8 +48,8 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of PLS Components")))
-		featureNames(model) <- .format.list(pData(model))
-		names(result) <- .format.list(pData(model))
+		featureNames(model) <- .format.data.frame(pData(model))
+		names(result) <- .format.data.frame(pData(model))
 		object <- new("PLS",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
@@ -90,6 +90,7 @@ setMethod("predict", "PLS",
 		Xt <- as.matrix(iData(newx))
 		Xt <- scale(t(Xt), center=object$center[[1]],
 			scale=object$scale[[1]])
+		Y <- object$y[[1]]
 		if ( missing(newy) ) {
 			missing.newy <- TRUE
 		} else {
@@ -97,7 +98,7 @@ setMethod("predict", "PLS",
 		}
 		result <- lapply(object@resultData, function(res) {
 			.message("PLS: Predicting for ncomp = ", res$ncomp, ".")
-			pred <- .PLS.predict(Xt, ncomp=res$ncomp,
+			pred <- .PLS.predict(Xt, Y, ncomp=res$ncomp,
 				loadings=res$loadings, weights=res$weights,
 				Yweights=res$Yweights)
 			pred$fitted <- t(res$Yscale * t(pred$fitted) + res$Ycenter)
@@ -135,7 +136,7 @@ setMethod("predict", "PLS",
 	}
 }
 
-.PLS.predict <- function(X, ncomp, loadings, weights, Yweights) {
+.PLS.predict <- function(X, Y, ncomp, loadings, weights, Yweights) {
 	loadings <- loadings[,1:ncomp,drop=FALSE]
 	weights <- weights[,1:ncomp,drop=FALSE]
 	Yweights <- Yweights[,1:ncomp,drop=FALSE]
@@ -143,6 +144,15 @@ setMethod("predict", "PLS",
 	coefficients <- tcrossprod(projection, Yweights)
 	scores <- X %*% projection
 	fitted <- X %*% coefficients
+	if ( is.factor(Y) ) {
+		rownames(Yweights) <- levels(Y)
+		colnames(coefficients) <- levels(Y)
+		colnames(fitted) <- levels(Y)
+	} else {
+		rownames(Yweights) <- colnames(Y)
+		colnames(coefficients) <- colnames(Y)
+		colnames(fitted) <- colnames(Y)
+	}
 	list(scores=scores, loadings=loadings, weights=weights, Yweights=Yweights,
 		projection=projection, coefficients=coefficients, fitted=fitted)
 }

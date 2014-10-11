@@ -129,6 +129,7 @@ setMethod("[", "SImageSet",
 		x@imageData <- x@imageData[i,j,drop=NA]
 		x@featureData <- x@featureData[i,,drop=FALSE]
 		x@pixelData <- x@pixelData[j,,drop=FALSE]
+		x@protocolData <- x@protocolData[sampleNames(x@pixelData),,drop=FALSE]
 		x <- regeneratePositions(x)
 		x
 	})
@@ -270,7 +271,10 @@ setMethod("featureApply", "SImageSet",
 	})
 
 setMethod("cvApply", "SImageSet",
-	function(x, y, .fun, .fold = sample, ...) {
+	function(.x, .y, .fun, .fold = sample, ...) {
+		# setup
+		x <- .x
+		y <- .y
 		# get cv folds and method
 		.fun <- match.fun(.fun)
 		.fold <- tryCatch(eval(substitute(.fold), envir=pData(x),
@@ -278,21 +282,21 @@ setMethod("cvApply", "SImageSet",
 		# loop through folds
 		result <- lapply(sort(unique(.fold)), function(k) {
 			.message("!!---- Fold ", k, " ----!!")
-			if ( is.vector(y) || is.factor(y) ) {
-				fit <- .fun(x[,k!=.fold], y[k!=.fold], ...)
-				predict(fit,
-					newx=x[,k==.fold],
-					newy=y[k==.fold])
-			} else {
+			if ( is.matrix(y) ) {
 				fit <- .fun(x[,k!=.fold], y[k!=.fold,,drop=FALSE], ...)
 				predict(fit,
 					newx=x[,k==.fold],
 					newy=y[k==.fold,,drop=FALSE])
+			} else {
+				fit <- .fun(x[,k!=.fold], y[k!=.fold], ...)
+				predict(fit,
+					newx=x[,k==.fold],
+					newy=y[k==.fold])
 			}
 		})
-		names(result) <- levels(as.factor(.fold))
+		names(result) <- sort(unique(.fold))
 		model <- AnnotatedDataFrame(data=data.frame(
-				fold=.fold),
+				fold=sort(unique(.fold))),
 			varMetadata=data.frame(
 				labelDescription=c(
 					fold="Fold")))

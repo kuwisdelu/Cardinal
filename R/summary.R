@@ -1,29 +1,14 @@
 
-setMethod("summary", "CrossValidated",
-	function(object, ...) {
-		accuracy <- lapply(resultData(object),
-			function(ob) summary(ob)$accuracy)
-		accuracy <- do.call("Map", c(function(...) {
-			acc <- Reduce(`+`, list(...))
-			acc / length(acc)
-		}, accuracy))
-		out <- list(accuracy=accuracy)
-		class(out) <- "summary.CrossValidated"
-		out
-	})
-
 setMethod("summary", "PCA",
 	function(object, ...) {
-		summary <- do.call("rbind", lapply(resultData(object), function(x) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			ncomp <- x$ncomp
 			data.frame(ncomp=ncomp,
 				loadings=as.vector(x$loadings[,ncomp,drop=FALSE]))
 		}))
-		row.names(summary) <- NULL
-		sdev <- sapply(resultData(object), function(x) {
-			ncomp <- x$ncomp
-			x$sdev[ncomp]
-		})
+		row.names(topLabels) <- NULL
+		which <- which.max(unlist(object$ncomp))
+		sdev <- object$sdev[[which]]
 		importance <- t(simplify2array(list(sdev,
 			sdev^2 / sum(sdev^2),
 			cumsum(sdev^2 / sum(sdev^2)))))
@@ -31,14 +16,14 @@ setMethod("summary", "PCA",
 				"Proportion of Variance",
 				"Cumulative"),
 			paste0("PC", seq_along(sdev)))
-		out <- list(summary=summary, importance=importance)
+		out <- list(topLabels=topLabels, importance=importance)
 		class(out) <- "summary.PCA"
 		out
 	})
 
 setMethod("summary", "PLS",
 	function(object, ...) {
-		summary <- do.call("rbind", lapply(resultData(object), function(x) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
 			ncomp <- x$ncomp
@@ -56,7 +41,7 @@ setMethod("summary", "PLS",
 				weights=as.vector(x$weights[,ncomp,drop=FALSE]),
 				row.names=seq_len(nclasses * nrow(object)))
 		}))
-		row.names(summary) <- NULL
+		row.names(topLabels) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			if ( is.factor(x$y) ) {
 				.summarize.factor(x$y, x$classes)
@@ -64,14 +49,14 @@ setMethod("summary", "PLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(summary=summary, accuracy=accuracy)
+		out <- list(topLabels=topLabels, accuracy=accuracy)
 		class(out) <- "summary.PLS"
 		out
 	})
 
 setMethod("summary", "OPLS",
 	function(object, ...) {
-		summary <- do.call("rbind", lapply(resultData(object), function(x) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
 			ncomp <- x$ncomp
@@ -90,7 +75,7 @@ setMethod("summary", "OPLS",
 				weights=as.vector(x$weights),
 				Oweights=as.vector(x$Oweights[,ncomp,drop=FALSE]))
 		}))
-		row.names(summary) <- NULL
+		row.names(topLabels) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			if ( is.factor(x$y) ) {
 				.summarize.factor(x$y, x$classes)
@@ -98,14 +83,14 @@ setMethod("summary", "OPLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(summary=summary, accuracy=accuracy)
+		out <- list(topLabels=topLabels, accuracy=accuracy)
 		class(out) <- "summary.OPLS"
 		out
 	})
 
 setMethod("summary", "SpatialKMeans",
 	function(object, ...) {
-		summary <- do.call("rbind", lapply(resultData(object), function(x) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- tabulate(x$cluster)
 			n <- rep(n, each=nrow(object))
@@ -118,15 +103,15 @@ setMethod("summary", "SpatialKMeans",
 				betweenss=as.vector(x$betweenss),
 				row.names=seq_len(k * nrow(object)))
 		}))
-		row.names(summary) <- NULL
-		out <- list(summary=summary)
+		row.names(topLabels) <- NULL
+		out <- list(topLabels=topLabels)
 		class(out) <- "summary.SpatialKMeans"
 		out
 	})
 
 setMethod("summary", "SpatialShrunkenCentroids",
 	function(object, ...) {
-		summary <- do.call("rbind", lapply(resultData(object), function(x) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- tabulate(x$classes)
 			n <- rep(n, each=nrow(object))
@@ -142,7 +127,7 @@ setMethod("summary", "SpatialShrunkenCentroids",
 				adj.p.values=adj.p.values,
 				row.names=seq_len(k * nrow(object)))
 		}))
-		row.names(summary) <- NULL
+		row.names(topLabels) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			if ( is.null(x$y) ) {
 				NULL
@@ -150,8 +135,23 @@ setMethod("summary", "SpatialShrunkenCentroids",
 				.summarize.factor(x$y, x$classes)
 			}
 		})
-		out <- list(summary=summary, accuracy=accuracy)
+		out <- list(topLabels=topLabels, accuracy=accuracy)
 		class(out) <- "summary.SpatialShrunkenCentroids"
+		out
+	})
+
+setMethod("summary", "CrossValidated",
+	function(object, ...) {
+		accuracy <- lapply(resultData(object),
+			function(ob) summary(ob)$accuracy)
+		accuracy <- do.call("Map", c(function(...) {
+			dots <- list(...)
+			nfold <- length(dots)
+			acc <- Reduce(`+`, dots)
+			acc / nfold
+		}, accuracy))
+		out <- list(accuracy=accuracy)
+		class(out) <- "summary.CrossValidated"
 		out
 	})
 
@@ -160,10 +160,10 @@ setMethod("summary", "SpatialShrunkenCentroids",
 	y <- y[nonmissing]
 	fitted <- fitted[nonmissing]
 	accuracy <- lapply(levels(fitted), function(class) {
-		true.pos <- sum(y == class & fitted == class)
-		false.pos <- sum(y != class & fitted == class)
-		true.neg <- sum(y != class & fitted != class)
-		false.neg <- sum(y == class & fitted != class)
+		true.pos <- sum(y == class & fitted == class, na.rm=TRUE)
+		false.pos <- sum(y != class & fitted == class, na.rm=TRUE)
+		true.neg <- sum(y != class & fitted != class, na.rm=TRUE)
+		false.neg <- sum(y == class & fitted != class, na.rm=TRUE)
 		c(Accuracy=(true.pos + true.neg) / length(fitted),
 			Sensitivity=true.pos / (true.pos + false.neg),
 			Specificity=true.neg / (false.pos + true.neg),

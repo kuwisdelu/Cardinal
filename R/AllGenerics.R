@@ -3,6 +3,7 @@
 ## -------------------------------------
 setGeneric("as.array")
 setGeneric("as.matrix")
+setGeneric("length")
 setGeneric("names")
 setGeneric("names<-")
 setGeneric("rownames<-")
@@ -130,7 +131,7 @@ setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-
 
 #### Apply-like methods ####
 ## ------------------------
-setGeneric("cvApply", function(x, y, .fun, ...) standardGeneric("cvApply"))
+setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
 
@@ -159,7 +160,7 @@ setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spat
 
 #### Results ####
 ## --------------
-setGeneric("topIons", function(object, ...) standardGeneric("topIons"))
+setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 
 #### Plotting ####
 ## ---------------

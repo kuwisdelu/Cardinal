@@ -5,6 +5,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 	function(x, y, ncomp = 20,
 		method = "nipals",
 		scale = FALSE,
+		keep.Xnew = TRUE,
 		iter.max = 100, ...)
 	{
 		method <- match.arg(method)
@@ -48,8 +49,8 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of PLS Components")))
-		featureNames(model) <- .format.list(pData(model))
-		names(result) <- .format.list(pData(model))
+		featureNames(model) <- .format.data.frame(pData(model))
+		names(result) <- .format.data.frame(pData(model))
 		object <- new("OPLS",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
@@ -58,7 +59,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 			resultData=result,
 			modelData=model)
 		.time.stop()
-		predict(object, newx=newx, newy=newy)
+		predict(object, newx=newx, newy=newy, keep.Xnew=keep.Xnew, ...)
 	})
 
 setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"), 
@@ -82,7 +83,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "character"),
 	})
 
 setMethod("predict", "OPLS",
-	function(object, newx, newy, ...)
+	function(object, newx, newy, keep.Xnew = TRUE, ...)
 	{
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
@@ -113,6 +114,10 @@ setMethod("predict", "OPLS",
 				}	
 			}
 			res[names(pred)] <- pred
+			if ( !keep.Xnew ) {
+				res$Xnew <- NULL
+				res$Xortho <- NULL
+			}
 			if ( !missing.newy )
 				res$y <- newy
 			class(res) <- "ResultData"
@@ -155,7 +160,7 @@ setMethod("predict", "OPLS",
 	} else {
 		fit <- list(loadings=loadings, weights=weights, Yweights=Yweights)
 	}
-	pred <- .PLS.predict(Xnew, ncomp=1, loadings=fit$loadings,
+	pred <- .PLS.predict(Xnew, Y, ncomp=1, loadings=fit$loadings,
 		weights=fit$weights, Yweights=fit$Yweights)
 	append(pred, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
 		Oloadings=Oloadings, Oweights=Oweights))

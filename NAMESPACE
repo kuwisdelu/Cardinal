@@ -10,6 +10,9 @@ import("stats4")
 importFrom("fields",
 	"interp.surface.grid")
 
+importFrom("grid",
+	"grid.raster")
+
 importFrom("irlba",
 	"irlba")
 
@@ -253,7 +256,7 @@ exportMethods(
 	"spatialShrunkenCentroids")
 
 exportMethods(
-	"topIons")
+	"topLabels")
 
 exportMethods(
 	"select",

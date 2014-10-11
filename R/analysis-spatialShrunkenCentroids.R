@@ -35,8 +35,8 @@ setMethod("spatialShrunkenCentroids",
 					r="Neighborhood radius",
 					k="Number of classes",
 					s="Sparsity parameter")))
-		featureNames(model) <- .format.list(pData(model))
-		names(result) <- .format.list(pData(model))
+		featureNames(model) <- .format.data.frame(pData(model))
+		names(result) <- .format.data.frame(pData(model))
 		object <- new("SpatialShrunkenCentroids",
 			pixelData=x@pixelData,
 			featureData=x@featureData,
@@ -81,16 +81,16 @@ setMethod("spatialShrunkenCentroids",
 			})
 		}), recursive=FALSE)
 		model <- AnnotatedDataFrame(data=data.frame(
-				r=sapply(result, function(fit) fit$r),
-				k=sapply(result, function(fit) fit$k),
-				s=sapply(result, function(fit) fit$s)),
+				r=as.factor(sapply(result, function(fit) fit$r)),
+				k=as.factor(sapply(result, function(fit) fit$k)),
+				s=as.factor(sapply(result, function(fit) fit$s))),
 			varMetadata=data.frame(
 				labelDescription=c(
 					r="Neighborhood radius",
 					k="Number of classes",
 					s="Sparsity parameter")))
-		featureNames(model) <- .format.list(pData(model))
-		names(result) <- .format.list(pData(model))
+		featureNames(model) <- .format.data.frame(pData(model))
+		names(result) <- .format.data.frame(pData(model))
 		object <- new("SpatialShrunkenCentroids",
 			pixelData=x@pixelData,
 			featureData=x@featureData,

@@ -1,8 +1,8 @@
 Package: Cardinal
 Type: Package
 Title: Mass spectrometry imaging tools
-Version: 0.8.3
-Date: 2014-9-18
+Version: 0.8.4
+Date: 2014-10-9
 Author: Kyle D. Bemis <kbemis@purdue.edu>
 Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
 Description: Implements statistical & computational tools for analyzing
@@ -10,7 +10,7 @@ Description: Implements statistical & computational tools for analyzing
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
 Depends: BiocGenerics, Biobase, graphics, methods, stats
-Imports: fields, irlba, lattice, signal, sp, stats4, utils
-Suggests: CardinaliView, testthat, BiocStyle
+Imports: fields, grid, irlba, lattice, signal, sp, stats4, utils
+Suggests: BiocStyle, testthat, jpeg, png
 biocViews: Infrastructure, Bioinformatics, Proteomics,
 	MassSpectrometry, Clustering, Classification

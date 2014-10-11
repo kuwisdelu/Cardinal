@@ -110,17 +110,6 @@ setClass("MSImageProcess",
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)))
 
-#### Class for holding results of analysis on image data ####
-## holds matrices corresponding to results for pixels or features
-## --------------------------------------------------------------
-.RImageData <- setClass("RImageData",
-	slots = c(varMetadata = "list"),
-	contains = "ImageData",
-	prototype = prototype(
-		new("Versioned", versions=c(classVersion("ImageData"),
-			RImageData="0.1.0")),
-		varMetadata = list()))
-
 #### Matrix-like class for sparse signals ####
 ## implemented using lists as hash tables
 ## ---------------------------------------

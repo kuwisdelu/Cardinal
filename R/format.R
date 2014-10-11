@@ -1,7 +1,7 @@
 
-## Format a list of arguments
-.format.list <- function(args) {
-	apply(args, 1, function(a) {
+## Format a data.frame of labels
+.format.data.frame <- function(data) {
+	apply(data, 1, function(a) {
 		paste(paste(names(a), "=", a), collapse=", ")
 	})
 }
