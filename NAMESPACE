@@ -42,6 +42,7 @@ exportClasses(
 	"IAnnotatedDataFrame",
 	"ImageData",
 	"MIAPE-Imaging",
+	"MSImageData",
 	"MSImageProcess",
 	"MSImageSet",
 	"ResultData",

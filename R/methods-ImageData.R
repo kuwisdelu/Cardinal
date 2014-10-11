@@ -50,27 +50,6 @@ setValidity("ImageData", function(object) {
 	if (is.null(msg)) TRUE else msg
 })
 
-## Adapted from combine(AssayData, AssayData) from Biobase
-setMethod("combine",
-	signature = c(x = "ImageData", y = "ImageData"),
-	function(x, y, ...) {
-		storageMode <- storageMode(x)
-		if ( storageMode(y) != storageMode)
-			stop("ImageData must have same storage, but are '",
-				storageMode, "', '", storageMode(y))
-		if ( length(ls(x@data)) != length(ls(y@data)) )
-			stop("ImageData have different numbers of elements:\n\t",
-				paste(ls(x@data), collapse=" "), "\n\t",
-				paste(ls(y@data), collapse=" "))
-		if ( !all(ls(x@data) == ls(y@data)) )
-			stop(paste("ImageData have different element names:",
-				paste(ls(x@data), collapse=" "),
-				paste(ls(y@data), collapse=" "), sep="\n\t"))
-		data <- new.env(parent=emptyenv())
-		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
-		new(class(x), data=data, storageMode=storageMode)
-	})
-
 setMethod("names", "ImageData", function(x) ls(x@data, all.names=TRUE))
 
 setReplaceMethod("names", "ImageData", function(x, value) {
@@ -156,3 +135,23 @@ setReplaceMethod("[[", signature(x="ImageData", i="character", j="missing"),
 		x
 	})
 
+## Adapted from combine(AssayData, AssayData) from Biobase
+setMethod("combine",
+	signature = c(x = "ImageData", y = "ImageData"),
+	function(x, y, ...) {
+		storageMode <- storageMode(x)
+		if ( storageMode(y) != storageMode)
+			stop("ImageData must have same storage, but are '",
+				storageMode, "', '", storageMode(y))
+		if ( length(ls(x@data)) != length(ls(y@data)) )
+			stop("ImageData have different numbers of elements:\n\t",
+				paste(ls(x@data), collapse=" "), "\n\t",
+				paste(ls(y@data), collapse=" "))
+		if ( !all(ls(x@data) == ls(y@data)) )
+			stop(paste("ImageData have different element names:",
+				paste(ls(x@data), collapse=" "),
+				paste(ls(y@data), collapse=" "), sep="\n\t"))
+		data <- new.env(parent=emptyenv())
+		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
+		new(class(x), data=data, storageMode=storageMode)
+	})

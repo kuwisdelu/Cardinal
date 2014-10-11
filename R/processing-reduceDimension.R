@@ -28,7 +28,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		feature <- features(object, mz=mz)
 		object@featureData <- object@featureData[feature,]
 		object@pixelData <- object@pixelData[pixel,]
-		object@imageData <- SImageData(data=data,
+		object@imageData <- MSImageData(data=data,
 			coord=coord(object@pixelData),
 			storageMode=storageMode(imageData(object)),
 			dimnames=list(

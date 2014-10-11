@@ -110,6 +110,19 @@ setClass("MSImageProcess",
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)))
 
+#### Class for MS imaging data ###
+## allows methods for retrieving peak cubes, etc.
+## ----------------------------------------------
+.MSImageData <- setClass("MSImageData",
+	contains = "SImageData",
+	prototype = prototype(
+		new("Versioned", versions=c(classVersion("ImageData"),
+			classVersion("SImageData"), MSImageData="0.1.0")),
+		coord = data.frame(x=numeric(), y=numeric()),
+		positionArray = array(0, dim=c(x=0, y=0)),
+		dim = c(0, 0),
+		dimnames = list(NULL, NULL)))
+
 #### Matrix-like class for sparse signals ####
 ## implemented using lists as hash tables
 ## ---------------------------------------
@@ -169,8 +182,8 @@ setClass("iSet",
 	contains = "SImageSet",
 	prototype = prototype(
 		new("VersionedBiobase", versions=c(classVersion("iSet"),
-			c(classVersion("SImageSet"), MSImageSet="0.7.0"))),
-		imageData = .SImageData(),
+			classVersion("SImageSet"), MSImageSet="0.7.0")),
+		imageData = .MSImageData(),
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))
 

@@ -14,7 +14,7 @@ match.method <- function(method, options) {
 			options[matched]
 		}
 	} else {
-		"unknown"
+		"<unknown>"
 	}
 }
 

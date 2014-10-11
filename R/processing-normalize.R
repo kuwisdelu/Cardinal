@@ -22,7 +22,7 @@ setMethod("normalize", "MSImageSet",
 			}
 			sout
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
-		object@imageData <- SImageData(data=data,
+		object@imageData <- MSImageData(data=data,
 			coord=coord(object)[pixel,],
 			storageMode=storageMode(object@imageData),
 			dimnames=list(featureNames(object), pixelNames(object)[pixel]))

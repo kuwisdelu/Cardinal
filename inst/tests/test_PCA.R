@@ -4,6 +4,8 @@ context("PCA")
 
 test_that("Principal components analysis", {
 
+	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+
 	set.seed(1)
 	data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
 		NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 

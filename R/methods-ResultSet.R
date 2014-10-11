@@ -27,7 +27,7 @@ setMethod("names", "ResultSet", function(x) {
 })
 
 setMethod("$", "ResultSet", function(x, name) {
-	lapply(resultData(x), function(ob) ob[[name]])
+	lapply(resultData(x), function(res) res[[name]])
 })
 
 setMethod("[[", "ResultSet", function(x, i, j, ...) {

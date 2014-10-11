@@ -4,6 +4,8 @@ context("processing")
 
 test_that("Cardinal pre-processing", {
 
+	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+
 	set.seed(1)
 	data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
 		NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
@@ -14,8 +16,6 @@ test_that("Cardinal pre-processing", {
 	msset <- generateImage(data, range=c(1001, 5000), step=0.5, resolution=100, as="MSImageSet")
 
 	plot <- FALSE
-
-	options(Cardinal.progress=FALSE)
 
 	# normalization
 

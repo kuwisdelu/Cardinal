@@ -7,13 +7,39 @@ setMethod("initialize", "SImageData",
 		dimnames = list(NULL, NULL),
 		...)
 	{
+		.Object <- callNextMethod(.Object, ...)
+		if ( is.null(.Object[["iData"]]) ) {
+			.Object@data[["iData"]] <- matrix(nrow=dim[1], ncol=dim[2])
+		} else {
+			data <- .Object@data[["iData"]]
+			if ( length(dim(data)) > 2 ) {
+				dims <- dim(data)[-1]
+				if ( is.null(names(dims)) || any(nchar(dims) == 0) ) {
+					if ( length(dims) %in% c(2,3) ) {
+						names(dims) <- c("x", "y", "z")[seq_along(dims)]
+					} else {
+						names(dims) <- paste("dim", seq_along(dims), sep="")
+					}
+				}
+				positionArray <- array(seq_len(prod(dims)), dim=dims,
+					dimnames=lapply(dims, seq_len))
+				dim(data) <- c(dim(data)[1], prod(dims))
+				coord <- expand.grid(lapply(dims, seq_len))
+				names(coord) <- names(dims)
+				.Object@data[["iData"]] <- data
+			}
+		}
+		if ( is.null(dimnames) )
+			dimnames <- list(NULL, NULL)
+		if ( is.null(dim(data)) ) {
+			dim <- c(0,0)
+		} else {
+			dim <- dim(data)
+		}
 		.Object@coord <- coord
 		.Object@positionArray <- positionArray
 		.Object@dim <- dim
 		.Object@dimnames <- dimnames
-		.Object <- callNextMethod(.Object, ...)
-		if ( is.null(.Object[[".iData"]]) )
-			.Object@data[[".iData"]] <- matrix(nrow=dim[1], ncol=dim[2])
 		.Object
 	})
 
@@ -27,35 +53,7 @@ SImageData <- function(
 	dimnames = NULL,
 	...)
 {
-	storageMode <- match.arg(storageMode)
-	if ( length(dim(data)) > 2 ) {
-		dims <- dim(data)[-1]
-		if ( is.null(names(dims)) || any(nchar(dims) == 0) ) {
-			if ( length(dims) %in% c(2,3) ) {
-				names(dims) <- c("x", "y", "z")[seq_along(dims)]
-			} else {
-				names(dims) <- paste("dim", seq_along(dims), sep="")
-			}
-		}
-		positionArray <- array(seq_len(prod(dims)), dim=dims,
-			dimnames=lapply(dims, seq_len))
-		dim(data) <- c(dim(data)[1], prod(dims))
-		coord <- expand.grid(lapply(dims, seq_len))
-		names(coord) <- names(dims)
-	}
-	if ( is.null(dim(data)) ) {
-		dim <- c(0,0)
-	} else {
-		dim <- dim(data)
-	}
-	if ( missing(dimnames) ) {
-		if ( is.null(dimnames(data)) ) {
-			dimnames <- list(NULL, NULL)
-		} else {
-			dimnames <- dimnames(data)
-		}
-	}
-	.SImageData(.iData=data,
+	.SImageData(iData=data,
 		coord=coord,
 		storageMode=storageMode,
 		positionArray=positionArray,
@@ -68,7 +66,7 @@ setValidity("SImageData", function(object) {
 	msg <- validMsg(NULL, NULL)
 	if ( object@storageMode != "immutableEnvironment" )
 		msg <- validMsg(msg, "storageMode must be 'immutableEnvironment' for an SImageData")
-	names <- c(ls(object@data), ".iData")
+	names <- ls(object@data)
 	if ( !all(sapply(names, function(nm) length(dim(object@data[[nm]])) == 2)) )
 		msg <- validMsg(msg, "all data elements must be a matrix-like object ('dims' of length 2)")
 	ncols <- sapply(names, function(nm) ncol(object@data[[nm]]))
@@ -99,31 +97,11 @@ setValidity("SImageData", function(object) {
 })
 
 setMethod("iData", "SImageData",
-	function(object) object[[".iData"]])
+	function(object) object[["iData"]])
 
 setReplaceMethod("iData", "SImageData",
 	function(object, value) {
-		object[[".iData"]] <- value
-		if ( validObject(object) )
-			object			
-	})
-
-setMethod("peakData", "SImageData",
-	function(object) object[[".peakData"]])
-
-setReplaceMethod("peakData", "SImageData",
-	function(object, value) {
-		object[[".peakData"]] <- value
-		if ( validObject(object) )
-			object			
-	})
-
-setMethod("mzData", "SImageData",
-	function(object) object[[".mzData"]])
-
-setReplaceMethod("mzData", "SImageData",
-	function(object, value) {
-		object[[".mzData"]] <- value
+		object[["iData"]] <- value
 		if ( validObject(object) )
 			object			
 	})
@@ -230,8 +208,7 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 		}
 		inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
 		cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
-		cube[,!is.na(inds)] <- x[[".iData"]][args[[1]],inds[!is.na(inds)],drop=FALSE]
-		# cube <- x[[".iData"]][args[[1]],inds,drop=FALSE] # assumes indexing by NA returns NA
+		cube[,!is.na(inds)] <- iData(x)[args[[1]],inds[!is.na(inds)],drop=FALSE]
 		dim(cube) <- c(dim(cube)[1], dim(inds))
 		names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
 		if ( drop && all(dim(cube) == 1) )
@@ -266,7 +243,14 @@ generatePositionArray <- function(coord, dim, dimnames) {
 setMethod("combine",
 	signature = c(x = "SImageData", y = "SImageData"),
 	function(x, y, ...) {
-		object <- callNextMethod(x, y, ...)
+		if ( length(ls(x@data)) != length(ls(y@data)) )
+			stop("SImageData have different numbers of elements:\n\t",
+				paste(ls(x@data), collapse=" "), "\n\t",
+				paste(ls(y@data), collapse=" "))
+		if ( !all(ls(x@data) == ls(y@data)) )
+			stop(paste("SImageData have different element names:",
+				paste(ls(x@data), collapse=" "),
+				paste(ls(y@data), collapse=" "), sep="\n\t"))
 		if ( prod(dim(y)) == 0 )
 			return(x)
 		if ( prod(dim(x)) == 0 )
@@ -283,23 +267,23 @@ setMethod("combine",
 		names(unionRowIds) <- unionRows
 		unionColIds <- seq_along(unionCols)
 		names(unionColIds) <- unionCols
-		hiddenNames <- setdiff(ls(x@data, all.names=TRUE), ls(x@data))
-		for ( nm in hiddenNames ) {
+		data <- new.env(parent=emptyenv())
+		for ( nm in ls(x@data) ) {
 			ok <- all.equal(x[[nm]][xdim[[1]] %in% sharedRows, xdim[[2]] %in% sharedCols],
 				y[[nm]][ydim[[1]] %in% sharedRows, ydim[[2]] %in% sharedCols])
 			if (!isTRUE(ok))
 				stop("SImageData element ", nm, " shared row and column elements differ: ", ok)
-			object@data[[nm]] <- new(class(x[[nm]]), nrow=length(unionRows), ncol=length(unionCols))
-			object@data[[nm]][unionRowIds[xdim[[1]]], unionColIds[xdim[[2]]]] <- x[[nm]]
-			object@data[[nm]][unionRowIds[ydim[[1]]], unionColIds[ydim[[2]]]] <- y[[nm]]
+			data[[nm]] <- new(class(x[[nm]]), nrow=length(unionRows), ncol=length(unionCols))
+			data[[nm]][unionRowIds[xdim[[1]]], unionColIds[xdim[[2]]]] <- x[[nm]]
+			data[[nm]][unionRowIds[ydim[[1]]], unionColIds[ydim[[2]]]] <- y[[nm]]
 		}
-		object@dimnames <- list(unionRows, unionCols)
-		object@coord <- combine(x@coord, y@coord)
-		object@positionArray <- generatePositionArray(object@coord)
-		object@dim <- dim(object@positionArray)
-		object
+		coord <- combine(x@coord, y@coord)
+		positionArray <- generatePositionArray(coord)
+		new(class(x),
+			data=data,
+			coord=coord,
+			positionArray=positionArray,
+			storageMode=x@storageMode,
+			dim=dim(positionArray),
+			dimnames=list(unionRows, unionCols))
 	})
-
-
-
-

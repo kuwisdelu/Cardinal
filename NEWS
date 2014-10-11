@@ -16,6 +16,7 @@ o Added 'cvApply' method for cross-validation
 o Fixed bug in spatialShrunkenCentroids with prior probabilties
 o Fixed bug in OPLS with proper scaling of data matrices during prediction
 o Added additional statistics to SpatialKmeans class results
+o Changed 'auto.key' argument to 'key' in plotting methods
 
 Version 0.8.2 [2014-7-23]
 

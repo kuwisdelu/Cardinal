@@ -1,7 +1,7 @@
 
 setMethod("initialize", "MSImageSet",
 	function(.Object,
-			imageData = SImageData(),
+			imageData = MSImageData(),
 			pixelData = annotatedDataFrameFrom(imageData),
 			featureData = AnnotatedDataFrame(data.frame(mz=double())),
 			processingData = new("MSImageProcess"),
@@ -26,7 +26,7 @@ MSImageSet <- function(
 	coord = expand.grid(
 		x = seq_len(prod(dim(spectra)[-1])),
 		y = seq_len(ifelse(prod(dim(spectra)[-1]) > 0, 1, 0))),
-	imageData = SImageData(
+	imageData = MSImageData(
 		data=spectra,
 		coord=coord),
 	pixelData = IAnnotatedDataFrame(

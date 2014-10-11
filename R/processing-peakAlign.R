@@ -48,7 +48,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 			dim=c(nrow(object@featureData), nrow(object@pixelData)))
 		keys(peakData) <- alignment
 		keys(mzData) <- alignment
-		object@imageData <- SImageData(data=peakData[,,drop=FALSE],
+		object@imageData <- MSImageData(data=peakData[,,drop=FALSE],
 			coord=coord(object@pixelData),
 			storageMode=storageMode(imageData(object)),
 			dimnames=list(
