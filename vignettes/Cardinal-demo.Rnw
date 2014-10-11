@@ -32,7 +32,7 @@ options(Cardinal.progress=FALSE)
 @ 
 
 
-The \R package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
+The \R\ package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
 
 Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle components analysis, and classification techniques such as partial least Squares discriminant analysis.
 
@@ -49,7 +49,7 @@ Figure \ref{fig:flow} charts out the workflow for mass spectrometry imaging data
 
 
 
-This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R help file.
+This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R\ help file.
 
 
 
@@ -75,7 +75,7 @@ For more information on reading Analyze files, type \verb|?readAnalyze|.
 \subsubsection{imzML}
 
 
-The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets. Many other formats can be converted to imzML with the help of free applications available online.
+The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online.
 
 The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. To read datasets stored in the imzML format, use the \verb|readImzML| function. Both files must be present in the same folder and have the same name (again, except for the file extension) for the data to be read properly.
 
@@ -100,17 +100,17 @@ data <- readMSIData(file)
 
 \subsubsection{RData files}
 
-Any \R  object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
+Any \R\  object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
 <<eval=FALSE>>=
 save(data, file="/Where/to/save/the/data.RData")
 load("/Where/to/save/the/data.RData")
 @
 
-When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
+When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R\ session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
 
 \section{Data exploration and visualization}
 
-Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects. This allows \Rpackage{Cardinal} to keep track of the spectra, pixel coordinates, m/z values and more in one place for the dataset. The \Robject{MSImageSet} object is described in more detail below. There are many methods for both creating and manipulating \Robject{MSImageSet} objects in \Rpackage{Cardinal}. We now describe some of these methods.
+Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects. This allows \Rpackage{Cardinal} to keep track of the spectra, pixel coordinates, $m/z$ values and more in one place for the dataset. The \Robject{MSImageSet} object is described in more detail below. There are many methods for both creating and manipulating \Robject{MSImageSet} objects in \Rpackage{Cardinal}. We now describe some of these methods.
 
 \subsection{An example dataset}
 \label{sec:data}
@@ -130,7 +130,7 @@ msset <- generateImage(pattern, coord=expand.grid(x=1:9, y=1:9),
 	resolution=100, step=3.3, as="MSImageSet")
 @
 
-The above code creates a simulated MS imaging dataset called \Robject{msset}, which is $9 \times 9$ pixels, with a mass range from $m/z 1000$ to $m/z 5000$. There are three peaks, occuring at $m/z 2000$, $m/z 3000$, and $m/z 4000$. Each of these peaks corresponds to a distinct region of interest. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R. All pixels with \Robject{pattern} equal to zero correspond to the region with peak at $m/z 2000$, \Robject{pattern} = 1 corresponds to the peak at $m/z 3000$, and \Robject{pattern} = 2 corresponds to $m/z 4000$.
+The above code creates a simulated MS imaging dataset called \Robject{msset}, which is $9 \times 9$ pixels, with a mass range from $m/z \ 1000$ to $m/z \ 5000$. There are three peaks, occuring at $m/z \ 2000$, $m/z \ 3000$, and $m/z \ 4000$. Each of these peaks corresponds to a distinct region of interest. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R. All pixels with \Robject{pattern} equal to zero correspond to the region with peak at $m/z \ 2000$, \Robject{pattern} = 1 corresponds to the peak at $m/z \ 3000$, and \Robject{pattern} = 2 corresponds to $m/z \ 4000$.
 
 We'll call these regions of interest ``blue'', ``black'', and ``red'' respectively, for reasons that will become clear later. 
 
@@ -174,9 +174,9 @@ See \verb|?MSImageSet| for more details and additional methods.
 
 \subsection{Subsetting a \Robject{MSImageSet}}
 
-A \Robject{MSImageSet} can be subset by row and column like an ordinary \R matrix or \textit{data.frame}, where rows correspond to the features ($m/z$-values) and columns correspond to pixels (locations associated with mass spectra). Subsetting will return a new \Robject{MSImageSet}.
+A \Robject{MSImageSet} can be subset by row and column like an ordinary \R\ matrix or \textit{data.frame}, where rows correspond to the features ($m/z$-values) and columns correspond to pixels (locations associated with mass spectra). Subsetting will return a new \Robject{MSImageSet}.
 
-For example, we can subset by $m/z$-values so that we only keep the mass range from $m/z 2500$ to $m/z 4500$.
+For example, we can subset by $m/z$-values so that we only keep the mass range from $m/z \ 2500$ to $m/z \ 4500$.
 
 <<>>=
 tmp <- msset[2500 < mz(msset) & mz(msset) < 4500,]
@@ -267,26 +267,28 @@ Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| me
 image(msset, feature=1)
 @
 
-In Figure \ref{fig:imNeighborhood}, we plot the mean ion image for the neighborhood of m/z4000 with radius 10, i.e. m/z$[3990,4010]$.
+The mean ion image for the neighborhood of $m/z\ 4000$ with radius 10, i.e. $m/z\ [3990,4010]$ is shown in Figure \ref{fig:imNeighborhood}.
 <<image2>>=
 image(msset, mz=4000, plusminus=10)
 @
 
 
-In Figure \ref{fig:imMulti}, the single ion images for m/z2000, m/z3000, and m/z4000 are displayed simultaneously.
+In Figure \ref{fig:imMulti} the single ion images for $m/z\ 2000$, $m/z\ 3000$, and $m/z\ 4000$ are displayed simultaneously.
 
 <<image3>>=
 mycol <- c("blue", "black", "red")
 image(msset, mz=c(2000, 3000, 4000), col=mycol, superpose=TRUE)
 @
 
-In Figure \ref{fig:imSup}, the ion image for m/z2000 is shown with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
+The ion image for $m/z\ 2000$ is shown in Figure \ref{fig:imSup}, with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
+
 <<image4>>=
 mycol <- gradient.colors(100, start="white", end="blue")
 image(msset, mz=2000, col.regions=mycol, contrast.enhance="suppress")
 @
 
 In Figure \ref{fig:imSmooth}, a smoothed ion image for mz3000 with a custom color scale from white to black is presented.
+
 <<image5>>=
 mycol <- gradient.colors(100, start="white", end="black")
 image(msset, mz=3000, col.regions=mycol, smooth.image="gaussian")
@@ -308,7 +310,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image1>>
 @
-\caption{\small Single m/z feature}
+\caption{\small Single $m/z$ feature}
 \label{fig:imSingleFeature}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -316,7 +318,7 @@ image(msset2, mz=4000, col.regions=mycol)
 <<fig=TRUE, echo=FALSE>>=
 <<image2>>
 @
-\caption{\small Mean over m/z neighborhood}
+\caption{\small Mean over $m/z$ neighborhood}
 \label{fig:imNeighborhood}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -478,7 +480,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in m/z measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known m/z values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the reference peaks (calculated empirically from the mean spectrum) by red vertical lines, and aligns the peaks from an single pixel to these reference peaks.
+Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
 
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
@@ -501,7 +503,8 @@ msset6 <- peakAlign(msset5, method="diff")
 
 Other common forms of data reduction include resampling and binning. Discussions of these methods can be found in \textcolor{red}{SOURCES}.
 
-\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 $m/z$ in this example. The mean intensity or sum intensity of ions located in the same m/z bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
+\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same $m/z$ bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
+
 <<reducedimbin>>=
 temp <- reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
 @
@@ -705,7 +708,7 @@ options(Cardinal.progress=FALSE)
 
 The \verb|generateSpectrum| function can be used to simulate mass spectra. Its parameters can be tuned to simulate different kinds of mass spectra from different kinds of machines, and different protein and peptide patterns.
 
-One spectrum with $m/z$ range from 1001 to 20000, 50 randomly selected peaks, baseline 3000, and m/z resolution 100 is generated below and plotted in Figure \ref{fig:gs1}.
+One spectrum with $m/z$ range from 1001 to 20000, 50 randomly selected peaks, baseline 3000, and $m/z$ resolution 100 is generated below and plotted in Figure \ref{fig:gs1}.
 <<gs1>>=
 set.seed(1)
 s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000),
@@ -1037,5 +1040,9 @@ By creating spatial correlation patterns and combining them with the \Robject{in
 <<results=tex, echo=FALSE>>=
 toLatex(sessionInfo())
 @
+
+
+\bibliographystyle{unsrt}
+\bibliography{Cardinal}
 
 \end{document}
