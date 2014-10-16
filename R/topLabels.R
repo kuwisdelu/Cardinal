@@ -23,9 +23,8 @@ setMethod("topLabels", "ResultSet",
 			`+` = topLabels[order(topLabels[[sort.by]], decreasing=TRUE),],
 			`-` = topLabels[order(topLabels[[sort.by]], decreasing=FALSE),],
 			'b' = topLabels[order(abs(topLabels[[sort.by]]), decreasing=TRUE),])
-		topLabels <- topLabels[seq_len(n),]
 		row.names(topLabels) <- NULL
-		topLabels
+		head(topLabels, n=n, ...)
 	})
 
 setMethod("topLabels", "PCA",

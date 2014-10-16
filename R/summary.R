@@ -113,8 +113,9 @@ setMethod("summary", "SpatialShrunkenCentroids",
 	function(object, ...) {
 		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
-			n <- tabulate(x$classes)
+			n <- table(x$classes)
 			n <- rep(n, each=nrow(object))
+			n[n < 2] <- NA # remove singletons and missing classes
 			classes <- factor(rep(seq_len(k), each=nrow(object)),
 				labels=levels(x$classes))
 			p.values <- 2 * (1 - pt(abs(as.vector(x$tstatistics)), df=n - 1))

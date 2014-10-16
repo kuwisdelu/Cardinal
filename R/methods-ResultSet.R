@@ -31,7 +31,13 @@ setMethod("$", "ResultSet", function(x, name) {
 })
 
 setMethod("[[", "ResultSet", function(x, i, j, ...) {
-	resultData(x)[[i]]
+	if ( missing(i) ) {
+		x[..., drop=TRUE]
+	} else if ( length(list(...)) > 0 ) {
+		x[i, ..., drop=TRUE]
+	} else {
+		resultData(x)[[i]]
+	}
 })
 
 setMethod("[", "ResultSet", function(x, i, j, ..., drop=TRUE) {
