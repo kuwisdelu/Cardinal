@@ -132,7 +132,7 @@ void swap_hdr(struct dsr * pheader)
 template<typename CType, typename RType>
 SEXP readSimpleIntensityArray(const char * filename, int nrow, int ncol)
 {
-	FILE * pfile = fopen(filename, "r");
+	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
 	SEXP data;
 	PROTECT(data = allocMatrix(DataType<RType>(), nrow, ncol));
@@ -158,7 +158,7 @@ extern "C"
 	{
 		// read header file
 		const char * filename = CHAR(STRING_ELT(filepath, 0));
-		FILE * pfile = fopen(filename, "r");
+		FILE * pfile = fopen(filename, "rb");
 		if ( pfile == NULL ) return R_NilValue;
 		struct dsr header;
 		fread(&header, sizeof(struct dsr), 1, pfile);
@@ -253,7 +253,7 @@ extern "C"
 	SEXP readAnalyzeT2M(SEXP filepath, SEXP n)
 	{
 		const char * filename = CHAR(STRING_ELT(filepath, 0));
-		FILE * pfile = fopen(filename, "r");
+		FILE * pfile = fopen(filename, "rb");
 		if ( pfile == NULL ) return R_NilValue;
 		SEXP outmz;
 		PROTECT(outmz = NEW_NUMERIC(INTEGER(n)[0]));

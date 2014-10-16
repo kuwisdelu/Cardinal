@@ -17,7 +17,7 @@
 template<typename CType, typename RType>
 SEXP readContinuousMzArray(const char * filename, int offset, int length)
 {
-	FILE * pfile = fopen(filename, "r");
+	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
 	fseek(pfile, offset, SEEK_SET);
 	SEXP data;
@@ -37,7 +37,7 @@ SEXP readContinuousMzArray(const char * filename, int offset, int length)
 template<typename CType, typename RType>
 SEXP readContinuousIntensityArray(const char * filename, int offset, int nrow, int ncol)
 {
-	FILE * pfile = fopen(filename, "r");
+	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
 	fseek(pfile, offset, SEEK_SET);
 	SEXP data;
@@ -60,7 +60,7 @@ SEXP readContinuousIntensityArray(const char * filename, int offset, int nrow, i
 template<typename CType, typename RType>
 SEXP readProcessedIbdArray(const char * filename, int * offset, int * length, int count)
 {
-	FILE * pfile = fopen(filename, "r");
+	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
 	SEXP list;
 	PROTECT(list = NEW_LIST(count));
@@ -742,7 +742,7 @@ extern "C"
 	{
 		// read file
 		const char * filename = CHAR(STRING_ELT(filepath, 0));
-		FILE * pfile = fopen(filename, "r");
+		FILE * pfile = fopen(filename, "rb");
 		if ( pfile == NULL ) return R_NilValue;
 		pugi::xml_document doc;
 		pugi::xml_parse_result result = doc.load_file(filename);
