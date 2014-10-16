@@ -5,6 +5,9 @@ NEWS for Cardinal package
 Version 0.8.4 [2014-10-9]
 
 o Changed 'topIons' to 'topLabels' method for summarization
+o Added MSImageData class for peakData and mzData methods
+o Changed naming scheme for SImageData (.iData => iData)
+o Fixed but in plotting of classes for SpatialShrunkenCentroids
 
 Version 0.8.3 [2014-9-18]
 

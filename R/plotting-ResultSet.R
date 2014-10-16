@@ -283,7 +283,7 @@ setMethod("plot",
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids"),
 	function(x, formula = substitute(mode ~ x * y),
-		mode = c("probabilities", "cluster", "scores"),
+		mode = c("probabilities", "classes", "scores"),
 		...)
 	{
 		mode <- match.arg(mode)
