@@ -204,7 +204,7 @@ It is also possible to manually select a region of interest and use it to subset
 
 \subsection{Plotting mass spectra}
 
-Mass spectra from an \Robject{MSImageSet} can be plotted using the \verb|plot| method. To plot the mass spectrum at the first pixel of our \Robject{MSImageSet}, we do the following:
+Mass spectra from an \Robject{MSImageSet} can be displayed using the \verb|plot| method. To plot the mass spectrum at the first pixel of our \Robject{MSImageSet}, we do the following:
 
 <<plot1>>=
 plot(msset, pixel=1)
@@ -220,9 +220,9 @@ plot(msset, coord=list(x=5, y=5), plusminus=2)
 @
 
 
-Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. This is done below by specifying a vector for the \verb|pixel| argument. The plots are displayed simultaneously by setting \verb|superpose = TRUE| and \verb|key = TRUE| generates a legend.
+Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. This is done below by specifying a vector for the \verb|pixel| argument. The plots are displayed simultaneously by setting \verb|superpose = TRUE| and \verb|key = TRUE| generates a legend. The \verb|pixel.groups| here indicates that the pixels should be grouped by their classifications as encoded by the \verb|pattern| factor. By default, \Rpackage{Cardinal} averages over spectra in this group.
 
-\textcolor{red}{NOTE: Explain the 'pixel.groups' argument.}
+\textcolor{red}{For Kyle: Does Cardinal also average over the pixels if a vector is specified for the pixel argument?.}
 
 <<plot3>>=
 mycol <- c("blue", "black", "red")
@@ -364,7 +364,7 @@ image(msset2, mz=4000, col.regions=mycol)
 
 \subsection{Normalization}
 
-Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC), commonly used in MSI analysis \textcolor{red}{(see SOURCES)}. In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
+Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC), commonly used in MSI analysis (see \cite{TIC} for a discussion of this method). In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
 <<normalizetic>>=
 temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
 @
@@ -480,7 +480,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 \subsection{Peak alignment}
 
-Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements, as explained by \textcolor{red}{SOURCE (ALEXANDROV?)}. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks.
+Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks, as in \cite{Alexandrov2011}.
 
 <<peakaligndiff>>=
 temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
@@ -917,16 +917,18 @@ image(msset, feature=400, col.regions=alpha.colors(100, "red"))
 
 \subsubsection{Advanced simulation}
 
-The \verb|generateImage| function provides a straightforward method for rapid simulation of many kinds of images to test classification and clustering models, but suppose we wish to simulate a more complex dataset with spatial correlations. Below we simulate a dataset with two overlapping regions. Figure \ref{fig:sp}
+The \verb|generateImage| function provides a straightforward method for rapid simulation of many kinds of images to test classification and clustering models, but suppose we wish to simulate a more complex dataset with spatial correlations. Below we simulate a dataset with two overlapping regions. In each of these regions, the intensity degrades with distance from the center of the region, implining spatial correlation, Figure \ref{fig:sp}.
 
 
 <<adv1>>=
-x1 <- apply(expand.grid(x=1:10, y=1:10), 1, function(z) 1/(1 + ((4-z[[1]])/2)^2 + ((4-z[[2]])/2)^2))
+x1 <- apply(expand.grid(x=1:10, y=1:10), 1, 
+            function(z) 1/(1 + ((4-z[[1]])/2)^2 + ((4-z[[2]])/2)^2))
 dim(x1) <- c(10,10)
 image(x1[,ncol(x1):1])
 @
 <<adv2>>=
-x2 <- apply(expand.grid(x=1:10, y=1:10), 1, function(z) 1/(1 + ((6-z[[1]])/2)^2 + ((6-z[[2]])/2)^2))
+x2 <- apply(expand.grid(x=1:10, y=1:10), 1, 
+            function(z) 1/(1 + ((6-z[[1]])/2)^2 + ((6-z[[2]])/2)^2))
 dim(x2) <- c(10,10)
 image(x2[,ncol(x2):1])
 @
@@ -939,7 +941,7 @@ image(x2[,ncol(x2):1])
 <<fig=TRUE, echo=FALSE>>=
 <<adv1>>
 @
-\caption{\small}
+\caption{\small Region 1}
 \label{fig:sp1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -947,22 +949,32 @@ image(x2[,ncol(x2):1])
 <<fig=TRUE, echo=FALSE>>=
 <<adv2>>
 @
-\caption{\small}
+\caption{\small Region 2}
 \label{fig:sp2}
 \end{subfigure}
 \caption{\small Ground truth images of a dataset with overlapping regions.}
 \label{fig:sp}
 \end{figure}
 
-We generate the image by using \verb|generateSpectrum| with the calculated mean intensities. We use two peaks for the two regions with nearly overlapping peaks at $m/z$ 500 and $m/z$ 510. Figure \ref{fig:advimg}
+
+
+
+We generate the image by using \verb|generateSpectrum| with the calculated mean intensities. We use two peaks for the two regions with nearly overlapping peaks at $m/z$ 500 and $m/z$ 510. 
 
 
 <<advsim>>=
 set.seed(1)
-x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), intensities=c(z1, z2), range=c(1,1000), resolution=100, baseline=0, step=1)$x, as.vector(x1), as.vector(x2))
+x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), 
+                                               intensities=c(z1, z2), 
+                                               range=c(1,1000), 
+                                               resolution=100, 
+                                               baseline=0, step=1)$x,
+             as.vector(x1), as.vector(x2))
 img3 <- MSImageSet(x3, coord=expand.grid(x=1:10, y=1:10), mz=1:1000)
 @
-Now we can plot the ion images for each of the two peaks.
+
+
+Now we can plot the ion images for each of the two peaks in \ref{fig:advimg}.
 <<advimg1>>=
 image(img3, feature=500, col=intensity.colors(100))
 @
@@ -979,7 +991,7 @@ image(img3, feature=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg1>>
 @
-\caption{\small}
+\caption{\small Single ion image for peak at $mz500$}
 \label{fig:advimg1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -987,7 +999,7 @@ image(img3, feature=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg2>>
 @
-\caption{\small}
+\caption{\small Single ion image for peak at $mz510$}
 \label{fig:advimg2}
 \end{subfigure}
 \caption{\small Simulated mass spectral images at the two peaks.}
@@ -996,7 +1008,7 @@ image(img3, feature=510, col=intensity.colors(100))
 
 
 
-Finally, we also plot the mass spectra in Figure \ref{fig:advplot}
+Finally, we plot the mass spectrum for a pixel from each region in Figure \ref{fig:advplot}
 <<advplot1>>=
 plot(img3, pixel=34, type="l")
 @
@@ -1013,7 +1025,7 @@ plot(img3, pixel=56, type="l")
 <<fig=TRUE, echo=FALSE>>=
 <<advplot1>>
 @
-\caption{\small}
+\caption{\small Region 1, pixel 34 spectrum}
 \label{fig:advplot1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -1021,7 +1033,7 @@ plot(img3, pixel=56, type="l")
 <<fig=TRUE, echo=FALSE>>=
 <<advplot2>>
 @
-\caption{\small}
+\caption{\small Region 1, pixel 56 spectrum}
 \label{fig:advplot2}
 \end{subfigure}
 \caption{\small Simulated mass spectra from each of the two regions.}
