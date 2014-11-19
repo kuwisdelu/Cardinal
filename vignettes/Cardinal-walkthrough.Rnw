@@ -32,7 +32,7 @@ options(Cardinal.progress=FALSE)
 @ 
 
 
-The \R\ package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
+The \R{} package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
 
 Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle components analysis, and classification techniques such as partial least Squares discriminant analysis.
 
@@ -49,7 +49,7 @@ Figure \ref{fig:flow} charts out the workflow for mass spectrometry imaging data
 
 
 
-This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R\ help file.
+This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R{} help file.
 
 
 
@@ -100,13 +100,13 @@ data <- readMSIData(file)
 
 \subsubsection{RData files}
 
-Any \R\  object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
+Any \R{}  object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
 <<eval=FALSE>>=
 save(data, file="/Where/to/save/the/data.RData")
 load("/Where/to/save/the/data.RData")
 @
 
-When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R\ session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
+When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R{} session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
 
 \section{Data exploration and visualization}
 
@@ -174,7 +174,7 @@ See \verb|?MSImageSet| for more details and additional methods.
 
 \subsection{Subsetting a \Robject{MSImageSet}}
 
-A \Robject{MSImageSet} can be subset by row and column like an ordinary \R\ matrix or \textit{data.frame}, where rows correspond to the features ($m/z$-values) and columns correspond to pixels (locations associated with mass spectra). Subsetting will return a new \Robject{MSImageSet}.
+A \Robject{MSImageSet} can be subset by row and column like an ordinary \R{} matrix or \textit{data.frame}, where rows correspond to the features ($m/z$-values) and columns correspond to pixels (locations associated with mass spectra). Subsetting will return a new \Robject{MSImageSet}.
 
 For example, we can subset by $m/z$-values so that we only keep the mass range from $m/z \ 2500$ to $m/z \ 4500$.
 

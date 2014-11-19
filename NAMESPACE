@@ -19,6 +19,7 @@ importFrom("irlba",
 importFrom("lattice",
 	"xyplot",
 	"levelplot",
+	"panel.abline",
 	"panel.xyplot",
 	"panel.levelplot",
 	"simpleKey")
