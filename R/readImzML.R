@@ -48,7 +48,9 @@ readImzML <- function(name, folder=getwd()) {
 	# create and return dataset
 	experimentData <- new("MIAPE-Imaging")
 	processingData <- new("MSImageProcess", files=c(xmlpath, ibdpath))
-	MSImageSet(spectra=intensity, mz=mz, coord=coord,
+	object <- MSImageSet(spectra=intensity, mz=mz, coord=coord,
 		processingData=processingData,
 		experimentData=experimentData)
+	sampleNames(object) <- name
+	object
 }

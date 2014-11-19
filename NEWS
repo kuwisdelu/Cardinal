@@ -2,12 +2,21 @@
 NEWS for Cardinal package
 -------------------------
 
-Version 0.8.4 [2014-10-9]
+Version 0.8.5 [2014-11-20]
+o Added 'show' and 'print' methods for most objects
+o Fixed 'combine' method for SImageData and SImageSet
+o Fixed bug in between-cluster SS calculation for spatialKMeans
+o Fixed bug with pre-processing 1-pixel datasets
+o Completed .Rd documentation for all public methods
+o Cleaned up R CMD check warnings (except C++ .hpp headers)
+
+Version 0.8.4 [2014-10-16]
 
 o Changed 'topIons' to 'topLabels' method for summarization
 o Added MSImageData class for peakData and mzData methods
 o Changed naming scheme for SImageData (.iData => iData)
-o Fixed but in plotting of classes for SpatialShrunkenCentroids
+o Fixed bug in plotting of classes for SpatialShrunkenCentroids
+o Fixed bug in fopen in readAnalyze and readImzML affecting Windows
 
 Version 0.8.3 [2014-9-18]
 

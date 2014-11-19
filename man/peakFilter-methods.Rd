@@ -12,9 +12,9 @@
 	Apply peak filtering to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakFilter}{MSImageSet,numeric}(object, method = "freq",
+\S4method{peakFilter}{MSImageSet}(object, method = "freq",
     \dots,
-    pixel = pixel(object),
+    pixel = pixels(object),
     plot = FALSE)
 
 ## Filter based on the frequency of a peak
@@ -24,6 +24,7 @@ peakFilter.freq(x, freq.min=length(x) / 100, \dots)
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
     \item{method}{The peak filtering method to use.}
     \item{pixel}{The pixels to filter. If less than the extent of the dataset, this will result in a subset of the data being processed.}
+    \item{plot}{Not supported for this processing method.}
     \item{\dots}{Additional arguments passed to the peak filtering method.}
     \item{x}{The vector of ion image intensities to filter.}
     \item{freq.min}{Peaks that occur in the dataset fewer times than this will be removed.}

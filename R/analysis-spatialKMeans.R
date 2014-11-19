@@ -20,12 +20,10 @@ setMethod("spatialKMeans",
 			fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=w, ncomp=ncomp)
 			lapply(ks, function(k) {
 				.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
-				res <- append(.spatialKMeans(x, fastmap=fastmap, k=k,
+				append(.spatialKMeans(x, fastmap=fastmap, k=k,
 					iter.max=iter.max, nstart=nstart, algorithm=algorithm),
 					list(r=r, k=k, method=method, weights=weights,
 						fastmap=fastmap))
-				class(res) <- "ResultData"
-				res
 			})
 		}), recursive=FALSE)
 		.message("spatialKMeans: Preparing results.")
@@ -65,14 +63,13 @@ setMethod("spatialKMeans",
 		apply(scale(t(iData(x)[,cluster==Ck]), scale=FALSE)^2, 2, sum)
 	})
 	totss <- apply(scale(t(iData(x)), scale=FALSE)^2, 2, sum)
-	betweenss <- totss - withinss
+	betweenss <- totss - rowSums(withinss)
 	names(cluster) <- pixelNames(x)
 	rownames(centers) <- featureNames(x)
 	colnames(centers) <- levels(cluster)
 	rownames(withinss) <- featureNames(x)
 	colnames(withinss) <- levels(cluster)
-	rownames(betweenss) <- featureNames(x)
-	colnames(betweenss) <- levels(cluster)
+	names(betweenss) <- featureNames(x)
 	names(totss) <- featureNames(x)
 	list(cluster=cluster, centers=centers, totss=totss,
 		withinss=withinss, betweenss=betweenss,

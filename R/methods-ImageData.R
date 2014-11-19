@@ -155,3 +155,13 @@ setMethod("combine",
 		for ( nm in ls(x@data) ) data[[nm]] <- combine(x[[nm]], y[[nm]])
 		new(class(x), data=data, storageMode=storageMode)
 	})
+
+setMethod("show", "ImageData", function(object) {
+	cat("An object of class '", class(object), "'\n", sep="")
+	for ( nm in ls(object@data) ) {
+		ob <- object@data[[nm]]
+		dms <- paste0(dim(ob), collapse=" x ")
+		cat("  ", nm, ": ", dms, " ", class(ob), "\n", sep="")
+	}
+})
+

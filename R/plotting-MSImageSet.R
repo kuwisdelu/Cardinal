@@ -21,6 +21,8 @@ setMethod("plot",
 		} else if ( missing(pixel.groups) ) {
 			pixel.groups <- NULL
 		}
+		if ( missing(pixel) && missing(coord) && missing(formula) )
+			.stop("plot: 'pixel' or 'coord' must be specified")
 		callNextMethod(x,
 			formula=formula,
 			pixel=pixel,
@@ -60,6 +62,8 @@ setMethod("image",
 		} else if ( missing(feature.groups) ) {
 			feature.groups <- NULL
 		}
+		if ( missing(feature) && missing(mz) && missing(formula) )
+			.stop("image: 'feature' or 'mz' must be specified")
 		callNextMethod(x,
 			formula=formula,
 			feature=feature,

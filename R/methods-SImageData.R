@@ -277,6 +277,11 @@ setMethod("combine",
 			data[[nm]][unionRowIds[xdim[[1]]], unionColIds[xdim[[2]]]] <- x[[nm]]
 			data[[nm]][unionRowIds[ydim[[1]]], unionColIds[ydim[[2]]]] <- y[[nm]]
 		}
+		if ( "sample" %in% union(names(x@coord), names(y@coord)) ) {
+			samples <- union(levels(x@coord[["sample"]]), levels(y@coord[["sample"]]))
+			x@coord[["sample"]] <- factor(as.character(x@coord[["sample"]]), levels=samples)
+			y@coord[["sample"]] <- factor(as.character(y@coord[["sample"]]), levels=samples)
+		}
 		coord <- combine(x@coord, y@coord)
 		positionArray <- generatePositionArray(coord)
 		new(class(x),

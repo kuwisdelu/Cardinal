@@ -1,4 +1,23 @@
 
+setMethod("summary", "iSet", function(object, ...) {
+	outlist <- 	list()
+	outlist[["Features"]] <- paste0(nrow(fData(object)), " (",
+		paste(selectSome(featureNames(object), maxToShow=2), collapse=" "), ")")
+	outlist[["Pixels"]] <- paste0(nrow(pData(object)), " (",
+		paste(selectSome(pixelNames(object), maxToShow=2), collapse=" "), ")")
+	for ( co in coordLabels(object) ) {
+		outlist[[co]] <- paste(range(pData(object)[[co]]), collapse=" ... ")
+	}
+	class(outlist) <- "summary.iSet"
+	outlist
+})
+
+print.summary.iSet <- function(x, ...) {
+	for ( nm in names(x) ) {
+		cat(nm, ": ", x[[nm]], "\n", sep="")
+	}
+}
+
 setMethod("summary", "PCA",
 	function(object, ...) {
 		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
@@ -16,10 +35,14 @@ setMethod("summary", "PCA",
 				"Proportion of Variance",
 				"Cumulative"),
 			paste0("PC", seq_along(sdev)))
-		out <- list(topLabels=topLabels, importance=importance)
+		out <- list(topLabels=topLabels, importance=importance, model=modelData(object))
 		class(out) <- "summary.PCA"
 		out
 	})
+
+print.summary.PCA <- function(x, ...) {
+	print(x$importance)
+}
 
 setMethod("summary", "PLS",
 	function(object, ...) {
@@ -49,10 +72,14 @@ setMethod("summary", "PLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy)
+		out <- list(topLabels=topLabels, accuracy=accuracy, model=modelData(object))
 		class(out) <- "summary.PLS"
 		out
 	})
+
+print.summary.PLS <- function(x, ...) {
+	print(x$accuracy)
+}
 
 setMethod("summary", "OPLS",
 	function(object, ...) {
@@ -83,10 +110,14 @@ setMethod("summary", "OPLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy)
+		out <- list(topLabels=topLabels, accuracy=accuracy, model=modelData(object))
 		class(out) <- "summary.OPLS"
 		out
 	})
+
+print.summary.OPLS <- function(x, ...) {
+	print(x$accuracy)
+}
 
 setMethod("summary", "SpatialKMeans",
 	function(object, ...) {
@@ -104,10 +135,23 @@ setMethod("summary", "SpatialKMeans",
 				row.names=seq_len(k * nrow(object)))
 		}))
 		row.names(topLabels) <- NULL
-		out <- list(topLabels=topLabels)
+		withinss <- sapply(resultData(object), function(x) sum(x$withinss))
+		betweenss <- sapply(resultData(object), function(x) sum(x$betweenss))
+		totss <- sapply(resultData(object), function(x) sum(x$totss))
+		out <- list(topLabels=topLabels, withinss=withinss, betweenss=betweenss,
+			totss=totss, model=modelData(object))
 		class(out) <- "summary.SpatialKMeans"
 		out
 	})
+
+print.summary.SpatialKMeans <- function(x, ...) {
+	model <- pData(x$model)
+	row.names(model) <- NULL
+	model[["Within-Cluster SS"]] <- x$withinss
+	model[["Between-Cluster SS"]] <- x$betweenss
+	model[["Total SS"]] <- x$totss
+	print(model)
+}
 
 setMethod("summary", "SpatialShrunkenCentroids",
 	function(object, ...) {
@@ -136,10 +180,29 @@ setMethod("summary", "SpatialShrunkenCentroids",
 				.summarize.factor(x$y, x$classes)
 			}
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy)
+		nclasses <- sapply(resultData(object), function(x) 
+			length(unique(x$classes)))
+		nzfeatures <- sapply(resultData(object), function(x) {
+			which <- apply(x$tstatistics, 2, function(t) any(t != 0))
+			nz <- apply(x$tstatistics[,which,drop=FALSE], 2, function(t) sum(t != 0))
+			round(mean(nz))
+		})
+		out <- list(topLabels=topLabels, accuracy=accuracy, nclasses=nclasses,
+			nzfeatures=nzfeatures, model=modelData(object))
 		class(out) <- "summary.SpatialShrunkenCentroids"
 		out
 	})
+
+print.summary.SpatialShrunkenCentroids <- function(x, ...) {
+	model <- pData(x$model)
+	row.names(model) <- NULL
+	model[["Number of Classes"]] <- x$nclasses
+	model[["Avg. # of Features in Model"]] <- x$nzfeatures
+	print(model)
+	if ( !all(sapply(x$accuracy, is.null)) ) {
+		cat("\n"); print(x$accuracy)
+	}
+}
 
 setMethod("summary", "CrossValidated",
 	function(object, ...) {
@@ -155,6 +218,10 @@ setMethod("summary", "CrossValidated",
 		class(out) <- "summary.CrossValidated"
 		out
 	})
+
+print.summary.CrossValidated <- function(x, ...) {
+	print(x$accuracy)
+}
 
 .summarize.factor <- function(y, fitted) {
 	nonmissing <- !is.na(y)

@@ -9,6 +9,8 @@
 \alias{PLS,SImageSet,factor-method}
 \alias{PLS,SImageSet,character-method}
 \alias{predict,PLS-method}
+\alias{summary,PLS-method}
+\alias{print.summary.PLS}
 
 \title{Partial Least Squares}
 \description{

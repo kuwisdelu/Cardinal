@@ -146,8 +146,8 @@ setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduce
 
 #### Data transformation and alignment ####
 ## ---------------------------------------
-setGeneric("as2D", function(object) standardGeneric("as2D"))
-setGeneric("as3D", function(object) standardGeneric("as3D"))
+# setGeneric("as2D", function(object) standardGeneric("as2D"))
+# setGeneric("as3D", function(object) standardGeneric("as3D"))
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 
 #### Statistical analysis and tools ####
@@ -165,7 +165,7 @@ setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 #### Plotting ####
 ## ---------------
 setGeneric("select", function(x, ...) standardGeneric("select"))
-setGeneric("image3d", function(x, ...) standardGeneric("image3d"))
+# setGeneric("image3d", function(x, ...) standardGeneric("image3d"))
 
 ####-----------------------------------------------------------####
 

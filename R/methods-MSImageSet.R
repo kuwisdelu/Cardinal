@@ -144,15 +144,9 @@ setReplaceMethod("processingData", "MSImageSet",
 
 setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 	function(x, y, ...) {
-		if ( varMetadata(x)["sample", "labelType"] != "dim" )
-			varMetadata(x)["sample", "labelType"] <- "dim"
-		if ( varMetadata(y)["sample", "labelType"] != "dim" )
-			varMetadata(y)["sample", "labelType"] <- "dim"
-		pixelNames(x) <- .format.data.frame(coord(x))
-		pixelNames(y) <- .format.data.frame(coord(y))
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)
-		regeneratePositions(x)
+		x
 	})
 

@@ -8,6 +8,7 @@
 \alias{[,SImageSet-method}
 \alias{[,SImageSet,ANY,ANY,ANY-method}
 \alias{initialize,SImageSet-method}
+\alias{combine,SImageSet,SImageSet-method}
 \alias{iData,SImageSet-method}
 \alias{iData<-,SImageSet-method}
 \alias{regeneratePositions,SImageSet-method}
@@ -103,6 +104,8 @@ SImageSet(
 
     Standard generic methods:
     \describe{
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{SImageSet} objects. Unique 'sample's in \code{pixelData} are treated as a dimension.}
+
         \item{\code{SImageSet[i, j, ..., drop]}:}{Subset an \code{SImageSet} based on the rows (featureData components) and the columns (pixelData components). The result is a new \code{SImageSet}.}
     }
 

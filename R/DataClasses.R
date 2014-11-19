@@ -187,10 +187,6 @@ setClass("iSet",
 		processingData = new("MSImageProcess"),
 		experimentData = new("MIAPE-Imaging")))
 
-#### Classes for results from a single analysis ####
-## -------------------------------------------------
-setClassUnion("ResultData", c("list", "environment"))
-
 #### Classes for collections of experimental analysis results ####
 ## ---------------------------------------------------------------
 setClass("ResultSet",

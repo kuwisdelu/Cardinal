@@ -45,7 +45,6 @@ exportClasses(
 	"MSImageData",
 	"MSImageProcess",
 	"MSImageSet",
-	"ResultData",
 	"ResultSet",
 	"SImageData",
 	"SImageSet",
@@ -55,6 +54,7 @@ export(
 	"ImageData",
 	"IAnnotatedDataFrame",
 	"Hashmat",
+	"MSImageData",
 	"MSImageSet",
 	"SImageData",
 	"SImageSet")
@@ -69,6 +69,15 @@ export(
 	"readImzML",
 	"readMSIData",
 	"risk.colors")
+
+export(
+	"print.summary.iSet",
+	"print.summary.PCA",
+	"print.summary.PLS",
+	"print.summary.OPLS",
+	"print.summary.SpatialKMeans",
+	"print.summary.SpatialShrunkenCentroids",
+	"print.summary.CrossValidated")
 
 exportMethods(
 	"as.array",
@@ -244,10 +253,7 @@ exportMethods(
 	"reduceDimension",
 	"smoothSignal")
 
-exportMethods(
-	"as2D",
-	"as3D",
-	"coregister")
+exportMethods("coregister")
 
 exportMethods(
 	"OPLS",
@@ -256,11 +262,8 @@ exportMethods(
 	"spatialKMeans",
 	"spatialShrunkenCentroids")
 
-exportMethods(
-	"topLabels")
+exportMethods("topLabels")
 
-exportMethods(
-	"select",
-	"image3d")
+exportMethods("select")
 
 useDynLib("Cardinal")

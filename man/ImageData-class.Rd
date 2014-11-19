@@ -19,6 +19,7 @@
 \alias{storageMode<-,ImageData,character-method}
 \alias{names,ImageData-method}
 \alias{names<-,ImageData-method}
+\alias{show,ImageData-method}
 
 \title{Class Containing Arrays of Imaging Data}
 

@@ -39,7 +39,7 @@ gradient.colors <- function(n, start="white", end="black", alpha=1) {
 }
 
 ## Convert a color or vector of colors to be translucent
-alpha.colors <- function(n, col="black", ramp=c("linear","power"), range=c(0,1)) {
+alpha.colors <- function(n, col="red", ramp=c("linear","power"), range=c(0,1)) {
 	if ( missing(n) ) n <- length(col)
 	if ( length(col) < n ) col <- rep(col, n)
 	cols <- col2rgb(col, alpha=TRUE)

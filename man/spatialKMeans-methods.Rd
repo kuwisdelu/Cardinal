@@ -5,6 +5,8 @@
 \alias{SpatialKMeans-class}
 \alias{spatialKMeans-methods}
 \alias{spatialKMeans,SImageSet-method}
+\alias{summary,SpatialKMeans-method}
+\alias{print.summary.SpatialKMeans}
 
 \title{Spatially-Aware K-Means Clustering}
 \description{

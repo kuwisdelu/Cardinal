@@ -58,10 +58,8 @@
 \alias{fvarLabels<-,iSet-method}
 \alias{featureNames,iSet-method}
 \alias{featureNames<-,iSet-method}
-\alias{pixels,iSet-method}
-\alias{pixels<-,iSet-method}
-\alias{features,iSet-method}
-\alias{features<-,iSet-method}
+\alias{summary,iSet-method}
+\alias{print.summary.iSet}
 
 \title{Class to Contain High-Throughput Imaging Experiment Data and Metadata}
 

@@ -7,6 +7,8 @@
 \alias{PCA,SImageSet-method}
 \alias{predict,PCA-method}
 \alias{predict,PCA-method}
+\alias{summary,PCA-method}
+\alias{print.summary.PCA}
 
 \title{Principal Components Analysis}
 \description{

@@ -7,8 +7,14 @@
 \alias{plot,SImageSet,formula-method}
 \alias{plot,MSImageSet,missing-method}
 \alias{plot,MSImageSet,formula-method}
+\alias{plot,ResultSet,missing-method}
+\alias{plot,ResultSet,formula-method}
+\alias{plot,CrossValidated,missing-method}
+\alias{plot,PCA,missing-method}
+\alias{plot,PLS,missing-method}
+\alias{plot,OPLS,missing-method}
+\alias{plot,SpatialKMeans,missing-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
-\alias{plot,SpatialShrunkenCentroids,formula-method}
 
 \title{Plot the Feature-Space of an Imaging Dataset}
 
@@ -22,16 +28,17 @@
     pixel.groups,
     groups = NULL,
     superpose = FALSE,
-    auto.key = FALSE,
+    strip = TRUE,
+    key = FALSE,
     fun = mean,
     \dots,
     xlab,
     xlim,
     ylab,
     ylim,
+    layout,
     type = 'l',
     col = "black",
-    col.groups = "gray",
     subset = TRUE,
     lattice = FALSE)
 
@@ -41,18 +48,51 @@
     coord,
     plusminus,
     \dots,
-    type = ifelse(centroided(x), 'h', 'l'))
+    type = if (centroided(x)) 'h' else 'l')
 
-\S4method{plot}{SpatialShrunkenCentroids,missing}(x, formula = ~ Feature,
+\S4method{plot}{ResultSet,missing}(x, formula,
     model = pData(modelData(x)),
+    pixel,
+    pixel.groups,
     superpose = TRUE,
-    auto.key = TRUE,
+    strip = TRUE,
+    key = superpose,
     \dots,
-    mode = c("centers", "tstatistics"),
-    classes = levels(unlist(x$classes)),
-    type = 'h',
-    col = rainbow(nlevels(unlist(x$classes))),
+    xlab,
+    ylab,
+    column,
+    col = if (superpose) rainbow(nlevels(pixel.groups)) else "black",
     lattice = FALSE)
+
+\S4method{plot}{CrossValidated,missing}(x, fold, \dots)
+
+\S4method{plot}{PCA,missing}(x, formula = substitute(mode ~ mz),
+    mode = "loadings",
+    type = 'h',
+    \dots)
+
+\S4method{plot}{PLS,missing}(x, formula = substitute(mode ~ mz),
+    mode = c("coefficients", "loadings",
+        "weights", "projection"),
+    type = 'h',
+    \dots)
+
+\S4method{plot}{OPLS,missing}(x, formula = substitute(mode ~ mz),
+    mode = c("coefficients", "loadings", "Oloadings",
+        "weights", "Oweights", "projection"),
+    type = 'h',
+    \dots)
+
+\S4method{plot}{SpatialShrunkenCentroids,missing}(x, formula = substitute(mode ~ mz),
+    mode = c("centers", "tstatistics"),
+    type = 'h',
+    \dots)
+
+\S4method{plot}{SpatialKMeans,missing}(x, formula = substitute(mode ~ mz),
+    mode = c("centers", "betweenss", "withinss"),
+    type = 'h',
+    \dots)
+
 }
 
 \arguments{
@@ -77,7 +117,9 @@
 
     \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot?}
 
-    \item{auto.key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' (\emph{not} 'auto.key') if 'lattice = TRUE'.}
+    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link[lattice]{xyplot}}.}
+
+    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link[lattice]{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
 
@@ -89,9 +131,9 @@
 
     \item{ylim}{A numeric vector of length 2 giving the lower and upper limits for the y-axis.}
 
-    \item{col}{A specification for the default plotting color(s).}
+    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link[lattice]{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
-    \item{col.groups}{If both 'pixel.groups' and 'groups' are specified while 'superpose = TRUE', then this argument is used to expand the plotting colors.}
+    \item{col}{A specification for the default plotting color(s).}
 
     \item{type}{A character indicating the type of plotting.}
 
@@ -105,9 +147,12 @@
 
     \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
 
-    \item{mode}{What kind of results should be plotted.}
+    \item{fold}{What folds of the cross-validation should be plotted.}
 
-    \item{classes}{What classes to plot for analysis results.}
+    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
+
+    \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
+
 }
 
 \author{

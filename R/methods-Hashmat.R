@@ -241,3 +241,9 @@ setMethod("combine",
 		m
 	})
 
+setMethod("show", "Hashmat", function(object) {
+	cat("An object of class '", class(object), "'\n", sep="")
+	cat("  ", object@dim[[1]], " x ", object@dim[[2]],
+		" sparse matrix", "\n", sep="")
+})
+

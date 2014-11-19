@@ -273,4 +273,3 @@ setReplaceMethod("[[", "iSet",
 		x
 	})
 
-

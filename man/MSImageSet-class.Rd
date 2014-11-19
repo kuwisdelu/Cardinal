@@ -17,8 +17,6 @@
 \alias{processingData<-,MSImageSet-method}
 \alias{centroided,MSImageSet-method}
 \alias{centroided<-,MSImageSet-method}
-\alias{pixels,MSImageSet-method}
-\alias{features,MSImageSet-method}
 
 \title{Class to Contain Mass Spectrometry Imaging Experiment Data}
 
@@ -34,7 +32,7 @@ MSImageSet(
     coord = expand.grid(
         x = seq_len(prod(dim(spectra)[-1])),
         y = seq_len(ifelse(prod(dim(spectra)[-1]) > 0, 1, 0))),
-    imageData = SImageData(data=spectra, coord=coord),
+    imageData = MSImageData(data=spectra, coord=coord),
     pixelData = IAnnotatedDataFrame(
         data=coord,
         varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),

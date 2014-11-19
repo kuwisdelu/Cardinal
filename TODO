@@ -3,8 +3,9 @@ TODO for Cardinal package
 -------------------------
 
 Urgent:
-- remove unnecessary ResultData class assignments
-- add missing show and print methods
+- prettify show() and print() methods for new classes
+- fix wrong calculation for BSS in spatialKmeans!!
+- fix pixelApply for 1-d arrays (for pre-processing)
 
 Long term:
 - add support for 3D datasets and plotting

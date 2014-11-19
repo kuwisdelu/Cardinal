@@ -21,12 +21,15 @@
 \alias{pData,Hashmat-method}
 \alias{pData<-,Hashmat-method}
 \alias{pData<-,Hashmat,ANY-method}
+\alias{keys}
+\alias{keys<-}
 \alias{keys,Hashmat-method}
 \alias{keys<-,Hashmat-method}
 \alias{keys<-,Hashmat,character-method}
 \alias{keys<-,Hashmat,list-method}
 \alias{combine,Hashmat,Hashmat-method}
 \alias{initialize,Hashmat-method}
+\alias{show,Hashmat-method}
 
 \title{Sparse Matrix Class Using Lists as Hash Tables}
 

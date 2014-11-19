@@ -63,3 +63,9 @@ setMethod("[", "ResultSet", function(x, i, j, ..., drop=TRUE) {
 	}
 })
 
+setMethod("show", "ResultSet", function(object) {
+	cat("An object of class '", class(object), "'\n\n", sep="")
+	tryCatch(print(summary(object)),
+		error=function(e) cat("No summary available\n"))
+})
+

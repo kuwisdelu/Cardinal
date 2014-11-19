@@ -3,6 +3,7 @@
 
 \alias{coregister}
 \alias{coregister-methods}
+\alias{coregister,SpatialKMeans,missing-method}
 \alias{coregister,SpatialShrunkenCentroids,missing-method}
 
 \title{Coregister Images}
@@ -11,6 +12,8 @@
 }
 \usage{
 \S4method{coregister}{SpatialShrunkenCentroids,missing}(object, ref, \dots)
+
+\S4method{coregister}{SpatialKMeans,missing}(object, ref, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}

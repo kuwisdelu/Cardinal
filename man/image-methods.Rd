@@ -5,6 +5,12 @@
 \alias{image-methods}
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
+\alias{image,ResultSet-method}
+\alias{image,CrossValidated-method}
+\alias{image,PCA-method}
+\alias{image,PLS-method}
+\alias{image,OPLS-method}
+\alias{image,SpatialKMeans-method}
 \alias{image,SpatialShrunkenCentroids-method}
 
 \title{Plot the Pixel-Space of an Imaging Dataset}
@@ -19,7 +25,8 @@
     feature.groups,
     groups = NULL,
     superpose = FALSE,
-    auto.key = FALSE,
+    strip = TRUE,
+    key = FALSE,
     fun = mean,
     contrast.enhance = c("none", "suppression", "histogram"),
     smooth.image = c("none", "gaussian", "adaptive"),
@@ -29,8 +36,9 @@
     ylab,
     ylim,
     zlim,
+    layout,
     asp = 1,
-    col = rainbow(nlevels(groups)),
+    col = rainbow(nlevels(feature.groups)),
     col.regions = intensity.colors(100),
     colorkey = TRUE,
     subset = TRUE,
@@ -43,15 +51,40 @@
     plusminus,
     \dots)
 
-\S4method{image}{SpatialShrunkenCentroids}(x, formula = ~ x * y,
+\S4method{image}{ResultSet}(x, formula,
     model = pData(modelData(x)),
+    feature,
+    feature.groups,
     superpose = TRUE,
-    auto.key = TRUE,
+    strip = TRUE,
+    key = superpose,
     \dots,
-    mode = c("probabilities", "scores"),
-    classes = unique(unlist(x$classes)),
-    col = rainbow(nlevels(unlist(x$classes))),
+    column,
+    col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
     lattice = FALSE)
+
+\S4method{image}{CrossValidated}(x, fold, \dots)
+
+\S4method{image}{PCA}(x, formula = substitute(mode ~ x * y),
+    mode = "scores",
+    \dots)
+
+\S4method{image}{PLS}(x, formula = substitute(mode ~ x * y),
+    mode = c("fitted", "scores", "y"),
+    \dots)
+
+\S4method{image}{OPLS}(x, formula = substitute(mode ~ x * y),
+    mode = c("fitted", "scores", "Oscores", "y"),
+    \dots)
+
+\S4method{image}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y),
+    mode = c("probabilities", "classes", "scores"),
+    \dots)
+
+\S4method{image}{SpatialKMeans}(x, formula = substitute(mode ~ x * y),
+    mode = "cluster",
+    \dots)
+
 }
 
 \arguments{
@@ -76,7 +109,9 @@
 
     \item{superpose}{Should feature vectors from different feature groups specified by 'feature.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
 
-    \item{auto.key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' (\emph{not} 'auto.key') if 'lattice = TRUE'.}
+    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link[lattice]{levelplot}} is 'lattice = TRUE'.}
+
+    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link[lattice]{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
 
@@ -93,6 +128,8 @@
     \item{ylim}{A numeric vector of length 2 giving the top and bottom limits for the y-axis.}
 
     \item{zlim}{A numeric vector of length 2 giving the lower and upper limits for the z-axis (i.e., the range of colors to be plotted).}
+
+    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link[lattice]{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
     \item{asp}{The aspect ratio of the plot.}
 
@@ -112,9 +149,12 @@
 
     \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
 
-    \item{mode}{What kind of results should be plotted.}
+    \item{fold}{What folds of the cross-validation should be plotted.}
 
-    \item{classes}{What classes to plot for analysis results.}
+    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
+
+    \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
+
 }
 
 \author{

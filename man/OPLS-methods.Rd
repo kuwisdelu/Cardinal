@@ -9,6 +9,8 @@
 \alias{OPLS,SImageSet,factor-method}
 \alias{OPLS,SImageSet,character-method}
 \alias{predict,OPLS-method}
+\alias{summary,OPLS-method}
+\alias{print.summary.OPLS}
 
 \title{Orthogonal Partial Least Squares}
 \description{
@@ -18,6 +20,7 @@
 \S4method{OPLS}{SImageSet,matrix}(x, y, ncomp = 20,
     method = "nipals",
     scale = FALSE,
+    keep.Xnew = TRUE,
     iter.max = 100, \dots)
 
 \S4method{OPLS}{SImageSet,numeric}(x, y, \dots)
@@ -26,7 +29,7 @@
 
 \S4method{OPLS}{SImageSet,character}(x, y, \dots)
 
-\S4method{predict}{OPLS}(object, newx, newy, \dots)
+\S4method{predict}{OPLS}(object, newx, newy, keep.Xnew = TRUE, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset on which to perform partial least squares.}
@@ -34,6 +37,7 @@
     \item{ncomp}{The number of O-PLS components to calculate.}
     \item{method}{The function used to calculate the projection.}
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
+    \item{keep.Xnew}{Should the new data matrix be kept after filtering out the orthogonal variation?}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Passed to the next OPLS method.}
     \item{object}{The result of a previous call to \code{\link[Cardinal]{OPLS}}.}

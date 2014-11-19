@@ -1,45 +1,25 @@
-\name{SImageData-class}
+\name{MSImageData-class}
 \docType{class}
 
-\alias{class:SImageData}
-\alias{SImageData}
-\alias{SImageData-class}
+\alias{class:MSImageData}
+\alias{MSImageData}
+\alias{MSImageData-class}
 
-\alias{[,SImageData-method}
-\alias{[,SImageData,ANY,ANY,ANY-method}
-\alias{combine,SImageData,SImageData-method}
-\alias{dim,SImageData-method}
-\alias{dims,SImageData-method}
-\alias{initialize,SImageData-method}
-\alias{iData,SImageData-method}
-\alias{iData<-,SImageData-method}
-\alias{peakData,SImageData-method}
-\alias{peakData<-,SImageData-method}
-\alias{mzData,SImageData-method}
-\alias{mzData<-,SImageData-method}
-\alias{coord,SImageData-method}
-\alias{coord<-,SImageData-method}
-\alias{featureNames,SImageData-method}
-\alias{featureNames<-,SImageData-method}
-\alias{pixelNames,SImageData-method}
-\alias{pixelNames<-,SImageData-method}
-\alias{positionArray}
-\alias{positionArray<-}
-\alias{positionArray,SImageData-method}
-\alias{positionArray<-,SImageData-method}
-\alias{regeneratePositions}
-\alias{regeneratePositions,SImageData-method}
+\alias{initialize,MSImageData-method}
+\alias{peakData,MSImageData-method}
+\alias{peakData<-,MSImageData-method}
+\alias{mzData,MSImageData-method}
+\alias{mzData<-,MSImageData-method}
 
-
-\title{Class Containing Sparse Image Data}
+\title{Class Containing Mass Spectrometry Image Data}
 
 \description{
-    A container class for holding pixel-sparse image as a virtual datacube. It is assumed there will be missing pixels, so the feature vectors are stored as a matrix for memory efficiency, and the datacube is reconstructed on-the-fly. The implementation remains efficient even for non-sparse data as long as the full datacube does not need to be reconstructed as often as single images and feature vectors. All elements of \code{data} must have an identical number of rows (features) and columns (pixels).
+    A container class for mass spectrometry imaging data. This is an extension of the \linkS4class{SImageData} class, which adds methods specific for the extraction and replacement of mass spectral peaks.
 }
 
 \usage{
 ## Instance creation
-SImageData(
+MSImageData(
     data = Hashmat(nrow=0, ncol=0),
     coord = expand.grid(
         x = seq_len(ncol(data)),
@@ -58,7 +38,7 @@ SImageData(
 
     \item{coord}{A \code{data.frame} with columns representing the spatial dimensions. Each row provides a spatial coordinate for the location of a feature vector corresponding to a column in \code{data}. This argument is ignored if \code{data} is a multidimensional array rather than a matrix.}
 
-    \item{storageMode}{The storage mode to use for the \code{SImageData} object for the environment in the \code{data} slot. Only \code{"immutableEnvironment"} is allowed for \code{SImageData}. See documentation on the \code{storageMode} slot below for more details.}
+    \item{storageMode}{The storage mode to use for the \code{MSImageData} object for the environment in the \code{data} slot. Only \code{"immutableEnvironment"} is allowed for \code{MSImageData}. See documentation on the \code{storageMode} slot below for more details.}
 
     \item{positionArray}{The \code{positionArray} for the imaging data. This should not normally be specified the user, since it is generated automatically from the \code{coord} argument, unless for some reason \code{coord} is not specified.}
 
@@ -70,7 +50,7 @@ SImageData(
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, which is a matrix-like object with rows equal to the number of features and columns equal to the number of non-missing pixels. Each column is a feature vector.}
+        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, and possibly containing an element named \code{"peakData"} and \code{"mzData"}. The \code{"peakData"} element contains the intensities of the peak cube in a sparse matrix format. The \code{"mzData"} element contians the m/z values of the peaks in a sparse matrix format. All of these matrices have been aligned for that their dimensions reflect only the shared peaks, possibly across multiple datasets. They have been aligned from a call to \code{\link[Cardinal]{peakAlign}}.}
 
         \item{\code{coord}:}{An \code{data.frame} with rows giving the spatial coordinates of the pixels corresponding to the columns of \code{"iData"}.}
 
@@ -91,13 +71,17 @@ SImageData(
 }
 
 \section{Creating Objects}{
-    \code{SImageData} instances are usually created through \code{SImageData()}.
+    \code{MSImageData} instances are usually created through \code{MSImageData()}.
 }
 
 \section{Methods}{
     Class-specific methods:
     \describe{
         \item{\code{iData(object)}, \code{iData(object)<-}:}{Return or set the matrix of image intensities. Columns should correspond to feature vectors, and rows should correspond to pixel vectors.}
+
+        \item{\code{peakData(object)}, \code{peakData(object)<-}:}{Return or set the sparse matrix of peak intensities if it exists.}
+
+        \item{\code{mzData(object)}, \code{mzData(object)<-}:}{Return or set the sparse matrix of peak m/z values if it exists.}
 
         \item{\code{coord(object)}, \code{coord(object)<-}:}{Return or set the coodinates. This is a \code{data.frame} with each row corresponding to the spatial coordinates of a pixel.}
 
@@ -112,13 +96,13 @@ SImageData(
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{SImageData} objects. Elements are combined as for \code{\linkS4class{ImageData}}. Elements with hidden names (preceded by ".") are combined separetely, and must be a matrix-like object that can be instantiated with a call of the form \code{new(<class name>, nrow, ncol)}.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageData} objects. Elements are combined as for \code{\linkS4class{ImageData}}. Elements with hidden names (preceded by ".") are combined separetely, and must be a matrix-like object that can be instantiated with a call of the form \code{new(<class name>, nrow, ncol)}.}
 
         \item{\code{dim}:}{Return the dimensions of the (virtual) datacube. This is equal to the number of features (the number of rows in the matrix returned by \code{iData}) and the dimensions of the \code{positionArray} slot. For a standard imaging dataset, that is the number features followed by the spatial dimensions of the image.}
 
         \item{\code{dims}:}{A matrix where each column corresponds to the dimensions of the (virtual) datacubes stored as elements in the \code{data} slot. See above for how the dimensions are calculated.}
 
-        \item{\code{SImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}. Use \code{drop = NA} to return a subset of the same class as the object.}
+        \item{\code{MSImageData[i, j, ..., drop]}:}{Access intensities in the (virtual) imaging datacube. The datacube is reconstructed on-the-fly. The object can be indexed like any ordinary array with number of dimensions equal to \code{dim(object)}. Use \code{drop = NA} to return a subset of the same class as the object.}
     }
 }
 
@@ -126,29 +110,29 @@ SImageData(
 
 \seealso{
     \code{\linkS4class{ImageData}},
-    \code{\linkS4class{MSImageData}},
+    \code{\linkS4class{SImageData}},
     \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}
 }
 
 \examples{
-## Create an SImageData object
-SImageData()
+## Create an MSImageData object
+MSImageData()
 
 ## Using a P x N matrix
 data1 <- matrix(1:27, nrow=3)
 coord <- expand.grid(x=1:3, y=1:3)
-sdata1 <- SImageData(data1, coord)
+sdata1 <- MSImageData(data1, coord)
 sdata1[] # extract data as array
 
 ## Using a P x X x Y array
 data2 <- array(1:27, dim=c(3,3,3))
-sdata2 <- SImageData(data2)
+sdata2 <- MSImageData(data2)
 sdata2[] # should be identical to above
 
 # Missing data from some pixels
 data3 <- matrix(1:9, nrow=3)
-sdata3 <- SImageData(data3, coord[c(1,5,9),])
+sdata3 <- MSImageData(data3, coord[c(1,5,9),])
 
 dim(sdata3) # presents as an array
 iData(sdata3) # stored as matrix
@@ -159,7 +143,7 @@ sdata3[] # can only assign into matrix representation
 
 ## Sparse feature vectors
 data4 <- Hashmat(nrow=9, ncol=9)
-sdata4 <- SImageData(data4, coord)
+sdata4 <- MSImageData(data4, coord)
 iData(sdata4)[] <- diag(9)
 sdata4[1,,]
 }

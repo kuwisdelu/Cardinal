@@ -38,11 +38,9 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		.message("PLS: Fitting partial least squares components.")
 		fit <- .PLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 		result <- lapply(ncomps, function(ncomp) {
-			res <- append(fit, list(y=newy, ncomp=ncomp,
+			append(fit, list(y=newy, ncomp=ncomp,
 				method=method, scale=scale, center=center,
 				Yscale=Yscale, Ycenter=Ycenter))
-			class(res) <- "ResultData"
-			res
 		})
 		model <- AnnotatedDataFrame(
 			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
@@ -114,7 +112,6 @@ setMethod("predict", "PLS",
 			res[names(pred)] <- pred
 			if ( !missing.newy )
 				res$y <- newy
-			class(res) <- "ResultData"
 			res
 		})
 		.message("PLS: Done.")

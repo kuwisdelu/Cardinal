@@ -16,6 +16,7 @@
 \alias{sampleNames<-,IAnnotatedDataFrame-method}
 \alias{sampleNames<-,IAnnotatedDataFrame,ANY-method}
 \alias{combine,IAnnotatedDataFrame,IAnnotatedDataFrame-method}
+\alias{[,IAnnotatedDataFrame,ANY,ANY,ANY-method}
 
 \title{Class Containing Measured Variables and Their Meta-Data Description for Imaging Experiments}
 

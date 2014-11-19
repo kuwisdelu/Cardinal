@@ -11,12 +11,15 @@
 \alias{[[,ResultSet-method}
 \alias{[[,ResultSet,ANY,ANY-method}
 \alias{resultData}
+\alias{resultData<-}
 \alias{resultData,ResultSet-method}
 \alias{resultData<-,ResultSet-method}
 \alias{modelData}
+\alias{modelData<-}
 \alias{modelData,ResultSet-method}
 \alias{modelData<-,ResultSet-method}
 \alias{names,ResultSet-method}
+\alias{show,ResultSet-method}
 
 \title{Class to Contain Analysis Results for Imaging Experiments}
 

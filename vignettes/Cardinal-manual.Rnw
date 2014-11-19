@@ -1046,15 +1046,12 @@ By creating spatial correlation patterns and combining them with the \Robject{in
 
 \section{Session info}
 
-
-
-
 <<results=tex, echo=FALSE>>=
 toLatex(sessionInfo())
 @
 
 
-\bibliographystyle{unsrt}
-\bibliography{Cardinal}
+% \bibliographystyle{unsrt}
+% \bibliography{Cardinal}
 
 \end{document}

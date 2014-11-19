@@ -35,7 +35,9 @@ readAnalyze <- function(name, folder=getwd()) {
 	# create and return dataset
 	experimentData <- new("MIAPE-Imaging")
 	processingData <- new("MSImageProcess", files=c(hdrpath, t2mpath, imgpath))
-	MSImageSet(spectra=data, mz=mz, coord=coord,
+	object <- MSImageSet(spectra=data, mz=mz, coord=coord,
 		processingData=processingData,
 		experimentData=experimentData)
+	sampleNames(object) <- name
+	object
 }

@@ -16,13 +16,11 @@ setMethod("spatialShrunkenCentroids",
 			spatial <- spatial.info(x, r=init$r, method=method)
 			lapply(ss, function(s) {
 				.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
-				res <- append(.spatialShrunkenCentroids.cluster(x,
+				append(.spatialShrunkenCentroids.cluster(x,
 					classes=init$cluster, centers=init$centers,
 					r=init$r, k=init$k, s=s, spatial=spatial,
 					iter.max=iter.max), list(method=method,
 						r=init$r, k=init$k, s=s))
-				class(res) <- "ResultData"
-				res
 			})
 		}), recursive=FALSE)
 		.message("spatialShrunkenCentroids: Preparing results.")
@@ -75,9 +73,7 @@ setMethod("spatialShrunkenCentroids",
 			fit <- append(fit, list(y=newy, s=s, method=method, priors=priors))
 			lapply(rs, function(r) {
 				.message("spatialShrunkenCentroids: Expanding results for r = ", r, ".")
-				res <- append(fit, list(r=r, k=length(levels(y))))
-				class(res) <- "ResultData"
-				res
+				append(fit, list(r=r, k=length(levels(y))))
 			})
 		}), recursive=FALSE)
 		model <- AnnotatedDataFrame(data=data.frame(
@@ -130,7 +126,6 @@ setMethod("predict",
 			res[names(pred)] <- pred
 			if ( !missing.newy )
 				res$y <- newy
-			class(res) <- "ResultData"
 			res
 		})
 		.message("spatialShrunkenCentroids: Done.")

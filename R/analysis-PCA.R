@@ -19,11 +19,9 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			loadings <- fit$loadings[,1:ncomp,drop=FALSE]
 			scores <- fit$scores[,1:ncomp,drop=FALSE]
 			sdev <- fit$sdev[1:ncomp]
-			res <- list(scores=scores, loadings=loadings, sdev=sdev,
+			list(scores=scores, loadings=loadings, sdev=sdev,
 				method=method, ncomp=ncomp,
 				center=fit$center, scale=fit$scale)
-			class(res) <- "ResultData"
-			res
 		})
 		model <- AnnotatedDataFrame(
 			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
@@ -52,7 +50,6 @@ setMethod("predict", "PCA",
 			pred <- .PCA.predict(newx, ncomp=res$ncomp, loadings=res$loadings,
 				center=res$center, scale=res$scale)
 			res[names(pred)] <- pred
-			class(res) <- "ResultData"
 			res
 		})
 		.message("PCA: Done.")

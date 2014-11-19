@@ -134,6 +134,21 @@ setMethod("[", "SImageSet",
 		x
 	})
 
+setMethod("combine", signature = c(x = "SImageSet", y = "SImageSet"),
+	function(x, y, ...) {
+		if ( varMetadata(x)["sample", "labelType"] != "dim" ) {
+			coord(imageData(x))[["sample"]] <- pixelData(x)[["sample"]]
+			varMetadata(x)["sample", "labelType"] <- "dim"
+		}
+		if ( varMetadata(y)["sample", "labelType"] != "dim" ) {
+			coord(imageData(y))[["sample"]] <- pixelData(y)[["sample"]]
+			varMetadata(y)["sample", "labelType"] <- "dim"
+		}
+		pixelNames(x) <- .format.data.frame(coord(x))
+		pixelNames(y) <- .format.data.frame(coord(y))
+		callNextMethod(x, y, ...)
+	})
+
 ## Adapted from as(ExpressionSet, data.frame) from Biobase
 setAs("SImageSet", "data.frame",
 	function(from) data.frame(t(iData(from)), pData(from)))
@@ -195,12 +210,14 @@ setMethod("pixelApply", "SImageSet",
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.pixel)
 		if ( .simplify ) ans <- simplify2array(ans)
-		if ( .simplify && length(dim(ans) > 1) && any(dim(ans) == 1) ) {
+		if ( .simplify && length(dim(ans)) > 2 && any(dim(ans) == 1) ) {
 			dmn <- dimnames(ans)
 			rmInd <- which(dim(ans) == 1)
 			dim(ans) <- dim(ans)[-rmInd]
 			dimnames(ans) <- dmn[-rmInd]
 		}
+		if ( .simplify && length(dim(ans)) == 1 )
+			ans <- as.matrix(ans)
 		ans
 	})
 
@@ -261,12 +278,14 @@ setMethod("featureApply", "SImageSet",
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.feature)
 		if ( .simplify ) ans <- simplify2array(ans)
-		if ( .simplify && length(dim(ans) > 1) && any(dim(ans) == 1) ) {
+		if ( .simplify && length(dim(ans)) > 2 && any(dim(ans) == 1) ) {
 			dmn <- dimnames(ans)
 			rmInd <- which(dim(ans) == 1)
 			dim(ans) <- dim(ans)[-rmInd]
 			dimnames(ans) <- dmn[-rmInd]
 		}
+		if ( .simplify && length(dim(ans)) == 1 )
+			ans <- as.matrix(ans)
 		ans
 	})
 

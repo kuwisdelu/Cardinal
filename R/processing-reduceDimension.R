@@ -55,7 +55,9 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageS
 		if ( !centroided(ref) )
 			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
 		prochistory(processingData(object)) <- .history()
-		reduceDimension(object, method=method, peaklist=mz(ref), ...)
+		object <- reduceDimension(object, method=method, peaklist=mz(ref), ...)
+		peakPicking(processingData(object)) <- peakPicking(processingData(ref))
+		object
 	})
 
 reduceDimension.method <- function(method) {
