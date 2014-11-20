@@ -42,10 +42,6 @@ test_that("IAnnotatedDataFrame accessors and assignment", {
 	pixelNames(df) <- paste("p", 1:9, sep="")
 	expect_equal(pixelNames(df), paste("p", 1:9, sep=""))
 
-	df2 <- df
-	pixelNames(df2) <- paste("p", 10:18, sep="")
-	expect_true(is(combine(df, df2), "IAnnotatedDataFrame"))
-
 })
 
 test_that("IAnnotatedDataFrame combine", {
