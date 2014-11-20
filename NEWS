@@ -4,7 +4,7 @@ NEWS for Cardinal package
 
 Version 0.8.5 [2014-11-20]
 o Added 'show' and 'print' methods for most objects
-o Fixed 'combine' method for SImageData and SImageSet
+o Changed 'combine' method for IAnnotatedDataFame, SImageData, and SImageSet
 o Fixed bug in between-cluster SS calculation for spatialKMeans
 o Fixed bug with pre-processing 1-pixel datasets
 o Completed .Rd documentation for all public methods

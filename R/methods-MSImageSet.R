@@ -144,9 +144,12 @@ setReplaceMethod("processingData", "MSImageSet",
 
 setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 	function(x, y, ...) {
+		if ( !identical(mz(x), mz(y)) )
+			.stop("MSImageSet 'mz' must match")
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)
+		pixelNames(x) <- .format.data.frame(coord(x))
 		x
 	})
 

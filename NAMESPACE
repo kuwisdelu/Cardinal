@@ -89,6 +89,8 @@ exportMethods(
 	"rownames<-",
 	"colnames",
 	"colnames<-",
+	"cbind",
+	"rbind",
 	"summary")
 
 exportMethods(

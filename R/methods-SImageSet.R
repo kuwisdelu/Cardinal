@@ -136,16 +136,18 @@ setMethod("[", "SImageSet",
 
 setMethod("combine", signature = c(x = "SImageSet", y = "SImageSet"),
 	function(x, y, ...) {
-		if ( varMetadata(x)["sample", "labelType"] != "dim" ) {
-			coord(imageData(x))[["sample"]] <- pixelData(x)[["sample"]]
-			varMetadata(x)["sample", "labelType"] <- "dim"
+		sx <- pixelData(x)[["sample"]]
+		sy <- pixelData(y)[["sample"]]
+		if ( !identical(sort(unique(sx)), sort(unique(sy))) ) {
+			if ( varMetadata(x)["sample", "labelType"] != "dim" ) {
+				coord(imageData(x))[["sample"]] <- pixelData(x)[["sample"]]
+				varMetadata(x)["sample", "labelType"] <- "dim"
+			}
+			if ( varMetadata(y)["sample", "labelType"] != "dim" ) {
+				coord(imageData(y))[["sample"]] <- pixelData(y)[["sample"]]
+				varMetadata(y)["sample", "labelType"] <- "dim"
+			}
 		}
-		if ( varMetadata(y)["sample", "labelType"] != "dim" ) {
-			coord(imageData(y))[["sample"]] <- pixelData(y)[["sample"]]
-			varMetadata(y)["sample", "labelType"] <- "dim"
-		}
-		pixelNames(x) <- .format.data.frame(coord(x))
-		pixelNames(y) <- .format.data.frame(coord(y))
 		callNextMethod(x, y, ...)
 	})
 
@@ -183,7 +185,7 @@ setMethod("pixelApply", "SImageSet",
 			.feature.groups <- factor(integer(length(.feature)), labels="")
 		.feature.groups <- as.factor(.feature.groups)
 		if ( !length(.feature.groups) %in% c(length(.feature), nrow(.object)) )
-			stop("'.feature.groups' must have length equal to '.feature' or '.object' feature extent")
+			.stop("'.feature.groups' must have length equal to '.feature' or '.object' feature extent")
 		if ( length(.feature) != length(.feature.groups) )
 			.feature.groups <- .feature.groups[.feature]
 		groups <- split(.feature, .feature.groups, drop=TRUE)
@@ -251,7 +253,7 @@ setMethod("featureApply", "SImageSet",
 			.pixel.groups <- factor(integer(length(.pixel)), labels="")
 		.pixel.groups <- as.factor(.pixel.groups)
 		if ( !length(.pixel.groups) %in% c(length(.pixel), ncol(.object)) )
-			stop("'.pixel.groups' must have length equal to '.pixel' or '.object' pixel extent")
+			.stop("'.pixel.groups' must have length equal to '.pixel' or '.object' pixel extent")
 		if ( length(.pixel) != length(.pixel.groups) )
 			.pixel.groups <- .pixel.groups[.pixel]
 		groups <- split(.pixel, .pixel.groups, drop=TRUE)

@@ -195,7 +195,7 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 		# reconstruct the data cube and return subset as an array
 		nargs <- nargs() - 1 - !missing(drop)
 		if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
-			stop("incorrect number of dimensions")
+			.stop("incorrect number of dimensions")
 		if ( missing(drop) ) drop <- TRUE
 		args <- lapply(dim(x), function(dm) seq_len(dm))
 		if ( !missing(i) ) args[[1]] <- i
@@ -255,40 +255,73 @@ setMethod("combine",
 			return(x)
 		if ( prod(dim(x)) == 0 )
 			return(y)
-		xdim <- x@dimnames
-		ydim <- y@dimnames
-		if ( any(sapply(xdim, is.null)) || any(sapply(ydim, is.null)) )
-			stop("SImageData elements must have dimnames for 'combine'")
-		sharedRows <- intersect(xdim[[1]], ydim[[1]])
-		sharedCols <- intersect(xdim[[2]], ydim[[2]])
-		unionRows <- union(xdim[[1]], ydim[[1]])
-		unionCols <- union(xdim[[2]], ydim[[2]])
-		unionRowIds <- seq_along(unionRows)
-		names(unionRowIds) <- unionRows
-		unionColIds <- seq_along(unionCols)
-		names(unionColIds) <- unionCols
-		data <- new.env(parent=emptyenv())
-		for ( nm in ls(x@data) ) {
-			ok <- all.equal(x[[nm]][xdim[[1]] %in% sharedRows, xdim[[2]] %in% sharedCols],
-				y[[nm]][ydim[[1]] %in% sharedRows, ydim[[2]] %in% sharedCols])
-			if (!isTRUE(ok))
-				stop("SImageData element ", nm, " shared row and column elements differ: ", ok)
-			data[[nm]] <- new(class(x[[nm]]), nrow=length(unionRows), ncol=length(unionCols))
-			data[[nm]][unionRowIds[xdim[[1]]], unionColIds[xdim[[2]]]] <- x[[nm]]
-			data[[nm]][unionRowIds[ydim[[1]]], unionColIds[ydim[[2]]]] <- y[[nm]]
-		}
-		if ( "sample" %in% union(names(x@coord), names(y@coord)) ) {
-			samples <- union(levels(x@coord[["sample"]]), levels(y@coord[["sample"]]))
-			x@coord[["sample"]] <- factor(as.character(x@coord[["sample"]]), levels=samples)
-			y@coord[["sample"]] <- factor(as.character(y@coord[["sample"]]), levels=samples)
-		}
-		coord <- combine(x@coord, y@coord)
+		coord <- rbind(x@coord, y@coord)
+		if ( any(duplicated(coord)) )
+			.stop("SImageData contain pixels with duplicate coordinates")
 		positionArray <- generatePositionArray(coord)
+		data <- new.env(parent=emptyenv())
+		for ( nm in ls(x@data) )
+			data[[nm]] <- cbind(x[[nm]], y[[nm]])
+		dimnames <- list(dimnames(x)[[1]],
+			c(dimnames(x)[[2]], dimnames(y)[[2]]))
 		new(class(x),
 			data=data,
 			coord=coord,
 			positionArray=positionArray,
 			storageMode=x@storageMode,
 			dim=dim(positionArray),
-			dimnames=list(unionRows, unionCols))
+			dimnames=dimnames)
 	})
+
+# setMethod("combine",
+# 	signature = c(x = "SImageData", y = "SImageData"),
+# 	function(x, y, ...) {
+# 		if ( length(ls(x@data)) != length(ls(y@data)) )
+# 			.stop("SImageData have different numbers of elements:\n\t",
+# 				paste(ls(x@data), collapse=" "), "\n\t",
+# 				paste(ls(y@data), collapse=" "))
+# 		if ( !all(ls(x@data) == ls(y@data)) )
+# 			.stop(paste("SImageData have different element names:",
+# 				paste(ls(x@data), collapse=" "),
+# 				paste(ls(y@data), collapse=" "), sep="\n\t"))
+# 		if ( prod(dim(y)) == 0 )
+# 			return(x)
+# 		if ( prod(dim(x)) == 0 )
+# 			return(y)
+# 		xdim <- x@dimnames
+# 		ydim <- y@dimnames
+# 		if ( any(sapply(xdim, is.null)) || any(sapply(ydim, is.null)) )
+# 			.stop("SImageData elements must have dimnames for 'combine'")
+# 		sharedRows <- intersect(xdim[[1]], ydim[[1]])
+# 		sharedCols <- intersect(xdim[[2]], ydim[[2]])
+# 		unionRows <- union(xdim[[1]], ydim[[1]])
+# 		unionCols <- union(xdim[[2]], ydim[[2]])
+# 		unionRowIds <- seq_along(unionRows)
+# 		names(unionRowIds) <- unionRows
+# 		unionColIds <- seq_along(unionCols)
+# 		names(unionColIds) <- unionCols
+# 		data <- new.env(parent=emptyenv())
+# 		for ( nm in ls(x@data) ) {
+# 			ok <- all.equal(x[[nm]][xdim[[1]] %in% sharedRows, xdim[[2]] %in% sharedCols],
+# 				y[[nm]][ydim[[1]] %in% sharedRows, ydim[[2]] %in% sharedCols])
+# 			if (!isTRUE(ok))
+# 				.stop("SImageData element ", nm, " shared row and column elements differ: ", ok)
+# 			data[[nm]] <- new(class(x[[nm]]), nrow=length(unionRows), ncol=length(unionCols))
+# 			data[[nm]][unionRowIds[xdim[[1]]], unionColIds[xdim[[2]]]] <- x[[nm]]
+# 			data[[nm]][unionRowIds[ydim[[1]]], unionColIds[ydim[[2]]]] <- y[[nm]]
+# 		}
+# 		if ( "sample" %in% union(names(x@coord), names(y@coord)) ) {
+# 			samples <- union(levels(x@coord[["sample"]]), levels(y@coord[["sample"]]))
+# 			x@coord[["sample"]] <- factor(as.character(x@coord[["sample"]]), levels=samples)
+# 			y@coord[["sample"]] <- factor(as.character(y@coord[["sample"]]), levels=samples)
+# 		}
+# 		coord <- combine(x@coord, y@coord)
+# 		positionArray <- generatePositionArray(coord)
+# 		new(class(x),
+# 			data=data,
+# 			coord=coord,
+# 			positionArray=positionArray,
+# 			storageMode=x@storageMode,
+# 			dim=dim(positionArray),
+# 			dimnames=list(unionRows, unionCols))
+# 	})

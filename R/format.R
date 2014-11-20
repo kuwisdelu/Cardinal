@@ -2,7 +2,7 @@
 ## Format a data.frame of labels
 .format.data.frame <- function(data) {
 	apply(data, 1, function(a) {
-		paste(paste(names(a), "=", a), collapse=", ")
+		paste0(paste0(names(a), " = ", a), collapse=", ")
 	})
 }
 
@@ -26,7 +26,7 @@
 	}
 	digits <- max(digits, 2)
 	if ( length(mz) > 0 ) {
-		paste("m/z", "=", round(mz, digits=digits))
+		paste0("m/z", " = ", round(mz, digits=digits))
 	} else {
 		character()
 	}

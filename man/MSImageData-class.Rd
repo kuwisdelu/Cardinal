@@ -96,7 +96,7 @@ MSImageData(
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageData} objects. Elements are combined as for \code{\linkS4class{ImageData}}. Elements with hidden names (preceded by ".") are combined separetely, and must be a matrix-like object that can be instantiated with a call of the form \code{new(<class name>, nrow, ncol)}.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{MSImageData} objects. Elements must be matrix-like objects and are combined column-wise with a call to 'cbind'. The numbers of rows must match, but otherwise no checking of row or column names is performed. The pixel coordinates are checked for uniqueness.}
 
         \item{\code{dim}:}{Return the dimensions of the (virtual) datacube. This is equal to the number of features (the number of rows in the matrix returned by \code{iData}) and the dimensions of the \code{positionArray} slot. For a standard imaging dataset, that is the number features followed by the spatial dimensions of the image.}
 

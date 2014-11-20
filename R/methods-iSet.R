@@ -168,7 +168,7 @@ setMethod("features", "iSet",
 	function(object, ...) {
 		dots <- list(...)
 		if ( !all(names(dots) %in% fvarLabels(object)) )
-			stop("all arguments must appear as variables in 'featureData'")
+			.stop("all arguments must appear as variables in 'featureData'")
 		if ( length(dots) > 0 ) {
 			features <- sapply(seq_along(dots), function(i) {
 				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
@@ -189,7 +189,7 @@ setMethod("pixels", "iSet",
 	function(object, ...) {
 		dots <- list(...)
 		if ( !all(names(dots) %in% varLabels(object)) )
-			stop("all arguments must appear as variables in 'pixelData'")
+			.stop("all arguments must appear as variables in 'pixelData'")
 		if ( length(dots) > 0 ) {
 			pixels <- sapply(seq_along(dots), function(i) {
 				pData(object)[[names(dots)[[i]]]] %in% dots[[i]]
@@ -232,7 +232,7 @@ setReplaceMethod("experimentData", "iSet",
 setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 	function(x, y, ...) {
 		if (class(x) != class(y))
-			stop("objects must be the same class, but are '",
+			.stop("objects must be the same class, but are '",
 				class(x), "', '", class(y), "'")
 		if ( !isCurrent(x)[["iSet"]] )
 			x <- updateObject(x)

@@ -104,7 +104,7 @@ setMethod("combine",
 					c(slot(x, sl), slot(y, sl))
 				},
 				.__classVersion__ = {
-					stop("'MSImageProcess' objects have different class version strings")
+					.stop("'MSImageProcess' objects have different class version strings")
 				},
 				# unknown
 				{

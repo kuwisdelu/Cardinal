@@ -134,7 +134,7 @@ setReplaceMethod("pData", "Hashmat",
 setMethod("keys", "Hashmat", function(object) object@keys)
 
 setReplaceMethod("keys", c("Hashmat", "character"), function(object, value) {
-	object@dimnames <- list(NULL, object@dimnames[[2]])
+	object@dimnames <- list(names(value), object@dimnames[[2]])
 	object@dim <- c(length(value), object@dim[2])
 	object@keys <- value
 	if ( validObject(object) )
@@ -226,12 +226,12 @@ setMethod("combine",
 		if ( is.null(xdim) || is.null(ydim) ||
 				any(sapply(xdim, is.null)) ||
 				any(sapply(ydim, is.null)) )
-			stop("Hashmat objects must have dimnames for 'combine'")
+			.stop("Hashmat objects must have dimnames for 'combine'")
 		sharedRows <- intersect(xdim[[1]], ydim[[1]])
 		sharedCols <- intersect(xdim[[2]], ydim[[2]])
 		ok <- all.equal(x[sharedRows, sharedCols], y[sharedRows, sharedCols])
 		if (!isTRUE(ok))
-			stop("Hashmat shared row and column elements differ: ", ok)
+			.stop("Hashmat shared row and column elements differ: ", ok)
 		unionRows <- union(xdim[[1]], ydim[[1]])
 		unionCols <- union(xdim[[2]], ydim[[2]])
 		m <- Hashmat(nrow=length(unionRows), ncol=length(unionCols),
@@ -240,6 +240,27 @@ setMethod("combine",
 		m[rownames(y), colnames(y)] <- y
 		m
 	})
+
+setMethod("cbind", "Hashmat", function(..., deparse.level=1) {
+	obs <- list(...)
+	ncol <- sapply(obs, ncol)
+	nrow <- sapply(obs, nrow)
+	if ( length(unique(nrow)) != 1 )
+		.stop("number of rows must match")
+	keys <- lapply(obs, keys)
+	if ( length(setdiff(unlist(keys), keys[[1]])) != 0 )
+		.stop("keys must match")
+	new(class(obs[[1]]),
+		data=unlist(lapply(obs, pData), recursive=FALSE),
+		keys=keys[[1]],
+		dim=c(length(keys[[1]]), sum(unlist(ncol))),
+		dimnames=list(rownames(obs[[1]]),
+			unlist(sapply(obs, colnames))))
+})
+
+setMethod("rbind", "Hashmat", function(..., deparse.level=1) {
+	.stop("cannot 'rbind' Hashmat objects")
+})
 
 setMethod("show", "Hashmat", function(object) {
 	cat("An object of class '", class(object), "'\n", sep="")

@@ -317,7 +317,7 @@ setMethod("combine",
 					paste(slot(x, sl), slot(y, sl), collapse = "\n")
 				},
 				.__classVersion__ = {
-					stop("'MIAPE-Imaging' objects have different class version strings")
+					.stop("'MIAPE-Imaging' objects have different class version strings")
 				},
 				## unknown
 				{

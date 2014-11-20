@@ -80,7 +80,7 @@ IAnnotatedDataFrame(data, varMetadata,
 
 	Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{IAnnotatedDataFrame} objects. Objects are combined similarly to an \code{AnnotatedDataFrame} but with special handling so that the 'sample' column does not require identical levels to be combined successfuly.}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{IAnnotatedDataFrame} objects. The objects are combined similarly to 'rbind' for \code{data.frame} objects. Pixels coordinates are checked for uniqueness. The 'varLabels' and 'varMetadata' must match.}
     }
 }
 

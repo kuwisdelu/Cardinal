@@ -18,6 +18,8 @@
 \alias{colnames<-,Hashmat-method}
 \alias{rownames,Hashmat-method}
 \alias{rownames<-,Hashmat-method}
+\alias{cbind,Hashmat-method}
+\alias{rbind,Hashmat-method}
 \alias{pData,Hashmat-method}
 \alias{pData<-,Hashmat-method}
 \alias{pData<-,Hashmat,ANY-method}
@@ -106,6 +108,10 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
         \item{\code{ncol}:}{Return the number of columns in the sparse matrix.}
 
         \item{\code{nrow}:}{Return the number of columns in the sparse matrix.}
+
+        \item{\code{cbind}:}{Combine sparse matrices by columns. The keys used to resolve the rows must match between matrices.}
+
+        \item{\code{rbind}:}{Not allowed for sparse matrices. (Always returns an error.)}
 
         \item{\code{Hashmat[i, j, ..., drop], Hashmat[i, j, ...] <- value}:}{Access and assign elements in the sparse matrix. A Hashmat sparse matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Use \code{drop = NA} to return a subset of the same class as the object.}
     }

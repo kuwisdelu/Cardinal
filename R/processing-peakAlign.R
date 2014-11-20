@@ -71,7 +71,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 		prochistory(processingData(object)) <- .history()
 		.message("peakAlign: Generating reference from mean mass spectrum.")
 		spectrum <- featureApply(ref, mean)
-		peaks <- mz(object)[localMaximaLogical(spectrum, span=5)]
+		peaks <- mz(ref)[localMaximaLogical(spectrum, span=5)]
 		peakAlign(object, ref=peaks, ...)
 	})
 

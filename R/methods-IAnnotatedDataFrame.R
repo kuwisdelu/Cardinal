@@ -82,7 +82,7 @@ setMethod("pixelNames", "IAnnotatedDataFrame",
 setReplaceMethod("pixelNames", "IAnnotatedDataFrame",
 	function(object, value) {
 		if (length(value) != dim(pData(object))[1])
-			stop("number of new names (", length(value), ") ",
+			.stop("number of new names (", length(value), ") ",
 				"should equal number of rows in AnnotatedDataFrame (",
 				dim(object)[1], ")")
 		row.names(pData(object)) <- value
@@ -133,9 +133,15 @@ setMethod("[", "IAnnotatedDataFrame",
 setMethod("combine",
 	signature = c(x = "IAnnotatedDataFrame", y = "IAnnotatedDataFrame"),
 	function(x, y, ...) {
-		samples <- union(levels(x[["sample"]]), levels(y[["sample"]]))
-		x[["sample"]] <- factor(as.character(x[["sample"]]), levels=samples)
-		y[["sample"]] <- factor(as.character(y[["sample"]]), levels=samples)
-		callNextMethod(x, y, ...)
+		if ( any(duplicated(rbind(coord(x), coord(y)))) )
+			.stop("IAnnotatedDataFrame contain pixels with duplicate coordinates")
+		if ( !identical(varLabels(x), varLabels(y)) )
+			.stop("IAnnotatedDataFrame 'varLabels' must match")
+		if ( !identical(varMetadata(x), varMetadata(y)) )
+			.stop("IAnnotatedDataFrame 'varMetadata' must match")
+		new(class(x),
+			data=rbind(pData(x), pData(y)),
+			varMetadata=varMetadata(x),
+			dimLabels=dimLabels(x))
 	})
 

@@ -53,44 +53,6 @@ test_that("SImageData accessors and assignment", {
 
 })
 
-test_that("SImageData combine", {
-
-	data1 <- array(1:27, dim=c(3,3,3))
-	sdata1 <- SImageData(data=data1)
-	dim(data1) <- c(3, 9)
-	expect_equal(iData(sdata1), data1)
-
-	sdata2 <- sdata1
-	featureNames(sdata1) <- 1:3
-	pixelNames(sdata1) <- 1:9
-	featureNames(sdata2) <- c(1:3)
-	pixelNames(sdata2) <- c(10, 2:9)
-
-	x1 <- iData(sdata1)
-	x2 <- iData(sdata1)
-	dimnames(x1) <- list(featureNames(sdata1), pixelNames(sdata1))
-	dimnames(x2) <- list(featureNames(sdata2), pixelNames(sdata2))
-
-	combdata <- combine(sdata1, sdata2)
-	expect_equivalent(iData(combdata), combine(x1, x2))
-
-	featureNames(sdata2) <- 2:4
-	expect_error(combine(sdata1, sdata2))
-
-	featureNames(sdata2) <- 1:3
-
-	sdata3 <- sdata2
-	featureNames(sdata3) <- 1:3
-	pixelNames(sdata3) <- 11:19
-
-	x3 <- iData(sdata3)
-	dimnames(x3) <- list(featureNames(sdata3), pixelNames(sdata3))
-
-	multicombdata <- combine(sdata1, sdata2, sdata3)
-	expect_equivalent(iData(multicombdata), combine(x1, x2, x3))
-
-})
-
 test_that("SImageData compatibility", {
 
 	data0 <- Hashmat(nrow=4, ncol=4)
@@ -102,4 +64,59 @@ test_that("SImageData compatibility", {
 	expect_equal(sdata0[], data1)
 
 })
+
+test_that("SImageData combine", {
+
+	data1 <- matrix(1:27, nrow=3)
+	sdata1 <- SImageData(data=data1)
+	sdata2 <- sdata1
+
+	coord(sdata1)$sample <- factor(1)
+	coord(sdata2)$sample <- factor(2)
+
+	sdata3 <- combine(sdata1, sdata2)
+
+	expect_true(validObject(sdata3))
+
+	expect_equivalent(iData(sdata3), cbind(iData(sdata1), iData(sdata2)))
+
+})
+
+# test_that("SImageData combine", {
+
+# 	data1 <- array(1:27, dim=c(3,3,3))
+# 	sdata1 <- SImageData(data=data1)
+# 	dim(data1) <- c(3, 9)
+# 	expect_equal(iData(sdata1), data1)
+
+# 	sdata2 <- sdata1
+# 	featureNames(sdata1) <- 1:3
+# 	pixelNames(sdata1) <- 1:9
+# 	featureNames(sdata2) <- c(1:3)
+# 	pixelNames(sdata2) <- c(10, 2:9)
+
+# 	x1 <- iData(sdata1)
+# 	x2 <- iData(sdata1)
+# 	dimnames(x1) <- list(featureNames(sdata1), pixelNames(sdata1))
+# 	dimnames(x2) <- list(featureNames(sdata2), pixelNames(sdata2))
+
+# 	combdata <- combine(sdata1, sdata2)
+# 	expect_equivalent(iData(combdata), combine(x1, x2))
+
+# 	featureNames(sdata2) <- 2:4
+# 	expect_error(combine(sdata1, sdata2))
+
+# 	featureNames(sdata2) <- 1:3
+
+# 	sdata3 <- sdata2
+# 	featureNames(sdata3) <- 1:3
+# 	pixelNames(sdata3) <- 11:19
+
+# 	x3 <- iData(sdata3)
+# 	dimnames(x3) <- list(featureNames(sdata3), pixelNames(sdata3))
+
+# 	multicombdata <- combine(sdata1, sdata2, sdata3)
+# 	expect_equivalent(iData(multicombdata), combine(x1, x2, x3))
+
+# })
 

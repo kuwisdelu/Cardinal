@@ -35,8 +35,10 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 				featureNames(object@featureData),
 				pixelNames(object@pixelData)))
 		mz(object) <- mz
-		if ( match.method(method) == "peaks" )
+		if ( match.method(method) == "peaks" ) {
+			spectrumRepresentation(processingData(object)) <- "centroid"
 			centroided(processingData(object)) <- TRUE
+		}
 		.message("reduceDimension: Done")
 		.time.stop()
 		object

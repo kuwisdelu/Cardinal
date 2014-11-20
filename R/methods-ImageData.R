@@ -8,7 +8,7 @@ setMethod("initialize", "ImageData",
 		dots <- match.call(expand.dots=FALSE)$...
 		names <- names(dots)
 		if ( length(dots) > 0 ) {
-			if ( any(is.null(names)) ) stop("all elements must be named")
+			if ( any(is.null(names)) ) .stop("all elements must be named")
 			for ( nm in names ) {
 				tryCatch({
 					.Object@data[[nm]] <- eval(dots[[nm]])
@@ -33,7 +33,7 @@ ImageData <- function(...,
 	dots <- match.call(expand.dots=FALSE)$...
 	names <- names(dots)
 	if ( any(is.null(names)) && length(dots) > 0 )
-		stop("all elements must be named")
+		.stop("all elements must be named")
 	.ImageData(..., data=data, storageMode=storageMode)
 }
 
@@ -55,7 +55,7 @@ setMethod("names", "ImageData", function(x) ls(x@data, all.names=TRUE))
 setReplaceMethod("names", "ImageData", function(x, value) {
 	names <- ls(x@data, all.names=TRUE)
 	if ( length(names) != length(value) ) {
-		stop(paste("'names' attribute [", length(value), "] must be",
+		.stop(paste("'names' attribute [", length(value), "] must be",
 			"the same length as the vector [", length(names), "]", sep=""))
 	}
 	if ( storageMode(x) == "immutableEnvironment" ) {
@@ -102,9 +102,9 @@ setMethod("annotatedDataFrameFrom", "ImageData",
 		if ( nrow(dims(object)) == 0 ) {
 			df <- IAnnotatedDataFrame()
 		} else if ( is.null(rownames(dims(object))) ) {
-			stop("ImageData must have named dimensions")
+			.stop("ImageData must have named dimensions")
 		} else if ( any(nchar(rownames(dims(object))) == 0) ) {
-			stop("all dimensions of ImageData must have names")
+			.stop("all dimensions of ImageData must have names")
 		} else {
 			data <- rep(list(integer()), nrow(dims(object)) - 1)
 			names(data) <- rownames(dims(object))[-1]
@@ -141,14 +141,14 @@ setMethod("combine",
 	function(x, y, ...) {
 		storageMode <- storageMode(x)
 		if ( storageMode(y) != storageMode)
-			stop("ImageData must have same storage, but are '",
+			.stop("ImageData must have same storage, but are '",
 				storageMode, "', '", storageMode(y))
 		if ( length(ls(x@data)) != length(ls(y@data)) )
-			stop("ImageData have different numbers of elements:\n\t",
+			.stop("ImageData have different numbers of elements:\n\t",
 				paste(ls(x@data), collapse=" "), "\n\t",
 				paste(ls(y@data), collapse=" "))
 		if ( !all(ls(x@data) == ls(y@data)) )
-			stop(paste("ImageData have different element names:",
+			.stop(paste("ImageData have different element names:",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
 		data <- new.env(parent=emptyenv())

@@ -43,7 +43,7 @@ setMethod("[[", "ResultSet", function(x, i, j, ...) {
 setMethod("[", "ResultSet", function(x, i, j, ..., drop=TRUE) {
 	dots <- list(...)
 	if ( !all(names(dots) %in% varLabels(modelData(x))) )
-		stop("all arguments must appear in 'modelData'")
+		.stop("all arguments must appear in 'modelData'")
 	if ( length(dots) > 0 ) {
 		select <- sapply(seq_along(dots), function(i) {
 			modelData(x)[[names(dots)[[i]]]] %in% dots[[i]]
