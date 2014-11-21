@@ -57,6 +57,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		peakData(imageData(object)) <- peakData
 		mzData(imageData(object)) <- mzData
 		mz(object) <- ref
+		spectrumRepresentation(processingData(object)) <- "centroid"
 		centroided(processingData(object)) <- TRUE
 		.message("peakAlign: Done.")
 		.time.stop()

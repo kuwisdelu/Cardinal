@@ -1,13 +1,18 @@
 
 setMethod("summary", "iSet", function(object, ...) {
 	outlist <- 	list()
-	outlist[["Features"]] <- paste0(nrow(fData(object)), " (",
-		paste(selectSome(featureNames(object), maxToShow=2), collapse=" "), ")")
-	outlist[["Pixels"]] <- paste0(nrow(pData(object)), " (",
-		paste(selectSome(pixelNames(object), maxToShow=2), collapse=" "), ")")
+	outlist[["Class"]] <- class(object)
+	outlist[["Features"]] <- paste0(paste(selectSome(featureNames(object), maxToShow=2), collapse=" "),
+		" (", nrow(fData(object)), " total)")
+	outlist[["Pixels"]] <- paste0(paste(selectSome(pixelNames(object), maxToShow=2), collapse=" "),
+		" (", nrow(pData(object)), " total)")
 	for ( co in coordLabels(object) ) {
 		outlist[[co]] <- paste(range(pData(object)[[co]]), collapse=" ... ")
 	}
+	size <- sapply(names(imageData(object)),
+		function(nm) object.size(imageData(object)[[nm]]))
+	size <- sum(size) + object.size(object)
+	outlist[["Size in memory"]] <- format(size, units="Mb")
 	class(outlist) <- "summary.iSet"
 	outlist
 })
@@ -196,8 +201,8 @@ setMethod("summary", "SpatialShrunkenCentroids",
 print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model <- pData(x$model)
 	row.names(model) <- NULL
-	model[["Number of Classes"]] <- x$nclasses
-	model[["Avg. # of Features in Model"]] <- x$nzfeatures
+	model[["Predicted # of Classes"]] <- x$nclasses
+	model[["Mean # of Features per Class"]] <- x$nzfeatures
 	print(model)
 	if ( !all(sapply(x$accuracy, is.null)) ) {
 		cat("\n"); print(x$accuracy)

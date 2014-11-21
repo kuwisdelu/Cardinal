@@ -210,8 +210,15 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	scores <- .calculateSpatialDiscriminantScores(x, centers=centers,
 		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
 	probabilities <- .calculateClassProbabilities(scores) # NaNs -> 0
-	classes <- factor(apply(probabilities, 1, which.max), # doesn't care about NaNs
-		levels=seq_len(nlevels(classes)), labels=levels(classes))
+	empty <- which(table(classes) == 0)
+	clusters <- apply(probabilities, 1, function(p) {
+		if ( any(is.finite(p)) ) {
+			which.max(p)
+		} else {
+			empty[[1]]
+		}
+	})
+	classes <- factor(clusters, levels=seq_len(nlevels(classes)), labels=levels(classes))
 	names(classes) <- pixelNames(x)
 	rownames(probabilities) <- pixelNames(x)
 	colnames(probabilities) <- levels(classes)
@@ -300,8 +307,8 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 
 .calculateClassProbabilities <- function(scores) {
 	t(apply(scores, 1, function(s) {
-		exp(-0.5 * s) / sum(exp(-0.5 * s))
+		pmax(exp(-0.5 * s) / sum(exp(-0.5 * s)),
+			rep(0, length(s)),
+			na.rm=TRUE)
 	}))
 }
-
-

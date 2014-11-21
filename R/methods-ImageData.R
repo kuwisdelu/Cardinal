@@ -161,7 +161,8 @@ setMethod("show", "ImageData", function(object) {
 	for ( nm in ls(object@data) ) {
 		ob <- object@data[[nm]]
 		dms <- paste0(dim(ob), collapse=" x ")
-		cat("  ", nm, ": ", dms, " ", class(ob), "\n", sep="")
+		size <- format(object.size(ob), units="Mb")
+		cat("  ", nm, ": ", dms, " ", class(ob), " (", size, ")\n", sep="")
 	}
 })
 

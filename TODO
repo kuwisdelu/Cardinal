@@ -2,9 +2,16 @@
 TODO for Cardinal package
 -------------------------
 
-Long term:
-- add support for 3D datasets and plotting
-- add interpolating smoothing options to image()
-- make readImzML parse more metadata (requires C++)
-- add writing of imzML and Analyze formats (requires C++)
-- add optical image support
+Priority: High
+-Support larger-than-memory datasets
+-Statistical hypothesis testing
+-3D datasets and 3D plotting
+-Optical image registration
+
+Priority: Medium
+-Parse more metadata from imzML datasets for MIAPE-Imaging
+-Faster reduceDimension implementation for method='peaks'
+
+Priority: Low
+-Native writing of imzML and Analyze 7.5 formats
+-Bilinear interpolation smoothing for ion images

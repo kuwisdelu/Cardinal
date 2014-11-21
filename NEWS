@@ -2,6 +2,10 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.8.6 [2014-11-21]
+o Completed walkthrough vignettes
+o Added ImagingMassSpectrometry biocView
+
 Version 0.8.5 [2014-11-20]
 o Added 'show' and 'print' methods for most objects
 o Changed 'combine' method for IAnnotatedDataFame, SImageData, and SImageSet
