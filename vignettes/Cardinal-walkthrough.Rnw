@@ -108,6 +108,17 @@ load("/Where/to/save/the/data.RData")
 
 When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R{} session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
 
+
+\clearpage
+
+
+
+
+
+
+
+
+
 \section{Data exploration and visualization}
 
 Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects. This allows \Rpackage{Cardinal} to keep track of the spectra, pixel coordinates, $m/z$ values and more in one place for the dataset. The \Robject{MSImageSet} object is described in more detail below. There are many methods for both creating and manipulating \Robject{MSImageSet} objects in \Rpackage{Cardinal}. We now describe some of these methods.
@@ -355,6 +366,10 @@ image(msset2, mz=4000, col.regions=mycol)
 \end{figure}
 
 
+
+\clearpage
+
+
 \section{Pre-processing}
 
 
@@ -363,8 +378,8 @@ image(msset2, mz=4000, col.regions=mycol)
 \subsection{Normalization}
 
 Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC), commonly used in MSI analysis (see \cite{TIC} for a discussion of this method). In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
-<<normalizetic>>=
-temp <- normalize(msset, pixel=1, method="tic", plot=TRUE)
+<<normalizetic, results=hide>>=
+normalize(msset, pixel=1, method="tic", plot=TRUE)
 @
 <<normalize>>=
 msset2 <- normalize(msset, method="tic")
@@ -372,7 +387,7 @@ msset2 <- normalize(msset, method="tic")
 \setkeys{Gin}{width=0.4\textwidth}
 \begin{figure}[h]
 \begin{center}
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<normalizetic>>
 @
 \caption{\small Total ion current (TIC) normalization.}
@@ -383,11 +398,11 @@ msset2 <- normalize(msset, method="tic")
 \subsection{Smoothing}
 
 Smoothing the mass spectra is useful for reducing noise, which can improve detection of peaks. \Rpackage{Cardinal} provides several common methods for smoothing mass spectra, including Gaussian kernel smoothing (Figure \ref{fig:gauSmo}), Savitsky-Golay smoothing (Figure \ref{fig:sgolSmo}), and a simple moving average filter \cite{Yang2009}.
-<<smoothgaus>>=
-temp <- smoothSignal(msset2, pixel=1, method="gaussian", window=9, plot=TRUE)
+<<smoothgaus, results=hide>>=
+smoothSignal(msset2, pixel=1, method="gaussian", window=9, plot=TRUE)
 @
-<<smoothsgolay>>=
-temp <- smoothSignal(msset2, pixel=1, method="sgolay", window=15, plot=TRUE)
+<<smoothsgolay, results=hide>>=
+smoothSignal(msset2, pixel=1, method="sgolay", window=15, plot=TRUE)
 @
 <<smooth>>=
 msset3 <- smoothSignal(msset2, method="gaussian", window=9)
@@ -399,7 +414,7 @@ msset3 <- smoothSignal(msset2, method="gaussian", window=9)
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<smoothgaus>>
 @
 \caption{\small Gaussian Kernel Smoothing}
@@ -407,7 +422,7 @@ msset3 <- smoothSignal(msset2, method="gaussian", window=9)
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
 \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<smoothsgolay>>
 @
 \caption{\small Savitsky-Golay smoothing}
@@ -420,8 +435,8 @@ msset3 <- smoothSignal(msset2, method="gaussian", window=9)
 \subsection{Baseline reduction}
 
 Baseline reduction is often necessary for many datasets, especially those obtained through matrix-assisted methods such as MALDI (\cite{Yang2009}). \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks. Figure \ref{fig:baseline} shows baseline reduction for a single pixel, where the green curve represents the estimated baseline and the baseline-reduced spectrum is plotted in black. 
-<<baselinemedian>>=
-temp <- reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
+<<baselinemedian, results=hide>>=
+reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
 @
 
 We can also reduce baseline across all pixels in the image.
@@ -432,7 +447,7 @@ msset4 <- reduceBaseline(msset3, method="median", blocks=50)
 \setkeys{Gin}{width=0.4\textwidth}
 \begin{figure}[h]
 \begin{center}
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<baselinemedian>>
 @
 \caption{\small Baseline reduction using interpolation from medians.}
@@ -444,11 +459,11 @@ msset4 <- reduceBaseline(msset3, method="median", blocks=50)
 
 Peak picking is a common form of data reduction that reduces the signal to relevant data peaks. \Rpackage{Cardinal} implements three varieties based on a user-specified signal-to-noise ratio (SNR). The ``simple'' version interpolates a constant noise pattern, the ``adaptive'' version interpolates an adaptive noise pattern Figure \ref{fig:adPeakPick}, and ``limpic'' implements the LIMPIC algorithm for peak detection Figure \ref{fig:LIMPIC}.
 
-<<peakpickadaptive>>=
-temp <- peakPick(msset4, pixel=1, method="adaptive", SNR=3, plot=TRUE)
+<<peakpickadaptive, results=hide>>=
+peakPick(msset4, pixel=1, method="adaptive", SNR=3, plot=TRUE)
 @
-<<peakpicklimpic>>=
-temp <- peakPick(msset4, pixel=1, method="limpic", SNR=3, plot=TRUE)
+<<peakpicklimpic, results=hide>>=
+peakPick(msset4, pixel=1, method="limpic", SNR=3, plot=TRUE)
 @
 <<peakpick>>=
 msset5 <- peakPick(msset4, method="simple", SNR=3)
@@ -459,7 +474,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<peakpickadaptive>>
 @
 \caption{\small Adaptive}
@@ -467,7 +482,7 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
 \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<peakpicklimpic>>
 @
 \caption{\small LIMPIC}
@@ -480,8 +495,8 @@ msset5 <- peakPick(msset4, method="simple", SNR=3)
 
 Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks, as in \cite{Alexandrov2011}.
 
-<<peakaligndiff>>=
-temp <- peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
+<<peakaligndiff, results=hide>>=
+peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
 @
 <<peakalign>>=
 msset6 <- peakAlign(msset5, method="diff")
@@ -489,7 +504,7 @@ msset6 <- peakAlign(msset5, method="diff")
 \setkeys{Gin}{width=0.4\textwidth}
 \begin{figure}[h]
 \begin{center}
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<peakaligndiff>>
 @
 \caption{\small Peak alignment to the local maxima of the mean spectrum.}
@@ -515,14 +530,14 @@ Other common forms of data reduction include resampling and binning.
 
 \Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same $m/z$ bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
 
-<<reducedimbin>>=
-temp <- reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
+<<reducedimbin, results=hide>>=
+reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
 @
 
 There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 $m/z$ on pixel 1 is plotted in Figure \ref{fig:resample}. The original spectrum is plotted in black, with the resampled version displayed simultaneously in red.
 
-<<reducedimresample>>=
-temp <- reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
+<<reducedimresample, results=hide>>=
+reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
 @
 
 Data reduction can be done on the whole dataset at once.
@@ -536,7 +551,7 @@ msset8 <- reduceDimension(msset4, method="resample", step=25)
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<reducedimbin>>
 @
 \caption{\small Binning}
@@ -544,7 +559,7 @@ msset8 <- reduceDimension(msset4, method="resample", step=25)
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
   \centering
-<<fig=TRUE, echo=FALSE>>=
+<<fig=TRUE, echo=FALSE, results=hide>>=
 <<reducedimresample>>
 @
 \caption{\small Resampling}
@@ -564,34 +579,29 @@ msset8 <- reduceDimension(msset4, method="resample", step=25)
 
 
 
-
+\clearpage
 
 \section{Analysis}
 
 For example workflows with analyses of real datasets, please see the vignettes in the companion data package \Rpackage{CardinalWorkflows}.
 
 
-\subsection{Principal components analysis}
+\subsection{Principal components analysis (PCA)}
 
-Principal components analysis (PCA) is a multivariate statistical tool used for dimension reduction and exploratory data analysis. PCA is rarely enough on its own to thoroughly analyze an experiment, but it can sometimes be useful when first exploring a dataset beyond plotting single-ion images. However, PCA should be viewed as a beginning step toward analysis, rather than a complete analysis on its own.
+Principal components analysis (PCA) is a multivariate statistical tool used for dimension reduction and exploratory data analysis. PCA can be useful when first exploring a dataset beyond plotting single-ion images, but additional statistical analysis is usually necessary to extract meaningful results.
 
-Below, we fit the first three principal components using \Rpackage{Cardinal}'s \verb|PCA| method to the TIC-normalized dataset.
+Below, we fit the first two principal components using \Rpackage{Cardinal}'s \verb|PCA| method and plot their loadings and scores.
 
-<<pcafit>>=
-pca <- PCA(msset4, ncomp=3)
-summary(pca)
+<<pca>>=
+pca <- PCA(msset4, ncomp=2)
 @
 
-As the summary shows, the first two principal components together account for 99\% of the variation in the dataset, while the third component contributes less than 1\%.
-
-Below, we plot the loading plots against the $m/z$ values, and an image of the PC scores for the first two components.
-
 <<pcaplot>>=
-plot(pca, col=c("black", "red", "blue"))
+plot(pca)
 @
 
 <<pcaimage>>=
-image(pca, column=c("PC1","PC2"), col=c("black", "red", "blue"))
+image(pca)
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -602,7 +612,7 @@ image(pca, column=c("PC1","PC2"), col=c("black", "red", "blue"))
 <<fig=TRUE, echo=FALSE>>=
 <<pcaplot>>
 @
-\caption{\small PC loadings (first 3 components)}
+\caption{\small PC loadings}
 \label{fig:pcaplot}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -610,7 +620,7 @@ image(pca, column=c("PC1","PC2"), col=c("black", "red", "blue"))
 <<fig=TRUE, echo=FALSE>>=
 <<pcaimage>>
 @
-\caption{\small PC scores (first 2 components)}
+\caption{\small PC scores}
 \label{fig:pcaimage}
 \end{subfigure}
 \caption{\small Principal components analysis.}
@@ -618,33 +628,28 @@ image(pca, column=c("PC1","PC2"), col=c("black", "red", "blue"))
 
 
 
-\subsection{Partial least squares}
+\subsection{Partial least squares (PLS)}
 
-Partial least squares (PLS), also called projection to latent structures, is a multivariate method from chemometrics that has been shown to be useful for classification of mass spectrometry images. When used for classification, it is known as partial least squares discriminant analysis, or PLS-DA. PLS-DA works similarly to PCA, but it is a supervised method, so it requires labels known \textit{a priori} to train a classifier.
+Partial least squares (PLS), also called projection to latent structures, is a multivariate method from chemometrics that has been shown to be useful for classification of mass spectrometry images \cite{Dill}.
 
-Here, we train a PLS classifier using the \Robject{pattern} labels from earlier.
+When used for classification, it is known as partial least squares discriminant analysis, or PLS-DA. PLS-DA works similarly to PCA, but it is a supervised method, so it requires data annotated with known labels.
 
-Note that the \verb|PLS| method is vectorized on the \Robject{ncomp} argument, so multiple models will be fit, and we will specify which one we want to show when we plot the results.
+Here, we train a PLS classifier using the \Robject{pattern} variable from earlier as our labels, and plot the results.
 
 <<pls>>=
-pls <- PLS(msset4, y=pattern, ncomp=1:2)
-summary(pls)
+pls <- PLS(msset4, y=pattern, ncomp=2)
 @
 
-Since we are predicting on the same data we have used to fit the classifier, the accuracy is very good, and only two PLS components are needed to produce perfect accuracy.
-
-When working with classification on real data, cross-validation should always be used, using the \verb|cvApply| method, to avoid biased results. See \verb|?cvApply|.
-
 <<plsplot>>=
-plot(pls, model=list(ncomp=2), col=mycol)
+plot(pls, col=c("blue", "black", "red"))
 @
 
 <<plsimage>>=
-image(pls, model=list(ncomp=2), col=mycol)
+image(pls, col=c("blue", "black", "red"))
 @
 
 \setkeys{Gin}{width=\textwidth}
-\begin{figure}[h]
+\begin{figure}
 \centering
 \begin{subfigure}{.3\textwidth}
   \centering
@@ -665,42 +670,115 @@ image(pls, model=list(ncomp=2), col=mycol)
 \caption{\small Partial least squares.}
 \end{figure}
 
-A variation on PLS, orthogonal partial least squares (O-PLS) is also implemented in \Rpackage{Cardinal}. O-PLS can often improve interpretability of the PLS model coefficients, while producing similar accuracy. See \verb|?OPLS|.
+When working with classification on real data, cross-validation should always be used, using the \verb|cvApply| method, to avoid biased results. See \verb|?cvApply|.
 
 
+\subsection{Orthogonal partial least squares (O-PLS)}
 
-\subsection{Spatially-aware nearest shrunken centroids}
 
-\Rpackage{Cardinal} offers a novel clustering and classification method based on the spatial smoothing of \cite{Alexandrov2011} and the nearest shrunken centroids of \cite{Tibshirani2003}. This is the \verb|spatialShrunkenCentroids| method, which can be used both for clustering and for classification.
+Orthogonal partial least squares (O-PLS) is a variation on PLS. O-PLS can sometimes improve the interpretability of the PLS model coefficients, while producing similar accuracy. O-PLS-DA is also implemented in \Rpackage{Cardinal}
 
-In the unsupervised case, the goal of this analysis is to cluster the imaging data into chemically-distinct and chemically-homogenous spatial regions. For imaging experiments, this is called spatial segmentation, and the clusters are sometimes called segments.
+<<opls>>=
+opls <- OPLS(msset4, y=pattern, ncomp=2)
+@
 
-In the supervised case, the labels from known class conditions are used as the segments, and the model is fit, but no clustering is done.
+<<oplsplot>>=
+plot(opls, col=c("blue", "black", "red"))
+@
 
-Below, we do clustering on the peak-picked dataset. The parameters \Robject{r}, \Robject{k}, and \Robject{s} are the neighborhood smoothing radius, the initial number of segments, and the sparsity parameter, respectively. Since \verb|spatialShrunkenCentroids| is vectoried on these parameters, it will fit five models for the five values of \Robject{s} we have given it.
+<<oplsimage>>=
+image(opls, col=c("blue", "black", "red"))
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<oplsplot>>
+@
+\caption{\small O-PLS coefficients}
+\label{fig:oplsplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<oplsimage>>
+@
+\caption{\small O-PLS prediction}
+\label{fig:oplsimage}
+\end{subfigure}
+\caption{\small Orthogonal partial least squares.}
+\end{figure}
+
+O-PLS is primarily useful when many PLS components are required to fit an accurate model, since this often leads to unstable model coefficients. Try O-PLS when the PLS model coefficients are difficult to interpret, or the best PLS model uses a large number of components.
+
+
+\subsection{Spatially-aware k-means clustering}
+
+Spatially-aware clustering using k-means is available \cite{Alexandrov2011}. This method uses a spatial distance function to project the data to a kernel space before performing ordinary k-means clustering.
+
+The parameters \Robject{r} and \Robject{k} are the neighborhood smoothing radius and the initial number of clusters.
+
+Below, we create a spatial segmentation using the spatially-aware clustering method.
+
+<<skm>>=
+set.seed(1)
+skm <- spatialKMeans(msset7, r=2, k=3, method="adaptive")
+@
+
+<<skmplot>>=
+plot(skm, col=c("black", "blue", "red"), type=c('p','h'), key=FALSE)
+@
+
+
+<<skmimage>>=
+image(skm, col=c("black", "blue", "red"), key=FALSE)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<skmplot>>
+@
+\caption{\small Predicted centers}
+\label{fig:skmplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<skmimage>>
+@
+\caption{\small Predicted clusters}
+\label{fig:skmimage}
+\end{subfigure}
+\caption{\small Spatially-aware k-means clustering.}
+\end{figure}
+
+
+\subsection{Spatial shrunken centroids}
+
+\Rpackage{Cardinal} offers a novel clustering and classification method based on the spatial smoothing \cite{Alexandrov2011} and nearest shrunken centroids \cite{Tibshirani2003}. This is the \verb|spatialShrunkenCentroids| method, which can be used both for clustering and for classification.
+
+The parameters \Robject{r}, \Robject{k}, and \Robject{s} are the neighborhood smoothing radius, the initial number of clusters, and the sparsity parameter, respectively.
+
+Below, we create a spatial segmentation using the spatial shrunken centroids method.
 
 <<ssc>>=
 set.seed(1)
-ssca <- spatialShrunkenCentroids(msset7, r=1, k=3, s=0:4, method="adaptive")
-summary(ssca)
+ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=3, method="adaptive")
 @
 
-The \verb|spatialShrunkenCentroids| method uses statistical regularization to performed feature selection. This is shown by the "Mean \# of Features per Class" in the summary, which indicates that after \Robject{s} = 1, only three features (three peaks) are retained in the model. Since we know the entire dataset is determined by three peaks, this makes sense.
-
-We plot the t-statistics, which rank the relative importance of the features in distinguishing segments from each other. These are closer to zero for features that do not distinguish between segments. Statistical regularization is used to shrink these t-statistics toward zero, so that features that are not useful in the segmentation are dropped from the analysis.
-
-Positive t-statistics indicate systematic enrichment of that feature in a segment, while negative t-statistics indicate systematic absence of that feature in a segment.
-
-Rather than hard segment assignments, \verb|spatialShrunkenCentroids| assigns probabilities for pixel membership to a particular segment. \Rpackage{Cardinal} uses opacity to plot probability, with higher opacity indicating stronger probability. Since the plotted image shows high opacity in a single color for all pixels, the segmentation for this data is very high quality.
-
 <<sscplot>>=
-plot(ssca, mode="tstatistics", model=list(s=1),
-  col=c("blue", "red", "black"), type=c('p','h'), xlim=c(1000,5000))
+plot(ssc, col=c("blue", "red", "black"), type=c('p','h'), key=FALSE)
 @
 
 <<sscimage>>=
-image(ssca, mode="probabilities", model=list(s=1),
-  col=c("blue", "red", "black"))
+image(ssc, col=c("blue", "red", "black"), key=FALSE)
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -711,7 +789,7 @@ image(ssca, mode="probabilities", model=list(s=1),
 <<fig=TRUE, echo=FALSE>>=
 <<sscplot>>
 @
-\caption{\small Shrunken t-statistics}
+\caption{\small Shrunken centroids}
 \label{fig:sscplot}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -719,11 +797,13 @@ image(ssca, mode="probabilities", model=list(s=1),
 <<fig=TRUE, echo=FALSE>>=
 <<sscimage>>
 @
-\caption{\small Predicted segment probabilies}
+\caption{\small Predicted class probabilies}
 \label{fig:sscimage}
 \end{subfigure}
 \caption{\small Spatially-aware nearest shrunken centroids clustering.}
 \end{figure}
+
+A unique property of \Rpackage{Cardinal}'s spatial shrunken centroids method is that it allows for the automated selection of the number of clusters, driven in part by the sparsity paramter. Although we initialized the clustering above with 5 clusters, only 3 were used in the final segmentation.
 
 See \verb|?spatialShrunkenCentroids| for more options and details.
 
@@ -738,7 +818,7 @@ See \verb|?spatialShrunkenCentroids| for more options and details.
 
 
 
-
+\clearpage
 
 \section{Advanced Topics}
 
@@ -781,17 +861,17 @@ cbind(pData(msset), t(p1))[1:30,c("pg","blue", "black", "red")]
 We can manually construct the images corresponding to the mean intensity of the three peaks centered at $m/z$ 2000, $m/z$ 3000, and $m/z$ 4000 and plot their images. This is shown in Figure \ref{fig:meanInt}
 
 <<pixelApply3>>=
-temp1 <- MSImageSet(spectra=t(as.vector(p1["blue",])), coord=coord(msset), mz=2000)
-image(temp1, feature=1, col=alpha.colors(100, "blue"), sub="m/z = 2000")
+tmp1 <- MSImageSet(spectra=t(as.vector(p1["blue",])), coord=coord(msset), mz=2000)
+image(tmp1, feature=1, col.regions=alpha.colors(100, "blue"), sub="m/z = 2000")
 @
 
 <<pixelApply4>>=
-temp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
-image(temp1, feature=1, col=alpha.colors(100, "black"), sub="m/z = 3000")
+tmp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
+image(tmp1, feature=1, col.regions=alpha.colors(100, "black"), sub="m/z = 3000")
 @
 <<pixelApply5>>=
-temp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
-image(temp2, feature=1, col=alpha.colors(100, "red"),  sub="m/z = 4000")
+tmp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
+image(tmp2, feature=1, col.regions=alpha.colors(100, "red"),  sub="m/z = 4000")
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -881,6 +961,15 @@ plot(mz(msset), f1["red",], type="l", xlab="m/z", ylab="Intensity", col="red")
 
 
 As expected,we see the mean spectrum of the blue pixels has a higher peak at $m/z$ 2000,  we see the mean spectrum of the black pixels has a higher peak at $m/z$ 3000, while the mean spectrum of the red pixels has a higher peak at $m/z$ 4000. As before, if only the plots are desired rather than the actual data, then \verb|plot| can be used to perform these steps automatically. See \textit{Cardinal plotting} for how to do this.
+
+
+
+
+
+
+
+\clearpage
+
 
 
 \subsection{Simulation}

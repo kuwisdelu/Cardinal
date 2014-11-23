@@ -173,6 +173,8 @@ setMethod("features", "iSet",
 			features <- sapply(seq_along(dots), function(i) {
 				fData(object)[[names(dots)[[i]]]] %in% dots[[i]]
 			})
+			if ( nrow(fData(object)) == 1 )
+				features <- t(features)
 			if ( is.null(dim(features)) ) {
 				features <- which(features)
 			} else {
@@ -194,6 +196,8 @@ setMethod("pixels", "iSet",
 			pixels <- sapply(seq_along(dots), function(i) {
 				pData(object)[[names(dots)[[i]]]] %in% dots[[i]]
 			})
+			if ( nrow(pData(object)) == 1 )
+				pixels <- t(pixels)
 			if ( is.null(dim(pixels)) ) {
 				pixels <- which(pixels)
 			} else {

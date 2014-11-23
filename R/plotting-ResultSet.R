@@ -53,7 +53,7 @@ setMethod("plot",
 			}
 			df$column <- factor(df$column, levels=unique(df$column))
 		} else {
-			df$column <- factor(rep(TRUE, nrow(df)))
+			df$column <- factor(rep(TRUE, nrow(df)), labels=names(fm$left))
 		}
 		# set up SImageSet to be plotted
 		data <- SImageSet(data=matrix(as.vector(unlist(data)),
@@ -147,7 +147,7 @@ setMethod("image",
 			}
 			df$column <- factor(df$column, levels=unique(df$column))
 		} else {
-			df$column <- factor(rep(TRUE, nrow(df)))
+			df$column <- factor(rep(TRUE, nrow(df)), labels=names(fm$left))
 		}
 		data <- SImageSet(data=matrix(as.vector(unlist(data)),
 			ncol=ncol(x), byrow=TRUE), coord=coord(x))
