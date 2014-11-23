@@ -1241,6 +1241,6 @@ toLatex(sessionInfo())
 @
 
 % \bibliographystyle{unsrt}
-% \bibliography{Cardinal}
+\bibliography{Cardinal}
 
 \end{document}

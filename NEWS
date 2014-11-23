@@ -2,6 +2,9 @@
 NEWS for Cardinal package
 -------------------------
 
+Versoin 0.8.7 [2014-11-23]
+o Fixed bug in plotting vectors from ResultSet
+
 Version 0.8.6 [2014-11-21]
 o Completed walkthrough vignettes
 o Added ImagingMassSpectrometry biocView

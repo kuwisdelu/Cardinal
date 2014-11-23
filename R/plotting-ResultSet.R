@@ -40,7 +40,7 @@ setMethod("plot",
 				seq_len(nrow(modelData(x))),
 				sapply(data, ncol))	
 		} else {
-			ntimes <- 1
+			ntimes <- seq_len(nrow(modelData(x)))
 		}
 		ntimes <- as.vector(unlist(ntimes))
 		df <- pData(modelData(x))[ntimes,,drop=FALSE]
