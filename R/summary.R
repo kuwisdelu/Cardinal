@@ -41,7 +41,8 @@ setMethod("summary", "PCA",
 				"Proportion of Variance",
 				"Cumulative"),
 			paste0("PC", seq_along(sdev)))
-		out <- list(topLabels=topLabels, importance=importance, model=modelData(object))
+		out <- list(topLabels=topLabels, importance=importance,
+			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PCA"
 		out
 	})
@@ -78,7 +79,8 @@ setMethod("summary", "PLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy, model=modelData(object))
+		out <- list(topLabels=topLabels, accuracy=accuracy,
+			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PLS"
 		out
 	})
@@ -116,7 +118,8 @@ setMethod("summary", "OPLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy, model=modelData(object))
+		out <- list(topLabels=topLabels, accuracy=accuracy,
+			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.OPLS"
 		out
 	})
@@ -144,8 +147,9 @@ setMethod("summary", "SpatialKMeans",
 		withinss <- sapply(resultData(object), function(x) sum(x$withinss))
 		betweenss <- sapply(resultData(object), function(x) sum(x$betweenss))
 		totss <- sapply(resultData(object), function(x) sum(x$totss))
-		out <- list(topLabels=topLabels, withinss=withinss, betweenss=betweenss,
-			totss=totss, model=modelData(object))
+		out <- list(topLabels=topLabels,
+			withinss=withinss, betweenss=betweenss, totss=totss,
+			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.SpatialKMeans"
 		out
 	})
@@ -153,6 +157,7 @@ setMethod("summary", "SpatialKMeans",
 print.summary.SpatialKMeans <- function(x, ...) {
 	model <- pData(x$model)
 	row.names(model) <- NULL
+	model[["method"]] <- x$method
 	model[["Within-Cluster SS"]] <- x$withinss
 	model[["Between-Cluster SS"]] <- x$betweenss
 	model[["Total SS"]] <- x$totss
@@ -193,8 +198,9 @@ setMethod("summary", "SpatialShrunkenCentroids",
 			nz <- apply(x$tstatistics[,which,drop=FALSE], 2, function(t) sum(t != 0))
 			round(mean(nz))
 		})
-		out <- list(topLabels=topLabels, accuracy=accuracy, nclasses=nclasses,
-			nzfeatures=nzfeatures, model=modelData(object))
+		out <- list(topLabels=topLabels, accuracy=accuracy,
+			nclasses=nclasses, nzfeatures=nzfeatures,
+			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.SpatialShrunkenCentroids"
 		out
 	})
@@ -202,11 +208,13 @@ setMethod("summary", "SpatialShrunkenCentroids",
 print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model <- pData(x$model)
 	row.names(model) <- NULL
+	model[["method"]] <- x$method
 	model[["Predicted # of Classes"]] <- x$nclasses
 	model[["Mean # of Features per Class"]] <- x$nzfeatures
 	print(model)
 	if ( !all(sapply(x$accuracy, is.null)) ) {
-		cat("\n"); print(x$accuracy)
+		cat("\n")
+		print(x$accuracy)
 	}
 }
 

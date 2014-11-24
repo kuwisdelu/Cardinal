@@ -25,7 +25,7 @@ BiocStyle::latex()
 \section{Introduction}
 
 <<echo=FALSE,results=hide>>=
-options(width=69)
+options(width=80)
 library(Cardinal)
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
@@ -832,6 +832,7 @@ See \verb|?spatialShrunkenCentroids| for more options and details.
 \section{Advanced Topics}
 
 \subsection{Apply}
+
 The \verb|apply| family of functions are a powerful feature of \R. The \verb|apply| function applies a function over margins of an array, while \verb|sapply| applies a function over every element of a vector-like object. The function \verb|tapply| applies a function over a ``ragged'' array, so that the function is applied over groups of values given by levels of another variable (usually a factor). In \Rpackage{Cardinal}, the methods \verb|pixelApply| and \verb|featureApply| allow \verb|apply|-like functionality that combine traits of each of these, tailored for imaging datasets.
 
 
@@ -921,6 +922,8 @@ If only the plots are desired rather than the actual data, then \verb|image| can
 \subsubsection{\Robject{featureApply}}
 
 The method \verb|featureApply| allows functions to be applied over all features. The function is applied to the flattened false-image vectors. These vectors are the pixel-by-pixel intensities of a single-feature image, not including missing pixels. Here, we use \verb|featureApply| to find the mean spectrum for different groups of pixels. We provide \verb|pData(msset)$pg| as a grouping variable, since it indicates the kind of pixel. We desire mean spectra for the black pixels, the red pixels, and the blue pixels. As before, since \verb|featureApply| knows to look in \Robject{msset}, we only need to provide \Robject{pg} to the argument \Robject{.pixel.groups}.
+
+
 <<featureApply1>>=
 f1 <- featureApply(msset, mean, .pixel.groups=pg)
 f1[,1:30]
@@ -999,16 +1002,14 @@ The \verb|generateSpectrum| function can be used to simulate mass spectra. Its p
 One spectrum with $m/z$ range from 1001 to 20000, 50 randomly selected peaks, baseline 3000, and $m/z$ resolution 100 is generated below and plotted in Figure \ref{fig:gs1}.
 <<gs1>>=
 set.seed(1)
-s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000),
-                       baseline=2000, resolution=100, step=3.3)
+s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000), baseline=2000, resolution=100, step=3.3)
 plot(x ~ t, data=s1, type="l", xlab="m/z", ylab="Intensity")
 @
 
 An example with fewer peaks, larger baseline, and lower resolution (Figure \ref{fig:gs2}):
 <<gs2>>=
 set.seed(2)
-s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000),
-                       baseline=3000, resolution=50, step=3.3)
+s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000), baseline=3000, resolution=50, step=3.3)
 plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
 @
 
@@ -1039,14 +1040,12 @@ plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
 Above we simulated MALDI-like spectra. We can also simulate DESI-like spectra, shown in Figure \ref{fig:gsp}.
 <<gs3>>=
 set.seed(3)
-s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000),
-                       baseline=0, resolution=250, noise=0.1, step=1.2)
+s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000), baseline=0, resolution=250, noise=0.1, step=1.2)
 plot(x ~ t, data=s3, type="l", xlab="m/z", ylab="Intensity")
 @
 <<gs4>>=
 set.seed(4)
-s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), 
-                       baseline=0, resolution=500, noise=0.2, step=1.2)
+s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), baseline=0, resolution=500, noise=0.2, step=1.2)
 plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
 @
 
@@ -1155,9 +1154,7 @@ pattern <- factor(c(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 0,
 	levels=c(0,1,2), labels=c("blue", "black", "red"))
 coord <- expand.grid(x=1:9, y=1:9)
 set.seed(2)
-msset <- generateImage(pattern, coord=coord,
-                                  range=c(1000, 5000), centers=c(2000, 3000, 4000),
-	                             resolution=100, step=3.3, as="MSImageSet")
+msset <- generateImage(pattern, coord=coord, range=c(1000, 5000), centers=c(2000, 3000, 4000), resolution=100, step=3.3, as="MSImageSet")
 @
 
 Again, we can plot the images to see that the simulated dataset is the same pattern as before (though the exact intensities will differ, because we have used a different seed for the random number generator), Figure \ref{fig:gI}.
@@ -1252,12 +1249,7 @@ We generate the image by using \verb|generateSpectrum| with the calculated mean 
 
 <<advsim>>=
 set.seed(1)
-x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), 
-                                               intensities=c(z1, z2), 
-                                               range=c(1,1000), 
-                                               resolution=100, 
-                                               baseline=0, step=1)$x,
-             as.vector(x1), as.vector(x2))
+x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), intensities=c(z1, z2), range=c(1,1000), resolution=100, baseline=0, step=1)$x, as.vector(x1), as.vector(x2))
 img3 <- MSImageSet(x3, coord=expand.grid(x=1:10, y=1:10), mz=1:1000)
 @
 
