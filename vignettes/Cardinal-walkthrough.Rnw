@@ -13,7 +13,7 @@ BiocStyle::latex()
 
 \title{Cardinal: Analytic tools for mass spectrometry imaging}
 
-\author{Kyle D. Bemis}
+\author{Kyle D. Bemis and April Harry}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -129,16 +129,19 @@ Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject
 To illustrate methods for the \Robject{MSImageSet} objects, we begin by creating a simple, simulated dataset using the \Rpackage{Cardinal} function \verb|generateImage|. This dataset will be the running example for this section. For more details on simulating mass spectrometry images, see \verb|?generateImage| or Section \ref{sec:sim} \textit{Simulation}.
 
 <<>>=
-set.seed(1)
 pattern <- factor(c(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 0,
 	0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 1, 1, 2,
 	2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 2, 2,
 	2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2,
 	2, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0),
 	levels=c(0,1,2), labels=c("blue", "black", "red"))
+
+set.seed(1)
 msset <- generateImage(pattern, coord=expand.grid(x=1:9, y=1:9),
 	range=c(1000, 5000), centers=c(2000, 3000, 4000),
 	resolution=100, step=3.3, as="MSImageSet")
+
+summary(msset)
 @
 
 The above code creates a simulated MS imaging dataset called \Robject{msset}, which is $9 \times 9$ pixels, with a mass range from $m/z \ 1000$ to $m/z \ 5000$. There are three peaks, occuring at $m/z \ 2000$, $m/z \ 3000$, and $m/z \ 4000$. Each of these peaks corresponds to a distinct region of interest. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R. All pixels with \Robject{pattern} = 0 correspond to the region with peak at $m/z \ 2000$, \Robject{pattern} = 1 corresponds to the peak at $m/z \ 3000$, and \Robject{pattern} = 2 corresponds to $m/z \ 4000$.
@@ -626,6 +629,8 @@ image(pca)
 \caption{\small Principal components analysis.}
 \end{figure}
 
+See \verb|?PCA| for more details.
+
 
 
 \subsection{Partial least squares (PLS)}
@@ -670,7 +675,7 @@ image(pls, col=c("blue", "black", "red"))
 \caption{\small Partial least squares.}
 \end{figure}
 
-When working with classification on real data, cross-validation should always be used, using the \verb|cvApply| method, to avoid biased results. See \verb|?cvApply|.
+When working with classification on real data, cross-validation should always be used, using the \verb|cvApply| method, to avoid biased results. See \verb|?cvApply| and \verb|?PLS| for more details.
 
 
 \subsection{Orthogonal partial least squares (O-PLS)}
@@ -712,16 +717,16 @@ image(opls, col=c("blue", "black", "red"))
 \caption{\small Orthogonal partial least squares.}
 \end{figure}
 
-O-PLS is primarily useful when many PLS components are required to fit an accurate model, since this often leads to unstable model coefficients. Try O-PLS when the PLS model coefficients are difficult to interpret, or the best PLS model uses a large number of components.
+O-PLS is primarily useful when many PLS components are required to fit an accurate model, since this often leads to unstable model coefficients. Try O-PLS when the PLS model coefficients are difficult to interpret, or the best PLS model uses a large number of components. See \verb|?OPLS| for more details.
 
 
 \subsection{Spatially-aware k-means clustering}
 
-Spatially-aware clustering using k-means is available \cite{Alexandrov2011}. This method uses a spatial distance function to project the data to a kernel space before performing ordinary k-means clustering.
+Spatially-aware clustering using k-means is available \cite{Alexandrov2011} through the \verb|spatialKMeans| method. This method uses a spatial distance function to project the data to a kernel space before performing ordinary k-means clustering.
 
 The parameters \Robject{r} and \Robject{k} are the neighborhood smoothing radius and the initial number of clusters.
 
-Below, we create a spatial segmentation using the spatially-aware clustering method.
+Below, we create a spatial segmentation using spatially-aware clustering.
 
 <<skm>>=
 set.seed(1)
@@ -758,6 +763,10 @@ image(skm, col=c("black", "blue", "red"), key=FALSE)
 \end{subfigure}
 \caption{\small Spatially-aware k-means clustering.}
 \end{figure}
+
+See \verb|?spatialKMeans| for more details.
+
+
 
 
 \subsection{Spatial shrunken centroids}
