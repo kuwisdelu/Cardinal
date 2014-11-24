@@ -147,9 +147,10 @@ setMethod("summary", "SpatialKMeans",
 		withinss <- sapply(resultData(object), function(x) sum(x$withinss))
 		betweenss <- sapply(resultData(object), function(x) sum(x$betweenss))
 		totss <- sapply(resultData(object), function(x) sum(x$totss))
+		time <- sapply(resultData(object), function(x) x$time[[3]])
 		out <- list(topLabels=topLabels,
 			withinss=withinss, betweenss=betweenss, totss=totss,
-			model=modelData(object), method=object[[1]]$method)
+			model=modelData(object), method=object[[1]]$method, time=time)
 		class(out) <- "summary.SpatialKMeans"
 		out
 	})
@@ -158,6 +159,7 @@ print.summary.SpatialKMeans <- function(x, ...) {
 	model <- pData(x$model)
 	row.names(model) <- NULL
 	model[["method"]] <- x$method
+	model[["time"]] <- x$time
 	model[["Within-Cluster SS"]] <- x$withinss
 	model[["Between-Cluster SS"]] <- x$betweenss
 	model[["Total SS"]] <- x$totss
@@ -198,9 +200,10 @@ setMethod("summary", "SpatialShrunkenCentroids",
 			nz <- apply(x$tstatistics[,which,drop=FALSE], 2, function(t) sum(t != 0))
 			round(mean(nz))
 		})
+		time <- sapply(resultData(object), function(x) x$time[[3]])
 		out <- list(topLabels=topLabels, accuracy=accuracy,
 			nclasses=nclasses, nzfeatures=nzfeatures,
-			model=modelData(object), method=object[[1]]$method)
+			model=modelData(object), method=object[[1]]$method, time=time)
 		class(out) <- "summary.SpatialShrunkenCentroids"
 		out
 	})
@@ -209,6 +212,7 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model <- pData(x$model)
 	row.names(model) <- NULL
 	model[["method"]] <- x$method
+	model[["time"]] <- x$time
 	model[["Predicted # of Classes"]] <- x$nclasses
 	model[["Mean # of Features per Class"]] <- x$nzfeatures
 	print(model)
