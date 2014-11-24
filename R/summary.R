@@ -33,9 +33,10 @@ setMethod("summary", "PCA",
 		row.names(topLabels) <- NULL
 		which <- which.max(unlist(object$ncomp))
 		sdev <- object$sdev[[which]]
+		totvar <- object[[which]]$totvar
 		importance <- t(simplify2array(list(sdev,
-			sdev^2 / sum(sdev^2),
-			cumsum(sdev^2 / sum(sdev^2)))))
+			sdev^2 / totvar,
+			cumsum(sdev^2 / totvar))))
 		dimnames(importance)  <- list(c("Standard deviation",
 				"Proportion of Variance",
 				"Cumulative"),

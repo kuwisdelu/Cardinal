@@ -19,9 +19,8 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 			loadings <- fit$loadings[,1:ncomp,drop=FALSE]
 			scores <- fit$scores[,1:ncomp,drop=FALSE]
 			sdev <- fit$sdev[1:ncomp]
-			list(scores=scores, loadings=loadings, sdev=sdev,
-				method=method, ncomp=ncomp,
-				center=fit$center, scale=fit$scale)
+			list(scores=scores, loadings=loadings, sdev=sdev, totvar=fit$totvar,
+				method=method, ncomp=ncomp, center=fit$center, scale=fit$scale)
 		})
 		model <- AnnotatedDataFrame(
 			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
@@ -74,6 +73,7 @@ setMethod("predict", "PCA",
 	} else {
 		svd <- svd(Xt, nu=0, nv=ncomp)
 	}
+	totvar <- sum(apply(Xt, 2, var))
 	sdev <- svd$d[1:ncomp] / sqrt(max(1, nrow(Xt) - 1))
 	loadings <- svd$v
 	scores <- Xt %*% loadings
@@ -81,7 +81,7 @@ setMethod("predict", "PCA",
 	colnames(loadings) <- paste("PC", 1:ncomp, sep="")
 	rownames(scores) <- pixelNames(x)
 	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev,
+	list(scores=scores, loadings=loadings, sdev=sdev, totvar=totvar,
 		method=method, center=center, scale=scale)
 }
 
