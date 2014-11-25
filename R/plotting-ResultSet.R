@@ -44,6 +44,7 @@ setMethod("plot",
 		}
 		ntimes <- as.vector(unlist(ntimes))
 		df <- pData(modelData(x))[ntimes,,drop=FALSE]
+		df <- as.data.frame(lapply(df, as.factor))
 		if ( !is.null(dim(data[[1]])) ) {
 			if ( is.null(colnames(data[[1]])) ) {
 				df$column <- as.vector(unlist(sapply(sapply(data, ncol),
@@ -138,6 +139,7 @@ setMethod("image",
 		}
 		ntimes <- as.vector(unlist(ntimes))
 		df <- pData(modelData(x))[ntimes,,drop=FALSE]
+		df <- as.data.frame(lapply(df, as.factor))
 		if ( !is.null(dim(data[[1]])) ) {
 			if ( is.null(colnames(data[[1]])) ) {
 				df$column <- as.vector(unlist(sapply(sapply(data, ncol),

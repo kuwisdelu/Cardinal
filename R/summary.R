@@ -222,6 +222,10 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	}
 }
 
+plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
+	# do something
+}
+
 setMethod("summary", "CrossValidated",
 	function(object, ...) {
 		accuracy <- lapply(resultData(object),

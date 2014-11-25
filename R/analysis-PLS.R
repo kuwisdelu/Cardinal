@@ -43,7 +43,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 				Yscale=Yscale, Ycenter=Ycenter))
 		})
 		model <- AnnotatedDataFrame(
-			data=data.frame(ncomp=as.factor(sapply(result, function(fit) fit$ncomp))),
+			data=data.frame(ncomp=sapply(result, function(fit) fit$ncomp)),
 			varMetadata=data.frame(
 				labelDescription=c(ncomp="Number of PLS Components")))
 		featureNames(model) <- .format.data.frame(pData(model))

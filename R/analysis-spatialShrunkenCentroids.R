@@ -25,9 +25,9 @@ setMethod("spatialShrunkenCentroids",
 		}), recursive=FALSE)
 		.message("spatialShrunkenCentroids: Preparing results.")
 		model <- AnnotatedDataFrame(data=data.frame(
-				r=as.factor(sapply(result, function(fit) fit$r)),
-				k=as.factor(sapply(result, function(fit) fit$k)),
-				s=as.factor(sapply(result, function(fit) fit$s))),
+				r=sapply(result, function(fit) fit$r),
+				k=sapply(result, function(fit) fit$k),
+				s=sapply(result, function(fit) fit$s)),
 			varMetadata=data.frame(
 				labelDescription=c(
 					r="Neighborhood radius",

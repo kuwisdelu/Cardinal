@@ -28,8 +28,8 @@ setMethod("spatialKMeans",
 		}), recursive=FALSE)
 		.message("spatialKMeans: Preparing results.")
 		model <- AnnotatedDataFrame(data=data.frame(
-				r=as.factor(sapply(result, function(fit) fit$r)),
-				k=as.factor(sapply(result, function(fit) fit$k))),
+				r=sapply(result, function(fit) fit$r),
+				k=sapply(result, function(fit) fit$k)),
 			varMetadata=data.frame(
 				labelDescription=c(
 					k="Number of clusters",
