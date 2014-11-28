@@ -187,7 +187,7 @@ plot.summary.SpatialKMeans <- function(x, y, ...) {
 	data <- pData(x$model)
 	data$withinss <- x$withinss
 	param <- data.frame(r=sort(unique(data$r)))
-	col <- rainbow(length(unique((data$r))))
+	col <- seq_len(length(unique((data$r))))
 	param$col <- col[as.integer(as.factor(param$r))]
 	plot(range(data$k), range(data$withinss), type='n',
 		xlab="# of Clusters (k)", ylab="Within-Cluster SS")
@@ -261,7 +261,7 @@ plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
 	data$nclasses <- x$nclasses
 	param <- expand.grid(r=sort(unique(data$r)),
 		k=sort(unique(data$k)))
-	col <- rainbow(length(unique((param$r))))
+	col <- seq_len(length(unique((param$r))))
 	param$col <- col[as.integer(as.factor(param$r))]
 	pch <- seq_len(length(unique((param$k))))
 	param$pch <- pch[as.integer(as.factor(param$k))]
