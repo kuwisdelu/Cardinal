@@ -57,7 +57,7 @@ plot.summary.PCA <- function(x, y, ...) {
 	cum <- x$importance["Cumulative",]
 	data <- data.frame(pc=seq_along(var), sdev=sdev, var=var, cum=cum)
 	plot(var ~ pc, data=data, type='b', xlab="PC",
-		ylab="Proportion of Variance")
+		ylab="Proportion of Variance", ...)
 }
 
 setMethod("summary", "PLS",
@@ -190,11 +190,12 @@ plot.summary.SpatialKMeans <- function(x, y, ...) {
 	col <- seq_len(length(unique((data$r))))
 	param$col <- col[as.integer(as.factor(param$r))]
 	plot(range(data$k), range(data$withinss), type='n',
-		xlab="# of Clusters (k)", ylab="Within-Cluster SS")
+		xlab="# of Clusters (k)", ylab="Within-Cluster SS", ...)
 	for ( i in seq_len(nrow(param)) ) {
 		par <- param[i,,drop=FALSE]
 		dat <- data[data$r == par$r,,drop=FALSE]
-		points(withinss ~ k, data=dat, type='b', col=par$col, pch=1, lty=1)
+		points(withinss ~ k, data=dat, type='b', col=par$col,
+			pch=1, lty=1, ...)
 	}
 	legend("topright", legend=.format.data.frame(param[,"r",drop=FALSE]),
 		col=param$col, pch=1, lty=1)
@@ -268,12 +269,12 @@ plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
 	lty <- seq_len(length(unique((param$k))))
 	param$lty <- lty[as.integer(as.factor(param$k))]
 	plot(range(data$s), c(min(data$nclasses), max(data$k)), type='n',
-		xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes")
+		xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes", ...)
 	for ( i in seq_len(nrow(param)) ) {
 		par <- param[i,,drop=FALSE]
 		dat <- data[data$r == par$r & data$k == par$k,]
 		points(nclasses ~ s, data=dat, type='b', col=par$col,
-			pch=par$pch, lty=par$lty)
+			pch=par$pch, lty=par$lty, ...)
 	}
 	legend("topright", legend=.format.data.frame(param[,c("r","k")]),
 		col=param$col, pch=param$pch, lty=param$lty)
@@ -342,13 +343,13 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 	data <- data.frame(data, accuracy)
 	plot(data$ncomp, accuracy[,1], type='b',
 		xlab="# of Components", ylab="Accuracy",
-		col=1, pch=1, lty=1)
+		col=1, pch=1, lty=1, ...)
 	abline(v=data$ncomp[which.max(accuracy[,1])], col=1, lty=9)
 	if ( ncol(accuracy) > 2 ) {
 		for ( i in seq_along(names(accuracy)) ) {
 			points(data$ncomp, accuracy[,i], type='b',
 				xlab="# of Components", ylab="Accuracy",
-				col=i, pch=i, lty=i)
+				col=i, pch=i, lty=i, ...)
 			abline(v=data$ncomp[which.max(accuracy[,i])], col=i, lty=9)
 		}
 		legend("topright", legend=names(accuracy),
