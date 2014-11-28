@@ -5,6 +5,7 @@ NEWS for Cardinal package
 Version 0.8.8 [2014-11-27]
 o Changed modelData for ResultSet from facors to original parameters
 o Added plot method for summaries of ResultSet objects
+o Added 'normalize.image' argument for image method
 
 Versoin 0.8.7 [2014-11-23]
 o Fixed bug in plotting vectors from ResultSet
