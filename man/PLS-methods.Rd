@@ -11,6 +11,7 @@
 \alias{predict,PLS-method}
 \alias{summary,PLS-method}
 \alias{print.summary.PLS}
+\alias{plot.summary.PLS}
 
 \title{Partial Least Squares}
 \description{

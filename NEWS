@@ -2,8 +2,14 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.8.8 [2014-11-27]
+o Changed modelData for ResultSet from facors to original parameters
+o Added plot method for summaries of ResultSet objects
+
 Versoin 0.8.7 [2014-11-23]
 o Fixed bug in plotting vectors from ResultSet
+o Completed Cardinal-walkthrough vignette
+o Fixed bug in PCA summary in reporting explained variance
 
 Version 0.8.6 [2014-11-21]
 o Completed walkthrough vignettes

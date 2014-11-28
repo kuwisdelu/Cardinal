@@ -7,6 +7,7 @@
 
 \alias{summary,CrossValidated-method}
 \alias{print.summary.CrossValidated}
+\alias{plot.summary.CrossValidated}
 
 \title{Apply Cross-Validated Analysis to Imaging Datasets}
 \description{

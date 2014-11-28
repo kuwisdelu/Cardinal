@@ -11,6 +11,7 @@
 \alias{predict,OPLS-method}
 \alias{summary,OPLS-method}
 \alias{print.summary.OPLS}
+\alias{plot.summary.OPLS}
 
 \title{Orthogonal Partial Least Squares}
 \description{

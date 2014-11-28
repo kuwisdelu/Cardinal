@@ -11,6 +11,7 @@
 \alias{logLik,SpatialShrunkenCentroids-method}
 \alias{summary,SpatialShrunkenCentroids-method}
 \alias{print.summary.SpatialShrunkenCentroids}
+\alias{plot.summary.SpatialShrunkenCentroids}
 
 \title{Spatially-Aware Shrunken Centroid Clustering and Classification}
 \description{

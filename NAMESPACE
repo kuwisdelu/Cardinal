@@ -80,6 +80,14 @@ export(
 	"print.summary.SpatialShrunkenCentroids",
 	"print.summary.CrossValidated")
 
+export(
+	"plot.summary.PCA",
+	"plot.summary.PLS",
+	"plot.summary.OPLS",
+	"plot.summary.SpatialKMeans",
+	"plot.summary.SpatialShrunkenCentroids",
+	"plot.summary.CrossValidated")
+
 exportMethods(
 	"as.array",
 	"as.matrix",

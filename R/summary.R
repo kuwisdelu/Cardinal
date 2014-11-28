@@ -51,6 +51,15 @@ print.summary.PCA <- function(x, ...) {
 	print(x$importance)
 }
 
+plot.summary.PCA <- function(x, y, ...) {
+	sdev <- x$importance["Standard deviation",]
+	var <- x$importance["Proportion of Variance",]
+	cum <- x$importance["Cumulative",]
+	data <- data.frame(pc=seq_along(var), sdev=sdev, var=var, cum=cum)
+	plot(var ~ pc, data=data, type='b', xlab="PC",
+		ylab="Proportion of Variance")
+}
+
 setMethod("summary", "PLS",
 	function(object, ...) {
 		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
@@ -87,6 +96,10 @@ setMethod("summary", "PLS",
 
 print.summary.PLS <- function(x, ...) {
 	print(x$accuracy)
+}
+
+plot.summary.PLS <- function(x, y, ...) {
+	.plot.accuracy(x, y, ...)	
 }
 
 setMethod("summary", "OPLS",
@@ -128,6 +141,10 @@ print.summary.OPLS <- function(x, ...) {
 	print(x$accuracy)
 }
 
+plot.summary.OPLS <- function(x, y, ...) {
+	.plot.accuracy(x, y, ...)	
+}
+
 setMethod("summary", "SpatialKMeans",
 	function(object, ...) {
 		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
@@ -164,6 +181,23 @@ print.summary.SpatialKMeans <- function(x, ...) {
 	model[["Between-Cluster SS"]] <- x$betweenss
 	model[["Total SS"]] <- x$totss
 	print(model)
+}
+
+plot.summary.SpatialKMeans <- function(x, y, ...) {
+	data <- pData(x$model)
+	data$withinss <- x$withinss
+	param <- data.frame(r=sort(unique(data$r)))
+	col <- rainbow(length(unique((data$r))))
+	param$col <- col[as.integer(as.factor(param$r))]
+	plot(range(data$k), range(data$withinss), type='n',
+		xlab="# of Clusters (k)", ylab="Within-Cluster SS")
+	for ( i in seq_len(nrow(param)) ) {
+		par <- param[i,,drop=FALSE]
+		dat <- data[data$r == par$r,,drop=FALSE]
+		points(withinss ~ k, data=dat, type='b', col=par$col, pch=1, lty=1)
+	}
+	legend("topright", legend=.format.data.frame(param[,"r",drop=FALSE]),
+		col=param$col, pch=1, lty=1)
 }
 
 setMethod("summary", "SpatialShrunkenCentroids",
@@ -223,7 +257,26 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 }
 
 plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
-	# do something
+	data <- pData(x$model)
+	data$nclasses <- x$nclasses
+	param <- expand.grid(r=sort(unique(data$r)),
+		k=sort(unique(data$k)))
+	col <- rainbow(length(unique((param$r))))
+	param$col <- col[as.integer(as.factor(param$r))]
+	pch <- seq_len(length(unique((param$k))))
+	param$pch <- pch[as.integer(as.factor(param$k))]
+	lty <- seq_len(length(unique((param$k))))
+	param$lty <- lty[as.integer(as.factor(param$k))]
+	plot(range(data$s), c(min(data$nclasses), max(data$k)), type='n',
+		xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes")
+	for ( i in seq_len(nrow(param)) ) {
+		par <- param[i,,drop=FALSE]
+		dat <- data[data$r == par$r & data$k == par$k,]
+		points(nclasses ~ s, data=dat, type='b', col=par$col,
+			pch=par$pch, lty=par$lty)
+	}
+	legend("topright", legend=.format.data.frame(param[,c("r","k")]),
+		col=param$col, pch=param$pch, lty=param$lty)
 }
 
 setMethod("summary", "CrossValidated",
@@ -236,13 +289,17 @@ setMethod("summary", "CrossValidated",
 			acc <- Reduce(`+`, dots)
 			acc / nfold
 		}, accuracy))
-		out <- list(accuracy=accuracy)
+		out <- list(accuracy=accuracy, model=modelData(object[[1]]))
 		class(out) <- "summary.CrossValidated"
 		out
 	})
 
 print.summary.CrossValidated <- function(x, ...) {
 	print(x$accuracy)
+}
+
+plot.summary.CrossValidated <- function(x, y, ...) {
+	.plot.accuracy(x, y, ...)	
 }
 
 .summarize.factor <- function(y, fitted) {
@@ -276,4 +333,27 @@ print.summary.CrossValidated <- function(x, ...) {
 	c(SSE = sum((fitted - y)^2),
 		MSE = sum((fitted - y)^2) / length(fitted),
 		RMSE = sqrt(sum((fitted - y)^2) / length(fitted)))
+}
+
+.plot.accuracy <- function(x, y, ...) {
+	data <- pData(x$model)
+	accuracy <- sapply(x$accuracy, function(summ) summ["Accuracy",])
+	accuracy <- as.data.frame(t(accuracy))
+	data <- data.frame(data, accuracy)
+	plot(data$ncomp, accuracy[,1], type='b',
+		xlab="# of Components", ylab="Accuracy",
+		col=1, pch=1, lty=1)
+	abline(v=data$ncomp[which.max(accuracy[,1])], col=1, lty=9)
+	if ( ncol(accuracy) > 2 ) {
+		for ( i in seq_along(names(accuracy)) ) {
+			points(data$ncomp, accuracy[,i], type='b',
+				xlab="# of Components", ylab="Accuracy",
+				col=i, pch=i, lty=i)
+			abline(v=data$ncomp[which.max(accuracy[,i])], col=i, lty=9)
+		}
+		legend("topright", legend=names(accuracy),
+			col=seq_len(ncol(accuracy)),
+			pch=seq_len(ncol(accuracy)),
+			lty=seq_len(ncol(accuracy)))
+	}
 }
