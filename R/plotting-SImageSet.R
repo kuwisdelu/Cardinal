@@ -228,6 +228,7 @@ setMethod("image",
 		strip = TRUE,
 		key = FALSE,
 		fun = mean,
+		normalize.image = c("none", "linear"),
 		contrast.enhance = c("none", "suppression", "histogram"),
 	    smooth.image = c("none", "gaussian", "adaptive"),
 		...,
@@ -311,10 +312,11 @@ setMethod("image",
 		values <- values[subsetPositions,,drop=FALSE]
 		dim(values) <- c(dim(subsetPositions), nrow(condition))
 		# perform image processing (contrast enhancement + spatial smoothing)
+		normalize.image <- normalize.image.method(normalize.image)
 		contrast.enhance <- contrast.enhance.method(contrast.enhance)
 		smooth.image <- smooth.image.method(smooth.image)
 		values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
-			function(x) smooth.image(contrast.enhance(x)))
+			function(x) smooth.image(contrast.enhance(normalize.image(x))))
 		# set up plotting parameters
 		if ( missing(xlim) )
 			xlim <- range(model$right[[1]], na.rm=TRUE) + c(-0.5, 0.5)

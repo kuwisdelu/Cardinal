@@ -28,6 +28,7 @@
     strip = TRUE,
     key = FALSE,
     fun = mean,
+    normalize.image = c("none", "linear"),
     contrast.enhance = c("none", "suppression", "histogram"),
     smooth.image = c("none", "gaussian", "adaptive"),
     \dots,
@@ -114,6 +115,8 @@
     \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link[lattice]{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
+
+    \item{normalize.image}{Normalization function to be applied to each image. The function can be user-supplied, of one of 'none' or 'linear'. The 'linear' normalization method normalized each image to the same intensity range using a linear transformation.}
 
     \item{contrast.enhance}{Contrast enhancement function to be applied to each image. The function can be user-supplied, or one of 'none', 'histogram', or 'suppression'. The 'histogram' equalization method flatterns the distribution of intensities. The hotspot 'suppression' method uses thresholding to reduce the intensities of hotspots.}
 
