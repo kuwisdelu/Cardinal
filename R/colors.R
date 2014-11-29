@@ -39,18 +39,15 @@ gradient.colors <- function(n, start="white", end="black", alpha=1) {
 }
 
 ## Convert a color or vector of colors to be translucent
-alpha.colors <- function(n, col="red", ramp=c("linear","power"), range=c(0,1)) {
-	if ( missing(n) ) n <- length(col)
-	if ( length(col) < n ) col <- rep(col, n)
+alpha.colors <- function(n, col="red", alpha.power=2, alpha=(seq_len(n)/n)^alpha.power) {
+	if ( missing(n) )
+		n <- length(col)
+	if ( length(col) != n )
+		col <- rep(col, length.out=n)
+	if ( length(alpha) != n )
+		alpha <- rep(alpha, length.out=n)
 	cols <- col2rgb(col, alpha=TRUE)
-	if ( is.numeric(ramp) ) {
-		alpha.ramp <- rep(ramp, lenght.out=n)
-	} else {
-		ramp <- match.arg(ramp)
-		alpha.ramp <- seq(from=range[[1]], to=range[[2]], length.out=n)
-	}
-	if ( ramp == "power" ) alpha.ramp <- alpha.ramp^2
-	alphas <- 255 * alpha.ramp
+	alphas <- 255 * alpha / max(alpha, na.rm=TRUE)
 	cols <- rgb(cols[1,], cols[2,], cols[3,],
 		alpha=as.integer(alphas),
 		maxColorValue=255)

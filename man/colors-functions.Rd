@@ -13,17 +13,16 @@
 intensity.colors(n, alpha=1)
 risk.colors(n, alpha=1)
 gradient.colors(n, start="white", end="black", alpha=1)
-alpha.colors(n, col="red", ramp=c("linear", "power"), range=c(0,1))
+alpha.colors(n, col="red", alpha.power=2, alpha=(seq_len(n)/n)^alpha.power)
 }
 
 \arguments{
     \item{n}{the number of colors}
-    \item{alpha}{a value between 0 and 1 to set the transparency level}
+    \item{alpha}{a vector of alpha values between 0 and 1}
     \item{start}{the starting color value}
     \item{end}{the ending color value}
     \item{col}{the color(s) to expand with transparency}
-    \item{ramp}{how opacity should be ramped}
-    \item{range}{the range of the opacity}
+    \item{alpha.power}{how the alpha should ramp as it increases}
 }
 
 \value{
