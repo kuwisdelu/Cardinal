@@ -9,7 +9,6 @@ Priority: High
 -Optical image registration
 
 Priority: Medium
--Change alpha.colors for 3D plotting
 -Parse more metadata from imzML datasets for MIAPE-Imaging
 -Faster reduceDimension implementation for method='peaks'
 
