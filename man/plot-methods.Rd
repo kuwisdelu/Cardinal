@@ -64,7 +64,7 @@
     col = if (superpose) rainbow(nlevels(pixel.groups)) else "black",
     lattice = FALSE)
 
-\S4method{plot}{CrossValidated,missing}(x, fold, \dots)
+\S4method{plot}{CrossValidated,missing}(x, fold = names(x), layout, \dots)
 
 \S4method{plot}{PCA,missing}(x, formula = substitute(mode ~ mz),
     mode = "loadings",

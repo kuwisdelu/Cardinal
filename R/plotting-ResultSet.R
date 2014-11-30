@@ -186,16 +186,18 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "CrossValidated", y = "missing"),
-	function(x, fold, ...)
+	function(x, fold = names(x), layout, ...)
 	{
-		for (i in fold) plot(resultData(x)[[i]], ...)
+		if ( !missing(layout) ) .setup.layout(layout)
+		for ( i in fold ) plot(resultData(x)[[i]], ...)
 	})
 
 setMethod("image",
 	signature = c(x = "CrossValidated"),
-	function(x, fold, ...)
+	function(x, fold = names(x), layout, ...)
 	{
-		for (i in fold) image(resultData(x)[[i]], ...)
+		if ( !missing(layout) ) .setup.layout(layout)
+		for ( i in fold ) image(resultData(x)[[i]], ...)
 	})
 
 #### Plotting for PCA ####

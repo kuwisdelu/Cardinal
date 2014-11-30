@@ -64,7 +64,7 @@
     col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
     lattice = FALSE)
 
-\S4method{image}{CrossValidated}(x, fold, \dots)
+\S4method{image}{CrossValidated}(x, fold = names(x), layout, \dots)
 
 \S4method{image}{PCA}(x, formula = substitute(mode ~ x * y),
     mode = "scores",
