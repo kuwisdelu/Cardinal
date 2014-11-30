@@ -26,6 +26,10 @@ setMethod("names", "ResultSet", function(x) {
 	sapply(resultData(x), names)
 })
 
+setMethod("length", "ResultSet", function(x) {
+	length(resultData(x))
+})
+
 setMethod("$", "ResultSet", function(x, name) {
 	lapply(resultData(x), function(res) res[[name]])
 })

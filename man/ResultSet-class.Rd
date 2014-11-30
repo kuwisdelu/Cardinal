@@ -18,6 +18,7 @@
 \alias{modelData<-}
 \alias{modelData,ResultSet-method}
 \alias{modelData<-,ResultSet-method}
+\alias{length,ResultSet-method}
 \alias{names,ResultSet-method}
 \alias{show,ResultSet-method}
 
@@ -67,6 +68,8 @@
 
     Standard generic methods:
     \describe{
+        \item{\code{length(x)}:}{Access the number of elements of \code{resultData}.}
+
         \item{\code{names(x)}:}{Access the names of the components of all of the elements of \code{resultData}.}
 
         \item{\code{ResultSet$name}:}{Access all of the result components with the name \code{name}.}

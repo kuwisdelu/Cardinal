@@ -91,6 +91,7 @@ export(
 exportMethods(
 	"as.array",
 	"as.matrix",
+	"length",
 	"names",
 	"names<-",
 	"rownames",

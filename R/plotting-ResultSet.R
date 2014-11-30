@@ -186,7 +186,7 @@ setMethod("image",
 
 setMethod("plot",
 	signature = c(x = "CrossValidated", y = "missing"),
-	function(x, fold = names(x), layout, ...)
+	function(x, fold = 1:length(x), layout, ...)
 	{
 		if ( !missing(layout) ) .setup.layout(layout)
 		for ( i in fold ) plot(resultData(x)[[i]], ...)
@@ -194,7 +194,7 @@ setMethod("plot",
 
 setMethod("image",
 	signature = c(x = "CrossValidated"),
-	function(x, fold = names(x), layout, ...)
+	function(x, fold = 1:length(x), layout, ...)
 	{
 		if ( !missing(layout) ) .setup.layout(layout)
 		for ( i in fold ) image(resultData(x)[[i]], ...)
