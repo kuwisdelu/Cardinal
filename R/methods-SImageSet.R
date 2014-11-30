@@ -303,16 +303,16 @@ setMethod("cvApply", "SImageSet",
 		# loop through folds
 		result <- lapply(sort(unique(.fold)), function(k) {
 			.message("!!---- Fold ", k, " ----!!")
-			if ( is.matrix(y) ) {
+			if ( length(dim(y)) == 2 ) {
 				fit <- .fun(x[,k!=.fold], y[k!=.fold,,drop=FALSE], ...)
 				predict(fit,
 					newx=x[,k==.fold],
-					newy=y[k==.fold,,drop=FALSE])
+					newy=y[k==.fold,,drop=FALSE], ...)
 			} else {
 				fit <- .fun(x[,k!=.fold], y[k!=.fold], ...)
 				predict(fit,
 					newx=x[,k==.fold],
-					newy=y[k==.fold])
+					newy=y[k==.fold], ...)
 			}
 		})
 		names(result) <- sort(unique(.fold))
