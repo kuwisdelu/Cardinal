@@ -88,6 +88,7 @@ setMethod("summary", "PLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
+		attr(accuracy, "varLabel") <- c("ncomp", "Number of Components")
 		out <- list(topLabels=topLabels, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PLS"
@@ -131,6 +132,7 @@ setMethod("summary", "OPLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
+		attr(accuracy, "varLabel") <- c("ncomp", "Number of Components")
 		out <- list(topLabels=topLabels, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.OPLS"
@@ -228,6 +230,7 @@ setMethod("summary", "SpatialShrunkenCentroids",
 				.summarize.factor(x$y, x$classes)
 			}
 		})
+		attr(accuracy, "varLabel") <- c("s", "Shrinkage parameter (s)")
 		nclasses <- sapply(resultData(object), function(x) 
 			length(unique(x$classes)))
 		nzfeatures <- sapply(resultData(object), function(x) {
@@ -258,38 +261,43 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 }
 
 plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
-	data <- pData(x$model)
-	data$nclasses <- x$nclasses
-	param <- expand.grid(r=sort(unique(data$r)),
-		k=sort(unique(data$k)))
-	col <- seq_len(length(unique((param$r))))
-	param$col <- col[as.integer(as.factor(param$r))]
-	pch <- seq_len(length(unique((param$k))))
-	param$pch <- pch[as.integer(as.factor(param$k))]
-	lty <- seq_len(length(unique((param$k))))
-	param$lty <- lty[as.integer(as.factor(param$k))]
-	plot(range(data$s), c(min(data$nclasses), max(data$k)), type='n',
-		xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes", ...)
-	for ( i in seq_len(nrow(param)) ) {
-		par <- param[i,,drop=FALSE]
-		dat <- data[data$r == par$r & data$k == par$k,]
-		points(nclasses ~ s, data=dat, type='b', col=par$col,
-			pch=par$pch, lty=par$lty, ...)
+	if ( any(sapply(x$accuracy, is.null)) ) {
+		data <- pData(x$model)
+		data$nclasses <- x$nclasses
+		param <- expand.grid(r=sort(unique(data$r)),
+			k=sort(unique(data$k)))
+		col <- seq_len(length(unique((param$r))))
+		param$col <- col[as.integer(as.factor(param$r))]
+		pch <- seq_len(length(unique((param$k))))
+		param$pch <- pch[as.integer(as.factor(param$k))]
+		lty <- seq_len(length(unique((param$k))))
+		param$lty <- lty[as.integer(as.factor(param$k))]
+		plot(range(data$s), c(min(data$nclasses), max(data$k)), type='n',
+			xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes", ...)
+		for ( i in seq_len(nrow(param)) ) {
+			par <- param[i,,drop=FALSE]
+			dat <- data[data$r == par$r & data$k == par$k,]
+			points(nclasses ~ s, data=dat, type='b', col=par$col,
+				pch=par$pch, lty=par$lty, ...)
+		}
+		legend("topright", legend=.format.data.frame(param[,c("r","k")]),
+			col=param$col, pch=param$pch, lty=param$lty)
+	} else {
+		.plot.accuracy(x, y, ...)
 	}
-	legend("topright", legend=.format.data.frame(param[,c("r","k")]),
-		col=param$col, pch=param$pch, lty=param$lty)
 }
 
 setMethod("summary", "CrossValidated",
 	function(object, ...) {
-		accuracy <- lapply(resultData(object),
+		acc <- lapply(resultData(object),
 			function(ob) summary(ob)$accuracy)
 		accuracy <- do.call("Map", c(function(...) {
 			dots <- list(...)
 			nfold <- length(dots)
 			acc <- Reduce(`+`, dots)
 			acc / nfold
-		}, accuracy))
+		}, acc))
+		attr(accuracy, "varLabel") <- attr(acc[[1]], "varLabel")
 		out <- list(accuracy=accuracy, model=modelData(object[[1]]))
 		class(out) <- "summary.CrossValidated"
 		out
@@ -336,21 +344,23 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 		RMSE = sqrt(sum((fitted - y)^2) / length(fitted)))
 }
 
-.plot.accuracy <- function(x, y, ...) {
+.plot.accuracy <- function(x, y, name, title, ...) {
 	data <- pData(x$model)
 	accuracy <- sapply(x$accuracy, function(summ) summ["Accuracy",])
+	name <- attr(x$accuracy, "varLabel")[[1]]
+	title <- attr(x$accuracy, "varLabel")[[2]]
 	accuracy <- as.data.frame(t(accuracy))
 	data <- data.frame(data, accuracy)
-	plot(data$ncomp, accuracy[,1], type='b',
-		xlab="# of Components", ylab="Accuracy",
+	plot(data[[name]], accuracy[,1], type='b',
+		xlab=title, ylab="Accuracy",
 		col=1, pch=1, lty=1, ...)
-	abline(v=data$ncomp[which.max(accuracy[,1])], col=1, lty=9)
+	abline(v=data[[name]][which.max(accuracy[,1])], col=1, lty=9)
 	if ( ncol(accuracy) > 2 ) {
 		for ( i in seq_along(names(accuracy)) ) {
-			points(data$ncomp, accuracy[,i], type='b',
+			points(data[[name]], accuracy[,i], type='b',
 				xlab="# of Components", ylab="Accuracy",
 				col=i, pch=i, lty=i, ...)
-			abline(v=data$ncomp[which.max(accuracy[,i])], col=i, lty=9)
+			abline(v=data[[name]][which.max(accuracy[,i])], col=i, lty=9)
 		}
 		legend("topright", legend=names(accuracy),
 			col=seq_len(ncol(accuracy)),
