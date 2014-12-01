@@ -88,7 +88,13 @@ setMethod("summary", "PLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		attr(accuracy, "varLabel") <- c("ncomp", "Number of Components")
+		if ( is.factor(object[[1]]$y) ) {
+			attr(accuracy, "accuracy:type") <- "factor"
+		} else {
+			attr(accuracy, "accuracy:type") <- "numeric"
+		}
+		attr(accuracy, "gridsearch:x") <- "ncomp"
+		attr(accuracy, "gridsearch:xlab") <- "Number of Components"
 		out <- list(topLabels=topLabels, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PLS"
@@ -96,11 +102,15 @@ setMethod("summary", "PLS",
 	})
 
 print.summary.PLS <- function(x, ...) {
-	print(x$accuracy)
+	print(c(x$accuracy))
 }
 
 plot.summary.PLS <- function(x, y, ...) {
-	.plot.accuracy(x, y, ...)	
+	if ( attr(x$accuracy, "accuracy") == "numeric" ) {
+		.plot.accuracy.numeric(x$model, x$accuracy, ...)
+	} else if ( attr(x$accuracy, "accuracy") == "factor" ) {
+		.plot.accuracy.factor(x$model, x$accuracy, ...)
+	}
 }
 
 setMethod("summary", "OPLS",
@@ -132,7 +142,13 @@ setMethod("summary", "OPLS",
 				.summarize.numeric(x$y, x$fitted)
 			}
 		})
-		attr(accuracy, "varLabel") <- c("ncomp", "Number of Components")
+		if ( is.factor(object[[1]]$y) ) {
+			attr(accuracy, "accuracy:type") <- "factor"
+		} else {
+			attr(accuracy, "accuracy:type") <- "numeric"
+		}
+		attr(accuracy, "gridsearch:x") <- "ncomp"
+		attr(accuracy, "gridsearch:xlab") <- "Number of Components"
 		out <- list(topLabels=topLabels, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.OPLS"
@@ -140,11 +156,15 @@ setMethod("summary", "OPLS",
 	})
 
 print.summary.OPLS <- function(x, ...) {
-	print(x$accuracy)
+	print(c(x$accuracy))
 }
 
 plot.summary.OPLS <- function(x, y, ...) {
-	.plot.accuracy(x, y, ...)	
+	if ( attr(x$accuracy, "accuracy") == "numeric" ) {
+		.plot.accuracy.numeric(x$model, x$accuracy, ...)
+	} else if ( attr(x$accuracy, "accuracy") == "factor" ) {
+		.plot.accuracy.factor(x$model, x$accuracy, ...)
+	}
 }
 
 setMethod("summary", "SpatialKMeans",
@@ -186,21 +206,8 @@ print.summary.SpatialKMeans <- function(x, ...) {
 }
 
 plot.summary.SpatialKMeans <- function(x, y, ...) {
-	data <- pData(x$model)
-	data$withinss <- x$withinss
-	param <- data.frame(r=sort(unique(data$r)))
-	col <- seq_len(length(unique((data$r))))
-	param$col <- col[as.integer(as.factor(param$r))]
-	plot(range(data$k), range(data$withinss), type='n',
-		xlab="# of Clusters (k)", ylab="Within-Cluster SS", ...)
-	for ( i in seq_len(nrow(param)) ) {
-		par <- param[i,,drop=FALSE]
-		dat <- data[data$r == par$r,,drop=FALSE]
-		points(withinss ~ k, data=dat, type='b', col=par$col,
-			pch=1, lty=1, ...)
-	}
-	legend("topright", legend=.format.data.frame(param[,"r",drop=FALSE]),
-		col=param$col, pch=1, lty=1)
+	.plot.gridsearch(x="k", y=x$withinss, model=x$model,
+		xlab="Number of Clusters", ylab="Within-Cluster SS", ...)
 }
 
 setMethod("summary", "SpatialShrunkenCentroids",
@@ -224,13 +231,13 @@ setMethod("summary", "SpatialShrunkenCentroids",
 		}))
 		row.names(topLabels) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
-			if ( is.null(x$y) ) {
-				NULL
-			} else {
-				.summarize.factor(x$y, x$classes)
-			}
+			.summarize.factor(x$y, x$classes)
 		})
-		attr(accuracy, "varLabel") <- c("s", "Shrinkage parameter (s)")
+		if ( !is.null(accuracy[[1]]) ) {
+			attr(accuracy, "gridsearch:x") <- "s"
+			attr(accuracy, "gridsearch:xlab") <- "Shrinkage parameter (s)"
+			attr(accuracy, "accuracy:type") <- "factor"
+		}
 		nclasses <- sapply(resultData(object), function(x) 
 			length(unique(x$classes)))
 		nzfeatures <- sapply(resultData(object), function(x) {
@@ -253,37 +260,19 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model[["time"]] <- x$time
 	model[["Predicted # of Classes"]] <- x$nclasses
 	model[["Mean # of Features per Class"]] <- x$nzfeatures
-	print(model)
-	if ( !all(sapply(x$accuracy, is.null)) ) {
-		cat("\n")
-		print(x$accuracy)
+	if ( !is.null(x$accuracy[[1]]) ) {
+		model[["Accuracy"]] <- sapply(x$accuracy,
+			function(s) s["Accuracy", 1])
 	}
+	print(model)
 }
 
 plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
-	if ( any(sapply(x$accuracy, is.null)) ) {
-		data <- pData(x$model)
-		data$nclasses <- x$nclasses
-		param <- expand.grid(r=sort(unique(data$r)),
-			k=sort(unique(data$k)))
-		col <- seq_len(length(unique((param$r))))
-		param$col <- col[as.integer(as.factor(param$r))]
-		pch <- seq_len(length(unique((param$k))))
-		param$pch <- pch[as.integer(as.factor(param$k))]
-		lty <- seq_len(length(unique((param$k))))
-		param$lty <- lty[as.integer(as.factor(param$k))]
-		plot(range(data$s), c(min(data$nclasses), max(data$k)), type='n',
-			xlab="Shrinkage Parameter (s)", ylab="Predicted # of Classes", ...)
-		for ( i in seq_len(nrow(param)) ) {
-			par <- param[i,,drop=FALSE]
-			dat <- data[data$r == par$r & data$k == par$k,]
-			points(nclasses ~ s, data=dat, type='b', col=par$col,
-				pch=par$pch, lty=par$lty, ...)
-		}
-		legend("topright", legend=.format.data.frame(param[,c("r","k")]),
-			col=param$col, pch=param$pch, lty=param$lty)
+	if ( is.null(x$accuracy[[1]]) ) {
+		.plot.gridsearch(x="s", y=x$nclasses, model=x$model,
+		xlab="Shrinkage parameter (s)", ylab="Predicted # of Classes", ...)
 	} else {
-		.plot.accuracy(x, y, ...)
+		.plot.accuracy.factor(x$model, x$accuracy, ...)
 	}
 }
 
@@ -297,21 +286,29 @@ setMethod("summary", "CrossValidated",
 			acc <- Reduce(`+`, dots)
 			acc / nfold
 		}, acc))
-		attr(accuracy, "varLabel") <- attr(acc[[1]], "varLabel")
+		attr(accuracy, "gridsearch:x") <- attr(acc[[1]], "gridsearch:x")
+		attr(accuracy, "gridsearch:xlab") <- attr(acc[[1]], "gridsearch:xlab")
+		attr(accuracy, "accuracy:type") <- attr(acc[[1]], "accuracy:type")
 		out <- list(accuracy=accuracy, model=modelData(object[[1]]))
 		class(out) <- "summary.CrossValidated"
 		out
 	})
 
 print.summary.CrossValidated <- function(x, ...) {
-	print(x$accuracy)
+	print(c(x$accuracy))
 }
 
 plot.summary.CrossValidated <- function(x, y, ...) {
-	.plot.accuracy(x, y, ...)	
+	if ( attr(x$accuracy, "accuracy") == "numeric" ) {
+		.plot.accuracy.numeric(x$model, x$accuracy, ...)
+	} else if ( attr(x$accuracy, "accuracy") == "factor" ) {
+		.plot.accuracy.factor(x$model, x$accuracy, ...)
+	}
 }
 
 .summarize.factor <- function(y, fitted) {
+	if ( is.null(y) || is.null(fitted) )
+		return(NULL)
 	nonmissing <- !is.na(y)
 	y <- y[nonmissing]
 	fitted <- fitted[nonmissing]
@@ -330,6 +327,8 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 }
 
 .summarize.numeric <- function(y, fitted) {
+	if ( is.null(y) || is.null(fitted) )
+		return(NULL)
 	nonmissing <- !is.na(y)
 	y <- y[nonmissing]
 	if ( is.matrix(fitted) ) {
@@ -344,27 +343,66 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 		RMSE = sqrt(sum((fitted - y)^2) / length(fitted)))
 }
 
-.plot.accuracy <- function(x, y, name, title, ...) {
-	data <- pData(x$model)
-	accuracy <- sapply(x$accuracy, function(summ) summ["Accuracy",])
-	name <- attr(x$accuracy, "varLabel")[[1]]
-	title <- attr(x$accuracy, "varLabel")[[2]]
-	accuracy <- as.data.frame(t(accuracy))
-	data <- data.frame(data, accuracy)
-	plot(data[[name]], accuracy[,1], type='b',
-		xlab=title, ylab="Accuracy",
-		col=1, pch=1, lty=1, ...)
-	abline(v=data[[name]][which.max(accuracy[,1])], col=1, lty=9)
-	if ( ncol(accuracy) > 2 ) {
-		for ( i in seq_along(names(accuracy)) ) {
-			points(data[[name]], accuracy[,i], type='b',
-				xlab="# of Components", ylab="Accuracy",
-				col=i, pch=i, lty=i, ...)
-			abline(v=data[[name]][which.max(accuracy[,i])], col=i, lty=9)
+.plot.accuracy.factor <- function(model, accuracy, ...) {
+	x <- attr(accuracy, "gridsearch:x")
+	xlab <- attr(accuracy, "gridsearch:xlab")
+	accuracy <- sapply(accuracy, function(s) s["Accuracy", 1])
+	.plot.gridsearch(x, y=accuracy, model=model,
+		xlab=xlab, ylab="Accuracy", markfun=which.max, ...)
+}
+
+.plot.accuracy.numeric <- function(model, accuracy, ...) {
+	x <- attr(accuracy, "gridsearch:x")
+	xlab <- attr(accuracy, "gridsearch:xlab")
+	accuracy <- sapply(accuracy, function(s) s["RMSE"])
+	.plot.gridsearch(x, y=accuracy, model=model,
+		xlab=xlab, ylab="RMSE", markfun=which.min, ...)
+}
+
+.plot.gridsearch <- function(x, y, model, markfun, ...) {
+	model <- pData(model)
+	if ( is.character(x) ) {
+		i <- which(names(model) == x)
+		x <- model[[x]]
+		model <- model[,-i,drop=FALSE]
+	}
+	if ( is.character(y) ) {
+		j <- which(names(model) == y)
+		y <- model[[y]]
+		model <- model[,-j,drop=FALSE]
+	}
+	if ( ncol(model) != 0 ) {
+		param <- expand.grid(lapply(model, unique))
+		col <- seq_len(length(unique((param[[1]]))))
+		param$col <- col[as.integer(as.factor(param[[1]]))]
+		if ( ncol(param) > 1 ) {
+			pch <- seq_len(length(unique((param[[2]]))))
+			param$pch <- pch[as.integer(as.factor(param[[2]]))]
+			lty <- seq_len(length(unique((param[[2]]))))
+			param$lty <- lty[as.integer(as.factor(param[[2]]))]
+		} else {
+			param$pch <- rep(1, nrow(param))
+			param$lty <- rep(1, nrow(param))
 		}
-		legend("topright", legend=names(accuracy),
-			col=seq_len(ncol(accuracy)),
-			pch=seq_len(ncol(accuracy)),
-			lty=seq_len(ncol(accuracy)))
+		plot(range(x), range(y), type='n', ...)
+		for ( i in seq_len(nrow(param)) ) {
+			par <- param[i,,drop=FALSE]
+			ind <- subrows(model, subset=par[names(model)])
+			xi <- x[ind]
+			yi <- y[ind]
+			points(xi, yi, type='b', col=par$col, pch=par$pch, lty=par$lty, ...)
+			if ( !missing(markfun) ) {
+				mark <- markfun(yi)
+				abline(v=xi[mark], col=par$col, lty=9)
+			}
+		}
+		legend("topright", legend=.format.data.frame(param[names(model)]),
+			col=param$col, pch=param$pch, lty=param$lty)
+	} else {
+		plot(x, y, type='b', ...)
+		if ( !missing(markfun) ) {
+			mark <- markfun(y)
+			abline(v=x[mark], lty=9)
+		}
 	}
 }
