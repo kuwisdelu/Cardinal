@@ -260,10 +260,10 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model[["time"]] <- x$time
 	model[["Predicted # of Classes"]] <- x$nclasses
 	model[["Mean # of Features per Class"]] <- x$nzfeatures
-	if ( !is.null(x$accuracy[[1]]) ) {
-		model[["Accuracy"]] <- sapply(x$accuracy,
-			function(s) s["Accuracy", 1])
-	}
+	# if ( !is.null(x$accuracy[[1]]) ) {
+	# 	model[["Accuracy"]] <- sapply(x$accuracy,
+	# 		function(s) s["Accuracy", 1])
+	# }
 	print(model)
 }
 

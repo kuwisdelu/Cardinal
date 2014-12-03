@@ -25,10 +25,10 @@ BiocStyle::latex()
 \section{Introduction}
 
 <<echo=FALSE,results=hide>>=
-options(width=80)
 library(Cardinal)
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
+options(width=100)
 @ 
 
 
