@@ -37,7 +37,7 @@
     For convenience, \code{MSImageSet} uses a special implementation for the 'mz' variable, which uses a bisection search so that exact precision is not required when searching based on m/z-values.
 }
 \value{
-    An object of class 'CrossValidated', which is derived from \code{\linkS4class{ResultSet}}.
+    A numeric vector of pixel of feature indices.
 }
 \author{
 	Kyle D. Bemis
