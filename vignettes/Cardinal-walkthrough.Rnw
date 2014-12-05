@@ -843,7 +843,7 @@ pData(msset)$pg <- pattern
 @
 
 
-Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``blue" ($m/z2000$), ``black''($m/z3000$), or ``red''($m/z4000$) pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``blue" ($m/z$ 2000), ``black''($m/z$ 3000), or ``red''($m/z$ 4000) pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
 
 <<fData>>=
 fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg","blue", "black", "red"))
@@ -1110,10 +1110,10 @@ img1 <- generateImage(data, range=c(1,1000), centers=c(100,200), step=1, as="MSI
 @
 Now to confirm the reasonability of our simulated dataset, we plot images corresponding to the two peaks associated with each region in Figure \ref{fig:gi2}. (Note that rows in the original matrix correspond to the x-axis in the image and the columns correspond to the y-axis.)
 <<gi1>>=
-image(img1, feature=100, col.regions=alpha.colors(100, "black"))
+image(img1, mz=100, col.regions=alpha.colors(100, "black"))
 @
 <<gi2>>=
-image(img1, feature=200, col.regions=alpha.colors(100, "red"))
+image(img1, mz=200, col.regions=alpha.colors(100, "red"))
 @
 
 
@@ -1160,13 +1160,13 @@ msset <- generateImage(pattern, coord=coord, range=c(1000, 5000), centers=c(2000
 Again, we can plot the images to see that the simulated dataset is the same pattern as before (though the exact intensities will differ, because we have used a different seed for the random number generator), Figure \ref{fig:gI}.
 
 <<gi3>>=
-image(msset, feature=200, col.regions=alpha.colors(100, "blue"))
+image(msset, mz=2000, col.regions=alpha.colors(100, "blue"))
 @
 <<gi4>>=
-image(msset, feature=300, col.regions=alpha.colors(100, "black"))
+image(msset, mz=3000, col.regions=alpha.colors(100, "black"))
 @
 <<gi5>>=
-image(msset, feature=400, col.regions=alpha.colors(100, "red"))
+image(msset, mz=4000, col.regions=alpha.colors(100, "red"))
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -1256,10 +1256,10 @@ img3 <- MSImageSet(x3, coord=expand.grid(x=1:10, y=1:10), mz=1:1000)
 
 Now we can plot the ion images for each of the two peaks in \ref{fig:advimg}.
 <<advimg1>>=
-image(img3, feature=500, col=intensity.colors(100))
+image(img3, mz=500, col=intensity.colors(100))
 @
 <<advimg2>>=
-image(img3, feature=510, col=intensity.colors(100))
+image(img3, mz=510, col=intensity.colors(100))
 @
 
 
@@ -1271,7 +1271,7 @@ image(img3, feature=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg1>>
 @
-\caption{\small Single ion image for peak at $mz500$}
+\caption{\small Single ion image for peak at $m/z$ 500}
 \label{fig:advimg1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -1279,7 +1279,7 @@ image(img3, feature=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg2>>
 @
-\caption{\small Single ion image for peak at $mz510$}
+\caption{\small Single ion image for peak at $m/z$ 510}
 \label{fig:advimg2}
 \end{subfigure}
 \caption{\small Simulated mass spectral images at the two peaks.}
@@ -1290,10 +1290,10 @@ image(img3, feature=510, col=intensity.colors(100))
 
 Finally, we plot the mass spectrum for a pixel from each region in Figure \ref{fig:advplot}
 <<advplot1>>=
-plot(img3, pixel=34, type="l")
+plot(img3, coord=list(x=4, y=4), type="l", xlim=c(200, 800))
 @
 <<advplot2>>=
-plot(img3, pixel=56, type="l")
+plot(img3, coord=list(x=6, y=6), type="l", xlim=c(200, 800))
 @
 
 
