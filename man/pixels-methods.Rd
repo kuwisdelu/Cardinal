@@ -37,7 +37,7 @@
     For convenience, \code{MSImageSet} uses a special implementation for the 'mz' variable, which uses a bisection search so that exact precision is not required when searching based on m/z-values.
 }
 \value{
-    A numeric vector of pixel of feature indices.
+    A numeric vector of pixel or feature indices.
 }
 \author{
 	Kyle D. Bemis
