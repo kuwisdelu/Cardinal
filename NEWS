@@ -2,8 +2,9 @@
 NEWS for Cardinal package
 -------------------------
 
-Version 0.8.9 [2014-12-1]
+Version 0.8.9 [2014-12-5]
 o Improved plot methods for object summaries
+o Fixed bugs in summary plots
 
 Version 0.8.8 [2014-11-27]
 o Changed modelData for ResultSet from facors to original parameters

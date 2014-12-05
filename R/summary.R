@@ -394,6 +394,7 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 			if ( !missing(markfun) ) {
 				mark <- markfun(yi)
 				abline(v=xi[mark], col=par$col, lty=9)
+				points(xi[mark], yi[mark], col=par$col, pch=4, cex=2)
 			}
 		}
 		legend("topright", legend=.format.data.frame(param[names(model)]),
@@ -403,6 +404,7 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 		if ( !missing(markfun) ) {
 			mark <- markfun(y)
 			abline(v=x[mark], lty=9)
+			points(x[mark], y[mark], pch=4, cex=2)
 		}
 	}
 }
