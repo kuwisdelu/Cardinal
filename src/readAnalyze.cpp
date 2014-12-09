@@ -36,17 +36,17 @@ struct header_key
 
 struct image_dimension
 {
-	short int dim[8];                 /* 0 + 16           */ 
-	short int unused8;                /* 16 + 2           */ 
-	short int unused9;                /* 18 + 2           */ 
-	short int unused10;               /* 20 + 2           */ 
-	short int unused11;               /* 22 + 2           */ 
-	short int unused12;               /* 24 + 2           */ 
-	short int unused13;               /* 26 + 2           */ 
-	short int unused14;               /* 28 + 2           */ 
-	short int datatype;               /* 30 + 2           */ 
-	short int bitpix;                 /* 32 + 2           */ 
-	short int dim_un0;                /* 34 + 2           */ 
+	unsigned short int dim[8];                 /* 0 + 16           */ 
+	unsigned short int unused8;                /* 16 + 2           */ 
+	unsigned short int unused9;                /* 18 + 2           */ 
+	unsigned short int unused10;               /* 20 + 2           */ 
+	unsigned short int unused11;               /* 22 + 2           */ 
+	unsigned short int unused12;               /* 24 + 2           */ 
+	unsigned short int unused13;               /* 26 + 2           */ 
+	unsigned short int unused14;               /* 28 + 2           */ 
+	unsigned short int datatype;               /* 30 + 2           */ 
+	unsigned short int bitpix;                 /* 32 + 2           */ 
+	unsigned short int dim_un0;                /* 34 + 2           */ 
 	float pixdim[8];                  /* 36 + 32          */
 	float vox_offset;                 /* 68 + 4           */ 
 	float funused1;                   /* 72 + 4           */ 
