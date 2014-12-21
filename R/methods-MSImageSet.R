@@ -89,6 +89,7 @@ setMethod("mz", "MSImageSet", function(object) object@featureData[["mz"]])
 setReplaceMethod("mz", "MSImageSet",
 	function(object, value) {
 		object@featureData[["mz"]] <- value
+		featureNames(object) <- .format.mz(value)
 		object
 	})
 
@@ -143,9 +144,12 @@ setReplaceMethod("processingData", "MSImageSet",
 	})
 
 setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
-	function(x, y, ...) {
-		if ( !identical(mz(x), mz(y)) )
+	function(x, y, ..., tolerance = 1e-5) {
+		if ( !isTRUE(all.equal(mz(x), mz(y), tolerance=tolerance)) ) {
 			.stop("MSImageSet 'mz' must match")
+		} else if ( !identical(mz(x), mz(y)) ) {
+			mz(y) <- mz(x)
+		}
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)
