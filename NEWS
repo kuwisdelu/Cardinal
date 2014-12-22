@@ -2,6 +2,9 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.99.0 [2014-12-22]
+o Bioconductor Release Candidate 1
+
 Version 0.9.0 [2014-12-22]
 o Added standardizeSamples method for between-sample normalization
 
