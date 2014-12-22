@@ -2,6 +2,9 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.9.0 [2014-12-22]
+o Added standardizeSamples method for between-sample normalization
+
 Version 0.8.9 [2014-12-5]
 o Improved plot methods for object summaries
 o Fixed minor issurs in walkthrough vignette

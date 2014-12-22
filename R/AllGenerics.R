@@ -143,6 +143,7 @@ setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
+setGeneric("standardizeSamples", function(object, ...) standardGeneric("standardizeSamples"))
 
 #### Data transformation and alignment ####
 ## ---------------------------------------

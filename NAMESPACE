@@ -263,7 +263,8 @@ exportMethods(
 	"peakFilter",
 	"reduceBaseline",
 	"reduceDimension",
-	"smoothSignal")
+	"smoothSignal",
+	"standardizeSamples")
 
 exportMethods("coregister")
 
