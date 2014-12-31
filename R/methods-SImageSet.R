@@ -130,6 +130,7 @@ setMethod("[", "SImageSet",
 		x@featureData <- x@featureData[i,,drop=FALSE]
 		x@pixelData <- x@pixelData[j,,drop=FALSE]
 		x@protocolData <- x@protocolData[sampleNames(x@pixelData),,drop=FALSE]
+		coord(x@imageData) <- coord(x)
 		x <- regeneratePositions(x)
 		x
 	})
