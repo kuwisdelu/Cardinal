@@ -1,0 +1,17 @@
+
+TODO for Cardinal package
+-------------------------
+
+Priority: High
+-Support larger-than-memory datasets
+-Statistical hypothesis testing
+-3D datasets and 3D plotting
+-Optical image registration
+
+Priority: Medium
+-Parse more metadata from imzML datasets for MIAPE-Imaging
+-Faster reduceDimension implementation for method='peaks'
+
+Priority: Low
+-Native writing of imzML and Analyze 7.5 formats
+-Bilinear interpolation smoothing for ion images

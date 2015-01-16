@@ -1,0 +1,186 @@
+
+NEWS for Cardinal package
+-------------------------
+
+Version 0.99.1 [2015-1-12]
+o Bioconductor Release Candidate 2
+o Fixed bug in SImageData coord factor levels not being
+	properly updated when SImageSet is subsetted
+o Cleaned up biocViews
+
+Version 0.99.0 [2014-12-22]
+o Bioconductor Release Candidate 1
+
+Version 0.9.0 [2014-12-22]
+o Added standardizeSamples method for between-sample normalization
+
+Version 0.8.9 [2014-12-5]
+o Improved plot methods for object summaries
+o Fixed minor issurs in walkthrough vignette
+
+Version 0.8.8 [2014-11-27]
+o Changed modelData for ResultSet from facors to original parameters
+o Added plot method for summaries of ResultSet objects
+o Added 'normalize.image' argument for image method
+o Improved plot and image methods for CrossValidated
+
+Versoin 0.8.7 [2014-11-23]
+o Fixed bug in plotting vectors from ResultSet
+o Completed Cardinal-walkthrough vignette
+o Fixed bug in PCA summary in reporting explained variance
+
+Version 0.8.6 [2014-11-21]
+o Completed walkthrough vignettes
+o Added ImagingMassSpectrometry biocView
+
+Version 0.8.5 [2014-11-20]
+o Added 'show' and 'print' methods for most objects
+o Changed 'combine' method for IAnnotatedDataFame, SImageData, and SImageSet
+o Fixed bug in between-cluster SS calculation for spatialKMeans
+o Fixed bug with pre-processing 1-pixel datasets
+o Completed .Rd documentation for all public methods
+o Cleaned up R CMD check warnings (except C++ .hpp headers)
+
+Version 0.8.4 [2014-10-16]
+
+o Changed 'topIons' to 'topLabels' method for summarization
+o Added MSImageData class for peakData and mzData methods
+o Changed naming scheme for SImageData (.iData => iData)
+o Fixed bug in plotting of classes for SpatialShrunkenCentroids
+o Fixed bug in fopen in readAnalyze and readImzML affecting Windows
+
+Version 0.8.3 [2014-9-18]
+
+o Added 'coregistration' for SpatialKMeans
+o Added 'summary' methods for all ResultSet subclasses
+o Added 'topIons' method for summarization
+o Added plotting methods for 'ResultSet' classes
+o Added 'cvApply' method for cross-validation
+o Fixed bug in spatialShrunkenCentroids with prior probabilties
+o Fixed bug in OPLS with proper scaling of data matrices during prediction
+o Added additional statistics to SpatialKmeans class results
+o Changed 'auto.key' argument to 'key' in plotting methods
+
+Version 0.8.2 [2014-7-23]
+
+o Added 'peakFilter' method
+o Minor fixes to documentation
+
+Version 0.8.1 [2014-7-10]
+
+o Changed 'parameters' argument to 'model' for ResultSet plot and image
+o Added 'auto.key' to plot and image for when 'groups' are specified
+o Added strip labels to plot and image when using base graphics
+o Added 'coregister' method for 'SpatialShrunkenCentroids'
+o Method 'image' is now vectorized for argument 'mz'
+o Method 'plot' is now vectorized for argument 'coord'
+o Fixed a bug where conditions are plotted in an incorrect order
+
+Version 0.8.0 [2014-6-16]
+
+o First public beta available for ASMS 2014.
+
+Version 0.7 [2014-6-2]
+
+o Refactored version of the package prepared for internal testing.
+o New processing methods, renamed to 'normalize', 'smoothSignal',
+	'reduceBaseline', 'peakPick', 'peakAlign', 'reduceDimension'.
+o New function 'readMSIData' for reading supported formats.
+o Native support for imzML added (no longer requires Java).
+o Methods 'pixels' and 'features' replaced with updated versions.
+o In 'features' method, m/z matching now done using bisection search.
+o New analysis method, renamed to spatialShrunkenCentroids.
+o Analysis methods now return a new class: 'ResultSet'.
+o New method 'select' to replace 'selectROI' and 'selectPixels'.
+
+Version 0.6 [2013-2-19]
+
+o Major revision to use Bioconductor base packages.
+o New dependencies on BiocGenerics and Biobase.
+o New virtual class iSet for generic imaging data.
+o New classes ImageSet, SImageSet, ImageData, and SImageData.
+o Revised MSImageSet that uses new parent classes.
+o New class MIAPE-Imaging for Minimum Information About
+	a Protemics Experiment - Imaging.
+o New class MSImageProcess for pre-processing information.
+o Revised functions for importing Analyze 7.5 and imzML
+o New plotting and image methods using lattice-style formula interface.
+o New pixelApply and featureApply methods.
+
+Version 0.5 [2013-11-8]
+
+o Added image coregistration for 3D sections.
+o Added 'volume' method for 3D visualization.
+
+Version 0.4 [2013-11-7]
+
+o Added 'summaryPlot' method for segmentation visualization.
+o Exposed 'calibrateSegmentation' method to calibrate colors
+	between multiple MSImageSegmentation objects.
+o Added more thorough verbose output for 'spatialSparseCluster'
+	and 'spatialSparseKMeans' methods.
+o Improved behavior of 'intensities' method when reconstructing
+	complex datacubes and with non-contiguous pixel requests.
+o Changed 'trellisImage' to plot all coordinates for dimensions
+	omitted from 'fixCoord' by default.
+o Minor changes to the 'MSImageSegmentation' class structure.
+o Improved 'likPlot' method and added AIC and BIC results and
+	the resulting number of classes.
+
+Version 0.3 [2013-7-5]
+
+o Improved speed of imaging processing (smoothing and interpolation)
+	methods for use with 'image' and 'trellisImage'.
+o Added option for verbose output and hooks for GUI progress bars.
+o For prediction on 'MSImageSegmentation' objects, 'autoDimNames'
+	is now automatically passed along from the original call.
+o Changed 'MSImageSegmentation' to an S4 class derived from 'list'.
+o Added option for plotting the probabilities of an 'MSImageSegmentation'
+	using overlaid transparency masks for improved visualization.
+
+Version 0.2 [2013-6-20]
+
+o Package renamed from internal code-name "Canary" to "Cardinal".
+o Split off GUI to a new package called "CardinaliView".
+o New GUI in "CardinaliView" now based on gWidgets and RGtk2.
+o Added slot 'peaks' to 'MSImageSet' class.
+o Changed 'MSPeakFrame' and 'MSPeakList' to S4 classes, and added
+	new class 'MSPeak Alignment'.
+o Changed how the 'estimateNoise' method estimates noise.
+o Changed options in the 'detectPeaks' method to be more useful.
+o Changed the 'alignPeaks' methods to align to the mean spectrum
+	as a reference when aligning a list of peaks.
+o Added 'interpolate' option for images.
+o Fixed bug where plotting mass spectra for multiple pixels fails
+	on datasets with missing mass spectra.
+o Fixed bug where the 'unload' method did not remove the object.
+o Added new method "selectPeaks" for manual peak selection.
+o Modified the 'type' arguments in the plotting methods.
+o Fixed bug in the 'crossValidate' method where the dots arguments
+	were not passed to the 'predict' method.
+o Changed 'crossValidate' method to now return predictions for the
+	full dataset for every fold instead of the test set only.
+
+Version 0.1 [2013-6-6]
+
+o First internal release for Stanford Canary Center for Cancer
+	Early Detection as primary beta testers.
+o Implementation of MSImageSet S4 class; mass spectra are stored as a
+	flat matrix with rows as features and columns as pixels; original
+	data cube can be reconstructed dynamically using a position array;
+	spectra stored using environments to prevent redundant data copying.
+o Visualization that includes plotting ion images and mass spectra,
+	using both base graphics and lattice graphics, allowing trellis
+	display of multiple ion images and multipe mass spectra.
+o Pre-processing for that includes normalization, baseline correct,
+	peak-picking, peak-alignment, resampling, and binning.
+o Multivaritate statistical analysis includes PCA, PLS, and OPLS.
+o Supervised analysis includes a spatially-aware version of nearest
+	shrunken centroids, PLS-DA, and OPLS-DA.
+o Unsupervised analysis includes spatially-aware clustering based on
+	nearest shrunken centroids, and an implementation based on sparse
+	k-means.
+o GUI based on tcltk using rpanel that supports all major
+	processing and statistical analysis methods in the package,
+	except for PLS and OPLS.
+

@@ -1,0 +1,282 @@
+
+import("Biobase")
+
+import("BiocGenerics")
+
+import("methods")
+
+import("stats4")
+
+importFrom("fields",
+	"interp.surface.grid")
+
+importFrom("grid",
+	"grid.raster")
+
+importFrom("irlba",
+	"irlba")
+
+importFrom("lattice",
+	"xyplot",
+	"levelplot",
+	"panel.abline",
+	"panel.xyplot",
+	"panel.levelplot",
+	"simpleKey")
+
+importFrom("signal",
+	"interp1",
+	"kaiser",
+	"pchip",
+	"sgolayfilt")
+
+importFrom("sp",
+	"point.in.polygon")
+
+importFrom("utils",
+	"sessionInfo",
+	"setTxtProgressBar",
+	"txtProgressBar")
+
+exportClasses(
+	"Hashmat",
+	"IAnnotatedDataFrame",
+	"ImageData",
+	"MIAPE-Imaging",
+	"MSImageData",
+	"MSImageProcess",
+	"MSImageSet",
+	"ResultSet",
+	"SImageData",
+	"SImageSet",
+	"iSet")
+
+export(
+	"ImageData",
+	"IAnnotatedDataFrame",
+	"Hashmat",
+	"MSImageData",
+	"MSImageSet",
+	"SImageData",
+	"SImageSet")
+
+export(
+	"alpha.colors",
+	"generateImage",
+	"generateSpectrum",
+	"gradient.colors",
+	"intensity.colors",
+	"readAnalyze",
+	"readImzML",
+	"readMSIData",
+	"risk.colors")
+
+export(
+	"print.summary.iSet",
+	"print.summary.PCA",
+	"print.summary.PLS",
+	"print.summary.OPLS",
+	"print.summary.SpatialKMeans",
+	"print.summary.SpatialShrunkenCentroids",
+	"print.summary.CrossValidated")
+
+export(
+	"plot.summary.PCA",
+	"plot.summary.PLS",
+	"plot.summary.OPLS",
+	"plot.summary.SpatialKMeans",
+	"plot.summary.SpatialShrunkenCentroids",
+	"plot.summary.CrossValidated")
+
+exportMethods(
+	"as.array",
+	"as.matrix",
+	"length",
+	"names",
+	"names<-",
+	"rownames",
+	"rownames<-",
+	"colnames",
+	"colnames<-",
+	"cbind",
+	"rbind",
+	"summary")
+
+exportMethods(
+	"image",
+	"plot")
+
+exportMethods(
+	"fitted",
+	"predict",
+	"residuals",
+	"coef")
+
+exportMethods("logLik")
+
+exportMethods(
+	"$",
+	"$<-",
+	"[",
+	"[<-",
+	"[[",
+	"[[<-",
+	"annotatedDataFrameFrom",
+	"combine",
+	"coord",
+	"coord<-",
+	"coordinates",
+	"coordinates<-",
+	"coordLabels",
+	"coordLabels<-",
+	"dim",
+	"dim<-",
+	"dims",
+	"dimnames",
+	"dimnames<-",
+	"features",
+	"fData",
+	"fData<-",
+	"featureData",
+	"featureData<-",
+	"featureNames",
+	"featureNames<-",
+	"fvarLabels",
+	"fvarLabels<-",
+	"fvarMetadata",
+	"fvarMetadata<-",
+	"iData",
+	"iData<-",
+	"imageData",
+	"imageData<-",
+	"initialize",
+	"keys",
+	"keys<-",
+	"modelData",
+	"modelData<-",
+	"mz",
+	"mz<-",
+	"mzData",
+	"mzData<-",
+	"pData",
+	"pData<-",
+	"peaks",
+	"peaks<-",
+	"peakData",
+	"peakData<-",
+	"pixels",
+	"pixelData",
+	"pixelData<-",
+	"pixelNames",
+	"pixelNames<-",
+	"positionArray",
+	"positionArray<-",
+	"processingData",
+	"processingData<-",
+	"regeneratePositions",
+	"resultData",
+	"resultData<-",
+	"sampleNames",
+	"sampleNames<-",
+	"show",
+	"spectra",
+	"spectra<-",
+	"storageMode",
+	"storageMode<-",
+	"varLabels",
+	"varLabels<-",
+	"varMetadata",
+	"varMetadata<-")
+
+exportMethods(
+	"embeddingMethod",
+	"embeddingMethod<-",
+	"imageShape",
+	"imageShape<-",
+	"instrumentModel",
+	"instrumentModel<-",
+	"instrumentVendor",
+	"instrumentVendor<-",
+	"inSituChemistry",
+	"inSituChemistry<-",
+	"ionizationType",
+	"ionizationType<-",
+	"lineScanDirection",
+	"lineScanDirection<-",
+	"massAnalyzerType",
+	"massAnalyzerType<-",
+	"matrixApplication",
+	"matrixApplication<-",
+	"msiInfo",
+	"pixelSize",
+	"pixelSize<-",
+	"scanDirection",
+	"scanDirection<-",
+	"scanPattern",
+	"scanPattern<-",
+	"scanPolarity<-",
+	"scanPolarity<-",
+	"scanType",
+	"scanType<-",
+	"softwareName",
+	"softwareName<-",
+	"softwareVersion",
+	"softwareVersion<-",
+	"specimenOrigin",
+	"specimenOrigin<-",
+	"specimenType",
+	"specimenType<-",
+	"stainingMethod",
+	"stainingMethod<-",
+	"tissueThickness",
+	"tissueThickness<-",
+	"tissueWash",
+	"tissueWash<-")
+
+exportMethods(
+	"baselineReduction",
+	"baselineReduction<-",
+	"centroided",
+	"centroided<-",
+	"prochistory",
+	"prochistory<-",
+	"files",
+	"files<-",
+	"normalization",
+	"normalization<-",
+	"peakPicking",
+	"peakPicking<-",
+	"smoothing",
+	"smoothing<-",
+	"spectrumRepresentation",
+	"spectrumRepresentation<-")
+
+exportMethods(
+	"cvApply",
+	"featureApply",
+	"pixelApply")
+
+exportMethods(
+	"normalize",
+	"peakPick",
+	"peakAlign",
+	"peakFilter",
+	"reduceBaseline",
+	"reduceDimension",
+	"smoothSignal",
+	"standardizeSamples")
+
+exportMethods("coregister")
+
+exportMethods(
+	"OPLS",
+	"PCA",
+	"PLS",
+	"spatialKMeans",
+	"spatialShrunkenCentroids")
+
+exportMethods("topLabels")
+
+exportMethods("select")
+
+useDynLib("Cardinal")

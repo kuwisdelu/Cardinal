@@ -1,0 +1,1336 @@
+
+%\VignetteIndexEntry{Cardinal: Analytic tools for mass spectrometry imaging}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, ImagingMassSpectrometry, Clustering, Classification}
+
+\documentclass[a4paper]{article}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+<<eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{Cardinal: Analytic tools for mass spectrometry imaging}
+
+\author{Kyle D. Bemis and April Harry}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<echo=FALSE,results=hide>>=
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=100)
+@ 
+
+
+The \R{} package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
+
+Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle components analysis, and classification techniques such as partial least Squares discriminant analysis.
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\begin{center}
+\includegraphics{preprocessingRoughDraft.pdf}
+\caption{\small Preprocessing steps}
+\label{fig:flow}
+\end{center}
+\end{figure}
+
+Figure \ref{fig:flow} charts out the workflow for mass spectrometry imaging data analysis.
+
+
+
+This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R{} help file.
+
+
+
+\section{Input/Output}
+\subsection{Input}
+
+In order to be analyzed in \Rpackage{Cardinal}, input data must be in either Analyze 7.5 and imzML format. These are two of the most common data exchange formats in imaging mass spectrometry.
+
+\subsubsection{Analyze 7.5}
+
+Originally designed for MRI data by the Mayo Clinic, Analyze 7.5 is a common format used for exchange of mass spectrometry imaging data.
+
+The Analyze format uses a collection of three files with extensions `.hdr', `.img', and `.t2m' to store data. To read datasets stored in the Analyze format, use the \verb|readAnalyze| function. All three files must be present in the same folder and have the same name (except for the file extension) for the data to be read properly.
+
+<<eval=FALSE>>=
+name <- "This is the common name of your .hdr, .img, and .t2m files"
+folder <- "/This/is/the/path/to/the/folder/containing/the/files"
+data <- readAnalyze(name, folder)
+@
+
+For more information on reading Analyze files, type \verb|?readAnalyze|.
+
+\subsubsection{imzML}
+
+
+The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online.
+
+The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. To read datasets stored in the imzML format, use the \verb|readImzML| function. Both files must be present in the same folder and have the same name (again, except for the file extension) for the data to be read properly.
+
+<<eval=FALSE>>=
+name <- "This is the common name of your .imzML and .ibd files"
+folder <- "/This/is/the/path/to/the/folder/containing/the/files"
+data <- readImzML(name, folder)
+@
+
+For more information on reading imzML files, type \verb|?readImzML|.
+
+\subsubsection{readMSIData}
+
+\Rpackage{Cardinal} also provides the convenience function \verb|readMSIData|, which can automatically recognize the whether the data format is Analyze or imzML based on file extensions. The same rules for naming conventions apply as described above, but one need only provide the path to any of the data files. For example, to read an Analyze file, providing the path to any of the `.hdr', `.img', or `.t2m' will work. Likewise, providing the path to either the `.imzML' or `.ibd' file will work for reading data stored in the imzML format.
+
+<<eval=FALSE>>=
+file <- "/This/is/the/path/to/an/imaging/data/file.extension"
+data <- readMSIData(file)
+@
+
+\subsection{Output}
+
+\subsubsection{RData files}
+
+Any \R{}  object, including those created by \Rpackage{Cardinal}, can be saved as an \textbf{RData} file using the \verb|save| and loaded using the \verb|load| function. 
+<<eval=FALSE>>=
+save(data, file="/Where/to/save/the/data.RData")
+load("/Where/to/save/the/data.RData")
+@
+
+When an \textbf{RData} file is loaded, the saved object appears in the global environment for the \R{} session and is available for access by name, just as it was in the session during which it was saved. This functionality is part of \R; see \verb|?save| and \verb|?load| for more details.
+
+
+\clearpage
+
+
+
+
+
+
+
+
+
+\section{Data exploration and visualization}
+
+Mass spectrometry imaging datasets in \Rpackage{Cardinal} are stored in \Robject{MSImageSet} objects. This allows \Rpackage{Cardinal} to keep track of the spectra, pixel coordinates, $m/z$ values and more in one place for the dataset. The \Robject{MSImageSet} object is described in more detail below. There are many methods for both creating and manipulating \Robject{MSImageSet} objects in \Rpackage{Cardinal}. We now describe some of these methods.
+
+\subsection{An example dataset}
+\label{sec:data}
+
+To illustrate methods for the \Robject{MSImageSet} objects, we begin by creating a simple, simulated dataset using the \Rpackage{Cardinal} function \verb|generateImage|. This dataset will be the running example for this section. For more details on simulating mass spectrometry images, see \verb|?generateImage| or Section \ref{sec:sim} \textit{Simulation}.
+
+<<>>=
+pattern <- factor(c(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 0,
+	0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 1, 1, 2,
+	2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 2, 2,
+	2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2,
+	2, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0),
+	levels=c(0,1,2), labels=c("blue", "black", "red"))
+
+set.seed(1)
+msset <- generateImage(pattern, coord=expand.grid(x=1:9, y=1:9),
+	range=c(1000, 5000), centers=c(2000, 3000, 4000),
+	resolution=100, step=3.3, as="MSImageSet")
+
+summary(msset)
+@
+
+The above code creates a simulated MS imaging dataset called \Robject{msset}, which is $9 \times 9$ pixels, with a mass range from $m/z \ 1000$ to $m/z \ 5000$. There are three peaks, occuring at $m/z \ 2000$, $m/z \ 3000$, and $m/z \ 4000$. Each of these peaks corresponds to a distinct region of interest. These are saved in the \textit{factor} \Robject{pattern}. A \textit{factor} is the standard way of storing categorical variables in \R. All pixels with \Robject{pattern} = 0 correspond to the region with peak at $m/z \ 2000$, \Robject{pattern} = 1 corresponds to the peak at $m/z \ 3000$, and \Robject{pattern} = 2 corresponds to $m/z \ 4000$.
+
+We'll label these regions of interest ``blue'' pixels, ``black'' pixels, and ``red'' pixels, respectively. 
+
+
+
+\subsection{The \Robject{MSImageSet} object}
+
+Most important aspects of a mass spectrometry imaging dataset stored in an \Robject{MSImageSet} object can be accessed by simple methods.
+
+For example, $m/z$-values are accessed by the method \verb|mz|, pixel coordinates are accessed by the method \verb|coord|, and the mass spectra themselves are accessed by the method \verb|spectra|. The mass spectra are stored as a matrix with each column corresponding to the mass spectrum at a single pixel.
+
+<<>>=
+head(mz(msset), n=10) # first 10 m/z values
+head(coord(msset), n=10) # first 10 pixel coordinates
+head(spectra(msset)[,1], n=10) # first 10 intensities in the first mass spectrum
+@
+
+The methods \verb|nrow| and \verb|ncol| can be used to retrieve the number of features and number of pixels in an object, respectively. The method \verb|dim| gives both number of features and number of pixels, while \verb|dims| gives number of features as well as spatial dimensions of the image.  
+
+<<>>=
+nrow(msset)
+ncol(msset)
+dim(msset)
+dims(msset)
+@
+
+Two other helpful methods are \verb|features| and \verb|pixels|. These are useful for retrieving the feature number and pixel number (i.e., the row and column in the \Robject{spectra(msset)} matrix) corresponding to items of interest such as specific $m/z$-values or pixel coordinates.
+
+<<>>=
+features(msset, mz=3000) # returns the feature number most closely matching m/z 3000
+mz(msset)[607]
+pixels(msset, coord=list(x=5, y=5)) # returns the pixel number for x = 5, y = 5
+pixels(msset, x=5, y=5) # also returns the pixel number for x = 5, y = 5
+coord(msset)[41,]
+@
+
+See \verb|?MSImageSet| for more details and additional methods.
+
+{\small\textit{Technical note: \Robject{MSImageSet} is an S4 class. It inherits from the more general \Robject{SImageSet} class, which itself inherits from the \Robject{iSet} virtual class. The \Robject{iSet} virtual class is designed around the same design principles as the \Robject{eSet} class provided by \Rpackage{Biobase}. See the ``Cardinal development'' vignette for more information.})}
+
+
+\subsection{Subsetting a \Robject{MSImageSet}}
+
+A \Robject{MSImageSet} can be subset by row and column like an ordinary \R{} matrix or \textit{data.frame}, where rows correspond to the features ($m/z$-values) and columns correspond to pixels (locations associated with mass spectra). Subsetting will return a new \Robject{MSImageSet}.
+
+For example, we can subset by $m/z$-values so that we only keep the mass range from $m/z \ 2500$ to $m/z \ 4500$.
+
+<<>>=
+tmp <- msset[2500 < mz(msset) & mz(msset) < 4500,]
+range(mz(msset))
+range(mz(tmp))
+@
+
+Alternatively, we can subset by pixel coordinates. To keep only pixels with $x$-coordinates greater than 5, we can do the following.
+
+<<>>=
+tmp <- msset[,coord(msset)$x > 5]
+range(coord(msset)$x)
+range(coord(tmp)$x)
+@
+
+We can also subset in both ways at once.
+
+<<>>=
+tmp <- msset[2500 < mz(msset) & mz(msset) < 4500, coord(msset)$x > 5]
+range(mz(tmp))
+range(coord(tmp)$x)
+@
+
+It is also possible to manually select a region of interest and use it to subset the dataset. This is done using the \verb|select| method, which will be introduced in Section \ref{sec:plotIon} \textit{Plotting ion images}.
+
+\subsection{Plotting mass spectra}
+
+Mass spectra from an \Robject{MSImageSet} can be displayed using the \verb|plot| method. To plot the mass spectrum at the first pixel of our \Robject{MSImageSet}, we do the following:
+
+<<plot1>>=
+plot(msset, pixel=1)
+@
+
+The result of which is shown in Figure \ref{fig:plotPixel1}.
+
+Instead of pixel number, we can specify a set of coordinates corresponding to the mass spectrum we want to plot. The following produces Figure \ref{fig:plotx5y5}, which is the mean spectrum for the pixel at spatial location $(5,5)$, and all other spectra within a 2 pixel neighborhood of that location.
+
+
+<<plot2>>=
+plot(msset, coord=list(x=5, y=5), plusminus=2)
+@
+
+
+Finally, we can plot multiple spectra at once, as shown in Figure \ref{fig:plotVector}. This is done below by specifying a vector for the \verb|pixel| argument. The plots are displayed simultaneously by setting \verb|superpose = TRUE| and \verb|key = TRUE| generates a legend. The \verb|pixel.groups| here indicates that the pixels should be grouped by their classifications as encoded by the \verb|pattern| factor. By default, \Rpackage{Cardinal} averages over spectra in the same group.
+
+<<plot3>>=
+mycol <- c("blue", "black", "red")
+plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, key=TRUE, col=mycol)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<plot1>>
+@
+\caption{\small Pixel 1 mass spectrum}
+\label{fig:plotPixel1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<plot2>>
+@
+\caption{\small Mean spectrum over neighborhood of pixel $(5,5)$}
+\label{fig:plotx5y5}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<plot3>>
+@
+\caption{\small Simultaneous plot of 3 mass spectra}
+\label{fig:plotVector}
+\end{subfigure}
+\caption{\small Plotting mass spectra.}
+\label{fig:plotMethod}
+\end{figure}
+
+\subsection{Plotting ion images}
+\label{sec:plotIon}
+Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method. To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeature}, we use:
+<<image1>>=
+image(msset, feature=1)
+@
+
+The mean ion image for the neighborhood of $m/z\ 4000$ with radius 10, i.e. $m/z\ [3990,4010]$ is shown in Figure \ref{fig:imNeighborhood}.
+<<image2>>=
+image(msset, mz=4000, plusminus=10)
+@
+
+
+In Figure \ref{fig:imMulti} the single ion images for $m/z\ 2000$, $m/z\ 3000$, and $m/z\ 4000$ are displayed simultaneously.
+
+<<image3>>=
+mycol <- c("blue", "black", "red")
+image(msset, mz=c(2000, 3000, 4000), col=mycol, superpose=TRUE)
+@
+
+The ion image for $m/z\ 2000$ is shown in Figure \ref{fig:imSup}, with a custom color scale from white to blue. The most intense ``hotspots" are suppressed.
+
+<<image4>>=
+mycol <- gradient.colors(100, start="white", end="blue")
+image(msset, mz=2000, col.regions=mycol, contrast.enhance="suppress")
+@
+
+In Figure \ref{fig:imSmooth}, a smoothed ion image for mz3000 with a custom color scale from white to black is presented.
+
+<<image5>>=
+mycol <- gradient.colors(100, start="white", end="black")
+image(msset, mz=3000, col.regions=mycol, smooth.image="gaussian")
+@
+
+Finally, in Figure \ref{fig:imRegions}, for only those pixels defined as being from the ``black" and ``red" regions, we plot the ion image of mz4000 with a custom color scale from black to red.
+
+<<image6>>=
+msset2 <- msset[,pattern == "black" | pattern == "red"]
+mycol <- gradient.colors(100, start="black", end="red")
+image(msset2, mz=4000, col.regions=mycol)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image1>>
+@
+\caption{\small Single $m/z$ feature}
+\label{fig:imSingleFeature}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image2>>
+@
+\caption{\small Mean over $m/z$ neighborhood}
+\label{fig:imNeighborhood}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image3>>
+@
+\caption{\small Multiple displayed simultaneously}
+\label{fig:imMulti}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image4>>
+@
+\caption{\small Hotspot suppressed}
+\label{fig:imSup}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image5>>
+@
+\caption{\small Gaussian smoothed}
+\label{fig:imSmooth}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<image6>>
+@
+\caption{\small Selected regions}
+\label{fig:imRegions}
+\end{subfigure}
+\caption{\small \small Plotting ion images.}
+\end{figure}
+
+
+
+\clearpage
+
+
+\section{Pre-processing}
+
+
+
+
+\subsection{Normalization}
+
+Normalization is perhaps the most important pre-processing step before any kind of analysis should be performed on biological datasets, and mass spectrometry imaging experiments are no different in this regard. \Rpackage{Cardinal} provides normalization to total ion current (TIC), commonly used in MSI analysis (see \cite{TIC} for a discussion of this method). In the first command below, we only perform the normalization on the first pixel in order to show a plot of the processing results in Figure \ref{fig:TICpix}. In the second, we perform normalization on the whole dataset.
+<<normalizetic, results=hide>>=
+normalize(msset, pixel=1, method="tic", plot=TRUE)
+@
+<<normalize>>=
+msset2 <- normalize(msset, method="tic")
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}[h]
+\begin{center}
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<normalizetic>>
+@
+\caption{\small Total ion current (TIC) normalization.}
+\label{fig:TICpix}
+\end{center}
+\end{figure}
+
+\subsection{Smoothing}
+
+Smoothing the mass spectra is useful for reducing noise, which can improve detection of peaks. \Rpackage{Cardinal} provides several common methods for smoothing mass spectra, including Gaussian kernel smoothing (Figure \ref{fig:gauSmo}), Savitsky-Golay smoothing (Figure \ref{fig:sgolSmo}), and a simple moving average filter \cite{Yang2009}.
+<<smoothgaus, results=hide>>=
+smoothSignal(msset2, pixel=1, method="gaussian", window=9, plot=TRUE)
+@
+<<smoothsgolay, results=hide>>=
+smoothSignal(msset2, pixel=1, method="sgolay", window=15, plot=TRUE)
+@
+<<smooth>>=
+msset3 <- smoothSignal(msset2, method="gaussian", window=9)
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<smoothgaus>>
+@
+\caption{\small Gaussian Kernel Smoothing}
+\label{fig:gauSmo}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+\centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<smoothsgolay>>
+@
+\caption{\small Savitsky-Golay smoothing}
+\label{fig:sgolSmo}
+\end{subfigure}
+\caption{\small Smoothing techniques.}
+\label{fig:Smoothing}
+\end{figure}
+
+\subsection{Baseline reduction}
+
+Baseline reduction is often necessary for many datasets, especially those obtained through matrix-assisted methods such as MALDI (\cite{Yang2009}). \Rpackage{Cardinal} implements a simple version that interpolates a baseline from local medians or local minima, while attempting to preserve the signal from mass spectral peaks. Figure \ref{fig:baseline} shows baseline reduction for a single pixel, where the green curve represents the estimated baseline and the baseline-reduced spectrum is plotted in black. 
+<<baselinemedian, results=hide>>=
+reduceBaseline(msset3, pixel=1, method="median", blocks=50, plot=TRUE)
+@
+
+We can also reduce baseline across all pixels in the image.
+
+<<baseline>>=
+msset4 <- reduceBaseline(msset3, method="median", blocks=50)
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}[h]
+\begin{center}
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<baselinemedian>>
+@
+\caption{\small Baseline reduction using interpolation from medians.}
+\label{fig:baseline}
+\end{center}
+\end{figure}
+
+\subsection{Peak picking}
+
+Peak picking is a common form of data reduction that reduces the signal to relevant data peaks. \Rpackage{Cardinal} implements three varieties based on a user-specified signal-to-noise ratio (SNR). The ``simple'' version interpolates a constant noise pattern, the ``adaptive'' version interpolates an adaptive noise pattern Figure \ref{fig:adPeakPick}, and ``limpic'' implements the LIMPIC algorithm for peak detection Figure \ref{fig:LIMPIC}.
+
+<<peakpickadaptive, results=hide>>=
+peakPick(msset4, pixel=1, method="adaptive", SNR=3, plot=TRUE)
+@
+<<peakpicklimpic, results=hide>>=
+peakPick(msset4, pixel=1, method="limpic", SNR=3, plot=TRUE)
+@
+<<peakpick>>=
+msset5 <- peakPick(msset4, method="simple", SNR=3)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<peakpickadaptive>>
+@
+\caption{\small Adaptive}
+\label{fig:adPeakPick}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+\centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<peakpicklimpic>>
+@
+\caption{\small LIMPIC}
+\label{fig:LIMPIC}
+\end{subfigure}
+\caption{\small Peak picking techniques.}
+\end{figure}
+
+\subsection{Peak alignment}
+
+Peak alignment is necessary to account for possible inaccuracy in $m/z$ measurements. Peaks can be aligned to a reference list of known $m/z$ values, or to the local maxima in the mean spectrum. Figure \ref{fig:align} denotes the selected peaks by red vertical lines, and aligns the local maxima of the mean spectra to these peaks, as in \cite{Alexandrov2011}.
+
+<<peakaligndiff, results=hide>>=
+peakAlign(msset5, pixel=1, method="diff", plot=TRUE)
+@
+<<peakalign>>=
+msset6 <- peakAlign(msset5, method="diff")
+@
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}[h]
+\begin{center}
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<peakaligndiff>>
+@
+\caption{\small Peak alignment to the local maxima of the mean spectrum.}
+\label{fig:align}
+\end{center}
+\end{figure}
+
+\subsection{Peak filtering}
+
+Peak filtering removes peaks that occur infrequently, such as those which only occur in a small proportion of pixels. This is useful for removing extraneous peaks that are likely to be false positives.
+
+<<peakfilter>>=
+msset7 <- peakFilter(msset6, method="freq")
+
+dim(msset6) # 89 peaks retained
+
+dim(msset7) # 10 peaks retained
+@
+
+\subsection{Data reduction}
+
+Other common forms of data reduction include resampling and binning.
+
+\Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same $m/z$ bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
+
+<<reducedimbin, results=hide>>=
+reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
+@
+
+There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 $m/z$ on pixel 1 is plotted in Figure \ref{fig:resample}. The original spectrum is plotted in black, with the resampled version displayed simultaneously in red.
+
+<<reducedimresample, results=hide>>=
+reduceDimension(msset4, pixel=1, method="resample", step=25, plot=TRUE)
+@
+
+Data reduction can be done on the whole dataset at once.
+<<reducedim>>=
+msset8 <- reduceDimension(msset4, method="resample", step=25)
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<reducedimbin>>
+@
+\caption{\small Binning}
+\label{fig:bin}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE, results=hide>>=
+<<reducedimresample>>
+@
+\caption{\small Resampling}
+\label{fig:resample}
+\end{subfigure}
+\caption{\small Data reduction via binning and resampling.}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+
+\section{Analysis}
+
+For example workflows with analyses of real datasets, please see the vignettes in the companion data package \Rpackage{CardinalWorkflows}.
+
+
+\subsection{Principal components analysis (PCA)}
+
+Principal components analysis (PCA) is a multivariate statistical tool used for dimension reduction and exploratory data analysis. PCA can be useful when first exploring a dataset beyond plotting single-ion images, but additional statistical analysis is usually necessary to extract meaningful results.
+
+Below, we fit the first two principal components using \Rpackage{Cardinal}'s \verb|PCA| method and plot their loadings and scores.
+
+<<pca>>=
+pca <- PCA(msset4, ncomp=2)
+@
+
+<<pcaplot>>=
+plot(pca)
+@
+
+<<pcaimage>>=
+image(pca)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pcaplot>>
+@
+\caption{\small PC loadings}
+\label{fig:pcaplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pcaimage>>
+@
+\caption{\small PC scores}
+\label{fig:pcaimage}
+\end{subfigure}
+\caption{\small Principal components analysis.}
+\end{figure}
+
+See \verb|?PCA| for more details.
+
+
+
+\subsection{Partial least squares (PLS)}
+
+Partial least squares (PLS), also called projection to latent structures, is a multivariate method from chemometrics that has been shown to be useful for classification of mass spectrometry images \cite{Dill}.
+
+When used for classification, it is known as partial least squares discriminant analysis, or PLS-DA. PLS-DA works similarly to PCA, but it is a supervised method, so it requires data annotated with known labels.
+
+Here, we train a PLS classifier using the \Robject{pattern} variable from earlier as our labels, and plot the results.
+
+<<pls>>=
+pls <- PLS(msset4, y=pattern, ncomp=2)
+@
+
+<<plsplot>>=
+plot(pls, col=c("blue", "black", "red"))
+@
+
+<<plsimage>>=
+image(pls, col=c("blue", "black", "red"))
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<plsplot>>
+@
+\caption{\small PLS coefficients}
+\label{fig:plsplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<plsimage>>
+@
+\caption{\small PLS prediction}
+\label{fig:plsimage}
+\end{subfigure}
+\caption{\small Partial least squares.}
+\end{figure}
+
+When working with classification on real data, cross-validation should always be used, using the \verb|cvApply| method, to avoid biased results. See \verb|?cvApply| and \verb|?PLS| for more details.
+
+
+\subsection{Orthogonal partial least squares (O-PLS)}
+
+
+Orthogonal partial least squares (O-PLS) is a variation on PLS. O-PLS can sometimes improve the interpretability of the PLS model coefficients, while producing similar accuracy. O-PLS-DA is also implemented in \Rpackage{Cardinal}
+
+<<opls>>=
+opls <- OPLS(msset4, y=pattern, ncomp=2)
+@
+
+<<oplsplot>>=
+plot(opls, col=c("blue", "black", "red"))
+@
+
+<<oplsimage>>=
+image(opls, col=c("blue", "black", "red"))
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<oplsplot>>
+@
+\caption{\small O-PLS coefficients}
+\label{fig:oplsplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<oplsimage>>
+@
+\caption{\small O-PLS prediction}
+\label{fig:oplsimage}
+\end{subfigure}
+\caption{\small Orthogonal partial least squares.}
+\end{figure}
+
+O-PLS is primarily useful when many PLS components are required to fit an accurate model, since this often leads to unstable model coefficients. Try O-PLS when the PLS model coefficients are difficult to interpret, or the best PLS model uses a large number of components. See \verb|?OPLS| for more details.
+
+
+\subsection{Spatially-aware k-means clustering}
+
+Spatially-aware clustering using k-means is available \cite{Alexandrov2011} through the \verb|spatialKMeans| method. This method uses a spatial distance function to project the data to a kernel space before performing ordinary k-means clustering.
+
+The parameters \Robject{r} and \Robject{k} are the neighborhood smoothing radius and the initial number of clusters.
+
+Below, we create a spatial segmentation using spatially-aware clustering.
+
+<<skm>>=
+set.seed(1)
+skm <- spatialKMeans(msset7, r=2, k=3, method="adaptive")
+@
+
+<<skmplot>>=
+plot(skm, col=c("black", "blue", "red"), type=c('p','h'), key=FALSE)
+@
+
+
+<<skmimage>>=
+image(skm, col=c("black", "blue", "red"), key=FALSE)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<skmplot>>
+@
+\caption{\small Predicted centers}
+\label{fig:skmplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<skmimage>>
+@
+\caption{\small Predicted clusters}
+\label{fig:skmimage}
+\end{subfigure}
+\caption{\small Spatially-aware k-means clustering.}
+\end{figure}
+
+See \verb|?spatialKMeans| for more details.
+
+
+
+
+\subsection{Spatial shrunken centroids}
+
+\Rpackage{Cardinal} offers a novel clustering and classification method based on the spatial smoothing \cite{Alexandrov2011} and nearest shrunken centroids \cite{Tibshirani2003}. This is the \verb|spatialShrunkenCentroids| method, which can be used both for clustering and for classification.
+
+The parameters \Robject{r}, \Robject{k}, and \Robject{s} are the neighborhood smoothing radius, the initial number of clusters, and the sparsity parameter, respectively.
+
+Below, we create a spatial segmentation using the spatial shrunken centroids method.
+
+<<ssc>>=
+set.seed(1)
+ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=3, method="adaptive")
+@
+
+<<sscplot>>=
+plot(ssc, col=c("blue", "red", "black"), type=c('p','h'), key=FALSE)
+@
+
+<<sscimage>>=
+image(ssc, col=c("blue", "red", "black"), key=FALSE)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<sscplot>>
+@
+\caption{\small Shrunken centroids}
+\label{fig:sscplot}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<sscimage>>
+@
+\caption{\small Predicted class probabilies}
+\label{fig:sscimage}
+\end{subfigure}
+\caption{\small Spatially-aware nearest shrunken centroids clustering.}
+\end{figure}
+
+A unique property of \Rpackage{Cardinal}'s spatial shrunken centroids method is that it allows for the automated selection of the number of clusters, driven in part by the sparsity paramter. Although we initialized the clustering above with 5 clusters, only 3 were used in the final segmentation.
+
+See \verb|?spatialShrunkenCentroids| for more options and details.
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+
+\section{Advanced Topics}
+
+\subsection{Apply}
+
+The \verb|apply| family of functions are a powerful feature of \R. The \verb|apply| function applies a function over margins of an array, while \verb|sapply| applies a function over every element of a vector-like object. The function \verb|tapply| applies a function over a ``ragged'' array, so that the function is applied over groups of values given by levels of another variable (usually a factor). In \Rpackage{Cardinal}, the methods \verb|pixelApply| and \verb|featureApply| allow \verb|apply|-like functionality that combine traits of each of these, tailored for imaging datasets.
+
+
+We need to mark which pixels are blue, black, and which are red, as in the \textit{factor} \Robject{pattern} in Section \ref{sec:data}.
+
+<<pData>>=
+pData(msset)$pg <- pattern
+@
+
+
+Then we need to mark which features (which regions of the mass spectrum) belong to the peaks associated with ``blue" ($m/z$ 2000), ``black''($m/z$ 3000), or ``red''($m/z$ 4000) pixels; the rest of the spectrum is marked as background noise (\texttt{bg}).
+
+<<fData>>=
+fData(msset)$fg <- factor(rep("bg", nrow(fData(msset))), levels=c("bg","blue", "black", "red"))
+fData(msset)$fg[1950 < fData(msset)$mz & fData(msset)$mz < 2050] <- "blue"
+fData(msset)$fg[2950 < fData(msset)$mz & fData(msset)$mz < 3050] <- "black"
+fData(msset)$fg[3950 < fData(msset)$mz & fData(msset)$mz < 4050] <- "red"
+@
+
+Now we can experiment with different ways of plotting an imaging dataset.
+
+\subsubsection{\Robject{pixelApply}}
+
+The method \verb|pixelApply| allows functions to be applied over all pixels. The function is applied pixel-by-pixel to the feature vectors (mass spectra). Here, we use \verb|pixelApply| to find the pixel-by-pixel mean intensity of different regions of the mass spectrum. We provide \verb|fData(msset)$fg| as a grouping variable, since it indicates different regions of the mass spectrum we expect to be associated with either background noise, or blue, red, or black pixels. Since \verb|pixelApply| knows to look in \Robject{msset} for the variable, we only need to provide \Robject{fg} to the argument \Robject{.feature.groups}.
+
+<<pixelApply1, results=verbatim>>=
+p1 <- pixelApply(msset, mean, .feature.groups=fg)
+p1[,1:30]
+@
+By comparing side-by-side with the ground truth (which we have stored in the variable \verb|pData(msset)$pg|), we see the result is as we expected. For ``blue'' pixels, the mean intensity of features belonging to the ``blue''-associated peak ($m/z$ 2000) is higher. For ``black'' pixels, the mean intensity of features belonging to the ``black''-associated peak ($m/z$ 3000) is higher. Finally, for ``red'' pixels, the mean intensity of features belonging to the ``red''-associated peak ($m/z$ 4000) is higher.
+
+<<pixelApply2, results=verbatim>>=
+cbind(pData(msset), t(p1))[1:30,c("pg","blue", "black", "red")]
+@
+
+We can manually construct the images corresponding to the mean intensity of the three peaks centered at $m/z$ 2000, $m/z$ 3000, and $m/z$ 4000 and plot their images. This is shown in Figure \ref{fig:meanInt}
+
+<<pixelApply3>>=
+tmp1 <- MSImageSet(spectra=t(as.vector(p1["blue",])), coord=coord(msset), mz=2000)
+image(tmp1, feature=1, col.regions=alpha.colors(100, "blue"), sub="m/z = 2000")
+@
+
+<<pixelApply4>>=
+tmp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
+image(tmp1, feature=1, col.regions=alpha.colors(100, "black"), sub="m/z = 3000")
+@
+<<pixelApply5>>=
+tmp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
+image(tmp2, feature=1, col.regions=alpha.colors(100, "red"),  sub="m/z = 4000")
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply3>>
+@
+\caption{\small Blue Peak}
+\label{fig:bluePix}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply4>>
+@
+\caption{\small Black Peak}
+\label{fig:blackPix}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<pixelApply5>>
+@
+\caption{\small Red Peak}
+\label{fig:redPix}
+\end{subfigure}
+\caption{\small Mean intensites of the three peaks centered at $m/z$ 2000, $m/z$ 3000 and $m/z$ 4000.}
+\label{fig:meanInt}
+\end{figure}
+
+
+
+If only the plots are desired rather than the actual data, then \verb|image| can be used to perform these steps automatically while producing the plot. See \textit{Cardinal plotting} for how to do this.
+
+\subsubsection{\Robject{featureApply}}
+
+The method \verb|featureApply| allows functions to be applied over all features. The function is applied to the flattened false-image vectors. These vectors are the pixel-by-pixel intensities of a single-feature image, not including missing pixels. Here, we use \verb|featureApply| to find the mean spectrum for different groups of pixels. We provide \verb|pData(msset)$pg| as a grouping variable, since it indicates the kind of pixel. We desire mean spectra for the black pixels, the red pixels, and the blue pixels. As before, since \verb|featureApply| knows to look in \Robject{msset}, we only need to provide \Robject{pg} to the argument \Robject{.pixel.groups}.
+
+
+<<featureApply1>>=
+f1 <- featureApply(msset, mean, .pixel.groups=pg)
+f1[,1:30]
+@
+Again, we can check the results by plotting them in Figure \ref{fig:meanCenters}.
+<<featureApply2>>=
+plot(mz(msset), f1["blue",], type="l", xlab="m/z", ylab="Intensity", col="blue")
+@
+<<featureApply3>>=
+plot(mz(msset), f1["black",], type="l", xlab="m/z", ylab="Intensity", col="black")
+@
+<<featureApply4>>=
+plot(mz(msset), f1["red",], type="l", xlab="m/z", ylab="Intensity", col="red")
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply2>>
+@
+\caption{\small Blue Pixels}
+\label{fig:blueSpec}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply3>>
+@
+\caption{\small Black Pixels}
+\label{fig:blackSpec}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<featureApply4>>
+@
+\caption{\small Red Pixels}
+\label{fig:redSpec}
+\end{subfigure}
+\caption{\small Mean spectra of blue, black, and red regions.}
+\label{fig:meanCenters}
+\end{figure}
+
+
+As expected,we see the mean spectrum of the blue pixels has a higher peak at $m/z$ 2000,  we see the mean spectrum of the black pixels has a higher peak at $m/z$ 3000, while the mean spectrum of the red pixels has a higher peak at $m/z$ 4000. As before, if only the plots are desired rather than the actual data, then \verb|plot| can be used to perform these steps automatically. See \textit{Cardinal plotting} for how to do this.
+
+
+
+
+
+
+
+\clearpage
+
+
+
+\subsection{Simulation}
+\label{sec:sim}
+
+<<Cardinal,echo=FALSE,results=hide>>=
+options(width=69)
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+@ 
+\Rpackage{Cardinal} provides functions for the simulation of mass spectra and mass spectrometry imaging datasets. This is of interest to developers for testing newly developed methodology for analyzing mass spectrometry imaging experiments.
+
+\subsubsection{Simulation of spectra}
+
+The \verb|generateSpectrum| function can be used to simulate mass spectra. Its parameters can be tuned to simulate different kinds of mass spectra from different kinds of machines, and different protein and peptide patterns.
+
+One spectrum with $m/z$ range from 1001 to 20000, 50 randomly selected peaks, baseline 3000, and $m/z$ resolution 100 is generated below and plotted in Figure \ref{fig:gs1}.
+<<gs1>>=
+set.seed(1)
+s1 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(50, 1001, 20000), baseline=2000, resolution=100, step=3.3)
+plot(x ~ t, data=s1, type="l", xlab="m/z", ylab="Intensity")
+@
+
+An example with fewer peaks, larger baseline, and lower resolution (Figure \ref{fig:gs2}):
+<<gs2>>=
+set.seed(2)
+s2 <- generateSpectrum(1, range=c(1001, 20000), centers=runif(20, 1001, 20000), baseline=3000, resolution=50, step=3.3)
+plot(x ~ t, data=s2, type="l", xlab="m/z", ylab="Intensity")
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs1>>
+@
+\caption{\small }
+\label{fig:gs1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs2>>
+@
+\caption{\small}
+\label{fig:gs2}
+\end{subfigure}
+\caption{\small MALDI-like simulated spectra.}
+\label{fig:gs}
+\end{figure}
+
+
+Above we simulated MALDI-like spectra. We can also simulate DESI-like spectra, shown in Figure \ref{fig:gsp}.
+<<gs3>>=
+set.seed(3)
+s3 <- generateSpectrum(1, range=c(101, 1000), centers=runif(25, 101, 1000), baseline=0, resolution=250, noise=0.1, step=1.2)
+plot(x ~ t, data=s3, type="l", xlab="m/z", ylab="Intensity")
+@
+<<gs4>>=
+set.seed(4)
+s4 <- generateSpectrum(1, range=c(101, 1000), centers=runif(100, 101, 1000), baseline=0, resolution=500, noise=0.2, step=1.2)
+plot(x ~ t, data=s4, type="l", xlab="m/z", ylab="Intensity")
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs3>>
+@
+\caption{\small }
+\label{fig:gs3}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gs4>>
+@
+\caption{\small }
+\label{fig:gs4}
+\end{subfigure}
+\caption{\small DESI-like simulated spectra.}
+\label{fig:gsp}
+\end{figure}
+
+
+
+\subsubsection{Simulation of images}
+
+The \verb|generateImage| function can be used to simulate mass spectral images. This is a simple wrapper for \verb|generateSpectra| that will generate unique spectral patterns based on a spatial pattern. The generated mass spectra will have a unique peak associated with each region. The pattern must have discrete regions, most easily given in the form of an integer matrix. We use a matrix in the pattern of a cardinal.
+
+<<data>>=
+data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+ NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+ 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+ 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+ 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+@
+
+As seen in Figure \ref{fig:gi}, we can plot the ground truth image directly.
+<<truth>>=
+image(data[,ncol(data):1], col=c("black", "red"))
+@
+
+\setkeys{Gin}{width=0.4\textwidth}
+\begin{figure}
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+<<truth>>
+@
+\caption{\small Ground truth image used to generate the simulated dataset.}
+\end{center}
+\end{figure}
+
+
+Now we generate the dataset. To make it easy to visualize, we set up the \Robject{range} and \Robject{step} size so that the feature indices correspond directly to their values. We create two peaks at $m/z$ 100 and $m/z$ 200, one of which is associated with each region in the image.
+<<img1>>=
+set.seed(1)
+img1 <- generateImage(data, range=c(1,1000), centers=c(100,200), step=1, as="MSImageSet")
+@
+Now to confirm the reasonability of our simulated dataset, we plot images corresponding to the two peaks associated with each region in Figure \ref{fig:gi2}. (Note that rows in the original matrix correspond to the x-axis in the image and the columns correspond to the y-axis.)
+<<gi1>>=
+image(img1, mz=100, col.regions=alpha.colors(100, "black"))
+@
+<<gi2>>=
+image(img1, mz=200, col.regions=alpha.colors(100, "red"))
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi1>>
+@
+\caption{\small Black Peak}
+\label{fig:gi1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi2>>
+@
+\caption{\small Red Peak}
+\label{fig:gi2}
+\end{subfigure}
+\caption{\small Generated image from an integer matrix.}
+\end{figure}
+
+
+
+We can generate the same kind of dataset using a \Robject{factor} and a \Robject{data.frame} of coordinates, as is done in the running example for earlier sections of this vignette.
+
+
+
+<<img2, results=verbatim>>=
+pattern <- factor(c(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 0,
+  0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 1, 1, 2,
+  2, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 2, 2,
+	2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2,
+	2, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0),
+	levels=c(0,1,2), labels=c("blue", "black", "red"))
+coord <- expand.grid(x=1:9, y=1:9)
+set.seed(2)
+msset <- generateImage(pattern, coord=coord, range=c(1000, 5000), centers=c(2000, 3000, 4000), resolution=100, step=3.3, as="MSImageSet")
+@
+
+Again, we can plot the images to see that the simulated dataset is the same pattern as before (though the exact intensities will differ, because we have used a different seed for the random number generator), Figure \ref{fig:gI}.
+
+<<gi3>>=
+image(msset, mz=2000, col.regions=alpha.colors(100, "blue"))
+@
+<<gi4>>=
+image(msset, mz=3000, col.regions=alpha.colors(100, "black"))
+@
+<<gi5>>=
+image(msset, mz=4000, col.regions=alpha.colors(100, "red"))
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi3>>
+@
+\caption{\small Blue Peak}
+\label{fig:gi3}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi4>>
+@
+\caption{\small Black Peak}
+\label{fig:gi4}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<gi5>>
+@
+\caption{\small Red Peak}
+\label{fig:gi5}
+\end{subfigure}
+\caption{\small Generated images from factor and coordinates}
+\label{fig:gI}
+\end{figure}
+
+\subsubsection{Advanced simulation}
+
+The \verb|generateImage| function provides a straightforward method for rapid simulation of many kinds of images to test classification and clustering models, but suppose we wish to simulate a more complex dataset with spatial correlations. Below we simulate a dataset with two overlapping regions. In each of these regions, the intensity degrades with distance from the center of the region, implining spatial correlation, Figure \ref{fig:sp}.
+
+
+<<adv1>>=
+x1 <- apply(expand.grid(x=1:10, y=1:10), 1, 
+            function(z) 1/(1 + ((4-z[[1]])/2)^2 + ((4-z[[2]])/2)^2))
+dim(x1) <- c(10,10)
+image(x1[,ncol(x1):1])
+@
+<<adv2>>=
+x2 <- apply(expand.grid(x=1:10, y=1:10), 1, 
+            function(z) 1/(1 + ((6-z[[1]])/2)^2 + ((6-z[[2]])/2)^2))
+dim(x2) <- c(10,10)
+image(x2[,ncol(x2):1])
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<adv1>>
+@
+\caption{\small Region 1}
+\label{fig:sp1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<adv2>>
+@
+\caption{\small Region 2}
+\label{fig:sp2}
+\end{subfigure}
+\caption{\small Ground truth images of a dataset with overlapping regions.}
+\label{fig:sp}
+\end{figure}
+
+
+
+
+We generate the image by using \verb|generateSpectrum| with the calculated mean intensities. We use two peaks for the two regions with nearly overlapping peaks at $m/z$ 500 and $m/z$ 510. 
+
+
+<<advsim>>=
+set.seed(1)
+x3 <- mapply(function(z1, z2) generateSpectrum(1, centers=c(500,510), intensities=c(z1, z2), range=c(1,1000), resolution=100, baseline=0, step=1)$x, as.vector(x1), as.vector(x2))
+img3 <- MSImageSet(x3, coord=expand.grid(x=1:10, y=1:10), mz=1:1000)
+@
+
+
+Now we can plot the ion images for each of the two peaks in \ref{fig:advimg}.
+<<advimg1>>=
+image(img3, mz=500, col=intensity.colors(100))
+@
+<<advimg2>>=
+image(img3, mz=510, col=intensity.colors(100))
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<advimg1>>
+@
+\caption{\small Single ion image for peak at $m/z$ 500}
+\label{fig:advimg1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<advimg2>>
+@
+\caption{\small Single ion image for peak at $m/z$ 510}
+\label{fig:advimg2}
+\end{subfigure}
+\caption{\small Simulated mass spectral images at the two peaks.}
+\label{fig:advimg}
+\end{figure}
+
+
+
+Finally, we plot the mass spectrum for a pixel from each region in Figure \ref{fig:advplot}
+<<advplot1>>=
+plot(img3, coord=list(x=4, y=4), type="l", xlim=c(200, 800))
+@
+<<advplot2>>=
+plot(img3, coord=list(x=6, y=6), type="l", xlim=c(200, 800))
+@
+
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<advplot1>>
+@
+\caption{\small Region 1, pixel 34 spectrum}
+\label{fig:advplot1}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+<<fig=TRUE, echo=FALSE>>=
+<<advplot2>>
+@
+\caption{\small Region 1, pixel 56 spectrum}
+\label{fig:advplot2}
+\end{subfigure}
+\caption{\small Simulated mass spectra from each of the two regions.}
+\label{fig:advplot}
+\end{figure}
+
+
+By creating spatial correlation patterns and combining them with the \Robject{intensities}, \Robject{sd}, and \Robject{noise} arguments in \verb|generateSpectrum|, it is possible to simulate more complex mass spectrometry imaging datasets.
+
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+% \bibliographystyle{unsrt}
+\bibliography{Cardinal}
+
+\end{document}
