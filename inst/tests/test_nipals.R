@@ -10,9 +10,9 @@ test_that("NIPALS - PCA", {
 	svd <- prcomp(scale(x, scale=FALSE))
 	pca <- nipals.PCA(scale(x, scale=FALSE), ncomp=10)
 
-	expect_equal(abs(svd$rotation), abs(pca$loadings), tolerance=0.1)
+	expect_equal(abs(svd$rotation), abs(pca$loadings), tolerance=0.2)
 
-	expect_equal(abs(svd$x), abs(pca$scores), tolerance=0.1)
+	expect_equal(abs(svd$x), abs(pca$scores), tolerance=0.2)
 
 })
 
