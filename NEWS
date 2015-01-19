@@ -2,11 +2,9 @@
 NEWS for Cardinal package
 -------------------------
 
-Version 0.99.1 [2015-1-12]
-o Bioconductor Release Candidate 2
+Version 0.99.1 [2014-12-31]
 o Fixed bug in SImageData coord factor levels not being
 	properly updated when SImageSet is subsetted
-o Cleaned up biocViews
 
 Version 0.99.0 [2014-12-22]
 o Bioconductor Release Candidate 1
