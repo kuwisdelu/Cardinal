@@ -14,3 +14,4 @@ Imports: fields, grid, irlba, lattice, signal, sp, stats4, utils
 Suggests: BiocStyle, testthat
 biocViews: Software, Infrastructure, Proteomics, Lipidomics, Normalization,
 	MassSpectrometry, ImagingMassSpectrometry, Clustering, Classification
+URL: http://www.cardinalmsi.org
