@@ -2,6 +2,10 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.99.2 [2015-1-20]
+o Bioconductor Release Candidate 3
+o Adjust NIPALS unit tests for Windows build
+
 Version 0.99.1 [2015-1-12]
 o Bioconductor Release Candidate 2
 o Fixed bug in SImageData coord factor levels not being
