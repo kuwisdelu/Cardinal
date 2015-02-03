@@ -534,7 +534,8 @@ setMethod("select",
 			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
 			if ( is.null(loc) ) return(NULL)
 			coord <- coord(x)[subset2, names(model$right)]
-			selected <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
+			selected <- numeric(ncol(x))
+			selected[subset2] <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
 			selected <- selected > 0
 			names(selected) <- pixelNames(x)
 		} else {

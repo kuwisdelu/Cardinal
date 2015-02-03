@@ -3,10 +3,10 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
+-Optical image registration
+-3D datasets and 3D plotting
 -Support larger-than-memory datasets
 -Statistical hypothesis testing
--3D datasets and 3D plotting
--Optical image registration
 
 Priority: Medium
 -Parse more metadata from imzML datasets for MIAPE-Imaging
