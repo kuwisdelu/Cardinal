@@ -36,7 +36,9 @@ setMethod("plot",
 		}
 		# evaluated with respect to fData
 		groups <- tryCatch(eval(substitute(groups), envir=fData(x),
-			enclos=environment(formula)), error = function(e) eval(groups)) 
+			enclos=environment(formula)), error = function(e) eval(groups))
+		if ( !is.null(groups) )
+			groups <- as.factor(groups)
 		subset <- tryCatch(eval(substitute(subset), envir=fData(x),
 			enclos=environment(formula)), error = function(e) eval(subset))
 		# set up pixel.groups
@@ -260,10 +262,14 @@ setMethod("image",
 		# evaluated with respect to pData
 		groups <- tryCatch(eval(substitute(groups), envir=pData(x),
 			enclos=environment(formula)), error = function(e) eval(groups))
-		if ( !is.null(groups) ) groups <- rep(groups, length.out=dim(x)[2])
+		if ( !is.null(groups) ) {
+			groups <- as.factor(groups)
+			groups <- rep(groups, length.out=dim(x)[2])
+		}
 		subset <- tryCatch(eval(substitute(subset), envir=pData(x),
 			enclos=environment(formula)), error = function(e) eval(subset))
-		if ( !is.null(subset) ) subset <- rep(subset, length.out=dim(x)[2])
+		if ( !is.null(subset) )
+			subset <- rep(subset, length.out=dim(x)[2])
 		# set up feature.groups
 		if ( missing(feature.groups) ) {
 			feature.groups <- factor(rep(TRUE, length(feature)))
@@ -534,7 +540,8 @@ setMethod("select",
 			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
 			if ( is.null(loc) ) return(NULL)
 			coord <- coord(x)[subset2, names(model$right)]
-			selected <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
+			selected <- numeric(ncol(x))
+			selected[subset2] <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y)
 			selected <- selected > 0
 			names(selected) <- pixelNames(x)
 		} else {

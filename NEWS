@@ -2,9 +2,14 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.99.3 [2015-2-3]
+o Bioconductor Release Candidate 4
+o Fixes bug in subset arg in select method
+o In plot and image methods, 'groups' arg now coerced to factor
+
 Version 0.99.2 [2015-1-20]
 o Bioconductor Release Candidate 3
-o Adjust NIPALS unit tests for Windows build
+o Adjusts NIPALS unit tests for Windows build
 
 Version 0.99.1 [2015-1-12]
 o Bioconductor Release Candidate 2
