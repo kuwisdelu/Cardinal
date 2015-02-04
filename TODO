@@ -3,7 +3,6 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
--Automatically coerge 'groups' to factor in plot and image methods
 -Shiny GUI
 -Optical image registration
 -3D datasets and 3D plotting
