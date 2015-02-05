@@ -4,8 +4,9 @@ NEWS for Cardinal package
 
 Version 0.99.3 [2015-2-3]
 o Bioconductor Release Candidate 4
-o Fixes bug in subset arg in select method
+o Fixed bug in subset arg in select method
 o In plot and image methods, 'groups' arg now coerced to factor
+o Fixed bug in plot and image methods with NA in 'groups' arg
 
 Version 0.99.2 [2015-1-20]
 o Bioconductor Release Candidate 3
