@@ -189,7 +189,9 @@ setMethod("plot",
 						subgroups <- which(levels(groups) %in% groups[subscripts])
 						for ( gi in subgroups ) {
 							ys.g <- ys
-							ys.g[groups[subscripts] != levels(groups)[gi]] <- NA
+							not.g <- groups[subscripts] != levels(groups)[gi]
+							not.g[is.na(not.g)] <- TRUE
+							ys.g[not.g] <- NA
 							for ( tpi in type ) {
 								points(xs, ys.g, type=tpi, col=col[gi], ...)
 							}
@@ -489,7 +491,9 @@ setMethod("image",
 							zs.g <- zs
 							add.g <- add || gi != subgroups[1]
 							col.g <- alpha.colors(length(col.regions), col[gi])
-							zs.g[groups[subscripts] != levels(groups)[gi]] <- NA
+							not.g <- groups[subscripts] != levels(groups)[gi]
+							not.g[is.na(not.g)] <- TRUE
+							zs.g[not.g] <- NA
 							if ( all(is.na(zs.g)) ) next
 							image(xs, ys, zs.g, xlab=xlab, xlim=xlim,
 								ylab=ylab, ylim=rev(ylim), zlim=zlim,
