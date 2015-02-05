@@ -1,4 +1,18 @@
 
+## Make an annotation (factor) from regions-of-interest (logical)
+make.annotation <- function(...) {
+	regions <- data.frame(...)
+	names <- names(regions)
+	x <- as.character(rep(NA, nrow(regions)))
+	for ( nm in names ) {
+		x[regions[[nm]]] <- nm
+	}
+	if ( length(regions) == 1 ) {
+		x[is.na(x)] <- paste("NOT", names[1])
+	}
+	as.factor(x)
+}
+
 ## Match methods to their workhorse functions
 match.method <- function(method, options) {
 	if ( is.function(method) ) {
