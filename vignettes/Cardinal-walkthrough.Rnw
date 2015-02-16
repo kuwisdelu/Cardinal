@@ -40,7 +40,7 @@ Analysis in imaging data includes many things, such as visualization, pre-proces
 \begin{figure}[h]
 \begin{center}
 \includegraphics{preprocessingRoughDraft.pdf}
-\caption{\small Preprocessing steps}
+\caption{\small Cardinal workflow for pre-processing and analysis}
 \label{fig:flow}
 \end{center}
 \end{figure}
@@ -49,8 +49,13 @@ Figure \ref{fig:flow} charts out the workflow for mass spectrometry imaging data
 
 
 
-This is a brief walkthrough of some of the basic functionality of\Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R{} help file.
+This is a brief walkthrough of some of the basic functionality of \Rpackage{Cardinal}. For a more detailed view of the functionality of a given method, see the \R{} help file.
 
+
+Additional R packages useful for the analysis of mass spectrometry experiments are \Rpackage{MSnbase} \cite{MSnbase} and \Rpackage{MALDIquant} \cite{MALDIquant}, which are both designed for traditional proteomics analyses. \Rpackage{MALDIquant} also has limited support for mass spectrometry imaging data.
+
+
+\clearpage
 
 
 \section{Input/Output}
@@ -75,7 +80,7 @@ For more information on reading Analyze files, type \verb|?readAnalyze|.
 \subsubsection{imzML}
 
 
-The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online.
+The open XML-based format imzML is a more recently developed format specifically designed for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online. See \url{http://www.imzml.org} for more information and links to free converters.
 
 The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. To read datasets stored in the imzML format, use the \verb|readImzML| function. Both files must be present in the same folder and have the same name (again, except for the file extension) for the data to be read properly.
 
@@ -274,7 +279,7 @@ plot(msset, pixel=1:ncol(msset), pixel.groups=pattern, superpose=TRUE, key=TRUE,
 
 \subsection{Plotting ion images}
 \label{sec:plotIon}
-Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method. To plot the single ion image for the first feature, Figure \ref{fig:imSingleFeature}, we use:
+Ion images from an \Robject{MSImageSet} can be plotted using the \verb|image| method. To plot the ion image for the first feature, Figure \ref{fig:imSingleFeature}, we use:
 <<image1>>=
 image(msset, feature=1)
 @
@@ -285,7 +290,7 @@ image(msset, mz=4000, plusminus=10)
 @
 
 
-In Figure \ref{fig:imMulti} the single ion images for $m/z\ 2000$, $m/z\ 3000$, and $m/z\ 4000$ are displayed simultaneously.
+In Figure \ref{fig:imMulti} the ion images for $m/z\ 2000$, $m/z\ 3000$, and $m/z\ 4000$ are displayed simultaneously.
 
 <<image3>>=
 mycol <- c("blue", "black", "red")
@@ -591,7 +596,7 @@ For example workflows with analyses of real datasets, please see the vignettes i
 
 \subsection{Principal components analysis (PCA)}
 
-Principal components analysis (PCA) is a multivariate statistical tool used for dimension reduction and exploratory data analysis. PCA can be useful when first exploring a dataset beyond plotting single-ion images, but additional statistical analysis is usually necessary to extract meaningful results.
+Principal components analysis (PCA) is a multivariate statistical tool used for dimension reduction and exploratory data analysis. PCA can be useful when first exploring a dataset beyond plotting molecular ion images, but additional statistical analysis is usually necessary to extract meaningful results.
 
 Below, we fit the first two principal components using \Rpackage{Cardinal}'s \verb|PCA| method and plot their loadings and scores.
 
@@ -818,6 +823,124 @@ See \verb|?spatialShrunkenCentroids| for more options and details.
 
 
 
+
+
+
+\clearpage
+
+\section{Examples}
+
+In-depth biological examples using real data can be found in the \Rpackage{CardinalWorkflows} package. Figure \ref{fig:pig206} shows an example using a cross-section of a whole pig fetus, and Figure \ref{fig:rcc} shows an example using a human renal cell carcinoma dataset. Both datasets and a thorough walkthrough of analyses are available in \Rpackage{CardinalWorkflows}.
+
+To install \Rpackage{CardinalWorkflows}, run:
+
+<<eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("CardinalWorkflows")
+@
+
+Please note that due to the size of the included datasets, downloading and installing \Rpackage{CardinalWorkflows} may take a long time.
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{pig206-optical.png}
+\caption{\small H\&E}
+\label{fig:pig206optical}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{pig206-mz256.pdf}
+\caption{\small $m/z$ 256}
+\label{fig:pig206mz256}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{pig206-sscg.pdf}
+\caption{\small Spatial segmentation}
+\label{fig:pig206sscg}
+\end{subfigure}
+\caption{\small Biological example of a pig fetus cross-section, showing the optical image, an ion image, and a segmentation created by Spatial Shrunken Centroids clustering.}
+\label{fig:pig206}
+\end{figure}
+
+Figure \ref{fig:pig206} uses a pig fetus cross-section as an example of unsupervised analysis of a mass spectrometry imaging experiment using \Rpackage{Cardinal}. To view the vignette associated with this dataset, install \Rpackage{CardinalWorkflows} and run:
+
+<<eval=FALSE>>=
+vignette("Workflows-clustering")
+@
+
+The dataset and its analyses can be loaded by running:
+
+<<eval=FALSE>>=
+data(pig206, pig206_analyses)
+@
+
+\setkeys{Gin}{width=\textwidth}
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{rcc-MH0204_33.png}
+\caption{\small H\&E}
+\label{fig:rccoptical}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{rcc-mz810.pdf}
+\caption{\small $m/z$ 810.5}
+\label{fig:rccmz256}
+\end{subfigure}
+\begin{subfigure}{.3\textwidth}
+  \centering
+\includegraphics{rcc-sscg.pdf}
+\caption{\small Spatial segmentation}
+\label{fig:rccsscg}
+\end{subfigure}
+\caption{\small Biological example of human renal cell carcinoma classification, showing an optical image, an ion image, and a segmentation created by Spatial Shrunken Centroids classification.}
+\label{fig:rcc}
+\end{figure}
+
+Figure \ref{fig:rcc} uses a human renal cell carcinoma dataset as an example of supervised analysis of a mass spectrometry imaging experiment using \Rpackage{Cardinal}. To view the vignette associated with this dataset, install \Rpackage{CardinalWorkflows} and run:
+
+<<eval=FALSE>>=
+vignette("Workflows-classification")
+@
+
+The dataset and its analyses can be loaded by running:
+
+<<eval=FALSE>>=
+data(rcc, rcc_analyses)
+@
+
+See \verb|?CardinalWorkflows| for more information.
+
+
+
+% <<eval=FALSE, echo=FALSE>>=
+% library(CardinalWorkflows)
+% data(pig206, pig206_analyses)
+% pdf(file="~/Documents/Developer/Projects/Cardinal/vignettes/pig206-mz256.pdf", width=8, height=6)
+% image(pig206, mz=256)
+% dev.off()
+% pdf(file="~/Documents/Developer/Projects/Cardinal/vignettes/pig206-sscg.pdf", width=8, height=6)
+% mycol <- c(internal1="#FD9827", back="#42FD24", internal2="#1995FC", brain="#FC23D9", liver="#3524FB", heart="#FC0D1B", bg="#CDFD34")
+% image(pig206.sscg, model=list(r=2, k=20, s=6), col=mycol, key=FALSE)
+% dev.off()
+% @
+
+% <<eval=FALSE, echo=FALSE>>=
+% library(CardinalWorkflows)
+% data(rcc, rcc_analyses)
+% pdf(file="~/Documents/Developer/Projects/Cardinal/vignettes/rcc-mz810.pdf", width=8, height=6)
+% image(rcc, mz=810.5, subset=sample %in% "MH0204_33", ylim=c(10,40), xlim=c(0.5,60), smooth.image="gaussian", contrast.enhance="histogram")
+% dev.off()
+% pdf(file="~/Documents/Developer/Projects/Cardinal/vignettes/rcc-sscg.pdf", width=8, height=6)
+% image(rcc.cv.sscg, model=list(r=3, s=20), fold=1)
+% dev.off()
+% @
 
 
 
@@ -1271,7 +1394,7 @@ image(img3, mz=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg1>>
 @
-\caption{\small Single ion image for peak at $m/z$ 500}
+\caption{\small Ion image for peak at $m/z$ 500}
 \label{fig:advimg1}
 \end{subfigure}
 \begin{subfigure}{.3\textwidth}
@@ -1279,7 +1402,7 @@ image(img3, mz=510, col=intensity.colors(100))
 <<fig=TRUE, echo=FALSE>>=
 <<advimg2>>
 @
-\caption{\small Single ion image for peak at $m/z$ 510}
+\caption{\small Ion image for peak at $m/z$ 510}
 \label{fig:advimg2}
 \end{subfigure}
 \caption{\small Simulated mass spectral images at the two peaks.}
