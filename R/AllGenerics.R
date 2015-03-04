@@ -40,11 +40,11 @@ setGeneric("keys", function(object) standardGeneric("keys"))
 setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
 setGeneric("modelData", function(object) standardGeneric("modelData"))
 setGeneric("modelData<-", function(object, value) standardGeneric("modelData<-"))
-setGeneric("mz", function(object) standardGeneric("mz")) # use MSnbase generic?
+# setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics
 setGeneric("mz<-", function(object, value) standardGeneric("mz<-"))
 setGeneric("mzData", function(object) standardGeneric("mzData"))
 setGeneric("mzData<-", function(object, value) standardGeneric("mzData<-"))
-setGeneric("peaks", function(object) standardGeneric("peaks")) # use mzR generic?
+# setGeneric("peaks", function(object, ...) standardGeneric("peaks")) # use ProtGenerics
 setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
 setGeneric("peakData", function(object) standardGeneric("peakData"))
 setGeneric("peakData<-", function(object, value) standardGeneric("peakData<-"))
@@ -61,7 +61,7 @@ setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePo
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
-setGeneric("spectra", function(object) standardGeneric("spectra")) # use MSnbase generic?
+# setGeneric("spectra", function(object, ...) standardGeneric("spectra")) # use ProtGenerics
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
 
 #### MIAPE - Imaging ####

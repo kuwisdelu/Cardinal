@@ -1,0 +1,208 @@
+
+%\VignetteIndexEntry{Cardinal design and development}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, ImagingMassSpectrometry}
+
+\documentclass[a4paper]{article}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+<<eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{\Rpackage{Cardinal} design and development}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<echo=FALSE,results=hide>>=
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=100)
+@ 
+
+\Rpackage{Cardinal} is designed with two primary purposes in mind: (1) to provide an environment for experimentalists for the handling, pre-processing, analysis, and visualization of mass spectrometry-based imaging experiments, and (2) to provide an infrastructure for computationalists for the development of new computational methods for mass spectrometry-based imaging experiments.
+
+Although MS imaging has attracted the interest of many statisticians and computer scientists, and a number of algorithms have been designed specifically for such experiments, most of these methods remain unavailable to experimentalists, because they are often either proprietary, or difficult for non-experts use. Additionally, the complexity of MS imaging creates a significant barrier to entry for developers. \Rpackage{Cardinal} aims to remove this hurdle, by providing \R{} developers with an accessible way to handle MS imaging data.
+
+As an \R{} package, \Rpackage{Cardinal} allows for the rapid prototyping of new analysis methods. This vignette describes the design of \Rpackage{Cardinal} data structures for developers interested in writing new \R{} packages using or extending them.
+
+
+\section{Design overview}
+
+The \Robject{iSet} object is the foundational data structure of \Rpackage{Cardinal}. What is an \Rpackage{iSet}?
+
+\begin{itemize}
+\item Similar to \Robject{eSet} in \Rpackage{Biobase} and \Robject{pSet} in \Rpackage{MSnbase}.
+\item Coordinates high-throughput imaging data, feature data, pixel data, and metadata.
+\item Provides an interface for manipulating data from imaging experiments.
+\end{itemize}
+
+Just as \Robject{eSet} from \Rpackage{Biobase} coordinates gene expression data and \Robject{pSet} from \Rpackage{MSnbase} coordinates proteomics data, \Robject{iSet} coordinates imaging data. It is a virtual class, so it is used only through its subclasses.
+
+\Robject{MSImageSet} is a subclass of \Robject{iSet}, and is the primary data structure used in \Rpackage{Cardinal}. It is designed to coordinate data from mass spectrometry-based imaging experiments. It contains mass spectra (or mass spectral peaks), feature data (including $m/z$ values), pixel data (including pixel coordinates and phenotype data), and other metadata. When a raw MS image data file is read into \Rpackage{Cardinal}, it is turned into an \Rpackage{MSImageSet}, which can then be used with \Rpackage{Cardinal}'s methods for pre-processing, analysis, and visualization.
+
+\Robject{MSImageData} is the class responsible for coordinating the mass spectra themselves, and reconstructing them into images when necessary. Every \Robject{MSImageSet} has an \verb|imageData| slot containing an \Robject{MSImageData} object. This is similar to the \verb|assayData| slot in \Rpackage{Biobase}, in that it uses an \Robject{environment} to store large high-throughput data more efficiently in memory, without \R{}'s usual copy-on-edit behavior.
+
+\Robject{IAnnotatedDataFrame} extends the \Rpackage{Biobase} \Robject{AnnotatedDataFrame} class by making a distinction between \textit{pixels} and \textit{samples}. An \Robject{IAnnotatedDataFrame} tracks pixel data, where each row corresponds to a single pixel, and each column corresponds to some measured variable (such as phenotype). An \Robject{MSImageSet} may contain multiple samples, where each sample is a single image, and possibly thousands of pixels corresponding to each sample.
+
+\Robject{ResultSet} is a class for containing results of analyses performed on \Robject{iSet} objects. A single \Robject{ResultSet} object may contain results for multiple parameter sets. Using a \Robject{ResultSet} provides users with a standardized way of viewing and plotting the results of analyses.
+
+Together, these classes provide a useful way of accessing and manipulating MS imaging data while keeping track of important experimental metadata.
+
+
+
+\section{\Robject{iSet}: high-throughput imaging experiments}
+
+Inspired by \Robject{eSet} in \Rpackage{Biobase} and \Robject{pSet} in \Rpackage{MSnbase}, the virtual class \Robject{iSet} provides the foundation for other classes in \Rpackage{Cardinal}. It is a generic class for the storage of imaging data and experimental metadata.
+
+<<>>=
+getClass("iSet")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{imageData}: high-throughput image data
+\item \Robject{pixelData}: pixel covariates (coordinates, sample, phenotype, etc.)
+\item \Robject{featureData}: feature covariates ($m/z$, protein annotation, etc.)
+\item \Robject{experimentData}: experiment description
+\item \Robject{protocolData}: sample protocol
+\end{itemize}
+
+Of particular note is the \verb|imageData| slot for the storing of high-throughput image data, which will be discussed further in Section \ref{sec:imagedata}, and the \verb|pixelData| slot, which will be discussed further in Section \ref{sec:pixeldata}.
+
+
+\subsection{\Robject{SImageSet}: pixel-sparse imaging experiments}
+
+\Robject{SImageSet} extends \Robject{iSet} without extending its internal structure. \Robject{SImageSet} implements methods assuming that the structure of \Robject{imageData} is a (\# of features) x (\# of pixels) matrix, where each column corresponds to a pixel's feature vector, and each row corresponds to a vector of flattened image intensities.
+
+\Robject{SImageSet} further assumes that there may be a number of missing pixels in the experiment. This is useful for non-rectangular images, and experiments with multiple images of different dimensions.
+
+<<>>=
+getClass("SImageSet")
+@
+
+\subsection{\Robject{MSImageSet}: mass spectrometry-based imaging experiments}
+
+\Robject{MSImageSet} extends \Robject{SImageSet} with mass spectrometry-specific features, including expecting $m/z$ values to be stored in the \verb|featureData| slot. This is the primary class in \Rpackage{Cardinal} for handling MS imaging experiments. It also adds a slot \verb|processingData| for tracking the what pre-processing has been applied to the dataset.
+
+<<>>=
+getClass("MSImageSet")
+@
+
+
+
+
+\section{\Robject{ImageData}: high-throughput image data}
+
+\label{sec:imagedata}
+
+\Robject{iSet} and all of its subclasses have an \verb|imageData| slot for storing the high-throughput image data. This must be an object of class \Robject{ImageData} or one of its subclasses.
+
+Similar to the \verb|assayData| slot in \Robject{eSet} from \Rpackage{Biobase} and \Robject{pSet} from \Rpackage{MSnbase}, \Robject{ImageData} uses an \Robject{environment} to store data in memory more efficiently, and bypass \R{}'s usual copy-on-edit behavior. Because the data elements of \Robject{ImageData} may be very large, editing any metadata in an \Robject{iSet} object would trigger expensive copying of these large data elements if a usual \R{} \Robject{list} were used. Using an \Robject{environment} avoids this behavior.
+
+<<>>=
+getClass("ImageData")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{data}: high-throughput image data
+\item \Robject{storageMode}: mode of the \verb|data| environment
+\end{itemize}
+
+Similar to \verb|assayData|, the elements of \Robject{ImageData} can be stored in three different ways. These are as a \textit{immutableEnvironment}, \textit{lockedEnvironment}, or \textit{environment}.
+
+The modes \textit{lockedEnvironment} and \textit{environment} behave the same as for \verb|assayData| in \Rpackage{Biobase} and \Rpackage{MSnbase}. \Rpackage{Cardinal} introduces \textit{immutableEnvironment}, which is a compromise between the two. When the storage mode is \textit{immutableEnvironment}, only changing the values of the elements of \Robject{ImageData} directly will trigger copying, while changing object metadata will not trigger copying.
+
+
+
+\subsection{\Robject{SImageData}: pixel-sparse imaging experiments}
+
+<<>>=
+getClass("SImageData")
+@
+
+\subsection{\Robject{MSImageData}: mass spectrometry imaging data}
+
+<<>>=
+getClass("MSImageData")
+@
+
+\subsubsection{\Robject{Hashmat}: compressed-sparse column matrices}
+
+<<>>=
+getClass("Hashmat")
+@
+
+
+
+\section{\Robject{IAnnotatedDataFrame}: pixel metadata for imaging experiments}
+
+\label{sec:pixeldata}
+
+<<>>=
+getClass("IAnnotatedDataFrame")
+@
+
+
+
+\section{\Robject{MIAPE-Imaging}: Minimum Information About a Proteomics Experiment for MS imaging}
+
+<<>>=
+getClass("MIAPE-Imaging")
+@
+
+
+
+\section{\Robject{MSImageProcess}: mass spectral pre-processing information}
+
+<<>>=
+getClass("MSImageProcess")
+@
+
+
+
+\section{\Robject{ResultSet}: analysis results for imaging experiments}
+
+<<>>=
+getClass("ResultSet")
+@
+
+
+
+\section{Visualization for high-throughput imaging experiments}
+
+\subsection{\Robject{SImageData} and \Robject{MSImageData}}
+
+\subsection{\Robject{ResultSet}}
+
+
+
+\section{Testing during development}
+
+\subsection{Simulating mass spectra}
+
+\subsection{Timing and diagnostics}
+
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+% \bibliographystyle{unsrt}
+% \bibliography{Cardinal}
+
+\end{document}
