@@ -41,7 +41,7 @@ setValidity("ImageData", function(object) {
 	msg <- validMsg(NULL, NULL)
 	names <- ls(object@data)
 	if ( !all(sapply(names, function(nm) !is.null(dim(object@data[[nm]])))) )
-		msg <- validMsg(msg, "all elements must be an array-like object ('dims' of positive length)")
+		msg <- validMsg(msg, "all elements must be an array-like object ('dim' of positive length)")
 	ldim <- sapply(names, function(nm) length(dim(object@data[[nm]])))
 	if ( !all(sapply(ldim, function(ld) ld == ldim[1])) )
 		msg <- validMsg(msg, "all elements must have an equal number of dimensions")
