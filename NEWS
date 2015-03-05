@@ -2,6 +2,11 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.99.5 [2015-3-3]
+o Bioconductor Release Candidate 6
+o Added new vignette for Cardinal design and development
+o Now using ProtGenerics generics for 'spectra', 'peaks', and 'mz'
+
 Version 0.99.4 [2015-2-15]
 o Bioconductor Release Candidate 5
 o Updated vignette with biological examples

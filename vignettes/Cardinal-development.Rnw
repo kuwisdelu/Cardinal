@@ -1,0 +1,313 @@
+
+%\VignetteIndexEntry{Cardinal design and development}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, ImagingMassSpectrometry}
+
+\documentclass[a4paper]{article}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+<<eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{\Rpackage{Cardinal} design and development}
+
+\author{Kyle D. Bemis}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+<<echo=FALSE,results=hide>>=
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=100)
+@ 
+
+\Rpackage{Cardinal} is designed with two primary purposes in mind: (1) to provide an environment for experimentalists for the handling, pre-processing, analysis, and visualization of mass spectrometry-based imaging experiments, and (2) to provide an infrastructure for computationalists for the development of new computational methods for mass spectrometry-based imaging experiments.
+
+Although MS imaging has attracted the interest of many statisticians and computer scientists, and a number of algorithms have been designed specifically for such experiments, most of these methods remain unavailable to experimentalists, because they are often either proprietary, or difficult for non-experts use. Additionally, the complexity of MS imaging creates a significant barrier to entry for developers. \Rpackage{Cardinal} aims to remove this hurdle, by providing \R{} developers with an accessible way to handle MS imaging data.
+
+As an \R{} package, \Rpackage{Cardinal} allows for the rapid prototyping of new analysis methods. This vignette describes the design of \Rpackage{Cardinal} data structures for developers interested in writing new \R{} packages using or extending them.
+
+
+\section{Design overview}
+
+The \Robject{iSet} object is the foundational data structure of \Rpackage{Cardinal}. What is an \Rpackage{iSet}?
+
+\begin{itemize}
+\item Similar to \Robject{eSet} in \Rpackage{Biobase} and \Robject{pSet} in \Rpackage{MSnbase}.
+\item Coordinates high-throughput imaging data, feature data, pixel data, and metadata.
+\item Provides an interface for manipulating data from imaging experiments.
+\end{itemize}
+
+Just as \Robject{eSet} from \Rpackage{Biobase} coordinates gene expression data and \Robject{pSet} from \Rpackage{MSnbase} coordinates proteomics data, \Robject{iSet} coordinates imaging data. It is a virtual class, so it is used only through its subclasses.
+
+\Robject{MSImageSet} is a subclass of \Robject{iSet}, and is the primary data structure used in \Rpackage{Cardinal}. It is designed to coordinate data from mass spectrometry-based imaging experiments. It contains mass spectra (or mass spectral peaks), feature data (including $m/z$ values), pixel data (including pixel coordinates and phenotype data), and other metadata. When a raw MS image data file is read into \Rpackage{Cardinal}, it is turned into an \Rpackage{MSImageSet}, which can then be used with \Rpackage{Cardinal}'s methods for pre-processing, analysis, and visualization.
+
+\Robject{MSImageData} is the class responsible for coordinating the mass spectra themselves, and reconstructing them into images when necessary. Every \Robject{MSImageSet} has an \verb|imageData| slot containing an \Robject{MSImageData} object. It is similar to the \verb|assayData| slot in \Rpackage{Biobase}, in that it uses an \Robject{environment} to store large high-throughput data more efficiently in memory, without \R{}'s usual copy-on-edit behavior.
+
+\Robject{IAnnotatedDataFrame} extends the \Rpackage{Biobase} \Robject{AnnotatedDataFrame} class by making a distinction between \textit{pixels} and \textit{samples}. An \Robject{IAnnotatedDataFrame} tracks pixel data, where each row corresponds to a single pixel, and each column corresponds to some measured variable (such as phenotype). An \Robject{MSImageSet} may contain multiple samples, where each sample is a single image, and possibly thousands of pixels corresponding to each sample.
+
+\Robject{ResultSet} is a class for containing results of analyses performed on \Robject{iSet} objects. A single \Robject{ResultSet} object may contain results for multiple parameter sets. Using a \Robject{ResultSet} provides users and developers with a standard way of viewing and plotting the results of analyses.
+
+Together, these classes (along with a few others) provide a useful way of accessing and manipulating MS imaging data while keeping track of important experimental metadata.
+
+
+
+\section{\Robject{iSet}: high-throughput imaging experiments}
+
+Inspired by \Robject{eSet} in \Rpackage{Biobase} and \Robject{pSet} in \Rpackage{MSnbase}, the virtual class \Robject{iSet} provides the foundation for other classes in \Rpackage{Cardinal}. It is a generic class for the storage of imaging data and experimental metadata.
+
+<<>>=
+getClass("iSet")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{imageData}: high-throughput image data
+\item \Robject{pixelData}: pixel covariates (coordinates, sample, phenotype, etc.)
+\item \Robject{featureData}: feature covariates ($m/z$, protein annotation, etc.)
+\item \Robject{experimentData}: experiment description
+\item \Robject{protocolData}: sample protocol
+\end{itemize}
+
+Of particular note is the \verb|imageData| slot for the storing of high-throughput image data, which will be discussed further in Section \ref{sec:imagedata}, and the \verb|pixelData| slot, which will be discussed further in Section \ref{sec:pixeldata}.
+
+
+\subsection{\Robject{SImageSet}: pixel-sparse imaging experiments}
+
+\Robject{SImageSet} extends \Robject{iSet} without extending its internal structure. \Robject{SImageSet} implements methods assuming that the structure of \Robject{imageData} is a (\# of features) x (\# of pixels) matrix, where each column corresponds to a pixel's feature vector (e.g., a single mass spectrum), and each row corresponds to a vector of flattened image intensities.
+
+\Robject{SImageSet} further assumes that there may be a number of missing pixels in the experiment. This is useful for non-rectangular images, and experiments with multiple images of different dimensions.
+
+<<>>=
+getClass("SImageSet")
+@
+
+\subsection{\Robject{MSImageSet}: mass spectrometry-based imaging experiments}
+
+\Robject{MSImageSet} extends \Robject{SImageSet} with mass spectrometry-specific features, including expecting $m/z$ values to be stored in the \verb|featureData| slot. This is the primary class in \Rpackage{Cardinal} for handling MS imaging experiments. It also adds a slot \verb|processingData| for tracking the what pre-processing has been applied to the dataset.
+
+<<>>=
+getClass("MSImageSet")
+@
+
+
+
+
+\section{\Robject{ImageData}: high-throughput image data}
+
+\label{sec:imagedata}
+
+\Robject{iSet} and all of its subclasses have an \verb|imageData| slot for storing the high-throughput image data. This must be an object of class \Robject{ImageData} or one of its subclasses.
+
+Similar to the \verb|assayData| slot in \Robject{eSet} from \Rpackage{Biobase} and \Robject{pSet} from \Rpackage{MSnbase}, \Robject{ImageData} uses an \Robject{environment} as its \verb|data| slot to store data objects in memory more efficiently, and bypass \R{}'s usual copy-on-edit behavior. Because these data elements of \Robject{ImageData} may be very large, editing any metadata in an \Robject{iSet} object would trigger expensive copying of these large data elements if a usual \R{} \Robject{list} were used. Using an \Robject{environment} avoids this behavior.
+
+\Robject{ImageData} makes no assumptions about the class of objects that make up the elements of its \verb|data| slot, but they must be array-like objects that return a positive-length vector to a call to \verb|dim|. These data elements must also have the same number of dimensions, but they may have different extents.
+
+<<>>=
+getClass("ImageData")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{data}: high-throughput image data
+\item \Robject{storageMode}: mode of the \verb|data| environment
+\end{itemize}
+
+Similar to \verb|assayData|, the elements of \Robject{ImageData} can be stored in three different ways. These are as a \textit{immutableEnvironment}, \textit{lockedEnvironment}, or \textit{environment}.
+
+The modes \textit{lockedEnvironment} and \textit{environment} behave the same as for \verb|assayData| in \Rpackage{Biobase} and \Rpackage{MSnbase}. \Rpackage{Cardinal} introduces \textit{immutableEnvironment}, which is a compromise between the two. When the storage mode is \textit{immutableEnvironment}, only changing the values of the elements of \Robject{ImageData} directly will trigger copying, while changing object metadata will not trigger copying.
+
+
+
+\subsection{\Robject{SImageData}: pixel-sparse imaging experiments}
+
+While \Robject{ImageData} makes very few assumptions about the objects that are the elements of its \verb|data| slot, its subclass \Robject{SImageData} expects a very specific structure to its data elements.
+
+\Robject{SimageData} expects at least one element named ``iData'' (accessed by \verb|iData|) which is a (\# of features) x (\# of pixels) matrix, where each column is a feature vector (i.e., a single mass spectrum) associated with a single pixel, and each row is a vector of flattened image intensities. Additional elements should follow the same structure, with the same dimensions.
+
+<<>>=
+getClass("SImageData")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{data}: high-throughput image data
+\item \Robject{storageMode}: mode of the \verb|data| environment
+\item \Robject{coord}: \Robject{data.frame} of pixel coordinates.
+\item \Robject{positionArray}: \Robject{array} mapping coordinates to pixel column indices
+\item \Robject{dim}: dimensions of array elements in \verb|data|
+\item \Robject{dimnames}: dimension names
+\end{itemize}
+
+\Robject{SimageData} implements methods for re-constructing images from the rows of flattened image intensities on-the-fly. In addition, it assumes the images may be pixel-sparse. This means data for missing pixels does not need to be stored. Instead, the \verb|positionArray| slot holds an \Robject{array} of the same dimension as the \textit{true dimensions} of the imaging dataset, i.e., the maximum of each column of \verb|coord|. For each pixel coordinate from the \textit{true image}, the \verb|positionArray| stores the index of the column for which the associated feature vector is stored in the matrix elements of \verb|data|.
+
+This allows transforming the image (e.g., changing the pixel coordinates such as transposing the image, rotating it, etc.) without editing (and thereby triggering R to make a copy of) the (possibly very large) data matrix elements in \verb|data|. This also means that it doesn't matter what order the pixels' feature vectors (e.g., mass spectra) are stored.
+
+
+
+
+\subsection{\Robject{MSImageData}: mass spectrometry imaging data}
+
+\Robject{MSImageData} is a small extension of \Robject{SImageData}, which adds methods for accessing additional elements of \verb|data| specific to mass spectrometry. There are an element named ``peakData'' (accessed by \verb|peakData|) for storing the intensities of peaks, and ``mzData'' (accessed by \verb|mzData|) for storing the $m/z$ values of peaks. Generally, these elements will only exist after peak-picking has been performed. (They may not exist if the data has been reduced to contain \textit{only} peaks, i.e., if the ``iData'' element consists of peaks rather than full mass spectra.)
+
+<<>>=
+getClass("MSImageData")
+@
+
+The ``peakData'' and ``mzData'' elements (when they exist) are usually objects of class \Robject{Hashmat}.
+
+
+\subsubsection{\Robject{Hashmat}: compressed-sparse column matrices}
+
+The \Robject{Hashmat} class is a compressed-sparse column matrix implementation designed to store mass spectral peaks efficiently alongside full spectra, and allow dynamic filtering and re-alignment of peaks without losing data.
+
+<<>>=
+getClass("Hashmat")
+@
+
+Structure:
+\begin{itemize}
+\item \Robject{data}: sparse data matrix elements
+\item \Robject{keys}: identifiers of non-zero elements
+\item \Robject{dim}: dimensions of (full) matrix
+\item \Robject{dimnames}: dimension names
+\end{itemize}
+
+In a \Robject{Hashmat} object, the \verb|data| slot is a \Robject{list} where each element is a column of the sparse matrix, represented by a named \Robject{numeric} vector. The \Robject{keys} slot is a \Robject{character} vector. The columns of the dense matrix are reconstructing by indexing each of the named vectors in \verb|data| by the \Robject{keys}. This means that a \Robject{Hashmat} can store matrix elements that are selectively zero or non-zero depending on the keys.
+
+In the context of mass spectral peak-picking, this means that each sparse column is a vector of mass spectral peaks. Peaks can be filtered (e.g., removing low-intensity peaks) or aligned (e.g., to the mean spectrum) loss-lessly, by changing the \verb|keys|. Filtering peaks simply means deleting a key, while peak alignment simply means re-arranging the keys. Additionally, the dimension of the dense matrix will be the same as the full mass spectra, while requiring very little additional storage.
+
+
+
+\section{\Robject{IAnnotatedDataFrame}: pixel metadata for imaging experiments}
+
+\label{sec:pixeldata}
+
+\Robject{IAnnotatedDataFrame} is extension of \Robject{AnnotatedDataFrame} from \Rpackage{Biobase}. It serves as the \verb|pixelData| slot for \Robject{iSet} and its subclasses. In an \Robject{AnnotatedDataFrame}, each row corresponds to a sample. However, in an \Robject{IAnnotatedDataFrame}, each row instead corresponds to a pixel.
+
+In an imaging experiment, each image is a sample, and a single image is composed of many pixels. Therefore, \Robject{IAnnotatedDataFrame} may have very many pixels, but have very few (or even just a single) sample.
+
+An \Robject{IAnnotatedDataFrame} must have a column named ``sample'', which is a \Robject{factor}, and gives the sample to which each pixel belongs.
+
+For an \Robject{IAnnotatedDataFrame}, \verb|pixelNames| retrieves the row names, while \verb|sampleNames| retrieves the levels of the ``sample'' column.
+
+<<>>=
+getClass("IAnnotatedDataFrame")
+@
+
+In addition, \verb|varMetadata| must have a column named ``labelType'', which is a \Robject{factor}, and takes on the values ``pheno'', ``sample'', or ``dim''. If a variable is ``dim'', then it describes pixel coordinates; if a variable is ``sample'', then the variable is the ``sample'' column \textit{and it is not currently acting as a pixel coordinate}; if a variable is ``pheno'', then it is describing phenotype.
+
+Note that the ``sample'' column may sometimes act as a pixel coordinate, in which case its ``labelType'' will be ``dim'', while all other times its ``labelType'' will be ``sample''.
+
+
+
+\section{\Robject{MIAPE-Imaging}: Minimum Information About a Proteomics Experiment for MS imaging}
+
+For \Robject{MSImageSet} objects, the \verb|experimentData| slot must be an object of class \Robject{MIAPE-Imaging}. That is the Minimum Information About a Protemics Experiment for Imaging. Most of its unique slots are based on the imzML specification.
+
+<<>>=
+getClass("MIAPE-Imaging")
+@
+
+
+
+\section{\Robject{MSImageProcess}: mass spectral pre-processing information}
+
+\Robject{MSImageSet} objects also have a \verb|processingData| slot, which must be an object of class \Robject{MSImageProcess}. This gives information about the pre-processing steps that have been applied to the dataset. All of the standard pre-processing methods in \Rpackage{Cardinal} will fill in \verb|processingData| with the appropriate processing type automatically.
+
+<<>>=
+getClass("MSImageProcess")
+@
+
+
+
+\section{\Robject{ResultSet}: analysis results for imaging experiments}
+
+\Robject{ResultSet} is a subclass of \Robject{iSet}, and is used to storing the results of analyses applied to \Robject{iSet} and \Robject{iSet}-derived objects.
+
+<<>>=
+getClass("ResultSet")
+@
+
+In addition to the usual \Robject{iSet} slots, a \Robject{ResultSet} also has a \verb|resultData| slot, which is a \Robject{list} used to store results, and a \verb|modelData| slot, which describes the parameters of the fitted model. The \Robject{ResultSet} class assumes that multiple models may be fit (i.e., multiple parameter sets over a grid search). Therefore, each element of the \verb|resultData| \Robject{list} should be another \Robject{list} containing the results for a single model, and each row of \verb|modelData| should describe the parameters for that one model.
+
+
+
+
+\section{Visualization for high-throughput imaging experiments}
+
+\Rpackage{Cardinal} provides a thorough methods for data visualization inspired by the \Rpackage{lattice} graphics system. \Rpackage{Cardinal} can display multiple images or plots in a grid of panels based on conditions.
+
+For example, for mass spectrometry imaging, multiple ion images or mass spectra can be plotted together on the same intensity scale. They can be plotted according to different conditions, such as the mean spectra for different phenotypes, etc.
+
+
+\subsection{\Robject{SImageData} and \Robject{MSImageData}}
+
+The main \Rpackage{Cardinal} walkthrough vignette describes in detail the \verb|plot| and \verb|image| methods for \Robject{SImageData} and \Robject{MSImageData} objects, which use \Rpackage{lattice}-style formulae and arguments.
+
+
+\subsection{\Robject{ResultSet}}
+
+Of interest to developers is writing simple methods for the plotting of \Robject{ResultSet} objects. The \verb|plot| and \verb|image| methods for \Robject{ResultSet} make it straightforward to write visualization methods for any kind of analysis results.
+
+The \verb|plot| method can create plots of results against features (such as model coefficients), while \verb|image| creates images of results (such as predicted values).
+
+For example, consider the \verb|plot| and \verb|image| methods for the \Robject{PCA} class, which is a subclass of \Robject{ResultSet} for principal components analysis.
+
+<<>>=
+selectMethod("plot", c("PCA", "missing"))
+selectMethod("image", "PCA")
+@
+
+The left-hand side of the formula (which can be changed by the ``mode'' argument in the above example) should be an element in the \verb|resultData| of the \Robject{ResultSet} class. So \verb|plot| will plot the PC loadings, while \verb|image| will plot an image of the PC scores.
+
+Such a method will work for two types of results: matrices with the same number of rows as the number of features (for \verb|plot|), and matrices with the same number of rows as the number of pixels (for \verb|image|).
+
+Usual \Rpackage{lattice}-style arguments will work for \Robject{ResultSet} as they would for \Robject{SImageData} and \Robject{MSImageData}, such as ``superpose'' for plotting results from different models on the same panel or separate panels.
+
+
+
+\section{Testing during development}
+
+\Rpackage{Cardinal} provides some simple tools to aid in the development of new analysis methods, such as for testing simulated data and timing analyses.
+
+
+\subsection{Simulating mass spectra}
+
+The main \Rpackage{Cardinal} walkthrough vignette describes in detail the \verb|generateSpectrum| and \verb|generateImage| methods for generating mass spectra and images.
+
+
+\subsection{Timing and diagnostics}
+
+\Rpackage{Cardinal} provides an option for automatically timing all of its own pre-processing and analysis routines.
+
+<<>>=
+options(Cardinal.timing=TRUE)
+@
+
+Some of its analysis methods such as \Robject{spatialKMeans} and \Robject{spatialShrunkenCentroids} also report timings as part of their standard resutls.
+
+
+
+
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+% \bibliographystyle{unsrt}
+% \bibliography{Cardinal}
+
+\end{document}

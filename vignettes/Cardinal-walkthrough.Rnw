@@ -11,7 +11,7 @@
 BiocStyle::latex()
 @
 
-\title{Cardinal: Analytic tools for mass spectrometry imaging}
+\title{\Rpackage{Cardinal}: Analytic tools for mass spectrometry imaging}
 
 \author{Kyle D. Bemis and April Harry}
 
@@ -32,7 +32,7 @@ options(width=100)
 @ 
 
 
-The \R{} package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R.
+The \R{} package \Rpackage{Cardinal} has been created to fill the need for an efficent, open-source tool for the analysis of imaging data--specifically mass spectrometry imaging data. Cardinal is built upon data structures which follow Bioconductor (http://www.bioconductor.org/) standards for data classes in order to provide an additional level of convenience and familiarity to those who may be used to performing bioinformatic analyses in \R{}.
 
 Analysis in imaging data includes many things, such as visualization, pre-processing, and multivariate statistical techniques. Both supervised and unsupervised statistical methods are supported in \Rpackage{Cardinal}, including image segmentation (clustering), principle components analysis, and classification techniques such as partial least Squares discriminant analysis.
 

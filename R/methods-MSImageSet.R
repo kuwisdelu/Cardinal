@@ -71,21 +71,21 @@ setValidity("MSImageSet", function(object) {
 	if (is.null(msg)) TRUE else msg	
 })
 
-setMethod("spectra", "MSImageSet", function(object) iData(object@imageData))
+setMethod("spectra", "MSImageSet", function(object, ...) iData(object@imageData))
 setReplaceMethod("spectra", "MSImageSet",
 	function(object, value) {
 		iData(object@imageData) <- value
 		object
 	})
 
-setMethod("peaks", "MSImageSet", function(object) peakData(object@imageData))
+setMethod("peaks", "MSImageSet", function(object, ...) peakData(object@imageData))
 setReplaceMethod("peaks", "MSImageSet",
 	function(object, value) {
 		peakData(object@imageData) <- value
 		object
 	})
 
-setMethod("mz", "MSImageSet", function(object) object@featureData[["mz"]])
+setMethod("mz", "MSImageSet", function(object, ...) object@featureData[["mz"]])
 setReplaceMethod("mz", "MSImageSet",
 	function(object, value) {
 		object@featureData[["mz"]] <- value

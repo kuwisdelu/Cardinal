@@ -3,6 +3,8 @@ import("Biobase")
 
 import("BiocGenerics")
 
+import("ProtGenerics")
+
 import("methods")
 
 import("stats4")
