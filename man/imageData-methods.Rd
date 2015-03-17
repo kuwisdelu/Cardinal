@@ -34,10 +34,10 @@ imageData(object) <- value
 iData(object)
 iData(object) <- value
 
-spectra(object)
+spectra(object, \dots)
 spectra(object) <- value
 
-peaks(object)
+peaks(object, \dots)
 peaks(object) <- value
 
 mzData(object)
@@ -49,6 +49,7 @@ peakData(object) <- value
 \arguments{
     \item{object}{An object, possible derived from \code{\linkS4class{iSet}}.}
     \item{value}{Value to be assigned to the corresponding object.}
+    \item{\dots}{Additional arguments (ignored).}
 }
 \value{
     \code{imageData} returns an object containing both image data and metadata, usually an object derived from \code{\linkS4class{ImageData}}. \code{iData} returns only the image data in a matrix-like object with the rows corresponding to features and the columns corresponding to pixels. \code{spectra} is an \emph{alias} for \code{iData} for use with \code{\linkS4class{MSImageSet}} objects. \code{mzData} and \code{peakData} are used for retrieving both peak data and metadata from peak-picked objects. \code{peaks} retrieves peak cubes from peak-picked objects.

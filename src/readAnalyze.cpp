@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.hpp"
+#include "utils.h"
 
 // defines copied from Analyze 7.5 documentation
 
