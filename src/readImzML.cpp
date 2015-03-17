@@ -9,8 +9,8 @@
 #include "OBO-MS.h"
 #include "OBO-UO.h"
 
-#include "pugixml.hpp"
-#include "utils.hpp"
+#include "pugixml.h"
+#include "utils.h"
 
 // utility functions for reading ibd
 

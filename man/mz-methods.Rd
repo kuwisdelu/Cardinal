@@ -10,12 +10,13 @@
 	This generic function accesses m/z values from \code{\linkS4class{MSImageSet}} objects.
 }
 \usage{
-mz(object)
+mz(object, \dots)
 mz(object) <- value
 }
 \arguments{
     \item{object}{An \code{MSImageSet} object.}
     \item{value}{Value to be assigned to the corresponding object.}
+    \item{\dots}{Additional arguments (ignored).}
 }
 \value{
     \code{mz} returns a numeric vector of m/z values.
