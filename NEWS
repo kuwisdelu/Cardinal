@@ -2,6 +2,13 @@
 NEWS for Cardinal package
 -------------------------
 
+Version 0.99.6 [2015-4-5]
+o Bioconductor Release Candidate 7
+o In 'readAnalyze' and 'readMSIData', removed endianness check
+	in Analyze 7.5 headers because some ABSciex data files
+	specify an incorrect header size, thereby fixing a bug where
+	bits would be swapped wrongly and file read incorrectly.
+
 Version 0.99.5 [2015-3-3]
 o Bioconductor Release Candidate 6
 o Added new vignette for Cardinal design and development
