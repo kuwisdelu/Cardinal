@@ -1,7 +1,7 @@
 Package: Cardinal
 Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
-Version: 0.99.5
+Version: 0.99.6
 Date: 2015-1-12
 Author: Kyle D. Bemis <kbemis@purdue.edu>
 Maintainer: Kyle D. Bemis <kbemis@purdue.edu>

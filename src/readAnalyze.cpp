@@ -172,7 +172,7 @@ extern "C"
 			SET_STRING_ELT(endian, 0, mkChar("native"));
 		} else {
 			SET_STRING_ELT(endian, 0, mkChar("swap"));
-			swap_hdr(&header);
+			// swap_hdr(&header);
 		}
 
 		// assign header_key elements
