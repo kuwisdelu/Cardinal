@@ -8,6 +8,7 @@ o In 'readAnalyze' and 'readMSIData', removed endianness check
 	in Analyze 7.5 headers because some ABSciex data files
 	specify an incorrect header size, thereby fixing a bug where
 	bits would be swapped wrongly and file read incorrectly.
+o Added CITATION file for citing Cardinal
 
 Version 0.99.5 [2015-3-3]
 o Bioconductor Release Candidate 6
