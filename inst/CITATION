@@ -1,0 +1,21 @@
+citHeader("To cite the Cardinal package in publications use:")
+
+citEntry(entry="article",  
+         title  = "Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments",
+         author = personList(
+           person(given="Kyle D.", family="Bemis"),
+           person(given="April", family="Harry"),
+           person(given="Livia S.", family="Eberlin"),
+           person(given="Christina", family="Ferreira"),
+           person(given="Stephanie M.", family="van de Ven"),
+           person(given="Parag", family="Mallick"),
+           person(given="Mark", family="Stolowitz"),
+           person(given="Olga", family="Vitek")),
+         journal = "Bioinformatics",
+         year = "2015",
+         doi = "10.1093/bioinformatics/btv146",
+         url = "http://bioinformatics.oxfordjournals.org/content/early/2015/04/03/bioinformatics.btv146",
+         textVersion = paste("Bemis, K. D., Harry, A., Eberlin, L. S., Ferreira, C., van de Ven, S. M., Mallick, P., Stolowitz, M., and Vitek, O.",
+           "Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments.",
+           "Bioinformatics (2015).", "doi:10.1093/bioinformatics/btv146")
+         )
