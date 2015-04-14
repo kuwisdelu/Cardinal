@@ -14,7 +14,6 @@ citEntry(entry="article",
          journal = "Bioinformatics",
          year = "2015",
          doi = "10.1093/bioinformatics/btv146",
-         url = "http://bioinformatics.oxfordjournals.org/content/early/2015/04/03/bioinformatics.btv146",
          textVersion = paste("Bemis, K. D., Harry, A., Eberlin, L. S., Ferreira, C., van de Ven, S. M., Mallick, P., Stolowitz, M., and Vitek, O.",
            "Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments.",
            "Bioinformatics (2015).", "doi:10.1093/bioinformatics/btv146")
