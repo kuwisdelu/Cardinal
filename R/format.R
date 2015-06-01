@@ -20,7 +20,12 @@
 	diffmz <- diff(mz)
 	if ( length(diffmz) > 0 ) {
 		mindiff <- signif(min(diffmz), 1)
-		digits <- nchar(strsplit(paste(mindiff), "[.]")[[1]][2])
+		digits <- strsplit(paste(mindiff), "[.]")[[1]]
+		if ( length(digits) > 1 ) {
+			digits <- nchar(strsplit(paste(mindiff), "[.]")[[1]][2])	
+		} else {
+			digits <- 0
+		}
 	} else {
 		digits <- 0
 	}
