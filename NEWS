@@ -1,10 +1,11 @@
 
-CHANGES IN VERSION 1.1.0 [2015-6-1]
+CHANGES IN VERSION 1.1.0 [2015-10-1]
 -----------------------------------
 
 BUG FIXES
 
-    o Fixed bug in formatting m/z labels affecting R 3.3
+    o Fixed bug in formatting m/z labels affecting R 3.2.2
+    o Removed dependency on 'fields' because 'maps' is broken on Windows
 
 CHANGES IN VERSION 0.99.6 [2015-4-5]
 -----------------------------------

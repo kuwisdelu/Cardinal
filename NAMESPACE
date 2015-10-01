@@ -9,9 +9,6 @@ import("methods")
 
 import("stats4")
 
-importFrom("fields",
-	"interp.surface.grid")
-
 importFrom("grid",
 	"grid.raster")
 
