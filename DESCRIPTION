@@ -10,7 +10,7 @@ Description: Implements statistical & computational tools for analyzing
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
 Depends: BiocGenerics, Biobase, graphics, methods, stats, ProtGenerics
-Imports: fields, grid, irlba, lattice, signal, sp, stats4, utils
+Imports: grid, irlba, lattice, signal, sp, stats4, utils
 Suggests: BiocStyle, testthat
 biocViews: Software, Infrastructure, Proteomics, Lipidomics, Normalization,
 	MassSpectrometry, ImagingMassSpectrometry, Clustering, Classification
