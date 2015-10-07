@@ -2,7 +2,7 @@
 #### Read imzML files ####
 ## ----------------------
 
-readImzML <- function(name, folder=getwd()) {
+readImzML <- function(name, folder=getwd(), attach.only=FALSE) {
 	# check for files
 	xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 		mustWork=FALSE)
@@ -19,7 +19,7 @@ readImzML <- function(name, folder=getwd()) {
 	if ( ibdtype == "processed" )
 		.stop("readImzML: Data binary type 'processed' is not currently supported.")
 	# read m/z values
-	.log("readImzML: Reading m/z values from file '", ibdpath, "'")
+	.log("readImzML: Reading m/z information from file '", ibdpath, "'")
 	mz.datatype <- s1[["binaryDataArrayList"]][["m/z array"]][["binary data type"]]
 	mz.offset <- sapply(mzml$run$spectrumList, function(s)
 		s[["binaryDataArrayList"]][["m/z array"]][["external offset"]])
@@ -28,14 +28,19 @@ readImzML <- function(name, folder=getwd()) {
 	mz <- .Call("readIbdMzArray", ibdpath, ibdtype,
 		mz.datatype, mz.offset, mz.length, count)
 	# read intensity values
-	.log("readImzML: Reading intensity values from file '", ibdpath, "'")
+	.log("readImzML: Reading intensity information from file '", ibdpath, "'")
 	intensity.datatype <- s1[["binaryDataArrayList"]][["intensity array"]][["binary data type"]]
 	intensity.offset <- sapply(mzml$run$spectrumList, function(s)
-		s1[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
+		s[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
 	intensity.length <- sapply(mzml$run$spectrumList, function(s)
-		s1[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
-	intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
-		intensity.datatype, intensity.offset, intensity.length, count)
+		s[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
+	if ( attach.only ) {
+		intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
+			offsets=intensity.offset, extents=intensity.length)
+	} else {
+		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
+			intensity.datatype, intensity.offset, intensity.length, count)
+	}
 	# set up coordinates
 	x <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position x"]])
 	y <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position y"]])

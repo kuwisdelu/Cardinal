@@ -388,13 +388,13 @@ relationship: is_a IMS:1000049 ! Line Scan Direction */
 /* def: "The starting point is at the top of the sample and the scanning happens in bottom direction (parallel to the y-axis)." [COMPUTIS:IMS]
 relationship: is_a IMS:1000049 ! Line Scan Direction */
 
-#define IMS__8_BIT_INTEGER_ID "IMS:1100000"
-#define IMS__8_BIT_INTEGER_NAME "8-bit integer"
+#define IMS_8_BIT_INTEGER_ID "IMS:1100000"
+#define IMS_8_BIT_INTEGER_NAME "8-bit integer"
 /* def: "Signed 8-bit integer." [COMPUTIS:IMS]
 relationship: is_a MS:1000518 ! binary data type */
 
-#define IMS__16_BIT_INTEGER_ID "IMS:1100001"
-#define IMS__16_BIT_INTEGER_NAME "16-bit integer"
+#define IMS_16_BIT_INTEGER_ID "IMS:1100001"
+#define IMS_16_BIT_INTEGER_NAME "16-bit integer"
 /* def: "Signed 16-bit integer." [COMPUTIS:IMS]
 relationship: is_a MS:1000518 ! binary data type */
 

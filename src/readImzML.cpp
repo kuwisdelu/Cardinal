@@ -859,7 +859,13 @@ extern "C"
 		const char * data_type = CHARACTER_VALUE(binary_data_type);
 		if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_CONTINUOUS_NAME) == 0 )
 		{
-			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			if ( strcmp(data_type, IMS_16_BIT_INTEGER_NAME) == 0 )
+			{
+				return readContinuousIntensityArray<short, int>(CHARACTER_VALUE(filepath),
+					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<int, int>(CHARACTER_VALUE(filepath),
 					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
@@ -898,7 +904,13 @@ extern "C"
 		}
 		else if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_PROCESSED_NAME) == 0 )
 		{
-			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			if ( strcmp(data_type, IMS_16_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<short, int>(CHARACTER_VALUE(filepath),
+					INTEGER(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
 					INTEGER(external_offset), INTEGER(external_array_length),

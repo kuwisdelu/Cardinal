@@ -1,6 +1,11 @@
 
-CHANGES IN VERSION 1.1.0 [2015-10-1]
+CHANGES IN VERSION 1.1.0 [2015-10-7]
 -----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added Binmat class for working with on-disk matrices
+    o Added 'attach.only' argument to readImzML and readAnalyze
 
 BUG FIXES
 

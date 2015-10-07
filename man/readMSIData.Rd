@@ -9,18 +9,20 @@
 }
 \usage{
 ## Read any supported MS imaging file
-readMSIData(file)
+readMSIData(file, \dots)
 
 ## Read imzML files
-readImzML(name, folder=getwd())
+readImzML(name, folder=getwd(), attach.only=FALSE)
 
 ## Read Analyze 7.5 files
-readAnalyze(name, folder=getwd())
+readAnalyze(name, folder=getwd(), attach.only=FALSE)
 }
 \arguments{
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
 	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
 	\item{folder}{The path to the folder containing the data files.}
+	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory. This feature is still experimental.}
+	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{
 	In the current implementation, the file extensions must match exactly: '.imzML' and '.ibd' for imzML and '.hdr', '.t2m', and '.img' for Analyze 7.5.
