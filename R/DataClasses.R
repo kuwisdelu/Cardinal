@@ -145,19 +145,19 @@ setClass("MSImageProcess",
 ## --------------------------------------------
 .Binmat <- setClass("Binmat",
 	slots = c(
-		files = "character",
+		files = "factor",
 		offsets = "numeric",
 		extents = "numeric",
-		datatype = "character",
+		datatype = "factor",
 		dim = "numeric",
 		dimnames = "list"),
 	contains = "Versioned",
 	prototype = prototype(
 		new("Versioned", versions=c(Binmat="0.1.0")),
-		files = character(),
+		files = factor(),
 		offsets = numeric(),
 		extents = numeric(),
-		datatype = character(),
+		datatype = factor(),
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)))
 

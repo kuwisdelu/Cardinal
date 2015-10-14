@@ -47,7 +47,7 @@ Binmat(
 
 \arguments{
     
-    \item{files}{The file where the matrix is stored. Currently, the whole matrix must be saved in a single file.}
+    \item{files}{The file(s) where the matrix is stored.}
 
     \item{nrow}{The number of rows in the on-disk matrix.}
 
@@ -67,13 +67,13 @@ Binmat(
 
 \section{Slots}{
     \describe{
-        \item{\code{files}:}{A \code{character} giving the full file path of the binary file storing the matrix on disk.}
+        \item{\code{files}:}{A \code{factor} giving the full file paths of the binary files storing the matrix (or matrices) on disk. Length must be equal to the number of columns.}
 
         \item{\code{offsets}:}{A \code{numeric} vector giving the positions of the first value of each column in number of bytes from the beginning of the file.}
 
         \item{\code{extents}:}{A \code{numeric} vector giving the length of each column.}
 
-        \item{\code{datatype}:}{A \code{character} vector giving the binrary data type of each element of the matrix on disk.}
+        \item{\code{datatype}:}{A \code{factor} vector giving the binary data types of each element of the matrix (or matrices) on disk. Length must be equal to the number of columns.}
         
         \item{\code{dim}:}{A length 2 integer vector analogous to the 'dim' attribute of an ordinary R matrix.}
 
@@ -106,7 +106,7 @@ Binmat(
 
         \item{\code{nrow}:}{Return the number of columns in the on-disk matrix.}
 
-        \item{\code{cbind}:}{Not allowed for on-disk matrices. (Always returns an error.)}
+        \item{\code{cbind}:}{Combine on-disk matrices by columns.}
 
         \item{\code{rbind}:}{Not allowed for on-disk matrices. (Always returns an error.)}
 

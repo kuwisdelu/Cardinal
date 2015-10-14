@@ -2,18 +2,24 @@
 
 setMethod("initialize", "Binmat",
 	function(.Object,
-			files = character(),
+			files = factor(),
 			offsets = numeric(),
 			extents = numeric(),
-			datatype = character(),
+			datatype = factor(),
 			dim = c(0, 0),
 			dimnames = list(NULL, NULL),
+			nrow,
+			ncol,
 			...)
 	{
+		if ( missing(dim) && !missing(nrow) && !missing(ncol))
+			dim <- c(nrow, ncol)
+		names(files) <- dimnames[[2]]
 		offsets <- as.integer(offsets)
 		extents <- as.integer(extents)
 		names(offsets) <- dimnames[[2]]
 		names(extents) <- dimnames[[2]]
+		names(datatype) <- dimnames[[2]]
 		callNextMethod(.Object,
 			files=files,
 			offsets=offsets,
@@ -37,8 +43,6 @@ Binmat <- function(
 	dimnames = NULL,
 	...)
 {
-	files <- normalizePath(files)
-	datatype <- match.arg(datatype)
 	if ( !missing(nrow) && !missing(ncol)) {
 		dim <- c(nrow, ncol)
 	} else if ( !missing(extents) && !missing(offsets) ) {
@@ -48,6 +52,8 @@ Binmat <- function(
 	} else {
 		.stop("must specify either 'nrow' and 'ncol', or 'extents' and 'offsets'")
 	}
+	files <- as.factor(rep(normalizePath(files), dim[2]))
+	datatype <- as.factor(rep(match.arg(datatype), dim[2]))
 	if ( length(offsets) != dim[2] )
 		offsets <- seq.int(offsets[1],
 			by=sizeof(datatype) * dim[1],
@@ -59,21 +65,27 @@ Binmat <- function(
 		offsets=offsets,
 		extents=extents,
 		datatype=datatype,
-		dim=dim,
 		dimnames=dimnames,
+		nrow=nrow,
+		ncol=ncol,
 		...)
 }
 
 setValidity("Binmat", function(object) {
 	msg <- validMsg(NULL, NULL)
-	if ( length(object@files) != 1 )
-		msg <- validMsg(msg, "length of 'files' must be 1")
-	if ( length(object@datatype) != 1 )
-		msg <- validMsg(msg, "length of 'type' must be 1")
 	dm <- object@dim
+	if ( dm[2] != length(object@files) )
+		msg <- validMsg(msg, paste("dims [", dm[2], "] does not match the length of files [",
+			length(object@files), "]", sep=""))
+	if ( dm[2] != length(object@datatype) )
+		msg <- validMsg(msg, paste("dims [", dm[2], "] does not match the length of datatype [",
+			length(object@datatype), "]", sep=""))
 	if ( any(dm[1] != object@extents) )
 		msg <- validMsg(msg, paste("dims [", dm[1], "] does not match the extents [",
 			object@extents[1], "]", sep=""))
+	if ( dm[2] != length(object@extents) )
+		msg <- validMsg(msg, paste("dims [", dm[2], "] does not match the length of extents [",
+			length(object@extents), "]", sep=""))
 	if ( dm[2] != length(object@offsets) )
 		msg <- validMsg(msg, paste("dims [", dm[2], "] does not match the length of offsets [",
 			length(object@offsets), "]", sep=""))
@@ -139,24 +151,46 @@ setMethod("[", "Binmat", function(x, i, j, ..., drop) {
 	names(is) <- rownames(x)
 	js <- seq_len(dim(x)[2])
 	names(js) <- colnames(x)
-	i <- is[i]
-	j <- js[j]
+	readBinarySubmatrix(x, is[i], js[j], ..., drop=drop)
+})
+
+readBinarySubmatrix <- function(x, i, j, ..., drop) {
 	is <- sort(i)
 	js <- sort(j)
 	count <- as.integer(length(js))
-	offsets <- as.integer(x@offsets[js] + min(is - 1) * sizeof(x@datatype))
-	extents <- rep(as.integer(diff(range(is)) + 1), count)
-	xsub <- .Call("readIbdIntensityArray", x@files, "processed",
-		x@datatype, offsets, extents, count)
+	offsets <- as.integer(x@offsets[js] + min(is - 1) * sizeof(x@datatype[js]))
+	extents <- pmin(x@extents[js], rep(as.integer(diff(range(is)) + 1), count))
+	if ( nlevels(x@files) == 1 ) {
+		xsub <- .Call("readIbdIntensityArray", as.character(x@files[1]),
+			"processed", as.character(x@datatype[1]), offsets, extents, count)
+	} else {
+		fun <- function(file, datatype, offset, extent) {
+			.Call("readIbdIntensityArray", as.character(file), "processed",
+				as.character(datatype), offset, extent, as.integer(1))[[1]]
+		}
+		xsub <- mapply(fun, x@files[js], x@datatype[js], offsets, extents)
+	}
 	xsub <- simplify2array(xsub)
-	dim(xsub) <- c(length(is), length(js))
+	dim(xsub) <- c(diff(range(is)) + 1, length(js))
 	names(dim(xsub)) <- names(dim(x))
-	dimnames(xsub) <- list(rownames(x)[is], colnames(x)[js])
+	dimnames(xsub) <- list(rownames(x)[min(is):max(is)], colnames(x)[js])
 	xsub[i - min(is) + 1, j - min(js) + 1, ..., drop=drop]
-})
+}
 
 setMethod("cbind", "Binmat", function(..., deparse.level=1) {
-	.stop("cannot 'cbind' Binmat objects")
+	obs <- list(...)
+	ncol <- sapply(obs, ncol)
+	nrow <- sapply(obs, nrow)
+	if ( length(unique(nrow)) != 1 )
+		.stop("number of rows must match")
+	new(class(obs[[1]]),
+		files=as.factor(unlist(lapply(obs, function(x) x@files), recursive=FALSE)),
+		offsets=as.integer(unlist(lapply(obs, function(x) x@offsets), recursive=FALSE)),
+		extents=as.integer(unlist(lapply(obs, function(x) x@extents), recursive=FALSE)),
+		datatype=as.factor(unlist(lapply(obs, function(x) x@datatype), recursive=FALSE)),
+		dim=c(nrow[1], sum(unlist(ncol))),
+		dimnames=list(rownames(obs[[1]]),
+			unlist(sapply(obs, colnames))))
 })
 
 setMethod("rbind", "Binmat", function(..., deparse.level=1) {
