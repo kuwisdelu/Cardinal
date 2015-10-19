@@ -8,8 +8,8 @@ setMethod("initialize", "MSImageSet",
 			protocolData = AnnotatedDataFrame(),
 			experimentData = new("MIAPE-Imaging"),
 			...) {
-		featureNames(featureData) <- .format.mz(featureData[["mz"]])
-		pixelNames(pixelData) <- .format.data.frame(coord(pixelData))
+		featureNames(featureData) <- make.unique(.format.mz(featureData[["mz"]]))
+		pixelNames(pixelData) <- make.unique(.format.data.frame(coord(pixelData)))
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
