@@ -203,7 +203,7 @@ setMethod("plot",
 						labels <- names(condition)
 						if ( superpose || missing.pixel.groups )
 							labels <- setdiff(labels, ".pixel.groups")
-						strip.labels <- as.character(unlist(condition[ci,labels,drop=FALSE]))
+						strip.labels <- sapply(condition[ci,labels,drop=FALSE], as.character)
 						legend("top", legend=strip.labels, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}
@@ -434,7 +434,7 @@ setMethod("image",
 					if ( is.factor(coord(x)[[nm]]) ) {
 						levels(coord(x)[[nm]])
 					} else {
-						seq_len(dim(imageData(x))[[nm]])
+						paste0(nm, " = ", seq_len(dim(imageData(x))[[nm]]))
 					}
 				}))
 				coordCond <- do.call("rbind", apply(coordExtra, 1, function(extra) {
@@ -506,7 +506,7 @@ setMethod("image",
 						labels <- names(condition)
 						if ( superpose || missing.feature.groups )
 							labels <- setdiff(labels, ".feature.groups")
-						strip.labels <- as.character(unlist(condition[ci,labels,drop=FALSE]))
+						strip.labels <- sapply(condition[ci,labels,drop=FALSE], as.character)
 						legend("top", legend=strip.labels, x.intersp=0,
 							bg=rgb(1, 1, 1, 0.75), cex=0.8)
 					}
