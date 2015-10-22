@@ -7,11 +7,19 @@
 }
 
 ## Format plotting labels
-.format.label <- function(label) {
-	if ( label == "mz" ) {
-		expression(italic(m/z))
+.format.label <- function(label, character.only=FALSE) {
+	if ( character.only ) {
+		if ( label == "mz" ) {
+			"m/z"
+		} else {
+			label
+		}
 	} else {
-		parse(text=paste0("italic(", label, ")"))
+		if ( label == "mz" ) {
+			expression(italic(m/z))
+		} else {
+			parse(text=paste0("italic(", label, ")"))
+		}
 	}
 }
 

@@ -36,12 +36,13 @@
     xlim,
     ylab,
     ylim,
+    zlab,
     zlim,
     layout,
     asp = 1,
     col = rainbow(nlevels(feature.groups)),
     col.regions = intensity.colors(100),
-    colorkey = TRUE,
+    colorkey = !is3d,
     subset = TRUE,
     lattice = FALSE)
 
@@ -124,7 +125,9 @@
 
     \item{xlab}{Character or expression giving the label for the x-axis.}
 
-    \item{ylab}{Character or expression giving the label for the x-axis.}
+    \item{ylab}{Character or expression giving the label for the y-axis.}
+
+    \item{zlab}{Character or expression giving the label for the z-axis. (Only used for plotting 3D images.)}
 
     \item{xlim}{A numeric vector of length 2 giving the left and right limits for the x-axis.}
 

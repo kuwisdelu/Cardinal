@@ -16,7 +16,8 @@
 		start=NULL,
 		stop=NULL,
 		flush=0),
-	.Random.seed=NULL))
+	.Random.seed=NULL,
+	trans3d=NULL))
 
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=interactive())
