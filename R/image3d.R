@@ -14,6 +14,7 @@ image3d <- function(
 	alpha.power = 2,
 	alpha = (seq_len(length(col))/length(col))^alpha.power,
 	pch = 15, cex = 1,
+	scale = FALSE,
 	add = FALSE,
 	...)
 {
@@ -51,7 +52,8 @@ image3d <- function(
     	.Cardinal$trans3d <- persp(xlim, ylim, matrix(zlim, nrow=2, ncol=2),
 			xlim=xlim, ylim=ylim, zlim=zlim,
 			xlab=xlab, ylab=ylab, zlab=zlab,
-			border=NA, shade=NA, col=NA, ...)
+			border=NA, shade=NA, col=NA,
+			scale=scale, ...)
 	col <- alpha.colors(col=col, alpha=alpha)
 	bins <- cut(values, breaks=seq(
 		from=min(values, na.rm=TRUE),
