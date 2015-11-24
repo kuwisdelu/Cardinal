@@ -3,6 +3,7 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
+-Clean up datasets in invalid metadata states
 -Shiny GUI
 -Optical image registration
 -3D datasets and 3D plotting
