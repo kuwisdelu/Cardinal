@@ -89,7 +89,7 @@ setMethod("mz", "MSImageSet", function(object, ...) object@featureData[["mz"]])
 setReplaceMethod("mz", "MSImageSet",
 	function(object, value) {
 		object@featureData[["mz"]] <- value
-		featureNames(object) <- .format.mz(value)
+		featureNames(object) <- make.unique(.format.mz(value))
 		object
 	})
 
