@@ -323,7 +323,7 @@ setMethod("image",
 		subsetPositions <- aperm(subsetPositions, perm=coordNames)
 		values <- values[subsetPositions,,drop=FALSE]
 		dim(values) <- c(dim(subsetPositions), nrow(condition))
-		names(dim(values)) <- c(coordNames, rownames(condition))
+		names(dim(values)) <- c(coordNames, character(1))
 		subset <- subset[subsetPositions]
 		groups <- groups[subsetPositions]
 		# perform image processing (contrast enhancement + spatial smoothing)
