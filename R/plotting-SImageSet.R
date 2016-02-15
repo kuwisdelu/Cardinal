@@ -313,12 +313,12 @@ setMethod("image",
 		# shape values into matrix with 1 hyper-image per column, includes NAs
 		coordNames <- union(names(model$right), names(coord(x)))
 		subsetPositions <- positionArray(imageData(x))
-		subset <- subset[subsetPositions]
-		groups <- groups[subsetPositions]
-		subsetPositions[!subset] <- NA
+		subsetPositions[!subset[subsetPositions]] <- NA
 		subsetPositions <- aperm(subsetPositions, perm=coordNames)
 		values <- values[subsetPositions,,drop=FALSE]
 		dim(values) <- c(dim(subsetPositions), nrow(condition))
+		subset <- subset[subsetPositions]
+		groups <- groups[subsetPositions]
 		# perform image processing (contrast enhancement + spatial smoothing)
 		normalize.image <- normalize.image.method(normalize.image)
 		contrast.enhance <- contrast.enhance.method(contrast.enhance)

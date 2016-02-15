@@ -40,9 +40,17 @@ readImzML <- function(name, folder=getwd()) {
 	x <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position x"]])
 	y <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position y"]])
 	z <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position z"]])
-	if ( all(z == 0) ) {
+	x3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionX"]])
+	y3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionY"]])
+	z3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionZ"]])
+	nz <- length(unique(z))
+	nz3d <- length(unique(z3d))
+	if ( nz == 1 && nz3d == 1 ) {
 		coord <- data.frame(x=x, y=y)
+	} else if ( nz3d == 1 ) {
+		coord <- data.frame(x=x, y=y, z=z)
 	} else {
+		z <- as.integer(as.factor(z3d))
 		coord <- data.frame(x=x, y=y, z=z)
 	}
 	# create and return dataset

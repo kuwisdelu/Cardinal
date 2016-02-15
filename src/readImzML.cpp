@@ -15,11 +15,11 @@
 // utility functions for reading ibd
 
 template<typename CType, typename RType>
-SEXP readContinuousMzArray(const char * filename, int offset, int length)
+SEXP readContinuousMzArray(const char * filename, double offset, int length)
 {
 	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
-	fseek(pfile, offset, SEEK_SET);
+	fseek(pfile, (long) offset, SEEK_SET);
 	SEXP data;
 	PROTECT(data = allocVector(DataType<RType>(), length));
 	RType * pdata = DataPtr<RType>(data);
@@ -35,11 +35,11 @@ SEXP readContinuousMzArray(const char * filename, int offset, int length)
 }
 
 template<typename CType, typename RType>
-SEXP readContinuousIntensityArray(const char * filename, int offset, int nrow, int ncol)
+SEXP readContinuousIntensityArray(const char * filename, double offset, int nrow, int ncol)
 {
 	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
-	fseek(pfile, offset, SEEK_SET);
+	fseek(pfile, (long) offset, SEEK_SET);
 	SEXP data;
 	PROTECT(data = allocMatrix(DataType<RType>(), nrow, ncol));
 	RType * pdata = DataPtr<RType>(data);
@@ -58,7 +58,7 @@ SEXP readContinuousIntensityArray(const char * filename, int offset, int nrow, i
 }
 
 template<typename CType, typename RType>
-SEXP readProcessedIbdArray(const char * filename, int * offset, int * length, int count)
+SEXP readProcessedIbdArray(const char * filename, double * offset, int * length, int count)
 {
 	FILE * pfile = fopen(filename, "rb");
 	if ( pfile == NULL ) return R_NilValue;
@@ -70,7 +70,7 @@ SEXP readProcessedIbdArray(const char * filename, int * offset, int * length, in
 	for ( int j = 0; j < count; j++ )
 	{
 		tmp = (CType *) Calloc(length[j], CType);
-		fseek(pfile, offset[j], SEEK_SET);
+		fseek(pfile, (long) offset[j], SEEK_SET);
 		fread(tmp, sizeof(CType), length[j], pfile);
 		PROTECT(data = allocVector(DataType<RType>(), length[j]));
 		pdata = DataPtr<RType>(data);
@@ -200,16 +200,34 @@ int find_position_z(pugi::xml_node node)
 		IMS_POSITION_Z_ID).attribute("value").as_int());
 }
 
+double find_3D_position_x(pugi::xml_node node)
+{
+	return(node.find_child_by_attribute("userParam", "name",
+		"3DPositionX").attribute("value").as_double());
+}
+
+double find_3D_position_y(pugi::xml_node node)
+{
+	return(node.find_child_by_attribute("userParam", "name",
+		"3DPositionY").attribute("value").as_double());
+}
+
+double find_3D_position_z(pugi::xml_node node)
+{
+	return(node.find_child_by_attribute("userParam", "name",
+		"3DPositionZ").attribute("value").as_double());
+}
+
+double find_external_offset(pugi::xml_node node)
+{
+	return(node.find_child_by_attribute("cvParam", "accession",
+		IMS_EXTERNAL_OFFSET_ID).attribute("value").as_double());
+}
+
 int find_external_array_length(pugi::xml_node node)
 {
 	return(node.find_child_by_attribute("cvParam", "accession",
 		IMS_EXTERNAL_ARRAY_LENGTH_ID).attribute("value").as_int());
-}
-
-int find_external_offset(pugi::xml_node node)
-{
-	return(node.find_child_by_attribute("cvParam", "accession",
-		IMS_EXTERNAL_OFFSET_ID).attribute("value").as_int());
 }
 
 int find_external_encoded_length(pugi::xml_node node)
@@ -552,16 +570,22 @@ SEXP parse_scan(pugi::xml_node node)
 		insert_referenceableParamGroup(node);
 
 	SEXP scan, scanNames;
-	PROTECT(scan = NEW_LIST(3));
-	PROTECT(scanNames = NEW_STRING(3));
+	PROTECT(scan = NEW_LIST(6));
+	PROTECT(scanNames = NEW_STRING(6));
 
 	SET_STRING_ELT(scanNames, 0, mkChar(IMS_POSITION_X_NAME));
 	SET_STRING_ELT(scanNames, 1, mkChar(IMS_POSITION_Y_NAME));
 	SET_STRING_ELT(scanNames, 2, mkChar(IMS_POSITION_Z_NAME));
+	SET_STRING_ELT(scanNames, 3, mkChar("3DPositionX"));
+	SET_STRING_ELT(scanNames, 4, mkChar("3DPositionY"));
+	SET_STRING_ELT(scanNames, 5, mkChar("3DPositionZ"));
 
 	SET_VECTOR_ELT(scan, 0, ScalarInteger(find_position_x(node)));
 	SET_VECTOR_ELT(scan, 1, ScalarInteger(find_position_y(node)));
 	SET_VECTOR_ELT(scan, 2, ScalarInteger(find_position_z(node)));
+	SET_VECTOR_ELT(scan, 3, ScalarReal(find_3D_position_x(node)));
+	SET_VECTOR_ELT(scan, 4, ScalarReal(find_3D_position_y(node)));
+	SET_VECTOR_ELT(scan, 5, ScalarReal(find_3D_position_z(node)));
 
 	setAttrib(scan, R_NamesSymbol, scanNames);
 	UNPROTECT(2);
@@ -601,13 +625,13 @@ SEXP parse_binaryDataArray(pugi::xml_node node)
 	PROTECT(binaryDataArray = NEW_LIST(4));
 	PROTECT(binaryDataArrayNames = NEW_STRING(4));
 
-	SET_STRING_ELT(binaryDataArrayNames, 0, mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
-	SET_STRING_ELT(binaryDataArrayNames, 1, mkChar(IMS_EXTERNAL_OFFSET_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 0, mkChar(IMS_EXTERNAL_OFFSET_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 1, mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
 	SET_STRING_ELT(binaryDataArrayNames, 2, mkChar(IMS_EXTERNAL_ENCODED_LENGTH_NAME));
 	SET_STRING_ELT(binaryDataArrayNames, 3, mkChar(MS_BINARY_DATA_TYPE_NAME));
 
-	SET_VECTOR_ELT(binaryDataArray, 0, ScalarInteger(find_external_array_length(node)));
-	SET_VECTOR_ELT(binaryDataArray, 1, ScalarInteger(find_external_offset(node)));
+	SET_VECTOR_ELT(binaryDataArray, 0, ScalarReal(find_external_offset(node)));
+	SET_VECTOR_ELT(binaryDataArray, 1, ScalarInteger(find_external_array_length(node)));
 	SET_VECTOR_ELT(binaryDataArray, 2, ScalarInteger(find_external_encoded_length(node)));
 	SET_VECTOR_ELT(binaryDataArray, 3, mkString(find_binary_data_type(node)));
 
@@ -783,32 +807,32 @@ extern "C"
 			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousMzArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousMzArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
 			{
 				return readContinuousMzArray<float, double>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
 			{
 				return readContinuousMzArray<double, double>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousMzArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousMzArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length));
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length));
 			}
 		}
 		else if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_PROCESSED_NAME) == 0 )
@@ -816,37 +840,37 @@ extern "C"
 			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
 			{
 				return readProcessedIbdArray<float, double>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
 			{
 				return readProcessedIbdArray<double, double>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 		}
@@ -859,79 +883,91 @@ extern "C"
 		const char * data_type = CHARACTER_VALUE(binary_data_type);
 		if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_CONTINUOUS_NAME) == 0 )
 		{
-			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			if ( strcmp(data_type, IMS_16_BIT_INTEGER_NAME) == 0 )
+			{
+				return readContinuousIntensityArray<short, int>(CHARACTER_VALUE(filepath),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<float, double>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<double, double>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readContinuousIntensityArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER_VALUE(external_offset), INTEGER_VALUE(external_array_length),
+					NUMERIC_VALUE(external_offset), INTEGER_VALUE(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 		}
 		else if ( strcmp(CHARACTER_VALUE(ibd_binary_type), IMS_PROCESSED_NAME) == 0 )
 		{
-			if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
+			if ( strcmp(data_type, IMS_16_BIT_INTEGER_NAME) == 0 )
+			{
+				return readProcessedIbdArray<short, int>(CHARACTER_VALUE(filepath),
+					REAL(external_offset), INTEGER(external_array_length),
+					INTEGER_VALUE(external_array_count));
+			}
+			else if ( strcmp(data_type, MS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_32_BIT_FLOAT_NAME) == 0 )
 			{
 				return readProcessedIbdArray<float, double>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, MS_64_BIT_FLOAT_NAME) == 0 )
 			{
 				return readProcessedIbdArray<double, double>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_32_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<int, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 			else if ( strcmp(data_type, IMS_64_BIT_INTEGER_NAME) == 0 )
 			{
 				return readProcessedIbdArray<long, int>(CHARACTER_VALUE(filepath),
-					INTEGER(external_offset), INTEGER(external_array_length),
+					REAL(external_offset), INTEGER(external_array_length),
 					INTEGER_VALUE(external_array_count));
 			}
 		}

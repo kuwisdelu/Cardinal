@@ -15,8 +15,6 @@ setMethod("initialize", "Binmat",
 		if ( missing(dim) && !missing(nrow) && !missing(ncol))
 			dim <- c(nrow, ncol)
 		names(files) <- dimnames[[2]]
-		offsets <- as.integer(offsets)
-		extents <- as.integer(extents)
 		names(offsets) <- dimnames[[2]]
 		names(extents) <- dimnames[[2]]
 		names(datatype) <- dimnames[[2]]
@@ -158,7 +156,7 @@ readBinarySubmatrix <- function(x, i, j, ..., drop) {
 	is <- sort(i)
 	js <- sort(j)
 	count <- as.integer(length(js))
-	offsets <- as.integer(x@offsets[js] + min(is - 1) * sizeof(x@datatype[js]))
+	offsets <- as.double(x@offsets[js] + min(is - 1) * sizeof(x@datatype[js]))
 	extents <- pmin(x@extents[js], rep(as.integer(diff(range(is)) + 1), count))
 	if ( nlevels(x@files) == 1 ) {
 		xsub <- .Call("readIbdIntensityArray", as.character(x@files[1]),
