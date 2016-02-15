@@ -1,4 +1,14 @@
 
+## Convert names of data types to their size in number of bytes
+sizeof <- function(datatype) {
+	bytes <- c(`16-bit integer` = 2,
+		`32-bit integer` = 4,
+		`64-bit integer` = 8,
+		`32-bit float` = 4,
+		`64-bit float` = 8)
+	bytes[as.character(datatype)]
+}
+
 ## Make an annotation (factor) from regions-of-interest (logical)
 make.annotation <- function(...) {
 	regions <- data.frame(...)

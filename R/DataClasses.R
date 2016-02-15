@@ -140,6 +140,27 @@ setClass("MSImageProcess",
 		dim = c(0, 0),
 		dimnames = list(NULL, NULL)))
 
+#### Matrix-like class for on-disk data ####
+## implemented using on-demand reads with fseek
+## --------------------------------------------
+.Binmat <- setClass("Binmat",
+	slots = c(
+		files = "factor",
+		offsets = "numeric",
+		extents = "numeric",
+		datatype = "factor",
+		dim = "numeric",
+		dimnames = "list"),
+	contains = "Versioned",
+	prototype = prototype(
+		new("Versioned", versions=c(Binmat="0.1.0")),
+		files = factor(),
+		offsets = numeric(),
+		extents = numeric(),
+		datatype = factor(),
+		dim = c(0, 0),
+		dimnames = list(NULL, NULL)))
+
 #### Class for generic imaging datasets ####
 ## heavily inspired by structure of Biobase's eSet
 ## ------------------------------------------------
