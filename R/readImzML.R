@@ -16,8 +16,6 @@ readImzML <- function(name, folder=getwd()) {
 	ibdtype <- mzml$fileDescription$fileContent[["ibd binary type"]]
 	count <- length(mzml$run$spectrumList)
 	s1 <- mzml$run$spectrumList[[1]]
-	if ( ibdtype == "processed" )
-		.stop("readImzML: Data binary type 'processed' is not currently supported.")
 	# read m/z values
 	.log("readImzML: Reading m/z values from file '", ibdpath, "'")
 	mz.datatype <- s1[["binaryDataArrayList"]][["m/z array"]][["binary data type"]]
@@ -33,9 +31,27 @@ readImzML <- function(name, folder=getwd()) {
 	intensity.offset <- sapply(mzml$run$spectrumList, function(s)
 		s1[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
 	intensity.length <- sapply(mzml$run$spectrumList, function(s)
-		s1[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
-	intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
-		intensity.datatype, intensity.offset, intensity.length, count)
+		s[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
+	if ( attach.only ) {
+		if ( ibdtype == "processed" )
+			.stop("readImzML: Data binary type 'processed' is not currently supported for attach only.")
+		intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
+			offsets=intensity.offset, extents=intensity.length)
+	} else {
+		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
+			intensity.datatype, intensity.offset, intensity.length, count)
+		if ( ibdtype == "processed" ) {
+			mz.names <- lapply(mz, as.character)
+			mz.keys <- unique(unlist(mz.names))
+			mz <- sort(unique(unlist(mz)))
+			intensity <- mapply(function(dat, key) {
+				names(dat) <- key
+				dat
+			}, intensity, mz.names, SIMPLIFY=FALSE)
+			intensity <- new("Hashmat", data=intensity, keys=mz.keys,
+				dim=c(length(mz.keys), length(intensity)))
+		}
+	}
 	# set up coordinates
 	x <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position x"]])
 	y <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position y"]])
