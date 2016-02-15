@@ -50,18 +50,18 @@ Binmat <- function(
 	} else {
 		.stop("must specify either 'nrow' and 'ncol', or 'extents' and 'offsets'")
 	}
-	files <- as.factor(rep(normalizePath(files), dim[2]))
-	datatype <- as.factor(rep(match.arg(datatype), dim[2]))
+	files <- as.factor(rep(normalizePath(files), length.out=dim[2]))
+	datatype <- as.factor(rep(match.arg(datatype), length.out=dim[2]))
 	if ( length(offsets) != dim[2] )
-		offsets <- seq.int(offsets[1],
+		offsets <- seq(offsets[1],
 			by=sizeof(datatype) * dim[1],
 			length.out=dim[2])
 	if ( length(extents) != dim[2] )
 		extents <- rep(extents, length.out=dim[2])
 	if ( is.null(dimnames) ) dimnames <- list(NULL, NULL)
 	.Binmat(files=files,
-		offsets=offsets,
-		extents=extents,
+		offsets=as.double(offsets),
+		extents=as.integer(extents),
 		datatype=datatype,
 		dimnames=dimnames,
 		nrow=nrow,
@@ -149,7 +149,21 @@ setMethod("[", "Binmat", function(x, i, j, ..., drop) {
 	names(is) <- rownames(x)
 	js <- seq_len(dim(x)[2])
 	names(js) <- colnames(x)
-	readBinarySubmatrix(x, is[i], js[j], ..., drop=drop)
+	if ( !missing(drop) && is.na(drop) ) {
+		# return a subset of class Hashmat
+		new("Binmat",
+			files=x@files[j],
+			offsets=x@offsets[j],
+			extents=as.integer(rep(length(is[i]), length(js[j]))),
+			datatype=x@datatype[j],
+			dim=c(length(is[i]), length(js[j])),
+			dimnames=list(rownames(x)[is[i]], colnames(x)[js[j]]))
+	} else {
+		# reconstruct the dense matrix and return a subset of it
+		if ( missing(drop) )
+			drop <- TRUE
+		readBinarySubmatrix(x, is[i], js[j], ..., drop=drop)
+	}
 })
 
 readBinarySubmatrix <- function(x, i, j, ..., drop) {

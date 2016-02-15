@@ -240,12 +240,13 @@ setMethod("image",
 		xlim,
 		ylab,
 		ylim,
+		zlab,
 		zlim,
 		layout,
 		asp = 1,
 		col = rainbow(nlevels(feature.groups)),
 		col.regions = intensity.colors(100),
-		colorkey = TRUE,
+		colorkey = !is3d,
 		subset = TRUE,
 		lattice = FALSE)
 	{
@@ -253,6 +254,11 @@ setMethod("image",
 		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
 		if ( missing(feature) && is.null(model$left) )
 			.stop("image: either 'feature' or LHS to formula must be specified")
+		if ( length(model$right) >= 3 ) {
+			is3d <- TRUE
+		} else {
+			is3d <- FALSE
+		}
 		# evaluated with respect to fData
 		if ( is.null(model$left) ) {
 			feature <- tryCatch(eval(substitute(feature), envir=fData(x),
@@ -323,19 +329,31 @@ setMethod("image",
 		normalize.image <- normalize.image.method(normalize.image)
 		contrast.enhance <- contrast.enhance.method(contrast.enhance)
 		smooth.image <- smooth.image.method(smooth.image)
-		values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
-			function(x) smooth.image(contrast.enhance(normalize.image(x))))
+		if ( is3d ) {
+			values <- apply(values, seq(from=4, to=length(dim(values)), by=1),
+				function(x) contrast.enhance(normalize.image(x)))
+		} else {
+			values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
+				function(x) smooth.image(contrast.enhance(normalize.image(x))))
+		}
 		# set up plotting parameters
 		if ( missing(xlim) )
 			xlim <- range(model$right[[1]], na.rm=TRUE) + c(-0.5, 0.5)
 		if ( missing(xlab) )
-			xlab <- .format.label(names(model$right)[[1]])
+			xlab <- .format.label(names(model$right)[[1]], character.only=is3d && !lattice)
 		if ( missing(ylim) )
 			ylim <- range(model$right[[2]], na.rm=TRUE) + c(-0.5, 0.5)
 		if ( missing(ylab) )
-			ylab <- .format.label(names(model$right)[[2]])
-		if ( missing(zlim) )
-			zlim <- range(values, na.rm=TRUE)
+			ylab <- .format.label(names(model$right)[[2]], character.only=is3d && !lattice)
+		if ( missing(zlim) ) {
+			if ( is3d ) {
+				zlim <- range(model$right[[3]], na.rm=TRUE) + c(-0.5, 0.5)
+			} else {
+				zlim <- range(values, na.rm=TRUE)
+			}
+		}
+		if ( missing(zlab) && is3d )
+			zlab <- .format.label(names(model$right)[[3]], character.only=is3d && !lattice)
 		if ( is.logical(colorkey) && colorkey )
 			colorkey <- list(col=col.regions)
 		if ( missing(layout) )
@@ -387,6 +405,8 @@ setMethod("image",
 		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		# branch for base or lattice graphics
 		if ( lattice ) {
+			if ( is3d )
+				.stop("3D plotting not yet implemented for lattice graphics")
 			# set up key
 			if ( !is.null(key) ) {
 				key <- list(text=list(key$text),
@@ -461,43 +481,71 @@ setMethod("image",
 			# set up the plotting coordinates
 			xs <- seq_len(max(model$right[[1]]))
 			ys <- seq_len(max(model$right[[2]]))
+			if ( is3d ) {
+				zs <- seq_len(max(model$right[[3]]))
+			} else {
+				zs <- integer()
+			}
 			# loop through conditions + dimensions
 			for ( ci in seq_len(ncond) ) {
 				add <- superposed[ci]
 				last <- c(!superposed[-1], TRUE)[ci]
 				subscripts <- seq(from=1 + (ci - 1) * nrow(data) / ncond,
 					by=1, length.out=nrow(data) / ncond)
-				zs <- data[subscripts, ".values"]
-				dim(zs) <- c(length(xs), length(ys))
-				if ( !all(is.na(zs)) ) {
+				vals <- data[subscripts, ".values"]
+				if ( is3d ) {
+					dim(vals) <- c(length(xs), length(ys), length(zs))
+				} else {
+					dim(vals) <- c(length(xs), length(ys))
+				}
+				if ( !all(is.na(vals)) ) {
 					if ( is.null(groups) ) {
-						image(xs, ys, zs, xlab=xlab, xlim=xlim,
-							ylab=ylab, ylim=rev(ylim), zlim=zlim,
-							asp=asp, col=col.regions, ...)
-						if ( is.list(colorkey) )
+						if ( is3d ) {
+							image3d(xs, ys, zs, vals, xlab=xlab, xlim=xlim,
+								ylab=ylab, ylim=ylim, zlab=zlab, zlim=zlim,
+								col=col.regions, ...)
+						} else {
+							image(xs, ys, vals, xlab=xlab, xlim=xlim,
+								ylab=ylab, ylim=rev(ylim), zlim=zlim,
+								asp=asp, col=col.regions, ...)
+						}
+						if ( is.list(colorkey) ) {
+							if ( is3d ) {
+								col.range <- range(values, na.rm=TRUE)
+							} else {
+								col.range <- zlim
+							}
 							legend("topright",
 								legend=c(
-									round(zlim[2], 2),
+									round(col.range[2], 2),
 									rep(NA, length(col.regions)-2),
-									round(zlim[1], 2)),
+									round(col.range[1], 2)),
 								col=rev(col.regions),
 								bg=rgb(1, 1, 1, 0.75),
 								y.intersp=0.1,
 								cex=0.6,
 								lwd=2)
+						}
 					} else {
 						subgroups <- which(levels(groups) %in% groups[subscripts])
 						for ( gi in subgroups ) {
-							zs.g <- zs
+							vals.g <- vals
 							add.g <- add || gi != subgroups[1]
 							col.g <- alpha.colors(length(col.regions), col[gi])
 							not.g <- groups[subscripts] != levels(groups)[gi]
 							not.g[is.na(not.g)] <- TRUE
-							zs.g[not.g] <- NA
-							if ( all(is.na(zs.g)) ) next
-							image(xs, ys, zs.g, xlab=xlab, xlim=xlim,
-								ylab=ylab, ylim=rev(ylim), zlim=zlim,
-								asp=asp, col=col.g, add=add.g, ...)
+							vals.g[not.g] <- NA
+							if ( all(is.na(vals.g)) )
+								next
+							if ( is3d ) {
+								image3d(xs, ys, zs, vals.g, xlab=xlab, xlim=xlim,
+									ylab=ylab, ylim=ylim, zlab=zlab, zlim=zlim,
+									col=col.g, add=add.g, ...)
+							} else {
+								image(xs, ys, vals.g, xlab=xlab, xlim=xlim,
+									ylab=ylab, ylim=rev(ylim), zlim=zlim,
+									asp=asp, col=col.g, add=add.g, ...)
+							}
 						}
 					}
 				}
