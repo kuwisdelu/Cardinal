@@ -85,6 +85,8 @@ setReplaceMethod("iData", "SImageSet",
 
 setMethod("regeneratePositions", "SImageSet",
 	function(object) {
+		if ( !identical(coord(object), coord(imageData(object))) )
+			coord(imageData(object)) <- coord(object)
 		object@imageData <- regeneratePositions(object@imageData)
 		object
 	})
