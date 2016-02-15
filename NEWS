@@ -13,6 +13,7 @@ BUG FIXES
     o Fixed bug in plotting 3D image slices in the z dimension
     o Fixed bug where large imzML files could not be read due to byte
         offsets being stored as ints; they are now stored as doubles.
+    o Fixed bug with strip labels in 3D plotting and with mixed labels
 
 CHANGES IN VERSION 1.1.0 [2015-10-1]
 -----------------------------------
