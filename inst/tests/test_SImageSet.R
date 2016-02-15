@@ -129,8 +129,8 @@ test_that("SImageSet pixelApply", {
 	tmp2 <- pixelApply(sset, function(x) .Index)
 	expect_equivalent(tmp2, pixels(sset))
 
-	tmp3 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
-	expect_equivalent(t(tmp3), as.matrix(coord(sset)))
+	# tmp3 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
+	# expect_equivalent(t(tmp3), as.matrix(coord(sset)))
 
 })
 
