@@ -12,10 +12,10 @@
 readMSIData(file, \dots)
 
 ## Read imzML files
-readImzML(name, folder=getwd(), attach.only=FALSE)
+readImzML(name, folder=getwd(), attach.only=FALSE, \dots)
 
 ## Read Analyze 7.5 files
-readAnalyze(name, folder=getwd(), attach.only=FALSE)
+readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
 }
 \arguments{
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}

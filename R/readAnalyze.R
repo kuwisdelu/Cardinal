@@ -2,7 +2,8 @@
 #### Read Analyze 7.5 files ####
 ## ----------------------------
 
-readAnalyze <- function(name, folder=getwd(), attach.only=FALSE) {
+readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
+{
 	# check for files
 	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 		mustWork=FALSE)

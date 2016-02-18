@@ -2,7 +2,8 @@
 #### Read imzML files ####
 ## ----------------------
 
-readImzML <- function(name, folder=getwd(), attach.only=FALSE) {
+readImzML <- function(name, folder=getwd(), attach.only=FALSE, ...)
+{
 	# check for files
 	xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 		mustWork=FALSE)
@@ -41,9 +42,10 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE) {
 		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
 			intensity.datatype, intensity.offset, intensity.length, count)
 		if ( ibdtype == "processed" ) {
+			mz <- lapply(mz, round, ...)
 			mz.names <- lapply(mz, as.character)
-			mz.keys <- unique(unlist(mz.names))
 			mz <- sort(unique(unlist(mz)))
+			mz.keys <- as.character(mz)
 			intensity <- mapply(function(dat, key) {
 				names(dat) <- key
 				dat
