@@ -1,4 +1,9 @@
 
+# Round to an arbitrary precision
+roundnear <- function(x, precision=0.1) {
+	round(x / precision) * precision
+}
+
 # L1 norm of a vector
 l1norm <- function(x) sum(abs(x))
 
