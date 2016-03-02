@@ -38,6 +38,7 @@ importFrom("utils",
 	"txtProgressBar")
 
 exportClasses(
+	"Binmat",
 	"Hashmat",
 	"IAnnotatedDataFrame",
 	"ImageData",
@@ -51,6 +52,7 @@ exportClasses(
 	"iSet")
 
 export(
+	"Binmat",
 	"ImageData",
 	"IAnnotatedDataFrame",
 	"Hashmat",

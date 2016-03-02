@@ -2,7 +2,8 @@
 #### Read Analyze 7.5 files ####
 ## ----------------------------
 
-readAnalyze <- function(name, folder=getwd()) {
+readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
+{
 	# check for files
 	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 		mustWork=FALSE)
@@ -23,7 +24,16 @@ readAnalyze <- function(name, folder=getwd()) {
 	mz <- .Call("readAnalyzeT2M", t2mpath, hdr$dime$dim[[2]])
 	# read image file
 	.log("readAnalyze: Reading IMG file '", imgpath, "'")
-	data <- .Call("readAnalyzeIMG", imgpath, dim, datatype)
+	if ( attach.only ) {
+		datatype <- switch(as.character(datatype),
+			`4` = "16-bit integer",
+			`8` = "32-bit integer",
+			`16` = "32-bit float",
+			`64` = "64-bit float")
+		data <- Binmat(files=imgpath, datatype=datatype, nrow=dim[1], ncol=dim[2])
+	} else {
+		data <- .Call("readAnalyzeIMG", imgpath, dim, datatype)
+	}
 	# set up coordinates
 	if ( hdr$dime$dim[[5]] > 1 ) {
 		coord <- expand.grid(x=seq_len(hdr$dime$dim[[3]]),

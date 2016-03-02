@@ -2,7 +2,9 @@
 #### Read imzML files ####
 ## ----------------------
 
-readImzML <- function(name, folder=getwd()) {
+readImzML <- function(name, folder=getwd(), attach.only=FALSE,
+	mz.accuracy=200, units.accuracy=c("ppm", "mz"), ...)
+{
 	# check for files
 	xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 		mustWork=FALSE)
@@ -17,7 +19,7 @@ readImzML <- function(name, folder=getwd()) {
 	count <- length(mzml$run$spectrumList)
 	s1 <- mzml$run$spectrumList[[1]]
 	# read m/z values
-	.log("readImzML: Reading m/z values from file '", ibdpath, "'")
+	.log("readImzML: Reading m/z information from file '", ibdpath, "'")
 	mz.datatype <- s1[["binaryDataArrayList"]][["m/z array"]][["binary data type"]]
 	mz.offset <- sapply(mzml$run$spectrumList, function(s)
 		s[["binaryDataArrayList"]][["m/z array"]][["external offset"]])
@@ -26,10 +28,10 @@ readImzML <- function(name, folder=getwd()) {
 	mz <- .Call("readIbdMzArray", ibdpath, ibdtype,
 		mz.datatype, mz.offset, mz.length, count)
 	# read intensity values
-	.log("readImzML: Reading intensity values from file '", ibdpath, "'")
+	.log("readImzML: Reading intensity information from file '", ibdpath, "'")
 	intensity.datatype <- s1[["binaryDataArrayList"]][["intensity array"]][["binary data type"]]
 	intensity.offset <- sapply(mzml$run$spectrumList, function(s)
-		s1[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
+		s[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
 	intensity.length <- sapply(mzml$run$spectrumList, function(s)
 		s[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
 	if ( attach.only ) {
@@ -41,9 +43,14 @@ readImzML <- function(name, folder=getwd()) {
 		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
 			intensity.datatype, intensity.offset, intensity.length, count)
 		if ( ibdtype == "processed" ) {
+			if ( match.arg(units.accuracy) == "ppm" ) {
+				mz.max <- max(sapply(mz, max))
+				mz.accuracy <- mz.accuracy * 1e-6 * mz.max
+			}
+			mz <- lapply(mz, roundnear, precision=mz.accuracy)
 			mz.names <- lapply(mz, as.character)
-			mz.keys <- unique(unlist(mz.names))
 			mz <- sort(unique(unlist(mz)))
+			mz.keys <- as.character(mz)
 			intensity <- mapply(function(dat, key) {
 				names(dat) <- key
 				dat

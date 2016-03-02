@@ -5,7 +5,7 @@
 #include <R.h>
 #include <Rdefines.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #define SWAP(x) swap_bytes(&x, sizeof(x));
 
