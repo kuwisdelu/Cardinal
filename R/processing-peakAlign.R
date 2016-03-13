@@ -17,14 +17,6 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		alignment <- pixelApply(object, function(s, ...) {
 			peakAlign.do(object, ref, .Index, fun, plot, ...)
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=FALSE)
-		alignment <- lapply(alignment, function(a) {
-			a <- unlist(a)
-			if ( length(a) == 0 ) {
-				integer()
-			} else {
-				as.integer(a)
-			}
-		})
 		feature <- features(object, mz=ref)
 		object@featureData <- object@featureData[feature,]
 		object@pixelData <- object@pixelData[pixel,]
