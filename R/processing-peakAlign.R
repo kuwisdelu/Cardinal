@@ -54,7 +54,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 		prochistory(processingData(object)) <- .history()
 		.message("peakAlign: Generating reference from mean mass spectrum.")
 		spectrum <- featureApply(ref, mean)
-		peaks <- mz(ref)[localMaximaLogical(spectrum, span=5)]
+		peaks <- mz(ref)[localMaximaLogical(spectrum)]
 		peakAlign(object, ref=peaks, ...)
 	})
 
@@ -101,13 +101,7 @@ peakAlign.diff <- function(x, y, diff.max=200, units=c("ppm", "mz"), ...) {
 	} else if ( length(diff.max) != length(y) ) {
 		diff.max <- rep(diff.max, length.out=length(y))
 	}
-	xmat <- matrix(x, nrow=length(y), ncol=length(x), byrow=TRUE)
-	ymat <- matrix(y, nrow=length(y), ncol=length(x), byrow=FALSE)
-	diffs <- abs(ymat - xmat)
-	mins <- apply(diffs, 1, min)
-	which <- apply(diffs, 1, which.min)
-	aligned <- data.frame(x=which, y=seq_along(y))
-	aligned <- aligned[mins <= diff.max,]
+	aligned <- diffAlign(x, y, diff.max=diff.max, ...)
 	matched <- rep(NA, length(x))
 	matched[aligned$x] <- aligned$y
 	matched
