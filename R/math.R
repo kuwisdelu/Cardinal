@@ -76,14 +76,23 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 }
 
 # Bin a signal
-bin <- function(x, lbound, ubound, fun=sum) {
-	mapply(function(l, u) {
-		fun(x[l:u], na.rm=TRUE)
-	}, lbound, ubound)
+bin <- function(x, t, bins, lbound, ubound, fun=sum, ...) {
+	if ( missing(bins) ) {
+		mapply(function(l, u) {
+			which <- findInterval(t, c(l, u))
+			fun(x[which == 1], ...)
+		}, lbound, ubound)
+	} else {
+		which <- findInterval(t, bins)
+		exclude <- which == 0 | which == length(bins)
+		x <- x[!exclude]
+		which <- which[!exclude]
+		as.vector(tapply(x, which, fun))
+	}
 }
 
 # Returns a list of approximately even subsets of a vector
-intervals <- function(x, blocks) {
+blocks <- function(x, blocks) {
 	ints <- floor(seq(from=1, to=length(x)+1, length.out=blocks))
 	begin <- ints[-length(ints)]
 	end <- ints[-1] - 1
@@ -139,33 +148,36 @@ localMaxima <- function(x, t, ...) {
 
 # Returns the two nearest local maxima to the given points
 nearestLocalMaxima <- function(x, t, tout, ...) {
-	locmax <- localMaxima(x, t, ...)
-	locmax <- unique(c(min(t), locmax, max(t)))
+	which <- c(1, which(localMaximaLogical(x, ...)), length(t))
+	locmax <- unique(t[which])
 	limits <- sapply(tout, function(ti) {
 		lower <- which(diff(sign(ti - locmax)) < 0)
 		if ( length(lower) > 1 )
 			lower <- lower[[1]]
 		upper <- lower + 1
-		c(locmax[lower], locmax[upper])
+		c(locmax[lower], locmax[upper], which[lower], which[upper])
 	})
-	list(lbound=limits[1,], ubound=limits[2,])
+	list(lbound=limits[1,], ubound=limits[2,],
+		lwhich=limits[3,], uwhich=limits[4,])
 }
 
 # Alignment of two vectors by absolute difference
 diffAlign <- function(x, y, diff.max, ...) {
+	if ( length(diff.max) < length(y) )
+		diff.max <- rep(diff.max, length.out=y)
 	aligned <- data.frame(x=rep(NA, length(y)), y=seq_along(y))
-	aligned$x <- sapply(y, function(yi) {
+	aligned$x <- mapply(function(yi, di) {
 		if ( length(x) == 0 )
 			return(NA)
 		diffs <- abs(x - yi)
 		which <- which.min(diffs)
-		if ( diffs[which] <= diff.max ) {
+		if ( diffs[which] <= di ) {
 			match <- which
 		} else {
 			match <- NA
 		}
 		match
-	})
+	}, y, diff.max)
 	aligned <- aligned[!is.na(aligned$x),]
 	aligned
 }

@@ -40,7 +40,7 @@ peakAlign.DP(x, y, gap=0, \dots)
     \item{x}{The vector of m/z values to be aligned.}
     \item{y}{The vector of reference m/z values.}
     \item{diff.max}{Peaks that differ less than this value will be aligned together.}
-    \item{units}{Either parts-per-million of the raw m/z values.}
+    \item{units}{Either parts-per-million or the raw m/z values.}
     \item{gap}{The gap penalty for the dynamic programming sequence alignment.}
 }
 \details{

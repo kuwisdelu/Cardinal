@@ -56,7 +56,7 @@ reduceBaseline.method <- function(method, name.only=FALSE) {
 }
 
 reduceBaseline.median <- function(x, blocks=500, fun=min, spar=1, ...) {
-	xint <- intervals(x, blocks=blocks)
+	xint <- blocks(x, blocks=blocks)
 	baseval <- sapply(xint, fun)
 	baseidx <- sapply(xint, function(xi) which.min(abs(fun(xi) - xi)))
 	baseidx <- baseidx + c(0, cumsum(sapply(xint, length))[-length(xint)])

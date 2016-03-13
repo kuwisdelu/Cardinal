@@ -44,6 +44,24 @@ match.method <- function(method, options) {
 	}
 }
 
+# A sequence with half-bin-widths in ppm (parts-per-million)
+# x = bin center, y = bin half-window, K = ppm
+# y[n] = K * x[n] * 1e-6
+# y[n+1] = (1e-6 * K) * (x[n] - y[n])) / (1 - (1e-6 * K))
+# x[n+1] = x[n] + y[n] + y[n+1]
+# => x[n] ((1 + K * 1e-6) / (1 - K * 1e-6))^n * x[0]
+# log x[n] = n log {(1 + K * 1e-6) / (1 - K * 1e-6)} + log x[0]
+# => n = (log x[n] - log x[0]) / log {(1 + K * 1e-6) / (1 - K * 1e-6)}
+seq.ppm <- function(from, to, ppm) {
+	length.out <- (log(to) - log(from)) / log((1 + 1e-6 * ppm) / (1 - 1e-6 *ppm))
+	length.out <- floor(1 + length.out)
+	out <- numeric(length.out)
+	out[1] <- from
+	for ( i in seq_len(length.out)[-1] )
+		out[i] <- from * ((1 + 1e-6 * ppm) / (1 - 1e-6 * ppm))^(i-1)
+	out
+}
+
 ## Programmatic friendly version of base::subset
 subdata <- function(data, subset, select, drop=FALSE) {
 	subset <- subrows(data, subset=subset)
