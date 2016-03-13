@@ -174,9 +174,16 @@ setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
 		# reconstruct the dense matrix and return a subset of it
 		if ( missing(drop) ) drop <- TRUE
 		xsub <- sapply(x@data[j], function(xi) {
-			xi <- xi[x@keys[i]]
-			xi[is.na(xi)] <- 0
-			xi
+			if ( length(i) < length(xi) ) {
+				xout <- xi[x@keys[i]]
+				xout[is.na(xout)] <- 0
+			} else {
+				xout <- numeric(length(i))
+				names(xout) <- x@keys[i]
+				nm <- names(xi)[names(xi) %in% names(xout)]
+				xout[nm] <- xi[nm]
+			}
+			xout
 		}, simplify=TRUE, USE.NAMES=FALSE)
 		dim(xsub) <- c(length(i), length(j))
 		names(dim(xsub)) <- names(dim(x))
