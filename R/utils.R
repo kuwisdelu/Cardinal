@@ -37,6 +37,8 @@ match.method <- function(method, options) {
 		} else {
 			options[matched]
 		}
+	} else if ( is.null(method) ) {
+		options[1]
 	} else {
 		"<unknown>"
 	}

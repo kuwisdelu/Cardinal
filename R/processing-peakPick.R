@@ -15,16 +15,7 @@ setMethod("peakPick", "MSImageSet",
 		.message("peakPeak: Using method = ", match.method(method))
 		.time.start()
 		peaks <- pixelApply(object, function(s, ...) {
-			pout <- fun(s, ...)
-			if ( plot ) {
-				wrap(plot(object, pixel=.Index, col="gray", ...),
-					..., signature=fun)
-				wrap(lines(mz(object), pout$noise, col="blue", ...),
-					..., signature=fun)
-				wrap(lines(mz(object)[pout$peaks], s[pout$peaks], col="red", type='h', ...),
-					..., signature=fun)
-			}
-			pout$peaks
+			peakPick.do(s, object, .Index, fun, plot, ...)
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=FALSE)
 		peakData <- lapply(seq_along(pixel), function(i) {
 			intensityArray <- iData(object)[peaks[[i]], pixel[i]]
@@ -49,9 +40,26 @@ setMethod("peakPick", "MSImageSet",
 		object
 	})
 
-peakPick.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("simple", "adaptive", "limpic"))
+peakPick.do <- function(s, object, pixel, fun, plot, ...) {
+	pout <- fun(s, ...)
+	if ( plot ) {
+		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+			ylab="Intensity", strip=FALSE, ...),
+			..., signature=fun)
+		wrap(lines(mz(object), pout$noise, col="blue", ...),
+			..., signature=fun)
+		wrap(lines(mz(object)[pout$peaks], s[pout$peaks], col="red", type='h', ...),
+			..., signature=fun)
+	}
+	pout$peaks
+}
+
+peakPick.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- c("simple", "adaptive", "limpic")
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			simple = peakPick.simple,
 			adaptive = peakPick.adaptive,

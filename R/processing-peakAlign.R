@@ -14,18 +14,8 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		prochistory(processingData(object)) <- .history()
 		.message("peakAlign: Using method = ", match.method(method))
 		.time.start()
-		peaklist <- pData(mzData(imageData(object)))
 		alignment <- pixelApply(object, function(s, ...) {
-			aout <- fun(peaklist[[.Index]], ref, ...)
-			if ( plot ) {
-				wrap(plot(object, pixel=.Index, lwd=2, ...),
-					..., signature=fun)
-				wrap(abline(v=ref, lty=2, lwd=0.5, col="blue", ...),
-					..., signature=fun)
-				wrap(abline(v=peaklist[[.Index]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
-					..., signature=fun)
-			}
-			aout
+			peakAlign.do(object, ref, .Index, fun, plot, ...)
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=FALSE)
 		alignment <- lapply(alignment, function(a) {
 			a <- unlist(a)
@@ -82,9 +72,27 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "missing"),
 		peakAlign(object, ref=object, ...)
 	})
 
-peakAlign.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("diff", "DP"))
+peakAlign.do <- function(object, ref, pixel, fun, plot, ...) {
+	peaklist <- pData(mzData(imageData(object)))
+	aout <- fun(peaklist[[pixel]], ref, ...)
+	if ( plot ) {
+		wrap(plot(object, pixel=pixel, lwd=2,
+			ylab="Intensity", strip=FALSE, ...),
+			..., signature=fun)
+		wrap(abline(v=ref, lty=2, lwd=0.5, col="blue", ...),
+			..., signature=fun)
+		wrap(abline(v=peaklist[[pixel]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
+			..., signature=fun)
+	}
+	aout
+}
+
+peakAlign.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- c("diff", "DP")
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			diff = peakAlign.diff,
 			DP = peakAlign.DP,
