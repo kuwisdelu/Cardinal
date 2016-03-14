@@ -40,16 +40,16 @@ setMethod("peakPick", "MSImageSet",
 		object
 	})
 
-peakPick.do <- function(s, object, pixel, fun, plot, ...) {
-	pout <- fun(s, ...)
-	if ( plot ) {
-		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+peakPick.do <- function(.s, .object, .pixel, .fun, .plot, ...) {
+	pout <- .fun(.s, ...)
+	if ( .plot ) {
+		wrap(plot(.object, .s ~ mz, pixel=.pixel, col="gray",
 			ylab="Intensity", strip=FALSE, ...),
-			..., signature=fun)
-		wrap(lines(mz(object), pout$noise, col="blue", ...),
-			..., signature=fun)
-		wrap(lines(mz(object)[pout$peaks], s[pout$peaks], col="red", type='h', ...),
-			..., signature=fun)
+			..., signature=.fun)
+		wrap(lines(mz(.object), pout$noise, col="blue", ...),
+			..., signature=.fun)
+		wrap(lines(mz(.object)[pout$peaks], .s[pout$peaks], col="red", type='h', ...),
+			..., signature=.fun)
 	}
 	pout$peaks
 }

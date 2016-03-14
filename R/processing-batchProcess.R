@@ -7,48 +7,69 @@ setMethod("batchProcess", "MSImageSet",
 		normalize = NULL,
 		smoothSignal = NULL,
 		reduceBaseline = NULL,
+		reduceDimension = NULL,
 		peakPick = NULL,
+		peakAlign = NULL,
 		...,
 		layout,
 		pixel = pixels(object),
 		plot = FALSE)
 	{
 		if ( centroided(object) )
-			.stop("Data already centroided. Processing will not be performed.")
+			.stop("batchProcess: Data already centroided. Processing will not be performed.")
 		prochistory(processingData(object)) <- .history()
+		normalize <- batch.args(normalize)
+		smoothSignal <- batch.args(smoothSignal)
+		reduceBaseline <- batch.args(reduceBaseline)
+		reduceDimension <- batch.args(reduceDimension)
+		peakPick <- batch.args(peakPick)
+		peakAlign <- batch.args(peakPick)
 		.time.start()
 		if ( missing(layout) )
 			layout <- NULL
 		if ( !is.null(layout) && plot )
 			.setup.layout(layout)
-		smean <- numeric(nrow(object))
+		out <- list()
 		data <- pixelApply(object, function(s) {
 			# handle feature-preserving pre-processing first
-			normalize <<- batch.args(normalize)
 			if ( !is.null(normalize) ) {
 				fun <- normalize.method(normalize$method)
 				args <- c(list(s, object, .Index, fun, plot), normalize)
 				args$method <- NULL
 				s <- do.call(normalize.do, args)
 			}
-			smoothSignal <<- batch.args(smoothSignal)
 			if ( !is.null(smoothSignal) ) {
 				fun <- smoothSignal.method(smoothSignal$method)
 				args <- c(list(s, object, .Index, fun, plot), smoothSignal)
 				args$method <- NULL
 				s <- do.call(smoothSignal.do, args)
 			}
-			reduceBaseline <<- batch.args(reduceBaseline)
 			if ( !is.null(reduceBaseline) ) {
 				fun <- reduceBaseline.method(reduceBaseline$method)
 				args <- c(list(s, object, .Index, fun, plot), reduceBaseline)
 				args$method <- NULL
 				s <- do.call(reduceBaseline.do, args)
 			}
+			# need to handle reduce dimension differently
+			if ( !is.null(reduceDimension) ) {
+				fun <- reduceDimension.method(reduceDimension$method)
+				if ( is.null(out$mz) ) {
+					args <- c(list(numeric(nrow(object)), mz(object)), reduceDimension)
+					args$method <- NULL
+					out$mz <<- do.call(fun, args)$t
+				}
+				args <- c(list(s, object, out$mz, .Index, fun, plot), reduceDimension)
+				args$method <- NULL
+				s <- do.call(reduceDimension.do, args)
+				s <- s$x
+			}
 			# save the mean spectrum
-			smean <<- s + smean
+			if ( is.null(out$mean) ) {
+				out$mean <<- s
+			} else {
+				out$mean <<- s + out$mean
+			}
 			# need to handle peak picking differently
-			peakPick <<- batch.args(peakPick)
 			if ( !is.null(peakPick) ) {
 				fun <- peakPick.method(peakPick$method)
 				args <- c(list(s, object, .Index, fun, plot), peakPick)
@@ -62,8 +83,8 @@ setMethod("batchProcess", "MSImageSet",
 			}
 			s
 		}, .pixel=pixel, .use.names=FALSE, .simplify=FALSE)
-		smean <- smean / length(data)
-		if ( is.null(peakPick) ) {
+		out$mean <- out$mean / length(data)
+		if ( is.null(reduceDimension) && is.null(peakPick) ) {
 			# handle feature-preserving pre-processing
 			data <- simplify2array(data)
 			object@imageData <- MSImageData(data=data,
@@ -71,9 +92,23 @@ setMethod("batchProcess", "MSImageSet",
 				storageMode=storageMode(object@imageData),
 				dimnames=list(featureNames(object), pixelNames(object)[pixel]))
 			object@pixelData <- object@pixelData[pixel,]
-			object@featureData[["mean.intensity"]] <- smean
-		} else if ( !is.null(peakPick) ) {
-			# handle peak-picked data
+			object@featureData[["mean.intensity"]] <- out$mean
+		} else if ( !is.null(reduceDimension) && is.null(peakPick) ) {
+			# handle reduce dimension
+			data <- simplify2array(data)
+			feature <- features(object, mz=out$mz)
+			object@featureData <- object@featureData[feature,]
+			object@pixelData <- object@pixelData[pixel,]
+			object@imageData <- MSImageData(data=data,
+				coord=coord(object@pixelData),
+				storageMode=storageMode(imageData(object)),
+				dimnames=list(
+					featureNames(object@featureData),
+					pixelNames(object@pixelData)))
+			object@featureData[["mean.intensity"]] <- out$mean
+			mz(object) <- out$mz
+		} else if ( !is.null(peakPick) && is.null(peakAlign) ) {
+			# handle peak data (no alignment)
 			peakData <- data
 			mzData <- lapply(data, function(p) {
 				pmz <- mz(object)[match(names(p), featureNames(object))]
@@ -90,7 +125,7 @@ setMethod("batchProcess", "MSImageSet",
 			iData(imageData(object)) <- data
 			peakData(imageData(object)) <- peakData
 			mzData(imageData(object)) <- mzData
-			object@featureData[["mean.intensity"]] <- smean
+			object@featureData[["mean.intensity"]] <- out$mean
 		}
 		if ( !is.null(normalize) )
 			normalization(processingData(object)) <- normalize.method(

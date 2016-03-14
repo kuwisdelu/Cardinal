@@ -14,16 +14,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		.time.start()
 		mzout <- fun(numeric(nrow(object)), mz(object), ...)$t
 		data <- pixelApply(object, function(s, ...) {
-			sout <- fun(s, mz(object), mzout, ...)
-			if ( plot ) {
-				wrap(plot(object, pixel=.Index, col="gray", ...),
-					..., signature=fun)
-				wrap(points(sout$t, sout$x, col="red", pch=20, ...),
-					..., signature=fun)
-				wrap(lines(sout$t, sout$x, col="red", type='h', lwd=0.5, ...),
-					..., signature=fun)
-			}
-			sout$x
+			reduceDimension.do(s, object, mzout, .Index, fun, plot, ...)$x
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		feature <- features(object, mz=mzout)
 		object@featureData <- object@featureData[feature,]
@@ -62,9 +53,26 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageS
 		object
 	})
 
-reduceDimension.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("bin", "resample", "peaks"))
+reduceDimension.do <- function(.s, .object, .tout, .pixel, .fun, .plot, ...) {
+	sout <- .fun(.s, mz(.object), .tout, ...)
+	if ( .plot ) {
+		wrap(plot(.object, .s ~ mz, pixel=.pixel, col="gray",
+			ylab="Intensity", strip=FALSE, ...),
+			..., signature=.fun)
+		wrap(points(sout$t, sout$x, col="red", pch=20, ...),
+			..., signature=.fun)
+		wrap(lines(sout$t, sout$x, col="red", type='h', lwd=0.5, ...),
+			..., signature=.fun)
+	}
+	sout
+}
+
+reduceDimension.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- c("bin", "resample", "peaks")
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			bin = reduceDimension.bin,
 			resample = reduceDimension.resample,

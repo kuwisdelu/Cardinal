@@ -28,16 +28,16 @@ setMethod("reduceBaseline", "MSImageSet",
 		object
 	})
 
-reduceBaseline.do <- function(s, object, pixel, fun, plot, ...) {
-	sout <- fun(s, ...)
-	if ( plot ) {
-		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+reduceBaseline.do <- function(.s, .object, .pixel, .fun, .plot, ...) {
+	sout <- .fun(.s, ...)
+	if ( .plot ) {
+		wrap(plot(.object, .s ~ mz, pixel=.pixel, col="gray",
 			ylab="Intensity", strip=FALSE, ...),
-			..., signature=fun)
-		wrap(lines(mz(object), s - sout, col="green", ...),
-			..., signature=fun)
-		wrap(lines(mz(object), sout, lwd=0.5, ...),
-			..., signature=fun)
+			..., signature=.fun)
+		wrap(lines(mz(.object), .s - sout, col="green", ...),
+			..., signature=.fun)
+		wrap(lines(mz(.object), sout, lwd=0.5, ...),
+			..., signature=.fun)
 	}
 	sout
 }
