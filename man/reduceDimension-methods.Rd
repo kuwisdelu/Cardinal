@@ -26,13 +26,13 @@
 \S4method{reduceDimension}{MSImageSet,MSImageSet}(object, ref, method = "peaks", \dots)
 
 ## Bin the signal
-reduceDimension.bin(x, t, tout, width=200, offset=0, units=c("ppm","mz"), fun=sum, ...)
+reduceDimension.bin(x, t, width=200, offset=0, units=c("ppm","mz"), fun=sum, ...)
 
 ## Resample the signal
-reduceDimension.resample(x, t, tout, step=1, offset=0, ...)
+reduceDimension.resample(x, t, step=1, offset=0, ...)
 
 ## Reduce the signal to peaks
-reduceDimension.peaks(x, t, tout, peaklist, type=c("height", "area"), ...)
+reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
@@ -43,13 +43,12 @@ reduceDimension.peaks(x, t, tout, peaklist, type=c("height", "area"), ...)
     \item{\dots}{Additional arguments passed to the dimension reduction method.}
     \item{x}{The mass spectrum to be reduced.}
     \item{t}{The corresponding m/z values.}
-    \item{tout}{The m/z values to output.}
     \item{width}{The width of a bin.}
     \item{step}{The step size.}
     \item{offset}{Offset from the nearest integer.}
     \item{units}{Either parts-per-million or the raw m/z values.}
     \item{fun}{The function to be applied to each bin.}
-    \item{peaklist}{A \code{vector} of m/z values corresponding to peaks.}
+    \item{peaklist}{A \code{numeric} vector giving the m/z values of the reference peaks.}
     \item{type}{Should the peak height or area under the curve be taken as the intensity value?}
 }
 \details{

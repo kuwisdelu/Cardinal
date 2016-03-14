@@ -55,11 +55,8 @@ match.method <- function(method, options) {
 seq.ppm <- function(from, to, ppm) {
 	length.out <- (log(to) - log(from)) / log((1 + 1e-6 * ppm) / (1 - 1e-6 *ppm))
 	length.out <- floor(1 + length.out)
-	out <- numeric(length.out)
-	out[1] <- from
-	for ( i in seq_len(length.out)[-1] )
-		out[i] <- from * ((1 + 1e-6 * ppm) / (1 - 1e-6 * ppm))^(i-1)
-	out
+	i <- seq_len(length.out)
+	from * ((1 + 1e-6 * ppm) / (1 - 1e-6 * ppm))^(i-1)
 }
 
 ## Programmatic friendly version of base::subset
