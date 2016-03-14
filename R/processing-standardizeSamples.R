@@ -9,9 +9,8 @@ setMethod("standardizeSamples", "MSImageSet",
 		prochistory(processingData(object)) <- .history()
 		.message("standardizeSamples: Using method = ", match.method(method))
 		.time.start()
-		data <- featureApply(object, function(s, ...) {
-			fun(s, ...)
-		}, .pixel.groups=sample, ..., .use.names=FALSE, .simplify=FALSE)
+		data <- featureApply(object, .fun=fun, .pixel.groups=sample, ...,
+			.use.names=FALSE, .simplify=FALSE)
 		data <- matrix(unlist(data), nrow=nrow(object), ncol=ncol(object),
 			byrow=TRUE)
 		object@imageData <- MSImageData(data=data,
@@ -24,9 +23,12 @@ setMethod("standardizeSamples", "MSImageSet",
 		object
 	})
 
-standardizeSamples.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("sum"))
+standardizeSamples.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- "sum"
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			sum = standardizeSamples.sum,
 			match.fun(method))

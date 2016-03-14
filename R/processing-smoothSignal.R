@@ -28,14 +28,14 @@ setMethod("smoothSignal", "MSImageSet",
 		object
 	})
 
-smoothSignal.do <- function(s, object, pixel, fun, plot, ...) {
-	sout <- fun(s, ...)
-	if ( plot ) {
-		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+smoothSignal.do <- function(.s, .object, .pixel, .fun, .plot, ...) {
+	sout <- .fun(.s, ...)
+	if ( .plot ) {
+		wrap(plot(.object, .s ~ mz, pixel=.pixel, col="gray",
 			ylab="Intensity", strip=FALSE, ...),
-			..., signature=fun)
-		wrap(lines(mz(object), sout, lwd=0.5, ...),
-			..., signature=fun)
+			..., signature=.fun)
+		wrap(lines(mz(.object), sout, lwd=0.5, ...),
+			..., signature=.fun)
 	}
 	sout
 }
