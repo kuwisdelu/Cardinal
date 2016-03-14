@@ -151,6 +151,25 @@ nearestLocalMaxima <- function(x, t, tout, ...) {
 	list(lbound=limits[1,], ubound=limits[2,])
 }
 
+# Alignment of two vectors by absolute difference
+diffAlign <- function(x, y, diff.max, ...) {
+	aligned <- data.frame(x=rep(NA, length(y)), y=seq_along(y))
+	aligned$x <- sapply(y, function(yi) {
+		if ( length(x) == 0 )
+			return(NA)
+		diffs <- abs(x - yi)
+		which <- which.min(diffs)
+		if ( diffs[which] <= diff.max ) {
+			match <- which
+		} else {
+			match <- NA
+		}
+		match
+	})
+	aligned <- aligned[!is.na(aligned$x),]
+	aligned
+}
+
 # Alignment of two vectors using dynamic programming
 dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)), ... ) {
 	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
@@ -170,5 +189,5 @@ dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)),
 	y.align <- out.align[[8]]
 	aligned <- cbind(y.align[y.align > 0], x.align[x.align > 0])
 	colnames(aligned) <- c("x", "y")
-	return(aligned)
+	aligned
 }
