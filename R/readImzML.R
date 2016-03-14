@@ -50,25 +50,25 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 					from=floor(mz.min),
 					to=ceiling(mz.max),
 					ppm=mass.accuracy * 2)
-				error <- mass.accuracy * 1e-6 * mz.bins
+				error <- mass.accuracy * 1e-6 * mzout
 			} else {
 				mzout <- seq(
 					from=floor(mz.min),
 					to=ceiling(mz.max),
 					by=mass.accuracy * 2)
-				error <- rep(mass.accuracy, length(mz.bins))
+				error <- rep(mass.accuracy, length(mzout))
 			}
 			mz.bins <- c(mzout[1] - error[1], mzout + error)
 			mz.names <- .format.mz(mzout)
-			mz.keys <- lapply(mz, function(mzi) {
-				unique(mz.names[findInterval(mzi, mz.bins)])
-			})
-			intensity <- mapply(function(s, mzi, key) {
-				s <- bin(s, mzi, mz.bins, fun=sum)
-				names(s) <- key
-			}, intensity, mz, mz.keys, SIMPLIFY=FALSE)
-			intensity <- new("Hashmat", data=intensity, keys=mz.keys,
-				dim=c(length(mz.keys), length(intensity)))
+			intensity <- mapply(function(s, mzi) {
+				which <- findInterval(mzi, mz.bins)
+				s <- as.vector(tapply(s, which, sum))
+				names(s) <- mz.names[unique(which)]
+				s
+			}, intensity, mz, SIMPLIFY=FALSE)
+			mz <- mzout
+			intensity <- new("Hashmat", data=intensity, keys=mz.names,
+				dim=c(length(mz.names), length(intensity)))
 		}
 	}
 	# set up coordinates
