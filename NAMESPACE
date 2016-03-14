@@ -258,7 +258,6 @@ exportMethods(
 	"pixelApply")
 
 exportMethods(
-	"batchProcess",
 	"normalize",
 	"peakPick",
 	"peakAlign",

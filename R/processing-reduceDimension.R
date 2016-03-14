@@ -14,7 +14,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		.time.start()
 		mzout <- fun(numeric(nrow(object)), mz(object), ...)$t
 		data <- pixelApply(object, function(s, ...) {
-			reduceDimension.do(s, object, mzout, .Index, fun, plot, ...)$x
+			reduceDimension.do(s, object, .Index, fun, plot, ...)$x
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		feature <- features(object, mz=mzout)
 		object@featureData <- object@featureData[feature,]
@@ -40,7 +40,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("reduceDimension: 'ref' contains m/z values outside of mass range.")
 		prochistory(processingData(object)) <- .history()
-		reduceDimension(object, method=method, tout=ref, ...)
+		reduceDimension(object, method=method, peaklist=ref, ...)
 	})
 
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageSet"),
@@ -48,21 +48,21 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageS
 		if ( !centroided(ref) )
 			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
 		prochistory(processingData(object)) <- .history()
-		object <- reduceDimension(object, method=method, tout=mz(ref), ...)
+		object <- reduceDimension(object, method=method, ref=mz(ref), ...)
 		peakPicking(processingData(object)) <- peakPicking(processingData(ref))
 		object
 	})
 
-reduceDimension.do <- function(.s, .object, .tout, .pixel, .fun, .plot, ...) {
-	sout <- .fun(.s, mz(.object), .tout, ...)
-	if ( .plot ) {
-		wrap(plot(.object, .s ~ mz, pixel=.pixel, col="gray",
+reduceDimension.do <- function(s, object, pixel, f, plot, ...) {
+	sout <- f(s, mz(object), ...)
+	if ( plot ) {
+		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
 			ylab="Intensity", strip=FALSE, ...),
-			..., signature=.fun)
+			..., signature=f)
 		wrap(points(sout$t, sout$x, col="red", pch=20, ...),
-			..., signature=.fun)
+			..., signature=f)
 		wrap(lines(sout$t, sout$x, col="red", type='h', lwd=0.5, ...),
-			..., signature=.fun)
+			..., signature=f)
 	}
 	sout
 }
@@ -82,16 +82,14 @@ reduceDimension.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
-reduceDimension.bin <- function(x, t, tout, width=200, offset=0, units=c("ppm", "mz"), fun=sum, ...) {
+reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"), fun=sum, ...) {
 	units <- match.arg(units)
-	if ( missing(tout) ) {
-		if ( units == "ppm" ) {
-			tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width)
-			width <- width * 1e-6 * tout
-		} else {
-			tout <- seq(from=offset + floor(min(t)), to=ceiling(max(t)), by=width)
-			width <- rep(width, length(tout))
-		}
+	if ( units == "ppm" ) {
+		tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width)
+		width <- width * 1e-6 * tout
+	} else {
+		tout <- seq(from=offset + floor(min(t)), to=ceiling(max(t)), by=width)
+		width <- rep(width, length(tout))
 	}
 	if ( length(tout) > length(t) )
 		.stop("reduceDimension.bin: 'width' is too small.")
@@ -99,9 +97,8 @@ reduceDimension.bin <- function(x, t, tout, width=200, offset=0, units=c("ppm", 
 	list(x=xout, t=tout)
 }
 
-reduceDimension.resample <- function(x, t, tout, step=1, offset=0, ...) {
-	if ( missing(tout) )
-		tout <- seq(from=ceiling(min(t)), to=floor(max(t)), by=step) + offset
+reduceDimension.resample <- function(x, t, step=1, offset=0, ...) {
+	tout <- seq(from=ceiling(min(t)), to=floor(max(t)), by=step) + offset
 	if ( length(tout) > length(t) )
 		.stop("reduceDimension.resample: 'step' is too small.")
 	if ( offset < 0 ) {
@@ -113,19 +110,19 @@ reduceDimension.resample <- function(x, t, tout, step=1, offset=0, ...) {
 	list(x=xout, t=tout)
 }
 
-reduceDimension.peaks <- function(x, t, tout, type=c("height", "area"), ...) {
-	if ( missing(tout) )
-		.stop("reduceDimension.peaks: 'tout' required.")
+reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...) {
+	if ( missing(peaklist) )
+		.stop("reduceDimension.peaks: 'peaklist' required.")
 	type <- match.arg(type)
 	if ( type == "height" ) {
 		fun <- max
 	} else if ( type == "area" ) {
 		fun <- sum
 	}
-	if ( length(tout) > length(t) )
-		.stop("reduceDimension.peaks: 'tout' is too long.")
-	limits <- nearestLocalMaxima(-x, t, tout)
+	if ( length(peaklist) > length(t) )
+		.stop("reduceDimension.peaks: 'peaklist' is too long.")
+	limits <- nearestLocalMaxima(-x, t, peaklist)
 	xout <- bin(x, t, lbound=limits$lbound, ubound=limits$ubound, fun=fun)
-	list(x=xout, t=tout)
+	list(x=xout, t=peaklist)
 }
 

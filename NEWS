@@ -6,8 +6,6 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Added 'mass.accuracy' and 'units.accuracy' arguments for
         controlling the m/z accuracy when reading 'processed' imzML
-    o Functions for 'reduceDimension' now take new argument 'tout'
-        giving the output m/z values, to avoid re-calculation
     o Function 'reduceDimension.bin' now takes argument 'units' with
         value 'ppm' or 'mz', and new corresponding defaults
 

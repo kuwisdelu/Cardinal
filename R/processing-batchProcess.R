@@ -58,7 +58,7 @@ setMethod("batchProcess", "MSImageSet",
 					args$method <- NULL
 					out$mz <<- do.call(fun, args)$t
 				}
-				args <- c(list(s, object, out$mz, .Index, fun, plot), reduceDimension)
+				args <- c(list(s, object, .Index, fun, plot), reduceDimension)
 				args$method <- NULL
 				s <- do.call(reduceDimension.do, args)
 				s <- s$x
