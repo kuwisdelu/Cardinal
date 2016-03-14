@@ -15,16 +15,7 @@ setMethod("reduceBaseline", "MSImageSet",
 		.message("reduceBaseline: Using method = ", match.method(method))
 		.time.start()
 		data <- pixelApply(object, function(s, ...) {
-			sout <- fun(s, ...)
-			if ( plot ) {
-				wrap(plot(object, pixel=.Index, col="gray", ...),
-					..., signature=fun)
-				wrap(lines(mz(object), s - sout, col="green", ...),
-					..., signature=fun)
-				wrap(lines(mz(object), sout, lwd=0.5, ...),
-					..., signature=fun)
-			}
-			sout
+			reduceBaseline.do(s, object, .Index, fun, plot, ...)
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		object@imageData <- MSImageData(data=data,
 			coord=coord(object)[pixel,],
@@ -37,9 +28,26 @@ setMethod("reduceBaseline", "MSImageSet",
 		object
 	})
 
-reduceBaseline.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("median"))
+reduceBaseline.do <- function(s, object, pixel, fun, plot, ...) {
+	sout <- fun(s, ...)
+	if ( plot ) {
+		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+			ylab="Intensity", strip=FALSE, ...),
+			..., signature=fun)
+		wrap(lines(mz(object), s - sout, col="green", ...),
+			..., signature=fun)
+		wrap(lines(mz(object), sout, lwd=0.5, ...),
+			..., signature=fun)
+	}
+	sout
+}
+
+reduceBaseline.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- "median"
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			median = reduceBaseline.median,
 			match.fun(method))

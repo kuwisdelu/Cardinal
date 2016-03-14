@@ -15,14 +15,7 @@ setMethod("smoothSignal", "MSImageSet",
 		.message("smoothSignal: Using method = ", match.method(method))
 		.time.start()
 		data <- pixelApply(object, function(s, ...) {
-			sout <- fun(s, ...)
-			if ( plot ) {
-				wrap(plot(object, pixel=.Index, col="gray", ...),
-					..., signature=fun)
-				wrap(lines(mz(object), sout, lwd=0.5, ...),
-					..., signature=fun)
-			}
-			sout
+			smoothSignal.do(s, object, .Index, fun, plot, ...)
 		}, .pixel=pixel, ..., .use.names=FALSE, .simplify=TRUE)
 		object@imageData <- MSImageData(data=data,
 			coord=coord(object)[pixel,],
@@ -35,9 +28,24 @@ setMethod("smoothSignal", "MSImageSet",
 		object
 	})
 
-smoothSignal.method <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("gaussian", "sgolay", "ma"))
+smoothSignal.do <- function(s, object, pixel, fun, plot, ...) {
+	sout <- fun(s, ...)
+	if ( plot ) {
+		wrap(plot(object, s ~ mz, pixel=pixel, col="gray",
+			ylab="Intensity", strip=FALSE, ...),
+			..., signature=fun)
+		wrap(lines(mz(object), sout, lwd=0.5, ...),
+			..., signature=fun)
+	}
+	sout
+}
+
+smoothSignal.method <- function(method, name.only=FALSE) {
+	if ( is.character(method) || is.null(method) ) {
+		options <- c("gaussian", "sgolay", "ma")
+		method <- match.method(method, options)
+		if ( name.only )
+			return(method)
 		method <- switch(method,
 			gaussian = smoothSignal.gaussian,
 			sgolay = smoothSignal.sgolay,
