@@ -43,18 +43,30 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
 			intensity.datatype, intensity.offset, intensity.length, count)
 		if ( ibdtype == "processed" ) {
+			mz.min <- min(sapply(mz, min))
+			mz.max <- max(sapply(mz, max))
 			if ( match.arg(units.accuracy) == "ppm" ) {
-				mz.max <- max(sapply(mz, max))
-				mass.accuracy <- mass.accuracy * 1e-6 * mz.max
+				mzout <- seq.ppm(
+					from=floor(mz.min),
+					to=ceiling(mz.max),
+					ppm=mass.accuracy * 2)
+				error <- mass.accuracy * 1e-6 * mz.bins
+			} else {
+				mzout <- seq(
+					from=floor(mz.min),
+					to=ceiling(mz.max),
+					by=mass.accuracy * 2)
+				error <- rep(mass.accuracy, length(mz.bins))
 			}
-			mz <- lapply(mz, roundnear, precision=mass.accuracy)
-			mz.names <- lapply(mz, as.character)
-			mz <- sort(unique(unlist(mz)))
-			mz.keys <- as.character(mz)
-			intensity <- mapply(function(dat, key) {
-				names(dat) <- key
-				dat
-			}, intensity, mz.names, SIMPLIFY=FALSE)
+			mz.bins <- c(mzout[1] - error[1], mzout + error)
+			mz.names <- .format.mz(mzout)
+			mz.keys <- lapply(mz, function(mzi) {
+				unique(mz.names[findInterval(mzi, mz.bins)])
+			})
+			intensity <- mapply(function(s, mzi, key) {
+				s <- bin(s, mzi, mz.bins, fun=sum)
+				names(s) <- key
+			}, intensity, mz, mz.keys, SIMPLIFY=FALSE)
 			intensity <- new("Hashmat", data=intensity, keys=mz.keys,
 				dim=c(length(mz.keys), length(intensity)))
 		}

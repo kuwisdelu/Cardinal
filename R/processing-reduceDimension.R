@@ -79,8 +79,10 @@ reduceDimension.bin <- function(x, t, tout, width=200, offset=0, units=c("ppm", 
 	if ( missing(tout) ) {
 		if ( units == "ppm" ) {
 			tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width)
+			width <- width * 1e-6 * tout
 		} else {
 			tout <- seq(from=offset + floor(min(t)), to=ceiling(max(t)), by=width)
+			width <- rep(width, length(tout))
 		}
 	}
 	if ( length(tout) > length(t) )
