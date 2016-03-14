@@ -100,7 +100,8 @@ setMethod("features", "MSImageSet",
 		} else {
 			mz <- as.numeric(mz)
 			features <- sapply(mz, function(mzi) {
-				bisection.seq(mz(object), function(x) x - mzi)
+				# bisection.seq(mz(object), function(x) x - mzi)
+				which.min(abs(mz(object) - mzi))
 			})
 			names(features) <- featureNames(object)[features]
 			if ( length(list(...)) > 0 ) {

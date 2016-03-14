@@ -539,7 +539,7 @@ Other common forms of data reduction include resampling and binning.
 \Rpackage{Cardinal} can do binning for a fixed width, taken to be 25 in this example. The mean intensity of ions located in the same $m/z$ bin is taken to be the response in the reduced version of the data. The results of binning on pixel 1 is plotted in Figure \ref{fig:bin}. The orignal spectrum is plotted in black, with the binned version displayed simultaneously in red.
 
 <<reducedimbin, results=hide>>=
-reduceDimension(msset4, pixel=1, method="bin", width=25, fun=mean, plot=TRUE)
+reduceDimension(msset4, pixel=1, method="bin", width=25, units="mz", fun=mean, plot=TRUE)
 @
 
 There is also the option of doing resampling for a fixed step size. The results of resampling with step size 25 $m/z$ on pixel 1 is plotted in Figure \ref{fig:resample}. The original spectrum is plotted in black, with the resampled version displayed simultaneously in red.

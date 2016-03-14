@@ -98,10 +98,13 @@ test_that("Cardinal pre-processing", {
 
 	# reduce dimension
 
-	tmp <- reduceDimension(msset2, method="bin", pixel=c(1,10), width=10, plot=plot)
+	tmp <- reduceDimension(msset2, method="bin", pixel=c(1,10), width=10, units="mz", plot=plot)
 	expect_true(validObject(tmp))
 
-	tmp <- reduceDimension(msset2, method="bin", pixel=c(1,10), fun=mean, width=10, plot=plot)
+	tmp <- reduceDimension(msset2, method="bin", pixel=c(1,10), fun=mean, width=10, units="mz", plot=plot)
+	expect_true(validObject(tmp))
+
+	tmp <- reduceDimension(msset2, method="bin", pixel=c(1,10), width=1000, plot=plot)
 	expect_true(validObject(tmp))
 
 	tmp <- reduceDimension(msset2, method="resample", pixel=c(1,10), step=10, plot=plot)

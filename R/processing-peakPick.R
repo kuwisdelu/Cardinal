@@ -71,7 +71,7 @@ peakPick.method <- function(method, name.only=FALSE) {
 
 peakPick.simple <- function(x, SNR=6, window=5, blocks=100, ...) {
 	t <- seq_along(x)
-	xint <- intervals(x, blocks=blocks)
+	xint <- blocks(x, blocks=blocks)
 	kurt <- sapply(xint, kurtosis) - 3
 	noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
 	noise <- rep(noise, length(x))
@@ -83,7 +83,7 @@ peakPick.simple <- function(x, SNR=6, window=5, blocks=100, ...) {
 
 peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
 	t <- seq_along(x)
-	xint <- intervals(x, blocks=blocks)
+	xint <- blocks(x, blocks=blocks)
 	xlen <- sapply(xint, length)
 	noise <- sapply(xint, sd)
 	noise <- unlist(mapply(function(ns, ln) rep(ns, ln), noise, xlen))
@@ -98,7 +98,7 @@ peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
 
 peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	t <- seq_along(x)
-	xint <- intervals(x, blocks=blocks)
+	xint <- blocks(x, blocks=blocks)
 	# identify flat reginos of spectrum
 	kurt <- sapply(xint, kurtosis) - 3
 	kurt[is.nan(kurt)] <- -Inf
