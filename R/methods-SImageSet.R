@@ -204,11 +204,14 @@ setMethod("pixelApply", "SImageSet",
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
 		.message(progress="start", max=length(.pixel))
+		if ( isTRUE(getOption("Cardinal.debug.pixelApply")) ) browser()
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .pixel[i], envir=env)
 				.fun(iData(.object)[j, .pixel[i]], ...)
-			}, USE.NAMES=.use.names)
+			}, simplify=.simplify, USE.NAMES=.use.names)
+			if ( !.simplify && length(groups) == 1 )
+				ans[[i]] <- ans[[i]][[1]]
 			.message(progress="increment")
 		}
 		.message(progress="stop")
@@ -272,11 +275,14 @@ setMethod("featureApply", "SImageSet",
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
 		.message(progress="start", max=length(.feature))
+		if ( isTRUE(getOption("Cardinal.debug.featureApply")) ) browser()
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .feature[i], env)
 				.fun(iData(.object)[.feature[i], j], ...)
-			}, USE.NAMES=.use.names)
+			}, simplify=.simplify, USE.NAMES=.use.names)
+			if ( !.simplify && length(groups) == 1 )
+				ans[[i]] <- ans[[i]][[1]]
 			.message(progress="increment")
 		}
 		.message(progress="stop")

@@ -12,6 +12,8 @@ BUG FIXES
     o Fixed bug in reading 'processed' imzML format that caused
         mass spectra to be reconstructed in the wrong order
     o Improved speed accessing columns of Hashmat sparse matrices
+    o In 'pixelApply' and 'featureApply', zero-length return values
+        are no longer returned as a list when '.simplify=FALSE'
 
 CHANGES IN VERSION 1.3.0 [2015-12-16]
 -----------------------------------
