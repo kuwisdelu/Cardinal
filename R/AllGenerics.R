@@ -167,7 +167,7 @@ setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 #### Plotting ####
 ## ---------------
 setGeneric("select", function(x, ...) standardGeneric("select"))
-# setGeneric("image3d", function(x, ...) standardGeneric("image3d"))
+setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 
 ####-----------------------------------------------------------####
 

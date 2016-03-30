@@ -64,17 +64,17 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "missing"),
 		peakAlign(object, ref=object, ...)
 	})
 
-peakAlign.do <- function(object, ref, pixel, fun, plot, ...) {
+peakAlign.do <- function(object, ref, pixel, f, plot, ...) {
 	peaklist <- pData(mzData(imageData(object)))
-	aout <- fun(peaklist[[pixel]], ref, ...)
+	aout <- f(peaklist[[pixel]], ref, ...)
 	if ( plot ) {
 		wrap(plot(object, pixel=pixel, lwd=2,
 			ylab="Intensity", strip=FALSE, ...),
-			..., signature=fun)
+			..., signature=f)
 		wrap(abline(v=ref, lty=2, lwd=0.5, col="blue", ...),
-			..., signature=fun)
+			..., signature=f)
 		wrap(abline(v=peaklist[[pixel]][!is.na(aout)], lty=3, lwd=1.5, col="red", ...),
-			..., signature=fun)
+			..., signature=f)
 	}
 	aout
 }
