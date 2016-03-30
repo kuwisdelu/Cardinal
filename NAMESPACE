@@ -105,6 +105,7 @@ exportMethods(
 
 exportMethods(
 	"image",
+	"image3D",
 	"plot")
 
 exportMethods(
@@ -258,6 +259,7 @@ exportMethods(
 	"pixelApply")
 
 exportMethods(
+	"batchProcess",
 	"normalize",
 	"peakPick",
 	"peakAlign",

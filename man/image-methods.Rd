@@ -13,6 +13,10 @@
 \alias{image,SpatialKMeans-method}
 \alias{image,SpatialShrunkenCentroids-method}
 
+\alias{image3D}
+\alias{image3D-methods}
+\alias{image3D,SImageSet-method}
+
 \title{Plot the Pixel-Space of an Imaging Dataset}
 
 \description{
@@ -86,6 +90,8 @@
 \S4method{image}{SpatialKMeans}(x, formula = substitute(mode ~ x * y),
     mode = "cluster",
     \dots)
+
+\S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
 
 }
 
@@ -161,6 +167,10 @@
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
+}
+
+\note{
+    For objects derived from class \linkS4class{SImageSet}, calling \code{image3D(x)} is equivalent to \code{image(x, ~ x * y * z)}.
 }
 
 \author{

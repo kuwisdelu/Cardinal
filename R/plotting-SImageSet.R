@@ -331,19 +331,19 @@ setMethod("image",
 		contrast.enhance <- contrast.enhance.method(contrast.enhance)
 		smooth.image <- smooth.image.method(smooth.image)
 		if ( is3d ) {
-			if ( isTRUE(getOption("Cardinal.3D.normalize.by.sample")) ) {
-				names3d <- names(dim(values))
-				dim3d <- dim(values)
-				values <- apply(values, which(!names(dim(values)) %in% c("x","y")),
-					function(x) contrast.enhance(normalize.image(x)))
-				dim(values) <- dim3d[c("x","y",names3d[which(!names3d %in% c("x","y"))])]
-				perm3d <- seq_along(dim(values))
-				names(perm3d) <- names(dim(values))
-				values <- aperm(values, perm=perm3d[names3d])
-			} else {
+			# if ( isTRUE(getOption("Cardinal.3D.normalize.by.sample")) ) {
+			# 	names3d <- names(dim(values))
+			# 	dim3d <- dim(values)
+			# 	values <- apply(values, which(!names(dim(values)) %in% c("x","y")),
+			# 		function(x) contrast.enhance(normalize.image(x)))
+			# 	dim(values) <- dim3d[c("x","y",names3d[which(!names3d %in% c("x","y"))])]
+			# 	perm3d <- seq_along(dim(values))
+			# 	names(perm3d) <- names(dim(values))
+			# 	values <- aperm(values, perm=perm3d[names3d])
+			# } else {
 				values <- apply(values, seq(from=4, to=length(dim(values)), by=1),
 					function(x) contrast.enhance(normalize.image(x)))
-			}
+			# }
 		} else {
 			values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
 				function(x) smooth.image(contrast.enhance(normalize.image(x))))
@@ -418,7 +418,7 @@ setMethod("image",
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			if ( is3d )
-				.stop("3D plotting not yet implemented for lattice graphics")
+				.stop("image: 3D plotting not yet implemented for lattice graphics")
 			# set up key
 			if ( !is.null(key) ) {
 				key <- list(text=list(key$text),
@@ -577,6 +577,13 @@ setMethod("image",
 				}
 			}
 		}
+	})
+
+setMethod("image3D",
+	signature = c(x = "SImageSet"),
+	function(x, formula = ~ x * y * z, ...)
+	{
+		image(x, formula=formula, ...)
 	})
 
 setMethod("select",

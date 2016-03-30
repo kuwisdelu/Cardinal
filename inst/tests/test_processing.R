@@ -121,3 +121,30 @@ test_that("Cardinal pre-processing", {
 	expect_true(validObject(msset8))	
 
 })
+
+test_that("Cardinal batch pre-processing", {
+
+	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+
+	set.seed(1)
+	data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
+		NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
+		1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
+		1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
+		1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+
+	msset <- generateImage(data, range=c(1001, 5000), step=0.5, resolution=100, as="MSImageSet")
+
+	plot <- FALSE
+	
+	tmp <- batchProcess(msset, normalize=TRUE, smoothSignal=TRUE,
+		reduceBaseline=TRUE, peakPick=TRUE,
+		layout=c(2,2), plot=plot)
+	expect_true(validObject(tmp))
+	
+	tmp <- batchProcess(msset, normalize=TRUE,
+		reduceBaseline=list(blocks=200), peakPick=list(SNR=12),
+		layout=c(1,3), plot=plot)
+	expect_true(validObject(tmp))
+
+})
