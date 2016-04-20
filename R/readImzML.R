@@ -46,6 +46,8 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 			mz.min <- min(sapply(mz, min))
 			mz.max <- max(sapply(mz, max))
 			if ( match.arg(units.accuracy) == "ppm" ) {
+				if ( floor(mz.min) <= 0 )
+					.stop("readImzML: m/z values must be positive for units.accuracy='ppm'")
 				mzout <- seq.ppm(
 					from=floor(mz.min),
 					to=ceiling(mz.max),

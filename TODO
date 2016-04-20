@@ -3,17 +3,15 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
--Clean up datasets in invalid metadata states
--Shiny GUI
--Optical image registration
--3D datasets and 3D plotting
--Support larger-than-memory datasets
+-Graphical user interface
+-Utility methods for changing experimental design
+-Improved support for larger-than-memory datasets
 -Statistical hypothesis testing
 
 Priority: Medium
 -Parse more metadata from imzML datasets for MIAPE-Imaging
--Faster reduceDimension implementation for method='peaks'
+-Optical image registration
 
 Priority: Low
 -Native writing of imzML and Analyze 7.5 formats
--Bilinear interpolation smoothing for ion images
+-Support for more file formats (Bruker, etc.)
