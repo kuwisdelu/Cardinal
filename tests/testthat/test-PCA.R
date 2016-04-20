@@ -15,7 +15,7 @@ test_that("Principal components analysis", {
 
 	sset <- generateImage(data, range=c(200, 300), step=1)
 
-	pca <- PCA(sset, ncomp=c(10,20))
+	pca <- suppressWarnings(PCA(sset, ncomp=c(10,20))) # irlba suggests svd
 
 	prcomp <- prcomp(t(iData(sset)))$rotation[,1:10]
 
