@@ -203,3 +203,19 @@ dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)),
 	colnames(aligned) <- c("x", "y")
 	aligned
 }
+
+# A sequence with half-bin-widths in ppm (parts-per-million)
+# x = bin center, y = bin half-window, K = ppm
+# y[n] = K * x[n] * 1e-6
+# y[n+1] = (1e-6 * K) * (x[n] - y[n])) / (1 - (1e-6 * K))
+# x[n+1] = x[n] + y[n] + y[n+1]
+# => x[n] ((1 + K * 1e-6) / (1 - K * 1e-6))^n * x[0]
+# log x[n] = n log {(1 + K * 1e-6) / (1 - K * 1e-6)} + log x[0]
+# => n = (log x[n] - log x[0]) / log {(1 + K * 1e-6) / (1 - K * 1e-6)}
+seq.ppm <- function(from, to, ppm) {
+	length.out <- (log(to) - log(from)) / log((1 + 1e-6 * ppm) / (1 - 1e-6 *ppm))
+	length.out <- floor(1 + length.out)
+	i <- seq_len(length.out)
+	from * ((1 + 1e-6 * ppm) / (1 - 1e-6 * ppm))^(i-1)
+}
+

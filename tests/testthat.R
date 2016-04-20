@@ -1,4 +1,4 @@
 library(testthat)
 library(Cardinal)
 
-test_package("Cardinal")
+test_check("Cardinal")
