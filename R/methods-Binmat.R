@@ -150,6 +150,8 @@ setMethod("[", "Binmat", function(x, i, j, ..., drop) {
 	js <- seq_len(dim(x)[2])
 	names(js) <- colnames(x)
 	if ( !missing(drop) && is.na(drop) ) {
+		if ( any(i != seq_len(dim(x)[1])) )
+			.stop("cannot subset 'Binmat' objects by row with S4 return type")
 		# return a subset of class Hashmat
 		new("Binmat",
 			files=x@files[j],

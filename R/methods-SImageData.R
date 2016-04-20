@@ -244,11 +244,11 @@ setMethod("combine",
 	signature = c(x = "SImageData", y = "SImageData"),
 	function(x, y, ...) {
 		if ( length(ls(x@data)) != length(ls(y@data)) )
-			stop("SImageData have different numbers of elements:\n\t",
+			.warning("SImageData have different numbers of elements:\n\t",
 				paste(ls(x@data), collapse=" "), "\n\t",
 				paste(ls(y@data), collapse=" "))
 		if ( !all(ls(x@data) == ls(y@data)) )
-			stop(paste("SImageData have different element names:",
+			.warning(paste("SImageData have different element names:",
 				paste(ls(x@data), collapse=" "),
 				paste(ls(y@data), collapse=" "), sep="\n\t"))
 		if ( prod(dim(y)) == 0 )
@@ -260,8 +260,13 @@ setMethod("combine",
 			.stop("SImageData contain pixels with duplicate coordinates")
 		positionArray <- generatePositionArray(coord)
 		data <- new.env(parent=emptyenv())
-		for ( nm in ls(x@data) )
-			data[[nm]] <- cbind(x[[nm]], y[[nm]])
+		for ( nm in intersect(ls(x@data), ls(y@data)) ) {
+			tryCatch(data[[nm]] <- cbind(x[[nm]], y[[nm]]),
+				error=function(e) {
+					.warning(paste0("Error combining '", nm, "'.",
+						" It will be dropped from the result."))
+				})
+		}
 		dimnames <- list(dimnames(x)[[1]],
 			c(dimnames(x)[[2]], dimnames(y)[[2]]))
 		new(class(x),
