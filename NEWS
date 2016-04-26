@@ -14,7 +14,7 @@ BUG FIXES
 CHANGES IN VERSION 1.3.2 [2016-3-29]
 -----------------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
+NEW FEATURES
 
     o Added 'image3D' method for plotting 3D images
     o Added 'batchProcess' method for batch pre-processing
@@ -41,13 +41,16 @@ BUG FIXES
 CHANGES IN VERSION 1.3.0 [2015-12-16]
 -----------------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
+NEW FEATURES
 
     o Added experimental Binmat class for working with on-disk matrices
-    o Added 'attach.only' argument to readImzML and readAnalyze
     o Added experimental support for 3D files from benchmark datasets
     o Added experimental support for plotting 3D images
     o Added experimental support for 'processed' imzML format
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added 'attach.only' argument to readImzML and readAnalyze
 
 BUG FIXES
 
