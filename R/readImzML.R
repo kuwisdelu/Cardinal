@@ -37,8 +37,19 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 	if ( attach.only ) {
 		if ( ibdtype == "processed" )
 			.stop("readImzML: Data binary type 'processed' is not currently supported for attach only.")
-		intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
-			offsets=intensity.offset, extents=intensity.length)
+		if ( "package:matter" %in% search() ) {
+			datamode <- switch(intensity.datatype,
+				`16-bit integer`="short",
+				`32-bit integer`="int",
+				`64-bit integer`="long",
+				`32-bit float`="float",
+				`64-bit float`="double")
+			intensity <- matter_mat(filepath=ibdpath, datamode=datamode,
+				offset=intensity.offset, extent=intensity.length)
+		} else {
+			intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
+				offsets=intensity.offset, extents=intensity.length)
+		}
 	} else {
 		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
 			intensity.datatype, intensity.offset, intensity.length, count)
