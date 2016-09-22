@@ -2,6 +2,12 @@
 CHANGES IN VERSION 1.4.1 [2016-5-25]
 -----------------------------------
 
+NEW FEATURES
+
+    o Added experimental support for 'matter' on-disk matrices, from
+        package 'matter', hosted at https://github.com/kuwisdelu/matter,
+        as a replacement for 'Binmat' matrices
+
 BUG FIXES
 
     o Fixed subsetting SImageData objects with variables
