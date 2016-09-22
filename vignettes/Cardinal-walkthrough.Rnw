@@ -13,7 +13,7 @@ BiocStyle::latex()
 
 \title{\Rpackage{Cardinal}: Analytic tools for mass spectrometry imaging}
 
-\author{Kyle D. Bemis and April Harry}
+\author{Kylie A. Bemis and April Harry}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}

@@ -13,7 +13,7 @@ BiocStyle::latex()
 
 \title{\Rpackage{Cardinal} design and development}
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
