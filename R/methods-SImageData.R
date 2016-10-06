@@ -202,9 +202,12 @@ setMethod("[", "SImageData", function(x, i, j, ..., drop) {
 		if ( !missing(j) ) args[[2]] <- j
 		if ( nargs > 2 ) {
 			dots <- match.call(expand.dots=FALSE)$...
-			nonmissing <- sapply(dots, nchar) > 0 # changed from !is.symbol
+			nonmissing <- sapply(dots, function(a) {
+				is.call(a) || nchar(a) > 0 # changed from !is.symbol
+			})
 			if ( sum(nonmissing) > 0 )
-				args[c(FALSE,FALSE,nonmissing)] <- lapply(dots[nonmissing], eval)
+				args[c(FALSE,FALSE,nonmissing)] <- lapply(dots[nonmissing],
+					eval, envir=parent.frame())
 		}
 		inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
 		cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
