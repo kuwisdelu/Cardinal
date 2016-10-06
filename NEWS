@@ -10,6 +10,7 @@ BUG FIXES
     o Elements of 'imageData' that fail to 'combine' or which
         are missing from one or more of the objects are now
         dropped from the result with warning rather than failing
+    o Moved unit tests in 'ints/tests' to 'tests/testthat'
 
 CHANGES IN VERSION 1.3.2 [2016-3-29]
 -----------------------------------
