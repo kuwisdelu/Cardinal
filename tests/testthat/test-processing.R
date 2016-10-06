@@ -137,14 +137,45 @@ test_that("Cardinal batch pre-processing", {
 
 	plot <- FALSE
 	
-	tmp <- batchProcess(msset, normalize=TRUE, smoothSignal=TRUE,
-		reduceBaseline=TRUE, peakPick=TRUE,
+	tmp <- batchProcess(msset,
+		normalize=TRUE,
+		smoothSignal=TRUE,
+		reduceBaseline=TRUE,
+		peakPick=TRUE,
 		layout=c(2,2), plot=plot)
+
 	expect_true(validObject(tmp))
-	
-	tmp <- batchProcess(msset, normalize=TRUE,
-		reduceBaseline=list(blocks=200), peakPick=list(SNR=12),
+
+	tmp <- batchProcess(msset,
+		normalize=TRUE,
+		reduceBaseline=list(blocks=200),
+		reduceDimension=list(method="bin", width=10, units="mz"),
 		layout=c(1,3), plot=plot)
+
+	expect_true(validObject(tmp))
+
+	tmp <- batchProcess(msset,
+		normalize=TRUE,
+		reduceBaseline=list(blocks=200),
+		peakPick=list(SNR=12),
+		layout=c(1,3), plot=plot)
+
+	expect_true(validObject(tmp))
+
+	expect_error(tmp <- batchProcess(msset,
+		normalize=TRUE,
+		reduceBaseline=list(blocks=200),
+		reduceDimension=list(method="bin", width=10, units="mz"),
+		peakPick=list(SNR=12),
+		layout=c(2,2), plot=plot))
+
+	tmp <- batchProcess(msset,
+		normalize=TRUE,
+		reduceBaseline=list(blocks=200),
+		peakPick=list(SNR=12),
+		peakAlign=TRUE,
+		layout=c(1,3), plot=plot)
+
 	expect_true(validObject(tmp))
 
 })

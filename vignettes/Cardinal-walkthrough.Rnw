@@ -75,6 +75,8 @@ folder <- "/This/is/the/path/to/the/folder/containing/the/files"
 data <- readAnalyze(name, folder)
 @
 
+Large Analyze files can also be attached on-disk without fully loading them into memory by using the \verb|attach.only=TRUE| option. Not all \Rpackage{Cardinal} features are supported for on-disk datasets.
+
 For more information on reading Analyze files, type \verb|?readAnalyze|.
 
 \subsubsection{imzML}
@@ -89,6 +91,10 @@ name <- "This is the common name of your .imzML and .ibd files"
 folder <- "/This/is/the/path/to/the/folder/containing/the/files"
 data <- readImzML(name, folder)
 @
+
+Large imzML files can also be attached on-disk without fully loading them into memory by using the \verb|attach.only=TRUE| option. Not all \Rpackage{Cardinal} features are supported for on-disk datasets.
+
+Both `continuous' and `processed' imzML format are supported, but currently only `continous' format can be attached using \verb|attach.only=TRUE|.
 
 For more information on reading imzML files, type \verb|?readImzML|.
 
@@ -577,7 +583,28 @@ msset8 <- reduceDimension(msset4, method="resample", step=25)
 \end{figure}
 
 
+\subsection{Batch processing}
 
+To simplify the above pre-processing steps, as well as save memory when processing on-disk data, \Rpackage{Cardinal} provides a batch processing method.
+
+<<batch1>>=
+msset9 <- batchProcess(msset, normalize=TRUE, smoothSignal=TRUE, reduceBaseline=TRUE)
+summary(msset9)
+processingData(msset9)
+@
+
+Each step can be set to its default parameters by setting it to \verb|TRUE|, or a list of options can be provided.
+
+<<batch2>>=
+msset10 <- batchProcess(msset, normalize=TRUE, smoothSignal=TRUE, reduceBaseline=list(blocks=200),
+  peakPick=list(SNR=12), peakAlign=TRUE)
+summary(msset10)
+processingData(msset10)
+@
+
+This method is particularly useful when processing larger-than-memory on-disk datasets to a smaller processed form, without loading the full data into memory.
+
+See \verb|?batchProcess| for more details and differences in behavior from the individual processing methods.
 
 
 

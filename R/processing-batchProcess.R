@@ -7,7 +7,9 @@ setMethod("batchProcess", "MSImageSet",
 		normalize = NULL,
 		smoothSignal = NULL,
 		reduceBaseline = NULL,
+		reduceDimension = NULL,
 		peakPick = NULL,
+		peakAlign = NULL,
 		...,
 		layout,
 		pixel = pixels(object),
@@ -19,9 +21,13 @@ setMethod("batchProcess", "MSImageSet",
 		normalize <- batch.args(normalize)
 		smoothSignal <- batch.args(smoothSignal)
 		reduceBaseline <- batch.args(reduceBaseline)
-		# reduceDimension <- batch.args(reduceDimension)
+		reduceDimension <- batch.args(reduceDimension)
 		peakPick <- batch.args(peakPick)
-		# peakAlign <- batch.args(peakPick)
+		peakAlign <- batch.args(peakAlign)
+		if ( !is.null(reduceDimension) && !is.null(peakPick) )
+			.stop("batchProcess: reduceDimension and peakPick cannot appear in the same call.")
+		if ( !is.null(peakAlign) && is.null(peakPick) )
+			.stop("batchProcess: peakAlign cannot appear without peakPick in the same call.")
 		.time.start()
 		if ( missing(layout) )
 			layout <- NULL
@@ -49,18 +55,15 @@ setMethod("batchProcess", "MSImageSet",
 				s <- do.call(reduceBaseline.do, args)
 			}
 			# need to handle reduce dimension differently
-			# if ( !is.null(reduceDimension) ) {
-			# 	fun <- reduceDimension.method(reduceDimension$method)
-			# 	if ( is.null(out$mz) ) {
-			# 		args <- c(list(numeric(nrow(object)), mz(object)), reduceDimension)
-			# 		args$method <- NULL
-			# 		out$mz <<- do.call(fun, args)$t
-			# 	}
-			# 	args <- c(list(s, object, .Index, fun, plot), reduceDimension)
-			# 	args$method <- NULL
-			# 	s <- do.call(reduceDimension.do, args)
-			# 	s <- s$x
-			# }
+			if ( !is.null(reduceDimension) ) {
+				fun <- reduceDimension.method(reduceDimension$method)
+				args <- c(list(s, object, .Index, fun, plot), reduceDimension)
+				args$method <- NULL
+				s <- do.call(reduceDimension.do, args)
+				if ( is.null(out$mz) )
+					out$mz <<- s$t
+				s <- s$x
+			}
 			# save the mean spectrum
 			if ( is.null(out$mean) ) {
 				out$mean <<- s
@@ -76,14 +79,18 @@ setMethod("batchProcess", "MSImageSet",
 			}
 			# return only the named peaks if they exist
 			if ( exists("p", inherits=FALSE) ) {
-				names(s) <- featureNames(object)
+				if ( is.null(out$mz) ) {
+					names(s) <- featureNames(object)
+				} else {
+					names(s) <- .format.mz(out$mz)
+				}
 				s <- s[p]
 			}
 			s
 		}, .pixel=pixel, .use.names=FALSE, .simplify=FALSE)
+		# calculate the mean spectrum
 		out$mean <- out$mean / length(data)
-		# if ( is.null(reduceDimension) && is.null(peakPick) ) {
-		if ( is.null(peakPick) ) {
+		if ( is.null(reduceDimension) && is.null(peakPick) ) {
 			# handle feature-preserving pre-processing
 			data <- simplify2array(data)
 			object@imageData <- MSImageData(data=data,
@@ -91,24 +98,23 @@ setMethod("batchProcess", "MSImageSet",
 				storageMode=storageMode(object@imageData),
 				dimnames=list(featureNames(object), pixelNames(object)[pixel]))
 			object@pixelData <- object@pixelData[pixel,]
-			object@featureData[["mean.spectrum"]] <- out$mean
-		# } else if ( !is.null(reduceDimension) && is.null(peakPick) ) {
-		# 	# handle reduce dimension
-		# 	data <- simplify2array(data)
-		# 	feature <- features(object, mz=out$mz)
-		# 	object@featureData <- object@featureData[feature,]
-		# 	object@pixelData <- object@pixelData[pixel,]
-		# 	object@imageData <- MSImageData(data=data,
-		# 		coord=coord(object@pixelData),
-		# 		storageMode=storageMode(imageData(object)),
-		# 		dimnames=list(
-		# 			featureNames(object@featureData),
-		# 			pixelNames(object@pixelData)))
-		# 	object@featureData[["mean.spectrum"]] <- out$mean
-		# 	mz(object) <- out$mz
-		# } else if ( !is.null(peakPick) && is.null(peakAlign) ) {
-		} else {
-			# handle peak data (no alignment)
+			object@featureData[["mean"]] <- out$mean
+		} else if ( !is.null(reduceDimension) ) {
+			# handle reduce dimension
+			data <- simplify2array(data)
+			feature <- features(object, mz=out$mz)
+			object@featureData <- object@featureData[feature,]
+			object@pixelData <- object@pixelData[pixel,]
+			object@imageData <- MSImageData(data=data,
+				coord=coord(object@pixelData),
+				storageMode=storageMode(imageData(object)),
+				dimnames=list(
+					featureNames(object@featureData),
+					pixelNames(object@pixelData)))
+			object@featureData[["mean"]] <- out$mean
+			mz(object) <- out$mz
+		} else if ( !is.null(peakPick) ) {
+			# handle peak data
 			peakData <- data
 			mzData <- lapply(data, function(p) {
 				pmz <- mz(object)[match(names(p), featureNames(object))]
@@ -125,7 +131,7 @@ setMethod("batchProcess", "MSImageSet",
 			iData(imageData(object)) <- data
 			peakData(imageData(object)) <- peakData
 			mzData(imageData(object)) <- mzData
-			object@featureData[["mean.spectrum"]] <- out$mean
+			object@featureData[["mean"]] <- out$mean
 		}
 		if ( !is.null(normalize) )
 			normalization(processingData(object)) <- normalize.method(
@@ -136,19 +142,38 @@ setMethod("batchProcess", "MSImageSet",
 		if ( !is.null(reduceBaseline) )
 			baselineReduction(processingData(object)) <- reduceBaseline.method(
 				reduceBaseline$method, name.only=TRUE)
-		if ( !is.null(peakPick) )
+		if ( isTRUE(reduceDimension$method == "peaks") ) {
+			spectrumRepresentation(processingData(object)) <- "centroid"
+			centroided(processingData(object)) <- TRUE
+		}
+		if ( !is.null(peakPick) ) {
+			.message("batchProcess: Processed spectra not saved. Peaks only will be returned.")
+			if ( is.null(peakAlign) )
+				.message("batchProcess: The returned spectra will be sparse.")
 			peakPicking(processingData(object)) <- peakPick.method(
 				peakPick$method, name.only=TRUE)
+		}
+		if ( !is.null(peakAlign) ) {
+			# handle peak alignment (can't be integrated into earlier pixelApply)
+			.message("batchProcess: Dispatching to peakAlign method.")
+			args <- c(list(object=object, pixel=pixel, plot=plot), peakAlign)
+			object <- do.call("peakAlign", args)
+		}
+		.message("batchProcess: Done.")
 		.time.stop()
 		object
 	})
 
-batch.args <- function(args) {
+batch.args <- function(args, msg=TRUE) {
 	if ( (is.logical(args) && !args) || is.null(args) ) {
 		NULL
-	} else if ( isTRUE(args) ) {
-		list()
 	} else {
-		as.list(args)
+		if ( msg )
+			.message("batchProcess: ", deparse(substitute(args)), " = TRUE")
+		if ( isTRUE(args) ) {
+			list()
+		} else {
+			as.list(args)
+		}
 	}
 }

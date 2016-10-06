@@ -52,9 +52,14 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		prochistory(processingData(object)) <- .history()
-		.message("peakAlign: Generating reference from mean mass spectrum.")
-		spectrum <- featureApply(ref, mean)
-		peaks <- mz(ref)[localMaximaLogical(spectrum)]
+		if ( is.null(fData(ref)[["mean"]]) ) {
+			.message("peakAlign: Generating reference from mean mass spectrum.")
+			spectrum <- featureApply(ref, mean)
+		} else {
+			.message("peakAlign: Using 'mean' from featureData of ref.")
+			spectrum <- fData(ref)[["mean"]]
+		}
+		peaks <- mz(ref)[localMaximaLogical(spectrum)]	
 		peakAlign(object, ref=peaks, ...)
 	})
 
