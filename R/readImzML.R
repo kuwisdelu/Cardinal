@@ -44,7 +44,7 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 				`64-bit integer`="long",
 				`32-bit float`="float",
 				`64-bit float`="double")
-			intensity <- matter_mat(filepath=ibdpath, datamode=datamode,
+			intensity <- matter_mat(paths=ibdpath, datamode=datamode,
 				offset=intensity.offset, extent=intensity.length)
 		} else {
 			intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
