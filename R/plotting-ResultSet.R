@@ -71,7 +71,8 @@ setMethod("plot",
 		} else {
 			which <- do.call("pixels", c(list(data), model))
 		}
-		data <- data[,which]
+		if ( !setequal(which, pixels(data)) )
+			data <- data[,which]
 		if ( missing(column) ) {
 			column <- list(column=unique(df$column))
 		} else if ( is.numeric(column) ) {
@@ -165,7 +166,8 @@ setMethod("image",
 		} else {
 			which <- do.call("features", c(list(data), model))
 		}
-		data <- data[which,]
+		if ( !setequal(which, features(data)) )
+			data <- data[which,]
 		if ( missing(column) ) {
 			column <- list(column=unique(df$column))
 		} else if ( is.numeric(column) ) {
@@ -200,6 +202,14 @@ setMethod("image",
 		for ( i in fold ) image(resultData(x)[[i]], ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "CrossValidated"),
+	function(x, fold = 1:length(x), layout, ...)
+	{
+		if ( !missing(layout) ) .setup.layout(layout)
+		for ( i in fold ) image3D(resultData(x)[[i]], ...)
+	})
+
 #### Plotting for PCA ####
 
 setMethod("plot",
@@ -221,6 +231,16 @@ setMethod("image",
 	{
 		mode <- match.arg(mode)
 		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "PCA"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = "scores",
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
 	})
 
 #### Plotting for PLS ####
@@ -247,6 +267,16 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "PLS"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = c("fitted", "scores", "y"),
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
+	})
+
 #### Plotting for OPLS ####
 
 setMethod("plot",
@@ -269,6 +299,16 @@ setMethod("image",
 	{
 		mode <- match.arg(mode)
 		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "OPLS"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = c("fitted", "scores", "Oscores", "y"),
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
 	})
 
 #### Plotting for SpatialShrunkenCentroids ####
@@ -294,6 +334,16 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "SpatialShrunkenCentroids"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = c("probabilities", "classes", "scores"),
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
+	})
+
 #### Plotting for SpatialKMeans ####
 
 setMethod("plot",
@@ -315,4 +365,14 @@ setMethod("image",
 	{
 		mode <- match.arg(mode)
 		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "SpatialKMeans"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = "cluster",
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
 	})

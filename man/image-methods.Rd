@@ -16,6 +16,14 @@
 \alias{image3D}
 \alias{image3D-methods}
 \alias{image3D,SImageSet-method}
+\alias{image3D,MSImageSet-method}
+\alias{image3D,ResultSet-method}
+\alias{image3D,CrossValidated-method}
+\alias{image3D,PCA-method}
+\alias{image3D,PLS-method}
+\alias{image3D,OPLS-method}
+\alias{image3D,SpatialKMeans-method}
+\alias{image3D,SpatialShrunkenCentroids-method}
 
 \title{Plot the Pixel-Space of an Imaging Dataset}
 
@@ -50,6 +58,8 @@
     subset = TRUE,
     lattice = FALSE)
 
+\S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
+
 \S4method{image}{MSImageSet}(x, formula = ~ x * y,
     feature = features(x, mz=mz),
     feature.groups,
@@ -71,7 +81,13 @@
 
 \S4method{image}{CrossValidated}(x, fold = 1:length(x), layout, \dots)
 
+\S4method{image3D}{CrossValidated}(x, fold = 1:length(x), layout, \dots)
+
 \S4method{image}{PCA}(x, formula = substitute(mode ~ x * y),
+    mode = "scores",
+    \dots)
+
+\S4method{image3D}{PCA}(x, formula = substitute(mode ~ x * y * z),
     mode = "scores",
     \dots)
 
@@ -79,7 +95,15 @@
     mode = c("fitted", "scores", "y"),
     \dots)
 
+\S4method{image3D}{PLS}(x, formula = substitute(mode ~ x * y * z),
+    mode = c("fitted", "scores", "y"),
+    \dots)
+
 \S4method{image}{OPLS}(x, formula = substitute(mode ~ x * y),
+    mode = c("fitted", "scores", "Oscores", "y"),
+    \dots)
+
+\S4method{image3D}{OPLS}(x, formula = substitute(mode ~ x * y * z),
     mode = c("fitted", "scores", "Oscores", "y"),
     \dots)
 
@@ -87,11 +111,17 @@
     mode = c("probabilities", "classes", "scores"),
     \dots)
 
+\S4method{image3D}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y * z),
+    mode = c("probabilities", "classes", "scores"),
+    \dots)
+
 \S4method{image}{SpatialKMeans}(x, formula = substitute(mode ~ x * y),
     mode = "cluster",
     \dots)
 
-\S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
+\S4method{image3D}{SpatialKMeans}(x, formula = substitute(mode ~ x * y * z),
+    mode = "cluster",
+    \dots)
 
 }
 

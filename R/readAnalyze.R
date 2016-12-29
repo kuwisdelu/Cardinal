@@ -25,7 +25,7 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 	# read image file
 	.log("readAnalyze: Reading IMG file '", imgpath, "'")
 	if ( attach.only ) {
-		if ( "package:matter" %in% search() ) {
+		if ( require(matter) ) {
 			datamode <- switch(as.character(datatype),
 				`4` = "short",
 				`8` = "int",

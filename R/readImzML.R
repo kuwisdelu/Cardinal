@@ -37,7 +37,7 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 	if ( attach.only ) {
 		if ( ibdtype == "processed" )
 			.stop("readImzML: Data binary type 'processed' is not currently supported for attach only.")
-		if ( "package:matter" %in% search() ) {
+		if ( require(matter) ) {
 			datamode <- switch(intensity.datatype,
 				`16-bit integer`="short",
 				`32-bit integer`="int",
