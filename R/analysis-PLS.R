@@ -21,13 +21,20 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		}
 		.time.start()
 		.message("PLS: Centering data.")
-		Xt <- as.matrix(iData(x))
-		Xt <- scale(t(Xt), scale=scale)
-		Y <- scale(y, scale=scale)
+		Xt <- t(as.matrixlike(iData(x), supported="matrix"))
+		Xt <- scale(Xt, center=center, scale=scale)
+		Y <- scale(y, center=center, scale=scale)
+		if ( center ) {
+			center <- attr(Xt, "scaled:center")
+			Ycenter <- attr(Y, "scaled:center")
+		} else {
+			Ycenter <- FALSE
+		}
 		if ( scale ) {
 			scale <- attr(Xt, "scaled:scale")
 			Yscale <- attr(Y, "scaled:scale")
 		} else {
+			Yscale <- FALSE
 			scale <- rep(1, ncol(Xt))
 			names(scale) <- colnames(Xt)
 			Yscale <- rep(1, ncol(Y))
@@ -85,9 +92,8 @@ setMethod("predict", "PLS",
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
-		Xt <- as.matrix(iData(newx))
-		Xt <- scale(t(Xt), center=object$center[[1]],
-			scale=object$scale[[1]])
+		Xt <- t(as.matrixlike(iData(newx), supported="matrix"))
+		Xt <- scale(Xt, center=object$center[[1]], scale=object$scale[[1]])
 		Y <- object$y[[1]]
 		if ( missing(newy) ) {
 			missing.newy <- TRUE

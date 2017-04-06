@@ -9,6 +9,7 @@ setMethod("spatialKMeans",
 		ncomp = 20, ...)
 	{
 		method <- match.arg(method)
+		iData(x) <- as.matrixlike(iData(x), supported="matrix")
 		save.seed()
 		rs <- sort(r)
 		ks <- sort(k)

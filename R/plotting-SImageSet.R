@@ -104,7 +104,11 @@ setMethod("plot",
 		# set up the groups and subset
 		subset <- rep(subset, length.out=nrow(data))
 		if ( superpose && is.null(groups) ) {
-			groups <- data$.pixel.groups
+			if ( is.null(data$.pixel.groups) ) {
+				groups <- data$.value.groups
+			} else {
+				groups <- data$.pixel.groups
+			}
 			groupkey <- list(text=levels(groups), col=col)
 		} else if ( !is.null(groups) ) {
 			groups <- factor(rep(groups, ncond) ,levels=levels(groups))
@@ -244,7 +248,7 @@ setMethod("image",
 		zlim,
 		layout,
 		asp = 1,
-		col = rainbow(nlevels(feature.groups)),
+		col = rainbow(nlevels(groups)),
 		col.regions = intensity.colors(100),
 		colorkey = !is3d,
 		subset = TRUE,
@@ -385,7 +389,11 @@ setMethod("image",
 		# set up the groups and subset
 		subset <- rep(subset, ncond)
 		if ( superpose && is.null(groups) ) {
-			groups <- data$.feature.groups
+			if ( is.null(data$.feature.groups) ) {
+				groups <- data$.value.groups
+			} else {
+				groups <- data$.feature.groups
+			}
 			groupkey <- list(text=levels(feature.groups), col=col)
 		} else if ( !is.null(groups) ) {
 			groups <- factor(rep(groups, ncond), levels=levels(groups))

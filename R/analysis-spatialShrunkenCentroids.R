@@ -6,6 +6,7 @@ setMethod("spatialShrunkenCentroids",
 		iter.max=10, ...)
 	{
 		method <- match.arg(method)
+		iData(x) <- as.matrixlike(iData(x), supported="matrix")
 		rs <- sort(r)
 		ks <- sort(k)
 		ss <- sort(s)
@@ -55,6 +56,7 @@ setMethod("spatialShrunkenCentroids",
 		priors = table(y), ...)
 	{
 		method <- match.arg(method)
+		iData(x) <- as.matrixlike(iData(x), supported="matrix")
 		priors <- priors / sum(priors)
 		rs <- sort(r)
 		ss <- sort(s)
@@ -111,6 +113,7 @@ setMethod("predict",
 	{
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
+		iData(newx) <- as.matrixlike(iData(newx), supported="matrix")
 		.time.start()
 		if ( missing(newy) ) {
 			missing.newy <- TRUE

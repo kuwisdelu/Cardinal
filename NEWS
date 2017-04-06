@@ -1,4 +1,28 @@
 
+<<<<<<< HEAD
+=======
+CHANGES IN VERSION 1.7.2 [2017-3-22]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o In 'image' method, 'superpose = TRUE' now supports multiple LHS
+        arguments in the formula (e.g., formula = a + b ~ x * y)
+
+CHANGES IN VERSION 1.7.1 [2016-11-29]
+-----------------------------------
+
+NEW FEATURES
+
+    o PCA is now supported for larger-than-memory on-disk datasets
+    o External 'matter' matrices replace 'Binmat' matrices for on-disk support
+    o Added 'image3D' aliases for all 'ResultSet' subclasses
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added 'matter' package to Depends list
+
+>>>>>>> 41b2923... v.1.7.2 bug fixes and cleanup
 CHANGES IN VERSION 1.5.2 [2016-10-6]
 -----------------------------------
 

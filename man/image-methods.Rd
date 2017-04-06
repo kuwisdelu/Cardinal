@@ -44,7 +44,7 @@
     zlim,
     layout,
     asp = 1,
-    col = rainbow(nlevels(feature.groups)),
+    col = rainbow(nlevels(groups)),
     col.regions = intensity.colors(100),
     colorkey = !is3d,
     subset = TRUE,

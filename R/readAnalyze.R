@@ -25,21 +25,18 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 	# read image file
 	.log("readAnalyze: Reading IMG file '", imgpath, "'")
 	if ( attach.only ) {
-		if ( "package:matter" %in% search() ) {
-			datamode <- switch(as.character(datatype),
-				`4` = "short",
-				`8` = "int",
-				`16` = "float",
-				`64` = "double")
-			data <- matter_mat(paths=imgpath, datamode=datamode, nrow=dim[1], ncol=dim[2])
-		} else {
-			datatype <- switch(as.character(datatype),
-				`4` = "16-bit integer",
-				`8` = "32-bit integer",
-				`16` = "32-bit float",
-				`64` = "64-bit float")
-			data <- Binmat(files=imgpath, datatype=datatype, nrow=dim[1], ncol=dim[2])
-		}
+		datamode <- switch(as.character(datatype),
+			`4` = "short",
+			`8` = "int",
+			`16` = "float",
+			`64` = "double")
+		data <- matter_mat(paths=imgpath, datamode=datamode, nrow=dim[1], ncol=dim[2])
+		# datatype <- switch(as.character(datatype),
+		# 	`4` = "16-bit integer",
+		# 	`8` = "32-bit integer",
+		# 	`16` = "32-bit float",
+		# 	`64` = "64-bit float")
+		# data <- Binmat(files=imgpath, datatype=datatype, nrow=dim[1], ncol=dim[2])
 	} else {
 		data <- .Call("readAnalyzeIMG", imgpath, dim, datatype)
 	}
