@@ -28,7 +28,7 @@
     \item{x}{The imaging dataset for which to calculate the principal components.}
     \item{ncomp}{The number of principal components to calculate.}
     \item{method}{The function used to calculate the singular value decomposition.}
-    \item{center}{Should the data be centered first? This is passed to \code{center}.}
+    \item{center}{Should the data be centered first? This is passed to \code{scale}.}
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Ignored.}
