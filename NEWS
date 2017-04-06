@@ -1,5 +1,6 @@
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 CHANGES IN VERSION 1.7.2 [2017-3-22]
 -----------------------------------
@@ -9,6 +10,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o In 'image' method, 'superpose = TRUE' now supports multiple LHS
         arguments in the formula (e.g., formula = a + b ~ x * y)
 
+=======
+>>>>>>> e51eb75... v1.7.1 updates for matter compatibility
 CHANGES IN VERSION 1.7.1 [2016-11-29]
 -----------------------------------
 
@@ -22,7 +25,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Added 'matter' package to Depends list
 
+<<<<<<< HEAD
 >>>>>>> 41b2923... v.1.7.2 bug fixes and cleanup
+=======
+>>>>>>> e51eb75... v1.7.1 updates for matter compatibility
 CHANGES IN VERSION 1.5.2 [2016-10-6]
 -----------------------------------
 

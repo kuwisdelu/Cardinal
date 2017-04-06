@@ -20,6 +20,7 @@
 \usage{
     \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 20,
         method = "nipals",
+        center = TRUE,
         scale = FALSE,
         iter.max = 100, \dots)
     
@@ -36,6 +37,7 @@
     \item{y}{The response variable, which can be a \code{matrix} or a \code{vector} for ordinary PLS, or a \code{factor} or a \code{character} for PLS-DA.}
     \item{ncomp}{The number of PLS components to calculate.}
     \item{method}{The function used to calculate the projection.}
+    \item{center}{Should the data be centered first? This is passed to \code{scale}.}
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Passed to the next PLS method.}

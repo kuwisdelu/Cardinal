@@ -32,15 +32,18 @@ setMethod("summary", "PCA",
 		}))
 		row.names(topLabels) <- NULL
 		which <- which.max(unlist(object$ncomp))
+		ncomp <- object$ncomp[[which]]
 		sdev <- object$sdev[[which]]
-		totvar <- object[[which]]$totvar
-		importance <- t(simplify2array(list(sdev,
-			sdev^2 / totvar,
-			cumsum(sdev^2 / totvar))))
-		dimnames(importance)  <- list(c("Standard deviation",
-				"Proportion of Variance",
-				"Cumulative"),
-			paste0("PC", seq_along(sdev)))
+		importance <- matrix(sdev, ncol=ncomp,
+			dimnames=list("Standard deviation", paste0("PC", 1:ncomp)))
+		# totvar <- object[[which]]$totvar		
+		# importance <- t(simplify2array(list(sdev,
+		# 	sdev^2 / totvar,
+		# 	cumsum(sdev^2 / totvar))))
+		# dimnames(importance)  <- list(c("Standard deviation",
+		# 		"Proportion of Variance",
+		# 		"Cumulative"),
+		# 	paste0("PC", seq_along(sdev)))
 		out <- list(topLabels=topLabels, importance=importance,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PCA"
@@ -53,11 +56,12 @@ print.summary.PCA <- function(x, ...) {
 
 plot.summary.PCA <- function(x, y, ...) {
 	sdev <- x$importance["Standard deviation",]
-	var <- x$importance["Proportion of Variance",]
-	cum <- x$importance["Cumulative",]
-	data <- data.frame(pc=seq_along(var), sdev=sdev, var=var, cum=cum)
-	plot(var ~ pc, data=data, type='b', xlab="PC",
-		ylab="Proportion of Variance", ...)
+	# var <- x$importance["Proportion of Variance",]
+	# cum <- x$importance["Cumulative",]
+	# data <- data.frame(pc=seq_along(var), sdev=sdev, var=var, cum=cum)
+	data <- data.frame(pc=seq_along(var), sdev=sdev)
+	plot(sdev ~ pc, data=data, type='b', xlab="PC",
+		ylab="Standard deviation", ...)
 }
 
 setMethod("summary", "PLS",

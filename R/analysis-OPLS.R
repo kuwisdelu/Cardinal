@@ -4,6 +4,7 @@
 setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"), 
 	function(x, y, ncomp = 20,
 		method = "nipals",
+		center = TRUE,
 		scale = FALSE,
 		keep.Xnew = TRUE,
 		iter.max = 100, ...)
@@ -41,14 +42,12 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 			Yscale <- rep(1, ncol(Y))
 			names(Yscale) <- colnames(Y)
 		}
-		center <- attr(Xt, "scaled:center")
-		Ycenter <- attr(Y, "scaled:center")
 		.message("OPLS: Fitting orthogonal partial least squares components.")
 		fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
 		result <- lapply(ncomps, function(ncomp) {
 			append(fit, list(y=newy, ncomp=ncomp,
-				method=method, scale=scale, center=center,
-				Yscale=Yscale, Ycenter=Ycenter))
+				method=method, center=center, scale=scale,
+				Ycenter=Ycenter, Yscale=Yscale))
 		})
 		model <- AnnotatedDataFrame(
 			data=data.frame(ncomp=sapply(result, function(fit) fit$ncomp)),
@@ -107,7 +106,17 @@ setMethod("predict", "OPLS",
 				loadings=res$loadings, Oloadings=res$Oloadings,
 				weights=res$weights, Oweights=res$Oweights,
 				Yweights=res$Yweights)
-			pred$fitted <- t(res$Yscale * t(pred$fitted) + res$Ycenter)
+			if ( is.logical(res$Ycenter) && !Ycenter ) {
+				Ycenter <- 0
+			} else {
+				Ycenter <- res$Ycenter
+			}
+			if ( is.logical(res$Yscale) && !Yscale ) {
+				Yscale <- 1
+			} else {
+				Yscale <- res$Yscale
+			}
+			pred$fitted <- t(Yscale * t(pred$fitted) + Ycenter)
 			if ( is.factor(object$y) || !missing.newy ) {
 				pred$classes <- factor(apply(pred$fitted, 1, which.max))
 				if ( !is.null(attr(newy, "OPLS:y")) ) {

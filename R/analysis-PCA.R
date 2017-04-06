@@ -3,8 +3,10 @@
 
 setMethod("PCA", signature = c(x = "SImageSet"), 
 	function(x, ncomp = 20,
-		method = c("irlba", "svd"),
-		scale = FALSE, ...)
+		method = c("irlba", "nipals", "svd"),
+		center = TRUE,
+		scale = FALSE,
+		iter.max = 100, ...)
 	{
 		method <- match.arg(method)
 		ncomps <- sort(ncomp)
@@ -14,12 +16,13 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		.message("PCA: Fitting principal components.")
 		if ( max(ncomps) > nrow(x) )
 			.stop("PCA: Can't fit more components than extent of dataset")
-		fit <- .PCA.fit(x, ncomp=max(ncomps), method=method, scale=scale)
+		fit <- .PCA.fit(x, ncomp=max(ncomps), method=method,
+			center=center, scale=scale, iter.max=iter.max)
 		result <- lapply(ncomps, function(ncomp) {
 			loadings <- fit$loadings[,1:ncomp,drop=FALSE]
 			scores <- fit$scores[,1:ncomp,drop=FALSE]
 			sdev <- fit$sdev[1:ncomp]
-			list(scores=scores, loadings=loadings, sdev=sdev, totvar=fit$totvar,
+			list(scores=scores, loadings=loadings, sdev=sdev, # totvar=fit$totvar,
 				method=method, ncomp=ncomp, center=fit$center, scale=fit$scale)
 		})
 		model <- AnnotatedDataFrame(
@@ -73,21 +76,27 @@ setMethod("predict", "PCA",
 		center <- attr(Xt, "scaled:center")
 	if ( scale )
 		scale <- attr(Xt, "scaled:scale")
-	center <- attr(Xt, "scaled:center")
-	if ( method == "irlba" ) {
-		svd <- irlba(Xt, nu=0, nv=ncomp)
+	if ( method == "nipals" ) {
+		nipals.out <- nipals.PCA(Xt, ncomp=ncomp, iter.max=iter.max)
+		sdev <- nipals.out$sdev
+		loadings <- nipals.out$loadings
+		scores <- nipals.out$scores
 	} else {
-		svd <- svd(Xt, nu=0, nv=ncomp)
+		if ( method == "irlba" ) {
+			sv <- irlba(Xt, nu=ncomp, nv=ncomp, fastpath=is.matrix(Xt))
+		} else if ( method == "svd") {
+			sv <- svd(Xt, nu=ncomp, nv=ncomp)
+		}
+		sdev <- sv$d[1:ncomp] / sqrt(max(1, nrow(Xt) - 1))
+		loadings <- sv$v
+		scores <- Xt %*% loadings
 	}
-	totvar <- sum(apply(Xt, 2, var))
-	sdev <- svd$d[1:ncomp] / sqrt(max(1, nrow(Xt) - 1))
-	loadings <- svd$v
-	scores <- Xt %*% loadings
+	# totvar <- sum(apply(Xt, 2, var))
 	rownames(loadings) <- featureNames(x)
 	colnames(loadings) <- paste("PC", 1:ncomp, sep="")
 	rownames(scores) <- pixelNames(x)
 	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev, totvar=totvar,
+	list(scores=scores, loadings=loadings, sdev=sdev, # totvar=totvar,
 		method=method, center=center, scale=scale)
 }
 

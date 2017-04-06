@@ -5,6 +5,8 @@ import("BiocGenerics")
 
 import("ProtGenerics")
 
+import("matter")
+
 import("methods")
 
 import("stats4")
