@@ -10,7 +10,7 @@ sizeof <- function(datatype) {
 }
 
 ## Coerce to a supported matrix-like array object
-as.matrixy <- function(x, supported="matrix") {
+as.matrixlike <- function(x, supported="matrix") {
 	err <- function(e) .stop("this function supports only in-memory R matrices")
 	if ( any(sapply(supported, is, object=x)) ) {
 		x

@@ -23,7 +23,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		}
 		.time.start()
 		.message("OPLS: Centering data.")
-		Xt <- t(as.matrixy(iData(x), supported="matrix"))
+		Xt <- t(as.matrixlike(iData(x), supported="matrix"))
 		Xt <- scale(Xt, center=center, scale=scale)
 		Y <- scale(y, center=center, scale=scale)
 		if ( center ) {
@@ -37,10 +37,10 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 			Yscale <- attr(Y, "scaled:scale")
 		} else {
 			Yscale <- FALSE
-			# scale <- rep(1, ncol(Xt))
-			# names(scale) <- colnames(Xt)
-			# Yscale <- rep(1, ncol(Y))
-			# names(Yscale) <- colnames(Y)
+			scale <- rep(1, ncol(Xt))
+			names(scale) <- colnames(Xt)
+			Yscale <- rep(1, ncol(Y))
+			names(Yscale) <- colnames(Y)
 		}
 		.message("OPLS: Fitting orthogonal partial least squares components.")
 		fit <- .OPLS.fit(Xt, Y, ncomp=max(ncomps), method=method, iter.max=iter.max)
@@ -92,7 +92,7 @@ setMethod("predict", "OPLS",
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
-		Xt <- t(as.matrixy(iData(x), supported="matrix"))
+		Xt <- t(as.matrixlike(iData(newx), supported="matrix"))
 		Xt <- scale(Xt, center=object$center[[1]], scale=object$scale[[1]])
 		Y <- object$y[[1]]
 		if ( missing(newy) ) {

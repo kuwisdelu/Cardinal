@@ -54,6 +54,10 @@ spatial.beta <- function(x, neighbors) {
 ## 'na.rm' replaces out-of-bound indices with a pixel's own index
 spatial.neighbors <- function(x, r, indices, na.rm=FALSE) {
 	coord <- coord(x)
+	if ( length(r) > 1 ) {
+		warning("'r' must be length 1, only the first element will be used")
+		r <- r[1]
+	}
 	if ( r == 0 )
 		return(matrix(seq_len(nrow(coord)), ncol=nrow(coord)))
 	coord <- data.frame(lapply(coord, as.integer))

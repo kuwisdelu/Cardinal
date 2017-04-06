@@ -67,9 +67,9 @@ setMethod("predict", "PCA",
 
 .PCA.fit <- function(x, ncomp, method, center, scale, iter.max) {
 	if ( method == "irlba" ) {
-		Xt <- t(as.matrixy(iData(x), supported=c("matrix", "matter")))
+		Xt <- t(as.matrixlike(iData(x), supported=c("matrix", "matter")))
 	} else {
-		Xt <- t(as.matrixy(iData(x), supported="matrix"))
+		Xt <- t(as.matrixlike(iData(x), supported="matrix"))
 	}
 	Xt <- scale(Xt, center=center, scale=scale)
 	if ( center )
@@ -101,7 +101,7 @@ setMethod("predict", "PCA",
 }
 
 .PCA.predict <- function(x, ncomp, loadings, center, scale) {
-	Xt <- t(as.matrixy(iData(x), supported=c("matrix", "matter")))
+	Xt <- t(as.matrixlike(iData(x), supported=c("matrix", "matter")))
 	Xt <- scale(Xt, center=center, scale=scale)
 	scores <- Xt %*% loadings[,1:ncomp,drop=FALSE]
 	sdev <- apply(scores, 2, sd)
