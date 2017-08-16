@@ -4,6 +4,7 @@ TODO for Cardinal package
 
 Priority: High
 -Graphical user interface
+-Larger-than-memory support for 'processed' imzML
 -Utility methods for changing experimental design
 -Statistical hypothesis testing
 
