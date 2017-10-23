@@ -3,15 +3,16 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
--Graphical user interface
--Larger-than-memory support for 'processed' imzML
--Utility methods for changing experimental design
--Statistical hypothesis testing
+- Change "drop=NA" behavior to use "drop=FALSE"
+- Larger-than-memory support for 'processed' imzML
+- Utility methods for changing experimental design
+- Statistical hypothesis testing
 
 Priority: Medium
--Parse more metadata from imzML datasets for MIAPE-Imaging
--Optical image registration
+- Graphical user interface
+- Parse more metadata from imzML datasets for MIAPE-Imaging
+- Optical image registration
 
 Priority: Low
--Native writing of imzML and Analyze 7.5 formats
--Support for more file formats (Bruker, etc.)
+- Native writing of imzML and Analyze 7.5 formats
+- Support for more file formats (Bruker, etc.)

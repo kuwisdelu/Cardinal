@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 1.9.1 [2017-10-23]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in package dependency 'matter' affecting the size
+        of datasets that can be processed with 'batchProcess'
+    o Fixed bug where bin sizes for units='ppm' were twice as wide
+        as they should be in 'readImzML' and 'reduceDimension'
+
 CHANGES IN VERSION 1.7.2 [2017-3-22]
 -----------------------------------
 

@@ -59,13 +59,13 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 				mzout <- seq.ppm(
 					from=floor(mz.min),
 					to=ceiling(mz.max),
-					ppm=mass.accuracy * 2)
+					ppm=mass.accuracy) # ppm == half-bin-widths
 				error <- mass.accuracy * 1e-6 * mzout
 			} else {
 				mzout <- seq(
 					from=floor(mz.min),
 					to=ceiling(mz.max),
-					by=mass.accuracy * 2)
+					by=mass.accuracy * 2)  # by == full-bin-widths
 				error <- rep(mass.accuracy, length(mzout))
 			}
 			mz.bins <- c(mzout[1] - error[1], mzout + error)

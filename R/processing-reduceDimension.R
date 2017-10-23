@@ -85,11 +85,11 @@ reduceDimension.method <- function(method, name.only=FALSE) {
 reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"), fun=sum, ...) {
 	units <- match.arg(units)
 	if ( units == "ppm" ) {
-		tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width)
-		width <- width * 1e-6 * tout
+		tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width / 2)
+		width <- width * 1e-6 * tout  # ppm == half-bin-widths
 	} else {
 		tout <- seq(from=offset + floor(min(t)), to=ceiling(max(t)), by=width)
-		width <- rep(width, length(tout))
+		width <- rep(width, length(tout)) # by == full-bin-widths
 	}
 	if ( length(tout) > length(t) )
 		.stop("reduceDimension.bin: 'width' is too small.")
