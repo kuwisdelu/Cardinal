@@ -20,9 +20,9 @@ To view other vignettes, type \code{browseVignettes("Cardinal")}.
 }
 
 \author{
-Kyle D. Bemis
+Kylie A. Bemis
 
-Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
+Maintainer: Kylie A. Bemis <kbemis@purdue.edu>
 }
 
 \keyword{package}

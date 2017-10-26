@@ -26,7 +26,7 @@ pData(object) <- value
     \code{pixelData} returns an object containing information on pixel variables and pixel metadata. \code{pixelData} returns an object containing information on pixel variables and pixel metadata. \code{pData} returns a \code{data.frame} with pixels as rows and variables as columns.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{iSet}},

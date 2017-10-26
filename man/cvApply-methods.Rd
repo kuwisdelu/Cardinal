@@ -32,7 +32,7 @@
     An object of class 'CrossValidated', which is derived from \code{\linkS4class{ResultSet}}.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\link[Cardinal]{PLS}},

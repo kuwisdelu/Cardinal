@@ -29,7 +29,7 @@ alpha.colors(n, col="red", alpha.power=2, alpha=(seq_len(n)/n)^alpha.power)
 	A pallete of colors.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \examples{
 col <- intensity.colors(100^2)

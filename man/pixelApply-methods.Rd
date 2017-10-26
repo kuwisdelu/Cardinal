@@ -68,7 +68,7 @@
     If \code{.simplify = FALSE}, a list. Otherwise, a matrix, or a higher-dimensional array if grouping is specified.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}}

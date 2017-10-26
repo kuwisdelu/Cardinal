@@ -33,7 +33,7 @@ coordLabels(object) <- value
     \code{coord} returns a \code{data.frame} with each row containing coordinates for an individual pixel. \code{coordLabels} retrieves the coordinate labels.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{iSet}},

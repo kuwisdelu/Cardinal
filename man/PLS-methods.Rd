@@ -66,7 +66,7 @@
     }
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \references{
     Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695

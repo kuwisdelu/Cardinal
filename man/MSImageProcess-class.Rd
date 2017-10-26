@@ -109,7 +109,7 @@
     }
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
     \code{\linkS4class{MSImageSet}}

@@ -82,7 +82,7 @@
     See \code{\linkS4class{iSet}} for additional methods.
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
     \code{\link[Cardinal]{iSet}},

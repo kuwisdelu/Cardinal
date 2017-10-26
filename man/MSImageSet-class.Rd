@@ -128,7 +128,7 @@ MSImageSet(
     See \code{\linkS4class{iSet}} and \code{\linkS4class{SImageSet}} for additional methods.
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
     \code{\linkS4class{iSet}},

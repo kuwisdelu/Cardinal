@@ -156,7 +156,7 @@
 }
 
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 
 \seealso{

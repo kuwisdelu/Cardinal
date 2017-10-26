@@ -24,7 +24,7 @@
     A new imaging dataset of the same class with coregistered images.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\link[Cardinal]{spatialShrunkenCentroids}}

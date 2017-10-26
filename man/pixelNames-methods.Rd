@@ -21,7 +21,7 @@ pixelNames(object) <- value
     \code{pixelNames} returns an object containing information on pixel names.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{iSet}},

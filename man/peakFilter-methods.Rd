@@ -44,7 +44,7 @@ peakFilter.freq(x, freq.min=length(x) / 100, \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the filtered peaks.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

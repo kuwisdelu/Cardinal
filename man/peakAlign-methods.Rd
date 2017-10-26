@@ -62,7 +62,7 @@ peakAlign.DP(x, y, gap=0, \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the peak aligned spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

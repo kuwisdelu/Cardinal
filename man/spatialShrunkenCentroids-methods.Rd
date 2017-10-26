@@ -63,7 +63,7 @@
     }
 }
 \author{
-    Kyle D. Bemis
+    Kylie A. Bemis
 }
 \references{
     Tibshirani, R., Hastie, T., Narasimhan, B., & Chu, G. (2003). Class Prediction by Nearest Shrunken Centroids, with Applications to DNA Microarrays. Statistical Science, 18, 104-117.

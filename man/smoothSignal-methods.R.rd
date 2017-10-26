@@ -56,7 +56,7 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the smoothed spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

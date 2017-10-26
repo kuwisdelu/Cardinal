@@ -59,7 +59,7 @@
     A \code{data.frame} with the top-ranked labels from the analysis.
 }
 \author{
-    Kyle D. Bemis
+    Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{ResultSet}},

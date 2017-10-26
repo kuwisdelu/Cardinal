@@ -94,7 +94,7 @@ IAnnotatedDataFrame(data, varMetadata,
 	The suggested structure for 3D imaging experiments is to create an additional variable solely to refer to the spatial dimension (e.g., 'z') and treat it separately from the 'sample'. Therefore, in a 3D imaging experiment with a single sample, the 'labelType' for 'sample' would be 'sample'.
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
 	\code{\link[Biobase]{AnnotatedDataFrame}},

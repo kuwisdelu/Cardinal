@@ -40,7 +40,7 @@ standardizeSamples.sum(x, sum=length(x), \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the ion images standardized across samples.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

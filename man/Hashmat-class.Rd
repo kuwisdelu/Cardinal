@@ -117,7 +117,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
     }
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
     \code{\link[base]{matrix}},

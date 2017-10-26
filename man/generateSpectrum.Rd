@@ -59,7 +59,7 @@ generateSpectrum(n, peaks = 100,
 }
 
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 
 \seealso{

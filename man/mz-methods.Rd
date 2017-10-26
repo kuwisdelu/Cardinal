@@ -22,7 +22,7 @@ mz(object) <- value
     \code{mz} returns a numeric vector of m/z values.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}}

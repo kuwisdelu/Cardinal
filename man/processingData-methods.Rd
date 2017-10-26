@@ -21,7 +21,7 @@ processingData(object) <- value
     \code{processingData} returns pre-processing information.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
 	\code{\linkS4class{MSImageProcess}},

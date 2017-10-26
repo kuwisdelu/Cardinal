@@ -62,7 +62,7 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the peak picking spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \references{
     Mantini, D., Petrucci, F., Pieragostino, D., Del Boccio, P., Di Nicola, M., Di Ilio, C., et al. (2007). LIMPIC: a computational method for the separation of protein MALDI-TOF-MS signals from noise. BMC Bioinformatics, 8(101), 101. doi:10.1186/1471-2105-8-101

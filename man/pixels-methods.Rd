@@ -40,7 +40,7 @@
     A numeric vector of pixel or feature indices.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\link[Cardinal]{PLS}},

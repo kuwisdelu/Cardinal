@@ -91,7 +91,7 @@ ImageData(\dots,
     }
 }
 
-\author{Kyle D. Bemis}
+\author{Kylie A. Bemis}
 
 \seealso{
     \code{\link[Biobase]{AssayData}},

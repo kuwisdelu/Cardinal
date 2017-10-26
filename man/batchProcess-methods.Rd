@@ -51,7 +51,7 @@
     An object of class \code{\linkS4class{MSImageSet}} with the processed spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

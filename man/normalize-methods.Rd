@@ -45,7 +45,7 @@ normalize.tic(x, tic=length(x), \dots)
     An object of class \code{\linkS4class{MSImageSet}} with the normalized spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},

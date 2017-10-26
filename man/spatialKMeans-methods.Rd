@@ -48,7 +48,7 @@
     }
 }
 \author{
-    Kyle D. Bemis
+    Kylie A. Bemis
 }
 \references{
     Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230-i238. doi:10.1093/bioinformatics/btr246

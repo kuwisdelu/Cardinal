@@ -76,7 +76,7 @@ reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
     An object of class \code{\linkS4class{MSImageSet}} with the dimension-reduced spectra.
 }
 \author{
-	Kyle D. Bemis
+	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
