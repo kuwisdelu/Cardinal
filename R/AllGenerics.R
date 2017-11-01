@@ -26,8 +26,8 @@ setGeneric("image")
 ## -----------------------------------------------
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
-setGeneric("coordinates", function(object) coord(object))
-setGeneric("coordinates<-", function(object, value) coord(object, value))
+setGeneric("coordinates", function(object) standardGeneric("coord"))
+setGeneric("coordinates<-", function(object, value) standardGeneric("coord<-"))
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
@@ -35,10 +35,10 @@ setGeneric("iData", function(object) standardGeneric("iData"))
 setGeneric("iData<-", function(object, value) standardGeneric("iData<-"))
 setGeneric("imageData", function(object) standardGeneric("imageData"))
 setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
-setGeneric("intensities", function(object, ...) standardGeneric("intensities"))
-setGeneric("keys", function(object) standardGeneric("keys"))
-setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
-setGeneric("modelData", function(object) standardGeneric("modelData"))
+# setGeneric("intensity", function(object, ...) standardGeneric("intensity")) # use ProtGenerics version
+# setGeneric("keys", function(object) standardGeneric("keys")) # use matter version
+# setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
+setGeneric("modelData", function(object) standardGeneric("modelData")) # use matter version
 setGeneric("modelData<-", function(object, value) standardGeneric("modelData<-"))
 # setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics version
 # setGeneric("mz<-", function(object, value) standardGeneric("mz<-")) # use ProtGenerics version

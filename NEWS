@@ -1,4 +1,12 @@
 
+
+CHANGES IN VERSION 1.11.1 [2017-10-25]
+-----------------------------------
+
+BUG FIXES
+
+    o Use 'keys' and 'keys<-' generic from 'matter'
+
 CHANGES IN VERSION 1.9.2 [2017-10-25]
 -----------------------------------
 
