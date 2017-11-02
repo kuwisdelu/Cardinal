@@ -57,6 +57,7 @@ setGeneric("positionArray", function(object) standardGeneric("positionArray"))
 setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
 setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
 setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
+setGeneric("dataCube", function(object, ...) standardGeneric("dataCube"))
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
