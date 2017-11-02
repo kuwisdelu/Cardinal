@@ -1,15 +1,45 @@
 
-import("Biobase")
+importFrom("graphics",
+	"abline",
+	"legend",
+	"lines",
+	"locator",
+	"par",
+	"persp",
+	"points")
+
+importFrom("stats",
+	"approx",
+	"as.formula",
+	"dnorm",
+	"filter",
+	"kmeans",
+	"median",
+	"p.adjust",
+	"pt",
+	"quantile",
+	"rnorm",
+	"runif",
+	"smooth.spline")
 
 import("BiocGenerics")
 
-import("ProtGenerics")
+import("Biobase")
 
 import("matter")
 
 import("methods")
 
 import("stats4")
+
+import("ProtGenerics")
+
+importFrom("grDevices",
+	"col2rgb",
+	"colorRamp",
+	"rainbow",
+	"rgb",
+	"trans3d")
 
 importFrom("grid",
 	"grid.raster")
@@ -35,6 +65,10 @@ importFrom("sp",
 	"point.in.polygon")
 
 importFrom("utils",
+	"flush.console",
+	"object.size",
+	"packageDescription",
+	"packageVersion",
 	"sessionInfo",
 	"setTxtProgressBar",
 	"txtProgressBar")

@@ -8,6 +8,7 @@
 \alias{[,Hashmat-method}
 \alias{[<-,Hashmat-method}
 \alias{[,Hashmat,ANY,ANY,ANY-method}
+\alias{[,Hashmat,ANY,ANY,NULL-method}
 \alias{[<-,Hashmat,ANY,ANY,ANY-method}
 \alias{dim,Hashmat-method}
 \alias{dim<-,Hashmat-method}
@@ -113,7 +114,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 
         \item{\code{rbind}:}{Not allowed for sparse matrices. (Always returns an error.)}
 
-        \item{\code{Hashmat[i, j, ..., drop], Hashmat[i, j, ...] <- value}:}{Access and assign elements in the sparse matrix. A Hashmat sparse matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Use \code{drop = NA} to return a subset of the same class as the object.}
+        \item{\code{Hashmat[i, j, ..., drop], Hashmat[i, j, ...] <- value}:}{Access and assign elements in the sparse matrix. A Hashmat sparse matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Use \code{drop = NULL} to return a subset of the same class as the object.}
     }
 }
 

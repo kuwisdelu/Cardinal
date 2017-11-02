@@ -3,7 +3,6 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Change "drop=NA" behavior to use "drop=FALSE"
 - Larger-than-memory support for 'processed' imzML
 - Utility methods for changing experimental design
 - Statistical hypothesis testing

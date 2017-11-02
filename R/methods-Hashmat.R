@@ -163,41 +163,43 @@ setReplaceMethod("keys", c("Hashmat", "list"), function(object, value) {
 setMethod("[", "Hashmat", function(x, i, j, ..., drop) {
 	if ( missing(i) ) i <- seq_len(dim(x)[1])
 	if ( missing(j) ) j <- seq_len(dim(x)[2])
-	if ( !missing(drop) && is.na(drop) ) {
-		# return a subset of class Hashmat
-		new("Hashmat",
-			data=x@data[j],
-			keys=x@keys[i],
-			dim=c(length(x@keys[i]), length(x@data[j])),
-			dimnames=list(rownames(x)[i], colnames(x)[j]))
-	} else {
-		# reconstruct the dense matrix and return a subset of it
-		if ( missing(drop) ) drop <- TRUE
-		xsub <- sapply(x@data[j], function(xi) {
-			if ( length(i) < length(xi) ) {
-				xout <- xi[x@keys[i]]
-				xout[is.na(xout)] <- 0
-			} else {
-				xout <- numeric(length(i))
-				names(xout) <- x@keys[i]
-				nm <- names(xi)[names(xi) %in% names(xout)]
-				xout[nm] <- xi[nm]
-			}
-			xout
-		}, simplify=TRUE, USE.NAMES=FALSE)
-		dim(xsub) <- c(length(i), length(j))
-		names(dim(xsub)) <- names(dim(x))
-		dimnames(xsub) <- list(rownames(x)[i], colnames(x)[j])
-		if ( drop ) {
-			if ( length(i) == 1 || length(j) == 1 )
-				xsub <- as.vector(xsub)
-			if ( length(i) == 1 && length(j) != 1 )
-				names(xsub) <- colnames(x)[j]
-			if ( length(i) != 1 && length(j) == 1 )
-				names(xsub) <- rownames(x)[i]
+	# reconstruct the dense matrix and return a subset of it
+	if ( missing(drop) ) drop <- TRUE
+	xsub <- sapply(x@data[j], function(xi) {
+		if ( length(i) < length(xi) ) {
+			xout <- xi[x@keys[i]]
+			xout[is.na(xout)] <- 0
+		} else {
+			xout <- numeric(length(i))
+			names(xout) <- x@keys[i]
+			nm <- names(xi)[names(xi) %in% names(xout)]
+			xout[nm] <- xi[nm]
 		}
-		xsub
+		xout
+	}, simplify=TRUE, USE.NAMES=FALSE)
+	dim(xsub) <- c(length(i), length(j))
+	names(dim(xsub)) <- names(dim(x))
+	dimnames(xsub) <- list(rownames(x)[i], colnames(x)[j])
+	if ( drop ) {
+		if ( length(i) == 1 || length(j) == 1 )
+			xsub <- as.vector(xsub)
+		if ( length(i) == 1 && length(j) != 1 )
+			names(xsub) <- colnames(x)[j]
+		if ( length(i) != 1 && length(j) == 1 )
+			names(xsub) <- rownames(x)[i]
 	}
+	xsub
+})
+
+setMethod("[", c(x="Hashmat", drop="NULL"), function(x, i, j, ..., drop) {
+	if ( missing(i) ) i <- seq_len(dim(x)[1])
+	if ( missing(j) ) j <- seq_len(dim(x)[2])
+	# return a subset of class Hashmat
+	new("Hashmat",
+		data=x@data[j],
+		keys=x@keys[i],
+		dim=c(length(x@keys[i]), length(x@data[j])),
+		dimnames=list(rownames(x)[i], colnames(x)[j]))
 })
 
 setReplaceMethod("[", "Hashmat", function(x, i, j, ..., value) {

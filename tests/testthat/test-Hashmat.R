@@ -104,7 +104,7 @@ test_that("Hashmat combine", {
 
 	expect_error(cbind(x, y))
 
-	expect_equivalent(cbind(x, y[1:3,,drop=NA])[], cbind(x[], y[1:3,]))
+	expect_equivalent(cbind(x, y[1:3,,drop=NULL])[], cbind(x[], y[1:3,]))
 
 })
 
