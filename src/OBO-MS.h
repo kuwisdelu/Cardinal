@@ -551,8 +551,8 @@ is_a: MS:1000018 ! scan direction */
 /* def: "The mass scan is done in exponential mode." [PSI:MS]
 is_a: MS:1000019 ! scan law */
 
-// #define MS_LINEAR_ID "MS:1000095"
-// #define MS_LINEAR_NAME "linear"
+#define MS_LINEAR_ID "MS:1000095"
+#define MS_LINEAR_NAME "linear"
 /* def: "OBSOLETE The mass scan is done in linear mode." [PSI:MS]
 comment: This term was made obsolete because it was redundant with the Pato Ontology term linear (UO:0001199).
 is_a: MS:1000019 ! scan law
@@ -2876,8 +2876,8 @@ is_a: MS:1000503 ! scan attribute */
 relationship: part_of MS:1000442 ! spectrum
 relationship: part_of MS:1000625 ! chromatogram */
 
-#define MS_M_Z_ARRAY_ID "MS:1000514"
-#define MS_M_Z_ARRAY_NAME "m/z array"
+#define MS_MZ_ARRAY_ID "MS:1000514"
+#define MS_MZ_ARRAY_NAME "m/z array"
 /* def: "A data array of m/z values." [PSI:MS]
 xref: binary-data-type:MS\:1000521 "32-bit float"
 xref: binary-data-type:MS\:1000523 "64-bit float"

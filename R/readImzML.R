@@ -107,3 +107,15 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 	sampleNames(object) <- name
 	object
 }
+
+parseImzML <- function(file) {
+	mzml <- .Call("parseImzML", normalizePath(file))
+	dfnames <- c("spectrumList", "scanList",
+		"mzArrayList", "intensityArrayList")
+	todf <- which(names(mzml) %in% dfnames)
+	mzml[todf] <- lapply(mzml[todf], as.data.frame,
+		check.names=FALSE, stringsAsFactors=FALSE)
+	len <- sapply(mzml$experimentMetadata, nchar, type="bytes")
+	mzml$experimentMetadata <- mzml$experimentMetadata[len > 0]
+	mzml
+}
