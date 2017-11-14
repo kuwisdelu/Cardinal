@@ -128,7 +128,7 @@ setMethod("[", "SImageSet",
 		if ( missing(j) ) j <- seq_len(nrow(pixelData(x)))
 		i <- features(x)[i]
 		j <- pixels(x)[j]
-		x@imageData <- x@imageData[i,j,drop=NA]
+		x@imageData <- x@imageData[i,j,drop=NULL]
 		x@featureData <- x@featureData[i,,drop=FALSE]
 		x@pixelData <- x@pixelData[j,,drop=FALSE]
 		x@protocolData <- x@protocolData[sampleNames(x@pixelData),,drop=FALSE]

@@ -7,6 +7,7 @@
 
 \alias{[,Binmat-method}
 \alias{[,Binmat,ANY,ANY,ANY-method}
+\alias{[,Binmat,ANY,ANY,NULL-method}
 \alias{dim,Binmat-method}
 \alias{dim<-,Binmat-method}
 \alias{dimnames,Binmat-method}

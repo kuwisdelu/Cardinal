@@ -3,6 +3,11 @@
 CHANGES IN VERSION 1.11.1 [2017-10-25]
 -----------------------------------
 
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Use 'drop=NULL' from now on instead of 'drop=NA' to do
+        endomorphic subsetting of 'SimageData' objects
+
 BUG FIXES
 
     o Use 'keys' and 'keys<-' generic from 'matter'

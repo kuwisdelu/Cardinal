@@ -174,54 +174,54 @@ setMethod("dims", "SImageData",
 	})
 
 setMethod("[", "SImageData", function(x, i, j, ..., drop) {
-	if ( !missing(drop) && is.na(drop) ) {
-		# return a subset of class SImageData
-		if ( missing(i) ) i <- seq_len(dim(x)[1])
-		if ( missing(j) ) j <- seq_len(dim(x)[2])
-		names <- ls(x@data, all.names=TRUE)
-		for ( nm in names ) {
-			if ( isS4(x[[nm]]) ) {
-				x[[nm]] <- x[[nm]][i,j,drop=NA]
-			} else {
-				x[[nm]] <- x[[nm]][i,j,drop=FALSE]
-			}
-		}
-		x@coord <- x@coord[j,]
-		x@positionArray <- generatePositionArray(x@coord)
-		x@dim <- c(length(i), length(j))
-		x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
-		x
-	} else {
-		# reconstruct the data cube and return subset as an array
-		nargs <- nargs() - 1 - !missing(drop)
-		if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
-			.stop("incorrect number of dimensions")
-		if ( missing(drop) ) drop <- TRUE
-		args <- lapply(dim(x), function(dm) seq_len(dm))
-		if ( !missing(i) ) args[[1]] <- i
-		if ( !missing(j) ) args[[2]] <- j
-		if ( nargs > 2 ) {
-			dots <- match.call(expand.dots=FALSE)$...
-			nonmissing <- sapply(dots, function(a) {
-				is.call(a) || nchar(a) > 0 # changed from !is.symbol
-			})
-			if ( sum(nonmissing) > 0 )
-				args[c(FALSE,FALSE,nonmissing)] <- lapply(dots[nonmissing],
-					eval, envir=parent.frame())
-		}
-		inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
-		cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
-		cube[,!is.na(inds)] <- iData(x)[args[[1]],inds[!is.na(inds)],drop=FALSE]
-		dim(cube) <- c(dim(cube)[1], dim(inds))
-		names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
-		if ( drop && all(dim(cube) == 1) )
-			cube <- as.vector(cube)
-		if ( drop && any(dim(cube) == 1) )
-			dim(cube) <- dim(cube)[dim(cube) != 1]
-		if ( drop && length(dim(cube)) == 1 )
-			cube <- as.vector(cube)
-		cube
+	# reconstruct the data cube and return subset as an array
+	nargs <- nargs() - 1 - !missing(drop)
+	if ( nargs != length(dim(x)) && !(nargs == 1 && missing(i)) )
+		.stop("incorrect number of dimensions")
+	if ( missing(drop) ) drop <- TRUE
+	args <- lapply(dim(x), function(dm) seq_len(dm))
+	if ( !missing(i) ) args[[1]] <- i
+	if ( !missing(j) ) args[[2]] <- j
+	if ( nargs > 2 ) {
+		dots <- match.call(expand.dots=FALSE)$...
+		nonmissing <- sapply(dots, function(a) {
+			is.call(a) || nchar(a) > 0 # changed from !is.symbol
+		})
+		if ( sum(nonmissing) > 0 )
+			args[c(FALSE,FALSE,nonmissing)] <- lapply(dots[nonmissing],
+				eval, envir=parent.frame())
 	}
+	inds <- do.call("[", c(list(x@positionArray), args[-1], drop=FALSE))
+	cube <- matrix(NA, nrow=length(args[[1]]), ncol=length(inds))
+	cube[,!is.na(inds)] <- iData(x)[args[[1]],inds[!is.na(inds)],drop=FALSE]
+	dim(cube) <- c(dim(cube)[1], dim(inds))
+	names(dim(cube)) <- c("Features", names(dim(x@positionArray)))
+	if ( drop && all(dim(cube) == 1) )
+		cube <- as.vector(cube)
+	if ( drop && any(dim(cube) == 1) )
+		dim(cube) <- dim(cube)[dim(cube) != 1]
+	if ( drop && length(dim(cube)) == 1 )
+		cube <- as.vector(cube)
+	cube
+})
+
+setMethod("[", c(x="SImageData", drop="NULL"), function(x, i, j, ..., drop) {
+	# return a subset of class SImageData
+	if ( missing(i) ) i <- seq_len(dim(x)[1])
+	if ( missing(j) ) j <- seq_len(dim(x)[2])
+	names <- ls(x@data, all.names=TRUE)
+	for ( nm in names ) {
+		if ( inherits(x[[nm]], c("matter", "Binmat", "Hashmat")) ) {
+			x[[nm]] <- x[[nm]][i,j,drop=NULL]
+		} else {
+			x[[nm]] <- x[[nm]][i,j,drop=FALSE]
+		}
+	}
+	x@coord <- x@coord[j,]
+	x@positionArray <- generatePositionArray(x@coord)
+	x@dim <- c(length(i), length(j))
+	x@dimnames <- list(x@dimnames[[1]][i], x@dimnames[[2]][j])
+	x
 })
 
 generatePositionArray <- function(coord, dim, dimnames) {
