@@ -26,26 +26,23 @@ setGeneric("image")
 ## -----------------------------------------------
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
-setGeneric("coordinates", function(object) standardGeneric("coord"))
-setGeneric("coordinates<-", function(object, value) standardGeneric("coord<-"))
+# setGeneric("coordinates", function(object) standardGeneric("coord")) # use sp version
+# setGeneric("coordinates<-", function(object, value) standardGeneric("coord<-")) # use sp version
+# setGeneric("coordnames", function(x) standardGeneric("coordnames")) # use sp version
+# setGeneric("coordnames<-", function(x, value) standardGeneric("coordnames<-")) # use sp version
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
-setGeneric("iData", function(object) standardGeneric("iData"))
-setGeneric("iData<-", function(object, value) standardGeneric("iData<-"))
+setGeneric("iData", function(object, ...) standardGeneric("iData")) # need ... for Cardinal 2.0
+setGeneric("iData<-", function(object, ..., value) standardGeneric("iData<-")) # need ... for Cardinal 2.0
 setGeneric("imageData", function(object) standardGeneric("imageData"))
 setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
-# setGeneric("intensity", function(object, ...) standardGeneric("intensity")) # use ProtGenerics version
 # setGeneric("keys", function(object) standardGeneric("keys")) # use matter version
-# setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
-setGeneric("modelData", function(object) standardGeneric("modelData")) # use matter version
+# setGeneric("keys<-", function(object, value) standardGeneric("keys<-")) # use matter version
+setGeneric("modelData", function(object) standardGeneric("modelData"))
 setGeneric("modelData<-", function(object, value) standardGeneric("modelData<-"))
-# setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics version
-# setGeneric("mz<-", function(object, value) standardGeneric("mz<-")) # use ProtGenerics version
 setGeneric("mzData", function(object) standardGeneric("mzData"))
 setGeneric("mzData<-", function(object, value) standardGeneric("mzData<-"))
-# setGeneric("peaks", function(object, ...) standardGeneric("peaks")) # use ProtGenerics version
-setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
 setGeneric("peakData", function(object) standardGeneric("peakData"))
 setGeneric("peakData<-", function(object, value) standardGeneric("peakData<-"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
@@ -62,8 +59,16 @@ setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePo
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
+
+#### Supplement ProtGenerics  ####
+## -------------------------------
+# setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics version
+# setGeneric("mz<-", function(object, value) standardGeneric("mz<-")) # use ProtGenerics version
+# setGeneric("peaks", function(object, ...) standardGeneric("peaks")) # use ProtGenerics version
+setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
 # setGeneric("spectra", function(object, ...) standardGeneric("spectra")) # use ProtGenerics version
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
+# setGeneric("intensity", function(object, ...) standardGeneric("intensity")) # use ProtGenerics version
 
 #### MIAPE - Imaging ####
 ## ----------------------
