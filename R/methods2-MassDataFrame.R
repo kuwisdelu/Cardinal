@@ -13,6 +13,8 @@ setMethod("initialize", "MassDataFrame",
 MassDataFrame <- function(mz, ...,
 	row.names = NULL, check.names = TRUE)
 {
+	if ( missing(mz) && length(list(...)) == 0 )
+		return(.MassDataFrame())
 	data <- DataFrame(...,
 		row.names=row.names,
 		check.names=check.names)
@@ -93,7 +95,7 @@ setMethod("as.list", "MassDataFrame",
 	})
 
 # including 'mz' by default means they show up in 'show'
-setMethod("lapply", "PositionDataFrame",
+setMethod("lapply", "MassDataFrame",
 	function(X, FUN, ..., with.mz = TRUE)
 	{
 		if ( with.mz ) {
@@ -128,7 +130,7 @@ setMethod("[", "MassDataFrame",
 		x <- .MassDataFrame(
 			mz=mz,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=length(mz),
 			listData=x@listData,
 			elementMetadata=mcols)
 		x
@@ -147,7 +149,7 @@ setMethod("cbind", "MassDataFrame",
 		.MassDataFrame(
 			mz=mz,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=length(mz),
 			listData=x@listData,
 			elementMetadata=mcols(x))
 	})
@@ -160,7 +162,7 @@ setMethod("rbind", "MassDataFrame",
 		.MassDataFrame(
 			mz=mz,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=length(mz),
 			listData=x@listData,
 			elementMetadata=mcols(x))
 	})

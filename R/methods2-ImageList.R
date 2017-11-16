@@ -121,14 +121,14 @@ setMethod("dims", "ImageList",
 
 ## 2D-Subsetting for SimpleImageArrayList
 
-# Note that drop = NULL is used here to do endomorphic
+# Note that drop = NULL can be used here to do endomorphic
 # subsetting of 'matter' objects -- this does not seem
 # to cause problems for in-memory R matrices or DelayedArray
 # arrays. Fails for Matrix and big.matrix. Solution is
 # to wrap objects in DelayedArray or virtual_mat, or
 # simply set drop = FALSE manually?
 
-.subsetSimpleImageArrayList <- function(x, i, j, drop = NULL)
+.subsetSimpleImageArrayList <- function(x, i, j, drop = FALSE)
 {
 	if ( isTRUE(drop) )
 		drop <- FALSE
@@ -165,7 +165,7 @@ setMethod("dims", "ImageList",
 }
 
 setMethod("[", "ImageArrayList",
-	function(x, i, j, ..., drop = NULL)
+	function(x, i, j, ..., drop = FALSE)
 		.subsetSimpleImageArrayList(x, i, j, drop))
 
 .replaceSimpleImageArrayList <- function(x, i, j, value)

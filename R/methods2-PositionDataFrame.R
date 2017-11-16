@@ -4,7 +4,7 @@
 
 setMethod("initialize", "PositionDataFrame",
 	function(.Object, coord, ...) {
-		if ( missing(coord) )
+		if ( missing(coord) || length(coord) == 0 )
 			coord <- DataFrame(x=numeric(), y=numeric())
 		.Object <- .setResolutionfromCoord(.Object, coord)
 		callNextMethod(.Object, coord=coord, ...)
@@ -13,13 +13,16 @@ setMethod("initialize", "PositionDataFrame",
 PositionDataFrame <- function(coord, ...,
 	row.names = NULL, check.names = TRUE)
 {
+	if ( missing(coord) && length(list(...)) == 0 )
+		return(.PositionDataFrame())
+	coord <- DataFrame(coord)
 	data <- DataFrame(...,
 		row.names=row.names,
 		check.names=check.names)
 	.PositionDataFrame(
-		coord=DataFrame(coord),
+		coord=coord,
 		rownames=row.names,
-		nrows=nrow(data),
+		nrows=nrow(coord),
 		listData=as.list(data))
 }
 
@@ -99,25 +102,40 @@ setReplaceMethod("coordnames", "PositionDataFrame",
 			x
 	})
 
+setMethod("coordLabels", "PositionDataFrame",
+	function(object) coordnames(object))
+
+setReplaceMethod("coordLabels", "PositionDataFrame",
+	function(object, value) {
+		coordnames(object) <- value
+		object
+	})
+
+# whether the positions are gridded
+
 setMethod("gridded", "PositionDataFrame",
 	function(obj) obj@gridded)
 
 setReplaceMethod("gridded", "PositionDataFrame",
 	function(obj, value) {
-		names(obj@gridded) <- value
+		obj@gridded <- value
 		if ( validObject(obj) )
 			obj
 	})
+
+# the spatial resolution
 
 setMethod("resolution", "PositionDataFrame",
 	function(object) object@resolution)
 
 setReplaceMethod("resolution", "PositionDataFrame",
 	function(object, value) {
-		names(object@resolution) <- value
+		object@resolution <- value
 		if ( validObject(object) )
 			object
 	})
+
+# the raster dimensions (for gridded positions only)
 
 setMethod("dims", "PositionDataFrame",
 	function(object) {
@@ -130,7 +148,8 @@ setMethod("as.list", "PositionDataFrame",
 	function(x, use.names = TRUE, fix.coord="coord:")
 	{
 		pos <- coord(x)
-		names(pos) <- paste0(fix.coord, names(pos))
+		if ( length(pos) > 0 )
+			names(pos) <- paste0(fix.coord, names(pos))
 		ans <- append(as.list(pos), x@listData)
 		if ( !use.names )
 			names(ans) <- NULL
@@ -173,7 +192,7 @@ setMethod("[", "PositionDataFrame",
 		x <- .PositionDataFrame(
 			coord=coord,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=nrow(coord),
 			listData=x@listData,
 			elementMetadata=mcols)
 		x
@@ -192,7 +211,7 @@ setMethod("cbind", "PositionDataFrame",
 		.PositionDataFrame(
 			coord=coord,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=nrow(coord),
 			listData=x@listData,
 			elementMetadata=mcols(x))
 	})
@@ -205,7 +224,7 @@ setMethod("rbind", "PositionDataFrame",
 		.PositionDataFrame(
 			coord=coord,
 			rownames=rownames(x),
-			nrows=nrow(x),
+			nrows=nrow(coord),
 			listData=x@listData,
 			elementMetadata=mcols(x))
 	})
