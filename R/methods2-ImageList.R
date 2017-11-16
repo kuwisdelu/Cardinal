@@ -165,8 +165,8 @@ setMethod("dims", "ImageList",
 }
 
 setMethod("[", "ImageArrayList",
-	function(x, i, j, ..., drop=NULL) .subsetSimpleImageArrayList(x, i, j, drop)
-)
+	function(x, i, j, ..., drop = NULL)
+		.subsetSimpleImageArrayList(x, i, j, drop))
 
 .replaceSimpleImageArrayList <- function(x, i, j, value)
 {
@@ -207,8 +207,8 @@ setMethod("[", "ImageArrayList",
 }
 
 setReplaceMethod("[", "ImageArrayList",
-	function(x, i, j, ..., value) .replaceSimpleImageArrayList(x, i, j, value)
-)
+	function(x, i, j, ..., value) 
+		.replaceSimpleImageArrayList(x, i, j, value))
 
 ## rbind/cbind
 
