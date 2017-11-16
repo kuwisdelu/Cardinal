@@ -4,6 +4,8 @@
 
 setMethod("initialize", "MassDataFrame",
 	function(.Object, mz, ...) {
+		if ( missing(mz) )
+			mz <- numeric()
 		.Object <- .setResolutionfromMass(.Object, mz)
 		callNextMethod(.Object, mz=mz, ...)
 	})
@@ -43,6 +45,8 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 }
 
 .estimateMassResolution <- function(mz) {
+	if ( length(mz) == 0 || is.unsorted(mz) )
+		return(NA_real_)
 	bwidth <- diff(mz)
 	ppm <- 1e6 * bwidth / mz[-length(mz)]
 	if ( diff(range(bwidth)) < min(bwidth) ) {
@@ -76,13 +80,27 @@ setReplaceMethod("resolution", "MassDataFrame",
 			object
 	})
 
+# includes 'mz' slot in the list, prefixed/affixed by ":"
 setMethod("as.list", "MassDataFrame",
-	function(x, use.names = TRUE)
+	function(x, use.names = TRUE, fix.mz = ":")
 	{
-		ans <- append(list(":mz:"=mz(x)), x@listData)
+		nmz <- paste0(fix.mz, "mz", fix.mz)
+		lmz <- setNames(list(mz(x)), nmz)
+		ans <- append(lmz, x@listData)
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
+	})
+
+# including 'mz' by default means they show up in 'show'
+setMethod("lapply", "PositionDataFrame",
+	function(X, FUN, ..., with.mz = TRUE)
+	{
+		if ( with.mz ) {
+			lapply(as.list(X), FUN=FUN, ...)
+		} else {
+			lapply(as.list(X@listData), FUN=FUN, ...)
+		}
 	})
 
 setMethod("[", "MassDataFrame",
@@ -92,7 +110,12 @@ setMethod("[", "MassDataFrame",
 		} else {
 			mz <- x@mz[i]
 		}
-		x <- callNextMethod(DataFrame(x@listData),
+		if ( missing(j) ) {
+			mcols <- mcols(x)
+		} else {
+			mcols <- mcols(x)[j]
+		}
+		x <- callNextMethod(as(x, "DataFrame"),
 			i=i, j=j, ..., drop=FALSE)
 		if ( missing(drop) )
 			drop <- ncol(x) == 1L
@@ -106,14 +129,41 @@ setMethod("[", "MassDataFrame",
 			mz=mz,
 			rownames=rownames(x),
 			nrows=nrow(x),
-			listData=as.list(x))
+			listData=x@listData,
+			elementMetadata=mcols)
 		x
 	})
 
-# still need to implement
-setMethod("rbind", "MassDataFrame", callNextMethod)
+setMethod("cbind", "MassDataFrame",
+	function(..., deparse.level = 1) {
+		args <- list(...)
+		mz <- mz(args[[1]])
+		ok <- vapply(args, function(a) 
+			isTRUE(all.equal(mz(a), mz)),
+			logical(1))
+		if ( !all(ok) )
+			stop("'mz' must match")
+		x <- callNextMethod(...)
+		.MassDataFrame(
+			mz=mz,
+			rownames=rownames(x),
+			nrows=nrow(x),
+			listData=x@listData,
+			elementMetadata=mcols(x))
+	})
 
-# still need to implement
-setMethod("cbind", "MassDataFrame", callNextMethod)
+setMethod("rbind", "MassDataFrame",
+	function(..., deparse.level = 1) {
+		mz <- do.call("c",
+			lapply(list(...), mz))
+		x <- callNextMethod(...)
+		.MassDataFrame(
+			mz=mz,
+			rownames=rownames(x),
+			nrows=nrow(x),
+			listData=x@listData,
+			elementMetadata=mcols(x))
+	})
+
 
 

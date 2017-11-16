@@ -4,6 +4,8 @@
 
 setMethod("initialize", "PositionDataFrame",
 	function(.Object, coord, ...) {
+		if ( missing(coord) )
+			coord <- DataFrame(x=numeric(), y=numeric())
 		.Object <- .setResolutionfromCoord(.Object, coord)
 		callNextMethod(.Object, coord=coord, ...)
 	})
@@ -123,15 +125,27 @@ setMethod("dims", "PositionDataFrame",
 			object@resolution)
 	})
 
+# includes 'coord' slot in the list, prefixed by "coord:"
 setMethod("as.list", "PositionDataFrame",
-	function(x, use.names = TRUE)
+	function(x, use.names = TRUE, fix.coord="coord:")
 	{
 		pos <- coord(x)
-		names(pos) <- paste0("coord:", names(pos))
+		names(pos) <- paste0(fix.coord, names(pos))
 		ans <- append(as.list(pos), x@listData)
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
+	})
+
+# including 'coord' by default means they show up in 'show'
+setMethod("lapply", "PositionDataFrame",
+	function(X, FUN, ..., with.coord = TRUE)
+	{
+		if ( with.coord ) {
+			lapply(as.list(X), FUN=FUN, ...)
+		} else {
+			lapply(as.list(X@listData), FUN=FUN, ...)
+		}
 	})
 
 setMethod("[", "PositionDataFrame",
@@ -141,7 +155,12 @@ setMethod("[", "PositionDataFrame",
 		} else {
 			coord <- x@coord[i,]
 		}
-		x <- callNextMethod(DataFrame(x@listData),
+		if ( missing(j) ) {
+			mcols <- mcols(x)
+		} else {
+			mcols <- mcols(x)[j]
+		}
+		x <- callNextMethod(as(x, "DataFrame"),
 			i=i, j=j, ..., drop=FALSE)
 		if ( missing(drop) )
 			drop <- ncol(x) == 1L
@@ -155,14 +174,38 @@ setMethod("[", "PositionDataFrame",
 			coord=coord,
 			rownames=rownames(x),
 			nrows=nrow(x),
-			listData=as.list(x))
+			listData=x@listData,
+			elementMetadata=mcols)
 		x
 	})
 
-# still need to implement
-setMethod("rbind", "PositionDataFrame", callNextMethod)
+setMethod("cbind", "PositionDataFrame",
+	function(..., deparse.level = 1) {
+		args <- list(...)
+		coord <- coord(args[[1]])
+		ok <- vapply(args, function(a) 
+			isTRUE(all.equal(coord(a), coord)),
+			logical(1))
+		if ( !all(ok) )
+			stop("'coord' must match")
+		x <- callNextMethod(...)
+		.PositionDataFrame(
+			coord=coord,
+			rownames=rownames(x),
+			nrows=nrow(x),
+			listData=x@listData,
+			elementMetadata=mcols(x))
+	})
 
-# still need to implement
-setMethod("cbind", "PositionDataFrame", callNextMethod)
-
-
+setMethod("rbind", "PositionDataFrame",
+	function(..., deparse.level = 1) {
+		coord <- do.call("rbind",
+			lapply(list(...), coord))
+		x <- callNextMethod(...)
+		.PositionDataFrame(
+			coord=coord,
+			rownames=rownames(x),
+			nrows=nrow(x),
+			listData=x@listData,
+			elementMetadata=mcols(x))
+	})

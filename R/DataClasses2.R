@@ -1,8 +1,12 @@
 
-#### DataFrame with spatial information for imaging data ####
-## --------------------------------------------------------
+#### Classes to overwrite 'show' method for DataFrame ###
+## -----------------------------------------------------
+setClass("XDataFrame", contains = "DataFrame")
+
+#### DataFrame with position information for imaging data ####
+## -----------------------------------------------------------
 .PositionDataFrame <- setClass("PositionDataFrame",
-	contains = "DataFrame",
+	contains = "XDataFrame",
 	slots = c(
 		coord = "DataFrame",
 		gridded = "logical",
@@ -17,7 +21,7 @@
 #### DataFrame with mass information for mass spectral data ####
 ## -------------------------------------------------------------
 .MassDataFrame <- setClass("MassDataFrame",
-	contains = "DataFrame",
+	contains = "XDataFrame",
 	slots = c(
 		mz = "numeric",
 		resolution = "numeric"),
@@ -28,26 +32,47 @@
 		nrows = 0L,
 		listData = structure(list(), names = character())))
 
-#### Class for a list of imaging data ###
-## --------------------------------------
+#### Virtual classes for a list of imaging data ###
+## ------------------------------------------------
 setClass("ImageList", contains = "VIRTUAL")
+
+setClass("ImageArrayList", contains = c("ImageList", "VIRTUAL"))
+
+#### Classes for a list of imaging data ###
+## -----------------------------------------
 
 .SimpleImageList <- setRefClass("SimpleImageList",
     fields = list(data = "SimpleList"),
     contains = "ImageList")
 
-.MSContinuousImagingSpectraList <- setRefClass(
-	Class = "MSContinuousImagingSpectraList",
-    contains = "SimpleImageList")
-
-.MSProcessedImagingSpectraList <- setRefClass(
-	Class = "MSProcessedImagingSpectraList",
-    contains = "SimpleImageList")
+.SimpleImageArrayList <- setRefClass(
+	Class = "SimpleImageArrayList",
+    contains = c("SimpleImageList", "ImageArrayList"))
 
 setAs("SimpleList", "SimpleImageList",
     function(from) .SimpleImageList(data=from))
 
+setAs("SimpleList", "SimpleImageArrayList",
+    function(from) .SimpleImageArrayList(data=from))
+
 setAs("SimpleImageList", "SimpleList", function(from) from$data)
+
+#### Classes for a list of MS imaging data ###
+## -------------------------------------------
+
+.MSContinuousImagingSpectraList <- setRefClass(
+	Class = "MSContinuousImagingSpectraList",
+    contains = "SimpleImageArrayList")
+
+.MSProcessedImagingSpectraList <- setRefClass(
+	Class = "MSProcessedImagingSpectraList",
+    contains = "SimpleImageArrayList")
+
+setAs("SimpleList", "MSContinuousImagingSpectraList",
+    function(from) .MSContinuousImagingSpectraList(data=from))
+
+setAs("SimpleList", "MSContinuousImagingSpectraList",
+    function(from) .MSContinuousImagingSpectraList(data=from))
 
 #### Class for generic imaging experiments ####
 ## ---------------------------------------------
@@ -56,22 +81,21 @@ setAs("SimpleImageList", "SimpleList", function(from) from$data)
 	slots = c(
 		imageData = "ImageList",
 		featureData = "DataFrame",
-		elementMetadata = "PositionDataFrame",
-		processing = "SimpleList"),
+		elementMetadata = "PositionDataFrame"),
 	prototype = prototype(
 		imageData = .SimpleImageList(),
-		featureData = DataFrame(),
-		elementMetadata = .PositionDataFrame(),
-		metadata = list(),
-		processing = SimpleList()))
+		elementMetadata = .PositionDataFrame()))
 
 #### Class for pixel-sparse imaging experiments ####
 ## --------------------------------------------------
 .SparseImagingExperiment <- setClass("SparseImagingExperiment",
 	contains = "ImagingExperiment",
-	slots = c(imageData = "SimpleImageList"),
+	slots = c(
+		imageData = "ImageArrayList",
+		processing = "SimpleList"),
 	prototype = prototype(
-		imageData = .SimpleImageList()))
+		imageData = .SimpleImageArrayList(),
+		processing = SimpleList()))
 
 #### Class for mass spectrometry imaging experiments ####
 ## -------------------------------------------------------
@@ -81,9 +105,7 @@ setAs("SimpleImageList", "SimpleList", function(from) from$data)
 		featureData = "MassDataFrame",
 		centroided = "logical"),
 	prototype = prototype(
-		imageData = .SimpleImageList(),
 		featureData = .MassDataFrame(),
-		elementMetadata = .PositionDataFrame(),
 		centroided = FALSE))
 
 #### Class for 'continuous' mass spectrometry images ####
@@ -101,4 +123,5 @@ setAs("SimpleImageList", "SimpleList", function(from) from$data)
 	slots = c(imageData = "MSProcessedImagingSpectraList"),
 	prototype = prototype(
 		imageData = .MSProcessedImagingSpectraList()))
+
 

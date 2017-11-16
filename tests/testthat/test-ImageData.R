@@ -1,4 +1,5 @@
 require(testthat)
+require(Cardinal)
 
 context("ImageData class")
 
