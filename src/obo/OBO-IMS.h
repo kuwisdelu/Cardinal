@@ -215,8 +215,8 @@ relationship: is_a IMS:1000008 ! Ibd Indentification */
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 relationship: is_a IMS:1000009 ! Ibd Checksum */
 
-#define IMS_IBD_SHA_1_ID "IMS:1000091"
-#define IMS_IBD_SHA_1_NAME "ibd SHA_1"
+#define IMS_IBD_SHA1_ID "IMS:1000091"
+#define IMS_IBD_SHA1_NAME "ibd SHA-1"
 /* def: "SHA-1 (Secure Hash Algorithm-1) is a cryptographic hash function designed by the National Security Agency (NSA) and published by the NIST as a U. S. government standard. It is also used to verify file integrity." [COMPUTIS:IMS]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 relationship: is_a IMS:1000009 ! Ibd Checksum */

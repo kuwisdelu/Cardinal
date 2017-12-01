@@ -27,7 +27,8 @@
 	options(Cardinal.flush=60)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
-	set.seed(Sys.time())
+	if ( !exists(".Random.seed", globalenv()) )
+		set.seed(Sys.time())
 }
 
 .onAttach <- function(libname, pkgname) {
