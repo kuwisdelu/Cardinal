@@ -12,110 +12,127 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 	ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
 		mustWork=FALSE)
 	if ( !file.exists(ibdpath) ) .stop("readImzML: ", ibdpath, " does not exist")
-	# parse imzML
-	.log("readImzML: Parsing file '", xmlpath, "'")
-	mzml <- .Call("parseImzML", xmlpath)
-	ibdtype <- mzml$fileDescription$fileContent[["ibd binary type"]]
-	count <- length(mzml$run$spectrumList)
-	s1 <- mzml$run$spectrumList[[1]]
-	# read m/z values
-	.log("readImzML: Reading m/z information from file '", ibdpath, "'")
-	mz.datatype <- s1[["binaryDataArrayList"]][["m/z array"]][["binary data type"]]
-	mz.offset <- sapply(mzml$run$spectrumList, function(s)
-		s[["binaryDataArrayList"]][["m/z array"]][["external offset"]])
-	mz.length <- sapply(mzml$run$spectrumList, function(s)
-		s[["binaryDataArrayList"]][["m/z array"]][["external array length"]])
-	mz <- .Call("readIbdMzArray", ibdpath, ibdtype,
-		mz.datatype, mz.offset, mz.length, count)
-	# read intensity values
-	.log("readImzML: Reading intensity information from file '", ibdpath, "'")
-	intensity.datatype <- s1[["binaryDataArrayList"]][["intensity array"]][["binary data type"]]
-	intensity.offset <- sapply(mzml$run$spectrumList, function(s)
-		s[["binaryDataArrayList"]][["intensity array"]][["external offset"]])
-	intensity.length <- sapply(mzml$run$spectrumList, function(s)
-		s[["binaryDataArrayList"]][["intensity array"]][["external array length"]])
-	if ( attach.only ) {
-		if ( ibdtype == "processed" )
-			.stop("readImzML: Data binary type 'processed' is not currently supported for attach only.")
-		datamode <- switch(intensity.datatype,
-			`16-bit integer`="short",
-			`32-bit integer`="int",
-			`64-bit integer`="long",
-			`32-bit float`="float",
-			`64-bit float`="double")
-		intensity <- matter_mat(paths=ibdpath, datamode=datamode,
-			offset=intensity.offset, extent=intensity.length)
-		# intensity <- Binmat(files=ibdpath, datatype=intensity.datatype,
-		# 	offsets=intensity.offset, extents=intensity.length)
-	} else {
-		intensity <- .Call("readIbdIntensityArray", ibdpath, ibdtype,
-			intensity.datatype, intensity.offset, intensity.length, count)
-		if ( ibdtype == "processed" ) {
-			mz.min <- min(sapply(mz, min))
-			mz.max <- max(sapply(mz, max))
-			if ( match.arg(units.accuracy) == "ppm" ) {
-				if ( floor(mz.min) <= 0 )
-					.stop("readImzML: m/z values must be positive for units.accuracy='ppm'")
-				mzout <- seq.ppm(
-					from=floor(mz.min),
-					to=ceiling(mz.max),
-					ppm=mass.accuracy) # ppm == half-bin-widths
-				error <- mass.accuracy * 1e-6 * mzout
-			} else {
-				mzout <- seq(
-					from=floor(mz.min),
-					to=ceiling(mz.max),
-					by=mass.accuracy * 2)  # by == full-bin-widths
-				error <- rep(mass.accuracy, length(mzout))
-			}
-			mz.bins <- c(mzout[1] - error[1], mzout + error)
-			mz.names <- .format.mz(mzout)
-			intensity <- mapply(function(s, mzi) {
-				which <- findInterval(mzi, mz.bins)
-				s <- as.vector(tapply(s, which, sum))
-				names(s) <- mz.names[unique(which)]
-				s
-			}, intensity, mz, SIMPLIFY=FALSE)
+	# read imzML file
+	.log("readImzML: Reading imzML file '", xmlpath, "'")
+	mzml <- .readImzML(xmlpath)
+	# read ibd file
+	attr(mzml, "name") <- name
+	attr(mzml, "folder") <- folder
+	attr(mzml, "files") <- c(xmlpath, ibdpath)
+	units.accuracy <- match.arg(units.accuracy)
+	.log("readImzML: Reading ibd file '", ibdpath, "'")
+	obj <- .readIbd.MSImageset(ibdpath, mzml, attach.only=attach.only,
+		mass.accuracy=mass.accuracy, units.accuracy=units.accuracy)
+	if ( validObject(obj) )
+		obj
+}
+
+.readImzML <- function(file) {
+	info <- .Call("readImzML", normalizePath(file))
+	dfnames <- c("spectrumList", "scanList",
+		"mzArrayList", "intensityArrayList")
+	todf <- which(names(info) %in% dfnames)
+	info[todf] <- lapply(info[todf], as.data.frame,
+		check.names=FALSE, stringsAsFactors=FALSE)
+	len <- sapply(info$experimentMetadata, nchar, type="bytes")
+	info$experimentMetadata <- info$experimentMetadata[len > 0]
+	info
+}
+
+.readIbd.MSImageset <- function(file, info,
+	attach.only, mass.accuracy, units.accuracy)
+{
+	ibdtype <- info$experimentMetadata[["ibd binary type"]]
+	mz.ibdtype <- info$mzArrayList[["binary data type"]]
+	intensity.ibdtype <- info$intensityArrayList[["binary data type"]]
+	# read binary data
+	if ( ibdtype == "continuous" ) {
+		mz <- matter_vec(paths=file,
+			datamode=modeof.ibdtype(mz.ibdtype[1]),
+			offset=info$mzArrayList[["external offset"]][1],
+			extent=info$mzArrayList[["external array length"]][1])
+		intensity <- matter_mat(paths=file,
+			datamode=modeof.ibdtype(intensity.ibdtype[1]),
+			offset=info$intensityArrayList[["external offset"]],
+			extent=info$intensityArrayList[["external array length"]])
+		if ( attach.only ) {
+			spectra <- intensity
+		} else {
+			spectra <- intensity[]
+		}
+		mz <- mz[]
+	} else if ( ibdtype == "processed" ) {
+		mz <- matter_list(paths=file,
+			datamode=modeof.ibdtype(mz.ibdtype),
+			offset=info$mzArrayList[["external offset"]],
+			extent=info$mzArrayList[["external array length"]])
+		intensity <- matter_list(paths=file,
+			datamode=modeof.ibdtype(intensity.ibdtype),
+			offset=info$intensityArrayList[["external offset"]],
+			extent=info$intensityArrayList[["external array length"]])
+		mz.range <- range(as(mz, "matter_vec"))
+		mz.min <- mz.range[1]
+		mz.max <- mz.range[2]
+		if ( units.accuracy == "ppm" ) {
+			if ( floor(mz.min) <= 0 )
+				.stop("readImzML: m/z values must be positive for units.accuracy='ppm'")
+			mzout <- seq.ppm(
+				from=floor(mz.min),
+				to=ceiling(mz.max),
+				ppm=mass.accuracy) # ppm == half-bin-widths
+			error <- mass.accuracy * 1e-6 * mzout
+			tol <- c(relative = mass.accuracy * 1e-6)
+		} else {
+			mzout <- seq(
+				from=floor(mz.min),
+				to=ceiling(mz.max),
+				by=mass.accuracy * 2)  # by == full-bin-widths
+			error <- rep(mass.accuracy, length(mzout))
+			tol <- c(absolute = mass.accuracy)
+		}
+		mz.bins <- c(mzout[1] - error[1], mzout + error)
+		if ( attach.only ) {
+			data <- list(keys=mz, values=intensity)
 			mz <- mzout
-			intensity <- new("Hashmat", data=intensity, keys=mz.names,
-				dim=c(length(mz.names), length(intensity)))
+			spectra <- sparse_mat(data, keys=mz,
+				nrow=length(mz), ncol=length(intensity),
+				tolerance=tol, combiner="sum")
+		} else {
+			data <- list(keys=list(), values=list())
+			for ( i in seq_along(mz) ) {
+				mzi <- mz[[i]]
+				wh <- findInterval(mzi, mz.bins)
+				s <- as.vector(tapply(intensity[[i]], wh, sum))
+				data$keys[[i]] <- mzout[unique(wh)]
+				data$values[[i]] <- s
+			}
+			mz <- mzout
+			spectra <- sparse_mat(data, keys=mz,
+				nrow=length(mz), ncol=length(intensity),
+				tolerance=tol, combiner="sum")
 		}
 	}
 	# set up coordinates
-	x <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position x"]])
-	y <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position y"]])
-	z <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["position z"]])
-	x3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionX"]])
-	y3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionY"]])
-	z3d <- sapply(mzml$run$spectrumList, function(s) s$scanList$scan[["3DPositionZ"]])
-	nz <- length(unique(z))
-	nz3d <- length(unique(z3d))
-	if ( nz == 1 && nz3d == 1 ) {
+	x <- info$scanList[["position x"]]
+	y <- info$scanList[["position y"]]
+	z <- info$scanList[["position z"]]
+	x3d <- info$scanList[["3DPositionX"]]
+	y3d <- info$scanList[["3DPositionY"]]
+	z3d <- info$scanList[["3DPositionZ"]]
+	if ( all(is.na(z)) && all(is.na(z3d)) ) {
 		coord <- data.frame(x=x, y=y)
-	} else if ( nz3d == 1 ) {
+	} else if ( all(is.na(z3d)) ) {
 		coord <- data.frame(x=x, y=y, z=z)
 	} else {
 		z <- as.integer(as.factor(z3d))
 		coord <- data.frame(x=x, y=y, z=z)
 	}
-	# create and return dataset
 	experimentData <- new("MIAPE-Imaging")
-	processingData <- new("MSImageProcess", files=c(xmlpath, ibdpath))
-	object <- MSImageSet(spectra=intensity, mz=mz, coord=coord,
+	processingData <- new("MSImageProcess", files=attr(info, "files"))
+	object <- MSImageSet(spectra=spectra, mz=mz, coord=coord,
 		processingData=processingData,
 		experimentData=experimentData)
-	sampleNames(object) <- name
+	sampleNames(object) <- attr(info, "name")
 	object
 }
 
-parseImzML <- function(file) {
-	mzml <- .Call("parseImzML", normalizePath(file))
-	dfnames <- c("spectrumList", "scanList",
-		"mzArrayList", "intensityArrayList")
-	todf <- which(names(mzml) %in% dfnames)
-	mzml[todf] <- lapply(mzml[todf], as.data.frame,
-		check.names=FALSE, stringsAsFactors=FALSE)
-	len <- sapply(mzml$experimentMetadata, nchar, type="bytes")
-	mzml$experimentMetadata <- mzml$experimentMetadata[len > 0]
-	mzml
-}

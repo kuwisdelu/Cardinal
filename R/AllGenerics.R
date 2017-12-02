@@ -169,5 +169,11 @@ setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 setGeneric("select", function(x, ...) standardGeneric("select"))
 setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 
+#### Data export ####
+## --------------
+setGeneric("writeAnalyze", function(object, ...) standardGeneric("writeAnalyze"))
+setGeneric("writeImzML", function(object, ...) standardGeneric("writeImzML"))
+setGeneric("writeMSIData", function(object, file, ...) standardGeneric("writeMSIData"))
+
 ####-----------------------------------------------------------####
 

@@ -19,6 +19,32 @@ as.matrixlike <- function(x, supported="matrix") {
 	}
 }
 
+## Get the size of imzML ibd binary types
+sizeof.ibdtype <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = 2L,
+			`32-bit integer` = 4L,
+			`64-bit integer` = 8L,
+			`32-bit float` = 4L,
+			`64-bit float` = 8L,
+			stop("unrecognized ibd binary type"))
+	}, integer(1))
+}
+
+# Get the C type of imzML ibd binary types
+modeof.ibdtype <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = "short",
+			`32-bit integer` = "int",
+			`64-bit integer` = "long",
+			`32-bit float` = "float",
+			`64-bit float` = "double",
+			stop("unrecognized ibd binary type"))
+	}, character(1))
+}
+
 ## Make an annotation (factor) from regions-of-interest (logical)
 make.annotation <- function(...) {
 	regions <- data.frame(...)

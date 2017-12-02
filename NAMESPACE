@@ -103,11 +103,13 @@ export(
 	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",
-	"parseImzML",
+	"risk.colors",
 	"readAnalyze",
 	"readImzML",
 	"readMSIData",
-	"risk.colors")
+	"writeAnalyze",
+	"writeImzML",
+	"writeMSIData")
 
 export(
 	"print.summary.iSet",
