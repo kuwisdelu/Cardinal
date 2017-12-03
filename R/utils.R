@@ -1,12 +1,27 @@
 
 ## Convert names of data types to their size in number of bytes
-sizeof <- function(datatype) {
-	bytes <- c(`16-bit integer` = 2,
-		`32-bit integer` = 4,
-		`64-bit integer` = 8,
-		`32-bit float` = 4,
-		`64-bit float` = 8)
-	bytes[as.character(datatype)]
+Csizeof <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = 2L,
+			`32-bit integer` = 4L,
+			`64-bit integer` = 8L,
+			`32-bit float` = 4L,
+			`64-bit float` = 8L,
+			stop("unrecognized binary type"))
+	}, integer(1))
+}
+
+Ctypeof <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = "short",
+			`32-bit integer` = "int",
+			`64-bit integer` = "long",
+			`32-bit float` = "float",
+			`64-bit float` = "double",
+			stop("unrecognized binary type"))
+	}, character(1))
 }
 
 ## Coerce to a supported matrix-like array object
@@ -84,20 +99,6 @@ wrap <- function(exprs, ..., signature) {
 		formals(.local) <- signature
 	}
 	.local(...)
-}
-
-## UUID generation from https://gist.github.com/cbare/5979354
-uuid <- function(uppercase=FALSE) { 
-	hex_digits <- c(as.character(0:9), letters[1:6])
-	hex_digits <- if (uppercase) toupper(hex_digits) else hex_digits
-	y_digits <- hex_digits[9:12]
-	paste(
-		paste0(sample(hex_digits, 8, replace=TRUE), collapse=''),
-		paste0(sample(hex_digits, 4, replace=TRUE), collapse=''),
-		paste0('4', paste0(sample(hex_digits, 3, replace=TRUE), collapse=''), collapse=''),
-		paste0(sample(y_digits,1), paste0(sample(hex_digits, 3, replace=TRUE), collapse=''), collapse=''),
-		paste0(sample(hex_digits, 12, replace=TRUE), collapse=''),
-		sep='-')
 }
 
 ## Saves the current .Random.seed

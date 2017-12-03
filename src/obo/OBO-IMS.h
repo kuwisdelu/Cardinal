@@ -117,17 +117,19 @@ xref: value-type:xsd\:nonNegativeInteger "The allowed value-type for this CV ter
 relationship: is_a IMS:1000004 ! Image
 relationship: has_units UO:0000017 ! Micrometer */
 
-#define IMS_PIXEL_SIZE_ID "IMS:1000046"
-#define IMS_PIXEL_SIZE_NAME "pixel size"
+#define IMS_PIXEL_SIZE_X_ID "IMS:1000046"
+#define IMS_PIXEL_SIZE_X_NAME "pixel size x"
 /* def: "Describes the area of the sample presented by one pixel." [COMPUTIS:IMS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 relationship: is_a IMS:1000004 ! Image
 relationship: has_units UO:0000047 ! Area Unit */
 
-#define IMS_IMAGE_SHAPE_ID "IMS:1000047"
-#define IMS_IMAGE_SHAPE_NAME "image shape"
-/* def: "Describes the shape of the image." [COMPUTIS:IMS]
-relationship: is_a IMS:1000004 ! Image */
+#define IMS_PIXEL_SIZE_Y_ID "IMS:1000047"
+#define IMS_PIXEL_SIZE_Y_NAME "pixel size y"
+/* def: "Describes the area of the sample presented by one pixel." [COMPUTIS:IMS]
+xref: value-type:xsd\:float "The allowed value-type for this CV term."
+relationship: is_a IMS:1000004 ! Image
+relationship: has_units UO:0000047 ! Area Unit */
 
 #define IMS_SCAN_TYPE_ID "IMS:1000048"
 #define IMS_SCAN_TYPE_NAME "scan type"
@@ -213,8 +215,8 @@ relationship: is_a IMS:1000008 ! Ibd Indentification */
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 relationship: is_a IMS:1000009 ! Ibd Checksum */
 
-#define IMS_IBD_SHA_1_ID "IMS:1000091"
-#define IMS_IBD_SHA_1_NAME "ibd SHA_1"
+#define IMS_IBD_SHA1_ID "IMS:1000091"
+#define IMS_IBD_SHA1_NAME "ibd SHA-1"
 /* def: "SHA-1 (Secure Hash Algorithm-1) is a cryptographic hash function designed by the National Security Agency (NSA) and published by the NIST as a U. S. government standard. It is also used to verify file integrity." [COMPUTIS:IMS]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 relationship: is_a IMS:1000009 ! Ibd Checksum */

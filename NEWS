@@ -1,4 +1,25 @@
 
+CHANGES IN VERSION 1.11.2 [2017-12-2]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'writeMSIData', 'writeImzML', and 'writeAnalyze'
+        methods for writing MSI data to supported file formats
+    o Added support for on-disk 'processed' imzML (via argument
+        'attach.only' in 'readImzML' method)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Package 'matter' is used for all file I/O now
+    o Switched from using 'Hashmat' to using 'sparse_mat'
+        class from 'matter' for 'processed' imzML data
+
+BUG FIXES
+
+    o Changed compiler settings for parsing XML so reading
+        large imzML files should use much less memory now
+        (but may take slightly longer for smaller files)
 
 CHANGES IN VERSION 1.11.1 [2017-10-25]
 -----------------------------------

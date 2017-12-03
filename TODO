@@ -3,8 +3,7 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Larger-than-memory support for 'processed' imzML
-- Utility methods for changing experimental design
+- Move non-critical Depends to Imports to clean up search path
 - Statistical hypothesis testing
 
 Priority: Medium
@@ -13,5 +12,4 @@ Priority: Medium
 - Optical image registration
 
 Priority: Low
-- Native writing of imzML and Analyze 7.5 formats
 - Support for more file formats (Bruker, etc.)

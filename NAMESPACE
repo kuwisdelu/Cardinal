@@ -103,10 +103,13 @@ export(
 	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",
+	"risk.colors",
 	"readAnalyze",
 	"readImzML",
 	"readMSIData",
-	"risk.colors")
+	"writeAnalyze",
+	"writeImzML",
+	"writeMSIData")
 
 export(
 	"print.summary.iSet",
@@ -252,7 +255,7 @@ exportMethods(
 	"scanDirection<-",
 	"scanPattern",
 	"scanPattern<-",
-	"scanPolarity<-",
+	"scanPolarity",
 	"scanPolarity<-",
 	"scanType",
 	"scanType<-",

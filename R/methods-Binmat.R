@@ -54,7 +54,7 @@ Binmat <- function(
 	datatype <- as.factor(rep(match.arg(datatype), length.out=dim[2]))
 	if ( length(offsets) != dim[2] )
 		offsets <- seq(offsets[1],
-			by=sizeof(datatype) * dim[1],
+			by=Csizeof(datatype) * dim[1],
 			length.out=dim[2])
 	if ( length(extents) != dim[2] )
 		extents <- rep(extents, length.out=dim[2])
@@ -178,7 +178,7 @@ readBinarySubmatrix <- function(x, i, j, ..., drop) {
 	is <- sort(i)
 	js <- sort(j)
 	count <- as.integer(length(js))
-	offsets <- as.double(x@offsets[js] + min(is - 1) * sizeof(x@datatype[js]))
+	offsets <- as.double(x@offsets[js] + min(is - 1) * Csizeof(x@datatype[js]))
 	extents <- pmin(x@extents[js], rep(as.integer(diff(range(is)) + 1), count))
 	if ( nlevels(x@files) == 1 ) {
 		xsub <- .Call("readIbdIntensityArray", as.character(x@files[1]),

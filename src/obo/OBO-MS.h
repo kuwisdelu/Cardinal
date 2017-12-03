@@ -241,8 +241,8 @@ is_obsolete: true */
 comment: This term was made obsolete because it was redundant with Unit Ontology second (UO:0000010).
 is_obsolete: true */
 
-#define MS_M_Z_ID "MS:1000040"
-#define MS_M_Z_NAME "m/z"
+#define MS_MZ_ID "MS:1000040"
+#define MS_MZ_NAME "m/z"
 /* def: "Three-character symbol m/z is used to denote the quantity formed by dividing the mass of an ion in unified atomic mass units by its charge number (regardless of sign). The symbol is written in italicized lower case letters with no spaces. Note 1: The term mass-to-charge-ratio is deprecated. Mass-to-charge ratio has been used for the abscissa of a mass spectrum, although the quantity measured is not the quotient of the ion's mass to its electric charge. The three-character symbol m/z is recommended for the quantity that is the independent variable in a mass spectrum Note 2: The proposed unit thomson (Th) is deprecated." [PSI:MS]
 synonym: "mass-to-charge ratio" EXACT []
 synonym: "Th" EXACT []
@@ -536,13 +536,13 @@ is_a: MS:1000017 ! Scan Function */
 /* def: "Please see Single Ion Monitoring." [PSI:MS]
 is_a: MS:1000017 ! Scan Function */
 
-#define MS_DECREASING_M_Z_SCAN_ID "MS:1000092"
-#define MS_DECREASING_M_Z_SCAN_NAME "decreasing m/z scan"
+#define MS_DECREASING_MZ_SCAN_ID "MS:1000092"
+#define MS_DECREASING_MZ_SCAN_NAME "decreasing m/z scan"
 /* def: "High to low direction in terms of m/z of the scan for scanning analyzers." [PSI:MS]
 is_a: MS:1000018 ! scan direction */
 
-#define MS_INCREASING_M_Z_SCAN_ID "MS:1000093"
-#define MS_INCREASING_M_Z_SCAN_NAME "increasing m/z scan"
+#define MS_INCREASING_MZ_SCAN_ID "MS:1000093"
+#define MS_INCREASING_MZ_SCAN_NAME "increasing m/z scan"
 /* def: "Low to high direction in terms of m/z of the scan for scanning analyzers." [PSI:MS]
 is_a: MS:1000018 ! scan direction */
 
@@ -551,8 +551,8 @@ is_a: MS:1000018 ! scan direction */
 /* def: "The mass scan is done in exponential mode." [PSI:MS]
 is_a: MS:1000019 ! scan law */
 
-// #define MS_LINEAR_ID "MS:1000095"
-// #define MS_LINEAR_NAME "linear"
+#define MS_LINEAR_ID "MS:1000095"
+#define MS_LINEAR_NAME "linear"
 /* def: "OBSOLETE The mass scan is done in linear mode." [PSI:MS]
 comment: This term was made obsolete because it was redundant with the Pato Ontology term linear (UO:0001199).
 is_a: MS:1000019 ! scan law
@@ -1802,8 +1802,8 @@ is_a: MS:1000597 ! ion optics type */
 comment: This former purgatory term was made obsolete.
 is_obsolete: true */
 
-// #define MS_SCAN_M_Z_RANGE__ID "MS:1000313"
-// #define MS_SCAN_M_Z_RANGE__NAME "scan m/z range?"
+// #define MS_SCAN_MZ_RANGE__ID "MS:1000313"
+// #define MS_SCAN_MZ_RANGE__NAME "scan m/z range?"
 /* def: "OBSOLETE The limit of m/z over which a mass spectrometer can detect ions." [PSI:MS]
 comment: This former purgatory term was made obsolete.
 is_obsolete: true */
@@ -2482,13 +2482,13 @@ relationship: part_of MS:1001458 ! spectrum generation information */
 /* def: "Mass analyzer separates the ions according to their mass-to-charge ratio." [PSI:MS]
 relationship: part_of MS:1000451 ! mass analyzer */
 
-#define MS_M_Z_SEPARATION_METHOD_ID "MS:1000444"
-#define MS_M_Z_SEPARATION_METHOD_NAME "m/z Separation Method"
+#define MS_MZ_SEPARATION_METHOD_ID "MS:1000444"
+#define MS_MZ_SEPARATION_METHOD_NAME "m/z Separation Method"
 /* def: "Mass/charge separation Method." [PSI:MS]
 relationship: part_of MS:1000479 ! purgatory */
 
-#define MS_SEQUENTIAL_M_Z_SEPARATION_METHOD_ID "MS:1000445"
-#define MS_SEQUENTIAL_M_Z_SEPARATION_METHOD_NAME "sequential m/z separation method"
+#define MS_SEQUENTIAL_MZ_SEPARATION_METHOD_ID "MS:1000445"
+#define MS_SEQUENTIAL_MZ_SEPARATION_METHOD_NAME "sequential m/z separation method"
 /* def: "Sequential m/z separation method." [PSI:MS]
 relationship: part_of MS:1000479 ! purgatory */
 
@@ -2813,8 +2813,8 @@ relationship: has_units UO:0000031 ! minute */
 is_a: MS:1000547 ! object attribute
 relationship: part_of MS:1000441 ! scan */
 
-#define MS_BASE_PEAK_M_Z_ID "MS:1000504"
-#define MS_BASE_PEAK_M_Z_NAME "base peak m/z"
+#define MS_BASE_PEAK_MZ_ID "MS:1000504"
+#define MS_BASE_PEAK_MZ_NAME "base peak m/z"
 /* def: "M/z value of the signal of highest intensity in the mass spectrum." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
@@ -2876,8 +2876,8 @@ is_a: MS:1000503 ! scan attribute */
 relationship: part_of MS:1000442 ! spectrum
 relationship: part_of MS:1000625 ! chromatogram */
 
-#define MS_M_Z_ARRAY_ID "MS:1000514"
-#define MS_M_Z_ARRAY_NAME "m/z array"
+#define MS_MZ_ARRAY_ID "MS:1000514"
+#define MS_MZ_ARRAY_NAME "m/z array"
 /* def: "A data array of m/z values." [PSI:MS]
 xref: binary-data-type:MS\:1000521 "32-bit float"
 xref: binary-data-type:MS\:1000523 "64-bit float"
@@ -2956,16 +2956,16 @@ relationship: part_of MS:1000442 ! spectrum */
 /* def: "Waters data file found in a Waters RAW directory, generated from an MS acquisition." [PSI:MS]
 is_a: MS:1000560 ! mass spectrometer file format */
 
-#define MS_HIGHEST_OBSERVED_M_Z_ID "MS:1000527"
-#define MS_HIGHEST_OBSERVED_M_Z_NAME "highest observed m/z"
+#define MS_HIGHEST_OBSERVED_MZ_ID "MS:1000527"
+#define MS_HIGHEST_OBSERVED_MZ_NAME "highest observed m/z"
 /* def: "Highest m/z value observed in the m/z array." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
 is_a: MS:1000808 ! chromatogram attribute
 relationship: has_units MS:1000040 ! m/z */
 
-#define MS_LOWEST_OBSERVED_M_Z_ID "MS:1000528"
-#define MS_LOWEST_OBSERVED_M_Z_NAME "lowest observed m/z"
+#define MS_LOWEST_OBSERVED_MZ_ID "MS:1000528"
+#define MS_LOWEST_OBSERVED_MZ_NAME "lowest observed m/z"
 /* def: "Lowest m/z value observed in the m/z array." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000499 ! spectrum attribute
@@ -3203,8 +3203,8 @@ is_a: MS:1000560 ! mass spectrometer file format */
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1000561 ! data file checksum type */
 
-#define MS_SHA_1_ID "MS:1000569"
-#define MS_SHA_1_NAME "SHA-1"
+#define MS_SHA1_ID "MS:1000569"
+#define MS_SHA1_NAME "SHA-1"
 /* def: "SHA-1 (Secure Hash Algorithm-1) is a cryptographic hash function designed by the National Security Agency (NSA) and published by the NIST as a U. S. government standard. It is also used to verify file integrity." [PSI:MS]
 xref: value-type:xsd\:string "The allowed value-type for this CV term."
 is_a: MS:1000561 ! data file checksum type */
@@ -4231,8 +4231,8 @@ is_a: MS:1001040 ! intermediate analysis format */
 /* def: "Thermo Scientific TSQ Quantum Ultra AM." [PSI:MS]
 is_a: MS:1000494 ! Thermo Scientific instrument model */
 
-#define MS_SELECTED_ION_M_Z_ID "MS:1000744"
-#define MS_SELECTED_ION_M_Z_NAME "selected ion m/z"
+#define MS_SELECTED_ION_MZ_ID "MS:1000744"
+#define MS_SELECTED_ION_MZ_NAME "selected ion m/z"
 /* def: "Mass-to-charge ratio of an selected ion." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000455 ! ion selection attribute
@@ -4740,8 +4740,8 @@ is_a: MS:1000503 ! scan attribute
 relationship: has_units UO:0000010 ! second
 relationship: has_units UO:0000031 ! minute */
 
-#define MS_ISOLATION_WINDOW_TARGET_M_Z_ID "MS:1000827"
-#define MS_ISOLATION_WINDOW_TARGET_M_Z_NAME "isolation window target m/z"
+#define MS_ISOLATION_WINDOW_TARGET_MZ_ID "MS:1000827"
+#define MS_ISOLATION_WINDOW_TARGET_MZ_NAME "isolation window target m/z"
 /* def: "The primary or reference m/z about which the isolation window is defined." [PSI:MS]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1000792 ! isolation window attribute
@@ -5191,8 +5191,8 @@ is_a: MS:1000901 ! retention time normalization standard */
 xref: value-type:xsd\:positiveInteger "The allowed value-type for this CV term."
 is_a: MS:1001221 ! fragmentation information */
 
-#define MS_PRODUCT_ION_M_Z_DELTA_ID "MS:1000904"
-#define MS_PRODUCT_ION_M_Z_DELTA_NAME "product ion m/z delta"
+#define MS_PRODUCT_ION_MZ_DELTA_ID "MS:1000904"
+#define MS_PRODUCT_ION_MZ_DELTA_NAME "product ion m/z delta"
 /* def: "The difference in m/z of the predicted m/z based on the assigned product ion minus the actual observed peak m/z." [PSI:PI]
 xref: value-type:xsd\:float "The allowed value-type for this CV term."
 is_a: MS:1001221 ! fragmentation information
@@ -6487,8 +6487,8 @@ is_a: MS:1002307 ! fragmentation ion type */
 /* def: "Fragmentation information, type of product: b ion." [PSI:PI]
 is_a: MS:1002307 ! fragmentation ion type */
 
-#define MS_PRODUCT_ION_M_Z_ID "MS:1001225"
-#define MS_PRODUCT_ION_M_Z_NAME "product ion m/z"
+#define MS_PRODUCT_ION_MZ_ID "MS:1001225"
+#define MS_PRODUCT_ION_MZ_NAME "product ion m/z"
 /* def: "The m/z of the product ion." [PSI:PI]
 synonym: "fragment ion m/z" EXACT []
 is_a: MS:1001221 ! fragmentation information
@@ -6505,8 +6505,8 @@ relationship: has_units MS:1000132 ! percent of base peak
 relationship: has_units MS:1000814 ! counts per second
 relationship: has_units MS:1000905 ! percent of base peak times 100 */
 
-#define MS_PRODUCT_ION_M_Z_ERROR_ID "MS:1001227"
-#define MS_PRODUCT_ION_M_Z_ERROR_NAME "product ion m/z error"
+#define MS_PRODUCT_ION_MZ_ERROR_ID "MS:1001227"
+#define MS_PRODUCT_ION_MZ_ERROR_NAME "product ion m/z error"
 /* def: "The product ion m/z error." [PSI:PI]
 is_a: MS:1001221 ! fragmentation information
 relationship: has_units MS:1000040 ! m/z
@@ -7824,8 +7824,8 @@ is_a: MS:1001457 ! data processing software */
 /* def: "Normalization of data point intensities." [PSI:MS]
 is_a: MS:1000543 ! data processing action */
 
-#define MS_M_Z_CALIBRATION_ID "MS:1001485"
-#define MS_M_Z_CALIBRATION_NAME "m/z calibration"
+#define MS_MZ_CALIBRATION_ID "MS:1001485"
+#define MS_MZ_CALIBRATION_NAME "m/z calibration"
 /* def: "Calibration of data point m/z positions." [PSI:MS]
 is_a: MS:1000543 ! data processing action */
 
@@ -10687,8 +10687,8 @@ is_a: MS:1001143 ! search engine specific score for PSMs
 is_a: MS:1001405 ! spectrum identification result details
 is_a: MS:1001968 ! PTM localization score */
 
-#define MS_DELTA_M_Z_ID "MS:1001975"
-#define MS_DELTA_M_Z_NAME "delta m/z"
+#define MS_DELTA_MZ_ID "MS:1001975"
+#define MS_DELTA_MZ_NAME "delta m/z"
 /* def: "The difference between a theoretically calculated m/z and the corresponding experimentally measured m/z. It can be expressed as absolute or relative value." [PSI:MS]
 synonym: "m/z difference" EXACT []
 is_a: MS:1001405 ! spectrum identification result details
@@ -11238,8 +11238,8 @@ is_a: MS:1001139 ! quantitation software name */
 xref: value-type:xsd\:double "The allowed value-type for this CV term."
 is_a: MS:1001805 ! quantification datatype */
 
-#define MS_PEPTIDE_CONSENSUS_M_Z_ID "MS:1002065"
-#define MS_PEPTIDE_CONSENSUS_M_Z_NAME "peptide consensus m/z"
+#define MS_PEPTIDE_CONSENSUS_MZ_ID "MS:1002065"
+#define MS_PEPTIDE_CONSENSUS_MZ_NAME "peptide consensus m/z"
 /* def: "Peptide consensus mass/charge ratio." [PSI:PI]
 xref: value-type:xsd\:double "The allowed value-type for this CV term."
 is_a: MS:1001805 ! quantification datatype */
@@ -12125,8 +12125,8 @@ relationship: has_regexp MS:1002231 ! ([A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-
 xref: value-type:xsd\:boolean "The allowed value-type for this CV term."
 is_a: MS:1002101 ! ProteomeDiscoverer input parameter */
 
-#define MS_SELECTED_PRECURSOR_M_Z_ID "MS:1002234"
-#define MS_SELECTED_PRECURSOR_M_Z_NAME "selected precursor m/z"
+#define MS_SELECTED_PRECURSOR_MZ_ID "MS:1002234"
+#define MS_SELECTED_PRECURSOR_MZ_NAME "selected precursor m/z"
 /* def: "Mass-to-charge ratio of a precursor ion selected for fragmentation." [PSI:PI]
 synonym: "selected ion m/z" RELATED []
 xref: value-type:xsd\:float "The allowed value-type for this CV term."

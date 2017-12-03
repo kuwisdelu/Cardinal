@@ -22,7 +22,7 @@ readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
 	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
 	\item{folder}{The path to the folder containing the data files.}
-	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory. This feature is still experimental.}
+	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
 	\item{mass.accuracy}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
 	\item{units.accuracy}{The units for 'mass.accuracy'.}
 	\item{\dots}{Additional arguments passed to read functions.}
@@ -30,7 +30,7 @@ readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
 \details{
 	In the current implementation, the file extensions must match exactly: '.imzML' and '.ibd' for imzML and '.hdr', '.t2m', and '.img' for Analyze 7.5.
 
-	The \code{readImzML} function currently supports reading and returning the 'continuous' and 'processed' formats. Note that support for the 'processed' format was added in version 1.3.0 and is still considered experimental and under development.
+	The \code{readImzML} function supports reading and returning both the 'continuous' and 'processed' formats.
 }
 \value{
 	A \code{\linkS4class{MSImageSet}} object.
@@ -42,6 +42,6 @@ readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
     Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
 }
 \seealso{
-	\code{\linkS4class{MSImageSet}}
+	\code{\link[Cardinal]{writeMSIData}}
 }
 \keyword{IO}
