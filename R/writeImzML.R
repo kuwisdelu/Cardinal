@@ -6,17 +6,18 @@ setMethod("writeImzML", "MSImageSet",
 	function(object, name, folder = getwd(), merge = FALSE,
 		mz.type = "32-bit float", intensity.type = "32-bit float", ...)
 	{
-		if ( merge )
-			stop("'merge = TRUE' is not currently supported")
 		if ( length(sampleNames(object)) > 1 ) {
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
 				tmp <- object[,pData(object)$sample == nm]
 				nm2 <- paste0(name, "-", nm)
-				writeImzML(tmp, nm2, folder, ...)
+				writeImzML(tmp, nm2, folder, merge=merge,
+					mz.type=mz.type, intensity.type=intensity.type, ...)
 			})
 			return(invisible(result))
 		}
+		if ( merge )
+			.stop("writeImzML: 'merge = TRUE' is not supported yet")
 		# check for files
 		xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 			mustWork=FALSE)
@@ -25,13 +26,43 @@ setMethod("writeImzML", "MSImageSet",
 			mustWork=FALSE)
 		if ( file.exists(ibdpath) ) .stop("writeImzML: ", ibdpath, " already exists")
 		# read ibd file
-		.log("writeImzML: Reading ibd file '", ibdpath, "'")
-		mzml <- .writeIbd.MSImageSet(object, ibdpath, mz.type, intensity.type)
+		.log("writeImzML: Writing ibd file '", ibdpath, "'")
+		mzml <- .writeIbd(object, ibdpath, mz.type, intensity.type)
 		# read imzML file
 		.log("writeImzML: Writing imzML file '", xmlpath, "'")
 		result <- .writeImzML(mzml, xmlpath)
 		invisible(result)
 	})
+
+.writeIbd <- function(x, file, mz.type, intensity.type) {
+	if ( is.null(file) )
+		return(info)
+	file <- normalizePath(file, mustWork=FALSE)
+	if ( !file.create(file) )
+		.stop(paste0("couldn't create file '", file, "'"))
+	info <- .metadataImzML(x, mz.type, intensity.type)
+	warn <- getOption("matter.cast.warning")
+	options(matter.cast.warning=FALSE)
+	id <- uuid(uppercase=TRUE)
+	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
+	pid[] <- id$bytes
+	pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
+		offset=info$mzArrayList[["external offset"]][1],
+		extent=info$mzArrayList[["external array length"]][1],
+		datamode=Ctypeof(mz.type))
+	pmz[] <- mz(x)
+	pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
+		offset=info$intensityArrayList[["external offset"]],
+		extent=info$intensityArrayList[["external array length"]],
+		datamode=Ctypeof(intensity.type))
+	for ( i in seq_len(ncol(x)) )
+		pspectra[,i] <- spectra(x)[,i]
+	options(matter.cast.warning=warn)
+	hash <- checksum(pspectra, algo="sha1")
+	info$experimentMetadata[["universally unique identifier"]] <- paste0("{", id$string, "}")
+	info$experimentMetadata[["ibd SHA-1"]] <- toupper(as.character(hash))
+	info
+}
 
 .writeImzML <- function(metadata, file) {
 	tmpl <- .templateImzML(metadata)
@@ -40,53 +71,21 @@ setMethod("writeImzML", "MSImageSet",
 	invisible(result)
 }
 
-.writeIbd.MSImageSet <- function(x, file, mzType, intensityType) {
-	if ( is.null(file) )
-		return(info)
-	file <- normalizePath(file, mustWork=FALSE)
-	if ( file.exists(file) )
-		.stop(paste0("file '", file, "' already exists"))
-	if ( !file.create(file) )
-		.stop(paste0("couldn't create file '", file, "'"))
-	info <- .metadataImzML(x, mzType, intensityType)
-	matter.cast.warning <- getOption("matter.cast.warning")
-	options(matter.cast.warning=FALSE)
-	id <- uuid(uppercase=TRUE)
-	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
-	pid[] <- id$bytes
-	pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
-		offset=info$mzArrayList[["external offset"]][1],
-		extent=info$mzArrayList[["external array length"]][1],
-		datamode=modeof.ibdtype(mzType))
-	pmz[] <- mz(x)
-	pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
-		offset=info$intensityArrayList[["external offset"]],
-		extent=info$intensityArrayList[["external array length"]],
-		datamode=modeof.ibdtype(intensityType))
-	for ( i in seq_len(ncol(x)) )
-		pspectra[,i] <- spectra(x)[,i]
-	options(matter.cast.warning=matter.cast.warning)
-	hash <- checksum(pspectra, algo="sha1")
-	info$experimentMetadata[["universally unique identifier"]] <- paste0("{", id$string, "}")
-	info$experimentMetadata[["ibd SHA-1"]] <- toupper(as.character(hash))
-	info
-}
-
-.metadataImzML <- function(x, mzType, intensityType) {
+.metadataImzML <- function(x, mz.type, intensity.type) {
 	scanList <- coord(x)[coordLabels(x)]
 	positionNames <- c("position x", "position y", "position z")
 	names(scanList) <- positionNames[seq_along(coordLabels(x))]
 	mzArrayList <- data.frame(
 		"external offset"=rep(16, ncol(x)),
 		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(sizeof.ibdtype(mzType) * nrow(x), ncol(x)),
-		"binary data type"=rep(mzType, ncol(x)),
+		"external encoded length"=rep(Csizeof(mz.type) * nrow(x), ncol(x)),
+		"binary data type"=rep(mz.type, ncol(x)),
 		stringsAsFactors=FALSE, check.names=FALSE)
 	intensityArrayList <- data.frame(
-		"external offset"=rep(16 + sizeof.ibdtype(mzType) * nrow(x), ncol(x)),
+		"external offset"=rep(16 + Csizeof(mz.type) * nrow(x), ncol(x)),
 		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(sizeof.ibdtype(intensityType) * nrow(x), ncol(x)),
-		"binary data type"=rep(intensityType, ncol(x)),
+		"external encoded length"=rep(Csizeof(intensity.type) * nrow(x), ncol(x)),
+		"binary data type"=rep(intensity.type, ncol(x)),
 		stringsAsFactors=FALSE, check.names=FALSE)
 	offset <- c(0, cumsum(intensityArrayList[["external encoded length"]][-ncol(x)]))
 	intensityArrayList[["external offset"]] <- offset + intensityArrayList[["external offset"]]

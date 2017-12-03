@@ -42,17 +42,18 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 .readIbd.MSImageset <- function(file, info,
 	attach.only, mass.accuracy, units.accuracy)
 {
+	file <- normalizePath(file)
 	ibdtype <- info$experimentMetadata[["ibd binary type"]]
 	mz.ibdtype <- info$mzArrayList[["binary data type"]]
 	intensity.ibdtype <- info$intensityArrayList[["binary data type"]]
 	# read binary data
 	if ( ibdtype == "continuous" ) {
 		mz <- matter_vec(paths=file,
-			datamode=modeof.ibdtype(mz.ibdtype[1]),
+			datamode=Ctypeof(mz.ibdtype[1]),
 			offset=info$mzArrayList[["external offset"]][1],
 			extent=info$mzArrayList[["external array length"]][1])
 		intensity <- matter_mat(paths=file,
-			datamode=modeof.ibdtype(intensity.ibdtype[1]),
+			datamode=Ctypeof(intensity.ibdtype[1]),
 			offset=info$intensityArrayList[["external offset"]],
 			extent=info$intensityArrayList[["external array length"]])
 		if ( attach.only ) {
@@ -63,11 +64,11 @@ readImzML <- function(name, folder=getwd(), attach.only=FALSE,
 		mz <- mz[]
 	} else if ( ibdtype == "processed" ) {
 		mz <- matter_list(paths=file,
-			datamode=modeof.ibdtype(mz.ibdtype),
+			datamode=Ctypeof(mz.ibdtype),
 			offset=info$mzArrayList[["external offset"]],
 			extent=info$mzArrayList[["external array length"]])
 		intensity <- matter_list(paths=file,
-			datamode=modeof.ibdtype(intensity.ibdtype),
+			datamode=Ctypeof(intensity.ibdtype),
 			offset=info$intensityArrayList[["external offset"]],
 			extent=info$intensityArrayList[["external array length"]])
 		mz.range <- range(as(mz, "matter_vec"))

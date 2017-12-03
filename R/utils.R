@@ -1,12 +1,27 @@
 
 ## Convert names of data types to their size in number of bytes
-sizeof <- function(datatype) {
-	bytes <- c(`16-bit integer` = 2,
-		`32-bit integer` = 4,
-		`64-bit integer` = 8,
-		`32-bit float` = 4,
-		`64-bit float` = 8)
-	bytes[as.character(datatype)]
+Csizeof <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = 2L,
+			`32-bit integer` = 4L,
+			`64-bit integer` = 8L,
+			`32-bit float` = 4L,
+			`64-bit float` = 8L,
+			stop("unrecognized binary type"))
+	}, integer(1))
+}
+
+Ctypeof <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`16-bit integer` = "short",
+			`32-bit integer` = "int",
+			`64-bit integer` = "long",
+			`32-bit float` = "float",
+			`64-bit float` = "double",
+			stop("unrecognized binary type"))
+	}, character(1))
 }
 
 ## Coerce to a supported matrix-like array object
@@ -17,32 +32,6 @@ as.matrixlike <- function(x, supported="matrix") {
 	} else {
 		tryCatch(as.matrix(x), error=err)
 	}
-}
-
-## Get the size of imzML ibd binary types
-sizeof.ibdtype <- function(type) {
-	vapply(type, function(t) {
-		switch(t,
-			`16-bit integer` = 2L,
-			`32-bit integer` = 4L,
-			`64-bit integer` = 8L,
-			`32-bit float` = 4L,
-			`64-bit float` = 8L,
-			stop("unrecognized ibd binary type"))
-	}, integer(1))
-}
-
-# Get the C type of imzML ibd binary types
-modeof.ibdtype <- function(type) {
-	vapply(type, function(t) {
-		switch(t,
-			`16-bit integer` = "short",
-			`32-bit integer` = "int",
-			`64-bit integer` = "long",
-			`32-bit float` = "float",
-			`64-bit float` = "double",
-			stop("unrecognized ibd binary type"))
-	}, character(1))
 }
 
 ## Make an annotation (factor) from regions-of-interest (logical)
