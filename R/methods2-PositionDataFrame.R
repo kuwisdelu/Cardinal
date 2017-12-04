@@ -3,14 +3,23 @@
 ## ------------------------------------
 
 setMethod("initialize", "PositionDataFrame",
-	function(.Object, coord, ...) {
+	function(.Object, run, coord, ...) {
 		if ( missing(coord) || length(coord) == 0 )
 			coord <- DataFrame(x=numeric(), y=numeric())
+		if ( missing(run) ) {
+			if ( nrow(coord) == 0 ) {
+				run <- factor()
+			} else {
+				run <- factor(1)
+			}
+		}
+		if ( length(run) != nrow(coord) )
+			run <- rep(run, length.out=nrow(coord))
 		.Object <- .setResolutionfromCoord(.Object, coord)
-		callNextMethod(.Object, coord=coord, ...)
+		callNextMethod(.Object, run=run, coord=coord, ...)
 	})
 
-PositionDataFrame <- function(coord, ...,
+PositionDataFrame <- function(run, coord, ...,
 	row.names = NULL, check.names = TRUE)
 {
 	if ( missing(coord) && length(list(...)) == 0 )
@@ -20,6 +29,7 @@ PositionDataFrame <- function(coord, ...,
 		row.names=row.names,
 		check.names=check.names)
 	.PositionDataFrame(
+		run=run,
 		coord=coord,
 		rownames=row.names,
 		nrows=nrow(coord),
@@ -28,6 +38,10 @@ PositionDataFrame <- function(coord, ...,
 
 .valid.PositionDataFrame <- function(object) {
 	errors <- NULL
+	if ( object@nrows != length(object@run) )
+		errors <- c(errors , "'nrow' must match length of 'run'")
+	if ( object@nrows != nrow(object@coord) )
+		errors <- c(errors , "'nrow' must match number of rows of 'coord'")
 	if ( length(object@coord) < 2 )
 		errors <- c(errors , "'coord' must have at least 2 columns")
 	if ( any(duplicated(object@coord)) )
@@ -80,6 +94,26 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 	})
 	res
 }
+
+setMethod("run", "PositionDataFrame",
+	function(object) object@run)
+
+setReplaceMethod("run", "PositionDataFrame",
+	function(object, value) {
+		object@run <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("runNames", "PositionDataFrame",
+	function(object) levels(object@run))
+
+setReplaceMethod("runNames", "PositionDataFrame",
+	function(object, value) {
+		levels(object@run) <- value
+		if ( validObject(object) )
+			object
+	})
 
 setMethod("coord", "PositionDataFrame",
 	function(object) object@coord)
@@ -143,25 +177,37 @@ setMethod("dims", "PositionDataFrame",
 			object@resolution)
 	})
 
-# includes 'coord' slot in the list, prefixed by "coord:"
+# includes 'run' and 'coord' slot in the list
 setMethod("as.list", "PositionDataFrame",
-	function(x, use.names = TRUE, fix.coord="coord:")
+	function(x, use.names = TRUE, fix.run=":", fix.coord="coord:")
 	{
-		pos <- coord(x)
-		if ( length(pos) > 0 )
-			names(pos) <- paste0(fix.coord, names(pos))
-		ans <- append(as.list(pos), x@listData)
+		ans <- x@listData
+		if ( !is.null(fix.coord) ) {
+			pos <- coord(x)
+			if ( length(pos) > 0 )
+				names(pos) <- paste0(fix.coord, names(pos))
+			ans <- append(as.list(pos), x@listData)
+		}
+		if ( !is.null(fix.run) ) {
+			nmr <- paste0(fix.run, "run", fix.run)
+			run <- setNames(list(run(x)), nmr)
+			ans <- append(run, ans)
+		}
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
 	})
 
-# including 'coord' by default means they show up in 'show'
+# including 'run' and 'coord' by default means they show up in 'show'
 setMethod("lapply", "PositionDataFrame",
-	function(X, FUN, ..., with.coord = TRUE)
+	function(X, FUN, ..., with.run = TRUE, with.coord = TRUE)
 	{
-		if ( with.coord ) {
+		if ( with.run && with.coord ) {
 			lapply(as.list(X), FUN=FUN, ...)
+		} else if ( with.run ) {
+			lapply(as.list(X, fix.coord=NULL), FUN=FUN, ...)
+		} else if ( with.coord ) {
+			lapply(as.list(X, fix.run=NULL), FUN=FUN, ...)
 		} else {
 			lapply(as.list(X@listData), FUN=FUN, ...)
 		}
@@ -170,19 +216,23 @@ setMethod("lapply", "PositionDataFrame",
 setMethod("[", "PositionDataFrame",
 	function(x, i, j, ..., drop = TRUE) {
 		if ( missing(i) ) {
+			run <- x@run
 			coord <- x@coord
 		} else {
+			i2 <- seq_len(nrow(x))
+			i <- setNames(i2, rownames(x))[i]
+			run <- x@run[i]
 			coord <- x@coord[i,]
 		}
 		if ( missing(j) ) {
 			mcols <- mcols(x)
 		} else {
+			j2 <- seq_len(ncol(x))
+			j <- setNames(j2, colnames(x))[j]
 			mcols <- mcols(x)[j]
 		}
 		x <- callNextMethod(as(x, "DataFrame"),
 			i=i, j=j, ..., drop=FALSE)
-		if ( missing(drop) )
-			drop <- ncol(x) == 1L
 		if ( drop ) {
 			if (ncol(x) == 1L) 
 				return(x[[1L]])
@@ -190,7 +240,8 @@ setMethod("[", "PositionDataFrame",
 				return(as(x, "list"))
 		}
 		x <- .PositionDataFrame(
-			coord=coord,
+			run=droplevels(run),
+			coord=droplevels(coord),
 			rownames=rownames(x),
 			nrows=nrow(coord),
 			listData=x@listData,
@@ -201,6 +252,14 @@ setMethod("[", "PositionDataFrame",
 setMethod("cbind", "PositionDataFrame",
 	function(..., deparse.level = 1) {
 		args <- list(...)
+		# check that runs match
+		run <- run(args[[1]])
+		ok <- vapply(args, function(a) 
+			isTRUE(all.equal(run(a), run)),
+			logical(1))
+		if ( !all(ok) )
+			stop("'run' must match")
+		# check that coords match
 		coord <- coord(args[[1]])
 		ok <- vapply(args, function(a) 
 			isTRUE(all.equal(coord(a), coord)),
@@ -209,6 +268,7 @@ setMethod("cbind", "PositionDataFrame",
 			stop("'coord' must match")
 		x <- callNextMethod(...)
 		.PositionDataFrame(
+			run=run,
 			coord=coord,
 			rownames=rownames(x),
 			nrows=nrow(coord),
@@ -218,10 +278,15 @@ setMethod("cbind", "PositionDataFrame",
 
 setMethod("rbind", "PositionDataFrame",
 	function(..., deparse.level = 1) {
-		coord <- do.call("rbind",
-			lapply(list(...), coord))
+		run <- lapply(list(...), "run")
+		levs <- unique(unlist(lapply(run, levels), use.names=FALSE))
+		run <- do.call("c", lapply(run, as.character))
+		run <- factor(run, levels=levs)
+		coord <- lapply(list(...), "coord")
+		coord <- do.call("rbind", coord)
 		x <- callNextMethod(...)
 		.PositionDataFrame(
+			run=run,
 			coord=coord,
 			rownames=rownames(x),
 			nrows=nrow(coord),

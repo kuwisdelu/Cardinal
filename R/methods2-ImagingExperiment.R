@@ -94,55 +94,7 @@ setReplaceMethod("pixelNames", "ImagingExperiment",
 		object
 	})
 
-setMethod("coord", "ImagingExperiment",
-	function(object) coord(pixelData(object)))
-
-setReplaceMethod("coord", "ImagingExperiment",
-	function(object, value) {
-		coord(pixelData(object)) <- value
-		object
-	})
-
-setMethod("coordnames", "ImagingExperiment",
-	function(x) coordnames(pixelData(x)))
-
-setReplaceMethod("coordnames", "ImagingExperiment",
-	function(x, value) {
-		coordnames(pixelData(x)) <- value
-		x
-	})
-
-setMethod("coordLabels", "ImagingExperiment",
-	function(object) coordnames(object))
-
-setReplaceMethod("coordLabels", "ImagingExperiment",
-	function(object, value) {
-		coordnames(object) <- value
-		object
-	})
-
-setMethod("gridded", "ImagingExperiment",
-	function(obj) gridded(pixelData(obj)))
-
-setReplaceMethod("gridded", "ImagingExperiment",
-	function(obj, value) {
-		gridded(pixelData(obj)) <- value
-		obj
-	})
-
-setMethod("resolution", "ImagingExperiment",
-	function(object) resolution(pixelData(object)))
-
-setReplaceMethod("resolution", "ImagingExperiment",
-	function(object, value) {
-		resolution(pixelData(object)) <- value
-		object
-	})
-
-setMethod("dims", "ImagingExperiment",
-	function(object) dims(pixelData(object)))
-
-## Additional methods
+## Subsetting
 
 setMethod("[[", c("ImagingExperiment", "ANY", "missing"),
 	function(x, i, j, ...) pixelData(x)[[i, ...]])
@@ -165,10 +117,14 @@ setReplaceMethod("$", "ImagingExperiment",
 		x
 	})
 
+## Additional methods
+
 setMethod("dim", "ImagingExperiment", function(x)
 	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
 
 setMethod("dimnames", "ImagingExperiment", function(x)
 	list(featureNames(x), pixelNames(x)))
 
+setMethod("length", "ImagingExperiment", 
+	function(x) as.integer(ncol(x)))
 

@@ -59,6 +59,10 @@ setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePo
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
+setGeneric("run", function(object) standardGeneric("run"))
+setGeneric("run<-", function(object, value) standardGeneric("run<-"))
+setGeneric("runNames", function(object) standardGeneric("runNames"))
+setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 
 #### Supplement ProtGenerics  ####
 ## -------------------------------

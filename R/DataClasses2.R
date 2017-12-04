@@ -8,10 +8,12 @@ setClass("XDataFrame", contains = "DataFrame")
 .PositionDataFrame <- setClass("PositionDataFrame",
 	contains = "XDataFrame",
 	slots = c(
+		run = "factor",
 		coord = "DataFrame",
 		gridded = "logical",
 		resolution = "numeric"),
 	prototype = prototype(
+		run = factor(),
 		coord = DataFrame(),
 		resolution = c(NA_real_, NA_real_),
 		rownames = NULL,
@@ -81,10 +83,10 @@ setAs("SimpleList", "MSContinuousImagingSpectraList",
 	slots = c(
 		imageData = "ImageList",
 		featureData = "DataFrame",
-		elementMetadata = "PositionDataFrame"),
+		elementMetadata = "DataFrame"),
 	prototype = prototype(
 		imageData = .SimpleImageList(),
-		elementMetadata = .PositionDataFrame()))
+		elementMetadata = DataFrame()))
 
 #### Class for pixel-sparse imaging experiments ####
 ## --------------------------------------------------
@@ -92,9 +94,11 @@ setAs("SimpleList", "MSContinuousImagingSpectraList",
 	contains = "ImagingExperiment",
 	slots = c(
 		imageData = "ImageArrayList",
+		elementMetadata = "PositionDataFrame",
 		processing = "SimpleList"),
 	prototype = prototype(
 		imageData = .SimpleImageArrayList(),
+		elementMetadata = .PositionDataFrame(),
 		processing = SimpleList()))
 
 #### Class for mass spectrometry imaging experiments ####

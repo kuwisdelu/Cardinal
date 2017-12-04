@@ -26,12 +26,12 @@ setMethod("show", "XDataFrame",
 	ntail <- get_showTailLines()
 	nr <- nrow(object)
 	nc <- ncol(object)
-	true_nc <- length(lapply(object, function(x) NULL))
+	show_nc <- length(lapply(object, function(x) NULL))
 	cat(class(object), " with ",
 		nr, ifelse(nr == 1, " row and ", " rows and "),
 		nc, ifelse(nc == 1, " column\n", " columns\n"),
 		sep = "")
-	if (nr > 0 && nc > 0) {
+	if (nr > 0 && show_nc > 0) {
 		nms <- rownames(object)
 		if (nr <= (nhead + ntail + 1L)) {
 			out <-
@@ -46,7 +46,7 @@ setMethod("show", "XDataFrame",
 						lapply(object, function(x)
 							showAsCell(head(x, nhead))),
 						optional = TRUE))),
-					rbind(rep.int("...", true_nc)),
+					rbind(rep.int("...", show_nc)),
 					as.matrix(format(as.data.frame(
 						lapply(object, function(x) 
 							showAsCell(tail(x, ntail))),

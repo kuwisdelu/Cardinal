@@ -27,12 +27,12 @@ MassDataFrame <- function(mz, ...,
 
 .valid.MassDataFrame <- function(object) {
 	errors <- NULL
+	if ( object@nrows != length(object@mz) )
+		errors <- c(errors , "'nrow' must equal length of 'mz'")
 	if ( is.unsorted(object@mz) )
 		errors <- c(errors , "'mz' must be in increasing order")
 	if ( any(duplicated(object@mz)) )
 		errors <- c(errors , "elements of 'mz' must be unique")
-	if ( length(object@mz) != object@nrows )
-		errors <- c(errors , "'nrow' must equal length of 'mz'")
 	if ( length(object@resolution) != 1 )
 		errors <- c(errors, "length of 'resolution' must be 1")
 	if ( is.null(errors) ) TRUE else errors
@@ -82,13 +82,16 @@ setReplaceMethod("resolution", "MassDataFrame",
 			object
 	})
 
-# includes 'mz' slot in the list, prefixed/affixed by ":"
+# includes 'mz' slot in the list
 setMethod("as.list", "MassDataFrame",
 	function(x, use.names = TRUE, fix.mz = ":")
 	{
-		nmz <- paste0(fix.mz, "mz", fix.mz)
-		lmz <- setNames(list(mz(x)), nmz)
-		ans <- append(lmz, x@listData)
+		ans <- x@listData
+		if ( !is.null(fix.mz) ) {
+			nmz <- paste0(fix.mz, "mz", fix.mz)
+			lmz <- setNames(list(mz(x)), nmz)
+			ans <- append(lmz, ans)
+		}
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
@@ -110,17 +113,19 @@ setMethod("[", "MassDataFrame",
 		if ( missing(i) ) {
 			mz <- x@mz
 		} else {
+			i2 <- seq_len(nrow(x))
+			i <- setNames(i2, rownames(x))[i]
 			mz <- x@mz[i]
 		}
 		if ( missing(j) ) {
 			mcols <- mcols(x)
 		} else {
+			j2 <- seq_len(ncol(x))
+			j <- setNames(j2, colnames(x))[j]
 			mcols <- mcols(x)[j]
 		}
 		x <- callNextMethod(as(x, "DataFrame"),
 			i=i, j=j, ..., drop=FALSE)
-		if ( missing(drop) )
-			drop <- ncol(x) == 1L
 		if ( drop ) {
 			if (ncol(x) == 1L) 
 				return(x[[1L]])
