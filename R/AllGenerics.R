@@ -1,44 +1,26 @@
 
-#### Define new generics from base R ####
-## -------------------------------------
-setGeneric("as.array")
-setGeneric("as.matrix")
-setGeneric("length")
-setGeneric("names")
-setGeneric("names<-")
-setGeneric("rownames<-")
-setGeneric("colnames<-")
-setGeneric("summary")
-
 #### Define new generics from stats R ####
 ## ---------------------------------------
 setGeneric("predict")
 setGeneric("fitted")
-setGeneric("residuals")
-setGeneric("coef")
 
-#### Define new generics from graphics R ####
-## ------------------------------------------
-setGeneric("plot")
-setGeneric("image")
+#### Define new generics from EBImage ####
+## ---------------------------------------
+setGeneric("imageData")
+setGeneric("imageData<-")
+
+#### New accessor, setter, and manipulation ####
+## -----------------------------------------------
+setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
+setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 
 #### Basic accessor, setter, and manipulation ####
 ## -----------------------------------------------
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
-# setGeneric("coordinates", function(object) standardGeneric("coord")) # use sp version
-# setGeneric("coordinates<-", function(object, value) standardGeneric("coord<-")) # use sp version
-# setGeneric("coordnames", function(x) standardGeneric("coordnames")) # use sp version
-# setGeneric("coordnames<-", function(x, value) standardGeneric("coordnames<-")) # use sp version
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
-setGeneric("iData", function(object, ...) standardGeneric("iData")) # need ... for Cardinal 2.0
-setGeneric("iData<-", function(object, ..., value) standardGeneric("iData<-")) # need ... for Cardinal 2.0
-setGeneric("imageData", function(object) standardGeneric("imageData"))
-setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
-# setGeneric("keys", function(object) standardGeneric("keys")) # use matter version
-# setGeneric("keys<-", function(object, value) standardGeneric("keys<-")) # use matter version
 setGeneric("modelData", function(object) standardGeneric("modelData"))
 setGeneric("modelData<-", function(object, value) standardGeneric("modelData<-"))
 setGeneric("mzData", function(object) standardGeneric("mzData"))
@@ -56,6 +38,8 @@ setGeneric("processingData", function(object) standardGeneric("processingData"))
 setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
 setGeneric("dataCube", function(object, ...) standardGeneric("dataCube"))
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
+setGeneric("resolution", function(object) standardGeneric("resolution"))
+setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
@@ -66,17 +50,12 @@ setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 
 #### Supplement ProtGenerics  ####
 ## -------------------------------
-# setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics version
-# setGeneric("mz<-", function(object, value) standardGeneric("mz<-")) # use ProtGenerics version
-# setGeneric("peaks", function(object, ...) standardGeneric("peaks")) # use ProtGenerics version
 setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
-# setGeneric("spectra", function(object, ...) standardGeneric("spectra")) # use ProtGenerics version
 setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
-# setGeneric("intensity", function(object, ...) standardGeneric("intensity")) # use ProtGenerics version
 
 #### MIAPE - Imaging ####
 ## ----------------------
-setGeneric("msiInfo", function(object) standardGeneric("msiInfo"))
+setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
 setGeneric("specimenOrigin<-", function(object, value) standardGeneric("specimenOrigin<-"))
 setGeneric("specimenType", function(object) standardGeneric("specimenType"))
@@ -158,8 +137,6 @@ setGeneric("standardizeSamples", function(object, ...) standardGeneric("standard
 
 #### Data transformation and alignment ####
 ## ---------------------------------------
-# setGeneric("as2D", function(object) standardGeneric("as2D"))
-# setGeneric("as3D", function(object) standardGeneric("as3D"))
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 
 #### Statistical analysis and tools ####

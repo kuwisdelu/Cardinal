@@ -20,19 +20,19 @@ test_that("MSImageData validity", {
 
 })
 
-test_that("MSImageData combine", {
+# test_that("MSImageData combine", {
 
-	data1 <- matrix(1:27, nrow=3)
-	msdata1 <- MSImageData(data=data1)
-	msdata2 <- msdata1
+# 	data1 <- matrix(1:27, nrow=3)
+# 	msdata1 <- MSImageData(data=data1)
+# 	msdata2 <- msdata1
 
-	coord(msdata1)$sample <- factor(1)
-	coord(msdata2)$sample <- factor(2)
+# 	coord(msdata1)$sample <- factor(1)
+# 	coord(msdata2)$sample <- factor(2)
 
-	msdata3 <- combine(msdata1, msdata2)
+# 	msdata3 <- combine(msdata1, msdata2)
 
-	expect_true(validObject(msdata3))
+# 	expect_true(validObject(msdata3))
 
-	expect_equivalent(iData(msdata3), cbind(iData(msdata1), iData(msdata2)))
+# 	expect_equivalent(iData(msdata3), cbind(iData(msdata1), iData(msdata2)))
 
-})
+# })

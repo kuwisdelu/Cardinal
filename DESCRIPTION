@@ -9,9 +9,10 @@ Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
-Depends: BiocGenerics, BiocParallel, Biobase, graphics, matter,
-		methods, S4Vectors, stats, ProtGenerics
-Imports: grid, irlba, lattice, signal, sp, stats4, utils
+Depends: BiocGenerics, BiocParallel, graphics, methods,
+		S4Vectors, stats, ProtGenerics
+Imports: Biobase, EBImage, grid, irlba, lattice, matter,
+		signal, sp, stats4, utils
 Suggests: BiocStyle, testthat
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 		Normalization,	MassSpectrometry, ImagingMassSpectrometry

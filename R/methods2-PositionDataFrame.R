@@ -126,6 +126,25 @@ setReplaceMethod("coord", "PositionDataFrame",
 			object
 	})
 
+setMethod("coordLabels", "PositionDataFrame",
+	function(object) coordnames(object))
+
+setReplaceMethod("coordLabels", "PositionDataFrame",
+	function(object, value) {
+		coordnames(object) <- value
+		object
+	})
+
+setMethod("coordinates", "PositionDataFrame",
+	function(obj, ...) x@coord)
+
+setReplaceMethod("coordinates", "PositionDataFrame",
+	function(object, value) {
+		object@coord <- value
+		if ( validObject(object) )
+			object
+	})
+
 setMethod("coordnames", "PositionDataFrame",
 	function(x) names(x@coord))
 
@@ -134,15 +153,6 @@ setReplaceMethod("coordnames", "PositionDataFrame",
 		names(x@coord) <- value
 		if ( validObject(x) )
 			x
-	})
-
-setMethod("coordLabels", "PositionDataFrame",
-	function(object) coordnames(object))
-
-setReplaceMethod("coordLabels", "PositionDataFrame",
-	function(object, value) {
-		coordnames(object) <- value
-		object
 	})
 
 # whether the positions are gridded

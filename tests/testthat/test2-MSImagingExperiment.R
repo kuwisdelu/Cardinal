@@ -32,14 +32,14 @@ test_that("MSImagingExperiment validity", {
 	expect_true(is(y1, "MSContinuousImagingExperiment"))
 
 	y2 <- MSImagingExperiment(
-		imageData=as.matter(data),
+		imageData=matter::as.matter(data),
 		featureData=fdata,
 		pixelData=pdata)
 
 	expect_true(is(y2, "MSContinuousImagingExperiment"))
 
 	y3 <- MSImagingExperiment(
-		imageData=as.sparse(data),
+		imageData=matter::as.sparse(data),
 		featureData=fdata,
 		pixelData=pdata)
 

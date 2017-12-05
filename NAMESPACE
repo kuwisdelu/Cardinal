@@ -24,13 +24,21 @@ importFrom("stats",
 
 import("BiocGenerics")
 
+import("BiocParallel")
+
 import("Biobase")
+
+importFrom("EBImage",
+	"imageData",
+	"imageData<-")
 
 import("matter")
 
 import("methods")
 
 import("stats4")
+
+import("S4Vectors")
 
 import("ProtGenerics")
 
@@ -62,6 +70,12 @@ importFrom("signal",
 	"sgolayfilt")
 
 importFrom("sp",
+	"coordinates",
+	"coordinates<-",
+	"coordnames",
+	"coordnames<-",
+	"gridded",
+	"gridded<-",
 	"point.in.polygon")
 
 importFrom("utils",
@@ -96,6 +110,33 @@ export(
 	"MSImageSet",
 	"SImageData",
 	"SImageSet")
+
+exportClasses(
+	"XDataFrame",
+	"PositionDataFrame",
+	"MassDataFrame",
+	"ImageList",
+	"ImageArrayList",
+	"SimpleImageList",
+	"SimpleImageArrayList",
+	"MSContinuousImagingSpectraList",
+	"MSProcessedImagingSpectraList",
+	"ImagingExperiment",
+	"SparseImagingExperiment",
+	"MSImagingExperiment",
+	"MSContinuousImagingExperiment",
+	"MSProcessedImagingExperiment",
+	"MSImagingInfo")
+
+export(
+	"PositionDataFrame",
+	"MassDataFrame",
+	"ImageList",
+	"ImageArrayList",
+	"MSContinuousImagingSpectraList",
+	"MSProcessedImagingSpectraList",
+	"SparseImagingExperiment",
+	"MSImagingExperiment")
 
 export(
 	"alpha.colors",
@@ -168,6 +209,8 @@ exportMethods(
 	"coord<-",
 	"coordinates",
 	"coordinates<-",
+	"coordnames",
+	"coordnames<-",
 	"coordLabels",
 	"coordLabels<-",
 	"dim",
@@ -175,6 +218,8 @@ exportMethods(
 	"dims",
 	"dimnames",
 	"dimnames<-",
+	"experimentData",
+	"experimentData<-",
 	"features",
 	"fData",
 	"fData<-",
@@ -186,6 +231,8 @@ exportMethods(
 	"fvarLabels<-",
 	"fvarMetadata",
 	"fvarMetadata<-",
+	"gridded",
+	"gridded<-",
 	"iData",
 	"iData<-",
 	"imageData",
@@ -214,9 +261,17 @@ exportMethods(
 	"positionArray<-",
 	"processingData",
 	"processingData<-",
+	"protocolData",
+	"protocolData<-",
 	"regeneratePositions",
 	"resultData",
 	"resultData<-",
+	"resolution",
+	"resolution<-",
+	"run",
+	"run<-",
+	"runNames",
+	"runNames<-",
 	"sampleNames",
 	"sampleNames<-",
 	"show",
@@ -230,6 +285,16 @@ exportMethods(
 	"varMetadata<-")
 
 exportMethods(
+	"abstract",
+	"samples",
+	"preproc",
+	"preproc<-",
+	"pubMedIds",
+	"pubMedIds<-",
+	"otherInfo",
+	"expinfo",
+	"notes",
+	"notes<-",
 	"embeddingMethod",
 	"embeddingMethod<-",
 	"imageShape",

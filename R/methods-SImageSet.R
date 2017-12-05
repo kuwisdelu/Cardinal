@@ -76,11 +76,11 @@ setValidity("SImageSet", function(object) {
 })
 
 
-setMethod("iData", "SImageSet", function(object) iData(object@imageData))
+setMethod("iData", "SImageSet", function(x, i, ...) iData(x@imageData))
 setReplaceMethod("iData", "SImageSet",
-	function(object, value) {
-		iData(object@imageData) <- value
-		object
+	function(x, i, ..., value) {
+		iData(x@imageData) <- value
+		x
 	})
 
 setMethod("regeneratePositions", "SImageSet",

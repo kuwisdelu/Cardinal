@@ -42,12 +42,12 @@ setValidity("iSet", function(object) {
 #### imageData methods ####
 ## ------------------------
 
-setMethod("imageData", "iSet", function(object) object@imageData)
+setMethod("imageData", "iSet", function(y) y@imageData)
 
 setReplaceMethod("imageData", "iSet",
-	function(object, value) {
-		object@imageData <- value
-		object
+	function(y, value) {
+		y@imageData <- value
+		y
 	})
 
 #### featureData methods ####

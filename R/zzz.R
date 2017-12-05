@@ -32,7 +32,7 @@
 }
 
 .onAttach <- function(libname, pkgname) {
-	msg0 <- paste("Welcome to Cardinal (version ",
+	msg0 <- paste("\nWelcome to Cardinal (version ",
 		packageVersion("Cardinal"), ")\n\n", sep="")
 	msg1 <- "To get started, view the introductory
 	 		vignettes with 'browseVignettes(\"Cardinal\")'."

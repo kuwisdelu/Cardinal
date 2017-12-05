@@ -97,13 +97,13 @@ setValidity("SImageData", function(object) {
 })
 
 setMethod("iData", "SImageData",
-	function(object) object[["iData"]])
+	function(x, i, ...) x[["iData"]])
 
 setReplaceMethod("iData", "SImageData",
-	function(object, value) {
-		object[["iData"]] <- value
-		if ( validObject(object) )
-			object			
+	function(x, i, ..., value) {
+		x[["iData"]] <- value
+		if ( validObject(x) )
+			x
 	})
 
 setMethod("regeneratePositions", "SImageData",
