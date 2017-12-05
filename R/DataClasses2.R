@@ -73,8 +73,8 @@ setAs("SimpleImageList", "SimpleList", function(from) from$data)
 setAs("SimpleList", "MSContinuousImagingSpectraList",
     function(from) .MSContinuousImagingSpectraList(data=from))
 
-setAs("SimpleList", "MSContinuousImagingSpectraList",
-    function(from) .MSContinuousImagingSpectraList(data=from))
+setAs("SimpleList", "MSProcessedImagingSpectraList",
+    function(from) .MSProcessedImagingSpectraList(data=from))
 
 #### Class for generic imaging experiments ####
 ## ---------------------------------------------
@@ -128,4 +128,16 @@ setAs("SimpleList", "MSContinuousImagingSpectraList",
 	prototype = prototype(
 		imageData = .MSProcessedImagingSpectraList()))
 
+#### Class for mass spectrometry imaging information
+## --------------------------------------------------
+.MSImagingInfo <- setClass("MSImagingInfo",
+	contains = "Vector",
+	slots = c(
+		scanList = "DataTable",
+		mzArrayList = "DataTable",
+		intensityArrayList = "DataTable"),
+	prototype = prototype(
+		scanList = DataFrame(),
+		mzArrayList = DataFrame(),
+		intensityArrayList = DataFrame()))
 

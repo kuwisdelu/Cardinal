@@ -7,6 +7,22 @@ test_that("SparseImagingExperiment validity", {
 	
 	expect_true(validObject(new("SparseImagingExperiment")))
 
+	data <- matrix(1:9^2, nrow=9, ncol=9)
+	t <- seq_len(9)
+	a <- seq_len(9)
+	coord <- expand.grid(x=1:3, y=1:3)
+
+	idata <- ImageArrayList(data)
+	fdata <- DataFrame(t=t)
+	pdata <- PositionDataFrame(coord=coord, a=a)
+
+	x <- SparseImagingExperiment(
+		imageData=idata,
+		featureData=fdata,
+		pixelData=pdata)
+
+	expect_true(validObject(x))
+
 })
 
 test_that("SparseImagingExperiment accessors", {
@@ -20,12 +36,10 @@ test_that("SparseImagingExperiment accessors", {
 	fdata <- DataFrame(t=t)
 	pdata <- PositionDataFrame(coord=coord, a=a)
 
-	x <- new("SparseImagingExperiment",
+	x <- SparseImagingExperiment(
 		imageData=idata,
 		featureData=fdata,
-		elementMetadata=pdata)
-
-	expect_true(validObject(x))
+		pixelData=pdata)
 
 	expect_equal(imageData(x), idata)
 	expect_equal(iData(x), idata[[1]])
@@ -35,6 +49,8 @@ test_that("SparseImagingExperiment accessors", {
 	
 	expect_equal(featureData(x), fdata)
 	expect_equal(fData(x), fdata)
+
+	expect_equal(processingData(x), SimpleList())
 
 	expect_equal(dim(x), c(Features=nrow(fdata), Pixels=nrow(pdata)))
 
@@ -59,10 +75,10 @@ test_that("SparseImagingExperiment subsetting", {
 	fdata <- DataFrame(t=t)
 	pdata <- PositionDataFrame(coord=coord, a=a)
 
-	x <- new("SparseImagingExperiment",
+	x <- SparseImagingExperiment(
 		imageData=idata,
 		featureData=fdata,
-		elementMetadata=pdata)
+		pixelData=pdata)
 
 	xi <- x[1:3,]
 
@@ -95,10 +111,10 @@ test_that("SparseImagingExperiment binding", {
 	fdata <- DataFrame(t=t)
 	pdata <- PositionDataFrame(coord=coord, a=a)
 
-	x <- new("SparseImagingExperiment",
+	x <- SparseImagingExperiment(
 		imageData=idata,
 		featureData=fdata,
-		elementMetadata=pdata)
+		pixelData=pdata)
 
 	y <- rbind(x, x)
 
@@ -111,6 +127,7 @@ test_that("SparseImagingExperiment binding", {
 	x2 <- x
 
 	coord(x2)$x <- coord(x)$x + max(coord(x)$x)
+	run(x2) <- rep(factor(2), ncol(x))
 
 	expect_error(rbind(x, x2))
 

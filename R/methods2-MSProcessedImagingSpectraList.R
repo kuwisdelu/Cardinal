@@ -1,7 +1,7 @@
 #### Methods for MSProcessedImagingSpectraList ####
 ## ------------------------------------------------
 
-MSProcessedImagingSpectraList <- function(spectra) {
+MSProcessedImagingSpectraList <- function(data) {
 	if ( !is(data, "SimpleList") ) {
 		if ( is.list(data) || !is.null(dim(data)) ) {
 			data <- SimpleList(data)

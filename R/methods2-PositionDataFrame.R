@@ -253,21 +253,21 @@ setMethod("cbind", "PositionDataFrame",
 	function(..., deparse.level = 1) {
 		args <- list(...)
 		# check that runs match
-		run <- run(args[[1]])
+		run <- run(args[[1L]])
 		ok <- vapply(args, function(a) 
 			isTRUE(all.equal(run(a), run)),
 			logical(1))
 		if ( !all(ok) )
 			stop("'run' must match")
 		# check that coords match
-		coord <- coord(args[[1]])
+		coord <- coord(args[[1L]])
 		ok <- vapply(args, function(a) 
 			isTRUE(all.equal(coord(a), coord)),
 			logical(1))
 		if ( !all(ok) )
 			stop("'coord' must match")
 		x <- callNextMethod(...)
-		.PositionDataFrame(
+		new(class(args[[1L]]),
 			run=run,
 			coord=coord,
 			rownames=rownames(x),
@@ -278,14 +278,15 @@ setMethod("cbind", "PositionDataFrame",
 
 setMethod("rbind", "PositionDataFrame",
 	function(..., deparse.level = 1) {
-		run <- lapply(list(...), "run")
+		args <- list(...)
+		run <- lapply(args, "run")
 		levs <- unique(unlist(lapply(run, levels), use.names=FALSE))
 		run <- do.call("c", lapply(run, as.character))
 		run <- factor(run, levels=levs)
-		coord <- lapply(list(...), "coord")
+		coord <- lapply(args, "coord")
 		coord <- do.call("rbind", coord)
 		x <- callNextMethod(...)
-		.PositionDataFrame(
+		new(class(args[[1L]]),
 			run=run,
 			coord=coord,
 			rownames=rownames(x),

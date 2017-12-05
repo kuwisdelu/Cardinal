@@ -144,14 +144,14 @@ setMethod("[", "MassDataFrame",
 setMethod("cbind", "MassDataFrame",
 	function(..., deparse.level = 1) {
 		args <- list(...)
-		mz <- mz(args[[1]])
+		mz <- mz(args[[1L]])
 		ok <- vapply(args, function(a) 
 			isTRUE(all.equal(mz(a), mz)),
 			logical(1))
 		if ( !all(ok) )
 			stop("'mz' must match")
 		x <- callNextMethod(...)
-		.MassDataFrame(
+		new(class(args[[1L]]),
 			mz=mz,
 			rownames=rownames(x),
 			nrows=length(mz),
@@ -161,10 +161,11 @@ setMethod("cbind", "MassDataFrame",
 
 setMethod("rbind", "MassDataFrame",
 	function(..., deparse.level = 1) {
+		args <- list(...)
 		mz <- do.call("c",
-			lapply(list(...), mz))
+			lapply(args, mz))
 		x <- callNextMethod(...)
-		.MassDataFrame(
+		new(class(args[[1L]]),
 			mz=mz,
 			rownames=rownames(x),
 			nrows=length(mz),

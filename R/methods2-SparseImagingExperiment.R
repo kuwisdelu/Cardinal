@@ -32,12 +32,14 @@ SparseImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 
 .valid.SparseImagingExperiment <- function(object) {
 	errors <- NULL
-	if ( nrow(object@imageData) != nrow(object@featureData) )
-		errors <- c(errors , paste("number of rows in 'featureData'",
-			"must match number of rows in 'imageData'"))
-	if ( ncol(object@imageData) != nrow(object@elementMetadata) )
-		errors <- c(errors , paste("number of rows in 'pixelData'",
-			"must match number of columns in 'imageData'"))
+	if ( length(object@imageData) != 0L ) {
+		if ( nrow(object@imageData) != nrow(object@featureData) )
+			errors <- c(errors , paste("number of rows in 'featureData'",
+				"must match number of rows in 'imageData'"))
+		if ( ncol(object@imageData) != nrow(object@elementMetadata) )
+			errors <- c(errors , paste("number of rows in 'pixelData'",
+				"must match number of columns in 'imageData'"))
+	}
 	if ( is.null(errors) ) TRUE else errors
 }
 
@@ -113,6 +115,17 @@ setReplaceMethod("resolution", "SparseImagingExperiment",
 setMethod("dims", "SparseImagingExperiment",
 	function(object) dims(pixelData(object)))
 
+# processing methods
+
+setMethod("processingData", "SparseImagingExperiment",
+	function(object) object@processing)
+
+setReplaceMethod("processingData", "SparseImagingExperiment",
+	function(object, value) {
+		object@processing <- value
+		object
+	})
+
 ## Subsetting
 
 setMethod("[", "SparseImagingExperiment",
@@ -150,7 +163,7 @@ setMethod("rbind", "SparseImagingExperiment",
 			function(obj) length(obj@processing) > 0L)
 		if ( any(needs_processing) )
 			.warning("dropping processing data")
-		.SparseImagingExperiment(
+		new(class(objects[[1L]]),
 			imageData=imageData,
 			featureData=featureData,
 			elementMetadata=pixelData,
@@ -172,7 +185,7 @@ setMethod("cbind", "SparseImagingExperiment",
 			function(obj) length(obj@processing) > 0L)
 		if ( any(needs_processing) )
 			.warning("dropping processing data")
-		.SparseImagingExperiment(
+		new(class(objects[[1L]]),
 			imageData=imageData,
 			featureData=featureData,
 			elementMetadata=pixelData,
