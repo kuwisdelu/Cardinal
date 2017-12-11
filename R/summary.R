@@ -401,7 +401,7 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 				points(xi[mark], yi[mark], col=par$col, pch=4, cex=2)
 			}
 		}
-		legend("topright", legend=.format.data.frame(param[names(model)]),
+		legend("topright", legend=.format.data.labels(param[names(model)]),
 			col=param$col, pch=param$pch, lty=param$lty)
 	} else {
 		plot(x, y, type='b', ...)

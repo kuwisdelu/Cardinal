@@ -1,13 +1,12 @@
+
 #### Methods for XDataFrame ####
 ## ------------------------------
+
+XDataFrame <- function(...)  as(DataFrame(...), "XDataFrame")
 
 # Need to overwrite 'names', 'length', and 'show' methods
 # for XDataFrame which may have special eXtra columns that
 # must be printed but not counted as part of 'ncol'.
-#
-# Subclasses need to define 'lapply' method to include
-# the additional columns by default for printing, and
-# optionally redefine 'as.list' method for consistency
 
 setMethod("names", "XDataFrame", 
 	function(x) {
@@ -19,6 +18,45 @@ setMethod("length", "XDataFrame",
 		length(x@listData)
 	})
 
+setMethod("lapply", "XDataFrame", 
+	function(X, FUN, ..., slots = FALSE) {
+		if ( slots ) {
+			lapply(as.list(X), FUN=FUN, ...)
+		} else {
+			lapply(X@listData, FUN=FUN, ...)
+		}
+	})
+
+setMethod("as.env", "list",
+	function(x, enclos = parent.frame(2), tform = identity) {
+		env <- new.env(parent = enclos)
+		lapply(names(x), function(name) {
+			fun <- function() {
+				val <- tform(x[[name]])
+				rm(list = name, envir = env)
+				assign(name, val, env)
+				val
+			}
+			makeActiveBinding(name, fun, env)
+		})
+		env$.. <- x
+		env	
+	})
+
+setMethod("as.env", "XDataFrame",
+	function(x, enclos = parent.frame(2), ..., slots = FALSE) {
+		enclos <- force(enclos)
+		if ( slots ) {
+			as.env(as.list(x), enclos=enclos, ...)
+		} else {
+			as.env(x@listData, enclos=enclos, ...)
+		}
+	})
+
+# Subclasses should define an 'as.list' method to include
+# the additional slot-columns by default, or instead redefine
+# an 'lapply' method to include them when 'slots = TRUE'
+
 setMethod("show", "XDataFrame",
 	function(object)
 {
@@ -26,17 +64,17 @@ setMethod("show", "XDataFrame",
 	ntail <- get_showTailLines()
 	nr <- nrow(object)
 	nc <- ncol(object)
-	show_nc <- length(lapply(object, function(x) NULL))
+	true_nc <- length(lapply(object, function(x) NULL, slots=TRUE))
 	cat(class(object), " with ",
 		nr, ifelse(nr == 1, " row and ", " rows and "),
 		nc, ifelse(nc == 1, " column\n", " columns\n"),
 		sep = "")
-	if (nr > 0 && show_nc > 0) {
+	if (nr > 0 && true_nc > 0) {
 		nms <- rownames(object)
 		if (nr <= (nhead + ntail + 1L)) {
 			out <-
 				as.matrix(format(as.data.frame(
-					lapply(object, showAsCell),
+					lapply(object, showAsCell, slots=TRUE),
 						optional = TRUE)))
 			if (!is.null(nms))
 				rownames(out) <- nms
@@ -44,18 +82,18 @@ setMethod("show", "XDataFrame",
 			out <-
 				rbind(as.matrix(format(as.data.frame(
 						lapply(object, function(x)
-							showAsCell(head(x, nhead))),
+							showAsCell(head(x, nhead)), slots=TRUE),
 						optional = TRUE))),
-					rbind(rep.int("...", show_nc)),
+					rbind(rep.int("...", true_nc)),
 					as.matrix(format(as.data.frame(
 						lapply(object, function(x) 
-							showAsCell(tail(x, ntail))),
+							showAsCell(tail(x, ntail)), slots=TRUE),
 						optional = TRUE))))
-				rownames(out) <- .rownames(nms, nr, nhead, ntail) 
+				rownames(out) <- .make.rownames(nms, nr, nhead, ntail) 
 		}
 		classinfo <-
 			matrix(unlist(lapply(object, function(x)
-						paste0("<", classNameForDisplay(x)[1], ">")),
+						paste0("<", classNameForDisplay(x)[1], ">"), slots=TRUE),
 					use.names = FALSE), nrow = 1,
 				dimnames = list("", colnames(out)))
 		out <- rbind(classinfo, out)
@@ -64,7 +102,7 @@ setMethod("show", "XDataFrame",
 })
 
 # copied from S4Vectors::show,DataTable
-.rownames <- function(nms, nrow, nhead, ntail)
+.make.rownames <- function(nms, nrow, nhead, ntail)
 {
 	p1 <- ifelse (nhead == 0, 0L, 1L)
 	p2 <- ifelse (ntail == 0, 0L, ntail-1L)

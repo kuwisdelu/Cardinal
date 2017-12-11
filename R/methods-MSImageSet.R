@@ -9,7 +9,7 @@ setMethod("initialize", "MSImageSet",
 			experimentData = new("MIAPE-Imaging"),
 			...) {
 		featureNames(featureData) <- make.unique(.format.mz(featureData[["mz"]]))
-		pixelNames(pixelData) <- make.unique(.format.data.frame(coord(pixelData)))
+		pixelNames(pixelData) <- make.unique(.format.data.labels(coord(pixelData)))
 		callNextMethod(.Object,
 			imageData=imageData,
 			pixelData=pixelData,
@@ -154,7 +154,7 @@ setMethod("combine", signature = c(x = "MSImageSet", y = "MSImageSet"),
 		x <- callNextMethod(x, y, ...)
 		x@processingData <- combine(x@processingData,
 			y@processingData)
-		pixelNames(x) <- .format.data.frame(coord(x))
+		pixelNames(x) <- .format.data.labels(coord(x))
 		x
 	})
 

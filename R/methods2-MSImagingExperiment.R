@@ -108,3 +108,22 @@ setMethod("cbind", "MSImagingExperiment",
     }
 )
 
+## coerce to/from MSImageSet
+
+setAs("MSImageSet", "MSImagingExperiment",
+	function(from) {
+		MSImagingExperiment(imageData=spectra(from),
+			featureData=MassDataFrame(mz(from)),
+			pixelData=PositionDataFrame(coord(from),
+				run=pixelData(from)$sample),
+			centroided=centroided(from))
+	})
+
+setAs("MSImagingExperiment", "MSImageSet",
+	function(from) {
+		out <- MSImageSet(spectra=spectra(from),
+			mz=mz(from), coord=coord(from))
+		pixelData(out)$sample <- run(from)
+		centroided(out) <- centroided(out)
+		out
+	})

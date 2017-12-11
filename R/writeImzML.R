@@ -2,22 +2,31 @@
 #### Write imzML files ####
 ## ----------------------
 
-setMethod("writeImzML", "MSImageSet",
-	function(object, name, folder = getwd(), merge = FALSE,
+writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 		mz.type = "32-bit float", intensity.type = "32-bit float", ...)
 	{
-		if ( length(sampleNames(object)) > 1 ) {
+		if ( merge )
+			.stop("writeImzML: 'merge = TRUE' is not supported")
+		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
 				tmp <- object[,pData(object)$sample == nm]
-				nm2 <- paste0(name, "-", nm)
-				writeImzML(tmp, nm2, folder, merge=merge,
-					mz.type=mz.type, intensity.type=intensity.type, ...)
+				name2 <- paste0(name, "-", nm)
+				writeImzML(tmp, name2, folder,
+					intensity.type=intensity.type, ...)
 			})
 			return(invisible(result))
 		}
-		if ( merge )
-			.stop("writeImzML: 'merge = TRUE' is not supported yet")
+		if ( is(object, "MSImagingExperiment") && length(runNames(object)) > 1 ) {
+			runs <- runNames(object)
+			result <- sapply(runs, function(id) {
+				tmp <- object[,run(object) == id]
+				name2 <- paste0(name, "-", id)
+				writeImzML(tmp, name2, folder,
+					intensity.type=intensity.type, ...)
+			})
+			return(invisible(result))
+		}
 		# check for files
 		xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 			mustWork=FALSE)
@@ -26,77 +35,50 @@ setMethod("writeImzML", "MSImageSet",
 			mustWork=FALSE)
 		if ( file.exists(ibdpath) ) .stop("writeImzML: ", ibdpath, " already exists")
 		# read ibd file
-		.log("writeImzML: Writing ibd file '", ibdpath, "'")
-		mzml <- .writeIbd(object, ibdpath, mz.type, intensity.type)
+		.message("writeImzML: Writing ibd file '", ibdpath, "'")
+		info <- .writeIbd(object, ibdpath, mz.type, intensity.type)
 		# read imzML file
-		.log("writeImzML: Writing imzML file '", xmlpath, "'")
-		result <- .writeImzML(mzml, xmlpath)
+		.message("writeImzML: Writing imzML file '", xmlpath, "'")
+		result <- .writeImzML(info, xmlpath)
+		if ( result )
+			.message("writeImzML: Done.")
 		invisible(result)
-	})
+	}
 
 .writeIbd <- function(x, file, mz.type, intensity.type) {
-	if ( is.null(file) )
-		return(info)
 	file <- normalizePath(file, mustWork=FALSE)
 	if ( !file.create(file) )
 		.stop(paste0("couldn't create file '", file, "'"))
-	info <- .metadataImzML(x, mz.type, intensity.type)
+	info <- msiInfo(x, mz.type=mz.type, intensity.type=intensity.type)
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
 	id <- uuid(uppercase=TRUE)
 	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
 	pid[] <- id$bytes
 	pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
-		offset=info$mzArrayList[["external offset"]][1],
-		extent=info$mzArrayList[["external array length"]][1],
+		offset=mzData(info)[["external offset"]][1],
+		extent=mzData(info)[["external array length"]][1],
 		datamode=Ctypeof(mz.type))
 	pmz[] <- mz(x)
 	pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
-		offset=info$intensityArrayList[["external offset"]],
-		extent=info$intensityArrayList[["external array length"]],
+		offset=imageData(info)[["external offset"]],
+		extent=imageData(info)[["external array length"]],
 		datamode=Ctypeof(intensity.type))
 	for ( i in seq_len(ncol(x)) )
 		pspectra[,i] <- spectra(x)[,i]
 	options(matter.cast.warning=warn)
 	hash <- checksum(pspectra, algo="sha1")
-	info$experimentMetadata[["universally unique identifier"]] <- paste0("{", id$string, "}")
-	info$experimentMetadata[["ibd SHA-1"]] <- toupper(as.character(hash))
+	metadata(info)[["universally unique identifier"]] <- paste0("{", id$string, "}")
+	metadata(info)[["ibd SHA-1"]] <- toupper(as.character(hash))
 	info
 }
 
-.writeImzML <- function(metadata, file) {
-	tmpl <- .templateImzML(metadata)
-	result <- .Call("writeImzML", metadata, tmpl,
+.writeImzML <- function(info, file) {
+	metadata <- as.list(info)
+	template <- .templateImzML(info)
+	result <- .Call("writeImzML", metadata, template,
 		normalizePath(file, mustWork=FALSE))
 	invisible(result)
-}
-
-.metadataImzML <- function(x, mz.type, intensity.type) {
-	scanList <- coord(x)[coordLabels(x)]
-	positionNames <- c("position x", "position y", "position z")
-	names(scanList) <- positionNames[seq_along(coordLabels(x))]
-	mzArrayList <- data.frame(
-		"external offset"=rep(16, ncol(x)),
-		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(Csizeof(mz.type) * nrow(x), ncol(x)),
-		"binary data type"=rep(mz.type, ncol(x)),
-		stringsAsFactors=FALSE, check.names=FALSE)
-	intensityArrayList <- data.frame(
-		"external offset"=rep(16 + Csizeof(mz.type) * nrow(x), ncol(x)),
-		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(Csizeof(intensity.type) * nrow(x), ncol(x)),
-		"binary data type"=rep(intensity.type, ncol(x)),
-		stringsAsFactors=FALSE, check.names=FALSE)
-	offset <- c(0, cumsum(intensityArrayList[["external encoded length"]][-ncol(x)]))
-	intensityArrayList[["external offset"]] <- offset + intensityArrayList[["external offset"]]
-	spectrumType <- ifelse(centroided(x), "centroid spectrum", "profile spectrum")
-	experimentMetadata <- list(
-		"spectrum representation"=spectrumType,
-		"ibd binary type"="continuous")
-	list(experimentMetadata=experimentMetadata,
-		scanList=scanList,
-		mzArrayList=mzArrayList,
-		intensityArrayList=intensityArrayList)
 }
 
 .templateImzML <- function(x, version = packageVersion("Cardinal"))
@@ -186,8 +168,8 @@ setMethod("writeImzML", "MSImageSet",
 		</run>
 	</mzML>'
 	sprintf(mzml, version,
-		"max count of x" = as.integer(max(x$scanList[["position x"]])),
-		"max count of y" = as.integer(max(x$scanList[["position y"]])),
-		"count" = nrow(x$scanList))
+		"max count of x" = as.integer(max(scans(x)[["position x"]])),
+		"max count of y" = as.integer(max(scans(x)[["position y"]])),
+		"count" = nrow(scans(x)))
 }
 

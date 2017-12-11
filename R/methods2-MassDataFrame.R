@@ -18,11 +18,12 @@ MassDataFrame <- function(mz, ...,
 	data <- DataFrame(...,
 		row.names=row.names,
 		check.names=check.names)
+	listData <- lapply(data, rep, length.out=length(mz))
 	.MassDataFrame(
 		mz=mz,
 		rownames=row.names,
 		nrows=length(mz),
-		listData=as.list(data))
+		listData=listData)
 }
 
 .valid.MassDataFrame <- function(object) {
@@ -82,13 +83,13 @@ setReplaceMethod("resolution", "MassDataFrame",
 			object
 	})
 
-# includes 'mz' slot in the list
+# includes 'mz' slot in the list by default
 setMethod("as.list", "MassDataFrame",
-	function(x, use.names = TRUE, fix.mz = ":")
+	function(x, use.names = TRUE, format.mz = ":")
 	{
 		ans <- x@listData
-		if ( !is.null(fix.mz) ) {
-			nmz <- paste0(fix.mz, "mz", fix.mz)
+		if ( !is.null(format.mz) ) {
+			nmz <- paste0(format.mz, "mz", format.mz)
 			lmz <- setNames(list(mz(x)), nmz)
 			ans <- append(lmz, ans)
 		}
@@ -97,15 +98,17 @@ setMethod("as.list", "MassDataFrame",
 		ans
 	})
 
-# including 'mz' by default means they show up in 'show'
-setMethod("lapply", "MassDataFrame",
-	function(X, FUN, ..., with.mz = TRUE)
+# includes 'mz' slot in the env by default
+setMethod("as.env", "MassDataFrame",
+	function(x, enclos = parent.frame(2), ..., slots = TRUE)
 	{
-		if ( with.mz ) {
-			lapply(as.list(X), FUN=FUN, ...)
+		enclos <- force(enclos)
+		if ( slots ) {
+			x <- as.list(x, format.mz="")
 		} else {
-			lapply(as.list(X@listData), FUN=FUN, ...)
+			x <- x@listData
 		}
+		as.env(x, enclos=enclos, ...)
 	})
 
 setMethod("[", "MassDataFrame",

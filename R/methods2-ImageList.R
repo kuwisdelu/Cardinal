@@ -9,7 +9,7 @@
 # > > SimpleImageArrayList (enforces dimensionality contraints)
 
 ImageList <- function(data) {
-	if ( !is(data, "SimpleList") ) {
+	if ( !is(data, "SimpleList") && !is(data, "ImageList") ) {
 		if ( is.list(data) || !is.null(dim(data)) ) {
 			data <- SimpleList(data)
 		} else {

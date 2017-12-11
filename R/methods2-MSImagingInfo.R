@@ -21,7 +21,7 @@ setMethod("msiInfo", "MSImageSet",
 	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
 	{
 		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
-		info@metadata[["ibd.binary.type"]] <- "continuous"
+		info@metadata[["ibd binary type"]] <- "continuous"
 		if ( validObject(info) )
 			info
 	})
@@ -30,7 +30,7 @@ setMethod("msiInfo", "MSImagingExperiment",
 	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
 	{
 		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
-		info@metadata[["ibd.binary.type"]] <- "continuous"
+		info@metadata[["ibd binary type"]] <- "continuous"
 		info@metadata <- append(info@metadata, metadata(object))
 		info@metadata <- info@metadata[unique(names(info@metadata))]
 		if ( validObject(info) )
@@ -41,7 +41,7 @@ setMethod("msiInfo", "MSContinuousImagingExperiment",
 	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
 	{
 		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
-		info@metadata[["ibd.binary.type"]] <- "continuous"
+		info@metadata[["ibd binary type"]] <- "continuous"
 		info@metadata <- append(info@metadata, metadata(object))
 		info@metadata <- info@metadata[unique(names(info@metadata))]
 		if ( validObject(info) )
@@ -60,20 +60,19 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	intensity.type <- match.arg(intensity.type,
 		choices=c("32-bit float", "64-bit float",
 			"16-bit integer", "32-bit integer", "64-bit integer"))
-	coordNames <- coordLabels(x)[c(1,2)]
+	scanList <- DataFrame(coord(x)[c(1,2)])
 	positionNames <- c("position x", "position y", "position z")
-	scanList <- DataFrame(coord(x)[coordNames])
-	names(scanList) <- positionNames[seq_along(coordNames)]
+	names(scanList) <- positionNames[seq_along(scanList)]
 	mzArrayList <- DataFrame(
-		"external offset"=rep(16, ncol(x)),
-		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(Csizeof(mz.type) * nrow(x), ncol(x)),
+		"external offset"=unname(rep(16, ncol(x))),
+		"external array length"=unname(rep(nrow(x), ncol(x))),
+		"external encoded length"=unname(rep(Csizeof(mz.type) * nrow(x), ncol(x))),
 		"binary data type"=rep(mz.type, ncol(x)),
 		check.names=FALSE)
 	intensityArrayList <- DataFrame(
-		"external offset"=rep(16 + Csizeof(mz.type) * nrow(x), ncol(x)),
-		"external array length"=rep(nrow(x), ncol(x)),
-		"external encoded length"=rep(Csizeof(intensity.type) * nrow(x), ncol(x)),
+		"external offset"=unname(rep(16 + Csizeof(mz.type) * nrow(x), ncol(x))),
+		"external array length"=unname(rep(nrow(x), ncol(x))),
+		"external encoded length"=unname(rep(Csizeof(intensity.type) * nrow(x), ncol(x))),
 		"binary data type"=rep(intensity.type, ncol(x)),
 		check.names=FALSE)
 	offset <- c(0, cumsum(intensityArrayList[["external encoded length"]][-ncol(x)]))
@@ -113,6 +112,53 @@ setMethod("mzData", "MSImagingInfo",
 
 setMethod("imageData", "MSImagingInfo",
 	function(y) y@intensityArrayList)
+
+# processing metadata
+
+setMethod("normalization", "Vector",
+	function(object) object@metadata[["intensity normalization"]])
+
+setReplaceMethod("normalization", "Vector",
+	function(object, value) {
+		object@metadata[["intensity normalization"]] <- value
+		object
+	})
+
+setMethod("smoothing", "Vector",
+	function(object) object@metadata[["smoothing"]])
+
+setReplaceMethod("smoothing", "Vector",
+	function(object, value) {
+		object@metadata[["smoothing"]] <- value
+		object
+	})
+
+setMethod("baselineReduction", "Vector",
+	function(object) object@metadata[["baseline reduction"]])
+
+setReplaceMethod("baselineReduction", "Vector",
+	function(object, value) {
+		object@metadata[["baseline reduction"]] <- value
+		object
+	})
+
+setMethod("peakPicking", "Vector",
+	function(object) object@metadata[["peak picking"]])
+
+setReplaceMethod("peakPicking", "Vector",
+	function(object, value) {
+		object@metadata[["peak picking"]] <- value
+		object
+	})
+
+setMethod("spectrumRepresentation", "Vector",
+	function(object) object@metadata[["spectrum representation"]])
+
+setReplaceMethod("spectrumRepresentation", "Vector",
+	function(object, value) {
+		object@metadata[["spectrum representation"]] <- value
+		object
+	})
 
 # experiment metadata
 

@@ -94,6 +94,7 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 	contains = "ImagingExperiment",
 	slots = c(
 		imageData = "ImageArrayList",
+		featureData = "XDataFrame",
 		elementMetadata = "PositionDataFrame",
 		processing = "SimpleList"),
 	prototype = prototype(

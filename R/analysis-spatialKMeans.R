@@ -35,8 +35,8 @@ setMethod("spatialKMeans",
 				labelDescription=c(
 					k="Number of clusters",
 					r="Neighborhood radius")))
-		featureNames(model) <- .format.data.frame(pData(model))
-		names(result) <- .format.data.frame(pData(model))
+		featureNames(model) <- .format.data.labels(pData(model))
+		names(result) <- .format.data.labels(pData(model))
 		object <- new("SpatialKMeans",
 			pixelData=x@pixelData,
 			featureData=x@featureData,

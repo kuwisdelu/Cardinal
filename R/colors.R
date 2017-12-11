@@ -30,7 +30,7 @@ risk.colors <- function(n, alpha=1) {
 }
 
 ## Gradient of two colors
-gradient.colors <- function(n, start="white", end="black", alpha=1) {
+gradient.colors <- function(n, start="black", end="white", alpha=1) {
 	alpha <- round(alpha * 255)
 	f <- colorRamp(c(start, end))
 	cols <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
@@ -38,8 +38,19 @@ gradient.colors <- function(n, start="white", end="black", alpha=1) {
 	cols
 }
 
+## Discrete color scale
+discrete.colors <- function(n, chroma=150, luminance=50, alpha=1) {
+	hue <- c(0, 360) + 15
+	if ( diff(hue) %% 360 < 1 )
+		hue[2] <- hue[2] - 360 / n
+	rotate <- function(x) x %% 360
+	hues <- rotate(seq(hue[1], hue[2], length.out = n))
+	cols <- hcl(hues, c=chroma, l=luminance, alpha=alpha)
+	cols
+}
+
 ## Convert a color or vector of colors to be translucent
-alpha.colors <- function(n, col="red", alpha.power=2, alpha=(seq_len(n)/n)^alpha.power) {
+alpha.colors <- function(col, n, alpha.power=2, alpha=(seq_len(n)/n)^alpha.power) {
 	if ( missing(n) )
 		n <- length(col)
 	if ( length(col) != n )

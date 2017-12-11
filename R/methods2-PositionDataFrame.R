@@ -3,7 +3,7 @@
 ## ------------------------------------
 
 setMethod("initialize", "PositionDataFrame",
-	function(.Object, run, coord, ...) {
+	function(.Object, coord, run, ...) {
 		if ( missing(coord) || length(coord) == 0 )
 			coord <- DataFrame(x=numeric(), y=numeric())
 		if ( missing(run) ) {
@@ -12,6 +12,8 @@ setMethod("initialize", "PositionDataFrame",
 			} else {
 				run <- factor(1)
 			}
+		} else if ( !is.factor(run) ) {
+			run <- as.factor(run)
 		}
 		if ( length(run) != nrow(coord) )
 			run <- rep(run, length.out=nrow(coord))
@@ -19,21 +21,24 @@ setMethod("initialize", "PositionDataFrame",
 		callNextMethod(.Object, run=run, coord=coord, ...)
 	})
 
-PositionDataFrame <- function(run, coord, ...,
+PositionDataFrame <- function(coord, run, ...,
 	row.names = NULL, check.names = TRUE)
 {
 	if ( missing(coord) && length(list(...)) == 0 )
 		return(.PositionDataFrame())
 	coord <- DataFrame(coord)
+	if ( any(duplicated(coord)) )
+		warning("rows of 'coord' are not unique")
 	data <- DataFrame(...,
 		row.names=row.names,
 		check.names=check.names)
+	listData <- lapply(data, rep, length.out=nrow(coord))
 	.PositionDataFrame(
-		run=run,
 		coord=coord,
+		run=run,
 		rownames=row.names,
 		nrows=nrow(coord),
-		listData=as.list(data))
+		listData=listData)
 }
 
 .valid.PositionDataFrame <- function(object) {
@@ -44,12 +49,8 @@ PositionDataFrame <- function(run, coord, ...,
 		errors <- c(errors , "'nrow' must match number of rows of 'coord'")
 	if ( length(object@coord) < 2 )
 		errors <- c(errors , "'coord' must have at least 2 columns")
-	if ( any(duplicated(object@coord)) )
-		errors <- c(errors, "rows of 'coord' must be unique")
 	if ( !all(sapply(object@coord, mode) == "numeric") )
 		errors <- c(errors, "columns of 'coord' must have mode 'numeric'")
-	if ( any(sapply(object@coord, anyNA)) )
-		errors <- c(errors, "NA not allowed in 'coord'")
 	if ( length(object@gridded) != 1 )
 		errors <- c(errors, "'gridded' must have length 1")
 	if ( length(object@resolution) != length(object@coord) )
@@ -84,7 +85,7 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 		if ( length(x) < 2 )
 			return(NA_real_)
 		dx <- diff(x)
-		rx <- min(dx)
+		rx <- min(dx, na.rm=TRUE)
 		off <- (dx / rx) %% 1
 		if ( sum(off) > 0 ) {
 			NA_real_
@@ -100,6 +101,8 @@ setMethod("run", "PositionDataFrame",
 
 setReplaceMethod("run", "PositionDataFrame",
 	function(object, value) {
+		if ( length(value) != length(object) )
+			value <- rep(value, length.out=length(object))
 		object@run <- value
 		if ( validObject(object) )
 			object
@@ -187,19 +190,19 @@ setMethod("dims", "PositionDataFrame",
 			object@resolution)
 	})
 
-# includes 'run' and 'coord' slot in the list
+# includes 'run' and 'coord' slot in the list by default
 setMethod("as.list", "PositionDataFrame",
-	function(x, use.names = TRUE, fix.run=":", fix.coord="coord:")
+	function(x, use.names = TRUE, format.run=":", format.coord="coord:")
 	{
 		ans <- x@listData
-		if ( !is.null(fix.coord) ) {
+		if ( !is.null(format.coord) ) {
 			pos <- coord(x)
 			if ( length(pos) > 0 )
-				names(pos) <- paste0(fix.coord, names(pos))
+				names(pos) <- paste0(format.coord, names(pos))
 			ans <- append(as.list(pos), x@listData)
 		}
-		if ( !is.null(fix.run) ) {
-			nmr <- paste0(fix.run, "run", fix.run)
+		if ( !is.null(format.run) ) {
+			nmr <- paste0(format.run, "run", format.run)
 			run <- setNames(list(run(x)), nmr)
 			ans <- append(run, ans)
 		}
@@ -208,19 +211,17 @@ setMethod("as.list", "PositionDataFrame",
 		ans
 	})
 
-# including 'run' and 'coord' by default means they show up in 'show'
-setMethod("lapply", "PositionDataFrame",
-	function(X, FUN, ..., with.run = TRUE, with.coord = TRUE)
+# includes 'run' and 'coord' slot in the env by default
+setMethod("as.env", "PositionDataFrame",
+	function(x, enclos = parent.frame(2), ..., slots = TRUE)
 	{
-		if ( with.run && with.coord ) {
-			lapply(as.list(X), FUN=FUN, ...)
-		} else if ( with.run ) {
-			lapply(as.list(X, fix.coord=NULL), FUN=FUN, ...)
-		} else if ( with.coord ) {
-			lapply(as.list(X, fix.run=NULL), FUN=FUN, ...)
+		enclos <- force(enclos)
+		if ( slots ) {
+			x <- as.list(x, format.run="", format.coord="")
 		} else {
-			lapply(as.list(X@listData), FUN=FUN, ...)
+			x <- x@listData
 		}
+		as.env(x, enclos=enclos, ...)
 	})
 
 setMethod("[", "PositionDataFrame",

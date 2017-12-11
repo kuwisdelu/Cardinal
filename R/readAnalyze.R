@@ -2,8 +2,11 @@
 #### Read Analyze 7.5 files ####
 ## ----------------------------
 
-readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
+readAnalyze <- function(name, folder=getwd(), attach.only=FALSE,
+	as = c("MSImageSet", "MSImagingExperiment"), ...)
 {
+	# get output format
+	outclass <- match.arg(as)
 	# check for files
 	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 		mustWork=FALSE)
@@ -15,16 +18,16 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 		mustWork=FALSE)
 	if ( !file.exists(imgpath) ) .stop("readAnalyze: ", imgpath, " does not exist")
 	# parse header
-	.log("readAnalyze: Reading header file '", hdrpath, "'")
+	.message("readAnalyze: Reading header file '", hdrpath, "'")
 	hdr <- .readAnalyzeHDR(hdrpath)
 	dim <- as.integer(c(hdr$dime$dim[2], hdr$dime$dim[c(3,4,5)]))
 	sdim <- c(dim[1], prod(dim[c(2,3,4)]))
 	datatype <- as.integer(hdr$dime$datatype)
 	# read m/z values
-	.log("readAnalyze: Reading T2M file '", t2mpath, "'")
+	.message("readAnalyze: Reading T2M file '", t2mpath, "'")
 	mz <- .readAnalyzeT2M(t2mpath, n=dim[1])
 	# read image file
-	.log("readAnalyze: Reading IMG file '", imgpath, "'")
+	.message("readAnalyze: Reading IMG file '", imgpath, "'")
 	type <- switch(as.character(datatype),
 		`4` = "short",
 		`8` = "int",
@@ -38,13 +41,7 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 	} else {
 		coord <- expand.grid(x=seq_len(dim[2]), y=seq_len(dim[3]))
 	}
-	files <- structure(c(hdrpath, t2mpath, imgpath), name=name, folder=folder)
-	obj <- .readAnalyze.MSImageSet(spectra, mz, coord, files, attach.only)
-	if ( validObject(obj) )
-		obj
-}
-
-.readAnalyze.MSImageSet <- function(spectra, mz, coord, files, attach.only) {
+	files <- c(hdrpath, t2mpath, imgpath)
 	# set up spectra
 	if ( attach.only ) {
 		spectra <- spectra
@@ -52,14 +49,25 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 		spectra <- spectra[]
 	}
 	mz <- mz[]
-	# create and return dataset
-	experimentData <- new("MIAPE-Imaging")
-	processingData <- new("MSImageProcess", files=files)
-	object <- MSImageSet(spectra=spectra, mz=mz, coord=coord,
-		processingData=processingData,
-		experimentData=experimentData)
-	sampleNames(object) <- name
-	object
+	if ( outclass == "MSImageSet" ) {
+		experimentData <- new("MIAPE-Imaging")
+		processingData <- new("MSImageProcess", files=files)
+		object <- MSImageSet(spectra=spectra, mz=mz, coord=coord,
+			processingData=processingData,
+			experimentData=experimentData)
+		sampleNames(object) <- name
+	} else if ( outclass == "MSImagingExperiment" ) {
+		object <- MSImagingExperiment(spectra,
+			featureData=MassDataFrame(mz=mz),
+			pixelData=PositionDataFrame(coord=coord, run=name),
+			metadata=list(files=files, name=name))
+	} else {
+		stop("unrecognized outclass")
+	}
+	if ( validObject(object) ) {
+		.message("readAnalyze: Done.")
+		object
+	}
 }
 
 .makeAnalyzeHDR <- function(file, mode) {

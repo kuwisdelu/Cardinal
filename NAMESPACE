@@ -32,6 +32,9 @@ importFrom("EBImage",
 	"imageData",
 	"imageData<-")
 
+importFrom("magrittr",
+	"%>%")
+
 import("matter")
 
 import("methods")
@@ -129,6 +132,7 @@ exportClasses(
 	"MSImagingInfo")
 
 export(
+	"XDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
 	"ImageList",
@@ -140,6 +144,7 @@ export(
 
 export(
 	"alpha.colors",
+	"discrete.colors",
 	"generateImage",
 	"generateSpectrum",
 	"gradient.colors",
@@ -182,6 +187,8 @@ exportMethods(
 	"cbind",
 	"rbind",
 	"summary")
+
+export("%>%")
 
 exportMethods(
 	"image",
