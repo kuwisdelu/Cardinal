@@ -143,19 +143,18 @@ facet.image <- function(args, formula, obj,
 		function(i) facet_levels[i,,drop=FALSE])
 	values2 <- unlist(values, use.names=FALSE)
 	valrange <- range(values2, na.rm=TRUE)
-	coord <- data.frame(x=x, y=y)
-	coord$z <- z
-	res <- .estimateSpatialResolution(coord)
-	gridded <- all(is.finite(res))
-	if ( gridded ) {
-		rx <- res[1]
-		ry <- res[2]
+	if ( gridded(obj) ) {
+		rx <- resolution(obj)[names(args$rhs)[1]]
+		ry <- resolution(obj)[names(args$rhs)[2]]
 		if ( is3d ) {
-			rz <- res[3]
+			rz <- resolution(obj)[names(args$rhs)[3]]
+			res <- c(rx, ry, rz)
+			dim <- .getDimsFromResolution(list(x=x, y=y, z=z), res)
 		} else {
 			rz <- min(diff(sort(unique(values2))), na.rm=TRUE)
+			res <- c(rx, ry)
+			dim <- .getDimsFromResolution(list(x=x, y=y), res)
 		}
-		dim <- .getDimsFromResolution(coord, res)
 	} else {
 		rx <- min(diff(sort(unique(x))), na.rm=TRUE)
 		ry <- min(diff(sort(unique(y))), na.rm=TRUE)
@@ -164,6 +163,7 @@ facet.image <- function(args, formula, obj,
 		} else {
 			rz <- min(diff(sort(unique(values2))), na.rm=TRUE)
 		}
+		res <- NULL
 		dim <- NULL
 	}
 	if ( missing(xlab) )
