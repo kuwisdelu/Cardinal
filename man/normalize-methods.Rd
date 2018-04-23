@@ -39,7 +39,7 @@ normalize.tic(x, tic=length(x), \dots)
 
     A user-created function should return a \code{numeric} vector of the same length.
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the normalization. See its documentation page for more details on additional objects available to the environment installed to the normalization function.
+    Internally, \code{\link{pixelApply}} is used to apply the normalization. See its documentation page for more details on additional objects available to the environment installed to the normalization function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the normalized spectra.
@@ -49,7 +49,7 @@ normalize.tic(x, tic=length(x), \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

@@ -27,6 +27,6 @@
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\link{spatialShrunkenCentroids}}
 }
 \keyword{methods}

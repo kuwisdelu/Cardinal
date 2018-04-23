@@ -63,7 +63,7 @@ generateSpectrum(n, peaks = 100,
 }
 
 \seealso{
-	\code{\link[Cardinal]{generateImage}}
+	\code{\link{generateImage}}
 }
 
 \examples{

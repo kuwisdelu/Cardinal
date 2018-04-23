@@ -50,7 +50,7 @@ MSImageData(
 
 \section{Slots}{
     \describe{
-        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, and possibly containing an element named \code{"peakData"} and \code{"mzData"}. The \code{"peakData"} element contains the intensities of the peak cube in a sparse matrix format. The \code{"mzData"} element contians the m/z values of the peaks in a sparse matrix format. All of these matrices have been aligned for that their dimensions reflect only the shared peaks, possibly across multiple datasets. They have been aligned from a call to \code{\link[Cardinal]{peakAlign}}.}
+        \item{\code{data}:}{An \code{environment} which contains at least one element named \code{"iData"}, and possibly containing an element named \code{"peakData"} and \code{"mzData"}. The \code{"peakData"} element contains the intensities of the peak cube in a sparse matrix format. The \code{"mzData"} element contians the m/z values of the peaks in a sparse matrix format. All of these matrices have been aligned for that their dimensions reflect only the shared peaks, possibly across multiple datasets. They have been aligned from a call to \code{\link{peakAlign}}.}
 
         \item{\code{coord}:}{An \code{data.frame} with rows giving the spatial coordinates of the pixels corresponding to the columns of \code{"iData"}.}
 
@@ -60,7 +60,7 @@ MSImageData(
 
         \item{\code{dimnames}:}{A length 2 \code{list} analogous to the 'dimnames' attribute of an ordinary R matrix.}
         
-        \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
+        \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
 
         \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
     }

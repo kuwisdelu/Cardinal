@@ -70,7 +70,7 @@ reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
         \item{\code{t}: A \code{numeric} vector of new m/z values.}
     }
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the dimension reduction. See its documentation page for more details on additional objects available to the environment installed to the dimension reduction function.
+    Internally, \code{\link{pixelApply}} is used to apply the dimension reduction. See its documentation page for more details on additional objects available to the environment installed to the dimension reduction function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the dimension-reduced spectra.
@@ -80,9 +80,9 @@ reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{peakPick}},
-    \code{\link[Cardinal]{peakAlign}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{peakPick}},
+    \code{\link{peakAlign}},
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

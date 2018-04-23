@@ -56,7 +56,7 @@ peakAlign.DP(x, y, gap=0, \dots)
 
     A user-created function should return a vector of the same length as \code{x} and \code{y} where \code{NA} values indicate no match, and non-missing values give the index of the matched peak in the reference set.
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the peak alignment. See its documentation page for more details on additional objects available to the environment installed to the peak alignment function.
+    Internally, \code{\link{pixelApply}} is used to apply the peak alignment. See its documentation page for more details on additional objects available to the environment installed to the peak alignment function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the peak aligned spectra.
@@ -66,10 +66,10 @@ peakAlign.DP(x, y, gap=0, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{peakPick}},
-    \code{\link[Cardinal]{peakFilter}},
-    \code{\link[Cardinal]{reduceDimension}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{peakPick}},
+    \code{\link{peakFilter}},
+    \code{\link{reduceDimension}},
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(diag(2), as="MSImageSet")

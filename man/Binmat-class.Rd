@@ -118,7 +118,7 @@ Binmat(
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\link[base]{matrix}},
+    \code{\link{matrix}},
     \code{\linkS4class{Hashmat}},
     \code{\linkS4class{SImageSet}}
 }

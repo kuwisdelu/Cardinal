@@ -43,9 +43,7 @@
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\linkS4class{iSet}}
 }
 \examples{
 ## Create an MSImageSet object

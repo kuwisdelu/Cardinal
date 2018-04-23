@@ -96,7 +96,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 
     Standard generic methods:
     \describe{
-        \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link[BiocGenerics]{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}
+        \item{\code{combine(x, y, ...)}:}{Combines two Hashmat objects. See the \code{\link{combine}} method for matrices for details of how the Hashmat sparse matrices are combined. The behavior is identical, except when filling in missing elements in non-shared rows and columns, the resulting Hashmat object will have zeroes instead of NAs.}
 
         \item{\code{dim(x), dim(x) <- value}:}{Return or set the dimensions of the sparse matrix.}
 
@@ -121,7 +121,7 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\link[base]{matrix}},
+    \code{\link{matrix}},
     \code{\linkS4class{Binmat}},
     \code{\linkS4class{SImageSet}}
 }
