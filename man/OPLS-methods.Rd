@@ -43,8 +43,8 @@
     \item{keep.Xnew}{Should the new data matrix be kept after filtering out the orthogonal variation?}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Passed to the next OPLS method.}
-    \item{object}{The result of a previous call to \code{\link[Cardinal]{OPLS}}.}
-    \item{newx}{An imaging dataset for which to calculate their OPLS projection and predict a response from an already-calculated \code{\link[Cardinal]{OPLS}} object.}
+    \item{object}{The result of a previous call to \code{\link{OPLS}}.}
+    \item{newx}{An imaging dataset for which to calculate their OPLS projection and predict a response from an already-calculated \code{\link{OPLS}} object.}
     \item{newy}{Optionally, a new response from which residuals should be calculated.}
 }
 \value{
@@ -79,9 +79,9 @@
     Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695
 }
 \seealso{
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[Cardinal]{PCA}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}},
+    \code{\link{PLS}},
+    \code{\link{PCA}},
+    \code{\link{spatialShrunkenCentroids}},
 }
 \examples{
 sset <- generateImage(diag(4), range=c(200, 300), step=1)

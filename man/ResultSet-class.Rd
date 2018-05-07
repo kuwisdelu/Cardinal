@@ -25,7 +25,7 @@
 \title{Class to Contain Analysis Results for Imaging Experiments}
 
 \description{
-    This class is used as a return value by most of the analysis methods provided by Cardinal, including \code{\link[Cardinal]{PCA}}, \code{\link[Cardinal]{PLS}}, \code{\link[Cardinal]{OPLS}}, \code{\link[Cardinal]{spatialKMeans}}, \code{\link[Cardinal]{spatialShrunkenCentroids}}.
+    This class is used as a return value by most of the analysis methods provided by Cardinal, including \code{\link{PCA}}, \code{\link{PLS}}, \code{\link{OPLS}}, \code{\link{spatialKMeans}}, \code{\link{spatialShrunkenCentroids}}.
 }
 
 \section{Slots}{
@@ -85,12 +85,12 @@
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\link[Cardinal]{iSet}},
-    \code{\link[Cardinal]{PCA}},
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{spatialKMeans}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\link{iSet}},
+    \code{\link{PCA}},
+    \code{\link{PLS}},
+    \code{\link{OPLS}},
+    \code{\link{spatialKMeans}},
+    \code{\link{spatialShrunkenCentroids}}
 }
 
 \keyword{classes}

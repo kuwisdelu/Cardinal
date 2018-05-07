@@ -53,7 +53,7 @@ ImageData(\dots,
     \describe{
         \item{\code{data}:}{An \code{environment} which may contain one or more arrays with an equal number of dimensions. It is assumed that the first dimension corresponds to the features.}
         
-        \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link[Biobase]{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
+        \item{\code{storageMode}:}{A \code{character} which is one of \code{"immutableEnvironment"}, \code{"lockedEnvironment"}, or \code{"environment"}. The values \code{"lockedEnvironment"} and \code{"environment"} behave as described in the documentation of \code{\link{AssayData}}. An \code{"immutableEnvironment"} uses a locked environment while retaining R's typical copy-on-write behavior. Whenever an object in an immutable environment is modified, a new environment is created for the \code{data} slot, and all objects copied into it. This allows usual R functional semantics while avoiding copying of large objects when other slots are modified.}
 
         \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
     }
@@ -79,7 +79,7 @@ ImageData(\dots,
 
         \item{\code{validObject}:}{Validity-check that the arrays in the \code{data} slot environment are all of equal number of dimensions, and the storage mode is a valid value.}
 
-        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names, and are combined with calls to \code{combine}. Higher dimensional arrays are combined using the same rules as for matrices. (See \code{\link[BiocGenerics]{combine}} for more details.)}
+        \item{\code{combine(x, y, ...)}:}{Combine two or more \code{ImageData} objects. All elements must have matching names, and are combined with calls to \code{combine}. Higher dimensional arrays are combined using the same rules as for matrices. (See \code{\link{combine}} for more details.)}
 
         \item{\code{annotatedDataFrameFrom(object)}:}{Returns an \code{\linkS4class{IAnnotatedDataFrame}} with columns for the dimensions of the elements of \code{data}. All dimensions must be named (determined by the \code{rownames(dims(object))}). It is assumed that the first dimension corresponds to the features, and is not used as a dimension in the returned \code{\linkS4class{IAnnotatedDataFrame}}. Additional arguments (\code{byrow}, \dots) are ignored.}
 
@@ -94,7 +94,7 @@ ImageData(\dots,
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\link[Biobase]{AssayData}},
+    \code{\link{AssayData}},
     \code{\linkS4class{SImageData}},
     \code{\linkS4class{SImageSet}},
     \code{\linkS4class{MSImageSet}}

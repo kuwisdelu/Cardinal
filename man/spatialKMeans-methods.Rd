@@ -29,7 +29,7 @@
     \item{weights}{An optional vector of feature weights to be applied to the features during the clustering.}
     \item{iter.max}{The maximum number of k-means iterations.}
     \item{nstart}{The number of restarts for the k-means algorithm.}
-    \item{algorithm}{The k-means algorithm to use. See \code{\link[stats]{kmeans}} for details.}
+    \item{algorithm}{The k-means algorithm to use. See \code{\link{kmeans}} for details.}
     \item{ncomp}{The number of fastmap components to calculate.}
     \item{\dots}{Ignored.}
 }
@@ -56,7 +56,7 @@
     Faloutsos, C., & Lin, D. (1995). FastMap: A Fast Algorithm for Indexing, Data-Mining and Visualization of Traditional and Multimedia Datasets. Presented at the Proceedings of the 1995 ACM SIGMOD international conference on Management of data.
 }
 \seealso{
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\link{spatialShrunkenCentroids}}
 }
 \examples{
 set.seed(1)

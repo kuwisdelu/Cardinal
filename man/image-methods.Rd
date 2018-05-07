@@ -28,7 +28,7 @@
 \title{Plot the Pixel-Space of an Imaging Dataset}
 
 \description{
-    Create and display plots in the pixel space of an imaging dataset. This uses a formula interface inspired by the \code{\link[lattice]{lattice}} graphics package.
+    Create and display plots in the pixel space of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
 }
 
 \usage{
@@ -147,9 +147,9 @@
 
     \item{superpose}{Should feature vectors from different feature groups specified by 'feature.groups' be superposed on the same plot? If 'TRUE' then the 'groups' argument is ignored.}
 
-    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link[lattice]{levelplot}} is 'lattice = TRUE'.}
+    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link{levelplot}} is 'lattice = TRUE'.}
 
-    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link[lattice]{levelplot}} if 'lattice = TRUE'.}
+    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over pixel vectors of images grouped together by 'feature.groups'. By default, this is used for averaging over features.}
 
@@ -171,7 +171,7 @@
 
     \item{zlim}{A numeric vector of length 2 giving the lower and upper limits for the z-axis (i.e., the range of colors to be plotted).}
 
-    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link[lattice]{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
+    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
     \item{asp}{The aspect ratio of the plot.}
 
@@ -185,7 +185,7 @@
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
     
-    \item{\dots}{additional arguments passed to the underlying \code{\link[graphics]{plot}} functions.}
+    \item{\dots}{additional arguments passed to the underlying \code{\link{plot}} functions.}
 
     \item{mz}{The m/z value for which to plot the ion image.}
 
@@ -208,8 +208,8 @@
 }
 
 \seealso{
-    \code{\link[Cardinal]{plot-methods}},
-    \code{\link[Cardinal]{select-methods}}
+    \code{\link{plot}},
+    \code{\link{select}}
 }
 
 \examples{

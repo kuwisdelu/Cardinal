@@ -34,7 +34,7 @@ standardizeSamples.sum(x, sum=length(x), \dots)
 
     A user-created function should return a \code{numeric} vector of the same length.
 
-    Internally, \code{\link[Cardinal]{featureApply}} is used to apply the standardization, with \code{.pixel.groups=sample}. See its documentation page for more details on additional objects available to the environment installed to the standardization function.
+    Internally, \code{\link{featureApply}} is used to apply the standardization, with \code{.pixel.groups=sample}. See its documentation page for more details on additional objects available to the environment installed to the standardization function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the ion images standardized across samples.
@@ -44,7 +44,7 @@ standardizeSamples.sum(x, sum=length(x), \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{featureApply}}
+    \code{\link{featureApply}}
 }
 \examples{
 data1 <- generateImage(as="MSImageSet")

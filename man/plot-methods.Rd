@@ -19,7 +19,7 @@
 \title{Plot the Feature-Space of an Imaging Dataset}
 
 \description{
-	Create and display plots in the feature space of an imaging dataset. This uses a formula interface inspired by the \code{\link[lattice]{lattice}} graphics package.
+	Create and display plots in the feature space of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
 }
 
 \usage{
@@ -117,9 +117,9 @@
 
     \item{superpose}{Should feature vectors from different pixel groups specified by 'pixel.groups' be superposed on the same plot?}
 
-    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link[lattice]{xyplot}}.}
+    \item{strip}{Should strip labels indicating the plotting group be plotting along with the each panel? Passed to 'strip' in \code{\link{xyplot}}.}
 
-    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link[lattice]{levelplot}} if 'lattice = TRUE'.}
+    \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
 
@@ -131,7 +131,7 @@
 
     \item{ylim}{A numeric vector of length 2 giving the lower and upper limits for the y-axis.}
 
-    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link[lattice]{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
+    \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
     \item{col}{A specification for the default plotting color(s).}
 
@@ -141,7 +141,7 @@
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
 
-    \item{\dots}{Additional arguments passed to the underlying \code{\link[graphics]{plot}} or \code{\link[lattice]{xyplot}} functions.}
+    \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} or \code{\link{xyplot}} functions.}
 
     \item{coord}{A named vector or list giving the coordinate of the pixel to plot.}
 
@@ -160,7 +160,7 @@
 }
 
 \seealso{
-    \code{\link[Cardinal]{image-methods}}
+    \code{\link{image}}
 }
 
 \examples{

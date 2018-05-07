@@ -63,11 +63,11 @@
 }
 \seealso{
     \code{\linkS4class{ResultSet}},
-    \code{\link[Cardinal]{PCA}},
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{spatialKMeans}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\link{PCA}},
+    \code{\link{PLS}},
+    \code{\link{OPLS}},
+    \code{\link{spatialKMeans}},
+    \code{\link{spatialShrunkenCentroids}}
 }
 \examples{
 set.seed(1)

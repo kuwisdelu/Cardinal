@@ -38,7 +38,7 @@ peakFilter.freq(x, freq.min=length(x) / 100, \dots)
 
     A user-created function should return a logical: \code{TRUE} means keep the peak, and \code{FALSE} means remove the peak.
 
-    Internally, \code{\link[Cardinal]{featureApply}} is used to apply the filtering. See its documentation page for more details on additional objects available to the environment installed to the peak filtering function.
+    Internally, \code{\link{featureApply}} is used to apply the filtering. See its documentation page for more details on additional objects available to the environment installed to the peak filtering function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the filtered peaks.
@@ -48,10 +48,10 @@ peakFilter.freq(x, freq.min=length(x) / 100, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{peakPick}},
-    \code{\link[Cardinal]{peakAlign}},
-    \code{\link[Cardinal]{reduceDimension}},
-    \code{\link[Cardinal]{featureApply}}
+    \code{\link{peakPick}},
+    \code{\link{peakAlign}},
+    \code{\link{reduceDimension}},
+    \code{\link{featureApply}}
 }
 \examples{
 data <- generateImage(diag(2), as="MSImageSet")

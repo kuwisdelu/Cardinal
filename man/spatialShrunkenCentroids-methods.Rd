@@ -40,7 +40,7 @@
     \item{iter.max}{The maximum number of clustering iterations.}
     \item{priors}{Prior probabilities on the classes for classification. Improper priors will be normalized automatically.}
     \item{\dots}{Ignored.}
-    \item{object}{The result of a previous call to \code{\link[Cardinal]{spatialShrunkenCentroids}}.}
+    \item{object}{The result of a previous call to \code{\link{spatialShrunkenCentroids}}.}
     \item{newx}{An imaging dataset for which to calculate the predicted response from shrunken centroids.}
     \item{newy}{Optionally, a new response from which residuals should be calculated.}
 }
@@ -71,7 +71,7 @@
     Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230-i238. doi:10.1093/bioinformatics/btr246
 }
 \seealso{
-    \code{\link[Cardinal]{spatialKMeans}}
+    \code{\link{spatialKMeans}}
 }
 \examples{
 set.seed(1)

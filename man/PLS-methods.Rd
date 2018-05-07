@@ -41,8 +41,8 @@
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Passed to the next PLS method.}
-    \item{object}{The result of a previous call to \code{\link[Cardinal]{PLS}}.}
-    \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link[Cardinal]{PLS}} object.}
+    \item{object}{The result of a previous call to \code{\link{PLS}}.}
+    \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link{PLS}} object.}
     \item{newy}{Optionally, a new response from which residuals should be calcualted.}
 }
 \value{
@@ -72,9 +72,9 @@
     Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695
 }
 \seealso{
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{PCA}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}},
+    \code{\link{OPLS}},
+    \code{\link{PCA}},
+    \code{\link{spatialShrunkenCentroids}},
 }
 \examples{
 sset <- generateImage(diag(4), range=c(200, 300), step=1)

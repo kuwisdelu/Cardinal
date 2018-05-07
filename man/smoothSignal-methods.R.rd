@@ -50,7 +50,7 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 
     A user-created function should return a \code{numeric} vector of the same length.
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the smooothing. See its documentation page for more details on additional objects available to the environment installed to the smoothing function.
+    Internally, \code{\link{pixelApply}} is used to apply the smooothing. See its documentation page for more details on additional objects available to the environment installed to the smoothing function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the smoothed spectra.
@@ -60,7 +60,7 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

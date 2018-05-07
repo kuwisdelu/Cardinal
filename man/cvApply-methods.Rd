@@ -35,9 +35,9 @@
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{spatialShrunkenCentroids}}
+    \code{\link{PLS}},
+    \code{\link{OPLS}},
+    \code{\link{spatialShrunkenCentroids}}
 }
 \keyword{manip}
 \keyword{classif}

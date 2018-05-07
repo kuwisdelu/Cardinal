@@ -41,7 +41,7 @@ reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 
     A user-created function should return a \code{numeric} vector of the same length. with the baseline-subtracted intensities.
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the baseline reduction. See its documentation page for more details on additional objects available to the environment installed to the baseline reduction function.
+    Internally, \code{\link{pixelApply}} is used to apply the baseline reduction. See its documentation page for more details on additional objects available to the environment installed to the baseline reduction function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the baseline-subtracted spectra.
@@ -51,7 +51,7 @@ reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

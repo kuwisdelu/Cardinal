@@ -41,7 +41,7 @@
 
     Additionally, when performing batch pre-processing, the mean spectrum is also calculated and returned as part of the 'featureData' of the result, to be used by subsequent calls to \code{peakAlign}.
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the pre-processing steps, as with other pre-processing methods.
+    Internally, \code{\link{pixelApply}} is used to apply the pre-processing steps, as with other pre-processing methods.
 
     Note that \code{reduceDimension} and \code{peakPick} cannot appear in the same \code{batchProcess} call together, and \code{peakAlign} cannot appear in a \code{batchProcess} call without \code{peakPick}.
 
@@ -55,11 +55,11 @@
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{normalize}},
-    \code{\link[Cardinal]{smoothSignal}},
-    \code{\link[Cardinal]{reduceBaseline}},
-    \code{\link[Cardinal]{peakPick}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{normalize}},
+    \code{\link{smoothSignal}},
+    \code{\link{reduceBaseline}},
+    \code{\link{peakPick}},
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

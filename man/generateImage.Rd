@@ -29,7 +29,7 @@ generateImage(data = factor(1),
 
     \item{as}{Should the output object be an \code{\linkS4class{SImageSet}} or \code{\linkS4class{MSImageSet}}?}
 
-    \item{\dots}{Additional arguments to pass to \code{\link[Cardinal]{generateSpectrum}}.}
+    \item{\dots}{Additional arguments to pass to \code{\link{generateSpectrum}}.}
 }
 
 \value{
@@ -41,7 +41,7 @@ generateImage(data = factor(1),
 }
 
 \seealso{
-	\code{\link[Cardinal]{generateSpectrum}}
+	\code{\link{generateSpectrum}}
 }
 
 \examples{

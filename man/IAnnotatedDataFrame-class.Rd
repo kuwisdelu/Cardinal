@@ -97,7 +97,7 @@ IAnnotatedDataFrame(data, varMetadata,
 \author{Kylie A. Bemis}
 
 \seealso{
-	\code{\link[Biobase]{AnnotatedDataFrame}},
+	\code{\link{AnnotatedDataFrame}},
 	\code{\link{iSet}},
 	\code{\link{SImageSet}}
 	\code{\link{MSImageSet}}

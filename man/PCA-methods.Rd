@@ -32,7 +32,7 @@
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
     \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Ignored.}
-    \item{object}{The result of a previous call to \code{\link[Cardinal]{PCA}}.}
+    \item{object}{The result of a previous call to \code{\link{PCA}}.}
     \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
 }
 \value{
@@ -52,10 +52,10 @@
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\link[Cardinal]{OPLS}},
-    \code{\link[Cardinal]{PLS}},
-    \code{\link[irlba]{irlba}},
-    \code{\link[base]{svd}}
+    \code{\link{OPLS}},
+    \code{\link{PLS}},
+    \code{\link{irlba}},
+    \code{\link{svd}}
 }
 \examples{
 sset <- generateImage(diag(4), range=c(200, 300), step=1)

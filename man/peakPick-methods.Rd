@@ -56,7 +56,7 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
         \item{\code{noise}: A \code{numeric} vector with the estimated noise.}
     }
 
-    Internally, \code{\link[Cardinal]{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
+    Internally, \code{\link{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
 }
 \value{
     An object of class \code{\linkS4class{MSImageSet}} with the peak picking spectra.
@@ -69,10 +69,10 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link[Cardinal]{peakAlign}},
-    \code{\link[Cardinal]{peakFilter}},
-    \code{\link[Cardinal]{reduceDimension}},
-    \code{\link[Cardinal]{pixelApply}}
+    \code{\link{peakAlign}},
+    \code{\link{peakFilter}},
+    \code{\link{reduceDimension}},
+    \code{\link{pixelApply}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")
