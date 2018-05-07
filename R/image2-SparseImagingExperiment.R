@@ -21,7 +21,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		asp = 1,
 		layout,
 		col = discrete.colors,
-		colorscale = intensity.colors,
+		colorscale = gradient.colors,
 		colorkey = !is3d,
 		subset = TRUE,
 		add = FALSE)
@@ -43,7 +43,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 	} else {
 		feature.groups <- eval(substitute(feature.groups),
 			envir=as.env(featureData(x), enclos=e))
-		if ( !is.factor(groups) ) {
+		if ( !is.factor(feature.groups) ) {
 			feature.groups <- factor(feature.groups,
 				levels=unique(feature.groups))
 		} else {

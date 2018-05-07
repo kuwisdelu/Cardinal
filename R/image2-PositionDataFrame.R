@@ -18,7 +18,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 		asp = 1,
 		layout,
 		col = discrete.colors,
-		colorscale = intensity.colors,
+		colorscale = gradient.colors,
 		colorkey = !is3d,
 		subset = TRUE,
 		add = FALSE)
@@ -36,8 +36,8 @@ setMethod("image", c(x = "PositionDataFrame"),
 		stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( !is.null(args$g) )
 		stop("conditioning variables via | not allowed")
-	if ( !is.null(groups) ) {
-		groups <- eval(substitute(subset), envir=as.env(x, enclos=e))
+	if ( !missing(groups) ) {
+		groups <- eval(substitute(groups), envir=as.env(x, enclos=e))
 		if ( !is.factor(groups) ) {
 			groups <- factor(groups, levels=unique(groups))
 		} else {

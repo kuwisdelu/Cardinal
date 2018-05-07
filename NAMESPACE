@@ -144,7 +144,9 @@ export(
 
 export(
 	"alpha.colors",
+	"bw.colors",
 	"discrete.colors",
+	"divergent.colors",
 	"generateImage",
 	"generateSpectrum",
 	"gradient.colors",
