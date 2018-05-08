@@ -131,9 +131,9 @@ facet.plot <- function(args, formula, obj,
 				if ( has_groups ) {
 					levels <- levels(groups)
 				} else if ( superpose ) {
-					levels <- names(ys)
+					levels <- na.omit(unique(names(ys)))
 				} else {
-					levels <- unique(y)
+					levels <- na.omit(unique(y))
 				}
 				nlevels <- length(levels)
 				if ( is.function(col) ) {

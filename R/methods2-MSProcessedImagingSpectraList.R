@@ -9,6 +9,10 @@ MSProcessedImagingSpectraList <- function(data) {
 			stop("'data' must be a SimpleList, list or matrix")
 		}
 	}
+	if ( is.null(names(data)) ) {
+		inames <- .format.numbered("intensity", length(data))
+		names(data) <- inames
+	}
 	object <- as(data, "MSProcessedImagingSpectraList", strict=FALSE)
 	if ( validObject(object) )
 		object

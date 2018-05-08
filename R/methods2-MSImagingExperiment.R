@@ -12,6 +12,10 @@ MSImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 		imageData <- MSProcessedImagingSpectraList(imageData)
 	} else if ( !is(imageData, "ImageArrayList") ) {
 		imageData <- ImageArrayList(imageData)
+		if ( is.null(names(imageData)) ) {
+			inames <- .format.numbered("intensity", length(imageData))
+			names(imageData) <- inames
+		}
 	}
 	if ( length(imageData) != 0L ) {
 		iData <- imageData[[1]]

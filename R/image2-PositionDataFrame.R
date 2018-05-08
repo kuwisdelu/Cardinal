@@ -200,9 +200,9 @@ facet.image <- function(args, formula, obj,
 					if ( has_groups ) {
 						levels <- levels(groups)
 					} else if ( superpose ) {
-						levels <- names(values)
+						levels <- na.omit(unique(names(values)))
 					} else {
-						levels <- unique(vals)
+						levels <- na.omit(unique(vals))
 					}
 					nlevels <- length(levels)
 					if ( is.function(col) ) {

@@ -41,6 +41,8 @@ setValidity("ImageArrayList", .valid.ImageArrayList)
 		drop <- FALSE
 	if (!missing(i) && !missing(j)) {
 		fun <- function(x) {
+			if ( !is.matter(x) )
+				drop <- FALSE
 			switch(length(dim(x)),
 				stop("'[' on SimpleImageArrayList with 1 dimension not supported"),
 				x[i, j, drop=drop],
@@ -50,6 +52,8 @@ setValidity("ImageArrayList", .valid.ImageArrayList)
 		}
 	} else if (!missing(i)) {
 		fun <- function(x) {
+			if ( !is.matter(x) )
+				drop <- FALSE
 			switch(length(dim(x)),
 				stop("'[' on SimpleImageArrayList with 1 dimension not supported"),
 				x[i, , drop=drop],
@@ -59,6 +63,8 @@ setValidity("ImageArrayList", .valid.ImageArrayList)
 		}
 	} else if (!missing(j)) {
 		fun <- function(x) {
+			if ( !is.matter(x) )
+				drop <- FALSE
 			switch(length(dim(x)),
 				stop("'[' on SimpleImageArrayList with 1 dimension not supported"),
 				x[, j, drop=drop],

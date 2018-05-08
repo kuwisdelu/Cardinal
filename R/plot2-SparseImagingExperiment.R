@@ -28,13 +28,18 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		} else {
 			var <- ls(as.env(featureData(x)))[1L]
 		}
-		fm <- paste0("~", paste0(var, collapse="*"))
+		valnm <- names(imageData(x))[1L]
+		fm <- paste0(valnm, "~", paste0(var, collapse="*"))
 		formula <- as.formula(fm, env=parent.frame(2))
 	}
 	e <- environment(formula)
+	elhs <- as.env(featureData(x), enclos=e)
+	if ( !missing(pixel) && !is.null(names(imageData(x))) ) {
+		xi <- as.list(imageData(x)[,pixel,drop=FALSE])
+		multiassign(names(xi), xi, envir=elhs)
+	}
 	args <- .parseFormula2(formula,
-		lhs.e=as.env(featureData(x), enclos=e),
-		rhs.e=as.env(featureData(x), enclos=e),
+		lhs.e=elhs, rhs.e=as.env(featureData(x), enclos=e),
 		g.e=as.env(pixelData(x), enclos=e))
 	if ( length(args$rhs) != 1L )
 		stop("rhs of formula must include exactly 1 variables")
@@ -72,7 +77,7 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		if ( is.logical(subset) )
 			subset <- rep_len(subset, nrow(x))
 	}
-	if ( is.null(args$lhs) ) {
+	if ( !missing(pixel) ) {
 		if ( !is.null(args$g) ) {
 			condition <- as.data.frame(args$g)[pixel,,drop=FALSE]
 		} else {
@@ -90,12 +95,54 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 				ci <- droplevels(ci)
 			}
 		})
-		args$lhs <- .fastFeatureApply2(x, fun, pixel, condition)
-		names(args$lhs) <- unique(condition)$`..pixel.groups..`
+		if ( is.null(args$lhs) ) {
+			xi <- iData(x)[,pixel,drop=FALSE]
+			args$lhs <- .fastFeatureApply2(xi, fun, condition)
+			names(args$lhs) <- unique(condition)$`..pixel.groups..`
+		} else {
+			val.groups <- factor(names(args$lhs))
+			args$lhs <- lapply(args$lhs, function(xi) {
+				if ( isTRUE(ncol(xi) == nrow(condition)) ) {
+					.fastFeatureApply2(xi, fun, condition)
+				} else {
+					list(xi)
+				}
+			})
+			condition <- unique(condition)
+			val.groups <- rep.int(val.groups, lengths(args$lhs))
+			if ( sum(lengths(args$lhs)) > nrow(condition) ) {
+				condition <- lapply(lengths(args$lhs), function(l) {
+					if ( l != nrow(condition) ) {
+						condition[nrow(condition) + 1L,] # returns NA's
+					} else {
+						condition
+					}
+				})
+				condition <- do.call("rbind", condition)
+				condition$`..val.groups..` <- val.groups
+			}
+			args$lhs <- unlist(args$lhs, recursive=FALSE)
+			names(args$lhs) <- val.groups
+		}
+		condition <- unique(condition)
+		if ( superpose ) {
+			if ( is.null(pixel.groups) ) {
+				if ( length(args$g) == 1L ) {
+					names(args$lhs) <- as.character(condition[[names(args$g)]])
+					condition[[names(args$g)]] <- NULL
+				} else if ( length(args$g) > 1L ) {
+					stop("can't superpose multiple conditioning variables")
+				} else {
+					condition$`..val.groups..` <- NULL
+				}
+			} else {
+				names(args$lhs) <- as.character(condition$`..pixel.groups..`)
+			}
+		}
 		if ( superpose || is.null(pixel.groups) )
 			condition$`..pixel.groups..` <- NULL
 		if ( length(condition) > 0L ) {
-			facets <- unique(condition)
+			facets <- condition
 		} else {
 			facets <- NULL
 		}
@@ -113,18 +160,18 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		subset=subset, add=add)
 })
 
-.fastFeatureApply2 <- function(object, fun, pixel, pixel.groups) {
-	x <- iData(object)[,pixel,drop=FALSE]
-	groups <- unique(pixel.groups)
+.fastFeatureApply2 <- function(x, fun, groups) {
+	all.groups <- groups
+	groups <- unique(groups)
 	glevels <- lapply(seq_len(nrow(groups)),
 		function(i) groups[i,,drop=FALSE])
-	if ( length(pixel) == 1L ) {
+	if ( ncol(x) == 1L ) {
 		x <- list(drop(x))
 	} else if ( length(glevels) == 1L ) {
 		x <- list(apply(x, 1L, fun))
 	} else {
 		x <- lapply(glevels, function(g) {
-			i <- subrows(pixel.groups, g)
+			i <- subrows(all.groups, g)
 			apply(x[,i,drop=FALSE], 1L, fun)
 		})
 	}

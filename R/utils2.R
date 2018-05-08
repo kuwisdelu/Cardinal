@@ -91,6 +91,16 @@
 		do.call("legend", args)
 }
 
+## Format numbered labels
+.format.numbered <- function(label, n, sep="-") {
+	if ( n == 1L )
+		return(label)
+	nums <- as.character(seq_len(n))
+	nums <- paste0(sep, nums)
+	nums[1L] <- ""
+	paste0(label, nums)
+}
+
 ## Format a data.frame of labels
 .format.data.labels <- function(data) {
 	apply(data, 1, function(a) {
