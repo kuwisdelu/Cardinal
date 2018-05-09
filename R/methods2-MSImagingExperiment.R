@@ -84,6 +84,56 @@ setReplaceMethod("centroided", "MSImagingExperiment",
 		object
 	})
 
+## Filter pixels/features
+
+setMethod("features", "MSImagingExperiment",
+	function(object, ..., mz, withNames = TRUE) {
+		if ( missing(mz) ) {
+			features <- callNextMethod(object, ..., withNames=withNames)
+		} else {
+			mz <- as.numeric(mz)
+			features <- bsearch(mz, mz(object), nearest=TRUE)
+			if ( length(list(...)) > 0 ) {
+				keep <- features %in% callNextMethod(object, ..., withNames=FALSE)
+				features <- features[keep]
+			}
+			if ( withNames )
+				names(features) <- featureNames(object)[features]
+		}
+		features
+	})
+
+setMethod("pixels", "MSImagingExperiment",
+	function(object, ..., coord, withNames = TRUE) {
+		if ( missing(coord) ) {
+			pixels <- callNextMethod(object, ..., withNames=withNames)
+		} else {
+			if ( !gridded(object) )
+				.warning("pixel coordinates are not gridded")
+			coord <- as.data.frame(as.list(coord))
+			pixels <- unlist(apply(coord, 1, function(xy) {
+				lxy <- sapply(seq_along(xy), function(i) {
+					nm <- names(xy)[i]
+					coord(object)[[nm]] %in% xy[i]
+				})
+				if ( nrow(coord(object)) == 1 )
+					lxy <- t(lxy)
+				if ( is.null(dim(lxy)) ) {
+					lxy <- which(lxy)
+				} else {
+					lxy <- which(apply(lxy, 1, all))
+				}
+			}))
+			if ( length(list(...)) > 0 ) {
+				keep <- pixels %in% callNextMethod(object, ..., withNames=FALSE)
+				pixels <- pixels[keep]
+			}
+			if ( withNames )
+				names(pixels) <- pixelNames(object)[pixels]
+		}
+		pixels
+	})
+
 ## rbind/cbind
 
 setMethod("rbind", "MSImagingExperiment",

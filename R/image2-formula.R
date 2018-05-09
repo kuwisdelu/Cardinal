@@ -8,12 +8,12 @@ setMethod("image", c(x = "formula"),
 	args <- .parseFormula2(x, lhs.e=data, rhs.e=data, g.e=data)
 	is3d <- length(args$rhs) == 3L
 	if ( length(args$lhs) > 1L )
-		stop(paste("lhs must include exactly 1 variable;",
+		.stop(paste("lhs must include exactly 1 variable;",
 			"did you mean to use I()?"))
 	if ( length(args$rhs) != 2L && length(args$rhs) != 3L )
-		stop("rhs of formula must include exactly 2 or 3 variables")
+		.stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( !is.null(args$g) )
-		stop("conditioning variables via | not allowed")
+		.stop("conditioning variables via | not allowed")
 	e <- environment(x)
 	x <- args$rhs[[1]]
 	y <- args$rhs[[2]]
@@ -34,9 +34,9 @@ setMethod("image", c(x = "formula"),
 		vals <- vals[sub]
 	}
 	if ( length(x) != length(vals) || length(y) != length(vals) )
-		stop("variable lengths differ")
+		.stop("variable lengths differ")
 	if ( is3d && length(z) != length(vals) )
-		stop("variable lengths differ")
+		.stop("variable lengths differ")
 	coord <- data.frame(x=x, y=y)
 	coord$z <- z
 	res <- .estimateSpatialResolution(coord)

@@ -24,7 +24,7 @@
 .draw.strip.labels <- function(strip, text) {
 	args <- switch(class(strip),
 		"logical"=list(),
-		"character"=list(x=strip),
+		"character"=list(legend=strip),
 		"list"=strip,
 		stop("invalid 'strip' argument"))
 	if ( is.character(strip) || is.list(strip) )
@@ -47,7 +47,7 @@
 .draw.key <- function(key, text, fill) {
 	args <- switch(class(key),
 		"logical"=list(),
-		"character"=list(x=key),
+		"character"=list(legend=key),
 		"list"=key,
 		stop("invalid 'key' argument"))
 	if ( is.character(key) || is.list(key) )
@@ -92,7 +92,7 @@
 }
 
 ## Format numbered labels
-.format.numbered <- function(label, n, sep="-") {
+.format.numbered <- function(label, n, sep="") {
 	if ( n == 1L )
 		return(label)
 	nums <- as.character(seq_len(n))
@@ -102,9 +102,11 @@
 }
 
 ## Format a data.frame of labels
-.format.data.labels <- function(data) {
+.format.data.labels <- function(data, append = "") {
 	apply(data, 1, function(a) {
-		paste0(paste0(names(a), " = ", a), collapse=", ")
+		a <- paste0(names(a), " = ", a)
+		a <- paste0(a, append)
+		paste0(a, collapse=", ")
 	})
 }
 
@@ -126,20 +128,20 @@
 }
 
 ## Format m/z values
-.format.mz <- function(mz) {
+.format.mz <- function(mz, digits=2) {
 	diffmz <- diff(mz)
 	if ( length(diffmz) > 0 ) {
 		mindiff <- signif(min(diffmz), 1)
-		digits <- strsplit(paste(mindiff), "[.]")[[1]]
-		if ( length(digits) > 1 ) {
-			digits <- nchar(strsplit(paste(mindiff), "[.]")[[1]][2])	
+		dplaces <- strsplit(paste(mindiff), "[.]")[[1]]
+		if ( length(dplaces) > 1 ) {
+			dplaces <- nchar(strsplit(paste(mindiff), "[.]")[[1]][2])	
 		} else {
-			digits <- 0
+			dplaces <- 0
 		}
 	} else {
-		digits <- 0
+		dplaces <- 0
 	}
-	digits <- max(digits, 2)
+	digits <- max(dplaces, digits)
 	if ( length(mz) > 0 ) {
 		paste0("m/z", " = ", round(mz, digits=digits))
 	} else {

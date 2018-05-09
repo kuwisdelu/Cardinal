@@ -42,7 +42,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		g.e=as.env(featureData(x), enclos=e))
 	is3d <- length(args$rhs) == 3L
 	if ( length(args$rhs) != 2L && length(args$rhs) != 3L )
-		stop("rhs of formula must include exactly 2 or 3 variables")
+		.stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( missing(feature.groups) ) {
 		feature.groups <- NULL
 	} else {
@@ -132,7 +132,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 					names(args$lhs) <- as.character(condition[[names(args$g)]])
 					condition[[names(args$g)]] <- NULL
 				} else if ( length(args$g) > 1L ) {
-					stop("can't superpose multiple conditioning variables")
+					.stop("can't superpose multiple conditioning variables")
 				} else {
 					condition$`..val.groups..` <- NULL
 				}

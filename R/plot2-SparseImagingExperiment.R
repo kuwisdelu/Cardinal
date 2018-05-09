@@ -42,7 +42,7 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		lhs.e=elhs, rhs.e=as.env(featureData(x), enclos=e),
 		g.e=as.env(pixelData(x), enclos=e))
 	if ( length(args$rhs) != 1L )
-		stop("rhs of formula must include exactly 1 variables")
+		.stop("rhs of formula must include exactly 1 variables")
 	if ( missing(pixel.groups) ) {
 		pixel.groups <- NULL
 	} else {
@@ -131,7 +131,7 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 					names(args$lhs) <- as.character(condition[[names(args$g)]])
 					condition[[names(args$g)]] <- NULL
 				} else if ( length(args$g) > 1L ) {
-					stop("can't superpose multiple conditioning variables")
+					.stop("can't superpose multiple conditioning variables")
 				} else {
 					condition$`..val.groups..` <- NULL
 				}

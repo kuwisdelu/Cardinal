@@ -1,0 +1,46 @@
+
+#### Image plotting for MSImagingExperiment ####
+## ------------------------------------------------
+
+setMethod("image",
+	signature = c(x = "MSImagingExperiment"),
+	function(x, formula,
+		feature = features(x, mz=mz),
+		feature.groups,
+		mz,
+		plusminus,
+		...)
+	{
+		if ( !missing(mz) && missing(feature.groups) ) {
+			if ( missing(plusminus) || all(plusminus == 0) ) {
+				if ( is.null(featureNames(x)) ) {
+					feature.groups <- .format.mz(mz(x)[feature], 4)
+				} else {
+					feature.groups <- featureNames(x)[feature]
+				}
+			} else {
+				feature.groups <- paste0(.format.mz(mz, 4), " +/- ", abs(plusminus))
+				dmz <- abs(plusminus)
+				feature.list <- lapply(seq_along(mz), function(i) {
+					mzi <- mz[i]
+					f <- which(mz(x) >= mzi - dmz & mz(x) <= mzi + dmz)
+					if ( length(f) == 0L ) {
+						mznew <- mz(x)[features(x, mz=mzi)]
+						.warning("no features in range; re-centering m/z ", mzi, " to ", mznew)
+						feature.groups[i] <<- paste0(.format.mz(mznew, 4), " +/- ", dmz)
+						f <- which(mz(x) > mznew - dmz & mz(x) < mznew + dmz)
+					}
+					f
+				})
+				feature.groups <- rep.int(feature.groups, lengths(feature.list))
+				feature <- unlist(feature.list)
+			}
+		} else if ( missing(feature.groups) ) {
+			feature.groups <- NULL
+		}
+		callNextMethod(x,
+			formula=formula,
+			feature=feature,
+			feature.groups=feature.groups,
+			...)
+	})

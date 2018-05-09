@@ -33,9 +33,9 @@ setMethod("plot", c(x = "XDataFrame"),
 		lhs.e=as.env(x, enclos=e),
 		rhs.e=as.env(x, enclos=e))
 	if ( length(args$rhs) != 1L )
-		stop("rhs of formula must include exactly 1 variable")
+		.stop("rhs of formula must include exactly 1 variable")
 	if ( !is.null(args$g) )
-		stop("conditioning variables via | not allowed")
+		.stop("conditioning variables via | not allowed")
 	if ( !missing(groups) ) {
 		groups <- eval(substitute(groups), envir=as.env(x, enclos=e))
 		if ( !is.factor(groups) ) {
@@ -73,9 +73,9 @@ facet.plot <- function(args, formula, obj,
 	ys <- args$lhs
 	n <- nrow(obj)
 	if ( any(lengths(ys) != n) || length(x) != n )
-		stop("variable lengths differ")
+		.stop("variable lengths differ")
 	if ( superpose && !is.null(groups) )
-		stop("cannot specify 'superpose' and 'groups' in same call")
+		.stop("cannot specify 'superpose' and 'groups' in same call")
 	if ( !is.null(groups) ) {
 		has_groups <- TRUE		
 	} else {

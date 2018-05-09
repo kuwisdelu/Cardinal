@@ -94,6 +94,63 @@ setReplaceMethod("pixelNames", "ImagingExperiment",
 		object
 	})
 
+## Filter pixels/features
+
+setMethod("features", "ImagingExperiment",
+	function(object, ..., withNames = TRUE) {
+		fdata <- featureData(object)
+		conditions <- eval(substitute(alist(...)))
+		e <- as.env(fdata, enclos=parent.frame(2))
+		if ( length(conditions) > 0 ) {
+			features <- sapply(conditions, function(ci) {
+				ci <- eval(ci, envir=e)
+				if ( !is.logical(ci) ) 
+					.stop("arguments must be logical vectors")
+				rep_len(ci, nrow(fdata))
+			})
+			if ( nrow(fdata) == 1 )
+				features <- t(features)
+			if ( is.null(dim(features)) ) {
+				features <- which(features)
+			} else {
+				features <- which(apply(features, 1, all))
+			}	
+		} else {
+			features <- seq_len(nrow(fdata))
+		}
+		if ( withNames )
+			names(features) <- featureNames(object)[features]
+		features
+	})
+
+setMethod("pixels", "ImagingExperiment",
+	function(object, ..., withNames = TRUE) {
+		pdata <- pixelData(object)
+		conditions <- eval(substitute(alist(...)))
+		e <- as.env(pdata, enclos=parent.frame(2))
+		if ( length(conditions) > 0 ) {
+			pixels <- sapply(conditions, function(ci) {
+				ci <- eval(ci, envir=e)
+				if ( !is.logical(ci) ) 
+					.stop("argments must be logical vectors")
+				rep_len(ci, nrow(pdata))
+			})
+			if ( nrow(pdata) == 1 )
+				pixels <- t(pixels)
+			if ( is.null(dim(pixels)) ) {
+				pixels <- which(pixels)
+			} else {
+				pixels <- which(apply(pixels, 1, all))
+			}
+		} else {
+			pixels <- seq_len(nrow(pixelData(object)))
+		}
+		if ( withNames )
+			names(pixels) <- pixelNames(object)[pixels]
+		pixels
+	})
+
+
 ## Subsetting
 
 setMethod("[[", c("ImagingExperiment", "ANY", "missing"),

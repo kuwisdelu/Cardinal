@@ -33,9 +33,9 @@ setMethod("image", c(x = "PositionDataFrame"),
 		rhs.e=as.list(coord(x)))
 	is3d <- length(args$rhs) == 3L
 	if ( length(args$rhs) != 2L && length(args$rhs) != 3L )
-		stop("rhs of formula must include exactly 2 or 3 variables")
+		.stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( !is.null(args$g) )
-		stop("conditioning variables via | not allowed")
+		.stop("conditioning variables via | not allowed")
 	if ( !missing(groups) ) {
 		groups <- eval(substitute(groups), envir=as.env(x, enclos=e))
 		if ( !is.factor(groups) ) {
@@ -86,11 +86,11 @@ facet.image <- function(args, formula, obj,
 	values <- args$lhs
 	n <- nrow(coord(obj))
 	if ( any(lengths(values) != n) || length(x) != n || length(y) != n )
-		stop("variable lengths differ")
+		.stop("variable lengths differ")
 	if ( is3d && length(z) != n )
-		stop("variable lengths differ")
+		.stop("variable lengths differ")
 	if ( superpose && !is.null(groups) )
-		stop("cannot specify 'superpose' and 'groups' in same call")
+		.stop("cannot specify 'superpose' and 'groups' in same call")
 	more_dims <- length(coord(obj)) > length(args$rhs)
 	if ( more_dims ) {
 		wh <- which(coordnames(obj) %in% names(args$rhs))
