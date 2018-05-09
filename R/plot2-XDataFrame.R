@@ -20,12 +20,23 @@ setMethod("plot", c(x = "XDataFrame"),
 		add = FALSE)
 {
 	if ( missing(formula) ) {
-		if ( ncol(x) > 1L ) {
-			var <- names(x)[c(1,2)]
+		xnm <- setdiff(ls(as.env(x)), names(x))
+		if ( length(xnm) > 0L ) {
+			xnm <- xnm[1L]
+			if ( ncol(x) > 0L ) {
+				ynm <- names(x)[1L]
+			} else {
+				ynm <- xnm
+			}
 		} else {
-			var <- ls(as.env(x))[c(1,2)]
+			xnm <- names(x)[1L]
+			if ( ncol(x) > 1L ) {
+				ynm <- names(x)[2L]
+			} else {
+				ynm <- xnm
+			}
 		}
-		fm <- paste0("~", paste0(var, collapse="*"))
+		fm <- paste0(ynm, "~", xnm)
 		formula <- as.formula(fm, env=parent.frame(2))
 	}
 	e <- environment(formula)
@@ -112,8 +123,13 @@ facet.plot <- function(args, formula, obj,
 	ry <- min(diff(sort(unique(ys2))), na.rm=TRUE)
 	if ( missing(xlab) )
 		xlab <- names(args$rhs)[1]
-	if ( missing(ylab) )
-		ylab <- names(args$lhs)
+	if ( missing(ylab) ) {
+		if ( length(unique(names(args$lhs))) != 1L ) {
+			ylab <- character(1)
+		} else {
+			ylab <- unique(names(args$lhs))
+		}
+	}
 	xrange <- range(x, na.rm=TRUE)
 	yrange <- ysrange
 	if ( missing(xlim) )

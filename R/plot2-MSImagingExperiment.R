@@ -10,7 +10,7 @@ setMethod("plot",
 
 setMethod("plot",
 	signature = c(x = "MSImagingExperiment", y = "missing"),
-	function(x, formula = ~ mz,
+	function(x, formula,
 		pixel = pixels(x, coord=coord),
 		pixel.groups,
 		coord,
@@ -42,9 +42,9 @@ setMethod("plot",
 				pixel.groups <- rep.int(pixel.groups, lengths(pixel.list))
 				pixel <- unlist(pixel.list)
 			}
-		} else if ( missing(pixel.groups) ) {
-			pixel.groups <- NULL
 		}
+		if ( missing(pixel.groups) )
+			pixel.groups <- NULL
 		callNextMethod(x,
 			formula=formula,
 			pixel=pixel,

@@ -35,9 +35,9 @@ setMethod("image",
 				feature.groups <- rep.int(feature.groups, lengths(feature.list))
 				feature <- unlist(feature.list)
 			}
-		} else if ( missing(feature.groups) ) {
-			feature.groups <- NULL
 		}
+		if ( missing(feature.groups) )
+			feature.groups <- NULL
 		callNextMethod(x,
 			formula=formula,
 			feature=feature,

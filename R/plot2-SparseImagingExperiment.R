@@ -23,13 +23,14 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		add = FALSE)
 {
 	if ( missing(formula) ) {
-		if ( ncol(featureData(x)) > 0L ) {
-			var <- names(featureData(x))[1L]
+		xnm <- setdiff(ls(as.env(featureData(x))), names(featureData(x)))
+		if ( length(xnm) > 0L ) {
+			xnm <- xnm[1L]
 		} else {
-			var <- ls(as.env(featureData(x)))[1L]
+			xnm <- names(featureData(x))[1L]
 		}
-		valnm <- names(imageData(x))[1L]
-		fm <- paste0(valnm, "~", paste0(var, collapse="*"))
+		ynm <- names(imageData(x))[1L]
+		fm <- paste0(ynm, "~", xnm)
 		formula <- as.formula(fm, env=parent.frame(2))
 	}
 	e <- environment(formula)
@@ -45,7 +46,7 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		.stop("rhs of formula must include exactly 1 variables")
 	if ( missing(pixel.groups) ) {
 		pixel.groups <- NULL
-	} else {
+	} else if ( !is.null(pixel.groups) ) {
 		pixel.groups <- eval(substitute(pixel.groups),
 			envir=as.env(pixelData(x), enclos=e))
 		if ( !is.factor(pixel.groups) ) {
@@ -98,7 +99,11 @@ setMethod("plot", c(x = "SparseImagingExperiment"),
 		if ( is.null(args$lhs) ) {
 			xi <- iData(x)[,pixel,drop=FALSE]
 			args$lhs <- .fastFeatureApply2(xi, fun, condition)
-			names(args$lhs) <- unique(condition)$`..pixel.groups..`
+			if ( is.null(pixel.groups) && !is.null(names(imageData(x))) ) {
+				names(args$lhs) <- rep_len(names(imageData(x))[1], length(args$lhs))
+			} else {
+				names(args$lhs) <- unique(condition)$`..pixel.groups..`
+			}
 		} else {
 			val.groups <- factor(names(args$lhs))
 			args$lhs <- lapply(args$lhs, function(xi) {

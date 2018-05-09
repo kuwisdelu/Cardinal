@@ -45,7 +45,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		.stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( missing(feature.groups) ) {
 		feature.groups <- NULL
-	} else {
+	} else if ( !is.null(feature.groups) ) {
 		feature.groups <- eval(substitute(feature.groups),
 			envir=as.env(featureData(x), enclos=e))
 		if ( !is.factor(feature.groups) ) {
@@ -98,7 +98,11 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		if ( is.null(args$lhs) ) {
 			xi <- iData(x)[feature,,drop=FALSE]
 			args$lhs <- .fastPixelApply2(xi, fun, condition)
-			names(args$lhs) <- unique(condition)$`..feature.groups..`
+			if ( is.null(feature.groups) && !is.null(names(imageData(x))) ) {
+				names(args$lhs) <- rep_len(names(imageData(x))[1], length(args$lhs))
+			} else {
+				names(args$lhs) <- unique(condition)$`..feature.groups..`
+			}
 			val.groups <- NULL
 		} else {
 			val.groups <- factor(names(args$lhs))

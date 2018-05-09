@@ -247,14 +247,15 @@ facet.image <- function(args, formula, obj,
 						cols <- colors
 					}
 					if ( is3d ) {
-						ti <- contrast.enhance(normalize.image(ti))
+						ti <- normalize.image(contrast.enhance(ti))
 						points3d(xi, yi, zi, ti, ...,
 							xlab=xlab, ylab=ylab, zlab=zlab,
 							xlim=xlim, ylim=ylim, zlim=zlim,
 							col=cols, add=add)
 					} else if ( !all(is.na(ti)) ) {
 						tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
-						tproj <- smooth.image(contrast.enhance(normalize.image(tproj)))
+						tproj <- structure(tproj, range=valrange, resolution=res)
+						tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
 						xj <- seq(xrange[1], xrange[2], length.out=dim(tproj)[1])
 						yj <- seq(yrange[1], yrange[2], length.out=dim(tproj)[2])
 						image(xj, yj, tproj, ...,
