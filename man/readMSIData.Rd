@@ -13,10 +13,12 @@ readMSIData(file, \dots)
 
 ## Read imzML files
 readImzML(name, folder=getwd(), attach.only=FALSE,
-	mass.accuracy=200, units.accuracy=c("ppm", "mz"), \dots)
+	mass.accuracy=200, units.accuracy=c("ppm", "mz"),
+	as = c("MSImageSet", "MSImagingExperiment"), \dots)
 
 ## Read Analyze 7.5 files
-readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
+readAnalyze(name, folder=getwd(), attach.only=FALSE,
+	as = c("MSImageSet", "MSImagingExperiment"), \dots)
 }
 \arguments{
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
@@ -25,6 +27,7 @@ readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
 	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
 	\item{mass.accuracy}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
 	\item{units.accuracy}{The units for 'mass.accuracy'.}
+	\item{as}{After reading in the data, what class of object should be returned (i.e., 'MSImageSet' or 'MSImagingExperiment')?}
 	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{

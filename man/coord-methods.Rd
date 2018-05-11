@@ -19,15 +19,16 @@
 coord(object)
 coord(object) <- value
 
-coordinates(object)
+coordinates(obj, \dots)
 coordinates(object) <- value
 
 coordLabels(object)
 coordLabels(object) <- value
 }
 \arguments{
-    \item{object}{An object, possible derived from \code{\linkS4class{iSet}}.}
+    \item{obj, object}{An object, possible derived from \code{\linkS4class{iSet}}.}
     \item{value}{Value to be assigned to the corresponding object.}
+    \item{\dots}{Additional arguments (ignored).}
 }
 \value{
     \code{coord} returns a \code{data.frame} with each row containing coordinates for an individual pixel. \code{coordLabels} retrieves the coordinate labels.

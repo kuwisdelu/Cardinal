@@ -9,8 +9,8 @@
 \alias{[,SImageSet,ANY,ANY,ANY-method}
 \alias{initialize,SImageSet-method}
 \alias{combine,SImageSet,SImageSet-method}
-\alias{iData,SImageSet-method}
-\alias{iData<-,SImageSet-method}
+\alias{iData,SImageSet,ANY-method}
+\alias{iData<-,SImageSet,ANY-method}
 \alias{regeneratePositions,SImageSet-method}
 \alias{coord<-,SImageSet-method}
 \alias{coordLabels<-,SImageSet-method}

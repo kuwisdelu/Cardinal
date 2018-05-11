@@ -12,8 +12,8 @@
 \alias{dim,SImageData-method}
 \alias{dims,SImageData-method}
 \alias{initialize,SImageData-method}
-\alias{iData,SImageData-method}
-\alias{iData<-,SImageData-method}
+\alias{iData,SImageData,ANY-method}
+\alias{iData<-,SImageData,ANY-method}
 \alias{peakData,SImageData-method}
 \alias{peakData<-,SImageData-method}
 \alias{mzData,SImageData-method}

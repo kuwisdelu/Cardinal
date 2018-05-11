@@ -68,11 +68,11 @@ setReplaceMethod("mz", "MSImagingExperiment",
 		object
 	})
 
-setMethod("spectra", "MSImagingExperiment", function(object, ...) iData(object))
+setMethod("spectra", "MSImagingExperiment", function(object, ...) iData(object, ...))
 
 setReplaceMethod("spectra", "MSImagingExperiment",
-	function(object, value) {
-		iData(object) <- value
+	function(object, ..., value) {
+		iData(object, ...) <- value
 		object
 	})
 

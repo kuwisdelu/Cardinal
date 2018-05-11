@@ -53,6 +53,16 @@ setMethod("as.env", "XDataFrame",
 		}
 	})
 
+setMethod("cbind", "XDataFrame",
+	function(..., deparse.level = 1) {
+		as(callNextMethod(...), class(..1))
+	})
+
+setMethod("rbind", "XDataFrame",
+	function(..., deparse.level = 1) {
+		as(callNextMethod(...), class(..1))
+	})
+
 # Subclasses should define an 'as.list' method to include
 # the additional slot-columns by default, or instead redefine
 # an 'lapply' method to include them when 'slots = TRUE'

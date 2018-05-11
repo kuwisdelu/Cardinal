@@ -50,8 +50,8 @@ setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 
 #### Supplement ProtGenerics  ####
 ## -------------------------------
-setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
-setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
+setGeneric("peaks<-", function(object, ..., value) standardGeneric("peaks<-"))
+setGeneric("spectra<-", function(object, ..., value) standardGeneric("spectra<-"))
 
 #### MIAPE - Imaging ####
 ## ----------------------

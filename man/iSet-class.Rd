@@ -19,9 +19,9 @@
 \alias{storageMode<-,iSet,ANY-method}
 \alias{combine,iSet,iSet-method}
 \alias{protocolData,iSet-method}
-\alias{protocolData<-,iSet-method}
+\alias{protocolData<-,iSet,ANY-method}
 \alias{experimentData,iSet-method}
-\alias{experimentData<-,iSet-method}
+\alias{experimentData<-,iSet,ANY-method}
 \alias{imageData,iSet-method}
 \alias{imageData<-,iSet-method}
 \alias{iData,iSet-method}

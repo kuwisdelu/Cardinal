@@ -86,7 +86,7 @@ setReplaceMethod("coordLabels", "SparseImagingExperiment",
 	})
 
 setMethod("coordinates", "SparseImagingExperiment",
-	function(obj, ...) coordinates(pixelData(object)))
+	function(obj, ...) coordinates(pixelData(obj)))
 
 setReplaceMethod("coordinates", "SparseImagingExperiment",
 	function(object, value) {

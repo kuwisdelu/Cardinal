@@ -38,7 +38,7 @@
     groups = NULL,
     superpose = FALSE,
     strip = TRUE,
-    key = FALSE,
+    key = superpose,
     fun = mean,
     normalize.image = c("none", "linear"),
     contrast.enhance = c("none", "suppression", "histogram"),

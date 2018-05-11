@@ -125,7 +125,7 @@ test_that("MSImagingExperiment binding", {
 
 	expect_error(rbind(x, x))
 
-	expect_error(cbind(x, x))
+	# expect_error(cbind(x, x)) # allow duplicate coords?
 
 	x2 <- x
 

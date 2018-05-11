@@ -9,11 +9,14 @@
 \alias{abstract,MIAPE-Imaging-method}
 \alias{samples,MIAPE-Imaging-method}
 \alias{pubMedIds,MIAPE-Imaging-method}
-\alias{pubMedIds<-,MIAPE-Imaging-method}
+\alias{pubMedIds<-,MIAPE-Imaging,ANY-method}
 \alias{otherInfo,MIAPE-Imaging-method}
 \alias{expinfo,MIAPE-Imaging-method}
 \alias{notes,MIAPE-Imaging-method}
-\alias{notes<-,MIAPE-Imaging-method}
+\alias{notes<-,MIAPE-Imaging,character-method}
+\alias{notes<-,MIAPE-Imaging,list-method}
+\alias{preproc,MIAPE-Imaging-method}
+\alias{preproc<-,MIAPE-Imaging-method}
 \alias{combine,MIAPE-Imaging,MIAPE-Imaging-method}
 
 \alias{msiInfo}

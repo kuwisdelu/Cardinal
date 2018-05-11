@@ -29,16 +29,16 @@
 	These generic functions image data (typically spectra) stored in an object derived from \code{\linkS4class{iSet}}.
 }
 \usage{
-imageData(object)
-imageData(object) <- value
-iData(object)
-iData(object) <- value
+imageData(y)
+imageData(y) <- value
+iData(x, i, \dots)
+iData(x, i, \dots) <- value
 
 spectra(object, \dots)
-spectra(object) <- value
+spectra(object, \dots) <- value
 
 peaks(object, \dots)
-peaks(object) <- value
+peaks(object, \dots) <- value
 
 mzData(object)
 mzData(object) <- value
@@ -47,7 +47,8 @@ peakData(object)
 peakData(object) <- value
 }
 \arguments{
-    \item{object}{An object, possible derived from \code{\linkS4class{iSet}}.}
+    \item{x, y, object}{An object, possible derived from \code{\linkS4class{iSet}}.}
+    \item{i}{Which data element to access.}
     \item{value}{Value to be assigned to the corresponding object.}
     \item{\dots}{Additional arguments (ignored).}
 }

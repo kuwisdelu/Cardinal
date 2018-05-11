@@ -20,6 +20,7 @@ importFrom("stats",
 	"quantile",
 	"rnorm",
 	"runif",
+	"setNames",
 	"smooth.spline")
 
 import("BiocGenerics")
@@ -48,6 +49,8 @@ import("ProtGenerics")
 importFrom("grDevices",
 	"col2rgb",
 	"colorRamp",
+	"hcl",
+	"heat.colors",
 	"rainbow",
 	"rgb",
 	"trans3d")
@@ -189,8 +192,6 @@ exportMethods(
 	"cbind",
 	"rbind",
 	"summary")
-
-export("%>%")
 
 exportMethods(
 	"image",

@@ -101,8 +101,8 @@ setMethod("run", "PositionDataFrame",
 
 setReplaceMethod("run", "PositionDataFrame",
 	function(object, value) {
-		if ( length(value) != length(object) )
-			value <- rep(value, length.out=length(object))
+		if ( length(value) != nrow(object) )
+			value <- rep(value, length.out=nrow(object))
 		object@run <- value
 		if ( validObject(object) )
 			object
@@ -130,20 +130,22 @@ setReplaceMethod("coord", "PositionDataFrame",
 	})
 
 setMethod("coordLabels", "PositionDataFrame",
-	function(object) coordnames(object))
+	function(object) names(object@coord))
 
 setReplaceMethod("coordLabels", "PositionDataFrame",
 	function(object, value) {
-		coordnames(object) <- value
-		object
+		names(object@coord) <- value
+		if ( validObject(object) )
+			object
 	})
 
 setMethod("coordinates", "PositionDataFrame",
-	function(obj, ...) x@coord)
+	function(obj, ...) obj@coord)
 
 setReplaceMethod("coordinates", "PositionDataFrame",
 	function(object, value) {
 		object@coord <- value
+		object <- .setResolutionfromCoord(object, value)
 		if ( validObject(object) )
 			object
 	})
