@@ -5,7 +5,7 @@
 setMethod("plot", c(x = "SparseImagingExperiment", y = "formula"),
 	function(x, y, ...) plot(x, formula = y, ...))
 
-setMethod("plot", c(x = "SparseImagingExperiment"),
+setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 	function(x, formula,
 		pixel,
 		pixel.groups,

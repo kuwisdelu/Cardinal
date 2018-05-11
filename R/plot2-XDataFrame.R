@@ -5,7 +5,7 @@
 setMethod("plot", c(x = "XDataFrame", y = "formula"),
 	function(x, y, ...) plot(x, formula = y, ...))
 
-setMethod("plot", c(x = "XDataFrame"),
+setMethod("plot", c(x = "XDataFrame", y = "missing"),
 	function(x, formula,
 		groups = NULL,
 		superpose = FALSE,

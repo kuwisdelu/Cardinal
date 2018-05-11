@@ -19,6 +19,8 @@
 	.Random.seed=NULL,
 	trans3d=NULL))
 
+globalVariables(".Index")
+
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=interactive())
 	options(Cardinal.progress=interactive())

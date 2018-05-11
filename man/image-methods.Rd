@@ -3,6 +3,12 @@
 
 \alias{image}
 \alias{image-methods}
+
+\alias{image,formula-method}
+\alias{image,PositionDataFrame-method}
+\alias{image,SparseImagingExperiment-method}
+\alias{image,MSImagingExperiment-method}
+
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
 \alias{image,ResultSet-method}
@@ -25,13 +31,68 @@
 \alias{image3D,SpatialKMeans-method}
 \alias{image3D,SpatialShrunkenCentroids-method}
 
-\title{Plot the Pixel-Space of an Imaging Dataset}
+\title{Plot the pixel data of an imaging dataset}
 
 \description{
-    Create and display plots in the pixel space of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
+    Create and display plots for the pixel data of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
 }
 
 \usage{
+\S4method{image}{formula}(x, data = environment(x), \dots,
+    xlab, ylab, zlab, subset)
+
+## Methods for Cardinal version >= 2.0.0 classes
+
+\S4method{image}{PositionDataFrame}(x, formula,
+        groups = NULL,
+        superpose = FALSE,
+        strip = TRUE,
+        key = superpose || !is.null(groups),
+        normalize.image = c("none", "linear"),
+        contrast.enhance = c("none", "suppression", "histogram"),
+        smooth.image = c("none", "gaussian", "adaptive"),
+        \dots,
+        xlab, xlim,
+        ylab, ylim,
+        zlab, zlim,
+        asp = 1,
+        layout,
+        col = discrete.colors,
+        colorscale = gradient.colors,
+        colorkey = !is3d,
+        subset = TRUE,
+        add = FALSE)
+
+\S4method{image}{SparseImagingExperiment}(x, formula,
+        feature,
+        feature.groups,
+        groups = NULL,
+        superpose = FALSE,
+        strip = TRUE,
+        key = superpose || !is.null(groups),
+        fun = mean,
+        normalize.image = c("none", "linear"),
+        contrast.enhance = c("none", "suppression", "histogram"),
+        smooth.image = c("none", "gaussian", "adaptive"),
+        \dots,
+        xlab, xlim,
+        ylab, ylim,
+        zlab, zlim,
+        asp = 1,
+        layout,
+        col = discrete.colors,
+        colorscale = gradient.colors,
+        colorkey = !is3d,
+        subset = TRUE,
+        add = FALSE)
+
+\S4method{image}{MSImagingExperiment}(x, formula,
+        feature = features(x, mz=mz),
+        feature.groups,
+        mz,
+        plusminus,
+        \dots)
+
 \S4method{image}{SImageSet}(x, formula = ~ x * y,
     feature,
     feature.groups,
@@ -44,12 +105,9 @@
     contrast.enhance = c("none", "suppression", "histogram"),
     smooth.image = c("none", "gaussian", "adaptive"),
     \dots,
-    xlab,
-    xlim,
-    ylab,
-    ylim,
-    zlab,
-    zlim,
+    xlab, xlim,
+    ylab, ylim,
+    zlab, zlim,
     layout,
     asp = 1,
     col = rainbow(nlevels(groups)),
@@ -57,6 +115,8 @@
     colorkey = !is3d,
     subset = TRUE,
     lattice = FALSE)
+
+## Methods for Cardinal version >= 1.0.0 classes
 
 \S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
 
@@ -137,6 +197,8 @@
 
     The conditioning variables are evaluated in \code{fData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'feature.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose = TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
 
+    \item{data}{A \code{list} or \code{data.frame}-like object from which variables in \code{formula} should be taken.}
+
     \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
     
     \item{feature}{The feature or vector of features for which to plot the image. This is an expression that evaluates to a logical or integer indexing vector.}
@@ -177,13 +239,17 @@
 
     \item{col}{A specification for the default plotting color(s) for groups.}
 
-    \item{col.regions}{The default plotting color(s) for the z-axis of image intensities.}
+    \item{colorscale}{The color scale to use for the z-axis of image intensities. This may be either a vector of colors or a function which takes a single numeric argument \code{n} and generates a vector of colors of length \code{n}.}
+
+    \item{col.regions}{The default plotting color(s) for the z-axis of image intensities. Thus must be a vector of colors.}
 
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
     
     \item{\dots}{additional arguments passed to the underlying \code{\link{plot}} functions.}
 

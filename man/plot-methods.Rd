@@ -3,6 +3,14 @@
 
 \alias{plot}
 \alias{plot-methods}
+
+\alias{plot,XDataFrame,missing-method}
+\alias{plot,XDataFrame,formula-method}
+\alias{plot,SparseImagingExperiment,missing-method}
+\alias{plot,SparseImagingExperiment,formula-method}
+\alias{plot,MSImagingExperiment,missing-method}
+\alias{plot,MSImagingExperiment,formula-method}
+
 \alias{plot,SImageSet,missing-method}
 \alias{plot,SImageSet,formula-method}
 \alias{plot,MSImageSet,missing-method}
@@ -16,13 +24,55 @@
 \alias{plot,SpatialKMeans,missing-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
 
-\title{Plot the Feature-Space of an Imaging Dataset}
+\title{Plot the feature data of an imaging dataset}
 
 \description{
-	Create and display plots in the feature space of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
+	Create and display plots for the feature data of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
 }
 
 \usage{
+
+## Methods for Cardinal version >= 2.0.0 classes
+
+\S4method{plot}{XDataFrame,missing}(x, formula,
+        groups = NULL,
+        superpose = FALSE,
+        strip = TRUE,
+        key = superpose || !is.null(groups),
+        \dots,
+        xlab, xlim,
+        ylab, ylim,
+        layout,
+        col = discrete.colors,
+        subset = TRUE,
+        add = FALSE)
+
+\S4method{plot}{SparseImagingExperiment,missing}(x, formula,
+        pixel,
+        pixel.groups,
+        groups = NULL,
+        superpose = FALSE,
+        strip = TRUE,
+        key = superpose || !is.null(groups),
+        fun = mean,
+        \dots,
+        xlab, xlim,
+        ylab, ylim,
+        layout,
+        col = discrete.colors,
+        subset = TRUE,
+        add = FALSE)
+
+\S4method{plot}{MSImagingExperiment,missing}(x, formula,
+        pixel = pixels(x, coord=coord),
+        pixel.groups,
+        coord,
+        plusminus,
+        \dots,
+        type = if (centroided(x)) 'h' else 'l')
+
+## Methods for Cardinal version >= 1.0.0 classes
+
 \S4method{plot}{SImageSet,missing}(x, formula = ~ Feature,
     pixel,
     pixel.groups,
@@ -140,6 +190,8 @@
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 
     \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} or \code{\link{xyplot}} functions.}
 
