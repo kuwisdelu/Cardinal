@@ -9,7 +9,7 @@
 \alias{featureApply-methods}
 \alias{featureApply,SImageSet-method}
 
-\title{Apply Functions over Imaging Datasets}
+\title{Apply functions over imaging datasets}
 \description{
 	Apply an existing or a user-specified function over either all of the features or all of the pixels of an \code{\linkS4class{SImageSet}}. These are provided for convenience by analogy to the 'apply' family of functions, but allowing greater control over how the functions are applied over an imaging dataset.
 }

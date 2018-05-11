@@ -29,7 +29,7 @@
 \alias{cbind,SparseImagingExperiment-method}
 \alias{rbind,SparseImagingExperiment-method}
 
-\title{A class for pixel-sparse imaging experiments}
+\title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 
 \description{
    The \code{SparseImagingExperiment} class specializes the virtual \code{\linkS4class{ImagingExperiment}} class by assuming that each pixel may be a high-dimensional feature vector (e.g., a spectrum), but the pixels themselves may be sparse. Therefore, the data may be more efficiently stored as a matrix where rows are features and columns are pixels, rather than storing the full, dense datacube. Both 2D and 3D data are supported. Non-gridded pixel coordinates are allowed.

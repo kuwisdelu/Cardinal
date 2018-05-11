@@ -5,6 +5,10 @@
 \alias{MassDataFrame}
 \alias{MassDataFrame-class}
 
+\alias{mz}
+\alias{mz<-}
+\alias{mz-methods}
+
 \alias{initialize,MassDataFrame-method}
 \alias{mz,MassDataFrame-method}
 \alias{mz<-,MassDataFrame-method}
@@ -16,7 +20,7 @@
 \alias{cbind,MassDataFrame-method}
 \alias{rbind,MassDataFrame-method}
 
-\title{DataFrame with a column for mass-to-charge ratio}
+\title{MassDataFrame: data frame with mass-to-charge ratio metadata}
 
 \description{
 	An \code{MassDataFrame} is an extension of the \code{\linkS4class{XDataFrame}} class with a special slot-column for observed mass-to-charge ratios.

@@ -32,7 +32,7 @@
 \alias{regeneratePositions,SImageData-method}
 
 
-\title{Class Containing Sparse Image Data}
+\title{SImageData: Class containing sparse image data}
 
 \description{
     A container class for holding pixel-sparse image as a virtual datacube. It is assumed there will be missing pixels, so the feature vectors are stored as a matrix for memory efficiency, and the datacube is reconstructed on-the-fly. The implementation remains efficient even for non-sparse data as long as the full datacube does not need to be reconstructed as often as single images and feature vectors. All elements of \code{data} must have an identical number of rows (features) and columns (pixels).

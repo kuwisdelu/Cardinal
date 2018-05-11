@@ -5,13 +5,21 @@
 \alias{MSImageData}
 \alias{MSImageData-class}
 
+\alias{mzData}
+\alias{mzData<-}
+\alias{mzData-methods}
+
+\alias{peakData}
+\alias{peakData<-}
+\alias{peakData-methods}
+
 \alias{initialize,MSImageData-method}
 \alias{peakData,MSImageData-method}
 \alias{peakData<-,MSImageData-method}
 \alias{mzData,MSImageData-method}
 \alias{mzData<-,MSImageData-method}
 
-\title{Class Containing Mass Spectrometry Image Data}
+\title{MSImageData: Class containing mass spectrometry image data}
 
 \description{
     A container class for mass spectrometry imaging data. This is an extension of the \linkS4class{SImageData} class, which adds methods specific for the extraction and replacement of mass spectral peaks.

@@ -5,6 +5,19 @@
 \alias{PositionDataFrame}
 \alias{PositionDataFrame-class}
 
+\alias{coord}
+\alias{coord<-}
+\alias{coord-methods}
+\alias{coordinates}
+\alias{coordinates<-}
+\alias{coordinates-methods}
+\alias{coordLabels}
+\alias{coordLabels<-}
+\alias{coordLabels-methods}
+\alias{coordnames}
+\alias{coordnames<-}
+\alias{coordnames-methods}
+
 \alias{initialize,PositionDataFrame-method}
 \alias{run}
 \alias{run<-}
@@ -35,7 +48,7 @@
 \alias{cbind,PositionDataFrame-method}
 \alias{rbind,PositionDataFrame-method}
 
-\title{DataFrame with columns for spatial positions}
+\title{PositionDataFrame: data frame with spatial position metadata}
 
 \description{
 	An \code{PositionDataFrame} is an extension of the \code{\linkS4class{XDataFrame}} class with special slot-columns for spatial coordinates. It is designed specifically with biological imaging experiments in mind, so it also has an additional slot-column for tracking the experimental run.

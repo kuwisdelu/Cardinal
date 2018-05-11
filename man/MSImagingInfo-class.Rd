@@ -49,7 +49,7 @@
 \alias{lineScanDirection,Vector-method}
 \alias{lineScanDirection<-,Vector-method}
 
-\title{Mass spectrometry imaging metadata for imzML conversion}
+\title{MSImagingInfo: Mass spectrometry imaging metadata for imzML conversion}
 
 \description{
     The \code{MSImagingInfo} class is designed to contain metadata for reading/writing Cardinal objects from/to imzML files.

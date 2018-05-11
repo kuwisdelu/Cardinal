@@ -21,7 +21,7 @@
 \alias{names<-,ImageData-method}
 \alias{show,ImageData-method}
 
-\title{Class Containing Arrays of Imaging Data}
+\title{ImageData: Class containing arrays of imaging data}
 
 \description{
     A container class for holding imaging data, designed to contain one or more arrays in an immutable environment. It is assumed that the first dimension of each array corresponds to the features.

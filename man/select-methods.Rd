@@ -5,7 +5,7 @@
 \alias{select-methods}
 \alias{select,SImageSet-method}
 
-\title{Select Regions of an Imaging Dataset}
+\title{Select regions-of-interest of an imaging dataset}
 \description{
 	Manually select regions-of-interest or pixels on an imaging dataset. This uses the built-in \code{\link{locator}} function. The method has the same form as the \code{\link{image}} method for plotting imaging datasets.
 }

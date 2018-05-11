@@ -13,6 +13,14 @@
 \alias{MSProcessedImagingExperiment}
 \alias{MSProcessedImagingExperiment-class}
 
+\alias{spectra}
+\alias{spectra<-}
+\alias{spectra-methods}
+
+\alias{peaks}
+\alias{peaks<-}
+\alias{peaks-methods}
+
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}
 \alias{spectra,MSImagingExperiment-method}
@@ -24,7 +32,7 @@
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
 
-\title{Mass spectrometry imaging experiments}
+\title{MSImagingExperiment: Mass spectrometry imaging experiments}
 
 \description{
    The \code{MSImagingExperiment} class is designed for mass spectrometry imaging experimental data and metadata. It is designed to contain full MSI experiments, including multiple runs and replicates, potentially across multiple files. Both 2D and 3D imaging experiments are supported, as well as any type of experimental metadata such as diagnosis, subject, time point, etc.

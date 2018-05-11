@@ -10,7 +10,7 @@
 \alias{peakAlign.diff}
 \alias{peakAlign.DP}
 
-\title{Peak Align an Imaging Dataset}
+\title{Peak align an imaging dataset}
 \description{
 	Apply peak alignment to a mass spectrometry imaging dataset.
 }

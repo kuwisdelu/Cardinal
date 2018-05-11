@@ -8,7 +8,7 @@
 \alias{discrete.colors}
 \alias{alpha.colors}
 
-\title{Color Palettes for Imaging}
+\title{Color palettes for imaging}
 
 \description{
 	Create a vector of \code{n} continuous or discrete colors.

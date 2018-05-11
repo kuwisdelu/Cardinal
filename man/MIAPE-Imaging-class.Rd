@@ -106,7 +106,7 @@
 \alias{imageShape<-}
 \alias{imageShape<-,MIAPE-Imaging-method}
 
-\title{Class for Storing Mass Spectrometry Imaging Experiment Information}
+\title{MIAPE-Imaging: Class for storing mass spectrometry imaging experiment information}
 
 \description{
     The Minimum Information About a Proteomics Experiment for MS Imaging. The current implementation is based on the imzML specification.

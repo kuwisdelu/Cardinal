@@ -7,7 +7,7 @@
 
 \alias{reduceBaseline.median}
 
-\title{Reduce the Baseline for an Imaging Dataset}
+\title{Reduce the baseline for an imaging dataset}
 \description{
 	Apply baseline reduction to a mass spectrometry imaging dataset.
 }

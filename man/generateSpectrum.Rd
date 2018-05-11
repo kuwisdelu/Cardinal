@@ -1,7 +1,7 @@
 \name{generateSpectrum}
 \alias{generateSpectrum}
 
-\title{Generate a Simulated Spectrum}
+\title{Generate a simulated spectrum}
 
 \description{
 	Generates a simulated spectral signal, or multiple such signals, with peaks of specified intensities.

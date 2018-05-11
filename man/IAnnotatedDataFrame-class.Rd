@@ -18,7 +18,7 @@
 \alias{combine,IAnnotatedDataFrame,IAnnotatedDataFrame-method}
 \alias{[,IAnnotatedDataFrame,ANY,ANY,ANY-method}
 
-\title{Class Containing Measured Variables and Their Meta-Data Description for Imaging Experiments}
+\title{IAnnotatedDataFrame: Class containing measured variables and their metadata for imaging experiments}
 
 \description{
 	An \code{IAnnotatedDataFrame} is an extension of an \code{\linkS4class{AnnotatedDataFrame}} as defined in the 'Biobase' package modified to reflect that individual rows in \code{data} represent pixels rather than samples, and many pixels will come from a single sample. Additionally, it keeps track of the coordinates of the pixel represented by each row.

@@ -7,7 +7,7 @@
 
 \alias{standardizeSamples.sum}
 
-\title{Standardize the Samples in an Imaging Dataset}
+\title{Standardize the samples in an imaging dataset}
 \description{
 	Apply standardization across the samples in a mass spectrometry imaging dataset to correct for between-sample variation.
 }

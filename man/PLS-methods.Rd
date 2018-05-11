@@ -13,7 +13,7 @@
 \alias{print.summary.PLS}
 \alias{plot.summary.PLS}
 
-\title{Partial Least Squares}
+\title{Partial least squares}
 \description{
 	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform discriminant analysis (PLS-DA) if the response is a \code{factor}.
 }

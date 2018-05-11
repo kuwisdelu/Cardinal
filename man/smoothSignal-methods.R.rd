@@ -9,7 +9,7 @@
 \alias{smoothSignal.sgolay}
 \alias{smoothSignal.ma}
 
-\title{Smooth the Feature-Vectors of an Imaging Dataset}
+\title{Smooth the spectra of a spectral imaging dataset}
 \description{
 	Apply smoothing to a mass spectrometry imaging dataset.
 }

@@ -7,7 +7,7 @@
 
 \alias{peakFilter.freq}
 
-\title{Peak Filter an Imaging Dataset}
+\title{Peak filter an imaging dataset}
 \description{
 	Apply peak filtering to a mass spectrometry imaging dataset.
 }

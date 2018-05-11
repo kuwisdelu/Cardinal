@@ -14,7 +14,7 @@
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
 
-\title{DataFrame with eXtra columns}
+\title{XDataFrame: DataFrame with eXtra metadata columns}
 
 \description{
 	An \code{XDataFrame} is an extension of the \code{\linkS4class{DataFrame}} class as defined in the 'S4Vectors' package, modified to support eXtra "slot-columns" that behave differently from other columns. It is intended to facilitate \code{data.frame}-like classes that require specialized column access and behavior. The specialized slot-columns are stored as distinct slots, unlike regular columns.

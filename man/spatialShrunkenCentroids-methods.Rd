@@ -13,7 +13,7 @@
 \alias{print.summary.SpatialShrunkenCentroids}
 \alias{plot.summary.SpatialShrunkenCentroids}
 
-\title{Spatially-Aware Shrunken Centroid Clustering and Classification}
+\title{Spatially-aware shrunken centroid clustering and classification}
 \description{
     Performs spatially-aware nearest shrunken centroid clustering or classification on an imaging dataset. These methods use statistical regularization to shrink the t-statistics of the features toward 0 so that unimportant features are removed from the analysis. A Gaussian spatial kernel or an adaptive kernel based on bilateral filtering are used for spatial smoothing.
 }

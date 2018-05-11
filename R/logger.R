@@ -15,7 +15,7 @@
 		tryCatch({
 			if ( length(e$log) != 0 ) {
 				e$time$flush <- proc.time()[3]
-				filepath <- file.path(system.file(package="Cardinal"), "Cardinal.log")
+				filepath <- file.path(tempdir(), "Cardinal.log")
 				sink(filepath, append=TRUE)
 				for ( m in e$log ) {
 					cat(m, "\n\n")

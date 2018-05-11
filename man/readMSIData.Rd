@@ -3,7 +3,7 @@
 \alias{readImzML}
 \alias{readAnalyze}
 
-\title{Read Mass Spectrometry Imaging Data Files}
+\title{Read mass spectrometry imaging data files}
 \description{
 	Read supported mass spectrometry imaging data files. Supported formats include imzML and Analyze 7.5.
 }

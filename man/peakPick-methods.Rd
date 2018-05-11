@@ -9,7 +9,7 @@
 \alias{peakPick.adaptive}
 \alias{peakPick.limpic}
 
-\title{Peak Pick an Imaging Dataset}
+\title{Peak pick an imaging dataset}
 \description{
 	Apply peak picking to a mass spectrometry imaging dataset.
 }

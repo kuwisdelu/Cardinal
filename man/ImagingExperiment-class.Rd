@@ -5,6 +5,37 @@
 \alias{ImagingExperiment}
 \alias{ImagingExperiment-class}
 
+\alias{pixels}
+\alias{pixels-methods}
+\alias{features}
+\alias{features-methods}
+
+\alias{imageData}
+\alias{imageData<-}
+\alias{imageData-methods}
+\alias{iData}
+\alias{iData<-}
+\alias{iData-methods}
+\alias{pixelData}
+\alias{pixelData<-}
+\alias{pixelData-methods}
+\alias{pData}
+\alias{pData<-}
+\alias{pData-methods}
+\alias{featureData}
+\alias{featureData<-}
+\alias{featureData-methods}
+\alias{fData}
+\alias{fData<-}
+\alias{fData-methods}
+
+\alias{pixelNames}
+\alias{pixelNames<-}
+\alias{pixelNames-methods}
+\alias{featureNames}
+\alias{featureNames<-}
+\alias{featureNames-methods}
+
 \alias{length,ImagingExperiment-method}
 \alias{$,ImagingExperiment-method}
 \alias{$<-,ImagingExperiment-method}
@@ -36,7 +67,7 @@
 \alias{pixels,ImagingExperiment-method}
 \alias{features,ImagingExperiment-method}
 
-\title{Abstract imaging experiment}
+\title{ImagingExperiment: Abstract class for imaging experiments}
 
 \description{
    The \code{ImagingExperiment} class is a virtual class for biological imaging experiments. It includes slots for pixel metadata and for feature metadata. The class makes very few assumptions about the structure of the underlying imaging data, including the dimensions.

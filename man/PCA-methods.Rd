@@ -11,7 +11,7 @@
 \alias{print.summary.PCA}
 \alias{plot.summary.PCA}
 
-\title{Principal Components Analysis}
+\title{Principal components analysis}
 \description{
 	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
 }

@@ -42,7 +42,7 @@
 \alias{MSProcessedImagingSpectraList-class}
 \alias{[,MSProcessedImagingSpectraList,ANY,ANY,ANY-method}
 
-\title{Abstract image data list}
+\title{ImageList: Abstract image data list}
 
 \description{
     The \code{ImageList} virtual class provides an formal abstraction for the \code{imageData} slot of \code{\linkS4class{ImagingExperiment}} objects. It is analogous to the \code{Assays} classes from the \code{SummarizedExperiment} package.

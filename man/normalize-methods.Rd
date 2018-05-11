@@ -7,7 +7,7 @@
 
 \alias{normalize.tic}
 
-\title{Normalize an Imaging Dataset}
+\title{Normalize an imaging dataset}
 \description{
 	Apply normalization to a mass spectrometry imaging dataset.
 }

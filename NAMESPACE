@@ -33,9 +33,6 @@ importFrom("EBImage",
 	"imageData",
 	"imageData<-")
 
-importFrom("magrittr",
-	"%>%")
-
 import("matter")
 
 import("methods")
@@ -92,6 +89,10 @@ importFrom("utils",
 	"sessionInfo",
 	"setTxtProgressBar",
 	"txtProgressBar")
+
+import("shiny")
+
+import("shinydashboard")
 
 exportClasses(
 	"Binmat",
