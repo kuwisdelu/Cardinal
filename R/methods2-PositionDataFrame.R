@@ -81,7 +81,7 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 
 .estimateSpatialResolution <- function(coord) {
 	res <- sapply(coord, function(x) {
-		x <- sort(unique(x))
+		x <- sort(unique(as.numeric(x)))
 		if ( length(x) < 2 )
 			return(NA_real_)
 		dx <- diff(x)

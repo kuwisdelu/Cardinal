@@ -119,8 +119,8 @@ facet.image <- function(args, formula, obj,
 		y <- y[subset]
 		z <- z[subset]
 		values <- lapply(values, "[", subset)
-		groups <- groups[subset]
-		dpages <- dpages[subset]
+		groups <- droplevels(groups[subset])
+		dpages <- droplevels(dpages[subset])
 	}
 	if ( !is.null(facets) ) {
 		if ( !is.data.frame(facets) )

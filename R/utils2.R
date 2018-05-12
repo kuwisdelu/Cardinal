@@ -103,6 +103,7 @@
 
 ## Format a data.frame of labels
 .format.data.labels <- function(data, append = "") {
+	data <- as.data.frame(data)
 	apply(data, 1, function(a) {
 		a <- paste0(names(a), " = ", a)
 		a <- paste0(a, append)
