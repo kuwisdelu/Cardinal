@@ -6,7 +6,9 @@ importFrom("graphics",
 	"locator",
 	"par",
 	"persp",
-	"points")
+	"points",
+	"rect",
+	"text")
 
 importFrom("stats",
 	"approx",
@@ -50,6 +52,7 @@ importFrom("grDevices",
 	"heat.colors",
 	"rainbow",
 	"rgb",
+	"topo.colors",
 	"trans3d")
 
 importFrom("grid",
@@ -89,10 +92,6 @@ importFrom("utils",
 	"sessionInfo",
 	"setTxtProgressBar",
 	"txtProgressBar")
-
-import("shiny")
-
-import("shinydashboard")
 
 exportClasses(
 	"Binmat",
@@ -149,12 +148,14 @@ export(
 export(
 	"alpha.colors",
 	"bw.colors",
+	"color.map",
 	"discrete.colors",
 	"divergent.colors",
 	"generateImage",
 	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",
+	"jet.colors",
 	"risk.colors",
 	"readAnalyze",
 	"readImzML",

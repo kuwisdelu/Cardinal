@@ -1,6 +1,8 @@
 \name{intensity.colors}
 
+\alias{color.map}
 \alias{intensity.colors}
+\alias{jet.colors}
 \alias{divergent.colors}
 \alias{risk.colors}
 \alias{gradient.colors}
@@ -15,7 +17,12 @@
 }
 
 \usage{
+color.map(map = c("blueblack", "redblack", "greenblack", "parula",
+    "darkrainbow", "rainbow", "grayscale", "jet", "hot", "cool"))
+
 intensity.colors(n = 100, alpha = 1)
+
+jet.colors(n = 100, alpha = 1)
 
 divergent.colors(n = 100, start = "#00AAEE",
     middle = "#FFFFFF", end = "#EE2200", alpha = 1)
@@ -33,6 +40,7 @@ alpha.colors(col, n = 100, alpha.power = 2,
 }
 
 \arguments{
+    \item{map}{the name of the colormap}
     \item{n}{the number of colors}
     \item{alpha}{a vector of alpha values between 0 and 1}
     \item{start}{the start color value}

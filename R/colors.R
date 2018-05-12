@@ -1,4 +1,25 @@
 
+## Preset color maps
+color.map <- function(map = c("blueblack", "redblack", "greenblack",
+	"parula", "darkrainbow", "rainbow",
+	"grayscale", "jet", "hot", "cool"))
+{
+	map <- match.arg(map)
+	switch(map,
+		blueblack = gradient.colors(100),
+		redblack = gradient.colors(100, end="#EE2200"),
+		greenblack = gradient.colors(100, end="#00FF44"),
+		parula = topo.colors(100),
+		darkrainbow = intensity.colors(100),
+		rainbow = intensity.colors2(100),
+		grayscale = bw.colors(100),
+		jet = jet.colors(100),
+		hot = c(
+			divergent.colors(50, "black", "darkred", "red"),
+			divergent.colors(50, "red", "orange", "yellow")),
+		cool = gradient.colors(100, "cyan", "magenta"))
+}
+
 ## Colors for image intensities
 intensity.colors <- function(n = 100, alpha = 1) {
 	col2 <- rainbow(3*n, alpha=alpha)[(2*n):1]
@@ -15,6 +36,21 @@ intensity.colors2 <- function(n = 100, alpha = 1) {
 	cols <- rainbow(3*n, alpha=alpha)[(2*n):1]
 	cols[round(seq(from=1, to=2*n, length.out=n))]
 }
+
+## Colors for the "jet" color scheme
+jet.colors <- function(n = 100, alpha = 1) {
+	col2 <- rainbow(9*n, alpha=alpha)[1:(6*n)]
+	f <- colorRamp(c("darkred", rainbow(n)[1]))
+	g <- colorRamp(c(col2[length(col2)], "darkblue"))
+	alpha <- col2rgb(col2, alpha=TRUE)[[4]]
+	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+		c(as.list(f(i)), maxColorValue=255, alpha=alpha)))
+	col3 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+		c(as.list(g(i)), maxColorValue=255, alpha=alpha)))
+	cols <- rev(c(col1, col2, col3))
+	cols[seq(from=1, to=8*n, by=8)]
+}
+
 
 ## Colors for diverging conditions
 divergent.colors <- function(n = 100, start = "#00AAEE",

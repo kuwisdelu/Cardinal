@@ -12,7 +12,7 @@ License: Artistic-2.0
 Depends: BiocGenerics, BiocParallel, EBImage, graphics,
 		methods, S4Vectors, stats, ProtGenerics
 Imports: Biobase, grid, irlba, lattice, matter, signal,
-		shiny, shinydashboard, sp, stats4, utils
+		sp, stats4, utils
 Suggests: BiocStyle, testthat, magrittr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 		Normalization,	MassSpectrometry, ImagingMassSpectrometry
