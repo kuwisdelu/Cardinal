@@ -110,7 +110,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 				if ( isTRUE(nrow(xi) == nrow(condition)) ) {
 					.fastPixelApply2(xi, fun, condition)
 				} else {
-					list(xi)
+					list(as.vector(xi))
 				}
 			})
 			condition <- unique(condition)

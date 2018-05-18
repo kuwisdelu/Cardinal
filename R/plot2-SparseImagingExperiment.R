@@ -110,7 +110,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 				if ( isTRUE(ncol(xi) == nrow(condition)) ) {
 					.fastFeatureApply2(xi, fun, condition)
 				} else {
-					list(xi)
+					list(as.vector(xi))
 				}
 			})
 			condition <- unique(condition)
