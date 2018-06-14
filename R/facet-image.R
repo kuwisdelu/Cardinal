@@ -5,7 +5,7 @@ facet.image <- function(args, formula, obj,
 	xlab, xlim, ylab, ylim, zlab, zlim, asp, layout,
 	col, colorscale, colorkey, subset, add)
 {
-	call <- match.call()
+	dots <- list(...)
 	e <- environment(formula)
 	x <- args$rhs[[1]]
 	y <- args$rhs[[2]]
@@ -117,11 +117,12 @@ facet.image <- function(args, formula, obj,
 		ylim <- yrange + ry * c(-0.5, 0.5)
 	if ( missing(zlim) )
 		zlim <- zrange + rz * c(-0.5, 0.5)
-	if ( !missing(layout) )
-		.setup.layout(layout)
+	if ( missing(layout) )
+		layout <- NULL
 	normalize.image <- normalize.image.method(normalize.image)
 	contrast.enhance <- contrast.enhance.method(contrast.enhance)
 	smooth.image <- smooth.image.method(smooth.image)
+	layers <- list()
 	for ( p in levels(dpages) ) {
 		for ( f in facet_levels ) {
 			facet_ids <- subrows(facets, f)
@@ -155,6 +156,7 @@ facet.image <- function(args, formula, obj,
 				}
 				if ( !is.numeric(vals) )
 					vals <- as.numeric(vals)
+				sublayers <- list()
 				for ( g in levels(groups) ) {
 					subscripts <- dpages == p
 					gi <- groups[subscripts]
@@ -180,26 +182,23 @@ facet.image <- function(args, formula, obj,
 					}
 					if ( is3d ) {
 						ti <- normalize.image(contrast.enhance(ti))
-						points3d(xi, yi, zi, ti, ...,
-							xlab=xlab, ylab=ylab, zlab=zlab,
-							xlim=xlim, ylim=ylim, zlim=zlim,
-							col=cols, add=add)
-					} else if ( !all(is.na(ti)) ) {
-						tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
-						tproj <- structure(tproj, range=valrange, resolution=res)
-						tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
-						xj <- seq(xrange[1], xrange[2], length.out=dim(tproj)[1])
-						yj <- seq(yrange[1], yrange[2], length.out=dim(tproj)[2])
-						image(xj, yj, tproj, ...,
-							xlab=xlab, ylab=ylab,
-							xlim=xlim, ylim=rev(ylim), zlim=zlim,
-							col=cols, asp=asp, add=add)
+						sublayers[[length(sublayers) + 1L]] <- list(
+							x=xi, y=yi, z=zi, values=ti, col=cols,
+							dpage=p, facet=f, group=g, add=add)
 					} else {
-						plot(0, 0, type='n', ...,
-							xlab=xlab, ylab=ylab,
-							xlim=xlim, ylim=rev(ylim),
-							asp=asp, add=add)
-					}
+						xj <- seq(xrange[1], xrange[2], length.out=dim[1])
+						yj <- seq(yrange[1], yrange[2], length.out=dim[2])
+						if ( !all(is.na(ti)) ) {
+							tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
+							tproj <- structure(tproj, range=valrange, resolution=res)
+							tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
+						} else {
+							tproj <- matrix(NA, nrow=dim[1], ncol=dim[2])
+						}
+						sublayers[[length(sublayers) + 1L]] <- list(
+							x=xj, y=yj, values=tproj, col=cols,
+							dpage=p, facet=f, group=g, add=add)
+					}					
 					add <- TRUE
 				}
 				last <- i == max(facet_ids)
@@ -214,20 +213,82 @@ facet.image <- function(args, formula, obj,
 					}
 					if ( has_dpages )
 						text <- c(p, text)
-					.draw.strip.labels(strip, text)
+					attr(sublayers, "strip") <- list(
+						strip=strip, text=text)
 					if ( has_cats ) {
-						.draw.key(key, levels, colors)
+						attr(sublayers, "key") <- list(
+							key=key, text=levels, fill=colors)
 					} else {
-						.draw.colorkey(colorkey,
-							round(zlim, 2), colors)
+						attr(sublayers, "colorkey") <- list(
+							colorkey=colorkey,
+							text=round(zlim, 2),
+							col=colors)
 					}
 				}
+				layers <- c(layers, list(sublayers))
 				add <- superpose
 			}
 			add <- FALSE
 		}
 		add <- FALSE
 	}
-	invisible(call)
+	if ( is3d ) {
+		par <- list(
+			xlab=xlab, ylab=ylab, zlab=zlab,
+			xlim=xlim, ylim=ylim, zlim=zlim,
+			asp=asp)
+	} else {
+		par <- list(
+			xlab=xlab, ylab=ylab,
+			xlim=xlim, ylim=rev(ylim),
+			asp=asp)
+	}
+	out <- list(
+		layers=layers,
+		dpages=levels(dpages),
+		facets=facet_levels,
+		groups=levels(groups),
+		is3d=is3d, layout=layout,
+		par=c(par, dots))
+	class(out) <- "facet.image"
+	out
+}
+
+print.facet.image <- function(x, ...) {
+	obj <- x
+	if ( !is.null(obj$layout) )
+		.setup.layout(obj$layout)
+	for ( layer in obj$layers ) {
+		for ( sublayer in layer ) {
+			if ( obj$is3d ) {
+				args <- c(list(
+					x=sublayer$x, y=sublayer$y, z=sublayer$z,
+					values=sublayer$values, col=sublayer$col,
+					add=sublayer$add), obj$par)
+				do.call("points3d", args)
+			} else if ( !all(is.na(sublayer$values)) ) {
+				args <- c(list(
+					x=sublayer$x, y=sublayer$y,
+					z=sublayer$values,
+					col=sublayer$col,
+					add=sublayer$add), obj$par)
+				do.call("image", args)
+			} else if ( !sublayer$add ) {
+				args <- c(list(x=0, y=0, type='n'), obj$par)
+				do.call("plot", args)
+			}
+		}
+		strip <- attr(layer, "strip")
+		if ( !is.null(strip) )
+			.draw.strip.labels(strip$strip, strip$text)
+		key <- attr(layer, "key")
+		if ( !is.null(key) )
+			.draw.key(key$key, key$text, key$fill)
+		colorkey <- attr(layer, "colorkey")
+		if ( !is.null(colorkey) )			
+			.draw.colorkey(colorkey$colorkey,
+				colorkey$text, colorkey$col)
+	}
+	invisible(x)
 }
 

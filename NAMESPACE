@@ -172,6 +172,9 @@ S3method("print", "summary.SpatialKMeans")
 S3method("print", "summary.SpatialShrunkenCentroids")
 S3method("print", "summary.CrossValidated")
 
+S3method("print", "facet.plot")
+S3method("print", "facet.image")
+
 S3method("plot", "summary.PCA")
 S3method("plot", "summary.PLS")
 S3method("plot", "summary.OPLS")

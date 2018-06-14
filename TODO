@@ -3,6 +3,8 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
+- Fix visualization of images w/ factor lhs
+- Contrast enhancement should respect relative scale
 - Finish Cardinal v2 classes/methods
 - Statistical hypothesis testing
 

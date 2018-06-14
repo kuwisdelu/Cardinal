@@ -4,7 +4,7 @@ facet.plot <- function(args, formula, obj,
 	xlab, xlim, ylab, ylim, layout,
 	col, subset, add)
 {
-	call <- match.call()
+	dots <- list(...)
 	e <- environment(formula)
 	x <- args$rhs[[1]]
 	ys <- args$lhs
@@ -62,8 +62,9 @@ facet.plot <- function(args, formula, obj,
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) )
 		ylim <- yrange + ry * c(-0.5, 0.5)
-	if ( !missing(layout) )
-		.setup.layout(layout)
+	if ( missing(layout) )
+		layout <- NULL
+	layers <- list()
 	for ( f in facet_levels ) {
 		facet_ids <- subrows(facets, f)
 		for ( i in facet_ids ) {
@@ -96,6 +97,7 @@ facet.plot <- function(args, formula, obj,
 			}
 			if ( !is.numeric(y) )
 				y <- as.numeric(y)
+			sublayers <- list()
 			for ( g in levels(groups) ) {
 				gi <- groups
 				xi <- x
@@ -119,27 +121,8 @@ facet.plot <- function(args, formula, obj,
 				} else {
 					ylabi <- ylab
 				}
-				if ( !all(is.na(yi)) ) {
-					if ( add ) {
-						points(xi, yi, ...,
-							xlab=xlab, ylab=ylabi,
-							xlim=xlim, ylim=ylim,
-							col=coli)
-					} else {
-						plot(xi, yi, ...,
-							xlab=xlab, ylab=ylabi,
-							xlim=xlim, ylim=ylim,
-							col=coli)
-					}
-				} else if ( add ) {
-					points(0, 0, type='n', ...,
-						xlab=xlab, ylab=ylab,
-						xlim=xlim, ylim=ylim)
-				} else {
-					plot(0, 0, type='n', ...,
-						xlab=xlab, ylab=ylab,
-						xlim=xlim, ylim=ylim)
-				}
+				sublayers[[length(sublayers) + 1L]] <- list(
+					x=xi, y=yi, col=coli, facet=f, group=g, add=add)
 				add <- TRUE
 			}
 			last <- i == max(facet_ids)
@@ -152,14 +135,57 @@ facet.plot <- function(args, formula, obj,
 						text <- c(v, text)
 					}
 				}
-				.draw.strip.labels(strip, text)
-				if ( has_cats )
-					.draw.key(key, levels, colors)
+				attr(sublayers, "strip") <- list(
+					strip=strip, text=text)
+				if ( has_cats ) {
+					attr(sublayers, "key") <- list(
+						key=key, text=levels, fill=colors)
+				}
 			}
+			layers <- c(layers, list(sublayers))
 			add <- superpose
 		}
 		add <- FALSE
 	}
-	invisible(call)
+	par <- list(
+		xlab=xlab, ylab=ylab,
+		xlim=xlim, ylim=ylim)
+	out <- list(
+		layers=layers,
+		facets=facet_levels,
+		groups=levels(groups),
+		layout=layout,
+		par=c(par, dots))
+	class(out) <- "facet.plot"
+	out
+}
+
+print.facet.plot <- function(x, ...) {
+	obj <- x
+	if ( !is.null(obj$layout) )
+		.setup.layout(obj$layout)
+	for ( layer in obj$layers ) {
+		for ( sublayer in layer ) {
+			if ( !all(is.na(sublayer$x)) ) {
+				args <- c(list(
+					x=sublayer$x, y=sublayer$y,
+					col=sublayer$col), obj$par)
+			} else {
+				args <- c(list(x=0, y=0, type='n'), obj$par)
+			}
+			if ( sublayer$add ) {
+				do.call("points", args)
+			} else {
+				do.call("plot", args)
+			}
+		}
+		strip <- attr(layer, "strip")
+		if ( !is.null(strip) )
+			.draw.strip.labels(strip$strip, strip$text)
+		key <- attr(layer, "key")
+		if ( !is.null(key) )
+			.draw.key(key$key, key$text, key$fill)
+	}
+	invisible(x)
 }
 
