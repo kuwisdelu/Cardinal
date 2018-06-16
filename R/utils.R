@@ -281,8 +281,7 @@ make.annotation <- function(...) {
 ## Match methods to their workhorse functions
 match.method <- function(method, options) {
 	if ( is.function(method) ) {
-		tryCatch(deparse(substitute(method, env=parent.frame())),
-			error = function(e) "unknown")
+		method
 	} else if ( is.character(method) && missing(options) ) {
 		method[1]
 	} else if ( is.character(method) ) {
@@ -295,7 +294,7 @@ match.method <- function(method, options) {
 	} else if ( is.null(method) ) {
 		options[1]
 	} else {
-		"<unknown>"
+		stop("method matching failed")
 	}
 }
 

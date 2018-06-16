@@ -1,23 +1,23 @@
 
 ## Preset color maps
-color.map <- function(map = c("blueblack", "redblack", "greenblack",
-	"parula", "darkrainbow", "rainbow",
-	"grayscale", "jet", "hot", "cool"))
+color.map <- function(map = c("redblack", "greenblack", "blueblack",
+	"parula", "darkrainbow", "rainbow", "grayscale",
+	"jet", "hot", "cool"), n = 100)
 {
 	map <- match.arg(map)
 	switch(map,
-		blueblack = gradient.colors(100),
-		redblack = gradient.colors(100, end="#EE2200"),
-		greenblack = gradient.colors(100, end="#00FF44"),
-		parula = topo.colors(100),
-		darkrainbow = intensity.colors(100),
-		rainbow = intensity.colors2(100),
-		grayscale = bw.colors(100),
-		jet = jet.colors(100),
+		redblack = gradient.colors(n, end="#EE2200"),
+		greenblack = gradient.colors(n, end="#00FF44"),
+		blueblack = gradient.colors(n, end="#00AAFF"),
+		parula = topo.colors(n),
+		darkrainbow = intensity.colors(n),
+		rainbow = intensity.colors2(n),
+		grayscale = bw.colors(n),
+		jet = jet.colors(n),
 		hot = c(
-			divergent.colors(50, "black", "darkred", "red"),
-			divergent.colors(50, "red", "orange", "yellow")),
-		cool = gradient.colors(100, "cyan", "magenta"))
+			divergent.colors(ceiling(n/2), "black", "darkred", "red"),
+			divergent.colors(floor(n/2), "red", "orange", "yellow")),
+		cool = gradient.colors(n, "cyan", "magenta"))
 }
 
 ## Colors for image intensities

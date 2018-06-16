@@ -73,8 +73,8 @@ facet.image <- function(args, formula, obj,
 	facet_levels <- unique(facets)
 	facet_levels <- lapply(seq_len(nrow(facet_levels)),
 		function(i) facet_levels[i,,drop=FALSE])
-	values2 <- unlist(values, use.names=FALSE)
-	valrange <- range(values2, na.rm=TRUE)
+	raw_values <- unlist(values, use.names=FALSE)
+	raw_valrange <- range(raw_values, na.rm=TRUE)
 	if ( gridded(obj) ) {
 		rx <- resolution(obj)[names(args$rhs)[1]]
 		ry <- resolution(obj)[names(args$rhs)[2]]
@@ -83,18 +83,14 @@ facet.image <- function(args, formula, obj,
 			res <- c(rx, ry, rz)
 			dim <- .getDimsFromResolution(list(x=x, y=y, z=z), res)
 		} else {
-			rz <- min(diff(sort(unique(values2))), na.rm=TRUE)
 			res <- c(rx, ry)
 			dim <- .getDimsFromResolution(list(x=x, y=y), res)
 		}
 	} else {
 		rx <- min(diff(sort(unique(x))), na.rm=TRUE)
 		ry <- min(diff(sort(unique(y))), na.rm=TRUE)
-		if ( is3d ) {
+		if ( is3d )
 			rz <- min(diff(sort(unique(z))), na.rm=TRUE)
-		} else {
-			rz <- min(diff(sort(unique(values2))), na.rm=TRUE)
-		}
 		res <- NULL
 		dim <- NULL
 	}
@@ -106,19 +102,7 @@ facet.image <- function(args, formula, obj,
 		zlab <- names(args$rhs)[3]
 	xrange <- range(x, na.rm=TRUE)
 	yrange <- range(y, na.rm=TRUE)
-	if ( is3d ) {
-		zrange <- range(z, na.rm=TRUE)
-	} else {
-		zrange <- valrange
-	}
-	if ( missing(xlim) )
-		xlim <- xrange + rx * c(-0.5, 0.5)
-	if ( missing(ylim) )
-		ylim <- yrange + ry * c(-0.5, 0.5)
-	if ( missing(zlim) )
-		zlim <- zrange + rz * c(-0.5, 0.5)
-	if ( missing(layout) )
-		layout <- NULL
+	valrange <- c(NA, NA)
 	normalize.image <- normalize.image.method(normalize.image)
 	contrast.enhance <- contrast.enhance.method(contrast.enhance)
 	smooth.image <- smooth.image.method(smooth.image)
@@ -182,6 +166,7 @@ facet.image <- function(args, formula, obj,
 					}
 					if ( is3d ) {
 						ti <- normalize.image(contrast.enhance(ti))
+						valrange <- range(valrange, ti, na.rm=TRUE)
 						sublayers[[length(sublayers) + 1L]] <- list(
 							x=xi, y=yi, z=zi, values=ti, col=cols,
 							dpage=p, facet=f, group=g, add=add)
@@ -190,11 +175,12 @@ facet.image <- function(args, formula, obj,
 						yj <- seq(yrange[1], yrange[2], length.out=dim[2])
 						if ( !all(is.na(ti)) ) {
 							tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
-							tproj <- structure(tproj, range=valrange, resolution=res)
+							tproj <- structure(tproj, range=raw_valrange, resolution=res)
 							tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
 						} else {
 							tproj <- matrix(NA, nrow=dim[1], ncol=dim[2])
 						}
+						valrange <- range(valrange, tproj, na.rm=TRUE)
 						sublayers[[length(sublayers) + 1L]] <- list(
 							x=xj, y=yj, values=tproj, col=cols,
 							dpage=p, facet=f, group=g, add=add)
@@ -221,7 +207,7 @@ facet.image <- function(args, formula, obj,
 					} else {
 						attr(sublayers, "colorkey") <- list(
 							colorkey=colorkey,
-							text=round(zlim, 2),
+							text=c(NA, NA), # populate later
 							col=colors)
 					}
 				}
@@ -232,6 +218,22 @@ facet.image <- function(args, formula, obj,
 		}
 		add <- FALSE
 	}
+	if ( missing(layout) )
+		layout <- NULL
+	for ( i in seq_along(layers) )
+		if ( !is.null(attr(layers[[i]], "colorkey")) )
+			attr(layers[[i]], "colorkey")$text <- round(valrange, 2)
+	if ( missing(xlim) )
+		xlim <- xrange + rx * c(-0.5, 0.5)
+	if ( missing(ylim) )
+		ylim <- yrange + ry * c(-0.5, 0.5)
+	if ( missing(zlim) ) {
+		if ( is3d ) {
+			zlim <- range(z, na.rm=TRUE) + rz * c(-0.5, 0.5)
+		} else {
+			zlim <- valrange
+		}
+	}
 	if ( is3d ) {
 		par <- list(
 			xlab=xlab, ylab=ylab, zlab=zlab,
@@ -240,7 +242,7 @@ facet.image <- function(args, formula, obj,
 	} else {
 		par <- list(
 			xlab=xlab, ylab=ylab,
-			xlim=xlim, ylim=rev(ylim),
+			xlim=xlim, ylim=rev(ylim), zlim=zlim,
 			asp=asp)
 	}
 	out <- list(

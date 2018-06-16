@@ -58,12 +58,6 @@ facet.plot <- function(args, formula, obj,
 	}
 	xrange <- range(x, na.rm=TRUE)
 	yrange <- ysrange
-	if ( missing(xlim) )
-		xlim <- xrange + rx * c(-0.5, 0.5)
-	if ( missing(ylim) )
-		ylim <- yrange + ry * c(-0.5, 0.5)
-	if ( missing(layout) )
-		layout <- NULL
 	layers <- list()
 	for ( f in facet_levels ) {
 		facet_ids <- subrows(facets, f)
@@ -147,6 +141,12 @@ facet.plot <- function(args, formula, obj,
 		}
 		add <- FALSE
 	}
+	if ( missing(layout) )
+		layout <- NULL
+	if ( missing(xlim) )
+		xlim <- xrange + rx * c(-0.5, 0.5)
+	if ( missing(ylim) )
+		ylim <- yrange + ry * c(-0.5, 0.5)
 	par <- list(
 		xlab=xlab, ylab=ylab,
 		xlim=xlim, ylim=ylim)

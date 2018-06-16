@@ -166,10 +166,16 @@ setMethod("cbind", "MSImagingExperiment",
 
 setAs("MSImageSet", "MSImagingExperiment",
 	function(from) {
+		fDataNames <- setdiff(names(fData(from)), "mz")
+		pDataNames <- setdiff(names(pData(from)), names(coord(from)))
 		MSImagingExperiment(imageData=spectra(from),
-			featureData=MassDataFrame(mz(from)),
-			pixelData=PositionDataFrame(coord(from),
-				run=pixelData(from)$sample),
+			featureData=MassDataFrame(
+				mz=mz(from),
+				fData(from)[,fDataNames,drop=FALSE]),
+			pixelData=PositionDataFrame(
+				coord=DataFrame(coord(from), row.names=NULL),
+				run=pixelData(from)$sample,
+				pData(from)[,pDataNames,drop=FALSE]),
 			centroided=centroided(from))
 	})
 
@@ -178,6 +184,10 @@ setAs("MSImagingExperiment", "MSImageSet",
 		out <- MSImageSet(spectra=spectra(from),
 			mz=mz(from), coord=coord(from))
 		pixelData(out)$sample <- run(from)
+		fData <- as.data.frame(as(fData(from), "DataFrame"))
+		pData <- as.data.frame(as(pData(from), "DataFrame"))
+		fData(out) <- cbind(fData(out), fData)
+		pData(out) <- cbind(pData(out), pData)
 		centroided(out) <- centroided(out)
 		out
 	})

@@ -17,8 +17,8 @@
 }
 
 \usage{
-color.map(map = c("blueblack", "redblack", "greenblack", "parula",
-    "darkrainbow", "rainbow", "grayscale", "jet", "hot", "cool"))
+color.map(map = c("redblack", "greenblack", "blueblack", "parula",
+    "darkrainbow", "rainbow", "grayscale", "jet", "hot", "cool"), n = 100)
 
 intensity.colors(n = 100, alpha = 1)
 
