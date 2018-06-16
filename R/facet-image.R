@@ -43,8 +43,15 @@ facet.image <- function(args, formula, obj,
 	if ( !is.null(groups) ) {
 		has_groups <- TRUE		
 	} else {
-		groups <- rep_len(factor(1), n)
-		has_groups <- FALSE
+		if ( is.factor(values[[1]]) || is.character(values[[1]]) ) {
+			if ( length(values) > 1L )
+				.stop("multiple categorical variables in lhs of formula")
+			groups <- as.factor(values[[1]])
+			has_groups <- TRUE
+		} else {
+			groups <- rep_len(factor(1), n)
+			has_groups <- FALSE
+		}
 	}
 	if ( !is.null(subset) ) {
 		x <- x[subset]
@@ -74,7 +81,11 @@ facet.image <- function(args, formula, obj,
 	facet_levels <- lapply(seq_len(nrow(facet_levels)),
 		function(i) facet_levels[i,,drop=FALSE])
 	raw_values <- unlist(values, use.names=FALSE)
-	raw_valrange <- range(raw_values, na.rm=TRUE)
+	if ( is.numeric(raw_values) ) {
+		raw_valrange <- range(raw_values, na.rm=TRUE)
+	} else {
+		raw_valrange <- c(NA, NA)
+	}
 	if ( gridded(obj) ) {
 		rx <- resolution(obj)[names(args$rhs)[1]]
 		ry <- resolution(obj)[names(args$rhs)[2]]
@@ -139,7 +150,7 @@ facet.image <- function(args, formula, obj,
 					has_cats <- FALSE
 				}
 				if ( !is.numeric(vals) )
-					vals <- as.numeric(vals)
+					vals <- as.factor(vals)
 				sublayers <- list()
 				for ( g in levels(groups) ) {
 					subscripts <- dpages == p
@@ -159,7 +170,7 @@ facet.image <- function(args, formula, obj,
 						}
 						cols <- setNames(colors, levels)
 						cols <- cols[cat]
-						if ( !is.null(cat) )
+						if ( !is.null(cat) && is.numeric(vals) )
 							cols <- alpha.colors(cols, 100)
 					} else {
 						cols <- colors
@@ -184,7 +195,7 @@ facet.image <- function(args, formula, obj,
 						sublayers[[length(sublayers) + 1L]] <- list(
 							x=xj, y=yj, values=tproj, col=cols,
 							dpage=p, facet=f, group=g, add=add)
-					}					
+					}
 					add <- TRUE
 				}
 				last <- i == max(facet_ids)
@@ -276,6 +287,7 @@ print.facet.image <- function(x, ...) {
 					add=sublayer$add), obj$par)
 				do.call("image", args)
 			} else if ( !sublayer$add ) {
+				par <- obj$par[-which(names(obj$par) == "zlim")]
 				args <- c(list(x=0, y=0, type='n'), obj$par)
 				do.call("plot", args)
 			}

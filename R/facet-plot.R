@@ -43,10 +43,14 @@ facet.plot <- function(args, formula, obj,
 	facet_levels <- unique(facets)
 	facet_levels <- lapply(seq_len(nrow(facet_levels)),
 		function(i) facet_levels[i,,drop=FALSE])
-	ys2 <- unlist(ys, use.names=FALSE)
-	ysrange <- range(ys2, na.rm=TRUE)
+	raw_ys <- unlist(ys, use.names=FALSE)
+	if ( is.numeric(raw_ys) ) {
+		raw_ysrange <- range(raw_ys, na.rm=TRUE)
+	} else {
+		raw_ysrange <- c(NA, NA)
+	}
 	rx <- min(diff(sort(unique(x))), na.rm=TRUE)
-	ry <- min(diff(sort(unique(ys2))), na.rm=TRUE)
+	ry <- min(diff(sort(unique(raw_ys))), na.rm=TRUE)
 	if ( missing(xlab) )
 		xlab <- names(args$rhs)[1]
 	if ( missing(ylab) ) {
@@ -57,7 +61,7 @@ facet.plot <- function(args, formula, obj,
 		}
 	}
 	xrange <- range(x, na.rm=TRUE)
-	yrange <- ysrange
+	yrange <- raw_ysrange
 	layers <- list()
 	for ( f in facet_levels ) {
 		facet_ids <- subrows(facets, f)
@@ -90,7 +94,7 @@ facet.plot <- function(args, formula, obj,
 				has_cats <- FALSE
 			}
 			if ( !is.numeric(y) )
-				y <- as.numeric(y)
+				y <- as.factor(y)
 			sublayers <- list()
 			for ( g in levels(groups) ) {
 				gi <- groups

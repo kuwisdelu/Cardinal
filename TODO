@@ -3,8 +3,9 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Fix visualization of images w/ factor lhs
 - Finish Cardinal v2 classes/methods
+- Add pixelApply and featureApply for new classes
+- Add processing methods for new classes
 - Statistical hypothesis testing
 
 Priority: Medium
