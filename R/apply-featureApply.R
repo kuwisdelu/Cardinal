@@ -1,4 +1,84 @@
 
+setMethod("featureApply", "SparseImagingExperiment",
+	function(.object, .fun, ...,
+			.simplify = TRUE,
+			.use.names = TRUE,
+			.chunks = 0L,
+			.chunksize = nrow(.object) / .chunks,
+			.cache.chunks = FALSE,
+			BPPARAM = bpparam())
+	{
+		.fun <- match.fun(.fun)
+		.args <- list(...)
+		if ( is.null(environment(.fun)) ) {
+			e <- new.env(parent=parent.frame(2))
+		} else {
+			e <- new.env(parent=environment(.fun))
+		}
+		environment(.fun) <- e
+		if ( .chunksize > 0L && is.finite(.chunksize)  ) {
+			.blockfun <- function(X, FUNC, ARGS, PRELOAD, ...) {
+				suppressPackageStartupMessages(require(Cardinal))
+				assign(".object", X, envir=environment(FUNC))
+				if ( PRELOAD )
+					iData(X) <- as.matrix(iData(X))
+				lapply(seq_len(nrow(X)), function(i) {
+					assign("..i..", i, envir=environment(FUNC))
+					do.call(FUNC, c(list(iData(X)[i,]), ARGS))
+				})
+			}
+			ans <- .featureBlockApply(.object, .blockfun,
+				FUNC=.fun, ARGS=.args, PRELOAD=.cache.chunks,
+				.chunks=.chunks, .chunksize=.chunksize,
+				BPPARAM=BPPARAM)
+		} else {
+			assign(".object", .object, envir=environment(.fun))
+			.indexfun <- function(i, OBJ, FUNC, ARGS, ...) {
+				suppressPackageStartupMessages(require(Cardinal))
+				assign("..i..", i, envir=environment(FUNC))
+				do.call(FUNC, c(list(iData(OBJ)[i,]), ARGS))
+			}
+			ans <- bplapply(seq_len(nrow(.object)), .indexfun,
+				OBJ=.object, FUNC=.fun, ARGS=.args, BPPARAM=BPPARAM)
+		}
+		if ( .use.names )
+			names(ans) <- featureNames(.object)
+		if ( .simplify )
+			ans <- drop(simplify2array(ans))
+		ans
+	})
+
+.featureIterator <- function(obj, n = 1000L) {
+	i <- 1L
+	n <- min(n, nrow(obj))
+	function() {
+		if ( i > nrow(obj) )
+			return(NULL)
+		i2 <- min(i + n - 1L, nrow(obj))
+		idx <- i:i2
+		i <<- i + n
+		if ( length(i2) > 0L ) {
+			obj[idx,]
+		} else {
+			NULL
+		}
+	}
+}
+
+.featureBlockApply <- function(.object, .fun, ...,
+							.chunks, .chunksize,
+							REDUCE = combine,
+							init = NULL,
+							reduce.in.order = TRUE,
+							BPPARAM = bpparam())
+{
+	iter <- .featureIterator(.object, floor(.chunksize))
+	if ( bpprogressbar(BPPARAM) && !missing(.chunks) )
+		.message("expected iterations: ", .chunks + 1L)
+	bpiterate(iter, .fun, ..., REDUCE=REDUCE, init=init,
+		reduce.in.order=reduce.in.order, BPPARAM=BPPARAM)
+}
+
 setMethod("featureApply", "SImageSet",
 	function(.object, .fun, ...,
 			.feature,

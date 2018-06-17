@@ -48,7 +48,7 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 }
 
 .estimateMassResolution <- function(mz) {
-	if ( length(mz) == 0 || is.unsorted(mz) )
+	if ( length(mz) <= 1L || is.unsorted(mz) )
 		return(NA_real_)
 	bwidth <- diff(mz)
 	ppm <- 1e6 * bwidth / mz[-length(mz)]

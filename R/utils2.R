@@ -11,6 +11,13 @@
 	}
 }
 
+# Create a virtual copy of the object with no data
+.virtual.image <- function(x) {
+	imageData(x) <- new(class(imageData(x)))
+	if ( validObject(x) )
+		x
+}
+
 # Setup plotting layout
 .setup.layout <- function(layout) {
 	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
