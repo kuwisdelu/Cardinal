@@ -33,3 +33,10 @@ setValidity("MSProcessedImagingSpectraList",
 setMethod("[", "MSProcessedImagingSpectraList",
 	function(x, i, j, ..., drop = NULL)
 		.subsetSimpleImageArrayList(x, i, j, drop))
+
+setReplaceMethod("[[", "MSProcessedImagingSpectraList",
+	function(x, i, j, ..., value) {
+		if ( !inherits(value, "sparse_matc") )
+			x <- .SimpleImageArrayList(x)
+		callNextMethod(x, i=i, ..., value=value)
+	})

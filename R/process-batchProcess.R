@@ -1,6 +1,195 @@
 
-#### Batch pre-processing ####
-## ----------------------------
+#### Delayed/batched pre-processing ####
+## -------------------------------------
+
+setMethod("process", "SparseImagingExperiment",
+	function(object, fun, ..., label = "",
+			kind = c("pixel", "feature"),
+			prefun, preargs,
+			postfun, postargs,
+			plotfun,
+			delay = FALSE,
+			plot = FALSE,
+			par = NULL,
+			layout,
+			subset = TRUE,
+			chunks = 0L,
+			chunksize = ncol(object) / chunks,
+			cache.chunks = FALSE,
+			BPPARAM = bpparam())
+	{
+		if ( !missing(fun) && !is.null(fun) ) {
+			# get preproc
+			if ( missing(prefun) ) {
+				prefun <- NULL
+				has_pre <- FALSE
+			} else {
+				prefun <- match.fun(prefun)
+				has_pre <- TRUE
+			}
+			if ( missing(preargs) )
+				preargs <- NULL
+			# get postproc
+			if ( missing(postfun) ) {
+				postfun <- NULL
+				has_post <- FALSE
+			} else {
+				postfun <- match.fun(postfun)
+				has_post <- TRUE
+			}
+			if ( missing(postargs) )
+				postargs <- NULL
+			# get plotfun
+			if ( missing(plotfun) ) {
+				plotfun <- NULL
+				has_plot <- FALSE
+			} else {
+				plotfun <- match.fun(plotfun)
+				has_plot <- TRUE
+			}
+			# create processing list
+			proclist <- list(
+				fun=match.fun(fun), args=list(...),
+				prefun=prefun, preargs=preargs,
+				postfun=postfun, postargs=postargs,
+				plotfun=plotfun)
+			# create processing info
+			procinfo <- DataFrame(
+				label=label, kind=match.arg(kind),
+				pending=TRUE, complete=FALSE,
+				has_pre=has_pre, has_post=has_post,
+				has_plot=has_plot)
+			# update object
+			i <- length(processingData(object)) + 1L
+			if ( label %in% names(processingData(object)) ) {
+				processingData(object)[[i]] <- proclist
+			} else {
+				processingData(object)[[label]] <- proclist
+			}
+			if ( is.null(mcols(processingData(object))) ) {
+				mcols(processingData(object)) <- procinfo
+			} else {
+				mcols(processingData(object))[i,] <- procinfo
+			}
+		}
+		if ( !delay ) {
+			if ( !missing(subset) ) {
+				subset <- eval(substitute(subset),
+					envir=as.env(pixelData(object),
+						enclos=parent.frame(2)))
+				if ( is.logical(subset) )
+					subset <- rep_len(subset, ncol(object))
+				object <- object[,subset]
+			}
+			if ( plot && !is(BPPARAM, "SerialParam") ) {
+				.warning("plot=TRUE only allowed for SerialParam()")
+				plot <- FALSE
+				par <- NULL
+			} else if ( plot && !missing(layout) ) {
+				.setup.layout(layout)
+			}
+			object <- .delayedBatchProcess(object, plot=plot, par=par,
+				.chunks=chunks, .chunksize=chunksize,
+				.cache.chunks=cache.chunks,
+				BPPARAM=BPPARAM)
+		}
+		if ( validObject(object) )
+			object
+	})
+
+.delayedBatchProcess <- function(object, plot, par, ...) {
+	queue <- .pendingQueue(processingData(object))
+	if ( is.null(queue) )
+		.warning("no pending processing steps to apply")
+	while ( !is.null(queue) ) {
+		proclist <- queue$queue
+		# perform preprocessing
+		if ( any(queue$info$has_pre) ) {
+			if ( getOption("Cardinal.verbose") )
+				.message("preprocessing ", queue$info$label[1L], " ...")
+			prefun <- proclist[[1L]]$prefun
+			preargs <- proclist[[1L]]$preargs
+			prearglist <- c(list(object), preargs)
+			object <- do.call(prefun, prearglist)
+		}
+		# apply processing to all pixels/features
+		procfun <- function(.x, .list, .plot, .par, ...) {
+			for ( i in seq_along(.list) ) {
+				has_plotfun <- !is.null(.list[[i]]$plotfun)
+				if ( .plot && has_plotfun )
+					.xold <- .x
+				fun <- .list[[i]]$fun
+				arglist <- c(list(.x), .list[[i]]$args)
+				.x <- do.call(fun, arglist)
+				if ( .plot && has_plotfun ) {
+					plotfun <- .list[[i]]$plotfun
+					plotarglist <- c(list(.x), list(.xold), .par)
+					do.call(plotfun, plotarglist)
+				}
+			}
+			.x
+		}
+		by_pixels <- "pixel" %in% queue$info$kind
+		by_features <- "feature" %in% queue$info$kind
+		if ( getOption("Cardinal.verbose") ) {
+			labels <- paste0(queue$info$label, collapse=" ")
+			.message("processing ", labels, " ...")
+		}
+		if ( by_pixels ) {
+			ans <- pixelApply(object, procfun,
+				.list=proclist, .plot=plot, .par=par, ...,
+				.simplify=FALSE)
+		} else if ( by_features ) {
+			ans <- featureApply(object, procfun,
+				.list=proclist, .plot=plot, .par=par, ...,
+				.simplify=FALSE)
+		} else {
+			.stop("unknown processing kind: ",
+				setdiff(queue$info$kind, c("pixel", "feature")))
+		}
+		# perform postprocessing
+		imageData(object) <- as(imageData(object), "SimpleImageArrayList")
+		if ( any(queue$info$has_post) ) {
+			last <- length(proclist)
+			if ( getOption("Cardinal.verbose") )
+				.message("postprocessing ", queue$info$label[last], " ...")
+			postfun <- proclist[[last]]$postfun
+			postargs <- proclist[[last]]$postargs
+			postarglist <- c(list(ans), list(object), postargs)
+			object <- do.call(postfun, postarglist)
+		} else {
+			if ( by_pixels ) {
+				iData(object) <- as.matrix(simplify2array(ans))
+			} else if ( by_features ) {
+				iData(object) <- t(simplify2array(ans))
+			}
+		}
+		mcols(processingData(object))$pending[queue$index] <- FALSE
+		mcols(processingData(object))$complete[queue$index] <- TRUE
+		queue <- .pendingQueue(processingData(object))
+	}
+	object
+}
+
+.pendingQueue <- function(y) {
+	x <- y[mcols(y)$pending]
+	if ( length(x) == 0L )
+		return(NULL)
+	kind_ok <- mcols(x)$kind == mcols(x)$kind[1L]
+	pre_ok <- !mcols(x)$has_pre
+	pre_ok[1L] <- TRUE
+	post_ok <- !mcols(x)$has_post
+	post_ok <- c(TRUE, post_ok[-length(post_ok)])
+	ok <- kind_ok & pre_ok & post_ok
+	index <- which(mcols(y)$pending)[ok]
+	list(index=index, info=mcols(y)[index,], queue=y[index])
+}
+
+.checkForIncompleteProcessing <- function(object) {
+	if ( any(mcols(processingData(object))$pending) )
+		.warning("object has incomplete processing steps; ",
+			"run process() on it to apply them")
+}
 
 setMethod("batchProcess", "MSImageSet",
 	function(object,

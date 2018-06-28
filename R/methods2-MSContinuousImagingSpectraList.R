@@ -33,3 +33,10 @@ setValidity("MSContinuousImagingSpectraList",
 setMethod("[", "MSContinuousImagingSpectraList",
 	function(x, i, j, ..., drop = NULL)
 		.subsetSimpleImageArrayList(x, i, j, drop))
+
+setReplaceMethod("[[", "MSContinuousImagingSpectraList",
+	function(x, i, j, ..., value) {
+		if ( !inherits(value, c("matrix", "matter_matc")) )
+			x <- .SimpleImageArrayList(x)
+		callNextMethod(x, i=i, ..., value=value)
+	})

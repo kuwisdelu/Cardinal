@@ -126,6 +126,7 @@ setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelAppl
 
 #### Pre-processing ####
 ## ---------------------
+setGeneric("process", function(object, ...) standardGeneric("process"))
 setGeneric("batchProcess", function(object, ...) standardGeneric("batchProcess"))
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))

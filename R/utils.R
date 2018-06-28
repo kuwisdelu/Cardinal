@@ -282,17 +282,19 @@ make.annotation <- function(...) {
 match.method <- function(method, options) {
 	if ( is.function(method) ) {
 		method
-	} else if ( is.character(method) && missing(options) ) {
-		method[1]
 	} else if ( is.character(method) ) {
-		matched <- pmatch(method[1], options)
-		if ( is.na(matched) ) {
-			method[1]
+		if ( missing(options) ) {
+			method[1L]
 		} else {
-			options[matched]
+			matched <- pmatch(method[1L], options)
+			if ( is.na(matched) ) {
+				method[1L]
+			} else {
+				options[matched]
+			}	
 		}
 	} else if ( is.null(method) ) {
-		options[1]
+		options[1L]
 	} else {
 		stop("method matching failed")
 	}

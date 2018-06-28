@@ -84,6 +84,38 @@ setReplaceMethod("centroided", "MSImagingExperiment",
 		object
 	})
 
+# 'continuous' imaging experiments
+
+setReplaceMethod("iData", c("MSContinuousImagingExperiment", "missing"),
+	function(x, i, ..., value) {
+		if ( !inherits(value, c("matrix", "matter_matc")) )
+			x <- as(x, "MSImagingExperiment")
+		callNextMethod(x, ..., value=value)
+	})
+
+setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
+	function(x, i, ..., value) {
+		if ( !inherits(value, c("matrix", "matter_matc")) )
+			x <- as(x, "MSImagingExperiment")
+		callNextMethod(x, i=i, ..., value=value)
+	})
+
+# 'processed' imaging experiments
+
+setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
+	function(x, i, ..., value) {
+		if ( !inherits(value, "sparse_matc") )
+			x <- as(x, "MSImagingExperiment")
+		callNextMethod(x, ..., value=value)
+	})
+
+setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
+	function(x, i, ..., value) {
+		if ( !inherits(value, "sparse_matc") )
+			x <- as(x, "MSImagingExperiment")
+		callNextMethod(x, i=i, ..., value=value)
+	})
+
 ## Filter pixels/features
 
 setMethod("features", "MSImagingExperiment",
@@ -161,6 +193,24 @@ setMethod("cbind", "MSImagingExperiment",
 		result
     }
 )
+
+## coerce to/from MSImagingExperiment subclasses
+
+setAs("MSImagingExperiment", "MSContinuousImagingExperiment",
+	function(from) {
+		if ( !is(imageData(from), "MSContinuousImagingSpectraList") )
+			imageData(from) <- .MSContinuousImagingSpectraList(imageData(from))
+		class(from) <- "MSContinuousImagingExperiment"
+		from
+	})
+
+setAs("MSImagingExperiment", "MSProcessedImagingExperiment",
+	function(from) {
+		if ( !is(imageData(from), "MSProcessedImagingSpectraList") )
+			imageData(from) <- .MSProcessedImagingSpectraList(imageData(from))
+		class(from) <- "MSProcessedImagingExperiment"
+		from
+	})
 
 ## coerce to/from MSImageSet
 

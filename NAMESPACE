@@ -377,6 +377,7 @@ exportMethods(
 
 exportMethods(
 	"batchProcess",
+	"process",
 	"normalize",
 	"peakPick",
 	"peakAlign",

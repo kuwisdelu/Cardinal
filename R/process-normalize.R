@@ -2,6 +2,17 @@
 #### Normalization methods ####
 ## ----------------------------
 
+setMethod("normalize", "MSImagingExperiment",
+	function(object, method = "tic", ...)
+	{
+		fun <- normalize.method2(method)
+		object <- as(object, "MSImagingExperiment")
+		object <- process(object, fun=fun, ...,
+			label="normalize", kind="pixel",
+			delay=TRUE)
+		object
+	})
+
 setMethod("normalize", "MSImageSet",
 	function(object, method = "tic",
 		...,
@@ -51,6 +62,17 @@ normalize.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
+normalize.method2 <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method, c("tic"))
+		switch(method,
+			tic = normalize.tic2,
+			match.fun(method))
+	} else {
+		match.fun(method)
+	}
+}
+
 normalize.tic <- function(x, tic=length(x), ...) {
 	auc <- sum(x)
 	if ( auc > 0 ) {
@@ -59,4 +81,6 @@ normalize.tic <- function(x, tic=length(x), ...) {
 		rep(0, length(x))
 	}
 }
+
+normalize.tic2 <- normalize.tic
 

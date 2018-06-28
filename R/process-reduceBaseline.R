@@ -2,6 +2,28 @@
 #### Baseline reduction methods ####
 ## ---------------------------------
 
+setMethod("reduceBaseline", "MSImagingExperiment",
+	function(object, method = "median", ...)
+	{
+		fun <- reduceBaseline.method2(method)
+		e <- new.env(parent=getNamespace("Cardinal"))
+		e$mz <- mz(object)
+		plotfun <- function(s1, s2, ...,
+			main="Baseline reduction", xlab="m/z", ylab="")
+		{
+			plot(mz, s2, main=main, xlab=xlab, ylab=ylab,
+				col="gray", type='l', ...)
+			lines(mz, s2 - s1, col="green")
+			lines(mz, s1, lwd=0.5)
+		}
+		environment(plotfun) <- e
+		object <- as(object, "MSImagingExperiment")
+		object <- process(object, fun=fun, ...,
+			label="reduceBaseline", kind="pixel",
+			plotfun=plotfun, delay=TRUE)
+		object
+	})
+
 setMethod("reduceBaseline", "MSImageSet",
 	function(object, method = "median",
 		...,
@@ -55,6 +77,17 @@ reduceBaseline.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
+reduceBaseline.method2 <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method, c("median"))
+		switch(method,
+			median = reduceBaseline.median,
+			match.fun(method))
+	} else {
+		match.fun(method)
+	}
+}
+
 reduceBaseline.median <- function(x, blocks=500, fun=min, spar=1, ...) {
 	xint <- blocks(x, blocks=blocks)
 	baseval <- sapply(xint, fun)
@@ -73,3 +106,5 @@ reduceBaseline.median <- function(x, blocks=500, fun=min, spar=1, ...) {
 	baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
 	pmax(x - baseline, 0)
 }
+
+reduceBaseline.median2 <- reduceBaseline.median

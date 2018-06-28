@@ -2,6 +2,42 @@
 #### Peak picking methods ####
 ## ---------------------------
 
+setMethod("peakPick", "MSImagingExperiment",
+	function(object, method = c("simple", "adaptive"), ...)
+	{
+		fun <- peakPick.method2(method)
+		e <- new.env(parent=getNamespace("Cardinal"))
+		e$mz <- mz(object)
+		plotfun <- function(s1, s2, ...,
+			main="Peak picking", xlab="m/z", ylab="")
+		{
+			plot(mz, s2, main=main, xlab=xlab, ylab=ylab,
+				col="gray", type='l', ...)
+			lines(mz[s1], s2[s1], col="red", type='h')
+		}
+		environment(plotfun) <- e
+		postfun <- function(peaks, object, ...) {
+			# do something here
+			mz <- lapply(peaks, function(idx) mz(object)[idx])
+			intensity <- lapply(seq_along(peaks), function(i) {
+				idx <- peaks[[i]]
+				s <- spectra(object)[idx,i]
+				as.numeric(s)
+			})
+			data <- list(keys=mz, values=intensity)
+			spectra <- sparse_mat(data, keys=mz(object),
+				nrow=nrow(object), ncol=ncol(object))
+			imageData(object) <- MSProcessedImagingSpectraList(spectra)
+			as(object, "MSProcessedImagingExperiment")
+		}
+		object <- as(object, "MSImagingExperiment")
+		object <- process(object, fun=fun, ...,
+			label="peakPick", kind="pixel",
+			postfun=postfun, plotfun=plotfun,
+			delay=TRUE)
+		object
+	})
+
 setMethod("peakPick", "MSImageSet",
 	function(object, method = c("simple", "adaptive", "limpic"),
 		...,
@@ -69,31 +105,48 @@ peakPick.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
+peakPick.method2 <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method, c("simple", "adaptive"))
+		switch(method,
+			simple = peakPick.simple2,
+			adaptive = peakPick.adaptive2,
+			match.fun(method))
+	} else {
+		match.fun(method)
+	}
+}
+
 peakPick.simple <- function(x, SNR=6, window=5, blocks=100, ...) {
-	t <- seq_along(x)
-	xint <- blocks(x, blocks=blocks)
-	kurt <- sapply(xint, kurtosis) - 3
-	noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
-	noise <- rep(noise, length(x))
+	noise <- .estimateNoiseSimple(x, blocks=blocks)
 	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
 	list(peaks=peaks, noise=noise)
 }
 
+peakPick.simple2 <- function(x, SNR=6, window=5, blocks=100, ...) {
+	noise <- .estimateNoiseSimple(x, blocks=blocks)
+	is.max <- localMaximaLogical(x, window=window)
+	peaks <- is.max & (x / noise) >= SNR
+	peaks[is.na(peaks)] <- FALSE
+	which(peaks)
+}
+
 peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
-	t <- seq_along(x)
-	xint <- blocks(x, blocks=blocks)
-	xlen <- sapply(xint, length)
-	noise <- sapply(xint, sd)
-	noise <- unlist(mapply(function(ns, ln) rep(ns, ln), noise, xlen))
-	cutoff <- smooth.spline(x=t, y=noise, spar=1)$y
-	noise <- interp1(t[noise <= cutoff], noise[noise <= cutoff], xi=t,
-		method="linear", extrap=median(noise, na.rm=TRUE))
+	noise <- .estimateNoiseAdaptive(x, blocks=blocks, spar=spar)
 	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
 	list(peaks=peaks, noise=noise)
+}
+
+peakPick.adaptive2 <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
+	noise <- .estimateNoiseAdaptive(x, blocks=blocks, spar=spar)
+	is.max <- localMaximaLogical(x, window=window)
+	peaks <- is.max & (x / noise) >= SNR
+	peaks[is.na(peaks)] <- FALSE
+	which(peaks)
 }
 
 peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {

@@ -18,8 +18,12 @@ setMethod("plot",
 		...,
 		type = if (centroided(x)) 'h' else 'l')
 	{
-		if ( !missing(coord) && missing(pixel.groups) ) {
-			 if ( missing(plusminus) || all(plusminus == 0) ) {
+		if ( !missing(formula) && missing(pixel) && missing(coord) )
+			return(callNextMethod(x, formula=formula, ..., type=type))
+		if ( (!missing(coord) || length(pixel) == 1L) && missing(pixel.groups) ) {
+			if ( missing(coord) )
+				coord <- Cardinal::coord(x)[pixel,]
+			if ( missing(plusminus) || all(plusminus == 0) ) {
 			 	if ( is.null(pixelNames(x)) ) {
 					pixel.groups <- unname(.format.data.labels(coord(x)[pixel,]))
 				} else {
@@ -28,7 +32,7 @@ setMethod("plot",
 			 } else {
 			 	coord <- as.data.frame(coord)
 			 	pixel.groups <- unname(.format.data.labels(coord,
-			 		append=paste0(" +/- ", abs(plusminus))))
+			 		append=paste0(" \u00b1 ", abs(plusminus))))
 			 	dxy <- rep_len(abs(plusminus), ncol(coord(x)))
 				pixel.list <- lapply(seq_len(nrow(coord)), function(i) {
 					p <- mapply(function(xyi, coordi, dxyi) {
@@ -43,7 +47,7 @@ setMethod("plot",
 				pixel <- unlist(pixel.list)
 			}
 		}
-		if ( missing(pixel.groups) )
+		if ( missing(pixel.groups) || !missing(formula) )
 			pixel.groups <- NULL
 		callNextMethod(x,
 			formula=formula,

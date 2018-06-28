@@ -26,6 +26,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		subset = TRUE,
 		add = FALSE)
 {
+	.checkForIncompleteProcessing(x)
 	if ( missing(formula) ) {
 		valnm <- names(imageData(x))[1L]
 		fm <- paste0(valnm, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
@@ -35,7 +36,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 	elhs <- as.env(pixelData(x), enclos=e)
 	if ( !missing(feature) && !is.null(names(imageData(x))) ) {
 		xi <- as.list(imageData(x)[feature,,drop=FALSE])
-		multiassign(names(xi), xi, envir=elhs)	
+		multiassign(names(xi), xi, envir=elhs)
 	}
 	args <- .parseFormula2(formula,
 		lhs.e=elhs, rhs.e=as.list(coord(x)),

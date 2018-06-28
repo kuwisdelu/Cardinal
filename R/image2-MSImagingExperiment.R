@@ -11,7 +11,11 @@ setMethod("image",
 		plusminus,
 		...)
 	{
-		if ( !missing(mz) && missing(feature.groups) ) {
+		if ( !missing(formula) && missing(feature) && missing(mz) )
+			return(callNextMethod(x, formula=formula, ...))
+		if ( (!missing(mz) || length(feature == 1L)) && missing(feature.groups) ) {
+			if ( missing(mz) )
+				mz <- Cardinal::mz(x)[feature]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
 				if ( is.null(featureNames(x)) ) {
 					feature.groups <- .format.mz(mz(x)[feature], 4)
@@ -19,7 +23,7 @@ setMethod("image",
 					feature.groups <- featureNames(x)[feature]
 				}
 			} else {
-				feature.groups <- paste0(.format.mz(mz, 4), " +/- ", abs(plusminus))
+				feature.groups <- paste0(.format.mz(mz, 4), " \u00b1 ", abs(plusminus))
 				dmz <- abs(plusminus)
 				feature.list <- lapply(seq_along(mz), function(i) {
 					mzi <- mz[i]
@@ -27,7 +31,7 @@ setMethod("image",
 					if ( length(f) == 0L ) {
 						mznew <- mz(x)[features(x, mz=mzi)]
 						.warning("no features in range; re-centering m/z ", mzi, " to ", mznew)
-						feature.groups[i] <<- paste0(.format.mz(mznew, 4), " +/- ", dmz)
+						feature.groups[i] <<- paste0(.format.mz(mznew, 4), " \u00b1 ", dmz)
 						f <- which(mz(x) > mznew - dmz & mz(x) < mznew + dmz)
 					}
 					f
@@ -36,7 +40,7 @@ setMethod("image",
 				feature <- unlist(feature.list)
 			}
 		}
-		if ( missing(feature.groups) )
+		if ( missing(feature.groups) || !missing(formula) )
 			feature.groups <- NULL
 		callNextMethod(x,
 			formula=formula,

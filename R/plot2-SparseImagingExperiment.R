@@ -22,6 +22,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		subset = TRUE,
 		add = FALSE)
 {
+	.checkForIncompleteProcessing(x)
 	if ( missing(formula) ) {
 		xnm <- setdiff(ls(as.env(featureData(x))), names(featureData(x)))
 		if ( length(xnm) > 0L ) {

@@ -47,8 +47,7 @@ setClass("ImageArrayList", contains = c("ImageList", "VIRTUAL"))
     fields = list(data = "SimpleList"),
     contains = "ImageList")
 
-.SimpleImageArrayList <- setRefClass(
-	Class = "SimpleImageArrayList",
+.SimpleImageArrayList <- setRefClass("SimpleImageArrayList",
     contains = c("SimpleImageList", "ImageArrayList"))
 
 setAs("SimpleList", "SimpleImageList",

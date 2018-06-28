@@ -74,7 +74,9 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 			datamode=Ctypeof(intensity.ibdtype),
 			offset=imageData(info)[["external offset"]],
 			extent=imageData(info)[["external array length"]])
-		mz.range <- range(as(mz, "matter_vec"))
+		mzvec <- as(mz, "matter_vec")
+		chunksize(mzvec) <- 1e8L
+		mz.range <- range(mzvec)
 		mz.min <- mz.range[1]
 		mz.max <- mz.range[2]
 		if ( units.accuracy == "ppm" ) {
