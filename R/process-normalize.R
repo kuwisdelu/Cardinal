@@ -6,7 +6,6 @@ setMethod("normalize", "MSImagingExperiment",
 	function(object, method = "tic", ...)
 	{
 		fun <- normalize.method2(method)
-		object <- as(object, "MSImagingExperiment")
 		object <- process(object, fun=fun, ...,
 			label="normalize", kind="pixel",
 			delay=TRUE)

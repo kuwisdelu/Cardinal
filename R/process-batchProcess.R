@@ -3,11 +3,12 @@
 ## -------------------------------------
 
 setMethod("process", "SparseImagingExperiment",
-	function(object, fun, ..., label = "",
+	function(object, fun, ...,
 			kind = c("pixel", "feature"),
 			prefun, preargs,
 			postfun, postargs,
 			plotfun,
+			label = "",
 			delay = FALSE,
 			plot = FALSE,
 			par = NULL,
@@ -18,7 +19,15 @@ setMethod("process", "SparseImagingExperiment",
 			cache.chunks = FALSE,
 			BPPARAM = bpparam())
 	{
-		if ( !missing(fun) && !is.null(fun) ) {
+		if ( !missing(fun) ) {
+			# get fun
+			if ( is.null(fun) ) {
+				kind <- "global"
+				fun <- NULL
+			} else {
+				kind <- match.arg(kind)
+				fun <- match.fun(fun)
+			}
 			# get preproc
 			if ( missing(prefun) ) {
 				prefun <- NULL
@@ -49,13 +58,13 @@ setMethod("process", "SparseImagingExperiment",
 			}
 			# create processing list
 			proclist <- list(
-				fun=match.fun(fun), args=list(...),
+				fun=fun, args=list(...),
 				prefun=prefun, preargs=preargs,
 				postfun=postfun, postargs=postargs,
 				plotfun=plotfun)
 			# create processing info
 			procinfo <- DataFrame(
-				label=label, kind=match.arg(kind),
+				label=label, kind=kind,
 				pending=TRUE, complete=FALSE,
 				has_pre=has_pre, has_post=has_post,
 				has_plot=has_plot)
@@ -144,11 +153,9 @@ setMethod("process", "SparseImagingExperiment",
 				.list=proclist, .plot=plot, .par=par, ...,
 				.simplify=FALSE)
 		} else {
-			.stop("unknown processing kind: ",
-				setdiff(queue$info$kind, c("pixel", "feature")))
+			ans <- NULL
 		}
 		# perform postprocessing
-		imageData(object) <- as(imageData(object), "SimpleImageArrayList")
 		if ( any(queue$info$has_post) ) {
 			last <- length(proclist)
 			if ( getOption("Cardinal.verbose") )

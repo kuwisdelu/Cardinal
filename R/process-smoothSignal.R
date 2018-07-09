@@ -16,7 +16,6 @@ setMethod("smoothSignal", "MSImagingExperiment",
 			lines(mz, s1, lwd=0.5)
 		}
 		environment(plotfun) <- e
-		object <- as(object, "MSImagingExperiment")
 		object <- process(object, fun=fun, ...,
 			label="smoothSignal", kind="pixel",
 			plotfun=plotfun, delay=TRUE)

@@ -232,7 +232,7 @@ setAs("MSImageSet", "MSImagingExperiment",
 setAs("MSImagingExperiment", "MSImageSet",
 	function(from) {
 		out <- MSImageSet(spectra=spectra(from),
-			mz=mz(from), coord=coord(from))
+			mz=mz(from), coord=as.data.frame(coord(from)))
 		pixelData(out)$sample <- run(from)
 		fData <- as.data.frame(as(fData(from), "DataFrame"))
 		pData <- as.data.frame(as(pData(from), "DataFrame"))

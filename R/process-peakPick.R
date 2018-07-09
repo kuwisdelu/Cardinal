@@ -17,7 +17,6 @@ setMethod("peakPick", "MSImagingExperiment",
 		}
 		environment(plotfun) <- e
 		postfun <- function(peaks, object, ...) {
-			# do something here
 			mz <- lapply(peaks, function(idx) mz(object)[idx])
 			intensity <- lapply(seq_along(peaks), function(i) {
 				idx <- peaks[[i]]
@@ -27,10 +26,10 @@ setMethod("peakPick", "MSImagingExperiment",
 			data <- list(keys=mz, values=intensity)
 			spectra <- sparse_mat(data, keys=mz(object),
 				nrow=nrow(object), ncol=ncol(object))
+			object <- as(object, "MSImagingExperiment")
 			imageData(object) <- MSProcessedImagingSpectraList(spectra)
 			as(object, "MSProcessedImagingExperiment")
 		}
-		object <- as(object, "MSImagingExperiment")
 		object <- process(object, fun=fun, ...,
 			label="peakPick", kind="pixel",
 			postfun=postfun, plotfun=plotfun,
