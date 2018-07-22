@@ -1,17 +1,26 @@
 
-CHANGES IN VERSION 1.13.1 [2018-7-22]
+
+CHANGES IN VERSION 1.13.2 [2018-7-22]
+-----------------------------------
 
 NEW FEATURES
 
     o Added new classes for Cardinal v2 including 'XDataFrame',
         'PositionDataFrame', 'MassDataFrame', 'ImagingExperiment', 'SparseImagingExperiment', and 'MSImagingExperiment'
 
-CHANGES IN VERSION 1.12.1 [2018-7-22]
+CHANGES IN VERSION 1.13.1 [2018-7-22]
 -----------------------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Updated installation instructions for "CardinalWorkflows"
+
+CHANGES IN VERSION 1.12.1 [2018-7-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in reading Analyze 7.5 files
 
 CHANGES IN VERSION 1.11.2 [2017-12-2]
 -----------------------------------
