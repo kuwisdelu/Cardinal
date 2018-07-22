@@ -292,6 +292,8 @@ exportMethods(
 	"spectra<-",
 	"storageMode",
 	"storageMode<-",
+	"tolerance",
+	"tolerance<-",
 	"varLabels",
 	"varLabels<-",
 	"varMetadata",

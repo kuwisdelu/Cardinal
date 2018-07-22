@@ -84,19 +84,38 @@ setReplaceMethod("centroided", "MSImagingExperiment",
 		object
 	})
 
+setMethod("peaks", "MSImagingExperiment",
+	function(object, ...) {
+		if ( !centroided(object) )
+			.stop("cannot select 'peaks'; object is not centroided")
+		iData(object, ...)
+	})
+
+setReplaceMethod("peaks", "MSImagingExperiment",
+	function(object, ..., value) {
+		if ( !centroided(object) )
+			.stop("cannot assign 'peaks'; object is not centroided")
+		iData(object, ...) <- value
+		object
+	})
+
 # 'continuous' imaging experiments
 
 setReplaceMethod("iData", c("MSContinuousImagingExperiment", "missing"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, c("matrix", "matter_matc")) )
+		if ( !inherits(value, c("matrix", "matter_matc")) ) {
 			x <- as(x, "MSImagingExperiment")
+			imageData(x) <- .SimpleImageArrayList(imageData(x))
+		}
 		callNextMethod(x, ..., value=value)
 	})
 
 setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, c("matrix", "matter_matc")) )
+		if ( !inherits(value, c("matrix", "matter_matc")) ) {
 			x <- as(x, "MSImagingExperiment")
+			imageData(x) <- .SimpleImageArrayList(imageData(x))
+		}
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
@@ -104,16 +123,65 @@ setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
 
 setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") )
+		if ( !inherits(value, "sparse_matc") ) {
 			x <- as(x, "MSImagingExperiment")
+			imageData(x) <- .SimpleImageArrayList(imageData(x))
+		}
 		callNextMethod(x, ..., value=value)
 	})
 
 setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") )
+		if ( !inherits(value, "sparse_matc") ) {
 			x <- as(x, "MSImagingExperiment")
+			imageData(x) <- .SimpleImageArrayList(imageData(x))
+		}
 		callNextMethod(x, i=i, ..., value=value)
+	})
+
+setMethod("mzData", "MSProcessedImagingExperiment",
+	function(object) atomdata(iData(object))[["keys"]])
+
+setMethod("peakData", "MSProcessedImagingExperiment",
+	function(object) atomdata(iData(object))[["values"]])
+
+setMethod("mz", "missing",
+	function(from, to, by = 400, units = c("ppm", "mz"), ...) {
+		units <- match.arg(units)
+		halfwidth <- by / 2
+		mz <- switch(units,
+			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
+			mz = seq(from=from, to=to, by=halfwidth))
+		tol <- switch(units,
+			ppm = c(relative = halfwidth * 1e-6),
+			mz = c(absolute = halfwidth))
+		attr(mz, "tolerance") <- tol
+		mz
+	})
+
+setReplaceMethod("mz", "MSProcessedImagingExperiment",
+	function(object, value) {
+		if ( length(value) != length(mz(object)) ) {
+			if ( ncol(featureData(object)) > 0L ) {
+				mcols <- names(featureData(object))
+				.warning("dropping feature metadata cols: ", mcols)
+			}
+			object@featureData <- MassDataFrame(mz=value)
+		}
+		keys(object@imageData) <- value
+		if ( !is.null(attr(value, "tolerance")) )
+			tolerance(object@imageData) <- attr(value, "tolerance")
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("tolerance", "MSProcessedImagingExperiment",
+	function(object) tolerance(imageData(object)))
+
+setReplaceMethod("tolerance", "MSProcessedImagingExperiment",
+	function(object, value) {
+		tolerance(imageData(object)) <- value
+		object
 	})
 
 ## Filter pixels/features

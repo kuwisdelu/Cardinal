@@ -3,7 +3,7 @@
 ## ----------------------
 
 readImzML <- function(name, folder = getwd(), attach.only = FALSE,
-	mass.accuracy = 200, units.accuracy = c("ppm", "mz"),
+	mass.range = NULL, mass.accuracy = 200, units.accuracy = c("ppm", "mz"),
 	as = c("MSImageSet", "MSImagingExperiment"), ...)
 {
 	# get output format
@@ -24,7 +24,7 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 	units.accuracy <- match.arg(units.accuracy)
 	.message("readImzML: Reading ibd file '", ibdpath, "'")
 	object <- .readIbd(ibdpath, info, outclass=outclass, attach.only=attach.only,
-		mass.accuracy=mass.accuracy, units.accuracy=units.accuracy)
+		mass.range=mass.range, mass.accuracy=mass.accuracy, units.accuracy=units.accuracy)
 	if ( validObject(object) ) {
 		.message("readImzML: Done.")
 		object
@@ -42,8 +42,8 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 		metadata=experimentMetadata)
 }
 
-.readIbd <- function(file, info, outclass,
-	attach.only, mass.accuracy, units.accuracy)
+.readIbd <- function(file, info, outclass, attach.only,
+	mass.range, mass.accuracy, units.accuracy)
 {
 	file <- normalizePath(file)
 	ibdtype <- metadata(info)[["ibd binary type"]]
@@ -74,9 +74,13 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 			datamode=Ctypeof(intensity.ibdtype),
 			offset=imageData(info)[["external offset"]],
 			extent=imageData(info)[["external array length"]])
-		mzvec <- as(mz, "matter_vec")
-		chunksize(mzvec) <- 1e8L
-		mz.range <- range(mzvec)
+		if ( is.null(mass.range) ) {
+			mzvec <- as(mz, "matter_vec")
+			chunksize(mzvec) <- 1e8L # read chunks of 800 MB
+			mz.range <- range(mzvec)
+		} else {
+			mz.range <- mass.range
+		}
 		mz.min <- mz.range[1]
 		mz.max <- mz.range[2]
 		if ( units.accuracy == "ppm" ) {
@@ -104,13 +108,17 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 				nrow=length(mz), ncol=length(intensity),
 				tolerance=tol, combiner="sum")
 		} else {
-			data <- list(keys=list(), values=list())
-			for ( i in seq_along(mz) ) {
-				mzi <- mz[[i]]
-				wh <- findInterval(mzi, mz.bins)
-				s <- as.vector(tapply(intensity[[i]], wh, sum))
-				data$keys[[i]] <- mzout[unique(wh)]
-				data$values[[i]] <- s
+			if ( outclass == "MSImageSet" ) {
+				data <- list(keys=list(), values=list())
+				for ( i in seq_along(mz) ) {
+					mzi <- mz[[i]]
+					wh <- findInterval(mzi, mz.bins)
+					s <- as.vector(tapply(intensity[[i]], wh, sum))
+					data$keys[[i]] <- mzout[unique(wh)]
+					data$values[[i]] <- s
+				}
+			} else if ( outclass == "MSImagingExperiment") {
+				data <- list(keys=mz[], values=intensity[])
 			}
 			mz <- mzout
 			spectra <- sparse_mat(data, keys=mz,

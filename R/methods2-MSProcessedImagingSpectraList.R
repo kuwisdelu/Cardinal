@@ -31,8 +31,11 @@ setValidity("MSProcessedImagingSpectraList",
 	.valid.MSProcessedImagingSpectraList)
 
 setMethod("[", "MSProcessedImagingSpectraList",
-	function(x, i, j, ..., drop = NULL)
-		.subsetSimpleImageArrayList(x, i, j, drop))
+	function(x, i, j, ..., drop = NULL) {
+		if ( is.logical(drop) )
+			x <- .SimpleImageArrayList(x)
+		.subsetSimpleImageArrayList(x, i, j, drop)
+	})
 
 setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 	function(x, i, j, ..., value) {
@@ -40,3 +43,32 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 			x <- .SimpleImageArrayList(x)
 		callNextMethod(x, i=i, ..., value=value)
 	})
+
+# manipulate underlying sparse spectra data
+
+setMethod("keys", "MSProcessedImagingSpectraList",
+	function(object) keys(object[[1L]]))
+
+setReplaceMethod("keys", "MSProcessedImagingSpectraList",
+	function(object, value) {
+		fun <- function(x) {
+			keys(x) <- value
+			x
+		}
+		data <- as(object, "SimpleList", strict=FALSE)
+		as(endoapply(data, fun), class(object))
+	})
+
+setMethod("tolerance", "MSProcessedImagingSpectraList",
+	function(object) tolerance(object[[1L]]))
+
+setReplaceMethod("tolerance", "MSProcessedImagingSpectraList",
+	function(object, value) {
+		fun <- function(x) {
+			tolerance(x) <- value
+			x
+		}
+		data <- as(object, "SimpleList", strict=FALSE)
+		as(endoapply(data, fun), class(object))
+	})
+

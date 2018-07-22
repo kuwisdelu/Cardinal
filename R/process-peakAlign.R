@@ -6,7 +6,7 @@
 # 	signature = c(object = "MSImagingExperiment", ref = "numeric"),
 # 	function(object, ref, mass.accuracy = 200, units.accuracy = c("ppm", "mz"), ...)
 # 	{
-					
+		# do something
 # 	})
 
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
