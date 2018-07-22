@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 1.12.1 [2018-7-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in reading Analyze 7.5 files
+
 CHANGES IN VERSION 1.11.2 [2017-12-2]
 -----------------------------------
 

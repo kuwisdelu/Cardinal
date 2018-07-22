@@ -39,12 +39,12 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE, ...)
 		coord <- expand.grid(x=seq_len(dim[2]), y=seq_len(dim[3]))
 	}
 	files <- structure(c(hdrpath, t2mpath, imgpath), name=name, folder=folder)
-	obj <- .readAnalyze.MSImageSet(spectra, mz, coord, files, attach.only)
+	obj <- .readAnalyze.MSImageSet(spectra, mz, coord, name, files, attach.only)
 	if ( validObject(obj) )
 		obj
 }
 
-.readAnalyze.MSImageSet <- function(spectra, mz, coord, files, attach.only) {
+.readAnalyze.MSImageSet <- function(spectra, mz, coord, name, files, attach.only) {
 	# set up spectra
 	if ( attach.only ) {
 		spectra <- spectra
