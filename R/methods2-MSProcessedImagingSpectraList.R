@@ -72,3 +72,16 @@ setReplaceMethod("tolerance", "MSProcessedImagingSpectraList",
 		as(endoapply(data, fun), class(object))
 	})
 
+setMethod("combiner", "MSProcessedImagingSpectraList",
+	function(object) combiner(object[[1L]]))
+
+setReplaceMethod("combiner", "MSProcessedImagingSpectraList",
+	function(object, value) {
+		fun <- function(x) {
+			combiner(x) <- value
+			x
+		}
+		data <- as(object, "SimpleList", strict=FALSE)
+		as(endoapply(data, fun), class(object))
+	})
+

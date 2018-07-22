@@ -17,19 +17,21 @@ setMethod("peakPick", "MSImagingExperiment",
 		}
 		environment(plotfun) <- e
 		postfun <- function(peaks, object, ...) {
-			mz <- lapply(peaks, function(idx) mz(object)[idx])
-			intensity <- lapply(seq_along(peaks), function(i) {
+			mzData <- lapply(peaks, function(idx) mz(object)[idx])
+			intensityData <- lapply(seq_along(peaks), function(i) {
 				idx <- peaks[[i]]
 				s <- spectra(object)[idx,i]
 				as.numeric(s)
 			})
-			data <- list(keys=mz, values=intensity)
-			spectra <- sparse_mat(data, keys=mz(object),
+			data <- list(keys=mzData, values=intensityData)
+			data <- sparse_mat(data, keys=mz(object),
 				nrow=nrow(object), ncol=ncol(object))
+			tolerance(data) <- .Machine$double.eps
 			object <- as(object, "MSImagingExperiment")
-			imageData(object) <- MSProcessedImagingSpectraList(spectra)
+			imageData(object) <- MSProcessedImagingSpectraList(data)
 			as(object, "MSProcessedImagingExperiment")
 		}
+		environment(postfun) <- getNamespace("Cardinal")
 		object <- process(object, fun=fun, ...,
 			label="peakPick", kind="pixel",
 			postfun=postfun, plotfun=plotfun,

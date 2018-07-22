@@ -168,6 +168,8 @@ print.facet.plot <- function(x, ...) {
 	obj <- x
 	if ( !is.null(obj$layout) )
 		.setup.layout(obj$layout)
+	nil <- c(list(x=0, y=0), obj$par)
+	nil$type <- 'n'
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
 			if ( !all(is.na(sublayer$x)) ) {
@@ -175,13 +177,14 @@ print.facet.plot <- function(x, ...) {
 					x=sublayer$x, y=sublayer$y,
 					col=sublayer$col), obj$par)
 			} else {
-				args <- c(list(x=0, y=0, type='n'), obj$par)
+				args <- nil
 			}
-			if ( sublayer$add ) {
-				do.call("points", args)
-			} else {
-				do.call("plot", args)
-			}
+			new <- !sublayer$add
+			if ( new ) {
+				do.call("plot", nil)
+				abline(h=0, lwd=0.2)
+			}	
+			do.call("points", args)
 		}
 		strip <- attr(layer, "strip")
 		if ( !is.null(strip) )

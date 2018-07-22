@@ -218,6 +218,8 @@ exportMethods(
 	"[[<-",
 	"annotatedDataFrameFrom",
 	"combine",
+	"combiner",
+	"combiner<-",
 	"coord",
 	"coord<-",
 	"coordinates",

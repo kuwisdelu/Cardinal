@@ -171,6 +171,8 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 		keys(object@imageData) <- value
 		if ( !is.null(attr(value, "tolerance")) )
 			tolerance(object@imageData) <- attr(value, "tolerance")
+		if ( !is.null(attr(value, "combiner")) )
+			combiner(object@imageData) <- attr(value, "combiner")
 		if ( validObject(object) )
 			object
 	})
@@ -181,6 +183,15 @@ setMethod("tolerance", "MSProcessedImagingExperiment",
 setReplaceMethod("tolerance", "MSProcessedImagingExperiment",
 	function(object, value) {
 		tolerance(imageData(object)) <- value
+		object
+	})
+
+setMethod("combiner", "MSProcessedImagingExperiment",
+	function(object) combiner(imageData(object)))
+
+setReplaceMethod("combiner", "MSProcessedImagingExperiment",
+	function(object, value) {
+		combiner(imageData(object)) <- value
 		object
 	})
 

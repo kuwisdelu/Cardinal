@@ -140,7 +140,7 @@ setMethod("process", "SparseImagingExperiment",
 		}
 		by_pixels <- "pixel" %in% queue$info$kind
 		by_features <- "feature" %in% queue$info$kind
-		if ( getOption("Cardinal.verbose") ) {
+		if ( getOption("Cardinal.verbose") && (by_pixels || by_features) ) {
 			labels <- paste0(queue$info$label, collapse=" ")
 			.message("processing ", labels, " ...")
 		}
@@ -182,13 +182,17 @@ setMethod("process", "SparseImagingExperiment",
 	x <- y[mcols(y)$pending]
 	if ( length(x) == 0L )
 		return(NULL)
-	kind_ok <- mcols(x)$kind == mcols(x)$kind[1L]
-	pre_ok <- !mcols(x)$has_pre
-	pre_ok[1L] <- TRUE
-	post_ok <- !mcols(x)$has_post
-	post_ok <- c(TRUE, post_ok[-length(post_ok)])
-	ok <- kind_ok & pre_ok & post_ok
-	index <- which(mcols(y)$pending)[ok]
+	if ( mcols(x)$kind[1L] == "global" ) {
+		index <- which(mcols(y)$pending)[1L]
+	} else {
+		kind_ok <- mcols(x)$kind == mcols(x)$kind[1L]
+		pre_ok <- !mcols(x)$has_pre
+		pre_ok[1L] <- TRUE
+		post_ok <- !mcols(x)$has_post
+		post_ok <- c(TRUE, post_ok[-length(post_ok)])
+		ok <- kind_ok & pre_ok & post_ok
+		index <- which(mcols(y)$pending)[ok]
+	}
 	list(index=index, info=mcols(y)[index,], queue=y[index])
 }
 

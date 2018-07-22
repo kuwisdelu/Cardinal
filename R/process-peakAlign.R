@@ -2,12 +2,36 @@
 #### Peak alignment methods ####
 ## ---------------------------
 
-# setMethod("peakAlign",
-# 	signature = c(object = "MSImagingExperiment", ref = "numeric"),
-# 	function(object, ref, mass.accuracy = 200, units.accuracy = c("ppm", "mz"), ...)
-# 	{
-		# do something
-# 	})
+setMethod("peakAlign",
+	signature = c(object = "MSImagingExperiment", ref = "numeric"),
+	function(object, ref, mass.accuracy = 200, units.accuracy = c("ppm", "mz"),
+		type=c("height", "area"), ...)
+	{
+		tol <- switch(match.arg(units.accuracy),
+			ppm = c("relative" = mass.accuracy * 1e-6),
+			mz = c("absolute" = mass.accuracy))
+		attr(ref, "tolerance") <- tol
+		fun <- switch(match.arg(type),
+			height = "max", area = "sum")
+		attr(ref, "combiner") <- fun
+		e <- new.env(parent=getNamespace("Cardinal"))
+		e$ref <- ref
+		postfun <- function(nil, object, ...) {
+			if ( !inherits(object, "MSProcessedImagingExperiment") ) {
+				.warning("object must inherit from 'MSProcessedImagingExperiment'; ",
+					"no peak alignment will be done")
+				return(object)
+			}
+			mz(object) <- ref
+			centroided(object) <- TRUE
+			object
+		}
+		environment(postfun) <- e
+		object <- process(object, fun=NULL, ...,
+			label="peakAlign", kind="global",
+			postfun=postfun, delay=TRUE)
+		object
+	})
 
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = c("diff", "DP"),
