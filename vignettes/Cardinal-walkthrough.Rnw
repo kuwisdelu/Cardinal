@@ -862,8 +862,7 @@ In-depth biological examples using real data can be found in the \Rpackage{Cardi
 To install \Rpackage{CardinalWorkflows}, run:
 
 <<eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("CardinalWorkflows")
+BiocManager::install("CardinalWorkflows")
 @
 
 Please note that due to the size of the included datasets, downloading and installing \Rpackage{CardinalWorkflows} may take a long time.
