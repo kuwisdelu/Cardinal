@@ -13,7 +13,7 @@ setMethod("image",
 	{
 		if ( !missing(formula) && missing(feature) && missing(mz) )
 			return(callNextMethod(x, formula=formula, ...))
-		if ( (!missing(mz) || length(feature == 1L)) && missing(feature.groups) ) {
+		if ( (!missing(feature) || !missing(mz)) && missing(feature.groups) ) {
 			if ( missing(mz) )
 				mz <- Cardinal::mz(x)[feature]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
@@ -40,8 +40,13 @@ setMethod("image",
 				feature <- unlist(feature.list)
 			}
 		}
-		if ( missing(feature.groups) || !missing(formula) )
+		if ( missing(feature.groups) ) {
 			feature.groups <- NULL
+		} else {
+			feature.groups <- .try_eval(substitute(feature.groups),
+				envir=as.env(featureData(x),
+				enclos=environment(formula)))
+		}
 		callNextMethod(x,
 			formula=formula,
 			feature=feature,

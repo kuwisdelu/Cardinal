@@ -48,7 +48,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 	if ( missing(pixel.groups) ) {
 		pixel.groups <- NULL
 	} else if ( !is.null(pixel.groups) ) {
-		pixel.groups <- eval(substitute(pixel.groups),
+		pixel.groups <- .try_eval(substitute(pixel.groups),
 			envir=as.env(pixelData(x), enclos=e))
 		if ( !is.factor(pixel.groups) ) {
 			pixel.groups <- factor(pixel.groups,
@@ -63,7 +63,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		}
 	}
 	if ( !missing(groups) ) {
-		groups <- eval(substitute(groups),
+		groups <- .try_eval(substitute(groups),
 			envir=as.env(featureData(x), enclos=e))
 		if ( !is.factor(groups) ) {
 			groups <- factor(groups, levels=unique(groups))
@@ -74,7 +74,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 			groups <- rep_len(groups, nrow(x))
 	}
 	if ( !missing(subset) ) {
-		subset <- eval(substitute(subset),
+		subset <- .try_eval(substitute(subset),
 			envir=as.env(featureData(x), enclos=e))
 		if ( is.logical(subset) )
 			subset <- rep_len(subset, nrow(x))
@@ -142,10 +142,16 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 					condition$`..val.groups..` <- NULL
 				}
 			} else {
-				names(args$lhs) <- as.character(condition$`..pixel.groups..`)
+				if ( nlevels(val.groups) > 1L ) {
+					names(args$lhs) <- as.character(condition$`..val.groups..`)
+					condition$`..val.groups..` <- NULL
+				} else {
+					names(args$lhs) <- as.character(condition$`..pixel.groups..`)
+					condition$`..pixel.groups..` <- NULL
+				}
 			}
 		}
-		if ( superpose || is.null(pixel.groups) )
+		if ( is.null(pixel.groups) )
 			condition$`..pixel.groups..` <- NULL
 		if ( length(condition) > 0L ) {
 			facets <- condition

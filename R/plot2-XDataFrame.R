@@ -48,7 +48,7 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 	if ( !is.null(args$g) )
 		.stop("conditioning variables via | not allowed")
 	if ( !missing(groups) ) {
-		groups <- eval(substitute(groups), envir=as.env(x, enclos=e))
+		groups <- .try_eval(substitute(groups), envir=as.env(x, enclos=e))
 		if ( !is.factor(groups) ) {
 			groups <- factor(groups, levels=unique(groups))
 		} else {
@@ -58,7 +58,7 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			groups <- rep_len(groups, nrow(x))
 	}
 	if ( !missing(subset) ) {
-		subset <- eval(substitute(subset), envir=as.env(x, enclos=e))
+		subset <- .try_eval(substitute(subset), envir=as.env(x, enclos=e))
 		if ( is.logical(subset) )
 			subset <- rep_len(subset, nrow(x))
 	}

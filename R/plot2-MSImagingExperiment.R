@@ -20,7 +20,7 @@ setMethod("plot",
 	{
 		if ( !missing(formula) && missing(pixel) && missing(coord) )
 			return(callNextMethod(x, formula=formula, ..., type=type))
-		if ( (!missing(coord) || length(pixel) == 1L) && missing(pixel.groups) ) {
+		if ( (!missing(pixel) || !missing(coord)) && missing(pixel.groups) ) {
 			if ( missing(coord) )
 				coord <- Cardinal::coord(x)[pixel,]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
@@ -47,8 +47,13 @@ setMethod("plot",
 				pixel <- unlist(pixel.list)
 			}
 		}
-		if ( missing(pixel.groups) || !missing(formula) )
+		if ( missing(pixel.groups) ) {
 			pixel.groups <- NULL
+		} else {
+			pixel.groups <- .try_eval(substitute(pixel.groups),
+				envir=as.env(pixelData(x),
+				enclos=environment(formula)))
+		}
 		callNextMethod(x,
 			formula=formula,
 			pixel=pixel,

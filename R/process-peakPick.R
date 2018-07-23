@@ -27,9 +27,8 @@ setMethod("peakPick", "MSImagingExperiment",
 			data <- sparse_mat(data, keys=mz(object),
 				nrow=nrow(object), ncol=ncol(object))
 			tolerance(data) <- .Machine$double.eps
-			object <- as(object, "MSImagingExperiment")
-			imageData(object) <- MSProcessedImagingSpectraList(data)
-			as(object, "MSProcessedImagingExperiment")
+			peaks(object) <- data
+			object
 		}
 		environment(postfun) <- getNamespace("Cardinal")
 		object <- process(object, fun=fun, ...,

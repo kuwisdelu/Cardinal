@@ -17,11 +17,11 @@ setMethod("peakAlign",
 		e <- new.env(parent=getNamespace("Cardinal"))
 		e$ref <- ref
 		postfun <- function(nil, object, ...) {
-			if ( !inherits(object, "MSProcessedImagingExperiment") ) {
-				.warning("object must inherit from 'MSProcessedImagingExperiment'; ",
-					"no peak alignment will be done")
-				return(object)
-			}
+			peaks <- peaks(object)
+			if ( is.null(peaks) || is(peaks, "sparse_matc") )
+				.stop("can't find 'peaks' of expected class 'sparse_matc'")
+			imageData(object) <- MSProcessedImagingSpectraList(peaks)
+			object <- as(object, "MSProcessedImagingExperiment")
 			mz(object) <- ref
 			centroided(object) <- TRUE
 			object

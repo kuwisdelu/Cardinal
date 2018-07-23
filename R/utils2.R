@@ -11,6 +11,13 @@
 	}
 }
 
+# Try eval in specified envir, otherwise try in current envir
+.try_eval <- function(expr, envir) {
+	p <- parent.frame()
+	tryCatch(eval(expr, envir),
+		error=function(e) eval(expr, envir=p))
+}
+
 # Create a virtual copy of the object with no data
 .virtual.image <- function(x) {
 	imageData(x) <- new(class(imageData(x)))

@@ -86,20 +86,31 @@ setReplaceMethod("centroided", "MSImagingExperiment",
 
 setMethod("peaks", "MSImagingExperiment",
 	function(object, ...) {
-		if ( !centroided(object) )
-			.stop("cannot select 'peaks'; object is not centroided")
-		iData(object, ...)
+		if ( centroided(object) ) {
+			iData(object, ...)
+		} else {
+			imageData(object)[["peaks"]]
+		}
 	})
 
 setReplaceMethod("peaks", "MSImagingExperiment",
 	function(object, ..., value) {
-		if ( !centroided(object) )
-			.stop("cannot assign 'peaks'; object is not centroided")
-		iData(object, ...) <- value
+		if ( centroided(object) ) {
+			iData(object, ...) <- value
+		} else {
+			imageData(object)[["peaks"]] <- value
+		}
 		object
 	})
 
 # 'continuous' imaging experiments
+
+setReplaceMethod("imageData", "MSContinuousImagingExperiment",
+	function(y, value) {
+		if ( !inherits(value, c("MSContinuousImagingSpectraList")) )
+			y <- as(y, "MSImagingExperiment")
+		callNextMethod(y, value=value)
+	})
 
 setReplaceMethod("iData", c("MSContinuousImagingExperiment", "missing"),
 	function(x, i, ..., value) {
@@ -120,6 +131,13 @@ setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
 	})
 
 # 'processed' imaging experiments
+
+setReplaceMethod("imageData", "MSProcessedImagingExperiment",
+	function(y, value) {
+		if ( !inherits(value, c("MSProcessedImagingSpectraList")) )
+			y <- as(y, "MSImagingExperiment")
+		callNextMethod(y, value=value)
+	})
 
 setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
 	function(x, i, ..., value) {
