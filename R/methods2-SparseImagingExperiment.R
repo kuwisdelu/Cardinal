@@ -204,3 +204,23 @@ setMethod("cbind", "SparseImagingExperiment",
     }
 )
 
+## show
+
+setMethod("show", "SparseImagingExperiment",
+	function(object) {
+		callNextMethod(object)
+		# processingData()
+		plist <- mcols(processingData(object))
+		complete <- plist$label[plist$complete]
+		.scat("processing complete(%d): %s\n", complete,
+			prefix="    ")
+		pending <- plist$label[plist$pending]
+		.scat("processing pending(%d): %s\n", pending,
+			prefix="    ")
+		# raster dims()
+		rdims <- paste0(names(dims(object)), " <= ", dims(object))
+		.scat("raster dimensions(%d): %s\n", rdims,
+			collapse=", ", prefix="    ")
+	}
+)
+

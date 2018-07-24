@@ -94,6 +94,32 @@ setReplaceMethod("pixelNames", "ImagingExperiment",
 		object
 	})
 
+## show
+
+setMethod("show", "ImagingExperiment",
+	function(object) {
+		cat("An object of class '", class(object), "'\n", sep="")
+		cat("  <", nrow(object), " feature, ", ncol(object), " pixel> ",
+			"imaging dataset", "\n", sep="")
+		t1 <- "    "
+		# imageData()
+		.scat("imageData(%d): %s\n", names(imageData(object)), prefix=t1)
+		# featureData()
+		if ( !is.null(featureNames(object)) )
+			.scat("featureNames(%d): %s\n", featureNames(object), prefix=t1)
+		.scat("featureData(%d): %s\n", names(featureData(object)), prefix=t1)
+		# pixelData()
+		if ( !is.null(pixelNames(object)) )
+			.scat("pixelNames(%d): %s\n", pixelNames(object), prefix=t1)
+		.scat("pixelData(%d): %s\n", names(pixelData(object)), prefix=t1)
+		# metadata()
+	    if ( length(metadata(object)) > 0L )
+			.scat("metadata(%d): %s\n", names(metadata(object)), prefix=t1)
+	}
+)
+
+
+
 ## Filter pixels/features
 
 setMethod("features", "ImagingExperiment",

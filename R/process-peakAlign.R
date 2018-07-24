@@ -20,6 +20,8 @@ setMethod("peakAlign",
 			tolerance(object) <- tolerance
 			combiner(object) <- switch(type,
 				height="max", area="sum")
+			if ( !is.null(spectrumRepresentation(object)) )
+				spectrumRepresentation(object) <- "centroid spectrum"
 			centroided(object) <- TRUE
 			object
 		}

@@ -25,6 +25,16 @@
 		x
 }
 
+# Select and concatenate metadata for show() method
+.scat <- function(x, vals=character(), collapse=" ", exdent=4, prefix="", ...)
+{
+	if ( is.null(vals) ) vals <- character()
+	vals <- ifelse(nzchar(vals), vals, "''")
+	lbls <- paste(selectSome(vals), collapse=collapse)
+	txt <- sprintf(x, length(vals), lbls)
+	cat(strwrap(txt, exdent=exdent, prefix=prefix, ...), sep="\n")
+}
+
 # Setup plotting layout
 .setup.layout <- function(layout) {
 	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
@@ -116,10 +126,10 @@
 }
 
 ## Format a data.frame of labels
-.format.data.labels <- function(data, append = "") {
+.format.data.labels <- function(data, sym = " = ", append = "") {
 	data <- as.data.frame(data)
 	apply(data, 1, function(a) {
-		a <- paste0(names(a), " = ", a)
+		a <- paste0(names(a), sym, a)
 		a <- paste0(a, append)
 		paste0(a, collapse=", ")
 	})

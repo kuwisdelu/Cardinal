@@ -352,3 +352,18 @@ setAs("MSImagingExperiment", "MSImageSet",
 		centroided(out) <- centroided(out)
 		out
 	})
+
+## show
+
+setMethod("show", "MSImagingExperiment",
+	function(object) {
+		callNextMethod(object)
+		# mass range
+		mzr <- format(range(mz(object)))
+		cat("    mass range:", mzr[1L], "to", mzr[2L], "\n")
+		# centroided?
+		cat("    centroided:", centroided(object), "\n")
+	}
+)
+
+
