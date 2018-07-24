@@ -3,6 +3,7 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
+- Implement summarize() / finish peakAlign()
 - Finish Cardinal v2 classes/methods
 - Add processing methods for new classes
 - Statistical hypothesis testing

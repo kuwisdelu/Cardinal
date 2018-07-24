@@ -103,7 +103,7 @@ setMethod("peaks", "MSImagingExperiment",
 		if ( centroided(object) ) {
 			iData(object, ...)
 		} else {
-			imageData(object)[["peaks"]]
+			NULL
 		}
 	})
 
@@ -112,16 +112,28 @@ setReplaceMethod("peaks", "MSImagingExperiment",
 		if ( centroided(object) ) {
 			iData(object, ...) <- value
 		} else {
-			imageData(object)[["peaks"]] <- value
+			.stop("object must be 'centroided'")
 		}
 		object
 	})
 
 setMethod("mzData", "MSImagingExperiment",
-	function(object) atomdata(peaks(object))[["keys"]])
+	function(object) {
+		if ( !is.null(peaks(object)) ) {
+			atomdata(peaks(object))[["keys"]]
+		} else {
+			NULL
+		}
+	})
 
 setMethod("peakData", "MSImagingExperiment",
-	function(object) atomdata(peaks(object))[["values"]])
+	function(object) {
+		if ( !is.null(peaks(object)) ) {
+			atomdata(peaks(object))[["values"]]
+		} else {
+			NULL
+		}
+	})
 
 # 'continuous' imaging experiments
 

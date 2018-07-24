@@ -4,7 +4,7 @@
 
 setMethod("peakAlign",
 	signature = c(object = "MSImagingExperiment", ref = "numeric"),
-	function(object, ref, mass.accuracy = 200, units.accuracy = c("ppm", "mz"),
+	function(object, ref, tolerance = 200, units = c("ppm", "mz"),
 		type=c("height", "area"), ...)
 	{
 		tol <- switch(match.arg(units.accuracy),
@@ -15,11 +15,8 @@ setMethod("peakAlign",
 		e$tol <- tol
 		e$ref <- ref
 		postfun <- function(nil, object, ...) {
-			peaks <- peaks(object)
-			if ( is.null(peaks) || !is(peaks, "sparse_matc") )
-				.stop("can't find 'peaks' of expected class 'sparse_matc'")
-			imageData(object) <- MSProcessedImagingSpectraList(peaks)
-			object <- as(object, "MSProcessedImagingExperiment")
+			if ( !is(object, "MSProcessedImagingExperiment") )
+				object <- as(object, "MSProcessedImagingExperiment")
 			mz(object) <- ref
 			tolerance(object) <- tol
 			combiner(object) <- switch(type,
