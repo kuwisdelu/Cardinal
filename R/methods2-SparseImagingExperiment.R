@@ -218,7 +218,7 @@ setMethod("show", "SparseImagingExperiment",
 		.scat("processing pending(%d): %s\n", pending,
 			prefix="    ")
 		# raster dims()
-		rdims <- paste0(names(dims(object)), " <= ", dims(object))
+		rdims <- paste0(names(dims(object)), " := ", dims(object))
 		.scat("raster dimensions(%d): %s\n", rdims,
 			collapse=", ", prefix="    ")
 	}
