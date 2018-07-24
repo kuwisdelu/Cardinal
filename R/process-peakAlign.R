@@ -10,19 +10,20 @@ setMethod("peakAlign",
 		tol <- switch(match.arg(units.accuracy),
 			ppm = c("relative" = mass.accuracy * 1e-6),
 			mz = c("absolute" = mass.accuracy))
-		attr(ref, "tolerance") <- tol
-		fun <- switch(match.arg(type),
-			height = "max", area = "sum")
-		attr(ref, "combiner") <- fun
 		e <- new.env(parent=getNamespace("Cardinal"))
+		e$type <- match.arg(type)
+		e$tol <- tol
 		e$ref <- ref
 		postfun <- function(nil, object, ...) {
 			peaks <- peaks(object)
-			if ( is.null(peaks) || is(peaks, "sparse_matc") )
+			if ( is.null(peaks) || !is(peaks, "sparse_matc") )
 				.stop("can't find 'peaks' of expected class 'sparse_matc'")
 			imageData(object) <- MSProcessedImagingSpectraList(peaks)
 			object <- as(object, "MSProcessedImagingExperiment")
 			mz(object) <- ref
+			tolerance(object) <- tol
+			combiner(object) <- switch(type,
+				height="max", area="sum")
 			centroided(object) <- TRUE
 			object
 		}

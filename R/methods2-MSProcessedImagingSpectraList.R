@@ -21,8 +21,8 @@ MSProcessedImagingSpectraList <- function(data) {
 .valid.MSProcessedImagingSpectraList <- function(object) {
 	errors <- NULL
 	data <- as(object, "SimpleList", strict=FALSE)
-	classes <- sapply(data, function(x) class(x))
-	if ( length(data) > 0 && !all(classes %in% "sparse_matc") )
+	classes_ok <- sapply(data, function(x) inherits(x, "sparse_matc"))
+	if ( length(data) > 0 && !all(classes_ok) )
 		errors <- c(errors , "elements must be of class 'sparse_matc'")
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -43,6 +43,27 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 			x <- .SimpleImageArrayList(x)
 		callNextMethod(x, i=i, ..., value=value)
 	})
+
+.to.MSProcessedImagingSpectraList <- function(from, mz) {
+	tol <- c(absolute=min(abs(diff(mz))) / 2)
+	fun <- function(x) {
+		if ( inherits(x, "matter_matc") ) {
+			keys <- rep_vt(list(mz), length.out=ncol(x))
+			values <- as(x, "matter_list")
+			x <- sparse_mat(list(keys=keys, values=values),
+				nrow=nrow(x), ncol=ncol(x), keys=mz,
+				tolerance=tol, combiner="sum")
+		} else if ( !inherits(x, "sparse_matc") ) {
+			x <- sparse_mat(as.matrix(x), keys=mz)
+			tolerance(x) <- tol
+			combiner(x) <- "sum"
+		}
+		x
+	}
+	data <- as(from, "SimpleList", strict=FALSE)
+	as(endoapply(data, fun), "MSProcessedImagingSpectraList")
+}
+
 
 # manipulate underlying sparse spectra data
 

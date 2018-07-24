@@ -60,6 +60,20 @@ MSImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 
 ## MS-related methods
 
+setMethod("mz", "missing",
+	function(from, to, by = 400, units = c("ppm", "mz"), ...) {
+		units <- match.arg(units)
+		halfwidth <- by / 2
+		mz <- switch(units,
+			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
+			mz = seq(from=from, to=to, by=halfwidth))
+		tol <- switch(units,
+			ppm = c(relative = halfwidth * 1e-6),
+			mz = c(absolute = halfwidth))
+		attr(mz, "tolerance") <- tol
+		mz
+	})
+
 setMethod("mz", "MSImagingExperiment", function(object, ...) mz(object@featureData))
 
 setReplaceMethod("mz", "MSImagingExperiment",
@@ -102,6 +116,12 @@ setReplaceMethod("peaks", "MSImagingExperiment",
 		}
 		object
 	})
+
+setMethod("mzData", "MSImagingExperiment",
+	function(object) atomdata(peaks(object))[["keys"]])
+
+setMethod("peakData", "MSImagingExperiment",
+	function(object) atomdata(peaks(object))[["values"]])
 
 # 'continuous' imaging experiments
 
@@ -157,40 +177,22 @@ setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
-setMethod("mzData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["keys"]])
-
-setMethod("peakData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["values"]])
-
-setMethod("mz", "missing",
-	function(from, to, by = 400, units = c("ppm", "mz"), ...) {
-		units <- match.arg(units)
-		halfwidth <- by / 2
-		mz <- switch(units,
-			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
-			mz = seq(from=from, to=to, by=halfwidth))
-		tol <- switch(units,
-			ppm = c(relative = halfwidth * 1e-6),
-			mz = c(absolute = halfwidth))
-		attr(mz, "tolerance") <- tol
-		mz
-	})
-
 setReplaceMethod("mz", "MSProcessedImagingExperiment",
 	function(object, value) {
+		if ( !all(mz(object@featureData) == keys(object@imageData)) )
+			return(callNextMethod(object, value))
 		if ( length(value) != length(mz(object)) ) {
 			if ( ncol(featureData(object)) > 0L ) {
 				mcols <- names(featureData(object))
 				.warning("dropping feature metadata cols: ", mcols)
 			}
 			object@featureData <- MassDataFrame(mz=value)
+		} else {
+			mz(object@featureData) <- value
 		}
 		keys(object@imageData) <- value
 		if ( !is.null(attr(value, "tolerance")) )
 			tolerance(object@imageData) <- attr(value, "tolerance")
-		if ( !is.null(attr(value, "combiner")) )
-			combiner(object@imageData) <- attr(value, "combiner")
 		if ( validObject(object) )
 			object
 	})
@@ -296,7 +298,7 @@ setMethod("cbind", "MSImagingExperiment",
 setAs("MSImagingExperiment", "MSContinuousImagingExperiment",
 	function(from) {
 		if ( !is(imageData(from), "MSContinuousImagingSpectraList") )
-			imageData(from) <- .MSContinuousImagingSpectraList(imageData(from))
+			imageData(from) <- .to.MSContinuousImagingSpectraList(imageData(from))
 		class(from) <- "MSContinuousImagingExperiment"
 		from
 	})
@@ -304,7 +306,7 @@ setAs("MSImagingExperiment", "MSContinuousImagingExperiment",
 setAs("MSImagingExperiment", "MSProcessedImagingExperiment",
 	function(from) {
 		if ( !is(imageData(from), "MSProcessedImagingSpectraList") )
-			imageData(from) <- .MSProcessedImagingSpectraList(imageData(from))
+			imageData(from) <- .to.MSProcessedImagingSpectraList(imageData(from), mz(from))
 		class(from) <- "MSProcessedImagingExperiment"
 		from
 	})

@@ -73,7 +73,7 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 
 .getDimsFromResolution <- function(coord, res) {
 	dims <- mapply(function(x, r) {
-		breaks <- diff(range(x)) / r
+		breaks <- diff(range(as.numeric(x))) / r
 		breaks + 1
 	}, coord, res, USE.NAMES=TRUE)
 	dims

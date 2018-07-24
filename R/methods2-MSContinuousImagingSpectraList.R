@@ -21,8 +21,8 @@ MSContinuousImagingSpectraList <- function(data) {
 .valid.MSContinuousImagingSpectraList <- function(object) {
 	errors <- NULL
 	data <- as(object, "SimpleList", strict=FALSE)
-	classes <- sapply(data, function(x) class(x))
-	if ( length(data) > 0 && !all(classes %in% c("matrix", "matter_matc")) )
+	classes_ok <- sapply(data, function(x) inherits(x, c("matrix", "matter_matc")))
+	if ( length(data) > 0 && !all(classes_ok) )
 		errors <- c(errors , "elements must be of class 'matrix' or 'matter_matc'")
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -40,3 +40,15 @@ setReplaceMethod("[[", "MSContinuousImagingSpectraList",
 			x <- .SimpleImageArrayList(x)
 		callNextMethod(x, i=i, ..., value=value)
 	})
+
+.to.MSContinuousImagingSpectraList <- function(from) {
+	fun <- function(x) {
+		if ( !inherits(x, c("matrix", "matter_matc")) ) {
+			as.matrix(x)
+		} else {
+			x
+		}
+	}
+	data <- as(from, "SimpleList", strict=FALSE)
+	as(endoapply(data, fun), "MSContinuousImagingSpectraList")
+}

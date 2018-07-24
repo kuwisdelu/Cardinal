@@ -23,10 +23,11 @@ setMethod("peakPick", "MSImagingExperiment",
 				s <- spectra(object)[idx,i]
 				as.numeric(s)
 			})
+			tol <- c(absolute=min(abs(diff(mz(object)))) / 2)
 			data <- list(keys=mzData, values=intensityData)
 			data <- sparse_mat(data, keys=mz(object),
-				nrow=nrow(object), ncol=ncol(object))
-			tolerance(data) <- .Machine$double.eps
+				nrow=nrow(object), ncol=ncol(object),
+				tolerance=tol, combiner="sum")
 			peaks(object) <- data
 			object
 		}
