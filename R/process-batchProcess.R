@@ -4,7 +4,7 @@
 
 setMethod("process", "SparseImagingExperiment",
 	function(object, fun, ...,
-			kind = c("pixel", "feature"),
+			kind = c("pixel", "feature", "global"),
 			prefun, preargs,
 			postfun, postargs,
 			plotfun,
@@ -19,13 +19,12 @@ setMethod("process", "SparseImagingExperiment",
 			cache.chunks = FALSE,
 			BPPARAM = bpparam())
 	{
-		if ( !missing(fun) ) {
+		kind <- match.arg(kind)
+		if ( !missing(fun) || kind == "global" ) {
 			# get fun
-			if ( is.null(fun) ) {
-				kind <- "global"
+			if ( kind == "global" ) {
 				fun <- NULL
 			} else {
-				kind <- match.arg(kind)
 				fun <- match.fun(fun)
 			}
 			# get preproc
@@ -115,14 +114,14 @@ setMethod("process", "SparseImagingExperiment",
 		# perform preprocessing
 		if ( any(queue$info$has_pre) ) {
 			if ( getOption("Cardinal.verbose") )
-				.message("preprocessing ", queue$info$label[1L], " ...")
+				.message("preprocessing [", queue$info$label[1L], "] ...")
 			prefun <- proclist[[1L]]$prefun
 			preargs <- proclist[[1L]]$preargs
 			prearglist <- c(list(object), preargs)
 			object <- do.call(prefun, prearglist)
 		}
 		# apply processing to all pixels/features
-		procfun <- function(.x, .list, .plot, .par, ...) {
+		procfun <- function(.x, .list, .fdata, .plot, .par, ...) {
 			for ( i in seq_along(.list) ) {
 				has_plotfun <- !is.null(.list[[i]]$plotfun)
 				if ( .plot && has_plotfun )
@@ -132,7 +131,8 @@ setMethod("process", "SparseImagingExperiment",
 				.x <- do.call(fun, arglist)
 				if ( .plot && has_plotfun ) {
 					plotfun <- .list[[i]]$plotfun
-					plotarglist <- c(list(.x), list(.xold), .par)
+					plotarglist <- c(list(.x), list(.xold),
+						list(.fdata), .par)
 					do.call(plotfun, plotarglist)
 				}
 			}
@@ -141,16 +141,17 @@ setMethod("process", "SparseImagingExperiment",
 		by_pixels <- "pixel" %in% queue$info$kind
 		by_features <- "feature" %in% queue$info$kind
 		if ( getOption("Cardinal.verbose") && (by_pixels || by_features) ) {
-			labels <- paste0(queue$info$label, collapse=" ")
-			.message("processing ", labels, " ...")
+			labels <- paste0("[", queue$info$label, "]")
+			.message("processing ", paste0(labels, collapse=" "), " ...")
 		}
+		fdata <- force(featureData(object))
 		if ( by_pixels ) {
-			ans <- pixelApply(object, procfun,
-				.list=proclist, .plot=plot, .par=par, ...,
+			ans <- pixelApply(object, procfun, .list=proclist,
+				.fdata=fdata, .plot=plot, .par=par, ...,
 				.simplify=FALSE)
 		} else if ( by_features ) {
-			ans <- featureApply(object, procfun,
-				.list=proclist, .plot=plot, .par=par, ...,
+			ans <- featureApply(object, procfun, .list=proclist,
+				.fdata=fdata, .plot=plot, .par=par, ...,
 				.simplify=FALSE)
 		} else {
 			ans <- NULL
@@ -159,10 +160,10 @@ setMethod("process", "SparseImagingExperiment",
 		if ( any(queue$info$has_post) ) {
 			last <- length(proclist)
 			if ( getOption("Cardinal.verbose") )
-				.message("postprocessing ", queue$info$label[last], " ...")
+				.message("postprocessing [", queue$info$label[last], "] ...")
 			postfun <- proclist[[last]]$postfun
 			postargs <- proclist[[last]]$postargs
-			postarglist <- c(list(ans), list(object), postargs)
+			postarglist <- c(list(object), list(ans), postargs)
 			object <- do.call(postfun, postarglist)
 		} else {
 			if ( by_pixels ) {

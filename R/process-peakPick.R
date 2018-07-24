@@ -7,19 +7,18 @@ setMethod("peakPick", "MSImagingExperiment",
 	{
 		fun <- peakPick.method2(method)
 		e <- new.env(parent=getNamespace("Cardinal"))
-		e$mz <- mz(object)
-		plotfun <- function(s1, s2, ...,
+		plotfun <- function(s1, s2, fdata, ...,
 			main="Peak picking", xlab="m/z", ylab="")
 		{
-			plot(mz, s2, main=main, xlab=xlab, ylab=ylab,
+			plot(mz(fdata), s2, main=main, xlab=xlab, ylab=ylab,
 				col="gray", type='l', ...)
-			lines(mz[s1], s2[s1], col="red", type='h')
+			lines(mz(fdata)[s1], s2[s1], col="red", type='h')
 		}
 		environment(plotfun) <- e
-		postfun <- function(peaks, object, ...) {
-			mzData <- lapply(peaks, function(idx) mz(object)[idx])
-			intensityData <- lapply(seq_along(peaks), function(i) {
-				idx <- peaks[[i]]
+		postfun <- function(object, peak_ids, ...) {
+			mzData <- lapply(peak_ids, function(idx) mz(object)[idx])
+			intensityData <- lapply(seq_along(peak_ids), function(i) {
+				idx <- peak_ids[[i]]
 				s <- spectra(object)[idx,i]
 				as.numeric(s)
 			})
@@ -32,7 +31,7 @@ setMethod("peakPick", "MSImagingExperiment",
 			object <- as(object, "MSProcessedImagingExperiment")
 			object
 		}
-		environment(postfun) <- getNamespace("Cardinal")
+		environment(postfun) <- e
 		object <- process(object, fun=fun, ...,
 			label="peakPick", kind="pixel",
 			postfun=postfun, plotfun=plotfun,

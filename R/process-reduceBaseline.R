@@ -7,14 +7,13 @@ setMethod("reduceBaseline", "MSImagingExperiment",
 	{
 		fun <- reduceBaseline.method2(method)
 		e <- new.env(parent=getNamespace("Cardinal"))
-		e$mz <- mz(object)
-		plotfun <- function(s1, s2, ...,
+		plotfun <- function(s1, s2, fdata, ...,
 			main="Baseline reduction", xlab="m/z", ylab="")
 		{
-			plot(mz, s2, main=main, xlab=xlab, ylab=ylab,
+			plot(mz(fdata), s2, main=main, xlab=xlab, ylab=ylab,
 				col="gray", type='l', ...)
-			lines(mz, s2 - s1, col="green")
-			lines(mz, s1, lwd=0.5)
+			lines(mz(fdata), s2 - s1, col="green")
+			lines(mz(fdata), s1, lwd=0.5)
 		}
 		environment(plotfun) <- e
 		object <- process(object, fun=fun, ...,
