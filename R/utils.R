@@ -102,10 +102,13 @@ bin <- function(x, t, bins, lbound, ubound, fun=sum, ...) {
 
 # Returns a list of approximately even subsets of a vector
 blocks <- function(x, blocks) {
-	ints <- floor(seq(from=1, to=length(x)+1, length.out=blocks))
+	blocksize <- max(1L, length(x) / blocks)
+	n <- floor(length(x) / blocksize) + 1L
+	ints <- floor(seq(from=1L, to=length(x) + 1L, length.out=n))
 	begin <- ints[-length(ints)]
-	end <- ints[-1] - 1
-	apply(cbind(begin, end), 1, function(i) x[i[1]:i[2]])
+	end <- ints[-1L] - 1L
+	mapply(function(i, j) x[i:j],
+		begin, end, SIMPLIFY=FALSE)
 }
 
 # Affine transformation on a data.frame of coordinates

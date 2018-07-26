@@ -64,7 +64,6 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 	as(endoapply(data, fun), "MSProcessedImagingSpectraList")
 }
 
-
 # manipulate underlying sparse spectra data
 
 setMethod("keys", "MSProcessedImagingSpectraList",

@@ -2,12 +2,12 @@
 #### Sample standardize methods ####
 ## ---------------------------------
 
-setMethod("standardizeSamples", "MSImageSet",
+setMethod("standardizeRuns", "MSImageSet",
 	function(object, method = "sum", ...)
 	{
-		fun <- standardizeSamples.method(method)
+		fun <- standardizeRuns.method(method)
 		prochistory(processingData(object)) <- .history()
-		.message("standardizeSamples: Using method = ", match.method(method))
+		.message("standardizeRuns: Using method = ", match.method(method))
 		.time.start()
 		data <- featureApply(object, .fun=fun, .pixel.groups=sample, ...,
 			.use.names=FALSE, .simplify=FALSE)
@@ -18,25 +18,25 @@ setMethod("standardizeSamples", "MSImageSet",
 			storageMode=storageMode(object@imageData),
 			dimnames=list(featureNames(object), pixelNames(object)))
 		object@pixelData <- object@pixelData[order(pData(object)[["sample"]]),]
-		.message("standardizeSamples: Done.")
+		.message("standardizeRuns: Done.")
 		.time.stop()
 		object
 	})
 
-standardizeSamples.method <- function(method, name.only=FALSE) {
+standardizeRuns.method <- function(method, name.only=FALSE) {
 	if ( is.character(method) || is.null(method) ) {
 		options <- "sum"
 		method <- match.method(method, options)
 		if ( name.only )
 			return(method)
 		method <- switch(method,
-			sum = standardizeSamples.sum,
+			sum = standardizeRuns.sum,
 			match.fun(method))
 	}
 	match.fun(method)
 }
 
-standardizeSamples.sum <- function(x, sum=length(x), ...) {
+standardizeRuns.sum <- function(x, sum=length(x), ...) {
 	auc <- sum(x)
 	if ( auc > 0 ) {
 		sum * x / auc
@@ -44,3 +44,11 @@ standardizeSamples.sum <- function(x, sum=length(x), ...) {
 		rep(0, length(x))
 	}
 }
+
+# deprecated
+
+standardizeSamples <- function(object, ...) {
+	.Deprecated("standardizeRuns")
+	standardizeRuns(object, ...)
+}
+

@@ -43,7 +43,7 @@ facet.image <- function(args, formula, obj,
 	if ( !is.null(groups) ) {
 		has_groups <- TRUE		
 	} else {
-		if ( is.factor(values[[1]]) || is.character(values[[1]]) ) {
+		if ( !is.numeric(values[[1]]) ) {
 			if ( length(values) > 1L )
 				.stop("multiple categorical variables in lhs of formula")
 			groups <- as.factor(values[[1]])
@@ -98,8 +98,12 @@ facet.image <- function(args, formula, obj,
 			dim <- .getDimsFromResolution(list(x=x, y=y), res)
 		}
 	} else {
-		rx <- min(diff(sort(unique(x))), na.rm=TRUE)
-		ry <- min(diff(sort(unique(y))), na.rm=TRUE)
+		ux <- sort(unique(x))
+		uy <- sort(unique(y))
+		if ( length(ux) == 1L || length(uy) == 1L )
+			.stop("can't estimate reasonable raster dimensions")
+		rx <- min(diff(ux), na.rm=TRUE)
+		ry <- min(diff(uy), na.rm=TRUE)
 		if ( is3d )
 			rz <- min(diff(sort(unique(z))), na.rm=TRUE)
 		res <- NULL
@@ -261,6 +265,8 @@ facet.image <- function(args, formula, obj,
 		dpages=levels(dpages),
 		facets=facet_levels,
 		groups=levels(groups),
+		subset=subset,
+		coordnames=names(args$rhs),
 		is3d=is3d, layout=layout,
 		par=c(par, dots))
 	class(out) <- "facet.image"

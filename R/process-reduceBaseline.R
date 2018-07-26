@@ -6,21 +6,22 @@ setMethod("reduceBaseline", "MSImagingExperiment",
 	function(object, method = "median", ...)
 	{
 		fun <- reduceBaseline.method2(method)
-		e <- new.env(parent=getNamespace("Cardinal"))
-		plotfun <- function(s1, s2, fdata, ...,
-			main="Baseline reduction", xlab="m/z", ylab="")
-		{
-			plot(mz(fdata), s2, main=main, xlab=xlab, ylab=ylab,
-				col="gray", type='l', ...)
-			lines(mz(fdata), s2 - s1, col="green")
-			lines(mz(fdata), s1, lwd=0.5)
-		}
-		environment(plotfun) <- e
 		object <- process(object, fun=fun, ...,
 			label="reduceBaseline", kind="pixel",
-			plotfun=plotfun, delay=TRUE)
+			plotfun=reduceBaseline_plotfun,
+			delay=TRUE)
 		object
 	})
+
+reduceBaseline_plotfun <- function(s2, s1, ...,
+	main="Baseline reduction", xlab="m/z", ylab="")
+{
+	mz <- mz(attr(s1, "mcols"))
+	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+		col="gray", type='l', ...)
+	lines(mz, s1 - s2, col="green")
+	lines(mz, s2, lwd=0.5)
+}
 
 setMethod("reduceBaseline", "MSImageSet",
 	function(object, method = "median",

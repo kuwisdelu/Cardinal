@@ -1,83 +1,68 @@
 
 setMethod("pixelApply", "SparseImagingExperiment",
 	function(.object, .fun, ...,
+			.blocks = FALSE,
 			.simplify = TRUE,
 			.use.names = TRUE,
-			.chunks = 0L,
-			.chunksize = ncol(.object) / .chunks,
-			.cache.chunks = FALSE,
+			.outpath = NULL,
+			BPREDO = list(),
 			BPPARAM = bpparam())
 	{
 		.fun <- match.fun(.fun)
-		.args <- list(...)
-		if ( is.null(environment(.fun)) ) {
-			e <- new.env(parent=parent.frame(2))
-		} else {
-			e <- new.env(parent=environment(.fun))
-		}
-		environment(.fun) <- e
-		if ( .chunksize > 0L && is.finite(.chunksize)  ) {
-			.blockfun <- function(X, FUNC, ARGS, PRELOAD, ...) {
-				suppressPackageStartupMessages(require(Cardinal))
-				assign(".object", X, envir=environment(FUNC))
-				if ( PRELOAD )
-					iData(X) <- as.matrix(iData(X))
-				lapply(seq_len(ncol(X)), function(i) {
-					assign("..i..", i, envir=environment(FUNC))
-					do.call(FUNC, c(list(iData(X)[,i]), ARGS))
-				})
+		serial <- is(BPPARAM, "SerialParam")
+		remote <- !is.null(.outpath)
+		if ( .blocks ) {
+			if ( !is.logical(.simplify) )
+				reduce_blocks <- match.fun(.simplify)
+			.simplify <- !is.logical(.simplify)
+			if ( is.numeric(.blocks) ) {
+				idx <- blocks(seq_len(ncol(.object)), .blocks)
+			} else {
+				idx <- blocks(seq_len(ncol(.object)), 20L)
 			}
-			ans <- .pixelBlockApply(.object, .blockfun,
-				FUNC=.fun, ARGS=.args, PRELOAD=.cache.chunks,
-				.chunks=.chunks, .chunksize=.chunksize,
-				BPPARAM=BPPARAM)
 		} else {
-			assign(".object", .object, envir=environment(.fun))
-			.indexfun <- function(i, OBJ, FUNC, ARGS, ...) {
-				suppressPackageStartupMessages(require(Cardinal))
-				assign("..i..", i, envir=environment(FUNC))
-				do.call(FUNC, c(list(iData(OBJ)[,i]), ARGS))
-			}
-			ans <- bplapply(seq_len(ncol(.object)), .indexfun,
-				OBJ=.object, FUNC=.fun, ARGS=.args, BPPARAM=BPPARAM)
+			idx <- seq_len(ncol(.object))
 		}
-		if ( .use.names )
-			names(ans) <- pixelNames(.object)
-		if ( .simplify )
-			ans <- drop(simplify2array(ans))
+		pid <- ipcid()
+		if ( remote ) {
+			.outpath <- .outpath[1L]
+			.message("using outpath = ", .outpath)
+			rwrite <- .remote_writer(pid, .outpath)
+		}
+		if ( serial )
+			.message(progress="start", max=length(idx))
+		ans <- bplapply(idx, function(i) {
+			suppressPackageStartupMessages(require(Cardinal))
+			x <- iData(.object)[,i,drop=!.blocks]
+			attr(x, "idx") <- i
+			attr(x, "mcols") <- fData(.object)
+			res <- .fun(x, ...)
+			if ( remote )
+				res <- rwrite(res)
+			if ( serial )
+				.message(progress="increment")
+			res
+		}, BPREDO=BPREDO, BPPARAM=BPPARAM)
+		if ( serial )
+			.message(progress="stop")
+		if ( remote )
+			ans <- .remote_collect(ans, .outpath, .simplify)
+		if ( .use.names && !.blocks )
+			if ( remote && is(ans, "matter_mat") ) {
+				colnames(ans) <- pixelNames(.object)
+			} else {
+				names(ans) <- pixelNames(.object)
+			}
+		if ( .simplify ) {
+			if ( .blocks ) {
+				ans <- reduce_blocks(ans)
+			} else if ( !remote ) {
+				ans <- drop(simplify2array(ans))
+			}
+		}
+		ipcremove(pid)
 		ans
 	})
-
-.pixelIterator <- function(obj, n = 1000L) {
-	i <- 1L
-	n <- min(n, ncol(obj))
-	function() {
-		if ( i > ncol(obj) )
-			return(NULL)
-		i2 <- min(i + n - 1L, ncol(obj))
-		idx <- i:i2
-		i <<- i + n
-		if ( length(i2) > 0L ) {
-			obj[,idx]
-		} else {
-			NULL
-		}
-	}
-}
-
-.pixelBlockApply <- function(.object, .fun, ...,
-							.chunks, .chunksize,
-							REDUCE = combine,
-							init = NULL,
-							reduce.in.order = TRUE,
-							BPPARAM = bpparam())
-{
-	iter <- .pixelIterator(.object, floor(.chunksize))
-	if ( bpprogressbar(BPPARAM) && !missing(.chunks) )
-		.message("expected iterations: ", .chunks + 1L)
-	bpiterate(iter, .fun, ..., REDUCE=REDUCE, init=init,
-		reduce.in.order=reduce.in.order, BPPARAM=BPPARAM)
-}
 
 setMethod("pixelApply", "SImageSet",
 	function(.object, .fun, ...,

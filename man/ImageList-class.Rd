@@ -35,12 +35,10 @@
 \alias{class:MSContinuousImagingSpectraList}
 \alias{MSContinuousImagingSpectraList}
 \alias{MSContinuousImagingSpectraList-class}
-\alias{[,MSContinuousImagingSpectraList,ANY,ANY,ANY-method}
 
 \alias{class:MSProcessedImagingSpectraList}
 \alias{MSProcessedImagingSpectraList}
 \alias{MSProcessedImagingSpectraList-class}
-\alias{[,MSProcessedImagingSpectraList,ANY,ANY,ANY-method}
 
 \title{ImageList: Abstract image data list}
 
@@ -51,7 +49,7 @@
 
     The \code{SimpleImageList} and \code{SimpleImageArrayList} subclasses are the default implementations.
 
-    The \code{MSContinuousImagingSpectraList} and \code{MSProcessedImagingSpectraList} are subclasses of \code{SimpleImageArrayList} that make certain assumptions about how the underlying data elements are stored (i.e., either dense or sparse). They are intended to be used with mass spectrometry imaging data.
+    The \code{MSContinuousImagingSpectraList} and \code{MSProcessedImagingSpectraList} classes are subclasses of \code{SimpleImageArrayList} that make certain assumptions about how the underlying data elements are stored (i.e., either dense or sparse). They are intended to be used with mass spectrometry imaging data.
 }
 
 \usage{

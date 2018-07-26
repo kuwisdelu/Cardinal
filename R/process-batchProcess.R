@@ -13,10 +13,8 @@ setMethod("process", "SparseImagingExperiment",
 			plot = FALSE,
 			par = NULL,
 			layout,
+			outpath = NULL,
 			subset = TRUE,
-			chunks = 0L,
-			chunksize = ncol(object) / chunks,
-			cache.chunks = FALSE,
 			BPPARAM = bpparam())
 	{
 		kind <- match.arg(kind)
@@ -96,19 +94,21 @@ setMethod("process", "SparseImagingExperiment",
 			} else if ( plot && !missing(layout) ) {
 				.setup.layout(layout)
 			}
-			object <- .delayedBatchProcess(object, plot=plot, par=par,
-				.chunks=chunks, .chunksize=chunksize,
-				.cache.chunks=cache.chunks,
+			object <- .delayedBatchProcess(object,
+				plot=plot, par=par, outpath=outpath,
 				BPPARAM=BPPARAM)
 		}
 		if ( validObject(object) )
 			object
 	})
 
-.delayedBatchProcess <- function(object, plot, par, ...) {
+.delayedBatchProcess <- function(object, plot, par, outpath, BPPARAM)
+{
 	queue <- .pendingQueue(processingData(object))
-	if ( is.null(queue) )
+	if ( is.null(queue) ) {
 		.warning("no pending processing steps to apply")
+		return(object)
+	}
 	while ( !is.null(queue) ) {
 		proclist <- queue$queue
 		# perform preprocessing
@@ -121,22 +121,21 @@ setMethod("process", "SparseImagingExperiment",
 			object <- do.call(prefun, prearglist)
 		}
 		# apply processing to all pixels/features
-		procfun <- function(.x, .list, .fdata, .plot, .par, ...) {
+		procfun <- function(.x, .list, .plot, .par, ...) {
 			for ( i in seq_along(.list) ) {
 				has_plotfun <- !is.null(.list[[i]]$plotfun)
-				if ( .plot && has_plotfun )
-					.xold <- .x
 				fun <- .list[[i]]$fun
 				arglist <- c(list(.x), .list[[i]]$args)
-				.x <- do.call(fun, arglist)
+				.x2 <- do.call(fun, arglist)
+				attr(.x2, "idx") <- attr(.x, "idx")
+				attr(.x2, "mcols") <- attr(.x, "mcols")
 				if ( .plot && has_plotfun ) {
 					plotfun <- .list[[i]]$plotfun
-					plotarglist <- c(list(.x), list(.xold),
-						list(.fdata), .par)
+					plotarglist <- c(list(.x2), list(.x), .par)
 					do.call(plotfun, plotarglist)
 				}
 			}
-			.x
+			.x2
 		}
 		by_pixels <- "pixel" %in% queue$info$kind
 		by_features <- "feature" %in% queue$info$kind
@@ -146,13 +145,15 @@ setMethod("process", "SparseImagingExperiment",
 		}
 		fdata <- force(featureData(object))
 		if ( by_pixels ) {
-			ans <- pixelApply(object, procfun, .list=proclist,
-				.fdata=fdata, .plot=plot, .par=par, ...,
-				.simplify=FALSE)
+			ans <- pixelApply(object, procfun,
+				.list=proclist, .plot=plot, .par=par,
+				.simplify=FALSE, .outpath=outpath,
+				BPPARAM=BPPARAM)
 		} else if ( by_features ) {
-			ans <- featureApply(object, procfun, .list=proclist,
-				.fdata=fdata, .plot=plot, .par=par, ...,
-				.simplify=FALSE)
+			ans <- featureApply(object, procfun,
+				.list=proclist, .plot=plot, .par=par,
+				.simplify=FALSE, .outpath=outpath,
+				BPPARAM=BPPARAM)
 		} else {
 			ans <- NULL
 		}
@@ -167,15 +168,24 @@ setMethod("process", "SparseImagingExperiment",
 			object <- do.call(postfun, postarglist)
 		} else {
 			if ( by_pixels ) {
-				iData(object) <- as.matrix(simplify2array(ans))
+				if ( is(ans, "matter_list") ) {
+					iData(object) <- as(ans, "matter_matc")
+				} else {
+					iData(object) <- as.matrix(simplify2array(ans))	
+				}
 			} else if ( by_features ) {
-				iData(object) <- t(simplify2array(ans))
+				if ( is(ans, "matter_list") ) {
+					iData(object) <- as(ans, "matter_matr")
+				} else {
+					iData(object) <- t(simplify2array(ans))
+				}
 			}
 		}
 		mcols(processingData(object))$pending[queue$index] <- FALSE
 		mcols(processingData(object))$complete[queue$index] <- TRUE
 		queue <- .pendingQueue(processingData(object))
 	}
+	.message("done.")
 	object
 }
 

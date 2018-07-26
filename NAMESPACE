@@ -8,13 +8,14 @@ importFrom("graphics",
 	"persp",
 	"points",
 	"rect",
-	"text")
+	"text",
+	"title")
 
 importFrom("stats",
 	"approx",
 	"as.formula",
 	"dnorm",
-	"filter",
+	"convolve",
 	"kmeans",
 	"median",
 	"p.adjust",
@@ -40,6 +41,17 @@ import("matter")
 import("methods")
 
 import("stats4")
+
+importFrom("dplyr",
+	"select",
+	"filter",
+	"mutate",
+	"arrange",
+	"summarise",
+	"summarize")
+
+importFrom("magrittr",
+	"%>%")
 
 import("S4Vectors")
 
@@ -389,7 +401,11 @@ exportMethods(
 	"reduceBaseline",
 	"reduceDimension",
 	"smoothSignal",
-	"standardizeSamples")
+	"standardizeRuns")
+
+export("standardizeSamples")
+
+exportMethods("selectROI")
 
 exportMethods("coregister")
 
@@ -402,6 +418,13 @@ exportMethods(
 
 exportMethods("topLabels")
 
-exportMethods("select")
+exportMethods(
+	"select",
+	"filter",
+	"mutate",
+	"summarise",
+	"summarize")
+
+export("%>%")
 
 useDynLib("Cardinal")

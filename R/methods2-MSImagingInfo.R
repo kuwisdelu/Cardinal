@@ -110,6 +110,9 @@ setMethod("mzData", "MSImagingInfo",
 
 # intensity array list
 
+setMethod("peakData", "MSImagingInfo",
+	function(object) object@intensityArrayList)
+
 setMethod("imageData", "MSImagingInfo",
 	function(y) y@intensityArrayList)
 

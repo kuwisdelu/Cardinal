@@ -5,10 +5,6 @@
 \alias{MassDataFrame}
 \alias{MassDataFrame-class}
 
-\alias{mz}
-\alias{mz<-}
-\alias{mz-methods}
-
 \alias{initialize,MassDataFrame-method}
 \alias{mz,MassDataFrame-method}
 \alias{mz<-,MassDataFrame-method}

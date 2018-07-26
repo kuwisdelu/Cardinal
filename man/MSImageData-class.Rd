@@ -5,14 +5,6 @@
 \alias{MSImageData}
 \alias{MSImageData-class}
 
-\alias{mzData}
-\alias{mzData<-}
-\alias{mzData-methods}
-
-\alias{peakData}
-\alias{peakData<-}
-\alias{peakData-methods}
-
 \alias{initialize,MSImageData-method}
 \alias{peakData,MSImageData-method}
 \alias{peakData<-,MSImageData-method}

@@ -5,14 +5,6 @@
 \alias{MSImagingExperiment}
 \alias{MSImagingExperiment-class}
 
-\alias{class:MSContinuousImagingExperiment}
-\alias{MSContinuousImagingExperiment}
-\alias{MSContinuousImagingExperiment-class}
-
-\alias{class:MSProcessedImagingExperiment}
-\alias{MSProcessedImagingExperiment}
-\alias{MSProcessedImagingExperiment-class}
-
 \alias{spectra}
 \alias{spectra<-}
 \alias{spectra-methods}
@@ -21,10 +13,13 @@
 \alias{peaks<-}
 \alias{peaks-methods}
 
+\alias{show,MSImagingExperiment-method}
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}
 \alias{spectra,MSImagingExperiment-method}
 \alias{spectra<-,MSImagingExperiment-method}
+\alias{peaks,MSImagingExperiment-method}
+\alias{peaks<-,MSImagingExperiment-method}
 \alias{centroided,MSImagingExperiment-method}
 \alias{centroided<-,MSImagingExperiment-method}
 \alias{pixels,MSImagingExperiment-method}
@@ -68,7 +63,7 @@ MSImagingExperiment(
 \details{
     The \code{MSImagingExperiment} class is designed as a replacement for the \code{\linkS4class{MSImageSet}} class, using a simplified, robust implementation that should be more future-proof and enable better support for large, high-resolution experiments, multimodal experiments, and experiments with specialized needs such as non-gridded pixel coordinates.
 
-   Subclasses \code{MSContinuousImagingExperiment} and \code{MSProcessedImagingExperiment} exist to allow downstream methods to make assumptions about the underlying data storage (dense matrices for 'continous' format and sparse matrices for 'processed' format), which can sometimes allow more efficient computations.
+   Subclasses \code{\linkS4class{MSContinuousImagingExperiment}} and \code{\linkS4class{MSProcessedImagingExperiment}} exist to allow downstream methods to make assumptions about the underlying data storage (dense matrices for 'continous' format and sparse matrices for 'processed' format), which can sometimes allow more efficient computations.
 }
 
 \section{Slots}{
@@ -93,7 +88,9 @@ MSImagingExperiment(
     \describe{
         \item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the experimental run slot-column from \code{pixelData}.}
 
-        \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the experimental run levels from \code{pixelData}.}
+        \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the spectra (alias for \code{iData(object)}).}
+
+        \item{\code{peaks(object)}, \code{peaks(object) <- value}:}{Get or set the peaks of a centroided experiment (alias for \code{iData(object)} for centroided datasets only).}
 
         \item{\code{centroided(object)}, \code{centroided(object) <- value}:}{Get or set the spatial position slot-columns from \code{pixelData}.}
 
@@ -111,7 +108,9 @@ MSImagingExperiment(
 
 \seealso{
     \code{\linkS4class{ImagingExperiment}},
-    \code{\linkS4class{SparseImagingExperiment}}
+    \code{\linkS4class{SparseImagingExperiment}},
+    \code{\linkS4class{MSContinuousImagingExperiment}},
+    \code{\linkS4class{MSProcessedImagingExperiment}}
 }
 
 \examples{

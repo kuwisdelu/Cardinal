@@ -6,38 +6,53 @@ setMethod("peakPick", "MSImagingExperiment",
 	function(object, method = c("simple", "adaptive"), ...)
 	{
 		fun <- peakPick.method2(method)
-		e <- new.env(parent=getNamespace("Cardinal"))
-		plotfun <- function(s1, s2, fdata, ...,
-			main="Peak picking", xlab="m/z", ylab="")
-		{
-			plot(mz(fdata), s2, main=main, xlab=xlab, ylab=ylab,
-				col="gray", type='l', ...)
-			lines(mz(fdata)[s1], s2[s1], col="red", type='h')
-		}
-		environment(plotfun) <- e
-		postfun <- function(object, peak_ids, ...) {
-			mzData <- lapply(peak_ids, function(idx) mz(object)[idx])
-			intensityData <- lapply(seq_along(peak_ids), function(i) {
-				idx <- peak_ids[[i]]
-				s <- spectra(object)[idx,i]
-				as.numeric(s)
-			})
-			tol <- c(absolute=min(abs(diff(mz(object)))) / 2)
-			data <- list(keys=mzData, values=intensityData)
-			data <- sparse_mat(data, keys=mz(object),
-				nrow=nrow(object), ncol=ncol(object),
-				tolerance=tol, combiner="sum")
-			imageData(object) <- MSProcessedImagingSpectraList(data)
-			object <- as(object, "MSProcessedImagingExperiment")
-			object
-		}
-		environment(postfun) <- e
 		object <- process(object, fun=fun, ...,
 			label="peakPick", kind="pixel",
-			postfun=postfun, plotfun=plotfun,
+			postfun=peakPick_postfun,
+			plotfun=peakPick_plotfun,
 			delay=TRUE)
 		object
 	})
+
+peakPick_plotfun <- function(s2, s1, ...,
+	main="Peak picking", xlab="m/z", ylab="")
+{
+	mz <- mz(attr(s1, "mcols"))
+	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+		col="gray", type='l', ...)
+	lines(mz[s2], s1[s2], col="red", type='h')
+}
+
+peakPick_postfun <- function(object, peak_ids, ...) {
+	if ( is(peak_ids, "matter_list") ) {
+		mzData <- matter_list(datamode=typeof(mz(object)),
+			lengths=lengths(peak_ids), paths=tempfile())
+		peakData <- matter_list(datamode=typeof(spectra(object)[,1L]),
+			lengths=lengths(peak_ids), paths=tempfile())
+		.message("copying to tempfile = ", paths(mzData))
+		.message("copying to tempfile = ", paths(peakData))
+		for ( i in seq_len(length(peak_ids)) ) {
+			idx <- peak_ids[[i]]
+			mzData[[i]] <- mz(object)[idx]
+			peakData[[i]] <- spectra(object)[idx,i]
+		}
+	} else {
+		mzData <- lapply(peak_ids, function(idx) mz(object)[idx])
+		peakData <- lapply(seq_along(peak_ids), function(i) {
+			idx <- peak_ids[[i]]
+			s <- spectra(object)[idx,i]
+			as.numeric(s)
+		})
+	}
+	tol <- c(absolute=min(abs(diff(mz(object)))) / 2)
+	data <- list(keys=mzData, values=peakData)
+	data <- sparse_mat(data, keys=mz(object),
+		nrow=nrow(object), ncol=ncol(object),
+		tolerance=tol, combiner="sum")
+	imageData(object) <- MSProcessedImagingSpectraList(data)
+	object <- as(object, "MSProcessedImagingExperiment")
+	object
+}
 
 setMethod("peakPick", "MSImageSet",
 	function(object, method = c("simple", "adaptive", "limpic"),

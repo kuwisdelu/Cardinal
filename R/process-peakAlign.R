@@ -7,30 +7,32 @@ setMethod("peakAlign",
 	function(object, ref, tolerance = 200, units = c("ppm", "mz"),
 		type=c("height", "area"), ...)
 	{
-		e <- new.env(parent=getNamespace("Cardinal"))
-		e$ref <- ref
-		e$tolerance <- switch(match.arg(units),
+		tol <- switch(match.arg(units),
 			ppm = c("relative" = tolerance * 1e-6),
 			mz = c("absolute" = tolerance))
-		e$type <- match.arg(type)
-		postfun <- function(object, ...) {
-			if ( !is(object, "MSProcessedImagingExperiment") )
-				object <- as(object, "MSProcessedImagingExperiment")
-			mz(object) <- ref
-			tolerance(object) <- tolerance
-			combiner(object) <- switch(type,
-				height="max", area="sum")
-			if ( !is.null(spectrumRepresentation(object)) )
-				spectrumRepresentation(object) <- "centroid spectrum"
-			centroided(object) <- TRUE
-			object
-		}
-		environment(postfun) <- e
+		type <- match.arg(type)		
+		postfun <- peakAlign_postfun(ref, tol, type)
 		object <- process(object, ...,
 			label="peakAlign", kind="global",
 			postfun=postfun, delay=TRUE)
 		object
 	})
+
+peakAlign_postfun <- function(ref, tol, type, ...) {
+	fun <- function(object, ...) {
+		if ( !is(object, "MSProcessedImagingExperiment") )
+			object <- as(object, "MSProcessedImagingExperiment")
+		mz(object) <- ref
+		tolerance(object) <- tol
+		combiner(object) <- switch(type,
+			height="max", area="sum")
+		if ( !is.null(spectrumRepresentation(object)) )
+			spectrumRepresentation(object) <- "centroid spectrum"
+		centroided(object) <- TRUE
+		object
+	}
+	fun
+}
 
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = c("diff", "DP"),

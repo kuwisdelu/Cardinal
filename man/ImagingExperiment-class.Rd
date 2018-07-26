@@ -36,6 +36,7 @@
 \alias{featureNames<-}
 \alias{featureNames-methods}
 
+\alias{show,ImagingExperiment-method}
 \alias{length,ImagingExperiment-method}
 \alias{$,ImagingExperiment-method}
 \alias{$<-,ImagingExperiment-method}

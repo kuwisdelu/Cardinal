@@ -19,7 +19,6 @@
 \alias{preproc<-,MIAPE-Imaging-method}
 \alias{combine,MIAPE-Imaging,MIAPE-Imaging-method}
 
-\alias{msiInfo}
 \alias{msiInfo,MIAPE-Imaging-method}
 \alias{specimenOrigin}
 \alias{specimenOrigin,MIAPE-Imaging-method}

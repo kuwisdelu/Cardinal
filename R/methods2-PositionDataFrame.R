@@ -27,8 +27,13 @@ PositionDataFrame <- function(coord, run, ...,
 	if ( missing(coord) && length(list(...)) == 0 )
 		return(.PositionDataFrame())
 	coord <- DataFrame(coord)
-	if ( any(duplicated(coord)) )
-		warning("rows of 'coord' are not unique")
+	if ( missing(run) ) {
+		if ( any(duplicated(coord)) )
+			warning("rows of 'coord' are not unique")
+	} else {
+		if ( any(duplicated(cbind(data.frame(run=run), coord))) )
+			warning("rows of 'coord' + 'run' are not unique")
+	}
 	data <- DataFrame(...,
 		row.names=row.names,
 		check.names=check.names)

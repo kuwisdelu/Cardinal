@@ -117,24 +117,6 @@ setReplaceMethod("peaks", "MSImagingExperiment",
 		object
 	})
 
-setMethod("mzData", "MSImagingExperiment",
-	function(object) {
-		if ( !is.null(peaks(object)) ) {
-			atomdata(peaks(object))[["keys"]]
-		} else {
-			NULL
-		}
-	})
-
-setMethod("peakData", "MSImagingExperiment",
-	function(object) {
-		if ( !is.null(peaks(object)) ) {
-			atomdata(peaks(object))[["values"]]
-		} else {
-			NULL
-		}
-	})
-
 # 'continuous' imaging experiments
 
 setReplaceMethod("imageData", "MSContinuousImagingExperiment",
@@ -164,6 +146,26 @@ setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
 
 # 'processed' imaging experiments
 
+setReplaceMethod("mz", "MSProcessedImagingExperiment",
+	function(object, value) {
+		if ( !all(mz(object@featureData) == keys(object@imageData)) )
+			return(callNextMethod(object, value))
+		if ( length(value) != length(mz(object)) ) {
+			if ( ncol(featureData(object)) > 0L ) {
+				mcols <- names(featureData(object))
+				.warning("dropping feature metadata cols: ", mcols)
+			}
+			object@featureData <- MassDataFrame(mz=value)
+		} else {
+			mz(object@featureData) <- value
+		}
+		keys(object@imageData) <- value
+		if ( !is.null(attr(value, "tolerance")) )
+			tolerance(object@imageData) <- attr(value, "tolerance")
+		if ( validObject(object) )
+			object
+	})
+
 setReplaceMethod("imageData", "MSProcessedImagingExperiment",
 	function(y, value) {
 		if ( !inherits(value, c("MSProcessedImagingSpectraList")) )
@@ -189,22 +191,22 @@ setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
-setReplaceMethod("mz", "MSProcessedImagingExperiment",
+setMethod("mzData", "MSProcessedImagingExperiment",
+	function(object) atomdata(iData(object))[["keys"]])
+
+setReplaceMethod("mzData", "MSProcessedImagingExperiment",
 	function(object, value) {
-		if ( !all(mz(object@featureData) == keys(object@imageData)) )
-			return(callNextMethod(object, value))
-		if ( length(value) != length(mz(object)) ) {
-			if ( ncol(featureData(object)) > 0L ) {
-				mcols <- names(featureData(object))
-				.warning("dropping feature metadata cols: ", mcols)
-			}
-			object@featureData <- MassDataFrame(mz=value)
-		} else {
-			mz(object@featureData) <- value
-		}
-		keys(object@imageData) <- value
-		if ( !is.null(attr(value, "tolerance")) )
-			tolerance(object@imageData) <- attr(value, "tolerance")
+		atomdata(iData(object))[["keys"]] <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("peakData", "MSProcessedImagingExperiment",
+	function(object) atomdata(iData(object))[["values"]])
+
+setReplaceMethod("peakData", "MSProcessedImagingExperiment",
+	function(object, value) {
+		atomdata(iData(object))[["values"]] <- value
 		if ( validObject(object) )
 			object
 	})
@@ -328,13 +330,13 @@ setAs("MSImagingExperiment", "MSProcessedImagingExperiment",
 setAs("MSImageSet", "MSImagingExperiment",
 	function(from) {
 		fDataNames <- setdiff(names(fData(from)), "mz")
-		pDataNames <- setdiff(names(pData(from)), names(coord(from)))
+		pDataNames <- setdiff(names(pData(from)), c(coordLabels(from), "sample"))
 		MSImagingExperiment(imageData=spectra(from),
 			featureData=MassDataFrame(
 				mz=mz(from),
 				fData(from)[,fDataNames,drop=FALSE]),
 			pixelData=PositionDataFrame(
-				coord=DataFrame(coord(from), row.names=NULL),
+				coord=DataFrame(coord(from)[,coordLabels(from)], row.names=NULL),
 				run=pixelData(from)$sample,
 				pData(from)[,pDataNames,drop=FALSE]),
 			centroided=centroided(from))

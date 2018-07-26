@@ -24,6 +24,8 @@ facet.plot <- function(args, formula, obj,
 		ys <- lapply(ys, "[", subset)
 		groups <- groups[subset]
 	}
+	if ( length(x) == 1L )
+		.stop("can't estimate reasonable axes")
 	if ( !is.null(facets) ) {
 		if ( !is.data.frame(facets) )
 			facets <- as.data.frame(facets)
@@ -158,6 +160,7 @@ facet.plot <- function(args, formula, obj,
 		layers=layers,
 		facets=facet_levels,
 		groups=levels(groups),
+		subset=subset,
 		layout=layout,
 		par=c(par, dots))
 	class(out) <- "facet.plot"

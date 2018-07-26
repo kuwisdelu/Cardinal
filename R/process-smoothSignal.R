@@ -6,20 +6,21 @@ setMethod("smoothSignal", "MSImagingExperiment",
 	function(object, method = c("gaussian", "sgolay", "ma"), ...)
 	{
 		fun <- smoothSignal.method2(method)
-		e <- new.env(parent=getNamespace("Cardinal"))
-		plotfun <- function(s1, s2, fdata, ...,
-			main="Smoothing", xlab="m/z", ylab="")
-		{
-			plot(mz(fdata), s2, main=main, xlab=xlab, ylab=ylab,
-				col="gray", type='l', ...)
-			lines(mz(fdata), s1, lwd=0.5)
-		}
-		environment(plotfun) <- e
 		object <- process(object, fun=fun, ...,
 			label="smoothSignal", kind="pixel",
-			plotfun=plotfun, delay=TRUE)
+			plotfun=smoothSignal_plotfun,
+			delay=TRUE)
 		object
 	})
+
+smoothSignal_plotfun <- function(s2, s1, ...,
+	main="Smoothing", xlab="m/z", ylab="")
+{
+	mz <- mz(attr(s1, "mcols"))
+	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+		col="gray", type='l', ...)
+	lines(mz, s2, lwd=0.5)
+}
 
 setMethod("smoothSignal", "MSImageSet",
 	function(object, method = c("gaussian", "sgolay", "ma"),
@@ -92,7 +93,7 @@ smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, 
 	window <- length(coef)
 	halfWindow <- floor(window / 2)
 	xpad <- c(rep(x[1], halfWindow), x, rep(x[length(x)], halfWindow))
-	filter(xpad, filter=coef)[(halfWindow + 1):(length(xpad) - halfWindow)]
+	convolve(xpad, coef, type="filter")
 }
 
 smoothSignal.ma2 <- smoothSignal.ma

@@ -139,7 +139,7 @@ setReplaceMethod("processingData", "SparseImagingExperiment",
 ## Subsetting
 
 setMethod("[", "SparseImagingExperiment",
-	function(x, i, j, ..., drop = FALSE) {
+	function(x, i, j, ..., drop) {
 		if ( missing(i) ) {
 			i <- seq_len(nrow(x))
 		} else {

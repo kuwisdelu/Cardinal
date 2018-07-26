@@ -1,9 +1,4 @@
 
-## Provide fallback methods for atomic vectors and lists
-setMethod("combine",
-	signature = c(x = "vector", y = "vector"),
-	function(x, y, ...) c(x, y))
-
 ## Adapted from combine(matrix, matrix) from BiocGenerics
 setMethod("combine",
 	signature = c(x = "array", y = "array"),
@@ -35,3 +30,8 @@ setMethod("combine",
 		arr <- do.call("[<-", c(list(arr), dimnames(y), list(y)))
 		arr
 	})
+
+## Provide fallback methods for atomic vectors and lists
+setMethod("combine",
+	signature = c(x = "vector", y = "vector"),
+	function(x, y, ...) c(x, y))

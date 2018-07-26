@@ -5,6 +5,7 @@
 \alias{SparseImagingExperiment}
 \alias{SparseImagingExperiment-class}
 
+\alias{show,SparseImagingExperiment-method}
 \alias{run,SparseImagingExperiment-method}
 \alias{run<-,SparseImagingExperiment-method}
 \alias{runNames,SparseImagingExperiment-method}

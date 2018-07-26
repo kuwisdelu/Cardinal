@@ -134,11 +134,21 @@ setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
+setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardizeRuns"))
 setGeneric("standardizeSamples", function(object, ...) standardGeneric("standardizeSamples"))
 
-#### Data transformation and alignment ####
-## ---------------------------------------
+#### Data alignment ####
+## ---------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
+
+#### Data transformation ####
+## --------------------------
+setGeneric("select") # from 'dplyr'
+setGeneric("filter") # from 'dplyr'
+setGeneric("mutate") # from 'dplyr'
+setGeneric("arrange") # from 'dplyr'
+setGeneric("summarise") # from 'dplyr'
+setGeneric("summarize")	# from 'dplyr'
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
@@ -154,7 +164,7 @@ setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 
 #### Plotting ####
 ## ---------------
-setGeneric("select", function(x, ...) standardGeneric("select"))
+setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
 setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 
 #### Data export ####

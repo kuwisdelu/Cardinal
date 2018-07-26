@@ -11,6 +11,7 @@
 \alias{[[<-,ImageData,character,missing-method}
 \alias{annotatedDataFrameFrom,ImageData-method}
 \alias{combine,ImageData,ImageData-method}
+\alias{combine,vector,vector-method}
 \alias{combine,array,array-method}
 \alias{dim,ImageData-method}
 \alias{dims,ImageData-method}

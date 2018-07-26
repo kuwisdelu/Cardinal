@@ -1,21 +1,21 @@
-\name{standardizeSamples-methods}
+\name{standardizeRuns-methods}
 \docType{methods}
 
-\alias{standardizeSamples}
-\alias{standardizeSamples-methods}
-\alias{standardizeSamples,MSImageSet-method}
+\alias{standardizeRuns}
+\alias{standardizeRuns-methods}
+\alias{standardizeRuns,MSImageSet-method}
 
-\alias{standardizeSamples.sum}
+\alias{standardizeRuns.sum}
 
-\title{Standardize the samples in an imaging dataset}
+\title{Standardize between runs in an imaging dataset}
 \description{
-	Apply standardization across the samples in a mass spectrometry imaging dataset to correct for between-sample variation.
+	Apply standardization across the runs in a mass spectrometry imaging dataset to correct for between-run variation.
 }
 \usage{
-\S4method{standardizeSamples}{MSImageSet}(object, method = "sum", \dots)
+\S4method{standardizeRuns}{MSImageSet}(object, method = "sum", \dots)
 
 ## TIC normalization
-standardizeSamples.sum(x, sum=length(x), \dots)
+standardizeRuns.sum(x, sum=length(x), \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
@@ -37,7 +37,7 @@ standardizeSamples.sum(x, sum=length(x), \dots)
     Internally, \code{\link{featureApply}} is used to apply the standardization, with \code{.pixel.groups=sample}. See its documentation page for more details on additional objects available to the environment installed to the standardization function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the ion images standardized across samples.
+    An object of class \code{\linkS4class{MSImageSet}} with the runs standardized across samples.
 }
 \author{
 	Kylie A. Bemis
@@ -51,6 +51,6 @@ data1 <- generateImage(as="MSImageSet")
 data2 <- generateImage(as="MSImageSet")
 sampleNames(data2) <- "2"
 data3 <- combine(data1, data2)
-standardizeSamples(data3, method="sum")
+standardizeRuns(data3, method="sum")
 }
 \keyword{methods}

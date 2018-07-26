@@ -25,6 +25,47 @@
 		x
 }
 
+# Generate a function for (parallel) writing output to a file
+.remote_writer <- function(pid, path) {
+	fun <- function(x) {
+		ipclock(pid)
+		eof <- file.size(path)
+		eof <- ifelse(is.na(eof), 0, eof)
+		if ( !is.numeric(x) )
+			stop("non-numeric output not allowed for remote writing")
+		res <- matter::matter_vec(x, datamode=typeof(x),
+			filemode="rb+", offset=eof, paths=path)
+		ipcunlock(pid)
+		c(mode=datamode(res), offset=eof, length=length(res))
+	}
+	fun
+}
+
+# Collect the metadata from (parallel) file output
+.remote_collect <- function(ans, path, simplify) {
+	ans <- do.call(rbind, ans)
+	mode <- matter::make_datamode(ans[,1], type="R")
+	mode <- as.character(mode)
+	offset <- ans[,2]
+	extent <- ans[,3]
+	if ( simplify && all(extent == 1L) ) {
+		if ( !is.unsorted(offset) ) {
+			offset <- 0
+			extent <- nrow(ans)
+			mode <- mode[1L]
+		}
+		x <- matter::matter_vec(datamode=mode, filemode="rb+",
+				offset=offset, extent=extent, paths=path)
+	} else if ( simplify && length(unique(extent)) == 1L ) {
+		x <- matter::matter_mat(datamode=mode, filemode="rb+",
+			offset=offset, extent=extent, paths=path)
+	} else {
+		x <- matter::matter_list(datamode=mode, filemode="rb+",
+			offset=offset, extent=extent, paths=path)
+	}
+	x
+}
+
 # Select and concatenate metadata for show() method
 .scat <- function(x, vals=character(), collapse=" ", exdent=4, prefix="", ...)
 {
