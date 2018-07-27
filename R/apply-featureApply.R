@@ -8,28 +8,27 @@ setMethod("featureApply", "SparseImagingExperiment",
 			BPREDO = list(),
 			BPPARAM = bpparam())
 	{
+		.checkForIncompleteProcessing(.object)
 		.fun <- match.fun(.fun)
-		serial <- is(BPPARAM, "SerialParam")
-		remote <- !is.null(.outpath)
+		output <- !is.null(.outpath)
 		if ( .blocks ) {
 			if ( !is.logical(.simplify) )
 				reduce_blocks <- match.fun(.simplify)
 			.simplify <- !is.logical(.simplify)
-			if ( is.numeric(.blocks) ) {
-				idx <- blocks(seq_len(nrow(.object)), .blocks)
-			} else {
-				idx <- blocks(seq_len(nrow(.object)), 20L)
-			}
+			if ( !is.numeric(.blocks) )
+				.blocks <- getOption("Cardinal.nblocks")
+			idx <- blocks(seq_len(nrow(.object)), .blocks)
 		} else {
 			idx <- seq_len(nrow(.object))
 		}
 		pid <- ipcid()
-		if ( remote ) {
+		if ( output ) {
 			.outpath <- .outpath[1L]
 			.message("using outpath = ", .outpath)
-			rwrite <- .remote_writer(pid, .outpath)
+			rwrite <- .output_writer(pid, .outpath)
 		}
-		if ( serial )
+		progress <- is(BPPARAM, "SerialParam") && !bpprogressbar(BPPARAM)
+		if ( progress )
 			.message(progress="start", max=length(idx))
 		ans <- bplapply(idx, function(i) {
 			suppressPackageStartupMessages(require(Cardinal))
@@ -37,18 +36,18 @@ setMethod("featureApply", "SparseImagingExperiment",
 			attr(x, "idx") <- i
 			attr(x, "mcols") <- pData(.object)
 			res <- .fun(x, ...)
-			if ( remote )
+			if ( output )
 				res <- rwrite(res)
-			if ( serial )
+			if ( progress )
 				.message(progress="increment")
 			res
 		}, BPREDO=BPREDO, BPPARAM=BPPARAM)
-		if ( serial )
+		if ( progress )
 			.message(progress="stop")
-		if ( remote )
-			ans <- .remote_collect(ans, .outpath, .simplify)
+		if ( output )
+			ans <- .output_collect(ans, .outpath, .simplify)
 		if ( .use.names && !.blocks ) {
-			if ( remote && is(ans, "matter_mat") ) {
+			if ( output && is(ans, "matter_mat") ) {
 				colnames(ans) <- featureNames(.object)
 			} else {
 				names(ans) <- featureNames(.object)
@@ -57,7 +56,7 @@ setMethod("featureApply", "SparseImagingExperiment",
 		if ( .simplify ) {
 			if ( .blocks ) {
 				ans <- reduce_blocks(ans)
-			} else if ( !remote ) {
+			} else if ( !output ) {
 				ans <- drop(simplify2array(ans))
 			}
 		}

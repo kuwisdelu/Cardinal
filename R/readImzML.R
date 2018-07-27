@@ -3,9 +3,21 @@
 ## ----------------------
 
 readImzML <- function(name, folder = getwd(), attach.only = FALSE,
-	mass.range = NULL, mass.accuracy = 200, units.accuracy = c("ppm", "mz"),
+	mass.range = NULL, resolution = 200, units = c("ppm", "mz"),
 	as = c("MSImageSet", "MSImagingExperiment"), ...)
 {
+	# check input
+	dots <- list(...)
+	if ( "mass.accuracy" %in% names(dots) ) {
+		.warning("'mass.accuracy' is deprecated.\n",
+			"Use 'resolution' instead.")
+		resolution <- dots$mass.accuracy
+	}
+	if ( "units.accuracy" %in% names(dots) ) {
+		.warning("'units.accuracy' is deprecated.\n",
+			"Use 'units' instead.")
+		units <- dots$units.accuracy
+	}
 	# get output format
 	outclass <- match.arg(as)
 	# check for files
@@ -21,10 +33,10 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 	# read ibd file
 	metadata(info)[["files"]] <- c(xmlpath, ibdpath)
 	metadata(info)[["name"]] <- name
-	units.accuracy <- match.arg(units.accuracy)
+	units <- match.arg(units)
 	.message("readImzML: Reading ibd file '", ibdpath, "'")
 	object <- .readIbd(ibdpath, info, outclass=outclass, attach.only=attach.only,
-		mass.range=mass.range, mass.accuracy=mass.accuracy, units.accuracy=units.accuracy)
+		mass.range=mass.range, resolution=resolution, units=units)
 	if ( validObject(object) ) {
 		.message("readImzML: Done.")
 		object
@@ -43,7 +55,7 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 }
 
 .readIbd <- function(file, info, outclass, attach.only,
-	mass.range, mass.accuracy, units.accuracy)
+	mass.range, resolution, units)
 {
 	file <- normalizePath(file)
 	ibdtype <- metadata(info)[["ibd binary type"]]
@@ -83,22 +95,22 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 		}
 		mz.min <- mz.range[1]
 		mz.max <- mz.range[2]
-		if ( units.accuracy == "ppm" ) {
+		if ( units == "ppm" ) {
 			if ( floor(mz.min) <= 0 )
-				.stop("readImzML: m/z values must be positive for units.accuracy='ppm'")
+				.stop("readImzML: m/z values must be positive for units='ppm'")
 			mzout <- seq.ppm(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
-				ppm=mass.accuracy) # ppm == half-bin-widths
-			error <- mass.accuracy * 1e-6 * mzout
-			tol <- c(relative = mass.accuracy * 1e-6)
+				ppm=resolution) # ppm == half-bin-widths
+			error <- resolution * 1e-6 * mzout
+			tol <- c(relative = resolution * 1e-6)
 		} else {
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
-				by=mass.accuracy * 2)  # by == full-bin-widths
-			error <- rep(mass.accuracy, length(mzout))
-			tol <- c(absolute = mass.accuracy)
+				by=resolution * 2)  # by == full-bin-widths
+			error <- rep(resolution, length(mzout))
+			tol <- c(absolute = resolution)
 		}
 		mz.bins <- c(mzout[1] - error[1], mzout + error)
 		if ( attach.only ) {

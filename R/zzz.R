@@ -17,6 +17,7 @@
 		stop=NULL,
 		flush=0),
 	.Random.seed=NULL,
+	processing=FALSE,
 	trans3d=NULL))
 
 globalVariables(".Index")
@@ -27,6 +28,7 @@ globalVariables(".Index")
 	options(Cardinal.time=FALSE)
 	options(Cardinal.log=FALSE)
 	options(Cardinal.flush=60)
+	options(Cardinal.nblocks=20)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
 	if ( !exists(".Random.seed", globalenv()) )

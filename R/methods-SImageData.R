@@ -154,17 +154,17 @@ setMethod("dim", "SImageData",
 	function(x) c(Features=x@dim[1], dim(x@positionArray)))
 
 setMethod("dims", "SImageData",
-	function(object) {
-		names <- ls(object@data, all.names=TRUE)
+	function(x) {
+		names <- ls(x@data, all.names=TRUE)
 		if ( length(names) > 0 ) {
-			nr <- sapply(names, function(nm) nrow(object@data[[nm]]))
-			dm <- rep(dim(object@positionArray), length(names))
-			dim(dm) <- c(length(dim(object@positionArray)), length(names))
+			nr <- sapply(names, function(nm) nrow(x@data[[nm]]))
+			dm <- rep(dim(x@positionArray), length(names))
+			dim(dm) <- c(length(dim(x@positionArray)), length(names))
 			dims <- rbind(nr, dm)
-			if ( is.null(names(dim(object@positionArray))) ) {
-				rownames(dims) <- c("Features", rep("", length(dim(object@positionArray))))
+			if ( is.null(names(dim(x@positionArray))) ) {
+				rownames(dims) <- c("Features", rep("", length(dim(x@positionArray))))
 			} else {
-				rownames(dims) <- c("Features", names(dim(object@positionArray)))
+				rownames(dims) <- c("Features", names(dim(x@positionArray)))
 			}
 			colnames(dims) <- names
 			dims

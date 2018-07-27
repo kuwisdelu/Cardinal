@@ -109,6 +109,10 @@ facet.image <- function(args, formula, obj,
 		res <- NULL
 		dim <- NULL
 	}
+	rx <- ifelse(is.finite(rx), rx, 1)
+	ry <- ifelse(is.finite(ry), ry, 1)
+	if ( is3d )
+		rz <- ifelse(is.finite(rz), rz, 1)
 	if ( missing(xlab) )
 		xlab <- names(args$rhs)[1]
 	if ( missing(ylab) )
@@ -181,21 +185,19 @@ facet.image <- function(args, formula, obj,
 					}
 					if ( is3d ) {
 						ti <- normalize.image(contrast.enhance(ti))
-						valrange <- range(valrange, ti, na.rm=TRUE)
+						if ( !all(is.na(ti)) )
+							valrange <- range(valrange, ti, na.rm=TRUE)
 						sublayers[[length(sublayers) + 1L]] <- list(
 							x=xi, y=yi, z=zi, values=ti, col=cols,
 							dpage=p, facet=f, group=g, add=add)
 					} else {
-						xj <- seq(xrange[1], xrange[2], length.out=dim[1])
-						yj <- seq(yrange[1], yrange[2], length.out=dim[2])
-						if ( !all(is.na(ti)) ) {
-							tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
-							tproj <- structure(tproj, range=raw_valrange, resolution=res)
-							tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
-						} else {
-							tproj <- matrix(NA, nrow=dim[1], ncol=dim[2])
-						}
-						valrange <- range(valrange, tproj, na.rm=TRUE)
+						tproj <- projectToRaster(xi, yi, ti, dim=dim, res=res)
+						tproj <- structure(tproj, range=raw_valrange, resolution=res)
+						tproj <- normalize.image(smooth.image(contrast.enhance(tproj)))
+						xj <- seq(xrange[1L], xrange[2L], length.out=dim(tproj)[1])
+						yj <- seq(yrange[1L], yrange[2L], length.out=dim(tproj)[2])
+						if ( !all(is.na(tproj)) )
+							valrange <- range(valrange, tproj, na.rm=TRUE)
 						sublayers[[length(sublayers) + 1L]] <- list(
 							x=xj, y=yj, values=tproj, col=cols,
 							dpage=p, facet=f, group=g, add=add)
@@ -294,7 +296,7 @@ print.facet.image <- function(x, ...) {
 				do.call("image", args)
 			} else if ( !sublayer$add ) {
 				par <- obj$par[-which(names(obj$par) == "zlim")]
-				args <- c(list(x=0, y=0, type='n'), obj$par)
+				args <- c(list(x=0, y=0, type='n'), par)
 				do.call("plot", args)
 			}
 		}

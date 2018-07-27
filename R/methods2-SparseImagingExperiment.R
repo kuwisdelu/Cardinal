@@ -123,7 +123,7 @@ setReplaceMethod("resolution", "SparseImagingExperiment",
 	})
 
 setMethod("dims", "SparseImagingExperiment",
-	function(object) dims(pixelData(object)))
+	function(x) dims(pixelData(x)))
 
 # processing methods
 
@@ -134,6 +134,12 @@ setReplaceMethod("processingData", "SparseImagingExperiment",
 	function(object, value) {
 		object@processing <- value
 		object
+	})
+
+setMethod("preproc", "SparseImagingExperiment",
+	function(object) {
+		p <- mcols(object@processing)
+		setNames(p$complete, p$label)
 	})
 
 ## Subsetting

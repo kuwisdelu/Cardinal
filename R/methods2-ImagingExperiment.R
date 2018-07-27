@@ -123,10 +123,10 @@ setMethod("show", "ImagingExperiment",
 ## Filter pixels/features
 
 setMethod("features", "ImagingExperiment",
-	function(object, ..., withNames = TRUE) {
+	function(object, ..., .env = parent.frame(2)) {
 		fdata <- featureData(object)
 		conditions <- eval(substitute(alist(...)))
-		e <- as.env(fdata, enclos=parent.frame(2))
+		e <- as.env(fdata, enclos=.env)
 		if ( length(conditions) > 0 ) {
 			features <- sapply(conditions, function(ci) {
 				ci <- eval(ci, envir=e)
@@ -144,16 +144,15 @@ setMethod("features", "ImagingExperiment",
 		} else {
 			features <- seq_len(nrow(fdata))
 		}
-		if ( withNames )
-			names(features) <- featureNames(object)[features]
+		names(features) <- featureNames(object)[features]
 		features
 	})
 
 setMethod("pixels", "ImagingExperiment",
-	function(object, ..., withNames = TRUE) {
+	function(object, ..., .env = parent.frame(2)) {
 		pdata <- pixelData(object)
 		conditions <- eval(substitute(alist(...)))
-		e <- as.env(pdata, enclos=parent.frame(2))
+		e <- as.env(pdata, enclos=.env)
 		if ( length(conditions) > 0 ) {
 			pixels <- sapply(conditions, function(ci) {
 				ci <- eval(ci, envir=e)
@@ -171,8 +170,7 @@ setMethod("pixels", "ImagingExperiment",
 		} else {
 			pixels <- seq_len(nrow(pixelData(object)))
 		}
-		if ( withNames )
-			names(pixels) <- pixelNames(object)[pixels]
+		names(pixels) <- pixelNames(object)[pixels]
 		pixels
 	})
 

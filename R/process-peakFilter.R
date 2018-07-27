@@ -36,6 +36,6 @@ peakFilter.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
-peakFilter.freq <- function(x, freq.min=length(x) / 100, ...) {
-	sum(x > 0) > freq.min
+peakFilter.freq <- function(x, freq.min=0.01, ...) {
+	(sum(x > 0) / length(x)) > freq.min
 }

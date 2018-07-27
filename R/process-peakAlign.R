@@ -2,38 +2,6 @@
 #### Peak alignment methods ####
 ## ---------------------------
 
-setMethod("peakAlign",
-	signature = c(object = "MSImagingExperiment", ref = "numeric"),
-	function(object, ref, tolerance = 200, units = c("ppm", "mz"),
-		type=c("height", "area"), ...)
-	{
-		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
-		type <- match.arg(type)		
-		postfun <- peakAlign_postfun(ref, tol, type)
-		object <- process(object, ...,
-			label="peakAlign", kind="global",
-			postfun=postfun, delay=TRUE)
-		object
-	})
-
-peakAlign_postfun <- function(ref, tol, type, ...) {
-	fun <- function(object, ...) {
-		if ( !is(object, "MSProcessedImagingExperiment") )
-			object <- as(object, "MSProcessedImagingExperiment")
-		mz(object) <- ref
-		tolerance(object) <- tol
-		combiner(object) <- switch(type,
-			height="max", area="sum")
-		if ( !is.null(spectrumRepresentation(object)) )
-			spectrumRepresentation(object) <- "centroid spectrum"
-		centroided(object) <- TRUE
-		object
-	}
-	fun
-}
-
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = c("diff", "DP"),
 		...,

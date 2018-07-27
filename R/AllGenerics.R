@@ -143,10 +143,11 @@ setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"
 
 #### Data transformation ####
 ## --------------------------
-setGeneric("select") # from 'dplyr'
-setGeneric("filter") # from 'dplyr'
-setGeneric("mutate") # from 'dplyr'
 setGeneric("arrange") # from 'dplyr'
+setGeneric("filter") # from 'dplyr'
+setGeneric("group_by") # from 'dplyr'
+setGeneric("mutate") # from 'dplyr'
+setGeneric("select") # from 'dplyr'
 setGeneric("summarise") # from 'dplyr'
 setGeneric("summarize")	# from 'dplyr'
 

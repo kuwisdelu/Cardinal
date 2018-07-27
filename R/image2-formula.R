@@ -93,6 +93,8 @@ projectToRaster <- function(x, y, values, dim = NULL, res = NULL) {
 	} else {
 		ry <- res[2]
 	}
+	rx <- ifelse(is.finite(rx), rx, 1)
+	ry <- ifelse(is.finite(ry), ry, 1)
 	rows <- as.integer(round((x - xrange[1]) / rx))
 	cols <- as.integer(round((y - yrange[1]) / ry))
 	init <- as.vector(NA, mode=typeof(values))
@@ -137,6 +139,9 @@ projectToRaster3d <- function(x, y, z, values, dim = NULL, res = NULL) {
 	} else {
 		rz <- res[3]
 	}
+	rx <- ifelse(is.finite(rx), rx, 1)
+	ry <- ifelse(is.finite(ry), ry, 1)
+	rz <- ifelse(is.finite(rz), rz, 1)
 	ix <- as.integer(round((x - xrange[1]) / rx))
 	iy <- as.integer(round((y - yrange[1]) / ry))
 	iz <- as.integer(round((z - zrange[1]) / rz))

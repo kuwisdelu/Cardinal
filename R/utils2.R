@@ -66,6 +66,29 @@
 	x
 }
 
+# Combine many lists/dataframes into a single result
+.bind_results <- function(data, guess = 100L) {
+	dhead <- lapply(head(data, n=guess), as.data.frame,
+		check.names=FALSE, fix.empty.names=FALSE,
+		check.rows=FALSE, stringsAsFactors=FALSE)
+	coltypes <- sapply(do.call(rbind, dhead), typeof)
+	ans <-  lapply(coltypes, function(col_t)
+		vector(length(data), mode=col_t))
+	for ( i in seq_len(length(data)) )
+		for ( j in seq_along(ans) )
+			ans[[j]][i] <- data[[i]][[j]]
+	ans
+}
+
+# Match a function or NULL
+.matchFunOrNULL <- function(f) {
+	if ( is.null(f) ) {
+		f
+	} else {
+		match.fun(f)
+	}
+}
+
 # Select and concatenate metadata for show() method
 .scat <- function(x, vals=character(), collapse=" ", exdent=4, prefix="", ...)
 {

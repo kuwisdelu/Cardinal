@@ -2,26 +2,6 @@
 #### Signal smoothing methods ####
 ## -------------------------------
 
-setMethod("smoothSignal", "MSImagingExperiment",
-	function(object, method = c("gaussian", "sgolay", "ma"), ...)
-	{
-		fun <- smoothSignal.method2(method)
-		object <- process(object, fun=fun, ...,
-			label="smoothSignal", kind="pixel",
-			plotfun=smoothSignal_plotfun,
-			delay=TRUE)
-		object
-	})
-
-smoothSignal_plotfun <- function(s2, s1, ...,
-	main="Smoothing", xlab="m/z", ylab="")
-{
-	mz <- mz(attr(s1, "mcols"))
-	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
-		col="gray", type='l', ...)
-	lines(mz, s2, lwd=0.5)
-}
-
 setMethod("smoothSignal", "MSImageSet",
 	function(object, method = c("gaussian", "sgolay", "ma"),
 		...,
@@ -75,19 +55,6 @@ smoothSignal.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
-smoothSignal.method2 <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("gaussian", "sgolay", "ma"))
-		switch(method,
-			gaussian = smoothSignal.gaussian2,
-			sgolay = smoothSignal.sgolay2,
-			ma = smoothSignal.ma2,
-			match.fun(method))
-	} else {
-		match.fun(method)
-	}
-}
-
 smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, ...) {
 	coef <- coef / sum(coef)
 	window <- length(coef)
@@ -96,27 +63,19 @@ smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, 
 	convolve(xpad, coef, type="filter")
 }
 
-smoothSignal.ma2 <- smoothSignal.ma
-
 smoothSignal.gaussian <- function(x, sd=window/4, window=5, ...) {
 	halfWindow <- floor(window / 2)
 	coef <- dnorm((-halfWindow):halfWindow, sd=sd)
 	smoothSignal.ma(x, coef=coef, ...)
 }
 
-smoothSignal.gaussian2 <- smoothSignal.gaussian
-
 smoothSignal.kaiser <- function(x, beta=1, window=5, ...) {
 	coef <- kaiser(n=window + 1 - window %% 2, beta=beta)
 	smoothSignal.ma(x, coef=coef, ...)
 }
 
-smoothSignal.kaiser2 <- smoothSignal.kaiser
-
 smoothSignal.sgolay <- function(x, order=3, window=order + 3 - order %% 2, ...) {
 	window <- window + 1 - window %% 2
 	sgolayfilt(x, p=order, n=window)
 }
-
-smoothSignal.sgolay2 <- smoothSignal.sgolay
 

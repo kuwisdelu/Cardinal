@@ -112,7 +112,7 @@
 #### Generate entry for history log ####
 ## -------------------------------------
 
-.history <- function(which=-2) {
+.history <- function(which = -2L) {
 	error <- paste("Error: in", deparse(match.call()))
 	history <- tryCatch({
 		call <- sys.call(which)

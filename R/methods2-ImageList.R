@@ -88,10 +88,10 @@ setMethod("dim", "ImageList",
 	})
 
 setMethod("dims", "ImageList",
-	function(object) {
-		if ( length(object) == 0 )
+	function(x) {
+		if ( length(x) == 0 )
 			return(matrix(nrow=0, ncol=0))
-		data <- as(object, "SimpleList", strict=FALSE)
+		data <- as(x, "SimpleList", strict=FALSE)
 		sapply(data, dim, USE.NAMES=TRUE)
 	})
 

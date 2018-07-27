@@ -78,7 +78,7 @@ setMethod("resolution", "MassDataFrame",
 
 setReplaceMethod("resolution", "MassDataFrame",
 	function(object, value) {
-		names(object@resolution) <- value
+		object@resolution <- value
 		if ( validObject(object) )
 			object
 	})
@@ -96,6 +96,17 @@ setMethod("as.list", "MassDataFrame",
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
+	})
+
+# includes 'mz' slot in the data.frame by default
+setMethod("as.data.frame", "MassDataFrame",
+	function(x, ..., slots = TRUE)
+	{
+		if ( slots ) {
+			as.data.frame(as.list(x, format.mz=""), ...)
+		} else {
+			as.data.frame(x@listData, ...)
+		}
 	})
 
 # includes 'mz' slot in the env by default

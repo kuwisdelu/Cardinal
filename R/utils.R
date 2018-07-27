@@ -22,12 +22,12 @@ pos <- function(x) x
 # Return a vector multiplied by negative 1
 neg <- function(x) -x
 
-# Combined mean deviation of multiple samples
+# Combined (pooked) mean of multiple subsets
 combinedMean <- function(xbar, n) {
 	sum(xbar * n) / sum(n)
 }
 
-# Combined mean deviation of multiple samples
+# Combined (pooled) variance of multiple subsets
 combinedVar <- function(xbar, var, n) {
 	xc <- combinedMean(xbar, n)
 	(sum(n * var) + sum(n * (xbar - xc)^2)) / sum(n)

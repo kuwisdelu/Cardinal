@@ -43,10 +43,11 @@ import("methods")
 import("stats4")
 
 importFrom("dplyr",
-	"select",
-	"filter",
-	"mutate",
 	"arrange",
+	"filter",
+	"group_by",
+	"mutate",
+	"select",
 	"summarise",
 	"summarize")
 
@@ -419,10 +420,9 @@ exportMethods(
 exportMethods("topLabels")
 
 exportMethods(
-	"select",
 	"filter",
 	"mutate",
-	"summarise",
+	"select",
 	"summarize")
 
 export("%>%")

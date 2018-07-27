@@ -251,7 +251,7 @@ setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 setMethod("dim", "iSet", function(x)
 	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
 
-setMethod("dims", "iSet", function(object) dims(imageData(object)))
+setMethod("dims", "iSet", function(x) dims(imageData(x)))
 
 setMethod("storageMode", "iSet", function(object) storageMode(imageData(object)))
 

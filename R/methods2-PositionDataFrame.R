@@ -67,7 +67,8 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 
 .setResolutionfromCoord <- function(x, coord) {
 	res <- .estimateSpatialResolution(coord)
-	if ( any(is.na(res)) ) {
+	dims <- .getDimsFromResolution(coord, res)
+	if ( any(is.na(dims)) ) {
 		x@gridded <- FALSE
 	} else {
 		x@gridded <- TRUE
@@ -78,7 +79,10 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 
 .getDimsFromResolution <- function(coord, res) {
 	dims <- mapply(function(x, r) {
-		breaks <- diff(range(as.numeric(x))) / r
+		xrange <- range(as.numeric(x))
+		if ( xrange[1L] == xrange[2L] )
+			return(1)
+		breaks <- diff(xrange) / r
 		breaks + 1
 	}, coord, res, USE.NAMES=TRUE)
 	dims
@@ -192,10 +196,7 @@ setReplaceMethod("resolution", "PositionDataFrame",
 # the raster dimensions (for gridded positions only)
 
 setMethod("dims", "PositionDataFrame",
-	function(object) {
-		.getDimsFromResolution(object@coord,
-			object@resolution)
-	})
+	function(x) .getDimsFromResolution(x@coord, x@resolution))
 
 # includes 'run' and 'coord' slot in the list by default
 setMethod("as.list", "PositionDataFrame",
@@ -216,6 +217,17 @@ setMethod("as.list", "PositionDataFrame",
 		if ( !use.names )
 			names(ans) <- NULL
 		ans
+	})
+
+# includes 'run' and 'coord' slot in the data.frame by default
+setMethod("as.data.frame", "PositionDataFrame",
+	function(x, ..., slots = TRUE)
+	{
+		if ( slots ) {
+			as.data.frame(as.list(x, format.run="", format.coord=""), ...)
+		} else {
+			as.data.frame(x@listData, ...)
+		}
 	})
 
 # includes 'run' and 'coord' slot in the env by default

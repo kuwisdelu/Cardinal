@@ -232,26 +232,25 @@ setReplaceMethod("combiner", "MSProcessedImagingExperiment",
 ## Filter pixels/features
 
 setMethod("features", "MSImagingExperiment",
-	function(object, ..., mz, withNames = TRUE) {
+	function(object, ..., mz, .env = parent.frame(2)) {
 		if ( missing(mz) ) {
-			features <- callNextMethod(object, ..., withNames=withNames)
+			features <- callNextMethod(object, ..., .env=.env)
 		} else {
 			mz <- as.numeric(mz)
 			features <- bsearch(mz, mz(object), nearest=TRUE)
 			if ( length(list(...)) > 0 ) {
-				keep <- features %in% callNextMethod(object, ..., withNames=FALSE)
+				keep <- features %in% callNextMethod(object, ..., .env=.env)
 				features <- features[keep]
 			}
-			if ( withNames )
-				names(features) <- featureNames(object)[features]
+			names(features) <- featureNames(object)[features]
 		}
 		features
 	})
 
 setMethod("pixels", "MSImagingExperiment",
-	function(object, ..., coord, withNames = TRUE) {
+	function(object, ..., coord, .env = parent.frame(2)) {
 		if ( missing(coord) ) {
-			pixels <- callNextMethod(object, ..., withNames=withNames)
+			pixels <- callNextMethod(object, ..., .env=.env)
 		} else {
 			if ( !gridded(object) )
 				.warning("pixel coordinates are not gridded")
@@ -270,11 +269,10 @@ setMethod("pixels", "MSImagingExperiment",
 				}
 			}))
 			if ( length(list(...)) > 0 ) {
-				keep <- pixels %in% callNextMethod(object, ..., withNames=FALSE)
+				keep <- pixels %in% callNextMethod(object, ..., .env=.env)
 				pixels <- pixels[keep]
 			}
-			if ( withNames )
-				names(pixels) <- pixelNames(object)[pixels]
+			names(pixels) <- pixelNames(object)[pixels]
 		}
 		pixels
 	})

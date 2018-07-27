@@ -16,10 +16,16 @@ setMethod("plot",
 		coord,
 		plusminus,
 		...,
+		xlab, ylab,
 		type = if (centroided(x)) 'h' else 'l')
 	{
 		if ( !missing(formula) && missing(pixel) && missing(coord) )
-			return(callNextMethod(x, formula=formula, ..., type=type))
+			return(callNextMethod(x, formula=formula, ...,
+				xlab=xlab, ylab=ylab, type=type))
+		if ( missing(formula) ) {
+			xlab <- expression(italic(m/z))
+			ylab <- expression(italic(Intensity))
+		}
 		if ( (!missing(pixel) || !missing(coord)) && missing(pixel.groups) ) {
 			if ( missing(coord) )
 				coord <- Cardinal::coord(x)[pixel,]
@@ -59,6 +65,7 @@ setMethod("plot",
 			pixel=pixel,
 			pixel.groups=pixel.groups,
 			...,
+			xlab=xlab, ylab=ylab,
 			type=type)
 	})
 
