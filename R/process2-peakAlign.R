@@ -1,21 +1,19 @@
 
-#### Peak alignment methods ####
-## ---------------------------
+#### Align detected peaks to reference peaks ####
+## ----------------------------------------------
 
 setMethod("peakAlign", c("MSImagingExperiment", "missing"),
-	function(object, tolerance = 200, units = c("ppm", "mz"),
-			type=c("height", "area"), ...)
+	function(object, tolerance = 200, units = c("ppm", "mz"), ...)
 	{
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = tolerance * 1e-6),
 			mz = c("absolute" = tolerance))
-		type <- match.arg(type)
 		if ( is.null(metadata(object)[["reference peaks"]]) ) {
 			prefun <- peakAlign_prefun
 		} else {
 			prefun <- NULL
 		}
-		postfun <- peakAlign_postfun(tol, type)
+		postfun <- peakAlign_postfun(tol)
 		object <- process(object, label="peakAlign",
 			kind="global", prefun=prefun, postfun=postfun,
 			delay=TRUE)
@@ -47,15 +45,14 @@ peakAlign_prefun <- function(object, ..., BPPARAM) {
 	object
 }
 
-peakAlign_postfun <- function(tol, type, ...) {
+peakAlign_postfun <- function(tol, ...) {
 	fun <- function(object, ...) {
 		if ( !is(object, "MSProcessedImagingExperiment") )
 			object <- as(object, "MSProcessedImagingExperiment")
 		ref <- metadata(object)[["reference peaks"]]
 		mz(object) <- ref
 		tolerance(object) <- tol
-		combiner(object) <- switch(type,
-			height="max", area="sum")
+		combiner(object) <- "max"
 		if ( !is.null(spectrumRepresentation(object)) )
 			spectrumRepresentation(object) <- "centroid spectrum"
 		centroided(object) <- TRUE

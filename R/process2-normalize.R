@@ -1,6 +1,6 @@
 
-#### Normalization methods ####
-## ----------------------------
+#### Normalize spectra ####
+## ------------------------
 
 setMethod("normalize", "MSImagingExperiment",
 	function(object, method = "tic", ...)

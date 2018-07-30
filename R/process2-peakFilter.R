@@ -1,6 +1,6 @@
 
-#### Peak filtering methods ####
-## ---------------------------
+#### Filter peaks based on frequency, etc. ####
+## --------------------------------------------
 
 setMethod("peakFilter", "MSImagingExperiment",
 	function(object, freq.min = 0.01, ...)

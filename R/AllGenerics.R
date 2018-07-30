@@ -131,11 +131,11 @@ setGeneric("batchProcess", function(object, ...) standardGeneric("batchProcess")
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
+setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
 setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardizeRuns"))
-setGeneric("standardizeSamples", function(object, ...) standardGeneric("standardizeSamples"))
 
 #### Data alignment ####
 ## ---------------------

@@ -66,6 +66,27 @@
 	x
 }
 
+# If processing flattens key-value pairs, expand and collect them
+.collectKeyValueData <- function(ans) {
+	if ( is(ans, "matter_list") ) {
+		len <- floor(lengths(ans) / 2)
+		adata <- as.list(atomdata(ans))
+		mode <- as.character(adata$datamode)
+		keyData <- matter_list(datamode=mode,
+			offset=adata$offset, extent=len,
+			paths=paths(ans))
+		valueData <- matter_list(datamode=mode,
+			offset=adata$offset + sizeof(mode) * len,
+			extent=len, paths=paths(ans))
+	} else {
+		keyData <- lapply(ans, function(x)
+			x[1:floor(length(x) / 2)])
+		valueData <- lapply(ans, function(x)
+			x[floor(1 + (length(x) / 2)):length(x)])
+	}
+	list(keys=keyData, values=valueData)
+}
+
 # Combine many lists/dataframes into a single result
 .bind_results <- function(data, guess = 100L) {
 	dhead <- lapply(head(data, n=guess), as.data.frame,

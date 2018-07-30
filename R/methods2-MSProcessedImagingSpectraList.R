@@ -47,17 +47,15 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 .to.MSProcessedImagingSpectraList <- function(from, mz) {
 	tol <- c(absolute=min(abs(diff(mz))) / 2)
 	fun <- function(x) {
+		keys <- rep_vt(list(mz), length.out=ncol(x))
 		if ( inherits(x, "matter_matc") ) {
-			keys <- rep_vt(list(mz), length.out=ncol(x))
 			values <- as(x, "matter_list")
-			x <- sparse_mat(list(keys=keys, values=values),
-				nrow=nrow(x), ncol=ncol(x), keys=mz,
-				tolerance=tol, combiner="sum")
 		} else if ( !inherits(x, "sparse_matc") ) {
-			x <- sparse_mat(as.matrix(x), keys=mz)
-			tolerance(x) <- tol
-			combiner(x) <- "sum"
+			values <- lapply(seq_len(ncol(x)), function(i) x[,i])
 		}
+		x <- sparse_mat(list(keys=keys, values=values),
+			nrow=nrow(x), ncol=ncol(x), keys=mz,
+			tolerance=tol, combiner="sum")
 		x
 	}
 	data <- as(from, "SimpleList", strict=FALSE)

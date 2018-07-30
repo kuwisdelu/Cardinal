@@ -85,19 +85,26 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 }
 
 # Bin a signal
-bin <- function(x, t, bins, lbound, ubound, fun=sum, ...) {
-	if ( missing(bins) ) {
-		mapply(function(l, u) {
-			which <- findInterval(t, c(l, u))
-			fun(x[which == 1], ...)
-		}, lbound, ubound)
+bin <- function(x, t, bins, fun=sum, ...) {
+	if ( is.list(bins) ) {
+		if ( missing(t) ) {
+			xout <- mapply(function(l, u) {
+				fun(x[l:u], ...)
+			}, bins[[1]], bins[[2]])
+		} else {
+			xout <- mapply(function(l, u) {
+				which <- findInterval(t, c(l, u))
+				fun(x[which == 1], ...)
+			}, bins[[1]], bins[[2]])
+		}
 	} else {
 		which <- findInterval(t, bins)
 		exclude <- which == 0 | which == length(bins)
 		x <- x[!exclude]
 		which <- which[!exclude]
-		as.vector(tapply(x, which, fun))
+		xout <- as.vector(tapply(x, which, fun))
 	}
+	xout
 }
 
 # Returns a list of approximately even subsets of a vector
@@ -139,38 +146,31 @@ affine <- function(x, translate=c(0,0), rotate=0,
 
 # Logical local maxima in a window
 localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
-	halfWindow <- floor(window / 2)
-	if ( .C ) {
-		is.max <- integer(length(x))
-		is.max <- as.logical(.C("localMaxima", as.double(x), as.integer(is.max),
-			as.integer(length(x)), as.integer(halfWindow))[[2]])
-	} else {
-		is.max <- sapply(seq(from=1+halfWindow, to=length(x)-halfWindow, by=1),
-			function(i) which.max(x[(i-halfWindow):(i+halfWindow)]) == halfWindow + 1)
-		is.max <- c(rep(FALSE, halfWindow), is.max, rep(FALSE, halfWindow))
-	}
-	is.max
+	if ( length(x) < 3L )
+		return(logical(length(x)))
+	halfWindow <- floor(min(window, length(x)) / 2)
+	.Call("localMaxima", x, halfWindow, PACKAGE="Cardinal")
 }
 
 # Local maxima in a window
 localMaxima <- function(x, t, ...) {
-	if ( missing(t) ) t <- seq_along(x)
-	t[localMaximaLogical(x, ...)]
+	if ( missing(t) ) {
+		which(localMaximaLogical(x, ...))
+	} else {
+		t[localMaximaLogical(x, ...)]
+	}
 }
 
 # Returns the two nearest local maxima to the given points
 nearestLocalMaxima <- function(x, t, tout, ...) {
-	which <- c(1, which(localMaximaLogical(x, ...)), length(t))
-	locmax <- unique(t[which])
-	limits <- sapply(tout, function(ti) {
-		lower <- which(diff(sign(ti - locmax)) < 0)
-		if ( length(lower) > 1 )
-			lower <- lower[[1]]
-		upper <- lower + 1
-		c(locmax[lower], locmax[upper], which[lower], which[upper])
-	})
-	list(lbound=limits[1,], ubound=limits[2,],
-		lwhich=limits[3,], uwhich=limits[4,])
+	if ( length(x) != length(t) )
+		t <- rep_len(t, length(x))
+	locmax1 <- localMaximaLogical(x, ...)
+	locmax2 <- rev(localMaximaLogical(rev(x), ...))
+	locmax <- unique(c(1L, which(locmax1 | locmax2), length(x)))
+	lower <- findInterval(tout, t[locmax], all.inside=TRUE)
+	upper <- lower + 1L
+	list(lower=locmax[lower], upper=locmax[upper])
 }
 
 # Alignment of two vectors by absolute difference

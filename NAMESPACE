@@ -398,6 +398,7 @@ exportMethods(
 	"normalize",
 	"peakPick",
 	"peakAlign",
+	"peakBin",
 	"peakFilter",
 	"reduceBaseline",
 	"reduceDimension",

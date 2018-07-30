@@ -70,8 +70,6 @@ setMethod("summarize", "SparseImagingExperiment",
 	n <- switch(by,
 		feature = ncol(object),
 		pixel = nrow(object))
-	if ( n == 1L )
-		.stop("can't summarize data when n = 1")
 	colclasses <- c("matter_matc", "sparse_matc")
 	rowclasses <- c("matter_matr", "sparse_matr")
 	bias <- (n / (n - 1))
@@ -93,12 +91,12 @@ setMethod("summarize", "SparseImagingExperiment",
 	tsimplify <- function(ans) {
 		dim <- c(dim(ans[[1]]), length(ans))
 		ans <- array(unlist(ans), dim=dim)
-		sx <- rowSums(ans[3,,])
-		sx2 <- rowSums(ans[4,,])
+		sx <- apply(ans[3,,,drop=FALSE], 2, sum)
+		sx2 <- apply(ans[4,,,drop=FALSE], 2, sum)
 		var <- ((sx2 / n) - (sx / n)^2)
 		data.frame(
-			min=apply(ans[1,,], 1, min),
-			max=apply(ans[2,,], 1, max),
+			min=apply(ans[1,,,drop=FALSE], 2, min),
+			max=apply(ans[2,,,drop=FALSE], 2, max),
 			mean=sx / n, sum=sx,
 			sd=sqrt(bias) * sqrt(var),
 			var=bias * var)

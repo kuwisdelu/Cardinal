@@ -1,6 +1,6 @@
 
-#### Baseline reduction methods ####
-## ---------------------------------
+#### Estimate and subtract baseline methods ####
+## ---------------------------------------------
 
 setMethod("reduceBaseline", "MSImagingExperiment",
 	function(object, method = "median", ...)

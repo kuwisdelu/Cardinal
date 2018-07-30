@@ -3,9 +3,10 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Implement summarize() / finish peakAlign()
+- Finish peakBin() and reduceDimension()
+- Deprecate and remove Binmat class
 - Finish Cardinal v2 classes/methods
-- Add processing methods for new classes
+- Add analysis methods for new classes
 - Statistical hypothesis testing
 
 Priority: Medium

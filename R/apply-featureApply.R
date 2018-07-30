@@ -25,7 +25,7 @@ setMethod("featureApply", "SparseImagingExperiment",
 		if ( output ) {
 			.outpath <- .outpath[1L]
 			.message("using outpath = ", .outpath)
-			rwrite <- .output_writer(pid, .outpath)
+			rwrite <- .remote_writer(pid, .outpath)
 		}
 		progress <- is(BPPARAM, "SerialParam") && !bpprogressbar(BPPARAM)
 		if ( progress )
@@ -45,7 +45,7 @@ setMethod("featureApply", "SparseImagingExperiment",
 		if ( progress )
 			.message(progress="stop")
 		if ( output )
-			ans <- .output_collect(ans, .outpath, .simplify)
+			ans <- .remote_collect(ans, .outpath, .simplify)
 		if ( .use.names && !.blocks ) {
 			if ( output && is(ans, "matter_mat") ) {
 				colnames(ans) <- featureNames(.object)

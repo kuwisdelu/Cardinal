@@ -12,7 +12,6 @@ setMethod("process", "SparseImagingExperiment",
 			delay = FALSE,
 			plot = FALSE,
 			par = NULL,
-			layout,
 			outpath = NULL,
 			BPPARAM = bpparam())
 	{
@@ -77,8 +76,9 @@ setMethod("process", "SparseImagingExperiment",
 				.warning("plot=TRUE only allowed for SerialParam()")
 				plot <- FALSE
 				par <- NULL
-			} else if ( plot && !missing(layout) ) {
-				.setup.layout(layout)
+			} else if ( plot && !is.null(par$layout) ) {
+				.setup.layout(par$layout)
+				par$layout <- NULL
 			}
 			object <- .delayedBatchProcess(object,
 				plot=plot, par=par, outpath=outpath,
@@ -114,15 +114,15 @@ setMethod("process", "SparseImagingExperiment",
 				fun <- .list[[i]]$fun
 				arglist <- c(list(.x), .list[[i]]$args)
 				.xnew <- do.call(fun, arglist)
-				attr(.xnew, "idx") <- attr(.x, "idx")
-				attr(.xnew, "mcols") <- attr(.x, "mcols")
 				if ( .plot && has_plotfun ) {
 					plotfun <- .list[[i]]$plotfun
 					plotarglist <- c(list(.xnew), list(.x), .par)
 					do.call(plotfun, plotarglist)
 				}
+				attributes(.xnew) <- attributes(.x)
 				.x <- .xnew
 			}
+			attributes(.x) <- NULL
 			.x
 		}
 		by_pixels <- "pixel" %in% queue$info$kind

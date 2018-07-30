@@ -1,6 +1,6 @@
 
-#### Signal smoothing methods ####
-## -------------------------------
+#### Smooth spectra ####
+## ---------------------
 
 setMethod("smoothSignal", "MSImagingExperiment",
 	function(object, method = c("gaussian", "sgolay", "ma"), ...)

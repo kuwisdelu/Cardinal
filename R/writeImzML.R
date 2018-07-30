@@ -77,7 +77,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	metadata <- as.list(info)
 	template <- .templateImzML(info)
 	result <- .Call("writeImzML", metadata, template,
-		normalizePath(file, mustWork=FALSE))
+		normalizePath(file, mustWork=FALSE), PACKAGE="Cardinal")
 	invisible(result)
 }
 
