@@ -51,7 +51,12 @@ setMethod("msiInfo", "MSContinuousImagingExperiment",
 setMethod("msiInfo", "MSProcessedImagingExperiment",
 	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
 	{
-		stop("not supported yet")
+		info <- .make.MSProcessedImagingInfo(object, mz.type, intensity.type)
+		info@metadata[["ibd binary type"]] <- "processed"
+		info@metadata <- append(info@metadata, metadata(object))
+		info@metadata <- info@metadata[unique(names(info@metadata))]
+		if ( validObject(info) )
+			info
 	})
 
 .make.MSContinuousImagingInfo <- function(x, mz.type, intensity.type) {
@@ -77,6 +82,43 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		check.names=FALSE)
 	offset <- c(0, cumsum(intensityArrayList[["external encoded length"]][-ncol(x)]))
 	intensityArrayList[["external offset"]] <- offset + intensityArrayList[["external offset"]]
+	spectrumRepresentation <- ifelse(centroided(x),
+		"centroid spectrum", "profile spectrum")
+	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
+	new("MSImagingInfo",
+		scanList=scanList,
+		mzArrayList=mzArrayList,
+		intensityArrayList=intensityArrayList,
+		metadata=experimentMetadata)
+}
+
+.make.MSProcessedImagingInfo <- function(x, mz.type, intensity.type) {
+	mz.type <- match.arg(mz.type,
+		choices=c("32-bit float", "64-bit float"))
+	intensity.type <- match.arg(intensity.type,
+		choices=c("32-bit float", "64-bit float",
+			"16-bit integer", "32-bit integer", "64-bit integer"))
+	scanList <- DataFrame(coord(x)[c(1,2)])
+	positionNames <- c("position x", "position y", "position z")
+	names(scanList) <- positionNames[seq_along(scanList)]
+	if ( any(lengths(mzData(x)) != lengths(peakData(x))) )
+		.stop("lengths of intensity and m/z arrays differ")
+	mzLength <- Csizeof(mz.type) * lengths(mzData(x))
+	intensityLength <- Csizeof(intensity.type) * lengths(peakData(x))
+	mzOffset <- c(16, 16 + cumsum(mzLength + intensityLength)[-ncol(x)])
+	intensityOffset <- c(16 + cumsum(c(mzLength[1L], mzLength[-1L] + intensityLength[-ncol(x)])))
+	mzArrayList <- DataFrame(
+		"external offset"=unname(mzOffset),
+		"external array length"=unname(lengths(mzData(x))),
+		"external encoded length"=unname(mzLength),
+		"binary data type"=rep(mz.type, ncol(x)),
+		check.names=FALSE)
+	intensityArrayList <- DataFrame(
+		"external offset"=unname(intensityOffset),
+		"external array length"=unname(lengths(peakData(x))),
+		"external encoded length"=unname(intensityLength),
+		"binary data type"=rep(intensity.type, ncol(x)),
+		check.names=FALSE)
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)

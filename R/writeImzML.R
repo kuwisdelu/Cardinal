@@ -55,17 +55,36 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	id <- uuid(uppercase=TRUE)
 	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
 	pid[] <- id$bytes
-	pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
-		offset=mzData(info)[["external offset"]][1],
-		extent=mzData(info)[["external array length"]][1],
-		datamode=Ctypeof(mz.type))
-	pmz[] <- mz(x)
-	pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
-		offset=imageData(info)[["external offset"]],
-		extent=imageData(info)[["external array length"]],
-		datamode=Ctypeof(intensity.type))
-	for ( i in seq_len(ncol(x)) )
-		pspectra[,i] <- spectra(x)[,i]
+	if ( metadata(info)[["ibd binary type"]] == "continuous" ) {
+		# write 'continuous' imzML
+		pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
+			offset=mzData(info)[["external offset"]][1L],
+			extent=mzData(info)[["external array length"]][1L],
+			datamode=Ctypeof(mz.type))
+		pmz[] <- mz(x)
+		pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
+			offset=imageData(info)[["external offset"]],
+			extent=imageData(info)[["external array length"]],
+			datamode=Ctypeof(intensity.type))
+		for ( i in seq_len(ncol(x)) )
+			pspectra[,i] <- spectra(x)[,i]	
+	} else if ( metadata(info)[["ibd binary type"]] == "processed" ) {
+		# write 'processed' imzML
+		pmz <- matter_list(length=nrow(x), paths=file, filemode="rb+",
+			offset=mzData(info)[["external offset"]],
+			extent=mzData(info)[["external array length"]],
+			datamode=Ctypeof(mz.type))
+		pspectra <- matter_list(length=nrow(x), paths=file, filemode="rb+",
+			offset=imageData(info)[["external offset"]],
+			extent=imageData(info)[["external array length"]],
+			datamode=Ctypeof(intensity.type))
+		for ( i in seq_len(ncol(x)) ) {
+			pmz[[i]] <- mzData(x)[[i]]
+			pspectra[[i]] <- peakData(x)[[i]]
+		}
+	} else {
+		.stop("invalid 'ibd binary type' found")
+	}
 	options(matter.cast.warning=warn)
 	hash <- checksum(pspectra, algo="sha1")
 	metadata(info)[["universally unique identifier"]] <- paste0("{", id$string, "}")
