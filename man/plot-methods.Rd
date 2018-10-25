@@ -69,6 +69,7 @@
         coord,
         plusminus,
         \dots,
+        xlab, ylab,
         type = if (centroided(x)) 'h' else 'l')
 
 ## Methods for Cardinal version >= 1.0.0 classes

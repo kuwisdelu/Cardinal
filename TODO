@@ -6,7 +6,7 @@ Priority: High
 - Deprecate and remove Binmat class
 - Finish Cardinal v2 classes/methods
 - Add analysis methods for new classes
-- Statistical hypothesis testing
+- Add results classes and plotting
 
 Priority: Medium
 - Graphical user interface

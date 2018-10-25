@@ -4,6 +4,7 @@
 \alias{normalize}
 \alias{normalize-methods}
 \alias{normalize,MSImageSet-method}
+\alias{normalize,MSImagingExperiment-method}
 
 \alias{normalize.tic}
 
@@ -12,6 +13,8 @@
 	Apply normalization to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{normalize}{MSImagingExperiment}(object, method = "tic", \dots)
+
 \S4method{normalize}{MSImageSet}(object, method = "tic",
 	\dots,
 	pixel = pixels(object),
@@ -21,7 +24,7 @@
 normalize.tic(x, tic=length(x), \dots)
 }
 \arguments{
-    \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{object}{An imaging dataset.}
     \item{method}{The normalization method to use.}
     \item{pixel}{The pixels to normalize. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
@@ -42,14 +45,16 @@ normalize.tic(x, tic=length(x), \dots)
     Internally, \code{\link{pixelApply}} is used to apply the normalization. See its documentation page for more details on additional objects available to the environment installed to the normalization function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the normalized spectra.
+    An object of the same class with the normalized spectra.
 }
 \author{
 	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link{pixelApply}}
+    \code{\linkS4class{MSImagingExperiment}},
+    \code{\link{pixelApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

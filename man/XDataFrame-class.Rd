@@ -14,6 +14,9 @@
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
 
+\alias{[[<-,XDataFrame,ANY,ANY-method}
+\alias{$<-,XDataFrame-method}
+
 \title{XDataFrame: DataFrame with eXtra metadata columns}
 
 \description{

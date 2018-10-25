@@ -4,6 +4,7 @@
 \alias{reduceBaseline}
 \alias{reduceBaseline-methods}
 \alias{reduceBaseline,MSImageSet-method}
+\alias{reduceBaseline,MSImagingExperiment-method}
 
 \alias{reduceBaseline.median}
 
@@ -12,6 +13,8 @@
 	Apply baseline reduction to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{reduceBaseline}{MSImagingExperiment}(object, method = "median", \dots)
+
 \S4method{reduceBaseline}{MSImageSet}(object, method = "median",
     \dots,
     pixel = pixels(object),
@@ -21,7 +24,7 @@
 reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 }
 \arguments{
-    \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{object}{An imaging dataset.}
     \item{method}{The baseline reduction method to use.}
     \item{pixel}{The pixels to baseline subtract. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
@@ -51,7 +54,9 @@ reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link{pixelApply}}
+    \code{\linkS4class{MSImagingExperiment}},
+    \code{\link{pixelApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

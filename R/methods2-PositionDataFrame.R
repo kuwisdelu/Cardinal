@@ -79,6 +79,8 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 
 .getDimsFromResolution <- function(coord, res) {
 	dims <- mapply(function(x, r) {
+		if ( length(x) < 1L )
+			return(NA_real_)
 		xrange <- range(as.numeric(x))
 		if ( xrange[1L] == xrange[2L] )
 			return(1)

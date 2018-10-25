@@ -23,7 +23,7 @@
 \arguments{
     \item{object}{An imaging dataset.}
     \item{formula}{Passed to \code{\link{image}}.}
-    \item{mode}{What kind of selectROIion to perform: 'region' to select a region-of-interest, or 'pixels' to select individual pixels.}
+    \item{mode}{What kind of selection to perform: 'region' to select a region-of-interest, or 'pixels' to select individual pixels.}
     \item{\dots}{Addtional arguments to be passed to \code{\link{image}}.}
     \item{main}{Passed to \code{\link{image}}.}
     \item{subset}{Passed to \code{\link{image}}.}

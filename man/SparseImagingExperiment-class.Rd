@@ -24,6 +24,7 @@
 \alias{resolution<-,SparseImagingExperiment-method}
 \alias{processingData,SparseImagingExperiment-method}
 \alias{processingData<-,SparseImagingExperiment-method}
+\alias{preproc,SparseImagingExperiment-method}
 \alias{[,SparseImagingExperiment,ANY,ANY,ANY-method}
 \alias{[<-,SparseImagingExperiment,ANY,ANY,ANY-method}
 \alias{dims,SparseImagingExperiment-method}
@@ -95,6 +96,8 @@ SparseImagingExperiment(
         \item{\code{dims(object)}:}{Get the gridded dimensions of the spatial positions (i.e., as if projected to an image raster).}
 
         \item{\code{processingData(object)}, \code{processingData(object) <- value}:}{Get or set the \code{processing} slot.}
+
+        \item{\code{preproc(object)}:}{List the preprocessing steps queued and applied to the dataset.}
 
         \item{\code{object[i, j, ..., drop]}:}{Subset based on the rows (\code{featureData}) and the columns (\code{pixelData}). The result is the same class as the original object.}
 

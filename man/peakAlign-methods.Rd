@@ -6,6 +6,9 @@
 \alias{peakAlign,MSImageSet,numeric-method}
 \alias{peakAlign,MSImageSet,MSImageSet-method}
 \alias{peakAlign,MSImageSet,missing-method}
+\alias{peakAlign,MSImagingExperiment,numeric-method}
+\alias{peakAlign,MSImagingExperiment,character-method}
+\alias{peakAlign,MSImagingExperiment,missing-method}
 
 \alias{peakAlign.diff}
 \alias{peakAlign.DP}
@@ -15,6 +18,12 @@
 	Apply peak alignment to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{peakAlign}{MSImagingExperiment,missing}(object, tolerance = 200, units = c("ppm", "mz"), \dots)
+
+\S4method{peakAlign}{MSImagingExperiment,character}(object, ref, \dots)
+
+\S4method{peakAlign}{MSImagingExperiment,numeric}(object, ref, \dots)
+
 \S4method{peakAlign}{MSImageSet,numeric}(object, ref, method = c("diff", "DP"),
     \dots,
     pixel = pixels(object),
@@ -33,6 +42,8 @@ peakAlign.DP(x, y, gap=0, \dots)
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
     \item{ref}{A reference to which to align the peaks.}
+    \item{tolerance}{The tolerance to be used when aligning detected peaks to the reference.}
+    \item{units}{The units to use for the \code{tolerance}. Either parts-per-million or the raw m/z values.}
     \item{method}{The peak alignment method to use.}
     \item{pixel}{The pixels to align. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
@@ -40,7 +51,6 @@ peakAlign.DP(x, y, gap=0, \dots)
     \item{x}{The vector of m/z values to be aligned.}
     \item{y}{The vector of reference m/z values.}
     \item{diff.max}{Peaks that differ less than this value will be aligned together.}
-    \item{units}{Either parts-per-million or the raw m/z values.}
     \item{gap}{The gap penalty for the dynamic programming sequence alignment.}
 }
 \details{
@@ -66,10 +76,13 @@ peakAlign.DP(x, y, gap=0, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
+    \code{\linkS4class{MSImagingExperiment}},
     \code{\link{peakPick}},
     \code{\link{peakFilter}},
+    \code{\link{peakBin}},
     \code{\link{reduceDimension}},
-    \code{\link{pixelApply}}
+    \code{\link{pixelApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(diag(2), as="MSImageSet")
