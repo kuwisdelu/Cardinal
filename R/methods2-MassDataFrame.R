@@ -151,7 +151,8 @@ setMethod("[", "MassDataFrame",
 			rownames=rownames(x),
 			nrows=length(mz),
 			listData=x@listData,
-			elementMetadata=mcols)
+			elementMetadata=mcols,
+			metadata=metadata(x))
 		x
 	})
 

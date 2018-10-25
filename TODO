@@ -3,7 +3,6 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Finish peakBin() and reduceDimension()
 - Deprecate and remove Binmat class
 - Finish Cardinal v2 classes/methods
 - Add analysis methods for new classes

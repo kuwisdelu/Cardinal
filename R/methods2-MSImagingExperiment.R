@@ -152,10 +152,12 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 			return(callNextMethod(object, value))
 		if ( length(value) != length(mz(object)) ) {
 			if ( ncol(featureData(object)) > 0L ) {
-				mcols <- names(featureData(object))
-				.warning("dropping feature metadata cols: ", mcols)
+				drop <- names(featureData(object))
+				.warning("dropping feature metadata cols: ", drop)
 			}
-			object@featureData <- MassDataFrame(mz=value)
+			mcols <- MassDataFrame(mz=value)
+			metadata(mcols) <- metadata(object@featureData)
+			object@featureData <- mcols
 		} else {
 			mz(object@featureData) <- value
 		}

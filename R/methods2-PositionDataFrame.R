@@ -275,7 +275,8 @@ setMethod("[", "PositionDataFrame",
 			rownames=rownames(x),
 			nrows=nrow(coord),
 			listData=x@listData,
-			elementMetadata=mcols)
+			elementMetadata=mcols,
+			metadata=metadata(x))
 		x
 	})
 

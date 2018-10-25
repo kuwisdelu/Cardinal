@@ -21,7 +21,8 @@ peakFilter_postfun <- function(expr, freq.min) {
 			summary2 <- summarize(object,
 				.stat=c("min", "max", "mean", "sum", "sd", "var"),
 				.by="feature", BPPARAM=BPPARAM)
-			e <- as.env(cbind(summary1, summary2))
+			summary1 <- cbind(summary1, summary2)
+			e <- as.env(summary1)
 			rules <- lapply(expr, function(a) {
 				rule <- eval(a, envir=e)
 				if ( !is.logical(rule) )
