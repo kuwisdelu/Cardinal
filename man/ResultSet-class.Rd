@@ -22,7 +22,7 @@
 \alias{names,ResultSet-method}
 \alias{show,ResultSet-method}
 
-\title{Class to Contain Analysis Results for Imaging Experiments}
+\title{ResultSet: Class to contain analysis results for imaging experiments}
 
 \description{
     This class is used as a return value by most of the analysis methods provided by Cardinal, including \code{\link{PCA}}, \code{\link{PLS}}, \code{\link{OPLS}}, \code{\link{spatialKMeans}}, \code{\link{spatialShrunkenCentroids}}.

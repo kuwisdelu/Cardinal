@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 1.13.2 [2018-7-22]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added new classes for Cardinal v2 including 'XDataFrame',
+        'PositionDataFrame', 'MassDataFrame', 'ImagingExperiment', 'SparseImagingExperiment', and 'MSImagingExperiment'
+
 CHANGES IN VERSION 1.13.1 [2018-7-22]
 -----------------------------------
 

@@ -10,9 +10,9 @@ image3d <- function(
 	ylim = range(y),
 	zlim = range(z),
 	xlab, ylab, zlab,
-	col = intensity.colors(100),
+	col = heat.colors(12),
 	alpha.power = 2,
-	alpha = (seq_len(length(col))/length(col))^alpha.power,
+	alpha = (seq_along(col) / length(col))^alpha.power,
 	pch = 15, cex = 1,
 	scale = FALSE,
 	add = FALSE,
@@ -27,7 +27,7 @@ image3d <- function(
 				x <- x$x
 			} else {
 				if ( is.null(dim(x)) )
-					stop("argument must be matrix-like")
+					stop("argument must be array-like")
 				values <- x
 				x <- seq.int(0, 1, length.out = dim(values)[1])
 			}
@@ -54,15 +54,58 @@ image3d <- function(
 			xlab=xlab, ylab=ylab, zlab=zlab,
 			border=NA, shade=NA, col=NA,
 			scale=scale, ...)
-	col <- alpha.colors(col=col, alpha=alpha)
-	bins <- cut(values, breaks=seq(
-		from=min(values, na.rm=TRUE),
-		to=max(values, na.rm=TRUE),
-		length.out=length(col)+1),
-		include.lowest=TRUE)
-	col <- col[bins]
-	coord <- expand.grid(x=x, y=y, z=z)
-	points(trans3d(coord$x, coord$y, coord$z, .Cardinal$trans3d),
-		col=col, pch=pch, cex=cex)
+    if ( !all(is.na(values)) ) {
+    	col <- alpha.colors(col, alpha=alpha)
+		bins <- cut(values, breaks=seq(
+			from=min(values, na.rm=TRUE),
+			to=max(values, na.rm=TRUE),
+			length.out=length(col)+1),
+			include.lowest=TRUE)
+		col <- col[bins]
+		coord <- expand.grid(x=x, y=y, z=z)
+		points(trans3d(coord$x, coord$y, coord$z, .Cardinal$trans3d),
+			col=col, pch=pch, cex=cex)
+    }
+	invisible(.Cardinal$trans3d)
+}
+
+points3d <- function(
+	x, y, z,
+	values,
+	xlim = range(x),
+	ylim = range(y),
+	zlim = range(z),
+	xlab, ylab, zlab,
+	col = heat.colors(12),
+	alpha.power = 2,
+	alpha = (seq_along(col) / length(col))^alpha.power,
+	pch = 15, cex = 1,
+	scale = FALSE,
+	add = FALSE,
+	...)
+{
+	if ( missing(xlab) )
+		xlab <- if ( missing(x) ) "" else deparse(substitute(x))
+	if ( missing(ylab) )
+		ylab <- if ( missing(y) ) "" else deparse(substitute(y))
+	if ( missing(zlab) )
+		zlab <- if ( missing(z) ) "" else deparse(substitute(z))
+    if ( !add || is.null(.Cardinal$trans3d) )
+    	.Cardinal$trans3d <- persp(xlim, ylim, matrix(zlim, nrow=2, ncol=2),
+			xlim=xlim, ylim=ylim, zlim=zlim,
+			xlab=xlab, ylab=ylab, zlab=zlab,
+			border=NA, shade=NA, col=NA,
+			scale=scale, ...)
+	if ( !all(is.na(values)) ) {
+		col <- alpha.colors(col, alpha=alpha)
+		bins <- cut(values, breaks=seq(
+			from=min(values, na.rm=TRUE),
+			to=max(values, na.rm=TRUE),
+			length.out=length(col)+1),
+			include.lowest=TRUE)
+		col <- col[bins]
+		points(trans3d(x, y, z, .Cardinal$trans3d),
+			col=col, pch=pch, cex=cex)
+	}
 	invisible(.Cardinal$trans3d)
 }

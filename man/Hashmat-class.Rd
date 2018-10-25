@@ -34,10 +34,12 @@
 \alias{initialize,Hashmat-method}
 \alias{show,Hashmat-method}
 
-\title{Sparse Matrix Class Using Lists as Hash Tables}
+\title{Hashmat: Sparse matrix class using lists as hash tables}
 
 \description{
     The Hashmat class implements compressed sparse column (CSC) style matrices using R \code{list} objects as the columns. The implementation is unique in that it allows re-assignment of the keys describing the rows, allowing for arbitrary re-ordering of rows and row-wise elements. This is useful for storing sparse signals, such as processed spectra.
+
+    New code should use the \code{\linkS4class{sparse_mat}} class from the \code{matter} package instead.
 }
 
 \usage{

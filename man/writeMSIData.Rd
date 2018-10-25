@@ -8,7 +8,7 @@
 \alias{writeImzML,MSImageSet-method}
 \alias{writeAnalyze,MSImageSet-method}
 
-\title{Write Mass Spectrometry Imaging Data Files}
+\title{Write mass spectrometry imaging data files}
 \description{
 	Write supported mass spectrometry imaging data files. Supported formats include imzML and Analyze 7.5.
 }

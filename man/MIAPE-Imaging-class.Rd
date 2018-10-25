@@ -9,14 +9,16 @@
 \alias{abstract,MIAPE-Imaging-method}
 \alias{samples,MIAPE-Imaging-method}
 \alias{pubMedIds,MIAPE-Imaging-method}
-\alias{pubMedIds<-,MIAPE-Imaging-method}
+\alias{pubMedIds<-,MIAPE-Imaging,ANY-method}
 \alias{otherInfo,MIAPE-Imaging-method}
 \alias{expinfo,MIAPE-Imaging-method}
 \alias{notes,MIAPE-Imaging-method}
-\alias{notes<-,MIAPE-Imaging-method}
+\alias{notes<-,MIAPE-Imaging,character-method}
+\alias{notes<-,MIAPE-Imaging,list-method}
+\alias{preproc,MIAPE-Imaging-method}
+\alias{preproc<-,MIAPE-Imaging-method}
 \alias{combine,MIAPE-Imaging,MIAPE-Imaging-method}
 
-\alias{msiInfo}
 \alias{msiInfo,MIAPE-Imaging-method}
 \alias{specimenOrigin}
 \alias{specimenOrigin,MIAPE-Imaging-method}
@@ -103,7 +105,7 @@
 \alias{imageShape<-}
 \alias{imageShape<-,MIAPE-Imaging-method}
 
-\title{Class for Storing Mass Spectrometry Imaging Experiment Information}
+\title{MIAPE-Imaging: Class for storing mass spectrometry imaging experiment information}
 
 \description{
     The Minimum Information About a Proteomics Experiment for MS Imaging. The current implementation is based on the imzML specification.

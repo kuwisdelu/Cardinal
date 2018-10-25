@@ -1,4 +1,237 @@
 
+# Round to an arbitrary precision
+roundnear <- function(x, precision=0.1) {
+	round(x / precision) * precision
+}
+
+# L1 norm of a vector
+l1norm <- function(x) sum(abs(x))
+
+# L2 norm of a vector
+l2norm <- function(x) sqrt(sum(x^2))
+
+# Soft thresholding
+soft <- function(x, delta) sign(x) * pmax(0, abs(x) - delta)
+
+# Cube root
+cbrt <- function(x) x^(1/3)
+
+# Return a vector multiplied by positive 1
+pos <- function(x) x
+
+# Return a vector multiplied by negative 1
+neg <- function(x) -x
+
+# Combined (pooked) mean of multiple subsets
+combinedMean <- function(xbar, n) {
+	sum(xbar * n) / sum(n)
+}
+
+# Combined (pooled) variance of multiple subsets
+combinedVar <- function(xbar, var, n) {
+	xc <- combinedMean(xbar, n)
+	(sum(n * var) + sum(n * (xbar - xc)^2)) / sum(n)
+}
+
+# Grouped mean, e.g., of a histogram
+groupMean <- function(x, f) {
+	if ( any(f < 0) ) f[f < 0] <- 0
+	n <- sum(f)
+	sum(f * x) / n
+}
+
+# Grouped variance, e.g., of a histogram
+groupVar <- function(x, f) {
+	if ( any(f < 0) ) f[f < 0] <- 0
+	n <- sum(f)
+	xbar <- sum(f * x) / n
+	Sfx2 <- sum(f * x^2)
+	(Sfx2 / n) - xbar^2
+}
+
+# Kurtosis of a vector
+kurtosis <- function(x, na.rm=FALSE) {
+	if ( na.rm ) x <- x[!is.na(x)]
+	n <- length(x)
+	n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
+}
+
+# Bisection search along a sequence
+bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
+	if ( fun(x[1], ...) < fun(x[length(x)], ...) ) {
+		lo <- 1
+		hi <- length(x)
+		to.lo <- floor
+		to.hi <- ceiling
+	} else {
+		lo <- length(x)
+		hi <- 1
+		to.lo <- ceiling
+		to.hi <- floor
+	}
+	i <- round((lo + hi) / 2, digits=0)
+	iter <- 1
+	while ( iter <= iter.max && l2norm(fun(x[i], ...)) > epsilon ) {
+		if ( fun(x[i], ...) > 0 ) {
+			hi <- i
+			i <- to.lo((lo + hi) / 2)
+		} else {
+			lo <- i
+			i <- to.hi((lo + hi) / 2)
+		}
+		iter <- iter + 1
+	}
+	i
+}
+
+# Bin a signal
+bin <- function(x, t, bins, fun=sum, ...) {
+	if ( is.list(bins) ) {
+		if ( missing(t) ) {
+			xout <- mapply(function(l, u) {
+				fun(x[l:u], ...)
+			}, bins[[1]], bins[[2]])
+		} else {
+			xout <- mapply(function(l, u) {
+				which <- findInterval(t, c(l, u))
+				fun(x[which == 1], ...)
+			}, bins[[1]], bins[[2]])
+		}
+	} else {
+		which <- findInterval(t, bins)
+		exclude <- which == 0 | which == length(bins)
+		x <- x[!exclude]
+		which <- which[!exclude]
+		xout <- as.vector(tapply(x, which, fun))
+	}
+	xout
+}
+
+# Returns a list of approximately even subsets of a vector
+blocks <- function(x, blocks) {
+	blocksize <- max(1L, length(x) / blocks)
+	n <- floor(length(x) / blocksize) + 1L
+	ints <- floor(seq(from=1L, to=length(x) + 1L, length.out=n))
+	begin <- ints[-length(ints)]
+	end <- ints[-1L] - 1L
+	mapply(function(i, j) x[i:j],
+		begin, end, SIMPLIFY=FALSE)
+}
+
+# Affine transformation on a data.frame of coordinates
+affine <- function(x, translate=c(0,0), rotate=0,
+	angle=c("degrees", "radians"), grid=TRUE)
+{
+	angle <- match.arg(angle)
+	theta <- -rotate
+	if ( angle == "degrees" ) theta <- theta * pi / 180
+	# translate center of mass to be near origin
+	tt <- sapply(x, function(xs) mean(xs))
+	new.x <- t(as.matrix(x)) - tt
+	# rotate around origin
+	A <- matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2)
+	new.x <- A %*% new.x
+	# translate back and do requested translation
+	new.x <- t(new.x + tt + translate)
+	# remove negative coordinates and round to integers
+	if ( grid ) {
+		new.x <- round(new.x)
+		new.x[new.x < 1] <- 1
+	}
+	# return data.frame of new coordinates
+	new.x <- as.data.frame(new.x)
+	names(new.x) <- names(x)
+	new.x
+}
+
+# Logical local maxima in a window
+localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
+	if ( length(x) < 3L )
+		return(logical(length(x)))
+	halfWindow <- floor(min(window, length(x)) / 2)
+	.Call("localMaxima", x, halfWindow, PACKAGE="Cardinal")
+}
+
+# Local maxima in a window
+localMaxima <- function(x, t, ...) {
+	if ( missing(t) ) {
+		which(localMaximaLogical(x, ...))
+	} else {
+		t[localMaximaLogical(x, ...)]
+	}
+}
+
+# Returns the two nearest local maxima to the given points
+nearestLocalMaxima <- function(x, t, tout, ...) {
+	if ( length(x) != length(t) )
+		t <- rep_len(t, length(x))
+	locmax1 <- localMaximaLogical(x, ...)
+	locmax2 <- rev(localMaximaLogical(rev(x), ...))
+	locmax <- unique(c(1L, which(locmax1 | locmax2), length(x)))
+	lower <- findInterval(tout, t[locmax], all.inside=TRUE)
+	upper <- lower + 1L
+	list(lower=locmax[lower], upper=locmax[upper])
+}
+
+# Alignment of two vectors by absolute difference
+diffAlign <- function(x, y, diff.max, ...) {
+	if ( length(diff.max) < length(y) )
+		diff.max <- rep(diff.max, length.out=y)
+	aligned <- data.frame(x=rep(NA, length(y)), y=seq_along(y))
+	aligned$x <- mapply(function(yi, di) {
+		if ( length(x) == 0 )
+			return(NA)
+		diffs <- abs(x - yi)
+		which <- which.min(diffs)
+		if ( diffs[which] <= di ) {
+			match <- which
+		} else {
+			match <- NA
+		}
+		match
+	}, y, diff.max)
+	aligned <- aligned[!is.na(aligned$x),]
+	aligned
+}
+
+# Alignment of two vectors using dynamic programming
+dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)), ... ) {
+	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
+	y.mat <- matrix(y, byrow=FALSE, ncol=length(x), nrow=length(y))
+	similarity.mat <- score(x.mat, y.mat)
+	score.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
+	score.mat[1,] <- c(0, cumsum(rep(gap, length(x))))
+	score.mat[,1] <- c(0, cumsum(rep(gap, length(y))))
+	tracking.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
+	tracking.mat[,1] <- 0
+	tracking.mat[1,] <- 1
+	tracking.mat[1,1] <- 2
+	out.align <- .C("dynamicAlign", as.double(score.mat), as.integer(tracking.mat),
+		as.double(similarity.mat), as.integer(nrow(score.mat)), as.integer(ncol(score.mat)),
+		as.double(gap), integer(length(x)), integer(length(y)))
+	x.align <- out.align[[7]]
+	y.align <- out.align[[8]]
+	aligned <- cbind(y.align[y.align > 0], x.align[x.align > 0])
+	colnames(aligned) <- c("x", "y")
+	aligned
+}
+
+# A sequence with half-bin-widths in ppm (parts-per-million)
+# x = bin center, y = bin half-window, K = ppm
+# y[n] = K * x[n] * 1e-6
+# y[n+1] = (1e-6 * K) * (x[n] - y[n])) / (1 - (1e-6 * K))
+# x[n+1] = x[n] + y[n] + y[n+1]
+# => x[n] ((1 + K * 1e-6) / (1 - K * 1e-6))^n * x[0]
+# log x[n] = n log {(1 + K * 1e-6) / (1 - K * 1e-6)} + log x[0]
+# => n = (log x[n] - log x[0]) / log {(1 + K * 1e-6) / (1 - K * 1e-6)}
+seq.ppm <- function(from, to, ppm) {
+	length.out <- (log(to) - log(from)) / log((1 + 1e-6 * ppm) / (1 - 1e-6 *ppm))
+	length.out <- floor(1 + length.out)
+	i <- seq_len(length.out)
+	from * ((1 + 1e-6 * ppm) / (1 - 1e-6 * ppm))^(i-1)
+}
+
+
 ## Convert names of data types to their size in number of bytes
 Csizeof <- function(type) {
 	vapply(type, function(t) {
@@ -51,21 +284,22 @@ make.annotation <- function(...) {
 ## Match methods to their workhorse functions
 match.method <- function(method, options) {
 	if ( is.function(method) ) {
-		tryCatch(deparse(substitute(method, env=parent.frame())),
-			error = function(e) "unknown")
-	} else if ( is.character(method) && missing(options) ) {
-		method[1]
+		method
 	} else if ( is.character(method) ) {
-		matched <- pmatch(method[1], options)
-		if ( is.na(matched) ) {
-			method[1]
+		if ( missing(options) ) {
+			method[1L]
 		} else {
-			options[matched]
+			matched <- pmatch(method[1L], options)
+			if ( is.na(matched) ) {
+				method[1L]
+			} else {
+				options[matched]
+			}	
 		}
 	} else if ( is.null(method) ) {
-		options[1]
+		options[1L]
 	} else {
-		"<unknown>"
+		stop("method matching failed")
 	}
 }
 

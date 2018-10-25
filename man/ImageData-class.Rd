@@ -11,6 +11,7 @@
 \alias{[[<-,ImageData,character,missing-method}
 \alias{annotatedDataFrameFrom,ImageData-method}
 \alias{combine,ImageData,ImageData-method}
+\alias{combine,vector,vector-method}
 \alias{combine,array,array-method}
 \alias{dim,ImageData-method}
 \alias{dims,ImageData-method}
@@ -21,7 +22,7 @@
 \alias{names<-,ImageData-method}
 \alias{show,ImageData-method}
 
-\title{Class Containing Arrays of Imaging Data}
+\title{ImageData: Class containing arrays of imaging data}
 
 \description{
     A container class for holding imaging data, designed to contain one or more arrays in an immutable environment. It is assumed that the first dimension of each array corresponds to the features.

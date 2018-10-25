@@ -11,7 +11,7 @@
 \alias{reduceDimension.resample}
 \alias{reduceDimension.peaks}
 
-\title{Reduce the Dimension of an Imaging Dataset}
+\title{Reduce the dimension of an imaging dataset}
 \description{
 	Apply dimension reduction to a mass spectrometry imaging dataset.
 }

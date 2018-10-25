@@ -9,15 +9,15 @@
 \alias{[,SImageSet,ANY,ANY,ANY-method}
 \alias{initialize,SImageSet-method}
 \alias{combine,SImageSet,SImageSet-method}
-\alias{iData,SImageSet-method}
-\alias{iData<-,SImageSet-method}
+\alias{iData,SImageSet,ANY-method}
+\alias{iData<-,SImageSet,ANY-method}
 \alias{regeneratePositions,SImageSet-method}
 \alias{coord<-,SImageSet-method}
 \alias{coordLabels<-,SImageSet-method}
 \alias{featureNames<-,SImageSet-method}
 \alias{pixelNames<-,SImageSet-method}
 
-\title{Class to Contain Pixel-Sparse Imaging Data}
+\title{SIMageSet: Class to contain pixel-sparse imaging data}
 
 \description{
     An \code{\linkS4class{iSet}} derived class for pixel-sparse imaging data. Data is stored to be memory efficient when there are missing pixels or when the the stored images are non-rectangular regions. The data structures remain efficient for non-sparse pixel data as long as the full datacube does not need to be reconstructed often, and single images or feature vectors are of primary interest. This class can be combined with \code{\linkS4class{Hashmat}} to be sparse in both feature space and pixel space. This is useful for datasets with sparse signals, such as processed spectra.

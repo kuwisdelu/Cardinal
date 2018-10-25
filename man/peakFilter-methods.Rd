@@ -4,27 +4,30 @@
 \alias{peakFilter}
 \alias{peakFilter-methods}
 \alias{peakFilter,MSImageSet-method}
+\alias{peakFilter,MSImagingExperiment-method}
 
 \alias{peakFilter.freq}
 
-\title{Peak Filter an Imaging Dataset}
+\title{Peak filter an imaging dataset}
 \description{
 	Apply peak filtering to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{peakFilter}{MSImagingExperiment}(object, freq.min = 0.01, \dots)
+
 \S4method{peakFilter}{MSImageSet}(object, method = "freq", \dots, pixel, plot)
 
 ## Filter based on the frequency of a peak
-peakFilter.freq(x, freq.min=length(x) / 100, \dots)
+peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{freq.min}{Peaks that occur in the dataset in lesser proportion than this will be dropped.}
+    \item{\dots}{Additional arguments passed to the peak filtering method, or conditions evaluating to logical vectors where only those conditions that are TRUE are retained.}
     \item{method}{The peak filtering method to use.}
-    \item{\dots}{Additional arguments passed to the peak filtering method.}
     \item{pixel}{Deprecated.}
     \item{plot}{Deprecated. (Never did anything anyway.)}
     \item{x}{The vector of ion image intensities to filter.}
-    \item{freq.min}{Peaks that occur in the dataset fewer times than this will be removed.}
 }
 \details{
     Unlike most other processing methods, \code{peakFilter} operates on the feature space (ion images) of the dataset.
@@ -41,17 +44,20 @@ peakFilter.freq(x, freq.min=length(x) / 100, \dots)
     Internally, \code{\link{featureApply}} is used to apply the filtering. See its documentation page for more details on additional objects available to the environment installed to the peak filtering function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the filtered peaks.
+    An object of the same class with the filtered peaks.
 }
 \author{
 	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
+    \code{\linkS4class{MSImagingExperiment}},
     \code{\link{peakPick}},
     \code{\link{peakAlign}},
+    \code{\link{peakBin}},
     \code{\link{reduceDimension}},
-    \code{\link{featureApply}}
+    \code{\link{featureApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(diag(2), as="MSImageSet")

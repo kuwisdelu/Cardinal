@@ -6,13 +6,16 @@ importFrom("graphics",
 	"locator",
 	"par",
 	"persp",
-	"points")
+	"points",
+	"rect",
+	"text",
+	"title")
 
 importFrom("stats",
 	"approx",
 	"as.formula",
 	"dnorm",
-	"filter",
+	"convolve",
 	"kmeans",
 	"median",
 	"p.adjust",
@@ -20,11 +23,18 @@ importFrom("stats",
 	"quantile",
 	"rnorm",
 	"runif",
+	"setNames",
 	"smooth.spline")
 
 import("BiocGenerics")
 
+import("BiocParallel")
+
 import("Biobase")
+
+importFrom("EBImage",
+	"imageData",
+	"imageData<-")
 
 import("matter")
 
@@ -32,13 +42,30 @@ import("methods")
 
 import("stats4")
 
+importFrom("dplyr",
+	"arrange",
+	"filter",
+	"group_by",
+	"mutate",
+	"select",
+	"summarise",
+	"summarize")
+
+importFrom("magrittr",
+	"%>%")
+
+import("S4Vectors")
+
 import("ProtGenerics")
 
 importFrom("grDevices",
 	"col2rgb",
 	"colorRamp",
+	"hcl",
+	"heat.colors",
 	"rainbow",
 	"rgb",
+	"topo.colors",
 	"trans3d")
 
 importFrom("grid",
@@ -62,6 +89,12 @@ importFrom("signal",
 	"sgolayfilt")
 
 importFrom("sp",
+	"coordinates",
+	"coordinates<-",
+	"coordnames",
+	"coordnames<-",
+	"gridded",
+	"gridded<-",
 	"point.in.polygon")
 
 importFrom("utils",
@@ -97,12 +130,45 @@ export(
 	"SImageData",
 	"SImageSet")
 
+exportClasses(
+	"XDataFrame",
+	"PositionDataFrame",
+	"MassDataFrame",
+	"ImageList",
+	"ImageArrayList",
+	"SimpleImageList",
+	"SimpleImageArrayList",
+	"MSContinuousImagingSpectraList",
+	"MSProcessedImagingSpectraList",
+	"ImagingExperiment",
+	"SparseImagingExperiment",
+	"MSImagingExperiment",
+	"MSContinuousImagingExperiment",
+	"MSProcessedImagingExperiment",
+	"MSImagingInfo")
+
+export(
+	"XDataFrame",
+	"PositionDataFrame",
+	"MassDataFrame",
+	"ImageList",
+	"ImageArrayList",
+	"MSContinuousImagingSpectraList",
+	"MSProcessedImagingSpectraList",
+	"SparseImagingExperiment",
+	"MSImagingExperiment")
+
 export(
 	"alpha.colors",
+	"bw.colors",
+	"color.map",
+	"discrete.colors",
+	"divergent.colors",
 	"generateImage",
 	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",
+	"jet.colors",
 	"risk.colors",
 	"readAnalyze",
 	"readImzML",
@@ -111,22 +177,23 @@ export(
 	"writeImzML",
 	"writeMSIData")
 
-export(
-	"print.summary.iSet",
-	"print.summary.PCA",
-	"print.summary.PLS",
-	"print.summary.OPLS",
-	"print.summary.SpatialKMeans",
-	"print.summary.SpatialShrunkenCentroids",
-	"print.summary.CrossValidated")
+S3method("print", "summary.iSet")
+S3method("print", "summary.PCA")
+S3method("print", "summary.PLS")
+S3method("print", "summary.OPLS")
+S3method("print", "summary.SpatialKMeans")
+S3method("print", "summary.SpatialShrunkenCentroids")
+S3method("print", "summary.CrossValidated")
 
-export(
-	"plot.summary.PCA",
-	"plot.summary.PLS",
-	"plot.summary.OPLS",
-	"plot.summary.SpatialKMeans",
-	"plot.summary.SpatialShrunkenCentroids",
-	"plot.summary.CrossValidated")
+S3method("print", "facet.plot")
+S3method("print", "facet.image")
+
+S3method("plot", "summary.PCA")
+S3method("plot", "summary.PLS")
+S3method("plot", "summary.OPLS")
+S3method("plot", "summary.SpatialKMeans")
+S3method("plot", "summary.SpatialShrunkenCentroids")
+S3method("plot", "summary.CrossValidated")
 
 exportMethods(
 	"as.array",
@@ -164,10 +231,14 @@ exportMethods(
 	"[[<-",
 	"annotatedDataFrameFrom",
 	"combine",
+	"combiner",
+	"combiner<-",
 	"coord",
 	"coord<-",
 	"coordinates",
 	"coordinates<-",
+	"coordnames",
+	"coordnames<-",
 	"coordLabels",
 	"coordLabels<-",
 	"dim",
@@ -175,6 +246,8 @@ exportMethods(
 	"dims",
 	"dimnames",
 	"dimnames<-",
+	"experimentData",
+	"experimentData<-",
 	"features",
 	"fData",
 	"fData<-",
@@ -186,6 +259,8 @@ exportMethods(
 	"fvarLabels<-",
 	"fvarMetadata",
 	"fvarMetadata<-",
+	"gridded",
+	"gridded<-",
 	"iData",
 	"iData<-",
 	"imageData",
@@ -214,9 +289,17 @@ exportMethods(
 	"positionArray<-",
 	"processingData",
 	"processingData<-",
+	"protocolData",
+	"protocolData<-",
 	"regeneratePositions",
 	"resultData",
 	"resultData<-",
+	"resolution",
+	"resolution<-",
+	"run",
+	"run<-",
+	"runNames",
+	"runNames<-",
 	"sampleNames",
 	"sampleNames<-",
 	"show",
@@ -224,12 +307,24 @@ exportMethods(
 	"spectra<-",
 	"storageMode",
 	"storageMode<-",
+	"tolerance",
+	"tolerance<-",
 	"varLabels",
 	"varLabels<-",
 	"varMetadata",
 	"varMetadata<-")
 
 exportMethods(
+	"abstract",
+	"samples",
+	"preproc",
+	"preproc<-",
+	"pubMedIds",
+	"pubMedIds<-",
+	"otherInfo",
+	"expinfo",
+	"notes",
+	"notes<-",
 	"embeddingMethod",
 	"embeddingMethod<-",
 	"imageShape",
@@ -299,14 +394,20 @@ exportMethods(
 
 exportMethods(
 	"batchProcess",
+	"process",
 	"normalize",
 	"peakPick",
 	"peakAlign",
+	"peakBin",
 	"peakFilter",
 	"reduceBaseline",
 	"reduceDimension",
 	"smoothSignal",
-	"standardizeSamples")
+	"standardizeRuns")
+
+export("standardizeSamples")
+
+exportMethods("selectROI")
 
 exportMethods("coregister")
 
@@ -319,6 +420,12 @@ exportMethods(
 
 exportMethods("topLabels")
 
-exportMethods("select")
+exportMethods(
+	"filter",
+	"mutate",
+	"select",
+	"summarize")
+
+export("%>%")
 
 useDynLib("Cardinal")

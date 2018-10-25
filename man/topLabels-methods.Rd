@@ -10,9 +10,9 @@
 \alias{topLabels,SpatialShrunkenCentroids-method}
 \alias{topLabels,CrossValidated-method}
 
-\title{Retrieve Top-Ranked Labels from Analysis Results}
+\title{Retrieve top-ranked features from analysis results}
 \description{
-    The generic function is a convenience method for retrieving top-ranked labels from the results of imaging experiment analyses. For mass spectrometry-based imaging experiments, this can be used for identifying important masses from an analysis.
+    The generic function is a convenience method for retrieving top-ranked features from the results of imaging experiment analyses. For mass spectrometry-based imaging experiments, this can be used for identifying important masses from an analysis.
 }
 \usage{
 \S4method{topLabels}{ResultSet}(object, n = 6,

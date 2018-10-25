@@ -1,4 +1,5 @@
 require(testthat)
+require(Cardinal)
 
 context("iSet class")
 
@@ -13,7 +14,7 @@ test_that("iSet validity", {
 	test <- new("TestSet",
 		pixelData=IAnnotatedDataFrame(
 			data.frame(pixels=1:100)),
-		featureData=AnnotatedDataFrame(
+		featureData=Biobase::AnnotatedDataFrame(
 			data.frame(features=1:20)))
 
 	expect_true(validObject(test))

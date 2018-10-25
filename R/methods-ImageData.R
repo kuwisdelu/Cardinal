@@ -71,10 +71,10 @@ setReplaceMethod("names", "ImageData", function(x, value) {
 	x
 })
 
-setMethod("dims", "ImageData", function(object) {
-	names <- ls(object@data)
+setMethod("dims", "ImageData", function(x) {
+	names <- ls(x@data)
 	if ( length(names) > 0 ) {
-		sapply(names, function(nm) dim(object@data[nm]))
+		sapply(names, function(nm) dim(x@data[nm]))
 	} else {
 		matrix(nrow=0, ncol=0)
 	}

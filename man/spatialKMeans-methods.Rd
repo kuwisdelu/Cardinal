@@ -9,7 +9,7 @@
 \alias{print.summary.SpatialKMeans}
 \alias{plot.summary.SpatialKMeans}
 
-\title{Spatially-Aware K-Means Clustering}
+\title{Spatially-aware k-means clustering}
 \description{
     Performs spatially-aware (SA) or spatially-aware structurally-adaptive (SASA) clustering of imaging data. The data are first projected into an embedded feature space where spatial structure is maintained using the Fastmap algorithm, and then ordinary k-means clustering is performed on the projected dataset.
 }

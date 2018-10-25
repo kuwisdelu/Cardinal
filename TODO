@@ -3,13 +3,14 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Move non-critical Depends to Imports to clean up search path
-- Statistical hypothesis testing
+- Deprecate and remove Binmat class
+- Finish Cardinal v2 classes/methods
+- Add analysis methods for new classes
+- Add results classes and plotting
 
 Priority: Medium
 - Graphical user interface
-- Parse more metadata from imzML datasets for MIAPE-Imaging
 - Optical image registration
 
 Priority: Low
-- Support for more file formats (Bruker, etc.)
+- Additional normalization methods

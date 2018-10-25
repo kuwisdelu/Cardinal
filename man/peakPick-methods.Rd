@@ -4,16 +4,19 @@
 \alias{peakPick}
 \alias{peakPick-methods}
 \alias{peakPick,MSImageSet-method}
+\alias{peakPick,MSImagingExperiment-method}
 
 \alias{peakPick.simple}
 \alias{peakPick.adaptive}
 \alias{peakPick.limpic}
 
-\title{Peak Pick an Imaging Dataset}
+\title{Peak pick an imaging dataset}
 \description{
 	Apply peak picking to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{peakPick}{MSImagingExperiment}(object, method = c("simple", "adaptive"), \dots)
+
 \S4method{peakPick}{MSImageSet}(object, method = c("simple", "adaptive", "limpic"),
     \dots,
     pixel = pixels(object),
@@ -29,7 +32,7 @@ peakPick.adaptive(x, SNR=6, window=5, blocks=100, spar=1, \dots)
 peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 }
 \arguments{
-    \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{object}{An imaging dataset.}
     \item{method}{The peak picking method to use.}
     \item{pixel}{The pixels to peak pick. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
@@ -59,7 +62,7 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     Internally, \code{\link{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the peak picking spectra.
+    An object of the same class with the peak picking spectra.
 }
 \author{
 	Kylie A. Bemis
@@ -69,10 +72,13 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
+    \code{\linkS4class{MSImagingExperiment}},
     \code{\link{peakAlign}},
     \code{\link{peakFilter}},
+    \code{\link{peakBin}},
     \code{\link{reduceDimension}},
-    \code{\link{pixelApply}}
+    \code{\link{pixelApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

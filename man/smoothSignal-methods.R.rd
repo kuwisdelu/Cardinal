@@ -4,16 +4,19 @@
 \alias{smoothSignal}
 \alias{smoothSignal-methods}
 \alias{smoothSignal,MSImageSet-method}
+\alias{smoothSignal,MSImagingExperiment-method}
 
 \alias{smoothSignal.gaussian}
 \alias{smoothSignal.sgolay}
 \alias{smoothSignal.ma}
 
-\title{Smooth the Feature-Vectors of an Imaging Dataset}
+\title{Smooth the spectra of a spectral imaging dataset}
 \description{
 	Apply smoothing to a mass spectrometry imaging dataset.
 }
 \usage{
+\S4method{smoothSignal}{MSImagingExperiment}(object, method = c("gaussian", "sgolay", "ma"), \dots)
+
 \S4method{smoothSignal}{MSImageSet}(object, method = c("gaussian", "sgolay", "ma"),
     \dots,
     pixel = pixels(object),
@@ -29,7 +32,7 @@ smoothSignal.sgolay(x, order=3, window=order + 3 - order \%\% 2, \dots)
 smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 }
 \arguments{
-    \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{object}{An imaging dataset.}
     \item{method}{The smoothing method to use.}
     \item{pixel}{The pixels to smooth. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
@@ -53,14 +56,16 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
     Internally, \code{\link{pixelApply}} is used to apply the smooothing. See its documentation page for more details on additional objects available to the environment installed to the smoothing function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the smoothed spectra.
+    An object of the same class with the smoothed spectra.
 }
 \author{
 	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImageSet}},
-    \code{\link{pixelApply}}
+    \code{\linkS4class{MSImagingExperiment}},
+    \code{\link{pixelApply}},
+    \code{\link{process}}
 }
 \examples{
 data <- generateImage(as="MSImageSet")

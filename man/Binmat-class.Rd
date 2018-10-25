@@ -22,10 +22,12 @@
 \alias{initialize,Binmat-method}
 \alias{show,Binmat-method}
 
-\title{On-Disk Matrix Class Using On-Demand Disk Reads}
+\title{Binmat: On-disk matrix class using on-demand disk access}
 
 \description{
     The Binmat class implements on-disk matrices with efficient access to columns. Values within each column are contiguously stored in a binary file on disk. The columns themselves need not be stored contiguously. Only the accessed elements of the matrix are loaded into memory.
+
+    New code should use the \code{\linkS4class{matter_mat}} class from the \code{matter} package instead.
 }
 
 \usage{

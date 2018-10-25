@@ -1,4 +1,5 @@
 require(testthat)
+require(Cardinal)
 
 context("ImageData class")
 
@@ -47,28 +48,28 @@ test_that("ImageData names", {
 
 })
 
-test_that("ImageData combine", {
+# test_that("ImageData combine", {
 
-	data1 <- matrix(1:4, nrow=2, ncol=2, dimnames=list(1:2, 1:2))
-	idata1 <- ImageData(data0=data1, storageMode="immutableEnvironment")
+# 	data1 <- matrix(1:4, nrow=2, ncol=2, dimnames=list(1:2, 1:2))
+# 	idata1 <- ImageData(data0=data1, storageMode="immutableEnvironment")
 
-	data2 <- matrix(4:7, nrow=2, ncol=2, dimnames=list(2:3, 2:3))
-	idata2 <- ImageData(data0=data2, storageMode="immutableEnvironment")
+# 	data2 <- matrix(4:7, nrow=2, ncol=2, dimnames=list(2:3, 2:3))
+# 	idata2 <- ImageData(data0=data2, storageMode="immutableEnvironment")
 
-	combdata <- combine(idata1, idata2)
-	expect_equivalent(combdata[["data0"]], combine(data1, data2))
+# 	combdata <- combine(idata1, idata2)
+# 	expect_equivalent(combdata[["data0"]], combine(data1, data2))
 
-	data3 <- matrix(4:9, nrow=2, ncol=3, dimnames=list(2:3, 2:4))
-	idata3 <- ImageData(data0=data3, storageMode="immutableEnvironment")
-	multicombdata <- combine(idata1, idata2, idata3)
-	expect_equivalent(multicombdata[["data0"]], combine(data1, data2, data3))
+# 	data3 <- matrix(4:9, nrow=2, ncol=3, dimnames=list(2:3, 2:4))
+# 	idata3 <- ImageData(data0=data3, storageMode="immutableEnvironment")
+# 	multicombdata <- combine(idata1, idata2, idata3)
+# 	expect_equivalent(multicombdata[["data0"]], combine(data1, data2, data3))
 	
-	data4 <- array(1:27, dim=rep(3,3), dimnames=rep(list(1:3), 3))
-	idata4 <- ImageData(data0=data4)
-	data5 <- array(1:27, dim=rep(3,3), dimnames=rep(list(c(1,2,4)), 3))
-	idata5 <- ImageData(data0=data5)
-	arrcombdata <- combine(idata4, idata5)
-	expect_true(validObject(arrcombdata))
-	expect_equivalent(arrcombdata[["data0"]], combine(data4, data5))
+# 	data4 <- array(1:27, dim=rep(3,3), dimnames=rep(list(1:3), 3))
+# 	idata4 <- ImageData(data0=data4)
+# 	data5 <- array(1:27, dim=rep(3,3), dimnames=rep(list(c(1,2,4)), 3))
+# 	idata5 <- ImageData(data0=data5)
+# 	arrcombdata <- combine(idata4, idata5)
+# 	expect_true(validObject(arrcombdata))
+# 	expect_equivalent(arrcombdata[["data0"]], combine(data4, data5))
 
-})
+# })

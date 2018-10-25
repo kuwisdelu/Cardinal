@@ -2,16 +2,25 @@
 #### Write Analyze files ####
 ## ----------------------
 
-setMethod("writeAnalyze", "MSImageSet",
-	function(object, name, folder = getwd(),
+writeAnalyze <- function(object, name, folder = getwd(),
 		intensity.type = "16-bit integer", ...)
 	{
-		if ( length(sampleNames(object)) > 1 ) {
+		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
 				tmp <- object[,pData(object)$sample == nm]
-				nm2 <- paste0(name, "-", nm)
-				writeAnalyze(tmp, nm2, folder,
+				name2 <- paste0(name, "-", nm)
+				writeAnalyze(tmp, name2, folder,
+					intensity.type=intensity.type, ...)
+			})
+			return(invisible(result))
+		}
+		if ( is(object, "MSImagingExperiment") && length(runNames(object)) > 1 ) {
+			runs <- runNames(object)
+			result <- sapply(runs, function(id) {
+				tmp <- object[,run(object) == id]
+				name2 <- paste0(name, "-", id)
+				writeAnalyze(tmp, name2, folder,
 					intensity.type=intensity.type, ...)
 			})
 			return(invisible(result))
@@ -29,16 +38,19 @@ setMethod("writeAnalyze", "MSImageSet",
 		# pixel datatype
 		datatype <- Ctypeof(intensity.type)
 		# write image file
-		.log("writeAnalyze: Writing IMG file '", imgpath, "'")
+		.message("writeAnalyze: Writing IMG file '", imgpath, "'")
 		img <- .writeAnalyzeIMG(object, imgpath, datatype)
 		# write m/z values
-		.log("writeAnalyze: Writing T2M file '", t2mpath, "'")
+		.message("writeAnalyze: Writing T2M file '", t2mpath, "'")
 		t2m <- .writeAnalyzeT2M(object, t2mpath)
 		# write header
-		.log("writeAnalyze: Writing header file '", hdrpath, "'")
+		.message("writeAnalyze: Writing header file '", hdrpath, "'")
 		hdr <- .writeAnalyzeHDR(object, hdrpath, datatype)
-		invisible(TRUE)
-	})
+		result <- TRUE
+		if ( result )
+			.message("writeAnalyze: Done.")
+		invisible(result)
+	}
 
 .writeAnalyzeHDR <- function(x, file, type) {
 	file <- normalizePath(file, mustWork=FALSE)

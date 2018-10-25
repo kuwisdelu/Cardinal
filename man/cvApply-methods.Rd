@@ -9,7 +9,7 @@
 \alias{print.summary.CrossValidated}
 \alias{plot.summary.CrossValidated}
 
-\title{Apply Cross-Validated Analysis to Imaging Datasets}
+\title{Apply cross-validation to imaging analyses}
 \description{
 	Apply an existing or a user-specified function over imaging datasets. 
 }

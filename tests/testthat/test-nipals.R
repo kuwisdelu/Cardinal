@@ -1,4 +1,5 @@
 require(testthat)
+require(Cardinal)
 
 context("nipals")
 
@@ -8,7 +9,7 @@ test_that("NIPALS - PCA", {
 	x <- matrix(runif(100), nrow=10, ncol=10)
 	
 	svd <- prcomp(scale(x, scale=FALSE))
-	pca <- nipals.PCA(scale(x, scale=FALSE), ncomp=10)
+	pca <- Cardinal:::nipals.PCA(scale(x, scale=FALSE), ncomp=10)
 
 	expect_equal(abs(svd$rotation), abs(pca$loadings), tolerance=0.11)
 
@@ -27,7 +28,7 @@ test_that("NIPALS - PLS", {
 
 	y <- as.matrix(c(2, 2, 0, -4))
 	
-	pls0 <- nipals.PLS(x0, y, ncomp=1)
+	pls0 <- Cardinal:::nipals.PLS(x0, y, ncomp=1)
 
 	w0.1 <- c(-0.45, -0.89)
 	p0.1 <- c(-0.45, -0.89)
@@ -42,7 +43,7 @@ test_that("NIPALS - PLS", {
 				c(-0.48, 1.52),
 				c(0.83, 0.83))
 
-	pls1 <- nipals.PLS(x1, y, ncomp=2)
+	pls1 <- Cardinal:::nipals.PLS(x1, y, ncomp=2)
 
 	w1.1 <- c(-0.45, -0.89)
 	p1.1 <- c(-0.69, -0.77)
@@ -65,7 +66,7 @@ test_that("NIPALS - OPLS", {
 
 	y <- as.matrix(c(2, 2, 0, -4))
 
-	opls <- nipals.OPLS(x1, y, ncomp=1)
+	opls <- Cardinal:::nipals.OPLS(x1, y, ncomp=1)
 
 	wo.1 <- c(-0.89, 0.45)
 	po.1 <- c(-1.16, -0.09)
@@ -75,7 +76,7 @@ test_that("NIPALS - OPLS", {
 	expect_equal(po.1, opls$Oloadings[,1], tolerance=0.1)
 	expect_equal(to.1, opls$Oscores[,1], tolerance=0.1)
 
-	pls <- nipals.PLS(opls$Xnew, y, ncomp=1)
+	pls <- Cardinal:::nipals.PLS(opls$Xnew, y, ncomp=1)
 
 	w.1 <- c(-0.45, -0.89)
 	p.1 <- c(-0.45, -0.89)

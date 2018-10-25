@@ -31,3 +31,7 @@ setMethod("combine",
 		arr
 	})
 
+## Provide fallback methods for atomic vectors and lists
+setMethod("combine",
+	signature = c(x = "vector", y = "vector"),
+	function(x, y, ...) c(x, y))

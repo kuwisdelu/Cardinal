@@ -6,7 +6,7 @@
 \alias{coregister,SpatialKMeans,missing-method}
 \alias{coregister,SpatialShrunkenCentroids,missing-method}
 
-\title{Coregister Images}
+\title{Coregister images}
 \description{
 	Coregister images of an imaging dataset. Currently this is only used to coregister the class assignments for clustering methods, but additional functionality may be added in the future for 3D experiments and registration of optical images.
 }

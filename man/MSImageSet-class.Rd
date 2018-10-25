@@ -17,8 +17,14 @@
 \alias{processingData<-,MSImageSet-method}
 \alias{centroided,MSImageSet-method}
 \alias{centroided<-,MSImageSet-method}
+\alias{pixels,MSImageSet-method}
+\alias{features,MSImageSet-method}
 
-\title{Class to Contain Mass Spectrometry Imaging Experiment Data}
+\alias{processingData}
+\alias{processingData<-}
+\alias{processingData-methods}
+
+\title{MSImageSet: Class to contain mass spectrometry imaging experiment data}
 
 \description{
     Container for mass spectrometry imaging experimental data and metadata. \code{MSImageSet} is derived from \code{\linkS4class{iSet}} through \code{\linkS4class{SImageSet}}. It extends these classes with information about the processing and analysis, requiring MIAPE-Imaging in its experimentData slot.

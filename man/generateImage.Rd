@@ -1,7 +1,7 @@
 \name{generateImage}
 \alias{generateImage}
 
-\title{Generate a Simulated Image}
+\title{Generate a simulated image}
 
 \description{
 	Generates a simulated image of spectral signals.

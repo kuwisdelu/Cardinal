@@ -1,51 +1,30 @@
 
-#### Define new generics from base R ####
-## -------------------------------------
-setGeneric("as.array")
-setGeneric("as.matrix")
-setGeneric("length")
-setGeneric("names")
-setGeneric("names<-")
-setGeneric("rownames<-")
-setGeneric("colnames<-")
-setGeneric("summary")
-
 #### Define new generics from stats R ####
 ## ---------------------------------------
 setGeneric("predict")
 setGeneric("fitted")
-setGeneric("residuals")
-setGeneric("coef")
 
-#### Define new generics from graphics R ####
-## ------------------------------------------
-setGeneric("plot")
-setGeneric("image")
+#### Define new generics from EBImage ####
+## ---------------------------------------
+setGeneric("imageData")
+setGeneric("imageData<-")
+
+#### New accessor, setter, and manipulation ####
+## -----------------------------------------------
+setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
+setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 
 #### Basic accessor, setter, and manipulation ####
 ## -----------------------------------------------
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
-setGeneric("coordinates", function(object) coord(object))
-setGeneric("coordinates<-", function(object, value) {coord(object) <- value; object})
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
-setGeneric("iData", function(object) standardGeneric("iData"))
-setGeneric("iData<-", function(object, value) standardGeneric("iData<-"))
-setGeneric("imageData", function(object) standardGeneric("imageData"))
-setGeneric("imageData<-", function(object, value) standardGeneric("imageData<-"))
-# setGeneric("intensity", function(object, ...) standardGeneric("intensity")) # use ProtGenerics version
-# setGeneric("keys", function(object) standardGeneric("keys")) # use matter version
-# setGeneric("keys<-", function(object, value) standardGeneric("keys<-"))
-setGeneric("modelData", function(object) standardGeneric("modelData")) # use matter version
+setGeneric("modelData", function(object) standardGeneric("modelData"))
 setGeneric("modelData<-", function(object, value) standardGeneric("modelData<-"))
-# setGeneric("mz", function(object, ...) standardGeneric("mz")) # use ProtGenerics version
-# setGeneric("mz<-", function(object, value) standardGeneric("mz<-")) # use ProtGenerics version
 setGeneric("mzData", function(object) standardGeneric("mzData"))
 setGeneric("mzData<-", function(object, value) standardGeneric("mzData<-"))
-# setGeneric("peaks", function(object, ...) standardGeneric("peaks")) # use ProtGenerics version
-setGeneric("peaks<-", function(object, value) standardGeneric("peaks<-"))
 setGeneric("peakData", function(object) standardGeneric("peakData"))
 setGeneric("peakData<-", function(object, value) standardGeneric("peakData<-"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
@@ -57,16 +36,26 @@ setGeneric("positionArray", function(object) standardGeneric("positionArray"))
 setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
 setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
 setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
+setGeneric("dataCube", function(object, ...) standardGeneric("dataCube"))
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
+setGeneric("resolution", function(object) standardGeneric("resolution"))
+setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
 setGeneric("resultData", function(object) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
-# setGeneric("spectra", function(object, ...) standardGeneric("spectra")) # use ProtGenerics version
-setGeneric("spectra<-", function(object, value) standardGeneric("spectra<-"))
+setGeneric("run", function(object) standardGeneric("run"))
+setGeneric("run<-", function(object, value) standardGeneric("run<-"))
+setGeneric("runNames", function(object) standardGeneric("runNames"))
+setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
+
+#### Supplement ProtGenerics  ####
+## -------------------------------
+setGeneric("peaks<-", function(object, ..., value) standardGeneric("peaks<-"))
+setGeneric("spectra<-", function(object, ..., value) standardGeneric("spectra<-"))
 
 #### MIAPE - Imaging ####
 ## ----------------------
-setGeneric("msiInfo", function(object) standardGeneric("msiInfo"))
+setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
 setGeneric("specimenOrigin<-", function(object, value) standardGeneric("specimenOrigin<-"))
 setGeneric("specimenType", function(object) standardGeneric("specimenType"))
@@ -137,20 +126,30 @@ setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelAppl
 
 #### Pre-processing ####
 ## ---------------------
+setGeneric("process", function(object, ...) standardGeneric("process"))
 setGeneric("batchProcess", function(object, ...) standardGeneric("batchProcess"))
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
+setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
-setGeneric("standardizeSamples", function(object, ...) standardGeneric("standardizeSamples"))
+setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardizeRuns"))
 
-#### Data transformation and alignment ####
-## ---------------------------------------
-# setGeneric("as2D", function(object) standardGeneric("as2D"))
-# setGeneric("as3D", function(object) standardGeneric("as3D"))
+#### Data alignment ####
+## ---------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
+
+#### Data transformation ####
+## --------------------------
+setGeneric("arrange") # from 'dplyr'
+setGeneric("filter") # from 'dplyr'
+setGeneric("group_by") # from 'dplyr'
+setGeneric("mutate") # from 'dplyr'
+setGeneric("select") # from 'dplyr'
+setGeneric("summarise") # from 'dplyr'
+setGeneric("summarize")	# from 'dplyr'
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
@@ -166,7 +165,7 @@ setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 
 #### Plotting ####
 ## ---------------
-setGeneric("select", function(x, ...) standardGeneric("select"))
+setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
 setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 
 #### Data export ####

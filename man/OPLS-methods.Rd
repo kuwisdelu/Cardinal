@@ -13,7 +13,7 @@
 \alias{print.summary.OPLS}
 \alias{plot.summary.OPLS}
 
-\title{Orthogonal Partial Least Squares}
+\title{Orthogonal partial least squares}
 \description{
     Performs orthogonal partial least squares (also called orthogonal projection to latent structures or O-PLS) on an imaging dataset. This will also perform discriminant analysis (O-PLS-DA) if the response is a \code{factor}.
 }

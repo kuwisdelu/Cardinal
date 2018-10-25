@@ -3,7 +3,7 @@
 \alias{readImzML}
 \alias{readAnalyze}
 
-\title{Read Mass Spectrometry Imaging Data Files}
+\title{Read mass spectrometry imaging data files}
 \description{
 	Read supported mass spectrometry imaging data files. Supported formats include imzML and Analyze 7.5.
 }
@@ -13,18 +13,22 @@ readMSIData(file, \dots)
 
 ## Read imzML files
 readImzML(name, folder=getwd(), attach.only=FALSE,
-	mass.accuracy=200, units.accuracy=c("ppm", "mz"), \dots)
+	mass.range=NULL, resolution=200, units=c("ppm", "mz"),
+	as=c("MSImageSet", "MSImagingExperiment"), \dots)
 
 ## Read Analyze 7.5 files
-readAnalyze(name, folder=getwd(), attach.only=FALSE, \dots)
+readAnalyze(name, folder=getwd(), attach.only=FALSE,
+	as=c("MSImageSet", "MSImagingExperiment"), \dots)
 }
 \arguments{
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
 	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
 	\item{folder}{The path to the folder containing the data files.}
 	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
-	\item{mass.accuracy}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
-	\item{units.accuracy}{The units for 'mass.accuracy'.}
+	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time, as otherwise it is read and calculated from the dataset directly.}
+	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
+	\item{units}{The units for 'resolution'.}
+	\item{as}{After reading in the data, what class of object should be returned (i.e., 'MSImageSet' or 'MSImagingExperiment')?}
 	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{
