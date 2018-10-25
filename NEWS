@@ -1,4 +1,19 @@
 
+CHANGES IN VERSION 1.13.3 [2018-10-25]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'process' method for queueing delayed processing
+        functions to an imaging dataset and applying them
+    o Added new processing methods for Cardinal v2 including 
+        new versions of 'normalize', 'smoothSignal', 'reduceBaseline',
+        'peakPick', 'peakAlign', and 'peakFilter'
+    o Added new 'peakBin' function for binning peaks
+    o Updated 'show' method for new Cardinal v2 classes
+    o New support for exporting 'processed' imzML files
+        via the 'writeImzML' function
+
 CHANGES IN VERSION 1.13.2 [2018-7-22]
 -----------------------------------
 
