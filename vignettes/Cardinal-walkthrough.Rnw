@@ -1021,16 +1021,16 @@ We can manually construct the images corresponding to the mean intensity of the 
 
 <<pixelApply3>>=
 tmp1 <- MSImageSet(spectra=t(as.vector(p1["blue",])), coord=coord(msset), mz=2000)
-image(tmp1, feature=1, col.regions=alpha.colors(100, "blue"), sub="m/z = 2000")
+image(tmp1, feature=1, col.regions=alpha.colors("blue", 100), sub="m/z = 2000")
 @
 
 <<pixelApply4>>=
 tmp1 <- MSImageSet(spectra=t(as.vector(p1["black",])), coord=coord(msset), mz=3000)
-image(tmp1, feature=1, col.regions=alpha.colors(100, "black"), sub="m/z = 3000")
+image(tmp1, feature=1, col.regions=alpha.colors("black", 100), sub="m/z = 3000")
 @
 <<pixelApply5>>=
 tmp2 <- MSImageSet(spectra=t(as.vector(p1["red",])), coord=coord(msset), mz=4000)
-image(tmp2, feature=1, col.regions=alpha.colors(100, "red"),  sub="m/z = 4000")
+image(tmp2, feature=1, col.regions=alpha.colors("red", 100),  sub="m/z = 4000")
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -1259,10 +1259,10 @@ img1 <- generateImage(data, range=c(1,1000), centers=c(100,200), step=1, as="MSI
 @
 Now to confirm the reasonability of our simulated dataset, we plot images corresponding to the two peaks associated with each region in Figure \ref{fig:gi2}. (Note that rows in the original matrix correspond to the x-axis in the image and the columns correspond to the y-axis.)
 <<gi1>>=
-image(img1, mz=100, col.regions=alpha.colors(100, "black"))
+image(img1, mz=100, col.regions=alpha.colors("black", 100))
 @
 <<gi2>>=
-image(img1, mz=200, col.regions=alpha.colors(100, "red"))
+image(img1, mz=200, col.regions=alpha.colors("red", 100))
 @
 
 
@@ -1309,13 +1309,13 @@ msset <- generateImage(pattern, coord=coord, range=c(1000, 5000), centers=c(2000
 Again, we can plot the images to see that the simulated dataset is the same pattern as before (though the exact intensities will differ, because we have used a different seed for the random number generator), Figure \ref{fig:gI}.
 
 <<gi3>>=
-image(msset, mz=2000, col.regions=alpha.colors(100, "blue"))
+image(msset, mz=2000, col.regions=alpha.colors("blue", 100))
 @
 <<gi4>>=
-image(msset, mz=3000, col.regions=alpha.colors(100, "black"))
+image(msset, mz=3000, col.regions=alpha.colors("black", 100))
 @
 <<gi5>>=
-image(msset, mz=4000, col.regions=alpha.colors(100, "red"))
+image(msset, mz=4000, col.regions=alpha.colors("red", 100))
 @
 
 \setkeys{Gin}{width=\textwidth}
