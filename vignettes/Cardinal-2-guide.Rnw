@@ -1,0 +1,179 @@
+
+%\VignetteIndexEntry{Cardinal 2.0: User's Guide}
+%\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, ImagingMassSpectrometry, Clustering, Classification}
+
+\documentclass[a4paper]{article}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+<<eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\title{\Rpackage{Cardinal} 2.0: User's Guide}
+
+\author{Kylie A. Bemis}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction and installation}
+
+<<echo=FALSE,results=hide>>=
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=100)
+register(SerialParam())
+@ 
+
+
+The \R{} package \Rpackage{Cardinal} 2.0 description.
+
+
+
+\section{Data import and export}
+
+In order to be imported into R by \Rpackage{Cardinal}, input data must be in either imzML or Analyze 7.5 format. Data can be loaded into memory, or it can be attached on-disk using the \verb|attach.only=TRUE| argument to the data import function.
+
+
+\subsection{imzML}
+
+<<eval=FALSE>>=
+name <- "common name of your .imzML and .ibd files"
+folder <- "/path/to/the/folder/containing/the/files"
+data <- readImzML(name, folder, as="MSImagingExperiment")
+@
+
+The imzML format is an open standard designed specifically for interchange of mass spectrometry imaging datasets \cite{Schramm}. Many other formats can be converted to imzML with the help of free applications available online. See \url{http://www.imzml.org} for more information and links to free converters.
+
+The imzML format uses two files with extensions `.imzML' and `.ibd' to store data. The former is an XML-based human-readable text file that stores the metadata about the MS imaging experiment. The latter is a binary file storing the $m/z$ and intensity data.
+
+To import or attach imzML, use the \verb|readImzML()| function. Both files must be present in the same folder and have the same name (except for the file extension).
+
+The \verb|as="MSImagingExperiment"| argument is optional and may be used to specify whether to load the data using new Cardinal 2.0 classes (\Robject{MSImagingExperiment}) or legacy Cardinal classes (\Robject{MSImageSet}). Its defaults may change in future versions of Cardinal.
+
+Large imzML files can be attached on-disk without fully loading them into memory by using the \verb|attach.only=TRUE| option. Not all \Rpackage{Cardinal} features are supported for on-disk datasets.
+
+Both `continuous' and `processed' imzML format are supported. When using on-disk data with \verb|attach.only=TRUE|, accessing images of `processed' data may be slow (but accessing spectra should remain fast). This is due to the way the data is stored in the imzML file.
+
+For `processed' imzML files, there are additional options. The \verb|resolution| and \verb|units| arguments determine how the data is binned. If the data is imported using the new classes (\Robject{MSImagingExperiment}), this can be changed and the spectra re-binned on-the-fly later. Additionally, the \verb|mass.range| argument allows specifying the mass range, which can be computationally efficient. This avoids having to parse this information from the data (which can potentially take a long time for very large datasets).
+
+The \verb|writeImzML()| function can be used to write an MS imaging dataset to an imzML file. For `processed' data, re-importing the same dataset may result in the spectra being binned differently; however, the underlying data is preserved. Any metadata columns will not be written to the file.
+
+For more information on reading and writing imzML files, see \verb|?readImzML| and \verb|?writeImzML|.
+
+\subsection{Analyze 7.5}
+
+<<eval=FALSE>>=
+name <- "common name of your .hdr, .img, and .t2m files"
+folder <- "/path/to/the/folder/containing/the/files"
+data <- readAnalyze(name, folder, as="MSImagingExperiment")
+@
+
+Originally designed for MRI data by the Mayo Clinic, Analyze 7.5 is another common format used for mass spectrometry imaging data.
+
+The Analyze format uses a collection of three files with extensions `.hdr', `.img', and `.t2m' to store data. To read datasets stored in the Analyze format, use the \verb|readAnalyze()| function. All three files must be present in the same folder and have the same name (except for the file extension) for the data to be read properly.
+
+The \verb|as="MSImagingExperiment"| argument is optional may be used to specify whether to load the data using new Cardinal 2.0 classes (\Robject{MSImagingExperiment}) or legacy Cardinal classes (\Robject{MSImageSet}). Its defaults may change in future versions of Cardinal.
+
+Large Analyze files can be attached on-disk without fully loading them into memory by using the \verb|attach.only=TRUE| option. Not all \Rpackage{Cardinal} features are supported for on-disk datasets.
+
+The \verb|writeAnalyze()| function can be used to write an MS imaging dataset to an Analyze 7.5 file. Any metadata columns will not be written to the file.
+
+For more information on reading Analyze files, see \verb|?readAnalyze| and \verb|?writeAnalyze|.
+
+\subsection{Using \Robject{readMSIData} and \Robject{writeMSIData}}
+
+<<eval=FALSE>>=
+file <- "/path/to/an/imaging/data/file.extension"
+data <- readMSIData(file, as="MSImagingExperiment")
+@
+
+\Rpackage{Cardinal} also provides the convenience functions \verb|readMSIData()| and \verb|writeMSIData()|, which will attempt to automatically infer the correct function to use from the provided file extensions. The same rules for naming conventions apply as described above, but one need only provide the path to any of the data files. For example, to read/write an Analyze file, providing a path containing any of `.hdr', `.img', or `.t2m'. Likewise, to read or write imzML, provide a path containing either `.imzML' or `.ibd'.
+
+Any additional arguments will be passed to the appropriate underlying read/write functions.
+
+
+
+\section{Components of an imaging experiment}
+
+\subsection{Example dataset}
+
+\subsection{Metadata with \Robject{XDataFrame}}
+
+\subsubsection{Pixel metadata with \Robject{PositionDataFrame}}
+
+\subsubsection{Feature metadata with \Robject{MassDataFrame}}
+
+\subsection{Image data with \Robject{SimpleImageArrayList}}
+
+\subsection{MS imaging experiments with \Robject{MSImagingExperiment}}
+
+\subsubsection{Continuous MS imaging experiments}
+
+\subsubsection{Processed MS imaging experiments}
+
+
+
+
+\section{Data manipulation and transformation}
+
+\subsection{Subsetting and combining imaging experiments}
+
+\subsection{Using \Robject{pixelApply} and \Robject{featureApply}}
+
+
+
+
+\section{Visualization}
+
+\subsection{Visualizing mass spectra with \Robject{plot()}}
+
+\subsection{Visualizing molecular ion images with \Robject{image()}}
+
+\subsection{Region-of-interest selection}
+
+
+
+\section{Processing}
+
+\subsection{Queueing delayed processing with \Robject{process()}}
+
+\subsection{Smoothing spectra}
+
+\subsection{Baseline reduction}
+
+\subsection{Normalization}
+
+\subsection{Peak detection and alignment}
+
+\subsubsection{Peak picking}
+
+\subsubsection{Peak alignment}
+
+\subsubsection{Peak filtering}
+
+\subsubsection{Peak binning}
+
+
+
+\section{Analysis}
+
+
+
+\section{Session info}
+
+<<results=tex, echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+% \bibliographystyle{unsrt}
+\bibliography{Cardinal}
+
+\end{document}
