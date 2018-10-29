@@ -10,6 +10,6 @@
   These objects are imported from other packages and have been re-exported by Cardinal for user convenience.
 
   \describe{
-        \item{\code{maggritr}:}{\code{\link[magrittr]{\%>\%}}}
+        \item{\code{maggritr}:}{\code{\%>\%}}
     }
 }

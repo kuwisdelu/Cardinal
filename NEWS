@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 1.99.2 [2018-10-28]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated vignettes for Cardinal 2.0
+
+BUG FIXES
+
+    o Removed a unit test broken on Windows
+
 CHANGES IN VERSION 1.99.1 [2018-10-26]
 -----------------------------------
 
