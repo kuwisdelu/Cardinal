@@ -16,6 +16,8 @@ setMethod("process", "SparseImagingExperiment",
 			BPPARAM = bpparam())
 	{
 		kind <- match.arg(kind)
+		if ( missing(label) )
+			label <- deparse(substitute(fun))
 		if ( !missing(fun) || kind == "global" ) {
 			# get fun
 			if ( kind == "global" ) {

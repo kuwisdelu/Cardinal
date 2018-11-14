@@ -37,5 +37,9 @@ peakFilter.method <- function(method, name.only=FALSE) {
 }
 
 peakFilter.freq <- function(x, freq.min=0.01, ...) {
+	if ( freq.min >= 1 ) {
+		warning("freq.min >= 1 detected; assuming count")
+		freq.min <- freq.min / length(x)
+	}
 	(sum(x > 0) / length(x)) > freq.min
 }
