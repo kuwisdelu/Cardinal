@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.0.1 [2018-11-14]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated 'peakFilter' to check for freq.min >= 1 to
+        accomodate old behavior (counts)
+
 CHANGES IN VERSION 1.99.2 [2018-10-28]
 -----------------------------------
 

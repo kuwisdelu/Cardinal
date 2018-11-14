@@ -26,7 +26,7 @@ setMethod("summarize", "SparseImagingExperiment",
 			ecols <- .summarize_expr(.data, .by, expr, .tform, BPPARAM)
 			ans[,ecolnames] <- ecols
 		}
-		if ( !missing(.stat) ) {
+		if ( !missing(.stat) || length(expr) == 0 ) {
 			scolnames <- names(.stat)
 			.stat <- match.arg(.stat, several.ok=TRUE)
 			if ( is.null(scolnames) ) {
