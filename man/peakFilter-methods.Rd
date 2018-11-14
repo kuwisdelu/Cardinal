@@ -22,7 +22,7 @@ peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
-    \item{freq.min}{Peaks that occur in the dataset in lesser proportion than this will be dropped.}
+    \item{freq.min}{Minimum frequency density; peaks that occur in the dataset in lesser proportion than this will be dropped.}
     \item{\dots}{Additional arguments passed to the peak filtering method, or conditions evaluating to logical vectors where only those conditions that are TRUE are retained.}
     \item{method}{The peak filtering method to use.}
     \item{pixel}{Deprecated.}
