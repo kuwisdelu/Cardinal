@@ -17,7 +17,7 @@ setMethod("featureApply", "SparseImagingExperiment",
 			.simplify <- !is.logical(.simplify)
 			if ( !is.numeric(.blocks) )
 				.blocks <- getOption("Cardinal.nblocks")
-			idx <- blocks(seq_len(nrow(.object)), .blocks)
+			idx <- split_blocks(seq_len(nrow(.object)), .blocks)
 		} else {
 			idx <- seq_len(nrow(.object))
 		}

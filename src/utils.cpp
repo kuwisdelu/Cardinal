@@ -40,3 +40,29 @@ SEXPTYPE DataType<double>()
 {
 	return REALSXP;
 }
+
+template<>
+bool DataValid<int>(int x)
+{
+	return x != NA_INTEGER;
+}
+
+template<>
+bool DataValid<double>(double x)
+{
+	return R_FINITE(x);
+}
+
+template<>
+int DataNA<int>()
+{
+	return NA_INTEGER;
+}
+
+template<>
+double DataNA<double>()
+{
+	return NA_REAL;
+}
+
+

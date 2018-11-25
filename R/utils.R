@@ -108,7 +108,7 @@ bin <- function(x, t, bins, fun=sum, ...) {
 }
 
 # Returns a list of approximately even subsets of a vector
-blocks <- function(x, blocks) {
+split_blocks <- function(x, blocks) {
 	blocksize <- max(1L, length(x) / blocks)
 	n <- floor(length(x) / blocksize) + 1L
 	ints <- floor(seq(from=1L, to=length(x) + 1L, length.out=n))
@@ -195,24 +195,23 @@ diffAlign <- function(x, y, diff.max, ...) {
 }
 
 # Alignment of two vectors using dynamic programming
-dynamicAlign <- function(x, y, gap=0, score=function(x, y) 1 / (1 + abs(x - y)), ... ) {
+dynamicAlign <- function(x, y, gap=0, score=function(x, y) ifelse(x==y, 1, -1), ... ) {
+	gap <- as.numeric(gap)
 	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
 	y.mat <- matrix(y, byrow=FALSE, ncol=length(x), nrow=length(y))
 	similarity.mat <- score(x.mat, y.mat)
 	score.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
 	score.mat[1,] <- c(0, cumsum(rep(gap, length(x))))
 	score.mat[,1] <- c(0, cumsum(rep(gap, length(y))))
-	tracking.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
-	tracking.mat[,1] <- 0
-	tracking.mat[1,] <- 1
-	tracking.mat[1,1] <- 2
-	out.align <- .C("dynamicAlign", as.double(score.mat), as.integer(tracking.mat),
-		as.double(similarity.mat), as.integer(nrow(score.mat)), as.integer(ncol(score.mat)),
-		as.double(gap), integer(length(x)), integer(length(y)))
-	x.align <- out.align[[7]]
-	y.align <- out.align[[8]]
-	aligned <- cbind(y.align[y.align > 0], x.align[x.align > 0])
-	colnames(aligned) <- c("x", "y")
+	tracking.mat <- matrix(0L, ncol=length(x) + 1, nrow=length(y) + 1)
+	tracking.mat[,1] <- 0L
+	tracking.mat[1,] <- 1L
+	tracking.mat[1,1] <- 2L
+	aligned <- .Call("dynAlign", similarity.mat,
+		score.mat, tracking.mat, gap, PACKAGE="Cardinal")
+	names(aligned) <- c("x", "y")
+	aligned$x <- aligned$x[aligned$x > 0]
+	aligned$y <- aligned$y[aligned$y > 0]
 	aligned
 }
 

@@ -151,6 +151,10 @@ setGeneric("select") # from 'dplyr'
 setGeneric("summarise") # from 'dplyr'
 setGeneric("summarize")	# from 'dplyr'
 
+#### Spatial utilities ####
+## ---------------------
+setGeneric("findNeighbors", function(x, ...) standardGeneric("findNeighbors"))
+
 #### Statistical analysis and tools ####
 ## -------------------------------------
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))

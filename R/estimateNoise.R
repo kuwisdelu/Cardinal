@@ -3,7 +3,7 @@
 
 .estimateNoiseSimple <- function(x, blocks=100) {
 	t <- seq_along(x)
-	xint <- blocks(x, blocks=blocks)
+	xint <- split_blocks(x, blocks=blocks)
 	kurt <- sapply(xint, kurtosis) - 3
 	noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
 	noise <- rep(noise, length(x))
@@ -12,7 +12,7 @@
 
 .estimateNoiseAdaptive <- function(x, blocks=100, spar=1) {
 	t <- seq_along(x)
-	xint <- blocks(x, blocks=blocks)
+	xint <- split_blocks(x, blocks=blocks)
 	xlen <- sapply(xint, length)
 	noise <- sapply(xint, sd)
 	noise <- unlist(mapply(function(ns, ln) rep(ns, ln), noise, xlen))

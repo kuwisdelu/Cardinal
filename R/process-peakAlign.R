@@ -114,7 +114,8 @@ peakAlign.diff <- function(x, y, diff.max=200, units=c("ppm", "mz"), ...) {
 
 peakAlign.DP <- function(x, y, gap=0, ...) {
 	if ( length(x) == 0 ) return(integer())
-	aligned <- dynamicAlign(x, y, gap=gap, ...)
+	score <- function(x, y) 1 / (1 + abs(x - y))
+	aligned <- dynamicAlign(x, y, gap=gap, score=score, ...)
 	matched <- rep(NA, length(x))
 	matched[aligned[,"x"]] <- aligned[,"y"]
 	matched

@@ -21,4 +21,10 @@ T * DataPtr(SEXP x);
 template<typename T>
 SEXPTYPE DataType();
 
+template<typename T>
+bool DataValid(T x);
+
+template<typename T>
+T DataNA();
+
 #endif // UTILS

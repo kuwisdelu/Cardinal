@@ -87,7 +87,7 @@ peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
 
 peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	t <- seq_along(x)
-	xint <- blocks(x, blocks=blocks)
+	xint <- split_blocks(x, blocks=blocks)
 	# identify flat regions of spectrum
 	kurt <- sapply(xint, kurtosis) - 3
 	kurt[is.nan(kurt)] <- -Inf
