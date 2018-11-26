@@ -52,7 +52,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	info <- msiInfo(x, mz.type=mz.type, intensity.type=intensity.type)
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
-	id <- uuid(uppercase=TRUE)
+	id <- uuid(uppercase=FALSE)
 	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
 	pid[] <- id$bytes
 	if ( metadata(info)[["ibd binary type"]] == "continuous" ) {
@@ -88,7 +88,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	options(matter.cast.warning=warn)
 	hash <- checksum(pspectra, algo="sha1")
 	metadata(info)[["universally unique identifier"]] <- paste0("{", id$string, "}")
-	metadata(info)[["ibd SHA-1"]] <- toupper(as.character(hash))
+	metadata(info)[["ibd SHA-1"]] <- tolower(as.character(hash))
 	info
 }
 
@@ -149,6 +149,8 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 			<scanSettings id="scansettings1">
 				<cvParam cvRef="IMS" accession="IMS:1000042" name="max count of pixel x" value="%d"/>
 				<cvParam cvRef="IMS" accession="IMS:1000043" name="max count of pixel y" value="%d"/>
+				<cvParam cvRef="IMS" accession="IMS:1000046" name="pixel size x" value="%f"/>
+				<cvParam cvRef="IMS" accession="IMS:1000047" name="pixel size y" value="%f"/>
 			</scanSettings>
 		</scanSettingsList>
 		<instrumentConfigurationList count="1">
@@ -189,6 +191,8 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	sprintf(mzml, version,
 		"max count of x" = as.integer(max(scans(x)[["position x"]])),
 		"max count of y" = as.integer(max(scans(x)[["position y"]])),
+		"pixel size x" = min(diff(sort(unique(scans(x)[["position x"]])))),
+		"pixel size x" = min(diff(sort(unique(scans(x)[["position y"]])))),
 		"count" = nrow(scans(x)))
 }
 

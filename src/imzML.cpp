@@ -633,7 +633,7 @@ void set_binary_data_type(pugi::xml_node binaryDataArray, const char * value)
 		param.append_attribute("accession") = IMS_64_BIT_INTEGER_ID;
 		param.append_attribute("name") = IMS_64_BIT_INTEGER_NAME;
 	}
-	param.append_attribute("value") = value;
+	param.append_attribute("value") = "";
 }
 
 // read all experiment-level metadata
