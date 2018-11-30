@@ -3,6 +3,11 @@
 
 ## Calculate neighborhood members and spatial weights
 
+setMethod("findNeighbors", "SparseImagingExperiment",
+	function(x, r, groups = run(x), ...) {
+		findNeighbors(pixelData(x), r=r, groups=groups, ...)
+	})
+
 setMethod("findNeighbors", "PositionDataFrame",
 	function(x, r, groups = run(x), ...)
 	{
@@ -11,9 +16,54 @@ setMethod("findNeighbors", "PositionDataFrame",
 		} else if ( !is.null(names(r)) ) {
 			r <- r[names(coord(x))]
 		}
-		.Call("findNeighbors", as.matrix(coord(x)),
-			as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+		coord <- as.matrix(coord(x))
+		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
 	})
+
+setMethod("findNeighbors", "SImageSet",
+	function(x, r, groups = pData(x)$sample, ...)
+	{
+		if ( length(r) != length(coordLabels(x)) ) {
+			r <- rep_len(unname(r), length(coordLabels(x)))
+		} else if ( !is.null(names(r)) ) {
+			r <- r[coordLabels(x)]
+		}
+		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
+		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+	})
+
+.findSpatialOffsets <- function(coord, neighbors, i) {
+	if ( !is.matrix(coord) )	
+		coord <- as.matrix(coord)
+	if ( is.list(neighbors) )
+		neighbors <- neighbors[[i]]
+	offsets <- .Call("findSpatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
+	colnames(offsets) <- colnames(coord)
+	offsets
+}
+
+.findSpatialWeights <- function(x, offsets, sigma, bilateral = FALSE) {
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(offsets))) + 1) / 4
+	weights <- .Call("findSpatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
+	names(weights) <- c("alpha", "beta")
+	weights
+}
+
+.findSpatialDistance <- function(x, y, xoffsets, yoffsets,
+	xweights, yweights, sigma, tol.dist = 1e-9, bilateral = FALSE)
+{
+	if ( typeof(x) != typeof(y) || typeof(xoffsets) != typeof(yoffsets) )
+		stop("arrays must have the same data type")
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(xoffsets))) + 1) / 4
+	if ( missing(xweights) )
+		xweights <- .findSpatialWeights(x, xoffsets, sigma, bilateral)
+	if ( missing(yweights) )
+		yweights <- .findSpatialWeights(y, yoffsets, sigma, bilateral)
+	.Call("findSpatialDistance", x, y, xoffsets, yoffsets,
+		xweights, yweights, sigma, tol.dist, PACKAGE="Cardinal")
+}
 
 .findSpatialBlocks <- function(x, r, groups, nblocks) {
 	groups <- as.factor(groups)
@@ -50,6 +100,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 	}
 }
 
+# true if each neighborhood is contained in at least one block
 .validSpatialBlocks <- function(neighbors, blocks) {
 	ok <- sapply(neighbors, function(nb) {
 		any(sapply(blocks, function(bl) all(nb %in% bl)))
@@ -57,6 +108,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 	all(ok)
 }
 
+# assign each neighborhood to a single block (if overlap exists)
 .whichSpatialBlocks <- function(neighbors, blocks) {
 	wh <- vapply(neighbors, function(nb) {
 		ok <- vapply(blocks, function(bl) all(nb %in% bl), logical(1))

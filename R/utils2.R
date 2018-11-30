@@ -67,7 +67,7 @@
 }
 
 # If processing flattens key-value pairs, expand and collect them
-.collectKeyValueData <- function(ans) {
+.collect_keyval_pairs <- function(ans) {
 	if ( is(ans, "matter_list") ) {
 		len <- floor(lengths(ans) / 2)
 		adata <- as.list(atomdata(ans))

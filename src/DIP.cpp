@@ -123,8 +123,6 @@ SEXP bilateral_weights(SEXP x, int r) {
 					min_beta = beta_l;
 			}
 			double lambda = (max_beta - min_beta) / 2;
-			if ( lambda < 1e-9 )
-				lambda = 1;
 			lambda = lambda * lambda;
 			for ( int l = 0; l < size; ++l ) {
 				if ( ISNA(pBeta[ix * size + l]) )
@@ -144,9 +142,9 @@ extern "C" {
 
 	SEXP gaussianFilter(SEXP x, SEXP r, SEXP sd) {
 		if ( TYPEOF(x) == INTSXP )
-			return gaussian_filter<int>(x, INTEGER_VALUE(r), NUMERIC_VALUE(sd), R_NilValue);
+			return gaussian_filter<int>(x, asInteger(r), asReal(sd), R_NilValue);
 		else if ( TYPEOF(x) == REALSXP )
-			return gaussian_filter<double>(x, INTEGER_VALUE(r), NUMERIC_VALUE(sd), R_NilValue);
+			return gaussian_filter<double>(x, asInteger(r), asReal(sd), R_NilValue);
 		else
 			return R_NilValue;
 	}
@@ -155,14 +153,14 @@ extern "C" {
 		SEXP x_new, weights;
 		if ( TYPEOF(x) == INTSXP )
 		{
-			PROTECT(weights = bilateral_weights<int>(x, INTEGER_VALUE(r)));
-			PROTECT(x_new = gaussian_filter<int>(x, INTEGER_VALUE(r), NUMERIC_VALUE(sd), weights));
+			PROTECT(weights = bilateral_weights<int>(x, asInteger(r)));
+			PROTECT(x_new = gaussian_filter<int>(x, asInteger(r), asReal(sd), weights));
 			UNPROTECT(2);
 		}
 		else if ( TYPEOF(x) == REALSXP )
 		{
-			PROTECT(weights = bilateral_weights<double>(x, INTEGER_VALUE(r)));
-			PROTECT(x_new = gaussian_filter<double>(x, INTEGER_VALUE(r), NUMERIC_VALUE(sd), weights));
+			PROTECT(weights = bilateral_weights<double>(x, asInteger(r)));
+			PROTECT(x_new = gaussian_filter<double>(x, asInteger(r), asReal(sd), weights));
 			UNPROTECT(2);
 		}
 		else

@@ -44,7 +44,7 @@ peakPick_postfun <- function(object, ans, ...) {
 	.message("detected ~", round(mean(numPeaks)), " peaks per spectrum ",
 		"(min = ", min(numPeaks), ", max = ", max(numPeaks), ")")
 	tol <- c(absolute=min(abs(diff(mz(object)))) / 2)
-	data <- .collectKeyValueData(ans)
+	data <- .collect_keyval_pairs(ans)
 	data <- sparse_mat(data, keys=mz(object),
 		nrow=nrow(object), ncol=ncol(object),
 		tolerance=tol, combiner="sum")

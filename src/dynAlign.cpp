@@ -8,7 +8,7 @@ template<typename T>
 SEXP dyn_align(SEXP similarity, SEXP score, SEXP tracking, SEXP gap)
 {
 	// gap penalty
-	double gap_penalty = NUMERIC_VALUE(gap);
+	double gap_penalty = asReal(gap);
 	// matrix pointers
 	T * pSimilarity = DataPtr<T>(similarity);
 	int nrow = nrows(score);

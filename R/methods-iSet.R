@@ -248,6 +248,8 @@ setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 		x
 	})
 
+setMethod("length", "iSet", function(x) nrow(pData(x)))
+
 setMethod("dim", "iSet", function(x)
 	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
 

@@ -46,9 +46,9 @@ extern "C" {
 	{
 		switch(TYPEOF(x)) {
 			case INTSXP:
-				return find_local_maxima<int>(x, INTEGER_VALUE(r));
+				return find_local_maxima<int>(x, asInteger(r));
 			case REALSXP:
-				return find_local_maxima<double>(x, INTEGER_VALUE(r));
+				return find_local_maxima<double>(x, asInteger(r));
 		}
 		return R_NilValue;
 	}
