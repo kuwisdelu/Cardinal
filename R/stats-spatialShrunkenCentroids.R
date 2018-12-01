@@ -14,7 +14,7 @@ setMethod("spatialShrunkenCentroids",
 		.message("spatialShrunkenCentroids: Initializing classes.")
 		initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
 		result <- unlist(lapply(initial@resultData, function(init) {
-			spatial <- spatial.info(x, r=init$r, method=method)
+			spatial <- .spatialInfo(x, r=init$r, bilateral=method=="adaptive")
 			lapply(ss, function(s) {
 				.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
 				append(.spatialShrunkenCentroids.cluster(x,
@@ -121,7 +121,7 @@ setMethod("predict",
 			missing.newy <- FALSE
 		}
 		result <- lapply(object@resultData, function(res) {
-			spatial <- spatial.info(newx, r=res$r, method=res$method)
+			spatial <- .spatialInfo(newx, r=res$r, bilateral=res$method=="adaptive")
 			.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
 			pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
 				centers=res$centers, priors=res$priors,
@@ -276,36 +276,12 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 .calculateSpatialDiscriminantScores <- function(x, centers,
 	priors, spatial, sd, s0=median(sd), .C=TRUE)
 {
-	if ( .C ) {
-		w <- rep(1, nrow(iData(x)))
-		na.centers <- apply(centers, 2, function(x.k) any(is.na(x.k)))
-		if ( any(na.centers) ) centers[,na.centers] <- 0 # handle NaNs
-		spatial$beta <- t(simplify2array(spatial$beta, higher=FALSE))
-		spatial$neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
-		scores <- matrix(0, nrow=ncol(x), ncol=ncol(centers))
-		scores <- .C("discriminant_scores_spatial", as.double(iData(x)),
-			as.integer(nrow(iData(x))), as.integer(ncol(iData(x))),
-			as.integer(spatial$neighbors - 1), as.integer(ncol(spatial$neighbors)),
-			as.double(w), as.double(spatial$alpha), as.double(spatial$beta),
-			as.double(centers), as.integer(ncol(centers)),
-			as.double(sd + s0), as.double(scores))[[12]]
-		dim(scores) <- c(ncol(iData(x)), ncol(centers))
-		if ( any(na.centers) ) scores[,na.centers] <- Inf # handle NaNs
-	} else {
-		scores <- mapply(function(i, nb, b) {
-			gamma <- (spatial$alpha * b) / sum(gamma)
-			gamma <- rep(gamma, each=nrow(iData(x)))
-			apply(centers, 2, function(x.k) {
-				if ( any(is.na(x.k)) ) {
-					Inf  # handle NaNs
-				} else {
-					sum(gamma * (iData(x)[,nb,drop=FALSE] - x.k)^2 / (sd + s0)^2)
-				}
-			})
-		}, seq_len(ncol(iData(x))), spatial$neighbors, spatial$beta)
-		scores <- t(scores)
-	}
-	scores - 2 * log(rep(priors, each=ncol(iData(x))))
+	scores <- mapply(function(ii, wt) {
+		.Call("spatialZScores", iData(x)[,ii,drop=FALSE],
+			centers, wt, sd + s0, PACKAGE="Cardinal")
+	}, spatial$neighbors, spatial$weights)
+	scores[is.na(scores)] <- Inf
+	t(scores) - 2 * log(rep(priors, each=ncol(x)))
 }
 
 .calculateClassProbabilities <- function(scores) {

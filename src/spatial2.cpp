@@ -51,7 +51,68 @@ SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups)
 }
 
 template<typename T>
-SEXP find_spatial_offsets(SEXP coord, SEXP neighbors, int k)
+SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP binfo)
+{
+	int ngroups = LENGTH(binfo);
+	int nrow = nrows(coord);
+	int ncol = ncols(coord);
+	T * pCoord = DataPtr<T>(coord);
+	double * pR = REAL(r);
+	int * pGroups = INTEGER(groups);
+	bool within_block[nrow];
+	SEXP ret;
+	PROTECT(ret = NEW_LIST(ngroups));
+	for ( int k = 0; k < ngroups; ++k ) {
+		SEXP info = VECTOR_ELT(binfo, k);
+		SEXP limits = VECTOR_ELT(info, 0);
+		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
+		int nblocks = nrows(VECTOR_ELT(info, 1));
+		SEXP blocks;
+		PROTECT(blocks = NEW_LIST(nblocks));
+		for ( int l = 0; l < nblocks; ++l ) {
+			int blocksize = 0;
+			for ( int i = 0; i < nrow; ++i ) {
+				within_block[i] = true;
+				if ( pGroups[i] != k + 1 ) {
+					within_block[i] = false;
+					continue;
+				}
+				for  ( int j = 0; j < ncol; ++j ) {
+					double * pLimits = REAL(VECTOR_ELT(limits, j));
+					int g = pGrid[j * nblocks + l];
+					double lower = pLimits[g - 1];
+					double upper = pLimits[g];
+					if ( pCoord[j * nrow + i] <= lower - pR[j] )
+						within_block[i] = false;
+					if ( pCoord[j * nrow + i] > upper + pR[j] )
+						within_block[i] = false;
+				}
+				if ( within_block[i] )
+					blocksize++;
+			}
+			SEXP members;
+			PROTECT(members = NEW_INTEGER(blocksize));
+			int * pMembers = INTEGER(members);
+			int ix = 0;
+			for ( int ii = 0; ii < nrow && ix < blocksize; ++ii ) {
+				if ( within_block[ii] ) {
+					pMembers[ix] = ii + 1;
+					ix++;
+				}
+			}
+			SET_VECTOR_ELT(blocks, l, members);
+			UNPROTECT(1);
+		}
+		SET_VECTOR_ELT(ret, k, blocks);
+		UNPROTECT(1);
+	}
+	UNPROTECT(1);
+	return ret;
+}
+
+
+template<typename T>
+SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 {
 	int nrow = LENGTH(neighbors);
 	int ncol = ncols(coord);
@@ -69,7 +130,7 @@ SEXP find_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 }
 
 template<typename T1, typename T2>
-SEXP find_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
+SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 {
 	int npixels = ncols(x);
 	int nfeatures = nrows(x);
@@ -131,8 +192,8 @@ SEXP find_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 }
 
 template<typename T1, typename T2>
-double find_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
-	SEXP x_weights, SEXP y_weights, double sigma, double tol_dist)
+double get_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
+	SEXP x_weights, SEXP y_weights, double tol_dist)
 {
 	int ndims = ncols(x_offsets);
 	int nfeatures = nrows(x);
@@ -169,63 +230,36 @@ double find_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
 }
 
 template<typename T>
-SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP binfo)
+SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 {
-	int ngroups = LENGTH(binfo);
-	int nrow = nrows(coord);
-	int ncol = ncols(coord);
-	T * pCoord = DataPtr<T>(coord);
-	double * pR = REAL(r);
-	int * pGroups = INTEGER(groups);
-	bool within_block[nrow];
-	SEXP ret;
-	PROTECT(ret = NEW_LIST(ngroups));
-	for ( int k = 0; k < ngroups; ++k ) {
-		SEXP info = VECTOR_ELT(binfo, k);
-		SEXP limits = VECTOR_ELT(info, 0);
-		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
-		int nblocks = nrows(VECTOR_ELT(info, 1));
-		SEXP blocks;
-		PROTECT(blocks = NEW_LIST(nblocks));
-		for ( int l = 0; l < nblocks; ++l ) {
-			int blocksize = 0;
-			for ( int i = 0; i < nrow; ++i ) {
-				within_block[i] = true;
-				if ( pGroups[i] != k + 1 ) {
-					within_block[i] = false;
-					continue;
-				}
-				for  ( int j = 0; j < ncol; ++j ) {
-					double * pLimits = REAL(VECTOR_ELT(limits, j));
-					int g = pGrid[j * nblocks + l];
-					double lower = pLimits[g - 1];
-					double upper = pLimits[g];
-					if ( pCoord[j * nrow + i] <= lower - pR[j] )
-						within_block[i] = false;
-					if ( pCoord[j * nrow + i] > upper + pR[j] )
-						within_block[i] = false;
-				}
-				if ( within_block[i] )
-					blocksize++;
+	int nfeatures = nrows(x);
+	int npixels = ncols(x);
+	int nrefs = ncols(ref);
+	double * alpha = REAL(VECTOR_ELT(weights, 0));
+	double * beta = REAL(VECTOR_ELT(weights, 1));
+	double * sdev = REAL(sd);
+	T * pX = DataPtr<T>(x);
+	T * pRef = DataPtr<T>(ref);
+	SEXP scores;
+	PROTECT(scores = NEW_NUMERIC(nrefs));
+	double * pScores = REAL(scores);
+	double a_i, dist, wscale = 0;
+	for ( int i = 0; i < npixels; ++i )
+		wscale += alpha[i] * beta[i];
+	for ( int k = 0; k < nrefs; ++k ) {
+		pScores[k] = 0;
+		for ( int i = 0; i < npixels; ++i ) {
+			a_i = alpha[i] * beta[i] / wscale;
+			double score_i = 0;
+			for ( int j = 0; j < nfeatures; ++j ) {
+				dist = pX[i * nfeatures + j] - pRef[k * nfeatures + j];
+				score_i += (dist * dist) / (sdev[j] * sdev[j]);
 			}
-			SEXP members;
-			PROTECT(members = NEW_INTEGER(blocksize));
-			int * pMembers = INTEGER(members);
-			int ix = 0;
-			for ( int ii = 0; ii < nrow && ix < blocksize; ++ii ) {
-				if ( within_block[ii] ) {
-					pMembers[ix] = ii + 1;
-					ix++;
-				}
-			}
-			SET_VECTOR_ELT(blocks, l, members);
-			UNPROTECT(1);
+			pScores[k] += a_i * score_i;
 		}
-		SET_VECTOR_ELT(ret, k, blocks);
-		UNPROTECT(1);
 	}
 	UNPROTECT(1);
-	return ret;
+	return scores;
 }
 
 extern "C" {
@@ -239,48 +273,57 @@ extern "C" {
 			return R_NilValue;
 	}
 
-	SEXP findSpatialOffsets(SEXP coord, SEXP neighbors, SEXP k) {
-		if ( TYPEOF(coord) == INTSXP )
-			return find_spatial_offsets<int>(coord, neighbors, asInteger(k));
-		else if ( TYPEOF(coord) == REALSXP )
-			return find_spatial_offsets<double>(coord, neighbors, asInteger(k));
-		else
-			return R_NilValue;
-	}
-
-	SEXP findSpatialWeights(SEXP x, SEXP offsets, SEXP sigma, SEXP bilateral) {
-		if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == INTSXP )
-			return find_spatial_weights<int,int>(x, offsets, asReal(sigma), asLogical(bilateral));
-		else if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == REALSXP )
-			return find_spatial_weights<int,double>(x, offsets, asReal(sigma), asLogical(bilateral));
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == INTSXP )
-			return find_spatial_weights<double,int>(x, offsets, asReal(sigma), asLogical(bilateral));
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == REALSXP )
-			return find_spatial_weights<double,double>(x, offsets, asReal(sigma), asLogical(bilateral));
-		else
-			return R_NilValue;
-	}
-
-	SEXP findSpatialDistance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
-		SEXP x_weights, SEXP y_weights, SEXP sigma, SEXP tol_dist)
-	{
-		if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == INTSXP )
-			return ScalarReal(find_spatial_distance<int,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(sigma), asReal(tol_dist)));
-		else if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == REALSXP )
-			return ScalarReal(find_spatial_distance<int,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(sigma), asReal(tol_dist)));
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == INTSXP )
-			return ScalarReal(find_spatial_distance<double,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(sigma), asReal(tol_dist)));
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == REALSXP )
-			return ScalarReal(find_spatial_distance<double,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(sigma), asReal(tol_dist)));
-		else
-			return R_NilValue;
-	}
-
 	SEXP findSpatialBlocks(SEXP coord, SEXP r, SEXP group, SEXP binfo) {
 		if ( TYPEOF(coord) == INTSXP )
 			return find_spatial_blocks<int>(coord, r, group, binfo);
 		else if ( TYPEOF(coord) == REALSXP )
 			return find_spatial_blocks<double>(coord, r, group, binfo);
+		else
+			return R_NilValue;
+	}
+
+	SEXP spatialOffsets(SEXP coord, SEXP neighbors, SEXP k) {
+		if ( TYPEOF(coord) == INTSXP )
+			return get_spatial_offsets<int>(coord, neighbors, asInteger(k));
+		else if ( TYPEOF(coord) == REALSXP )
+			return get_spatial_offsets<double>(coord, neighbors, asInteger(k));
+		else
+			return R_NilValue;
+	}
+
+	SEXP spatialWeights(SEXP x, SEXP offsets, SEXP sigma, SEXP bilateral) {
+		if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == INTSXP )
+			return get_spatial_weights<int,int>(x, offsets, asReal(sigma), asLogical(bilateral));
+		else if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == REALSXP )
+			return get_spatial_weights<int,double>(x, offsets, asReal(sigma), asLogical(bilateral));
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == INTSXP )
+			return get_spatial_weights<double,int>(x, offsets, asReal(sigma), asLogical(bilateral));
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == REALSXP )
+			return get_spatial_weights<double,double>(x, offsets, asReal(sigma), asLogical(bilateral));
+		else
+			return R_NilValue;
+	}
+
+	SEXP spatialDistance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
+		SEXP x_weights, SEXP y_weights, SEXP tol_dist)
+	{
+		if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == INTSXP )
+			return ScalarReal(get_spatial_distance<int,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+		else if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == REALSXP )
+			return ScalarReal(get_spatial_distance<int,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == INTSXP )
+			return ScalarReal(get_spatial_distance<double,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == REALSXP )
+			return ScalarReal(get_spatial_distance<double,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+		else
+			return R_NilValue;
+	}
+
+	SEXP spatialZScores(SEXP x, SEXP ref, SEXP weights, SEXP sd) {
+		if ( TYPEOF(x) == INTSXP )
+			return get_spatial_zscores<int>(x, ref, weights, sd);
+		else if ( TYPEOF(x) == REALSXP )
+			return get_spatial_zscores<double>(x, ref, weights, sd);
 		else
 			return R_NilValue;
 	}

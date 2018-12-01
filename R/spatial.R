@@ -13,7 +13,7 @@ spatial.info <- function(x, r, method) {
 	} else {
 		beta <- rep(list(matrix(1, nrow=nrow(alpha), ncol=nrow(alpha))), ncol(iData(x)))
 	}
-	list(neighbors=neighbors, alpha=alpha, beta=beta)
+	list(alpha=alpha, beta=beta, neighbors=neighbors, method=method, r=r)
 }
 
 ## Gaussian spatial weights

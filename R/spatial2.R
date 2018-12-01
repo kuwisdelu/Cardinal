@@ -32,39 +32,6 @@ setMethod("findNeighbors", "SImageSet",
 		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
 	})
 
-.findSpatialOffsets <- function(coord, neighbors, i) {
-	if ( !is.matrix(coord) )	
-		coord <- as.matrix(coord)
-	if ( is.list(neighbors) )
-		neighbors <- neighbors[[i]]
-	offsets <- .Call("findSpatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
-	colnames(offsets) <- colnames(coord)
-	offsets
-}
-
-.findSpatialWeights <- function(x, offsets, sigma, bilateral = FALSE) {
-	if ( missing(sigma) )
-		sigma <- ((2 * max(abs(offsets))) + 1) / 4
-	weights <- .Call("findSpatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
-	names(weights) <- c("alpha", "beta")
-	weights
-}
-
-.findSpatialDistance <- function(x, y, xoffsets, yoffsets,
-	xweights, yweights, sigma, tol.dist = 1e-9, bilateral = FALSE)
-{
-	if ( typeof(x) != typeof(y) || typeof(xoffsets) != typeof(yoffsets) )
-		stop("arrays must have the same data type")
-	if ( missing(sigma) )
-		sigma <- ((2 * max(abs(xoffsets))) + 1) / 4
-	if ( missing(xweights) )
-		xweights <- .findSpatialWeights(x, xoffsets, sigma, bilateral)
-	if ( missing(yweights) )
-		yweights <- .findSpatialWeights(y, yoffsets, sigma, bilateral)
-	.Call("findSpatialDistance", x, y, xoffsets, yoffsets,
-		xweights, yweights, sigma, tol.dist, PACKAGE="Cardinal")
-}
-
 .findSpatialBlocks <- function(x, r, groups, nblocks) {
 	groups <- as.factor(groups)
 	if ( length(r) != length(coord(x)) ) {
@@ -119,4 +86,55 @@ setMethod("findNeighbors", "SImageSet",
 	lapply(seq_along(blocks), function(i) which(wh == i))
 }
 
+.spatialOffsets <- function(coord, neighbors, i) {
+	if ( !is.matrix(coord) )	
+		coord <- as.matrix(coord)
+	if ( is.list(neighbors) )
+		neighbors <- neighbors[[i]]
+	offsets <- .Call("spatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
+	colnames(offsets) <- colnames(coord)
+	offsets
+}
+
+.spatialWeights <- function(x, offsets, sigma, bilateral = FALSE) {
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(offsets))) + 1) / 4
+	weights <- .Call("spatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
+	names(weights) <- c("alpha", "beta")
+	weights
+}
+
+.spatialInfo <- function(x, r, bilateral = FALSE) {
+	neighbors <- findNeighbors(x, r=r)
+	if ( is(x, "iSet") ) {
+		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
+	} else if ( is(x, "SparseImagingExperiment") ) {
+		coord <- as.matrix(coord(x))
+	} else {
+		stop("unrecognized imaging class")
+	}
+	offsets <- lapply(1:ncol(x), function(i) {
+		.spatialOffsets(coord, neighbors, i)
+	})
+	sigma <- ((2 * mean(r)) + 1) / 4
+	weights <- mapply(function(ii, pos) {
+		.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
+	}, neighbors, offsets, SIMPLIFY=FALSE)
+	list(neighbors=neighbors, offsets=offsets, weights=weights)
+}
+
+.spatialDistance <- function(x, y, xoffsets, yoffsets,
+	xweights, yweights, sigma, tol.dist = 1e-9, bilateral = FALSE)
+{
+	if ( typeof(x) != typeof(y) || typeof(xoffsets) != typeof(yoffsets) )
+		stop("arrays must have the same data type")
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(xoffsets))) + 1) / 4
+	if ( missing(xweights) )
+		xweights <- .spatialWeights(x, xoffsets, sigma, bilateral)
+	if ( missing(yweights) )
+		yweights <- .spatialWeights(y, yoffsets, sigma, bilateral)
+	.Call("spatialDistance", x, y, xoffsets, yoffsets,
+		xweights, yweights, tol.dist, PACKAGE="Cardinal")
+}
 
