@@ -59,7 +59,7 @@ plot.summary.PCA <- function(x, y, ...) {
 	# var <- x$importance["Proportion of Variance",]
 	# cum <- x$importance["Cumulative",]
 	# data <- data.frame(pc=seq_along(var), sdev=sdev, var=var, cum=cum)
-	data <- data.frame(pc=seq_along(var), sdev=sdev)
+	data <- data.frame(pc=seq_along(sdev), sdev=sdev)
 	plot(sdev ~ pc, data=data, type='b', xlab="PC",
 		ylab="Standard deviation", ...)
 }
@@ -169,6 +169,52 @@ plot.summary.OPLS <- function(x, y, ...) {
 	} else if ( attr(x$accuracy, "accuracy") == "factor" ) {
 		.plot.accuracy.factor(x$model, x$accuracy, ...)
 	}
+}
+
+setMethod("summary", "SpatialFastmap",
+	function(object, ...) {
+		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+			r <- x$r
+			ncomp <- x$ncomp
+			data.frame(r=r, ncomp=ncomp,
+				cor=as.vector(x$cor[,ncomp,drop=FALSE]))
+		}))
+		row.names(topLabels) <- NULL
+		rs <- sort(unique(unlist(object$r)))
+		importance <- t(sapply(rs, function(r) {
+			rss <- unlist(object$r)
+			ncomps <- unlist(object$ncomp)
+			ncomps[rss != r] <- 0
+			which <- which.max(ncomps)
+			ncomp <- object$ncomp[[which]]
+			sdev <- object$sdev[[which]]
+			matrix(sdev, ncol=ncomp,
+				dimnames=list("Standard deviation", paste0("FC", 1:ncomp)))
+		}))
+		rownames(importance) <- paste0("Standard deviation, r = ", rs)
+		colnames(importance) <- paste0("FC", 1:max(unlist(object$ncomp)))
+		out <- list(topLabels=topLabels, importance=importance,
+			model=modelData(object), method=object[[1]]$method)
+		class(out) <- "summary.SpatialFastmap"
+		out
+	})
+
+print.summary.SpatialFastmap <- function(x, ...) {
+	print(x$importance)
+}
+
+plot.summary.SpatialFastmap <- function(x, y, ...) {
+	plot(c(1, ncol(x$importance)), range(x$importance), type='n',
+		xlab="FC", ylab="Standard deviation", ...)
+	for ( i in 1:nrow(x$importance) ) {
+		sdev <- x$importance[i,]
+		rs <- sort(unique(x$model$r))
+		data <- data.frame(fc=seq_along(sdev), sdev=sdev)
+		points(sdev ~ fc, data=data, type='b', xlab="FC",
+			ylab="Standard deviation", col=i, ...)
+	}
+	legend("topright", legend=paste0("r = ", rs),
+		pch=1, lty=1, col=1:nrow(x$importance))
 }
 
 setMethod("summary", "SpatialKMeans",

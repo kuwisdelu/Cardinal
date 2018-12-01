@@ -16,6 +16,7 @@
 \alias{image,PCA-method}
 \alias{image,PLS-method}
 \alias{image,OPLS-method}
+\alias{image,SpatialFastmap-method}
 \alias{image,SpatialKMeans-method}
 \alias{image,SpatialShrunkenCentroids-method}
 
@@ -28,6 +29,7 @@
 \alias{image3D,PCA-method}
 \alias{image3D,PLS-method}
 \alias{image3D,OPLS-method}
+\alias{image3D,SpatialFastmap-method}
 \alias{image3D,SpatialKMeans-method}
 \alias{image3D,SpatialShrunkenCentroids-method}
 
@@ -165,6 +167,14 @@
 
 \S4method{image3D}{OPLS}(x, formula = substitute(mode ~ x * y * z),
     mode = c("fitted", "scores", "Oscores", "y"),
+    \dots)
+
+\S4method{image}{SpatialFastmap}(x, formula = substitute(mode ~ x * y),
+    mode = "scores",
+    \dots)
+
+\S4method{image3D}{SpatialFastmap}(x, formula = substitute(mode ~ x * y * z),
+    mode = "scores",
     \dots)
 
 \S4method{image}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y),

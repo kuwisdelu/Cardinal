@@ -2,7 +2,7 @@
 ### implement methods for PLS ####
 
 setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"), 
-	function(x, y, ncomp = 20,
+	function(x, y, ncomp = 2,
 		method = "nipals",
 		center = TRUE,
 		scale = FALSE,

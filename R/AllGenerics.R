@@ -160,6 +160,7 @@ setGeneric("findNeighbors", function(x, ...) standardGeneric("findNeighbors"))
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
+setGeneric("spatialFastmap", function(x, ...) standardGeneric("spatialFastmap"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 

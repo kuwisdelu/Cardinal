@@ -170,6 +170,28 @@ setMethod("image3D",
 		image(x, formula=formula, ...)
 	})
 
+#### Image plotting for SpatialFastmap ####
+
+setMethod("image",
+	signature = c(x = "SpatialFastmap"),
+	function(x, formula = substitute(mode ~ x * y),
+		mode = "scores",
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "SpatialFastmap"),
+	function(x, formula = substitute(mode ~ x * y * z),
+		mode = "scores",
+		...)
+	{
+		mode <- match.arg(mode)
+		image(x, formula=formula, ...)
+	})
+
 #### Image plotting for SpatialShrunkenCentroids ####
 
 setMethod("image",

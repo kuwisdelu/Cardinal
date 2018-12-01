@@ -150,6 +150,19 @@ setMethod("plot",
 		callNextMethod(x, formula=formula, type=type, ...)
 	})
 
+#### Plotting for SpatialFastmap ####
+
+setMethod("plot",
+	signature = c(x = "SpatialFastmap", y = "missing"),
+	function(x, formula = substitute(mode ~ mz),
+		mode = "cor",
+		type = 'h',
+		...)
+	{
+		mode <- match.arg(mode)
+		callNextMethod(x, formula=formula, type=type, ...)
+	})
+
 #### Plotting for SpatialShrunkenCentroids ####
 
 setMethod("plot",

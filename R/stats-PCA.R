@@ -2,7 +2,7 @@
 ### implement methods for PCA ####
 
 setMethod("PCA", signature = c(x = "SImageSet"), 
-	function(x, ncomp = 20,
+	function(x, ncomp = 2,
 		method = c("irlba", "nipals", "svd"),
 		center = TRUE,
 		scale = FALSE,

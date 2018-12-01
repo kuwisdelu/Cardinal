@@ -21,6 +21,7 @@
 \alias{plot,PCA,missing-method}
 \alias{plot,PLS,missing-method}
 \alias{plot,OPLS,missing-method}
+\alias{plot,SpatialFastmap,missing-method}
 \alias{plot,SpatialKMeans,missing-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
 
@@ -131,6 +132,11 @@
 \S4method{plot}{OPLS,missing}(x, formula = substitute(mode ~ mz),
     mode = c("coefficients", "loadings", "Oloadings",
         "weights", "Oweights", "projection"),
+    type = 'h',
+    \dots)
+
+\S4method{plot}{SpatialFastmap,missing}(x, formula = substitute(mode ~ mz),
+    mode = "cor",
     type = 'h',
     \dots)
 

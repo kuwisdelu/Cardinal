@@ -12,6 +12,7 @@
 \alias{[[,iSet,ANY,ANY-method}
 \alias{[[<-,iSet,ANY,ANY-method}
 \alias{initialize,iSet-method}
+\alias{length,iSet-method}
 \alias{dim,iSet-method}
 \alias{dims,iSet-method}
 \alias{storageMode,iSet-method}

@@ -16,7 +16,7 @@
 	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
 }
 \usage{
-    \S4method{PCA}{SImageSet}(x, ncomp = 20,
+    \S4method{PCA}{SImageSet}(x, ncomp = 2,
         method = c("irlba", "nipals", "svd"),
         center = TRUE,
         scale = FALSE,

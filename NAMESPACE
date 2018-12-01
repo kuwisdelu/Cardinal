@@ -181,6 +181,7 @@ S3method("print", "summary.iSet")
 S3method("print", "summary.PCA")
 S3method("print", "summary.PLS")
 S3method("print", "summary.OPLS")
+S3method("print", "summary.SpatialFastmap")
 S3method("print", "summary.SpatialKMeans")
 S3method("print", "summary.SpatialShrunkenCentroids")
 S3method("print", "summary.CrossValidated")
@@ -191,6 +192,7 @@ S3method("print", "facet.image")
 S3method("plot", "summary.PCA")
 S3method("plot", "summary.PLS")
 S3method("plot", "summary.OPLS")
+S3method("plot", "summary.SpatialFastmap")
 S3method("plot", "summary.SpatialKMeans")
 S3method("plot", "summary.SpatialShrunkenCentroids")
 S3method("plot", "summary.CrossValidated")
@@ -411,12 +413,11 @@ exportMethods("selectROI")
 
 exportMethods("coregister")
 
-exportMethods("findNeighbors")
-
 exportMethods(
 	"OPLS",
 	"PCA",
 	"PLS",
+	"spatialFastmap",
 	"spatialKMeans",
 	"spatialShrunkenCentroids")
 

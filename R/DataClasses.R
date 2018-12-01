@@ -227,6 +227,8 @@ setClass("PLS", contains="ResultSet")
 
 setClass("OPLS", contains="ResultSet")
 
+setClass("SpatialFastmap", contains="ResultSet")
+
 setClass("SpatialKMeans", contains="ResultSet")
 
 setClass("SpatialShrunkenCentroids", contains="ResultSet")
