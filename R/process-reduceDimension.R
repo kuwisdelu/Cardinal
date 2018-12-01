@@ -122,7 +122,7 @@ reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...)
 	if ( length(peaklist) > length(t) )
 		.stop("reduceDimension.peaks: 'peaklist' is too long.")
 	bounds <- nearestLocalMaxima(-x, t, peaklist)
-	xout <- bin(x, t, bins=bounds, fun=fun)
+	xout <- bin(x, bins=bounds, fun=fun)
 	list(x=xout, t=peaklist)
 }
 
