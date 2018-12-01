@@ -16,9 +16,9 @@ setMethod("spatialKMeans",
 		w <- rep(weights, length.out=nrow(iData(x)))
 		.time.start()
 		result <- unlist(lapply(rs, function(r){
-			spatial <- spatial.info(x, r=r, method=method)
-			.message("spatialKMeans: Calculating spatial information for r = ", r, ".")
-			fastmap <- fastmap.spatial(iData(x), r=r, spatial=spatial, w=w, ncomp=ncomp)
+			.message("spatialKMeans: Initializing clusters for r = ", r, ".")
+			fastmap <- spatialFastmap(x, r=r, ncomp=ncomp, method=method, iter.max=1)
+			fastmap <- resultData(fastmap)[[1]][c("scores", "pivot.array")]
 			lapply(ks, function(k) {
 				.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
 				append(.spatialKMeans(x, fastmap=fastmap, k=k,
