@@ -52,7 +52,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 
 .spatialFastmap <- function(x, r, ncomp, method, ...) {
 	distfun <- .spatialDistanceFun(x, r, method)
-	fmap <- fastmap2(x, distfun=distfun, ncomp=ncomp, ...)
+	fmap <- fastmap(x, distfun=distfun, ncomp=ncomp, ...)
 	fmap$cor <- t(apply(iData(x), 1, function(xi) {
 		vapply(1:ncomp, function(nc) {
 			si <- fmap$scores[,nc]

@@ -1,55 +1,60 @@
 
-#### Fastmap algorithm for dimension reduction ####
 
-## Fastmap for euclidean distances
-## 'x' is a N x P matrix
-## 'ncomp' is the number of fastmap components to calculate
-## 'scale' indicates whether the x should be standardized
-## -----------------------------------------------------
-fastmap <- function(x, ncomp=1, scale=FALSE, ...) {
-	x <- as.matrix(x)
-	if ( scale ) x <- scale(x, scale=scale)
-	x.new <- matrix(0, nrow=nrow(x), ncol=ncomp)
-	pivot.array <- matrix(0, nrow=ncomp, ncol=2)
-	out.fastmap <- .C("fastmap_euclidean", as.double(x), as.double(x.new),
-		as.integer(pivot.array), as.integer(nrow(x)), as.integer(ncol(x)),
-		as.integer(ncomp))
-	x.new <- matrix(out.fastmap[[2]], nrow=nrow(x), ncol=ncomp)
-	pivot.array <- matrix(out.fastmap[[3]] + 1, nrow=ncomp, ncol=2)
-	return(list(scores=x.new, pivot.array=pivot.array))	
+fastmap <- function(x, distfun, ncomp=2, ...) {
+	if ( is.matrix(x) || is.data.frame(x) ) {
+		n <- nrow(x)
+	} else {
+		n <- length(x)
+	}
+	x.proj <- matrix(0, nrow=n, ncol=ncomp)
+	x.pivot <- matrix(NA_integer_, nrow=ncomp, ncol=2)
+	for ( j in seq_len(ncomp) ) {
+		x.pivot[j,] <- .findDistantObjects(x, x.proj, distfun, ...)
+		if ( any(is.na(x.pivot[j,])) )
+			break
+		fun <- .distanceFun(x, x.proj, distfun)
+		d_ab <- fun(x.pivot[j,1], x.pivot[j,2])
+		x.proj[,j] <- vapply(seq_len(n), function(i) {
+			d_ai <- fun(x.pivot[j,1], i)
+			d_bi <- fun(x.pivot[j,2], i)
+			(d_ai^2 + d_ab^2 - d_bi^2) / (2 * d_ab)
+		}, numeric(1))
+	}
+	list(scores=x.proj, pivot.array=x.pivot)
 }
 
-## Fastmap for spatially-aware clustering
-## 'x' is a P x N matrix
-## 'coord' is a data.frame of coordinates
-## 'r' is the neighborhood radius
-## 'ncomp' is the number of fastmap components to calculate
-## 'scale' indicates whether the x should be standardized
-## 'spatial' is spatial info (see spatial.info())
-## 'w' is the feature weights
-## ------------------------------------
-fastmap.spatial <- function(x, r=1, ncomp=1, scale=FALSE, spatial, w, ...) {
-	x <- as.matrix(x)
-	if ( scale ) x <- t(apply(x, 1, scale))
-	alpha <- spatial$alpha
-	beta <- t(simplify2array(spatial$beta, higher=FALSE))
-	neighbors <- t(simplify2array(spatial$neighbors, higher=FALSE))
-	ncomp <- ifelse(sum(w > 0) > ncomp, ncomp, sum(w > 0))
-	x.new <- matrix(0, nrow=ncol(x), ncol=ncomp)
-	pivot.array <- matrix(0, nrow=ncomp, ncol=2)
-	start.time <- proc.time()
-	out.fastmap <- .C("fastmap_spatial", as.double(x),
-		as.integer(nrow(x)), as.integer(ncol(x)),
-		as.integer(neighbors - 1), as.integer(ncol(neighbors)),
-		as.double(w), as.double(alpha), as.double(beta),
-		as.double(x.new), as.integer(pivot.array), as.integer(ncomp))
-	x.new <- matrix(out.fastmap[[9]], nrow=ncol(x), ncol=ncomp)
-	x.new <- as.data.frame(x.new)
-	names(x.new) <- paste("FC", 1:ncomp, sep="")
-	pivot.array <- matrix(out.fastmap[[10]] + 1, nrow=ncomp, ncol=2)
-	pivot.array <- as.data.frame(pivot.array)
-	names(pivot.array) <- c("Oa", "Ob")
-	list(scores=x.new, pivot.array=pivot.array,
-		time=proc.time() - start.time)
+.findDistantObjects <- function(x, x.proj, distfun, iter.max = 3, ...) {
+	if ( is.matrix(x) ) {
+		n <- nrow(x)
+	} else {
+		n <- length(x)
+	}
+	fun <- .distanceFun(x, x.proj, distfun)
+	iter <- 1
+	oa <- 1
+	ob <- NULL
+	while ( iter <= iter.max ) {
+		dists <- vapply(seq_len(n), fun, numeric(1), oa)
+		cand <- which.max(dists)
+		if ( dists[cand] == 0 )
+			return(c(NA, NA))		
+		if ( isTRUE(ob == cand) )
+			return(c(oa, ob))
+		ob <- cand
+		dists <- vapply(seq_len(n), fun, numeric(1), ob)
+		oa <- which.max(dists)
+		iter <- iter + 1
+	}
+	c(oa, ob)
 }
 
+.distanceFun <- function(x, x.proj, distfun) {
+	function(i, j) {
+		d2 <- distfun(x, i, j)^2 - sum((x.proj[i,] - x.proj[j,])^2)
+		if ( d2 > 0 ) {
+			sqrt(d2)
+		} else {
+			0
+		}
+	}
+}
