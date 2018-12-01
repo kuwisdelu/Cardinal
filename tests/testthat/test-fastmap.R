@@ -25,9 +25,11 @@ test_that("Fastmap euclidean", {
 
 	expect_equivalent(as.matrix(dist(x)), d)
 
-	proj <- Cardinal:::fastmap(x, ncomp=5, scale=FALSE)
+	fun <- function(x, i, j) sqrt(sum((x[i,] - x[j,])^2))
 
-	expect_equivalent(dist(proj$scores), dist(x))
+	proj <- Cardinal:::fastmap(x, distfun=fun, ncomp=5)
+
+	expect_equivalent(dist(proj$scores), dist(x), tolerance=0.1)
 
 	f1 <- c(0, 0.005, 0.005, 100, 99.995)
 	f2 <- c(0.707089, 1.41418, 1.06062, 0.707089, 0)
@@ -35,8 +37,7 @@ test_that("Fastmap euclidean", {
 
 	f <- cbind(f1, f2, f3)
 
-	# expect_equivalent(f, proj$scores[,1:3]) # why doesn't this work?
-	expect_equal(unname(f[,1:2]), proj$scores[,1:2], tolerance=0.1)
+	expect_equivalent(f[,1:2], proj$scores[,1:2], tolerance=0.1)
 
 	p1 <- c(1, 4)
 	p2 <- c(5, 2)
@@ -44,7 +45,6 @@ test_that("Fastmap euclidean", {
 
 	p <- rbind(p1, p2, p3)
 
-	# expect_equivalent(p, proj$pivot.array[1:3,]) # why doesn't this work?
-	# expect_equal(unname(p[1:2,]), proj$pivot.array[1:2,]) # Windows=fail
+	expect_equal(unname(p[1:2,]), proj$pivot.array[1:2,]) # Windows=fail?
 
 })

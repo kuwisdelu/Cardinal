@@ -14,10 +14,8 @@ setMethod("plot",
 		if ( !missing(coord) && missing(pixel.groups) ) {
 			 pixel.groups <- pixelNames(x)[pixel]
 			 if ( !missing(plusminus) && plusminus != 0 ) {
-				newpixels <- spatial.neighbors(x, r=plusminus,
-					indices=pixel, na.rm=TRUE)
-				pixel.groups <- rep(pixel.groups,
-					each=length(newpixels[[1]]))
+			 	newpixels <- findNeighbors(x, r=plusminus)[pixel]
+				pixel.groups <- rep.int(pixel.groups, lengths(newpixels))
 				pixel <- unlist(newpixels)
 			}
 		} else if ( missing(pixel.groups) ) {
@@ -38,3 +36,4 @@ setMethod("plot",
 	function(x, y, ...) {
 		plot(x, formula=y, ...)
 	})
+

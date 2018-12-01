@@ -1,80 +1,140 @@
 
 #### Spatially-aware statistics ####
 
-## Calculate alpha, beta, and neighborhood information
-## 'x' is an SImageSet object
-## 'r' is the neighborhood radius
-## 'method' spatially-aware (SA) of spatially-aware structurally-adaptive (SASA)
-spatial.info <- function(x, r, method) {
-	neighbors <- spatial.neighbors(x, r=r, na.rm=TRUE)
-	alpha <- spatial.alpha(r=r, p=length(coordLabels(x)))
-	if ( method == "adaptive" ) {
-		beta <- spatial.beta(x, neighbors)
-	} else {
-		beta <- rep(list(matrix(1, nrow=nrow(alpha), ncol=nrow(alpha))), ncol(iData(x)))
-	}
-	list(alpha=alpha, beta=beta, neighbors=neighbors, method=method, r=r)
-}
+## Calculate neighborhood members and spatial weights
 
-## Gaussian spatial weights
-## 'r' is the neighborhood radius
-## 'p' is the number of dimenions (2D or 3D?)
-spatial.alpha <- function(r, p) {
-	sigma <- ((2 * r) + 1) / 4
-	radii <- lapply(1:p, function(i) (-r):r)
-	neighborhood <- expand.grid(radii)
-	alpha <- apply(neighborhood, 1, function(i) exp((-sum(i^2))/(2 * sigma^2)))
-	dim(alpha) <- rep((2 * r) + 1, p)
-	alpha
-}
-
-## Adaptive spatial weights
-## 'x' is an SImageSet object
-## 'neighbors' is a list of neighbor indices
-spatial.beta <- function(x, neighbors) {
-	if ( length(neighbors[[1]]) == 1 ) {
-		matrix(1, ncol=length(neighbors))
-	} else {
-		mapply(function(i, nb) {
-			delta <- sqrt(colSums((iData(x)[,i] - iData(x)[,nb,drop=FALSE])^2))
-			lambda <- max(delta - min(delta)) / 2
-			lambda <- ifelse(lambda > 0, lambda, 1)
-			beta <- exp(-delta^2 / (2 * lambda^2))
-			dim(beta) <- dim(nb)
-			dimnames(beta) <- dimnames(nb)
-			beta
-		}, seq_len(ncol(iData(x))), neighbors, SIMPLIFY=FALSE)
-	}
-}
-
-## Find neighboring pixels within a given radius
-## 'x' is an SImageSet object
-## 'r' is the neighborhood radius
-## 'indices' is the pixels for which to find the neighborhood
-## 'na.rm' replaces out-of-bound indices with a pixel's own index
-spatial.neighbors <- function(x, r, indices, na.rm=FALSE) {
-	coord <- coord(x)
-	if ( length(r) > 1 ) {
-		warning("'r' must be length 1, only the first element will be used")
-		r <- r[1]
-	}
-	if ( r == 0 )
-		return(matrix(seq_len(nrow(coord)), ncol=nrow(coord)))
-	coord <- data.frame(lapply(coord, as.integer))
-	dim <- sapply(coord, max)
-	positionArray <- generatePositionArray(coord + r, dim + (2 * r))
-	coord <- coord + r
-	f <- function(...) positionArray[...]
-	radii <- rep(list((-r):r), ncol(coord))
-	names(radii) <- names(coord)
-	radii[!names(coord) %in% coordLabels(x)] <- 0
-	if ( missing(indices) )
-		indices <- seq_len(nrow(coord))
-	lapply(indices, function(i) {
-		neighbors <- do.call(f, mapply(`+`, coord[i,], radii, SIMPLIFY=FALSE))
-		if ( na.rm ) neighbors[is.na(neighbors)] <- i
-		dimnames(neighbors) <- radii[coordLabels(x)]
-		neighbors
+setMethod("findNeighbors", "SparseImagingExperiment",
+	function(x, r, groups = run(x), ...) {
+		findNeighbors(pixelData(x), r=r, groups=groups, ...)
 	})
+
+setMethod("findNeighbors", "PositionDataFrame",
+	function(x, r, groups = run(x), ...)
+	{
+		if ( length(r) != length(coord(x)) ) {
+			r <- rep_len(unname(r), length(coord(x)))
+		} else if ( !is.null(names(r)) ) {
+			r <- r[names(coord(x))]
+		}
+		coord <- as.matrix(coord(x))
+		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+	})
+
+setMethod("findNeighbors", "SImageSet",
+	function(x, r, groups = pData(x)$sample, ...)
+	{
+		if ( length(r) != length(coordLabels(x)) ) {
+			r <- rep_len(unname(r), length(coordLabels(x)))
+		} else if ( !is.null(names(r)) ) {
+			r <- r[coordLabels(x)]
+		}
+		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
+		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+	})
+
+.findSpatialBlocks <- function(x, r, groups, nblocks) {
+	groups <- as.factor(groups)
+	if ( length(r) != length(coord(x)) ) {
+		r <- rep_len(unname(r), length(coord(x)))
+	} else if ( !is.null(names(r)) ) {
+		r <- r[names(coord(x))]
+	}
+	# assume all groups are equal size
+	nblocks_per_group <- nblocks / nlevels(groups)
+	# calculate blocks for each group
+	block_info <- lapply(levels(groups), function(gi) {
+		gcoord <- coord(x)[groups == gi,,drop=FALSE]
+		dim_len <- sapply(gcoord, function(pos) diff(range(pos)))
+		block_per_dim <- round(nblocks_per_group^(dim_len/sum(dim_len)))
+		block_len <- dim_len / block_per_dim
+		limits <- mapply(function(pos, len, ri) {
+			lim <- seq(from=min(pos), to=max(pos), by=max(len, 2 * ri))
+			lim <- as.numeric(lim)
+			if ( lim[length(lim)] >  max(pos) - ri )
+				lim[length(lim)] <- max(pos)
+			lim
+		}, coord(x), block_len, r)
+		grid <- as.matrix(expand.grid(sapply(limits,
+			function(lim) seq_len(length(lim) - 1L))))
+		list(limits=limits, grid=grid)
+	})
+	blocks <- .Call("findSpatialBlocks", as.matrix(coord(x)),
+		as.numeric(r), as.integer(groups), block_info, PACKAGE="Cardinal")
+	if ( length(blocks) > 1L ) {
+		do.call("c", blocks)
+	} else {
+		blocks[[1L]]
+	}
+}
+
+# true if each neighborhood is contained in at least one block
+.validSpatialBlocks <- function(neighbors, blocks) {
+	ok <- sapply(neighbors, function(nb) {
+		any(sapply(blocks, function(bl) all(nb %in% bl)))
+	})
+	all(ok)
+}
+
+# assign each neighborhood to a single block (if overlap exists)
+.whichSpatialBlocks <- function(neighbors, blocks) {
+	wh <- vapply(neighbors, function(nb) {
+		ok <- vapply(blocks, function(bl) all(nb %in% bl), logical(1))
+		if ( !any(ok) )
+			stop("invalid blocks")
+		which(ok)[1L]
+	}, integer(1))
+	lapply(seq_along(blocks), function(i) which(wh == i))
+}
+
+.spatialOffsets <- function(coord, neighbors, i) {
+	if ( !is.matrix(coord) )	
+		coord <- as.matrix(coord)
+	if ( is.list(neighbors) )
+		neighbors <- neighbors[[i]]
+	offsets <- .Call("spatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
+	colnames(offsets) <- colnames(coord)
+	offsets
+}
+
+.spatialWeights <- function(x, offsets, sigma, bilateral = FALSE) {
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(offsets))) + 1) / 4
+	weights <- .Call("spatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
+	names(weights) <- c("alpha", "beta")
+	weights
+}
+
+.spatialInfo <- function(x, r, bilateral = FALSE) {
+	neighbors <- findNeighbors(x, r=r)
+	if ( is(x, "iSet") ) {
+		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
+	} else if ( is(x, "SparseImagingExperiment") ) {
+		coord <- as.matrix(coord(x))
+	} else {
+		stop("unrecognized imaging class")
+	}
+	offsets <- lapply(1:ncol(x), function(i) {
+		.spatialOffsets(coord, neighbors, i)
+	})
+	sigma <- ((2 * mean(r)) + 1) / 4
+	weights <- mapply(function(ii, pos) {
+		.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
+	}, neighbors, offsets, SIMPLIFY=FALSE)
+	list(neighbors=neighbors, offsets=offsets, weights=weights)
+}
+
+.spatialDistance <- function(x, y, xoffsets, yoffsets,
+	xweights, yweights, sigma, tol.dist = 1e-9, bilateral = FALSE)
+{
+	if ( typeof(x) != typeof(y) || typeof(xoffsets) != typeof(yoffsets) )
+		stop("arrays must have the same data type")
+	if ( missing(sigma) )
+		sigma <- ((2 * max(abs(xoffsets))) + 1) / 4
+	if ( missing(xweights) )
+		xweights <- .spatialWeights(x, xoffsets, sigma, bilateral)
+	if ( missing(yweights) )
+		yweights <- .spatialWeights(y, yoffsets, sigma, bilateral)
+	.Call("spatialDistance", x, y, xoffsets, yoffsets,
+		xweights, yweights, tol.dist, PACKAGE="Cardinal")
 }
 
