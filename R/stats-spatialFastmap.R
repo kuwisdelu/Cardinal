@@ -70,23 +70,14 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 }
 
 .spatialDistanceFun <- function(x, r, method) {
-	bilateral <- switch(method,
-		gaussian=FALSE, adaptive=TRUE)
-	sigma <- ((2 * mean(r)) + 1) / 4
-	neighbors <- findNeighbors(x, r=r)
-	coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
-	offsets <- lapply(1:ncol(x), function(i) {
-		.spatialOffsets(coord, neighbors, i)
-	})
-	weights <- mapply(function(ii, pos) {
-		xi <- iData(x)[,ii]
-		.spatialWeights(xi, pos, sigma, bilateral=bilateral)
-	}, neighbors, offsets, SIMPLIFY=FALSE)
+	bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
+	spatial <- .spatialInfo(x, r=r, bilateral=bilateral)
 	X <- iData(x)
 	function(x, i, j) {
-		xi <- X[,neighbors[[i]],drop=FALSE]
-		xj <- X[,neighbors[[j]],drop=FALSE]
-		.spatialDistance(xi, xj, offsets[[i]], offsets[[j]],
-			weights[[i]], weights[[j]], sigma)
+		xi <- X[,spatial$neighbors[[i]],drop=FALSE]
+		xj <- X[,spatial$neighbors[[j]],drop=FALSE]
+		.spatialDistance(xi, xj,
+			spatial$offsets[[i]], spatial$offsets[[j]],
+			spatial$weights[[i]], spatial$weights[[j]])
 	}
 }

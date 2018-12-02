@@ -9,9 +9,10 @@ fastmap <- function(x, distfun, ncomp=2, ...) {
 	x.proj <- matrix(0, nrow=n, ncol=ncomp)
 	x.pivot <- matrix(NA_integer_, nrow=ncomp, ncol=2)
 	for ( j in seq_len(ncomp) ) {
-		x.pivot[j,] <- .findDistantObjects(x, x.proj, distfun, ...)
-		if ( any(is.na(x.pivot[j,])) )
+		tmp <- .findDistantObjects(x, x.proj, distfun, ...)
+		if ( any(is.na(tmp)) )
 			break
+		x.pivot[j,] <- tmp
 		fun <- .distanceFun(x, x.proj, distfun)
 		d_ab <- fun(x.pivot[j,1], x.pivot[j,2])
 		x.proj[,j] <- vapply(seq_len(n), function(i) {
@@ -24,7 +25,7 @@ fastmap <- function(x, distfun, ncomp=2, ...) {
 }
 
 .findDistantObjects <- function(x, x.proj, distfun, iter.max = 3, ...) {
-	if ( is.matrix(x) ) {
+	if ( is.matrix(x) || is.data.frame(x) ) {
 		n <- nrow(x)
 	} else {
 		n <- length(x)
@@ -43,6 +44,8 @@ fastmap <- function(x, distfun, ncomp=2, ...) {
 		ob <- cand
 		dists <- vapply(seq_len(n), fun, numeric(1), ob)
 		oa <- which.max(dists)
+		if ( dists[oa] == 0 )
+			return(c(NA, NA))		
 		iter <- iter + 1
 	}
 	c(oa, ob)

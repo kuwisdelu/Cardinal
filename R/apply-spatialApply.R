@@ -78,6 +78,8 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		}
 		if ( .simplify ) {
 			if ( .blocks ) {
+				ci <- lapply(idx, attr, "centers")
+				attr(ans, "idx") <- ci
 				ans <- reduce_blocks(ans)
 			} else if ( !output ) {
 				ans <- drop(simplify2array(ans))

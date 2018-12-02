@@ -129,6 +129,7 @@ setMethod("findNeighbors", "iSet",
 	} else {
 		info <- list(neighbors=neighbors, offsets=offsets)
 	}
+	c(info, list(r=r, bilateral=bilateral))
 }
 
 .spatialDistance <- function(x, y, xoffsets, yoffsets,
