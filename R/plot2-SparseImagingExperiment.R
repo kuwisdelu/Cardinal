@@ -183,7 +183,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		x <- list(apply(x, 1L, fun))
 	} else {
 		x <- lapply(glevels, function(g) {
-			i <- subrows(all.groups, g)
+			i <- subset_rows(all.groups, g)
 			apply(x[,i,drop=FALSE], 1L, fun)
 		})
 	}

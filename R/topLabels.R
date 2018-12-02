@@ -18,7 +18,7 @@ setMethod("topLabels", "ResultSet",
 		topLabels <- data.frame(fData, topLabels, row.names=seq_len(nrow(topLabels)))
 		sort.by <- match.arg(sort.by[[1]], choices=names(topLabels))
 		filter <- append(model, filter)
-		topLabels <- subdata(topLabels, subset=filter)
+		topLabels <- subset_data(topLabels, subset=filter)
 		topLabels <- switch(type,
 			`+` = topLabels[order(topLabels[[sort.by]], decreasing=TRUE),],
 			`-` = topLabels[order(topLabels[[sort.by]], decreasing=FALSE),],

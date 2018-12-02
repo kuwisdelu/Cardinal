@@ -51,9 +51,9 @@ SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups)
 }
 
 template<typename T>
-SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP binfo)
+SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
 {
-	int ngroups = LENGTH(binfo);
+	int ngroups = LENGTH(block_info);
 	int nrow = nrows(coord);
 	int ncol = ncols(coord);
 	T * pCoord = DataPtr<T>(coord);
@@ -63,7 +63,7 @@ SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP binfo)
 	SEXP ret;
 	PROTECT(ret = NEW_LIST(ngroups));
 	for ( int k = 0; k < ngroups; ++k ) {
-		SEXP info = VECTOR_ELT(binfo, k);
+		SEXP info = VECTOR_ELT(block_info, k);
 		SEXP limits = VECTOR_ELT(info, 0);
 		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
 		int nblocks = nrows(VECTOR_ELT(info, 1));
@@ -110,6 +110,44 @@ SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP binfo)
 	return ret;
 }
 
+SEXP which_spatial_blocks(SEXP neighbors, SEXP blocks)
+{
+	int npixels = LENGTH(neighbors);
+	int nblocks = LENGTH(blocks);
+	SEXP which;
+	PROTECT(which = NEW_INTEGER(npixels));
+	int * pWhich = INTEGER(which);
+	int * pNeighbors, * pBlock;
+	for ( int i = 0; i < npixels; ++i ) {
+		pWhich[i] = NA_INTEGER;
+		for ( int j = 0; j < nblocks; ++j ) {
+			int num_neighbors = LENGTH(VECTOR_ELT(neighbors, i));
+			int blocksize = LENGTH(VECTOR_ELT(blocks, j));
+			pNeighbors = INTEGER(VECTOR_ELT(neighbors, i));
+			pBlock = INTEGER(VECTOR_ELT(blocks, j));
+			bool neighborhood_ok = true;
+			for ( int k = 0; k < num_neighbors; ++k ) {
+				bool id_ok = false;
+				for ( int l = 0; l < blocksize; ++l ) {
+					if ( pNeighbors[k] == pBlock[l] ) {
+						id_ok = true;
+						break;
+					}
+				}
+				if ( !id_ok ) {
+					neighborhood_ok = false;
+					break;
+				}
+			}
+			if ( neighborhood_ok ) {
+				pWhich[i] = j + 1;
+				break;
+			}
+		}
+	}
+	UNPROTECT(1);
+	return which;
+}
 
 template<typename T>
 SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
@@ -229,7 +267,7 @@ double get_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
 	return sqrt(dist2);
 }
 
-template<typename T>
+template<typename T1, typename T2>
 SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 {
 	int nfeatures = nrows(x);
@@ -238,8 +276,8 @@ SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 	double * alpha = REAL(VECTOR_ELT(weights, 0));
 	double * beta = REAL(VECTOR_ELT(weights, 1));
 	double * sdev = REAL(sd);
-	T * pX = DataPtr<T>(x);
-	T * pRef = DataPtr<T>(ref);
+	T1 * pX = DataPtr<T1>(x);
+	T2 * pRef = DataPtr<T2>(ref);
 	SEXP scores;
 	PROTECT(scores = NEW_NUMERIC(nrefs));
 	double * pScores = REAL(scores);
@@ -273,13 +311,17 @@ extern "C" {
 			return R_NilValue;
 	}
 
-	SEXP findSpatialBlocks(SEXP coord, SEXP r, SEXP group, SEXP binfo) {
+	SEXP findSpatialBlocks(SEXP coord, SEXP r, SEXP group, SEXP block_info) {
 		if ( TYPEOF(coord) == INTSXP )
-			return find_spatial_blocks<int>(coord, r, group, binfo);
+			return find_spatial_blocks<int>(coord, r, group, block_info);
 		else if ( TYPEOF(coord) == REALSXP )
-			return find_spatial_blocks<double>(coord, r, group, binfo);
+			return find_spatial_blocks<double>(coord, r, group, block_info);
 		else
 			return R_NilValue;
+	}
+
+	SEXP whichSpatialBlocks(SEXP neighbors, SEXP blocks) {
+		return which_spatial_blocks(neighbors, blocks);
 	}
 
 	SEXP spatialOffsets(SEXP coord, SEXP neighbors, SEXP k) {
@@ -320,10 +362,14 @@ extern "C" {
 	}
 
 	SEXP spatialZScores(SEXP x, SEXP ref, SEXP weights, SEXP sd) {
-		if ( TYPEOF(x) == INTSXP )
-			return get_spatial_zscores<int>(x, ref, weights, sd);
-		else if ( TYPEOF(x) == REALSXP )
-			return get_spatial_zscores<double>(x, ref, weights, sd);
+		if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == INTSXP )
+			return get_spatial_zscores<int,int>(x, ref, weights, sd);
+		else if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == REALSXP )
+			return get_spatial_zscores<int,double>(x, ref, weights, sd);
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == INTSXP )
+			return get_spatial_zscores<double,int>(x, ref, weights, sd);
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == REALSXP )
+			return get_spatial_zscores<double,double>(x, ref, weights, sd);
 		else
 			return R_NilValue;
 	}

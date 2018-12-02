@@ -87,7 +87,7 @@ peakBin_fun <- function(tol, type, cached.peaks, cached.mz) {
 		}
 		f <- switch(type, height=max, area=sum)
 		bounds <- nearestLocalMaxima(-x, seq_along(x), peaks)
-		peaks <- bin(x, bins=bounds, fun=f)
+		peaks <- bin_vector(x, bins=bounds, fun=f)
 		attr(peaks, "bins") <- bounds
 		peaks
 	}

@@ -40,8 +40,8 @@ setGeneric("dataCube", function(object, ...) standardGeneric("dataCube"))
 setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 setGeneric("resolution", function(object) standardGeneric("resolution"))
 setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
-setGeneric("resultData", function(object) standardGeneric("resultData"))
-setGeneric("resultData<-", function(object, value) standardGeneric("resultData<-"))
+setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
+setGeneric("resultData<-", function(object, i, ..., value) standardGeneric("resultData<-"))
 setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
 setGeneric("run", function(object) standardGeneric("run"))
 setGeneric("run<-", function(object, value) standardGeneric("run<-"))
@@ -123,6 +123,7 @@ setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-
 setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
+setGeneric("spatialApply", function(.object, .r, .fun, ...) standardGeneric("spatialApply"))
 
 #### Pre-processing ####
 ## ---------------------

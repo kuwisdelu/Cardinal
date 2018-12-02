@@ -43,7 +43,7 @@
 \S4method{image}{formula}(x, data = environment(x), \dots,
     xlab, ylab, zlab, subset)
 
-## Methods for Cardinal version >= 2.0.0 classes
+#### Methods for Cardinal version >= 2.0.0 classes
 
 \S4method{image}{PositionDataFrame}(x, formula,
         groups = NULL,
@@ -95,6 +95,8 @@
         plusminus,
         \dots)
 
+#### Methods for Cardinal version >= 1.0.0 classes
+
 \S4method{image}{SImageSet}(x, formula = ~ x * y,
     feature,
     feature.groups,
@@ -117,8 +119,6 @@
     colorkey = !is3d,
     subset = TRUE,
     lattice = FALSE)
-
-## Methods for Cardinal version >= 1.0.0 classes
 
 \S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
 

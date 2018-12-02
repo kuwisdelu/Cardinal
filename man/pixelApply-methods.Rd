@@ -13,7 +13,7 @@
 
 \title{Apply functions over imaging datasets}
 \description{
-	Apply an existing or a user-specified function over either all of the features or all of the pixels of an \code{\linkS4class{SImageSet}} or \code{\linkS4class{SparseImagingExperiment}}. These are provided for convenience by analogy to the 'apply' family of functions, but allowing greater control over how the functions are applied over an imaging dataset.
+	Apply an existing or a user-specified function over either all of the features or all of the pixels of a \code{\linkS4class{SparseImagingExperiment}} or \code{\linkS4class{SImageSet}}. These are provided by analogy to the 'apply' family of functions, but allowing greater efficiency and convenience when applying functions over an imaging dataset.
 }
 \usage{
 \S4method{pixelApply}{SparseImagingExperiment}(.object, .fun, \dots,
@@ -54,8 +54,8 @@
     \item{.object}{An imaging dataset.}
     \item{.fun}{The function to be applied.}
     \item{\dots}{Additional arguments passed to \code{.fun}.}
-    \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a number, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getOption("Cardinal.nblocks")} will be used.}
-    \item{.simplify}{Should the result be simplified into a matrix or array rather than a list, if appropriate?}
+    \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a positive integer, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getOption("Cardinal.nblocks")} will be used.}
+    \item{.simplify}{If applying over blocks, then a function to be used to simplify the list of results. Otherwise, a logical value giving whether the results should be simplified into a matrix or array rather than a list.}
     \item{.use.names}{Should the names of elements of \code{.object} (pixels or features, as appropriate) be used for the names of the result?}
     \item{.outpath}{The path to a file where the output data will be written. Results will be kept in-memory if this is NULL. Results will be coerced to a numeric vector before being written to file.}
     \item{BPREDO}{See documentation for \code{\link{bplapply}}.}
@@ -69,6 +69,24 @@
     \item{.verbose}{Used for debugging. Currently ignored.}
 }
 \details{
+
+    !! FOR \code{\linkS4class{SparseImagingExperiment}} CLASSES !!
+
+    For \code{pixelApply}, the function is applied to the feature vector(s) belonging to pixel(s).
+
+    For \code{featureApply}, the function is applied to the vector(s) of intensity values (i.e., the flattened image) corresponding to the feature(s).
+
+    If \code{.blocks} is provided (either TRUE or a positive integer), then the data is split into blocks beforehand, and entire blocks are loaded and passed to the function as a matrix of column-vectors. Otherwise, single vectors are passed to the function individually.
+
+    Additionally, the following attributes are assigned to the object passed to \code{.fun}, accessible via \code{attr()}:
+
+    \itemize{
+        \item{\code{idx}: The indices of the current pixel(s) or feature(s).}
+        \item{\code{mcols}: Either the \code{pixelData} for \code{featureApply} or the \code{featureData} for \code{pixelApply}.}
+    }
+
+    !! FOR \code{\linkS4class{SImageSet}} CLASSES !!
+
     The use of \code{.pixel} and \code{.feature} can be used to apply the function over only a subset of pixels or features (or both), allowing faster computation when calculation on only a subset of data is needed.
 
     For \code{pixelApply}, the function is applied to the feature vector belonging to each pixel. The use of \code{.feature.groups} allows code{\link{tapply}}-like functionality on the feature vectors, applied separately to each pixel.
@@ -83,8 +101,6 @@
         \item{\code{.Object}: The passed \code{.object}. (Note the case.)}
         \item{\code{.Index}: The index of the current iteration.}
     }
-
-    It is expected that these methods will be expanded in the future for different types of imaging datasets (e.g., data read directly from disk).
 }
 \value{
     If \code{.simplify = FALSE}, a list. Otherwise, a matrix, or a higher-dimensional array if grouping is specified.

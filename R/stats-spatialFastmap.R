@@ -1,7 +1,4 @@
 
-
-### implement methods for FastMap ####
-
 setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 	function(x, r = 1, ncomp = 2,
 		method = c("gaussian", "adaptive"),

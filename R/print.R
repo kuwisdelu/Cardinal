@@ -437,7 +437,7 @@ plot.summary.CrossValidated <- function(x, y, ...) {
 		plot(range(x), range(y), type='n', ...)
 		for ( i in seq_len(nrow(param)) ) {
 			par <- param[i,,drop=FALSE]
-			ind <- subrows(model, subset=par[names(model)])
+			ind <- subset_rows(model, subset=par[names(model)])
 			xi <- x[ind]
 			yi <- y[ind]
 			points(xi, yi, type='b', col=par$col, pch=par$pch, lty=par$lty, ...)

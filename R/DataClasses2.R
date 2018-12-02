@@ -95,11 +95,39 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		imageData = "ImageArrayList",
 		featureData = "XDataFrame",
 		elementMetadata = "PositionDataFrame",
-		processing = "SimpleList"),
+		processing = "List"),
 	prototype = prototype(
 		imageData = .SimpleImageArrayList(),
 		elementMetadata = .PositionDataFrame(),
 		processing = SimpleList()))
+
+#### Class for imaging experiment analysis results ####
+## -------------------------------------------------------
+.ResultImagingExperiment <- setClass("ResultImagingExperiment",
+	contains = c("ImagingExperiment", "VIRTUAL"),
+	slots = c(
+		resultData = "List",
+		modelData = "DataFrame"),
+	prototype = prototype(
+		resultData = SimpleList(),
+		modelData = DataFrame()))
+
+.SparseResultImagingExperiment <- setClass("SparseResultImagingExperiment",
+	contains=c("SparseImagingExperiment", "ResultImagingExperiment"))
+
+.CrossValidated2 <- setClass("CrossValidated2", contains="SparseResultImagingExperiment")
+
+.PCA2 <- setClass("PCA2", contains="SparseResultImagingExperiment")
+
+.PLS2 <- setClass("PLS2", contains="SparseResultImagingExperiment")
+
+.OPLS2 <- setClass("OPLS2", contains="SparseResultImagingExperiment")
+
+.SpatialFastmap2 <- setClass("SpatialFastmap2", contains="SparseResultImagingExperiment")
+
+.SpatialKMeans2 <- setClass("SpatialKMeans2", contains="SparseResultImagingExperiment")
+
+.SpatialShrunkenCentroids2 <- setClass("SpatialShrunkenCentroids2", contains="SparseResultImagingExperiment")
 
 #### Class for mass spectrometry imaging experiments ####
 ## -------------------------------------------------------

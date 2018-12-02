@@ -18,6 +18,15 @@
 		error=function(e) eval(expr, envir=p))
 }
 
+# Transform a factor into a matrix of indicator variables
+.factor_matrix <- function(fc) {
+	fc <- as.factor(fc)
+	ret <- vapply(levels(fc), function(l) fc == l,
+		integer(length(fc)))
+	colnames(ret) <- levels(fc)
+	ret
+}
+
 # Create a virtual copy of the object with no data
 .virtual.image <- function(x) {
 	imageData(x) <- new(class(imageData(x)))

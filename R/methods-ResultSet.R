@@ -2,11 +2,13 @@
 #### Methods for subsetting and retrieving results ####
 ## ---------------------------------------------------
 
-setMethod("resultData", "ResultSet",
-	function(object) object@resultData)
+setMethod("resultData",
+	signature = c("ResultSet", "missing"),
+	function(object, ...) object@resultData)
 
-setReplaceMethod("resultData", "ResultSet",
-	function(object, value) {
+setReplaceMethod("resultData",
+	signature = c("ResultSet", "missing", "ANY"),
+	function(object, ..., value) {
 		object@resultData <- value
 		if ( validObject(object) )
 			object			

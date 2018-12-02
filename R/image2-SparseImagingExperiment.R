@@ -188,7 +188,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		x <- list(apply(x, 2L, fun))
 	} else {
 		x <- lapply(glevels, function(g) {
-			i <- subrows(all.groups, g)
+			i <- subset_rows(all.groups, g)
 			apply(x[i,,drop=FALSE], 2L, fun)
 		})
 	}

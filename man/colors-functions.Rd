@@ -33,7 +33,7 @@ gradient.colors(n = 100, start = "#000000", end = "#00AAFF", alpha = 1)
 
 bw.colors(n = 100, alpha = 1)
 
-discrete.colors(n = 2, chroma = 150, luminance = 50, alpha = 1)
+discrete.colors(n = 2, chroma = 150, luminance = 65, alpha = 1)
 
 alpha.colors(col, n = 100, alpha.power = 2,
     alpha = (seq_len(n)/n)^alpha.power)

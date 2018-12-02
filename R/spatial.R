@@ -3,11 +3,6 @@
 
 ## Calculate neighborhood members and spatial weights
 
-setMethod("findNeighbors", "SparseImagingExperiment",
-	function(x, r, groups = run(x), ...) {
-		findNeighbors(pixelData(x), r=r, groups=groups, ...)
-	})
-
 setMethod("findNeighbors", "PositionDataFrame",
 	function(x, r, groups = run(x), ...)
 	{
@@ -17,10 +12,18 @@ setMethod("findNeighbors", "PositionDataFrame",
 			r <- r[names(coord(x))]
 		}
 		coord <- as.matrix(coord(x))
-		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+		out <- .Call("findNeighbors", coord, as.numeric(r),
+			as.integer(groups), PACKAGE="Cardinal")
+		attr(out, "r") <- r
+		out
 	})
 
-setMethod("findNeighbors", "SImageSet",
+setMethod("findNeighbors", "ImagingExperiment",
+	function(x, r, groups = run(x), ...) {
+		findNeighbors(pixelData(x), r=r, groups=groups, ...)
+	})
+
+setMethod("findNeighbors", "iSet",
 	function(x, r, groups = pData(x)$sample, ...)
 	{
 		if ( length(r) != length(coordLabels(x)) ) {
@@ -29,11 +32,15 @@ setMethod("findNeighbors", "SImageSet",
 			r <- r[coordLabels(x)]
 		}
 		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
-		.Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+		out <- .Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+		attr(out, "r") <- r
+		out
 	})
 
-.findSpatialBlocks <- function(x, r, groups, nblocks) {
+.findSpatialBlocks <- function(x, r, groups, nblocks, neighbors = NULL) {
 	groups <- as.factor(groups)
+	if ( missing(r) && !is.null(neighbors) )
+		r <- attr(neighbors, "r")
 	if ( length(r) != length(coord(x)) ) {
 		r <- rep_len(unname(r), length(coord(x)))
 	} else if ( !is.null(names(r)) ) {
@@ -53,37 +60,34 @@ setMethod("findNeighbors", "SImageSet",
 			if ( lim[length(lim)] >  max(pos) - ri )
 				lim[length(lim)] <- max(pos)
 			lim
-		}, coord(x), block_len, r)
-		grid <- as.matrix(expand.grid(sapply(limits,
-			function(lim) seq_len(length(lim) - 1L))))
+		}, gcoord, block_len, r, SIMPLIFY=FALSE)
+		grid <- lapply(limits, function(lim) seq_len(length(lim) - 1L))
+		grid <- as.matrix(expand.grid(grid))
 		list(limits=limits, grid=grid)
 	})
 	blocks <- .Call("findSpatialBlocks", as.matrix(coord(x)),
 		as.numeric(r), as.integer(groups), block_info, PACKAGE="Cardinal")
 	if ( length(blocks) > 1L ) {
-		do.call("c", blocks)
+		blocks <- do.call("c", blocks)
 	} else {
-		blocks[[1L]]
+		blocks <- blocks[[1L]]
 	}
-}
-
-# true if each neighborhood is contained in at least one block
-.validSpatialBlocks <- function(neighbors, blocks) {
-	ok <- sapply(neighbors, function(nb) {
-		any(sapply(blocks, function(bl) all(nb %in% bl)))
-	})
-	all(ok)
-}
-
-# assign each neighborhood to a single block (if overlap exists)
-.whichSpatialBlocks <- function(neighbors, blocks) {
-	wh <- vapply(neighbors, function(nb) {
-		ok <- vapply(blocks, function(bl) all(nb %in% bl), logical(1))
-		if ( !any(ok) )
+	blocks <- blocks[lengths(blocks) != 0L]
+	if ( !is.null(neighbors) ) {
+		wh <- .whichSpatialBlocks(neighbors, blocks)
+		if ( anyNA(wh) )
 			stop("invalid blocks")
-		which(ok)[1L]
-	}, integer(1))
-	lapply(seq_along(blocks), function(i) which(wh == i))
+		centers <- lapply(seq_along(blocks), function(i) which(wh == i))
+		blocks <- blocks[lengths(centers) != 0L]
+		centers <- centers[lengths(centers) != 0L]
+		for ( i in seq_along(blocks) )
+			attr(blocks[[i]], "centers") <- centers[[i]]
+	}
+	blocks
+}
+
+.whichSpatialBlocks <- function(neighbors, blocks) {
+	.Call("whichSpatialBlocks", neighbors, blocks, PACKAGE="Cardinal")
 }
 
 .spatialOffsets <- function(coord, neighbors, i) {
@@ -104,23 +108,27 @@ setMethod("findNeighbors", "SImageSet",
 	weights
 }
 
-.spatialInfo <- function(x, r, bilateral = FALSE) {
+.spatialInfo <- function(x, r, weights = TRUE, bilateral = FALSE) {
 	neighbors <- findNeighbors(x, r=r)
-	if ( is(x, "iSet") ) {
-		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
-	} else if ( is(x, "SparseImagingExperiment") ) {
+	if ( is(x, "ImagingExperiment") ) {
 		coord <- as.matrix(coord(x))
+	} else if ( is(x, "iSet") ) {
+		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
 	} else {
 		stop("unrecognized imaging class")
 	}
 	offsets <- lapply(1:ncol(x), function(i) {
 		.spatialOffsets(coord, neighbors, i)
 	})
-	sigma <- ((2 * mean(r)) + 1) / 4
-	weights <- mapply(function(ii, pos) {
-		.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
-	}, neighbors, offsets, SIMPLIFY=FALSE)
-	list(neighbors=neighbors, offsets=offsets, weights=weights)
+	if ( weights ) {
+		sigma <- ((2 * mean(r)) + 1) / 4
+		weights <- mapply(function(ii, pos) {
+			.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
+		}, neighbors, offsets, SIMPLIFY=FALSE)
+		info <- list(neighbors=neighbors, offsets=offsets, weights=weights)
+	} else {
+		info <- list(neighbors=neighbors, offsets=offsets)
+	}
 }
 
 .spatialDistance <- function(x, y, xoffsets, yoffsets,

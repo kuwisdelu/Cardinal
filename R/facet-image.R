@@ -128,7 +128,7 @@ facet.image <- function(args, formula, obj,
 	layers <- list()
 	for ( p in levels(dpages) ) {
 		for ( f in facet_levels ) {
-			facet_ids <- subrows(facets, f)
+			facet_ids <- subset_rows(facets, f)
 			for ( i in facet_ids ) {
 				vals <- values[[i]]
 				v <- names(values)[i]
@@ -293,6 +293,8 @@ print.facet.image <- function(x, ...) {
 					z=sublayer$values,
 					col=sublayer$col,
 					add=sublayer$add), obj$par)
+				if ( isTRUE(args$useRaster) )
+					args$z <- args$z[,ncol(args$z):1L,drop=FALSE]
 				do.call("image", args)
 			} else if ( !sublayer$add ) {
 				par <- obj$par[-which(names(obj$par) == "zlim")]

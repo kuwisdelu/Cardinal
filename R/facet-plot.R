@@ -66,7 +66,7 @@ facet.plot <- function(args, formula, obj,
 	yrange <- raw_ysrange
 	layers <- list()
 	for ( f in facet_levels ) {
-		facet_ids <- subrows(facets, f)
+		facet_ids <- subset_rows(facets, f)
 		for ( i in facet_ids ) {
 			y <- ys[[i]]
 			v <- names(ys)[i]

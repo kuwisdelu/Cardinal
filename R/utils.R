@@ -85,7 +85,7 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 }
 
 # Bin a signal
-bin <- function(x, t, bins, fun=sum, ...) {
+bin_vector <- function(x, t, bins, fun=sum, ...) {
 	if ( is.list(bins) ) {
 		if ( missing(t) ) {
 			xout <- mapply(function(l, u) {
@@ -303,21 +303,19 @@ match.method <- function(method, options) {
 }
 
 ## Programmatic friendly version of base::subset
-subdata <- function(data, subset, select, drop=FALSE) {
-	subset <- subrows(data, subset=subset)
+subset_data <- function(data, subset, select, drop=FALSE) {
+	subset <- subset_rows(data, subset=subset)
 	data[subset,select,drop=drop]
 }
 
 ## Programmatic friendly version of base::subset (only return row indices)
-subrows <- function(data, subset) {
-	subset <- sapply(seq_along(subset), function(i) {
+subset_rows <- function(data, subset) {
+	j <- setNames(seq_along(subset), names(subset))
+	sub <- lapply(j, function(i) {
 		data[[names(subset)[[i]]]] %in% subset[[i]]
 	})
-	if ( is.null(dim(subset)) ) {
-		which(subset)
-	} else {
-		which(apply(subset, 1, all))
-	}
+	sub <- as.data.frame(sub)
+	which(apply(sub, 1, all))
 }
 
 ## Evaluate a function after capturing unwanted ... arguments

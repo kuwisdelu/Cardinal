@@ -1,0 +1,140 @@
+
+setMethod("plot", c(x = "SparseResultImagingExperiment", y = "formula"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
+setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
+	function(x, formula,
+		model = modelData(x),
+		superpose = TRUE,
+		strip = TRUE,
+		key = superpose,
+		column,
+	    ...,
+		xlab, xlim,
+		ylab, ylim,
+		layout,
+		type = 'h',
+		col = discrete.colors,
+		subset = TRUE,
+		add = FALSE)
+{
+	.checkForIncompleteProcessing(x)
+	args <- .parseFormula2(formula)
+	if ( length(args$lhs) != 1L )
+		.stop("lhs of formula must include exactly 1 variable")
+	if ( length(args$rhs) != 1L )
+		.stop("rhs of formula must include exactly 1 variables")
+	if ( !is.null(args$g) )
+		.stop("conditioning variables via | not allowed")
+	newx <- .format_feature_results(x, names(args$lhs))
+	formula2 <- paste0(c(deparse(formula), "model"), collapse="|")
+	formula2 <- as.formula(formula2)
+	if ( is.null(names(model)) ) {
+		pixel1 <- subset_rows(coord(newx), list(model_id=model))
+	} else {
+		pixel1 <- subset_rows(pixelData(newx), as.list(model))
+	}
+	if ( missing(column) )
+		column <- sort(unique(pData(newx)[["column"]]))
+	if ( is.numeric(column) ) {
+		pixel2 <- subset_rows(coord(newx), list(column_id=column))
+	} else {
+		pixel2 <- subset_rows(pixelData(newx), list(column=column))
+	}
+	pixel <- intersect(pixel1, pixel2)
+	pixel.groups <- pixelData(newx)[["column"]][pixel]
+	if ( missing(xlab) )
+		xlab <- names(args$rhs)
+	if ( missing(ylab) )
+		ylab <- names(args$lhs)
+	plot(newx, formula=formula2, pixel=pixel, pixel.groups=pixel.groups,
+		superpose=superpose, strip=strip, key=key,
+		xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+		layout=layout, type=type, col=col,
+		subset=subset, add=add, ...)
+})
+
+## SpatialFastmap2
+
+setMethod("plot",
+	signature = c(x = "SpatialFastmap2", y = "missing"),
+	function(x, formula, values = "cor", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_feature_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## SpatialKMeans2
+
+setMethod("plot",
+	signature = c(x = "SpatialKMeans2", y = "missing"),
+	function(x, formula, values = c("centers", "betweenss", "withinss"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_feature_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## SpatialShrunkenCentroids2
+
+setMethod("plot",
+	signature = c(x = "SpatialShrunkenCentroids2", y = "missing"),
+	function(x, formula, values = c("centers", "tstatistics"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_feature_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+# format formula
+
+.formula_feature_results <- function(x, lhs) {
+	rhs <- setdiff(ls(as.env(featureData(x))), names(featureData(x)))
+	if ( length(rhs) > 0L ) {
+		rhs <- rhs[1L]
+	} else {
+		rhs <- names(featureData(x))[1L]
+	}
+	fm <- paste0(lhs, "~", rhs)
+	formula <- as.formula(fm, env=parent.frame(3))
+}
+
+# format feature data
+
+.format_feature_results <- function(object, name) {
+	data <- lapply(resultData(object), function(res) {
+		res <- res[[name]]
+		if ( is.factor(res) || is.character(res) ) {
+			.factor_matrix(res)
+		} else if ( is.vector(res) ) {
+			as.matrix(res)
+		} else {
+			res
+		}
+	})
+	cols <- lapply(data, function(x) {
+		if ( is.null(colnames(x))) {
+			paste0(seq_len(ncol(x)))
+		} else {
+			colnames(x)
+		}
+	})
+	pdata <- lapply(seq_along(cols), function(i) {
+		par <- as.list(modelData(object)[i,])
+		par[["model"]] <- .format.data.labels(par)
+		par[["column"]] <- cols[[i]]
+		len <- length(cols[[i]])
+		coord <- DataFrame(column_id=seq_len(len), model_id=i)
+		PositionDataFrame(r=factor(1), coord=coord, par)
+	})
+	pdata <- do.call("rbind", pdata)
+	data <- SimpleList(do.call("cbind", data))
+	names(data) <- name
+	SparseImagingExperiment(imageData=data,
+		featureData=featureData(object),
+		pixelData=pdata)
+}
+
+
+

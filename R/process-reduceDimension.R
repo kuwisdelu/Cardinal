@@ -93,7 +93,7 @@ reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"),
 	}
 	if ( length(tout) > length(t) )
 		.stop("reduceDimension.bin: 'width' is too small.")
-	xout <- bin(x, t, bins=list(tout - width / 2, tout + width / 2), fun=fun)
+	xout <- bin_vector(x, t, bins=list(tout - width / 2, tout + width / 2), fun=fun)
 	list(x=xout, t=tout)
 }
 
@@ -122,7 +122,7 @@ reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...)
 	if ( length(peaklist) > length(t) )
 		.stop("reduceDimension.peaks: 'peaklist' is too long.")
 	bounds <- nearestLocalMaxima(-x, t, peaklist)
-	xout <- bin(x, bins=bounds, fun=fun)
+	xout <- bin_vector(x, bins=bounds, fun=fun)
 	list(x=xout, t=peaklist)
 }
 

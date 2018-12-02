@@ -103,7 +103,10 @@ setMethod("show", "ImagingExperiment",
 			"imaging dataset", "\n", sep="")
 		t1 <- "    "
 		# imageData()
-		.scat("imageData(%d): %s\n", names(imageData(object)), prefix=t1)
+		imageDataNames <- names(imageData(object))
+		if ( is.null(imageDataNames) )
+			imageDataNames <- character(length(imageData(object)))
+		.scat("imageData(%d): %s\n", imageDataNames, prefix=t1)
 		# featureData()
 		if ( !is.null(featureNames(object)) )
 			.scat("featureNames(%d): %s\n", featureNames(object), prefix=t1)

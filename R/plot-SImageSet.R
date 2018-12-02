@@ -174,7 +174,7 @@ setMethod("plot",
 			for ( ci in seq_len(nrow(condition)) ) {
 				add <- superposed[ci]
 				last <- c(!superposed[-1], TRUE)[ci]
-				subscripts <- subrows(data, condition[ci,,drop=FALSE])
+				subscripts <- subset_rows(data, condition[ci,,drop=FALSE])
 				ys <- data[subscripts, ".values"]
 				ys[!subset[subscripts]] <- NA
 				if ( !all(is.na(ys)) ) {

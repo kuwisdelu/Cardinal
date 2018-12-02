@@ -216,16 +216,23 @@ setMethod("show", "SparseImagingExperiment",
 	function(object) {
 		callNextMethod(object)
 		# processingData()
-		plist <- mcols(processingData(object))
-		complete <- plist$label[plist$complete]
-		.scat("processing complete(%d): %s\n", complete,
-			prefix="    ")
-		pending <- plist$label[plist$pending]
-		.scat("processing pending(%d): %s\n", pending,
-			prefix="    ")
+		if ( length(processingData(object)) > 0L ) {
+			plist <- mcols(processingData(object))
+			complete <- plist$label[plist$complete]
+			.scat("processing complete(%d): %s\n", complete,
+				prefix="    ")
+			pending <- plist$label[plist$pending]
+			.scat("processing pending(%d): %s\n", pending,
+				prefix="    ")
+		}
 		# raster dims()
-		rdims <- paste0(names(dims(object)), " := ", dims(object))
+		rdims <- paste0(dims(object), collapse=" x ")
 		.scat("raster dimensions(%d): %s\n", rdims,
+			collapse=", ", prefix="    ")
+		# coord
+		clims <- sapply(coord(object), function(ci) paste0(range(ci), collapse="..."))
+		clims <- paste0(paste0(names(coord(object)), sep=" = "), clims)
+		.scat("coord(%d): %s\n", clims,
 			collapse=", ", prefix="    ")
 	}
 )

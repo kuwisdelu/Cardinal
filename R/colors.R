@@ -90,7 +90,7 @@ bw.colors <- function(n = 100, alpha = 1) {
 }
 
 ## Discrete color scale
-discrete.colors <- function(n = 2, chroma = 150, luminance = 50, alpha = 1) {
+discrete.colors <- function(n = 2, chroma = 150, luminance = 65, alpha = 1) {
 	if ( n == 1L )
 		return(rgb(0, 0, 0, alpha))
 	hue <- c(0, 360) + 15
