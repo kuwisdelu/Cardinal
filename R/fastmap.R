@@ -1,6 +1,6 @@
 
 
-fastmap <- function(x, distfun, ncomp=2, ...) {
+fastmap <- function(x, distfun, ncomp = 2, ...) {
 	if ( is.matrix(x) || is.data.frame(x) ) {
 		n <- nrow(x)
 	} else {
@@ -24,7 +24,7 @@ fastmap <- function(x, distfun, ncomp=2, ...) {
 	list(scores=x.proj, pivot.array=x.pivot)
 }
 
-.findDistantObjects <- function(x, x.proj, distfun, iter.max = 3, ...) {
+.findDistantObjects <- function(x, x.proj, distfun, iter.max = 2, ...) {
 	if ( is.matrix(x) || is.data.frame(x) ) {
 		n <- nrow(x)
 	} else {

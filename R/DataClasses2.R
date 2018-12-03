@@ -42,7 +42,6 @@ setClass("ImageArrayList", contains = c("ImageList", "VIRTUAL"))
 
 #### Classes for a list of imaging data ###
 ## -----------------------------------------
-
 .SimpleImageList <- setRefClass("SimpleImageList",
     fields = list(data = "SimpleList"),
     contains = "ImageList")
@@ -60,7 +59,6 @@ setAs("SimpleImageList", "SimpleList", function(from) from$data)
 
 #### Classes for a list of MS imaging data ###
 ## -------------------------------------------
-
 .MSContinuousImagingSpectraList <- setRefClass(
 	Class = "MSContinuousImagingSpectraList",
     contains = "SimpleImageArrayList")

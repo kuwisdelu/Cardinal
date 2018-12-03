@@ -16,10 +16,10 @@
 \usage{
 \S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 2,
     method = c("gaussian", "adaptive"),
-    weights = 1, iter.max = 100, nstart = 100,
+    weights = 1, iter.max = 10, nstart = 1,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
         "MacQueen"),
-    ncomp = 20, \dots)
+    ncomp = 10, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset to cluster.}

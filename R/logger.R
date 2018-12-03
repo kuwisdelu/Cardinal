@@ -5,29 +5,31 @@
 .log <- function(...) {
 	msg <- paste(date(), paste0(..., collapse="\n  "))
 	.Cardinal$log <- append(.Cardinal$log, msg)
-	elapsed <- proc.time()[3] - .Cardinal$time$flush
-	if ( elapsed > getOption("Cardinal.flush") )
-		.log.flush()
+	flushtime <- getOption("Cardinal.flush")
+	if ( !is.null(flushtime) ) {
+		elapsed <- proc.time()[3] - .Cardinal$time$flush
+		if ( elapsed > flushtime )
+			.log.flush()
+	}
 }
 
 .log.flush <- function(e=.Cardinal) {
-	if ( getOption("Cardinal.log") ) {
-		tryCatch({
-			if ( length(e$log) != 0 ) {
-				e$time$flush <- proc.time()[3]
-				filepath <- file.path(tempdir(), "Cardinal.log")
-				sink(filepath, append=TRUE)
-				for ( m in e$log ) {
-					cat(m, "\n\n")
-				}
-				e$log <- list()
-				sink()
+	if ( isTRUE(getOption("Cardinal.log")) && length(e$log) != 0 ) {
+		res <- tryCatch({
+			e$time$flush <- proc.time()[3]
+			filepath <- file.path(tempdir(), "Cardinal.log")
+			sink(filepath, append=TRUE)
+			for ( m in e$log ) {
+				cat(m, "\n\n")
 			}
+			e$log <- list()
+			sink()
 			TRUE
 		}, error=function(e) FALSE)
 	} else {
-		FALSE
+		res <- FALSE
 	}
+	invisible(res)
 }
 
 #### User messages ####
@@ -80,7 +82,7 @@
 .time.stop <- function() {
 	.Cardinal$time$stop <- proc.time()
 	time <- .Cardinal$time$stop - .Cardinal$time$start
-	if ( getOption("Cardinal.time") )
+	if ( isTRUE(getOption("Cardinal.time")) )
 		.console("Cardinal: Operation took ", round(time[[3]], digits=1), " seconds.")
 	.log("Cardinal: Operation took ", round(time[[3]], digits=2), " seconds.")
 }

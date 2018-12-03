@@ -18,7 +18,7 @@ setMethod("iData", c("ImagingExperiment", "missing"),
 	function(x, i, ...) x@imageData[[1]])
 
 setMethod("iData", c("ImagingExperiment", "ANY"), 
-	function(x, i, ...) x@imageData[[i]])
+	function(x, i, ...) x@imageData[[i, exact=FALSE]])
 
 setReplaceMethod("iData", c("ImagingExperiment", "missing"),
 	function(x, i, ..., value) {
@@ -193,7 +193,7 @@ setReplaceMethod("[[", c("ImagingExperiment", "ANY", "missing"),
 	grep(pattern, names(pixelData(x)), value=TRUE)
 
 setMethod("$", "ImagingExperiment",
-	function(x, name) pixelData(x)[[name]])
+	function(x, name) pixelData(x)[[name, exact=FALSE]])
 
 setReplaceMethod("$", "ImagingExperiment",
 	function(x, name, value) {

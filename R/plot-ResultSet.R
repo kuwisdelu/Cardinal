@@ -155,7 +155,7 @@ setMethod("plot",
 setMethod("plot",
 	signature = c(x = "SpatialFastmap", y = "missing"),
 	function(x, formula = substitute(mode ~ mz),
-		mode = "cor",
+		mode = "correlations",
 		type = 'h',
 		...)
 	{

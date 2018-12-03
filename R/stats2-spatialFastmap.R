@@ -1,10 +1,44 @@
 
+setMethod("spatialFastmap", "SparseImagingExperiment",
+	function(x, r = 1, ncomp = 2,
+		method = c("gaussian", "adaptive"),
+		iter.max = 1,
+		BPPARAM = bpparam(), ...)
+	{
+		method <- match.arg(method)
+		if ( !is.list(BPPARAM) )
+			BPPARAM <- list(BPPARAM, SerialParam())
+		if ( max(ncomp) > nrow(x) )
+			.stop("can't fit more components than number of pixels")
+		if ( max(ncomp) > nrow(x) )
+			.stop("can't fit more components than number of features")
+		if ( length(ncomp) > 1L ) {
+			ncomp <- max(ncomp)
+			.warning("ncomp has length > 1; using ncomp = ", ncomp)
+		}
+		.message("fitting ", ncomp, " FastMap components with ",
+			method, " spatial weights")
+		results <- bplapply(r, function(ri, BPPARAM) {
+			.message("r = ", ri)
+			.spatialFastmap2(x=x, r=ri, ncomp=ncomp,
+				method=method, iter.max=iter.max,
+				BPPARAM=BPPARAM, ...)
+		}, BPPARAM=BPPARAM)
+		models <- DataFrame(r=r, ncomp=ncomp)
+		.SpatialFastmap2(
+			imageData=.SimpleImageArrayList(),
+			featureData=featureData(x),
+			elementMetadata=pixelData(x),
+			resultData=as(results, "List"),
+			modelData=models)
+	})
+
 setAs("SpatialFastmap", "SpatialFastmap2",
 	function(from) {
 		.coerce_ResultImagingExperiment(from, "SpatialFastmap2")
 	})
 
-.spatialFastmap2 <- function(x, r, ncomp, method, ...) {
+.spatialFastmap2 <- function(x, r, ncomp, method, iter.max = 2, ...) {
 	init <- TRUE
 	bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
 	spatial <- .spatialInfo(x, r=r, bilateral=bilateral)
@@ -12,9 +46,25 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	pivots <- matrix(NA_integer_, nrow=ncomp, ncol=2)
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
+	fun <- function(xbl, xa, xb) {
+		idx <- attr(xbl, "idx")
+		f <- function(i, neighbors, offsets, weights) {
+			d_ai <- .spatialDistance2(xbl[,neighbors,drop=FALSE], xa,
+				offsets, attr(xa, "offsets"),
+				weights, attr(xa, "weights"),
+				proj=proj, i=idx[i], j=attr(xa, "idx"))
+			d_bi <- .spatialDistance2(xbl[,neighbors,drop=FALSE], xb,
+				offsets, attr(xb, "offsets"),
+				weights, attr(xb, "weights"),
+				proj=proj, i=idx[i], j=attr(xb, "idx"))
+			(d_ai^2 + d_ab^2 - d_bi^2) / (2 * d_ab)
+		}
+		mapply(f, attr(xbl, "centers"), attr(xbl, "neighbors"),
+			attr(xbl, "offsets"), attr(xbl, "params"))
+	}
 	for ( j in seq_len(ncomp) ) {
-		.message("projecting FastMap component ", j, " ...")
-		o_ab <- .findDistantObjects2(x, proj, spatial, init, ...)
+		.message("projecting component ", j)
+		o_ab <- .findDistantObjects2(x, proj, spatial, init, iter.max, ...)
 		if ( any(is.na(o_ab)) )
 			break		
 		if ( !is.null(attr(o_ab, "init")) )
@@ -34,46 +84,47 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			spatial$offsets[[oa]], spatial$offsets[[ob]],
 			spatial$weights[[oa]], spatial$weights[[ob]],
 			proj=proj, i=oa, j=ob)
-		fun <- function(xbl) {
-			idx <- attr(xbl, "idx")
-			ci <- seq_along(attr(xbl, "centers"))
-			vapply(ci, function(k) {
-				i <- match(attr(xbl, "neighbors")[[k]], idx)
-				d_ai <- .spatialDistance2(xbl[,i,drop=FALSE], xa,
-					attr(xbl, "offsets")[[k]], attr(xa, "offsets"),
-					attr(xbl, "params")[[k]], attr(xa, "weights"),
-					proj=proj, i=attr(xbl, "centers")[[k]], j=attr(xa, "idx"))
-				d_bi <- .spatialDistance2(xbl[,i,drop=FALSE], xb,
-					attr(xbl, "offsets")[[k]], attr(xb, "offsets"),
-					attr(xbl, "params")[[k]], attr(xb, "weights"),
-					proj=proj, i=attr(xbl, "centers")[[k]], j=attr(xb, "idx"))
-				(d_ai^2 + d_ab^2 - d_bi^2) / (2 * d_ab)
-			}, numeric(1))
-		}
-		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun,
+		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights)
+			.init=init, .params=spatial$weights, ...)
 		proj[,j] <- comp_j
 	}
-	.message("done.")
+	bind_r <- function(ans) do.call("rbind", ans)
+	corr <- featureApply(x, function(xbl) {
+		t(apply(xbl, 1, function(xi) {
+			vapply(1:ncomp, function(j) {
+				comp_j <- proj[,j]
+				if ( all(comp_j == 0) ) {
+					0
+				} else {
+					cor(xi, comp_j)
+				}
+			}, numeric(1))
+		}))
+	}, .blocks=TRUE, .simplify=bind_r, ...)
+	colnames(proj) <- paste("FC", 1:ncomp, sep="")
+	colnames(corr) <- paste("FC", 1:ncomp, sep="")
+	pivots <- as.data.frame(pivots)
+	names(pivots) <- c("Oa", "Ob")
+	sdev <- apply(proj, 2, sd)
 	options(Cardinal.progress=progress)
-	list(scores=proj, pivot.array=pivots)
+	SimpleList(scores=proj, correlations=corr, pivots=pivots, sdev=sdev)
 }
 
-.findDistantObjects2 <- function(x, proj, spatial, init, iter.max = 3) {
+.findDistantObjects2 <- function(x, proj, spatial, init, iter.max, ...) {
 	iter <- 1
 	oa <- 1
 	ob <- NULL
 	fun <- function(xbl, xj) {
 		idx <- attr(xbl, "idx")
-		ci <- seq_along(attr(xbl, "centers"))
-		vapply(ci, function(k) {
-			i <- match(attr(xbl, "neighbors")[[k]], idx)
-			.spatialDistance2(xbl[,i,drop=FALSE], xj,
-				attr(xbl, "offsets")[[k]], attr(xj, "offsets"),
-				attr(xbl, "params")[[k]], attr(xj, "weights"),
-				proj=proj, i=attr(xbl, "centers")[[k]], j=attr(xj, "idx"))
-		}, numeric(1))
+		f <- function(i, neighbors, offsets, weights) {
+			.spatialDistance2(xbl[,neighbors,drop=FALSE], xj,
+				offsets, attr(xj, "offsets"),
+				weights, attr(xj, "weights"),
+				proj=proj, i=idx[i], j=attr(xj, "idx"))
+		}
+		mapply(f, attr(xbl, "centers"), attr(xbl, "neighbors"),
+			attr(xbl, "offsets"), attr(xbl, "params"))
 	}
 	while ( iter <= iter.max ) {
 		xa <- iData(x)[,spatial$neighbors[[oa]]]
@@ -82,7 +133,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xa, "weights") <- spatial$weights[[oa]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xa,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights)
+			.init=init, .params=spatial$weights, ...)
 		if ( !is.null(attr(dists, "init")) )
 			init <- attr(dists, "init")
 		cand <- which.max(dists)
@@ -97,7 +148,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xb, "weights") <- spatial$weights[[ob]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xb,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights)
+			.init=init, .params=spatial$weights, ...)
 		oa <- which.max(dists)
 		if ( dists[oa] == 0 )
 			return(structure(c(NA, NA), init=init))

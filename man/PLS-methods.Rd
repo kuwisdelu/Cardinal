@@ -18,19 +18,19 @@
 	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform discriminant analysis (PLS-DA) if the response is a \code{factor}.
 }
 \usage{
-    \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 2,
-        method = "nipals",
-        center = TRUE,
-        scale = FALSE,
-        iter.max = 100, \dots)
-    
-    \S4method{PLS}{SImageSet,numeric}(x, y, \dots)
+\S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 2,
+    method = "nipals",
+    center = TRUE,
+    scale = FALSE,
+    iter.max = 100, \dots)
 
-    \S4method{PLS}{SImageSet,factor}(x, y, \dots)
+\S4method{PLS}{SImageSet,numeric}(x, y, \dots)
 
-    \S4method{PLS}{SImageSet,character}(x, y, \dots)
+\S4method{PLS}{SImageSet,factor}(x, y, \dots)
 
-    \S4method{predict}{PLS}(object, newx, newy, \dots)
+\S4method{PLS}{SImageSet,character}(x, y, \dots)
+
+\S4method{predict}{PLS}(object, newx, newy, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset on which to perform partial least squares.}

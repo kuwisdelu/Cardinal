@@ -296,6 +296,8 @@ exportMethods(
 	"regeneratePositions",
 	"resultData",
 	"resultData<-",
+	"resultNames",
+	"resultNames<-",
 	"resolution",
 	"resolution<-",
 	"run",
@@ -392,7 +394,8 @@ exportMethods(
 exportMethods(
 	"cvApply",
 	"featureApply",
-	"pixelApply")
+	"pixelApply",
+	"spatialApply")
 
 exportMethods(
 	"batchProcess",
@@ -414,9 +417,9 @@ exportMethods("selectROI")
 exportMethods("coregister")
 
 exportMethods(
-	"OPLS",
 	"PCA",
 	"PLS",
+	"OPLS",
 	"spatialFastmap",
 	"spatialKMeans",
 	"spatialShrunkenCentroids")

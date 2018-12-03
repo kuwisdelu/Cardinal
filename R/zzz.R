@@ -23,12 +23,9 @@
 globalVariables(".Index")
 
 .onLoad <- function(libname, pkgname) {
-	options(Cardinal.verbose=interactive())
-	options(Cardinal.progress=interactive())
-	options(Cardinal.time=FALSE)
-	options(Cardinal.log=FALSE)
-	options(Cardinal.flush=60)
-	options(Cardinal.nblocks=20)
+	options(Cardinal.verbose=interactive()) # public
+	options(Cardinal.progress=interactive()) # public
+	options(Cardinal.nblocks=20) # public
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
 	if ( !exists(".Random.seed", globalenv()) )

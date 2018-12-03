@@ -2,24 +2,35 @@
 #### Methods for ResultImagingExperiment ####
 ## ------------------------------------------
 
+.valid.ResultImagingExperiment <- function(object) {
+	errors <- NULL
+	if ( length(object@resultData) != nrow(object@modelData) )
+		errors <- c(errors , paste("length of 'resultData'",
+			"must match number of rows in 'modelData'"))
+	if ( is.null(errors) ) TRUE else errors
+}
+
+setValidity("ResultImagingExperiment", .valid.ResultImagingExperiment)
+
 setMethod("resultData", c("ResultImagingExperiment", "missing"), 
-	function(object, i, ...) object@resultData)
+	function(object, ...) object@resultData)
 
 setMethod("resultData", c("ResultImagingExperiment", "ANY"), 
-	function(object, i, ...) object@resultData[[i]])
-
-setReplaceMethod("resultData", c("ResultImagingExperiment", "missing"),
-	function(object, i, ..., value) {
-		object@resultData <- value
-		if ( validObject(object) )
-			object
+	function(object, i, j, ...) {
+		if ( missing(j) ) {
+			object@resultData[[i, exact=FALSE]]
+		} else {
+			object@resultData[[i, exact=FALSE]][[j, exact=FALSE]]
+		}
 	})
 
-setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"),
-	function(object, i, ..., value) {
-		object@resultData[[i]] <- value
-		if ( validObject(object) )
-			object
+setMethod("resultNames", "ResultImagingExperiment", 
+	function(object, i, ...) {
+		if ( missing(i) ) {
+			lapply(resultData(object), names)
+		} else {
+			names(resultData(object, i))
+		}
 	})
 
 setMethod("modelData", "ResultImagingExperiment",
@@ -32,21 +43,51 @@ setReplaceMethod("modelData", "ResultImagingExperiment",
 			object			
 	})
 
+setMethod("[[", c("ResultImagingExperiment", "ANY", "missing"),
+	function(x, i, j, ...) {
+		lapply(x@resultData, function(res) res[[i]])
+	})
+
+setMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
+	function(x, i, j, ...) {
+		x@resultData[[i]][[j]]
+	})
+
+.DollarNames.ResultImagingExperiment <- function(x, pattern = "")
+	grep(pattern, names(resultData(x, 1L)), value=TRUE)
+
+setMethod("$", "ResultImagingExperiment",
+	function(x, name) {
+		lapply(x@resultData, function(res) res[[name, exact=FALSE]])
+	})
+
 # show
 
-.show_ResultImagingExperiment <- function(object) {
+.show.ResultImagingExperiment <- function(object) {
 	t1 <- "    "
 	# resultData()
-    if ( length(resultData(object)) > 0L )
-		.scat("resultData(%d): %s\n", names(resultData(object)), prefix=t1)
+	if ( !is.null(resultNames(object, 1L)) )
+		.scat("resultNames(%d): %s\n", resultNames(object, 1L), prefix=t1)
+	resultDataNames <- names(resultData(object))
+	if ( is.null(resultDataNames) )
+		resultDataNames <- character(length(resultData(object)))
+	.scat("resultData(%d): %s\n", resultDataNames, prefix=t1)
 	# modelData()
 	.scat("modelData(%d): %s\n", names(modelData(object)), prefix=t1)
 }
 
-setMethod("show", "SparseResultImagingExperiment",
+setMethod("show", "ResultImagingExperiment",
 	function(object) {
 		callNextMethod(object)
-		.show_ResultImagingExperiment(object)
+		.show.ResultImagingExperiment(object)
+	}
+)
+
+setMethod("show", "SparseResultImagingExperiment",
+	function(object) {
+		.show_SIE <- selectMethod("show", "SparseImagingExperiment")
+		.show_SIE(object)
+		.show.ResultImagingExperiment(object)
 	}
 )
 

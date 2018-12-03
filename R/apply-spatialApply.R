@@ -52,10 +52,11 @@ setMethod("spatialApply", "SparseImagingExperiment",
 			suppressPackageStartupMessages(require(Cardinal))
 			x <- iData(.object)[,i,drop=FALSE]
 			ci <- attr(i, "centers")
+			ni <- lapply(spatial$neighbors[ci], match, i)
 			attr(x, "idx") <- i
 			attr(x, "mcols") <- fData(.object)
-			attr(x, "centers") <- ci
-			attr(x, "neighbors") <- spatial$neighbors[ci]
+			attr(x, "centers") <- match(ci, i)
+			attr(x, "neighbors") <- ni
 			attr(x, "offsets") <- spatial$offsets[ci]
 			attr(x, "params") <- .params[ci]
 			res <- .fun(x, ...)

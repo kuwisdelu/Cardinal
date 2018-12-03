@@ -2,8 +2,7 @@
 #### Methods for subsetting and retrieving results ####
 ## ---------------------------------------------------
 
-setMethod("resultData",
-	signature = c("ResultSet", "missing"),
+setMethod("resultData", "ResultSet",
 	function(object, ...) object@resultData)
 
 setReplaceMethod("resultData",
