@@ -1,7 +1,10 @@
 
 setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	function(from) {
-		.coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
+		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
+		metadata(to)$resultType <- list(feature=c("centers", "tstatistics"),
+			pixel=c("probabilities", "classes", "scores"))
+		to
 	})
 
 

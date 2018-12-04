@@ -29,13 +29,18 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
+			metadata=list(resultType=list(
+				feature="correlations",
+				pixel="scores")),
 			resultData=as(results, "List"),
 			modelData=models)
 	})
 
 setAs("SpatialFastmap", "SpatialFastmap2",
 	function(from) {
-		.coerce_ResultImagingExperiment(from, "SpatialFastmap2")
+		to <- .coerce_ResultImagingExperiment(from, "SpatialFastmap2")
+		metadata(to)$resultType <- list(feature="correlations", pixel="scores")
+		to
 	})
 
 .spatialFastmap2 <- function(x, r, ncomp, method, iter.max = 2, ...) {

@@ -61,6 +61,58 @@ setMethod("$", "ResultImagingExperiment",
 		lapply(x@resultData, function(res) res[[name, exact=FALSE]])
 	})
 
+## subsetting
+
+setMethod("[", "SparseResultImagingExperiment",
+	function(x, i, j, ..., drop) {
+		if ( missing(i) ) {
+			i <- seq_len(nrow(x))
+		} else {
+			i2 <- seq_len(nrow(x))
+			i <- setNames(i2, rownames(x))[i]
+		}
+		if ( missing(j) ) {
+			j <- seq_len(ncol(x))
+		} else {
+			j2 <- seq_len(ncol(x))
+			j <- setNames(j2, colnames(x))[j]
+		}
+		results <- x@resultData
+		models <- x@modelData
+		kind <- metadata(x)$resultType
+		if ( !is.null(kind) ) {
+			results <- endoapply(results, function(res) {
+				for ( name in kind$feature )
+					res[[name]] <- res[[name]][i,,drop=FALSE]
+				for ( name in kind$pixel )
+					res[[name]] <- res[[name]][j,,drop=FALSE]
+				res
+			})
+		}
+		x <- callNextMethod(x, i=i, j=j, ..., drop=drop)
+		x@resultData <- results
+		x@modelData <- models
+		x
+	})
+
+## combine
+
+setMethod("combine", "SparseResultImagingExperiment",
+	function(x, y, ...) {
+		x@resultData <- c(x@resultData, y@resultData)
+		x@modelData <- rbind(x@modelData, y@modelData)
+		if ( validObject(x) )
+			x
+	}
+)
+
+setMethod("rbind", "SparseResultImagingExperiment",
+	function(..., deparse.level=1) .stop("can't rbind results"))
+
+setMethod("cbind", "SparseResultImagingExperiment",
+	function(..., deparse.level=1) .stop("can't cbind results"))
+
+
 # show
 
 .show.ResultImagingExperiment <- function(object) {

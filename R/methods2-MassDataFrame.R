@@ -124,6 +124,9 @@ setMethod("as.env", "MassDataFrame",
 
 setMethod("[", "MassDataFrame",
 	function(x, i, j, ..., drop = TRUE) {
+		lst <- (nargs() - !missing(drop)) < 3L
+		if ( lst )
+			return(x[,i,drop=FALSE])
 		if ( missing(i) ) {
 			mz <- x@mz
 		} else {

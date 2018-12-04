@@ -1,7 +1,10 @@
 
 setAs("SpatialKMeans", "SpatialKMeans2",
 	function(from) {
-		.coerce_ResultImagingExperiment(from, "SpatialKMeans2")
+		to <- .coerce_ResultImagingExperiment(from, "SpatialKMeans2")
+		metadata(to)$resultType <- list(pixel="cluster",
+			feature=c("centers", "betweenss", "withinss"))
+		to
 	})
 
 

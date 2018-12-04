@@ -14,6 +14,28 @@ test_that("MassDataFrame validity", {
 
 })
 
+test_that("PositionDataFrame setters", {
+
+	mz <- seq(from=100, to=150, by=1.5)
+	values <- seq_len(length(mz))
+	fdata <- MassDataFrame(mz=mz, values=values)
+
+	fdata_orig <- fdata
+
+	expect_silent(fdata[["new_values"]] <- 1:34)
+	expect_silent(fdata[["new_values"]] <- NULL)
+
+	expect_identical(fdata, fdata_orig)
+
+	expect_silent(fdata$new_values <- 1:34)
+	expect_silent(fdata$new_values <- NULL)
+
+	expect_silent(fdata[,"new_values"] <- 1:34)
+	expect_identical(fdata[-2], fdata_orig)
+	expect_identical(fdata[,-2,drop=FALSE], fdata_orig)
+
+})
+
 test_that("MassDataFrame accessors", {
 
 	mz <- seq(from=100, to=150, by=1.5)

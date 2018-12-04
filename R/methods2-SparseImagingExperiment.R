@@ -164,7 +164,7 @@ setMethod("[", "SparseImagingExperiment",
 		x
 	})
 
-## rbind/cbind
+## combine
 
 setMethod("rbind", "SparseImagingExperiment",
 	function(..., deparse.level=1)
@@ -210,6 +210,9 @@ setMethod("cbind", "SparseImagingExperiment",
     }
 )
 
+setMethod("combine", "SparseImagingExperiment",
+	function(x, y, ...) cbind(x, y, ...))
+
 ## show
 
 setMethod("show", "SparseImagingExperiment",
@@ -230,7 +233,7 @@ setMethod("show", "SparseImagingExperiment",
 		.scat("raster dimensions(%d): %s\n", rdims,
 			collapse=", ", prefix="    ")
 		# coord
-		clims <- sapply(coord(object), function(ci) paste0(range(ci), collapse="..."))
+		clims <- sapply(coord(object), function(ci) paste0(range(ci), collapse=".."))
 		clims <- paste0(paste0(names(coord(object)), sep=" = "), clims)
 		.scat("coord(%d): %s\n", clims,
 			collapse=", ", prefix="    ")

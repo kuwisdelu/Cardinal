@@ -14,6 +14,28 @@ test_that("PositionDataFrame validity", {
 
 })
 
+test_that("PositionDataFrame setters", {
+
+	coord <- expand.grid(x=1:3, y=1:3)
+	values <- seq_len(nrow(coord))
+	pdata <- PositionDataFrame(coord=coord, values=values)
+
+	pdata_orig <- pdata
+
+	expect_silent(pdata[["new_values"]] <- 1:9)
+	expect_silent(pdata[["new_values"]] <- NULL)
+
+	expect_identical(pdata, pdata_orig)
+
+	expect_silent(pdata$new_values <- 1:9)
+	expect_silent(pdata$new_values <- NULL)
+
+	expect_silent(pdata[,"new_values"] <- 1:9)
+	expect_identical(pdata[-2], pdata_orig)
+	expect_identical(pdata[,-2,drop=FALSE], pdata_orig)
+
+})
+
 test_that("PositionDataFrame accessors", {
 
 	coord <- expand.grid(x=1:3, y=1:3)

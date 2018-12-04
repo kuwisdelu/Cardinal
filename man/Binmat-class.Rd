@@ -5,22 +5,22 @@
 \alias{Binmat}
 \alias{Binmat-class}
 
-\alias{[,Binmat-method}
-\alias{[,Binmat,ANY,ANY,ANY-method}
-\alias{[,Binmat,ANY,ANY,NULL-method}
-\alias{dim,Binmat-method}
-\alias{dim<-,Binmat-method}
-\alias{dimnames,Binmat-method}
-\alias{dimnames<-,Binmat-method}
-\alias{dimnames<-,Binmat,ANY-method}
-\alias{colnames,Binmat-method}
-\alias{colnames<-,Binmat-method}
-\alias{rownames,Binmat-method}
-\alias{rownames<-,Binmat-method}
-\alias{cbind,Binmat-method}
-\alias{rbind,Binmat-method}
-\alias{initialize,Binmat-method}
-\alias{show,Binmat-method}
+% \alias{[,Binmat-method}
+% \alias{[,Binmat,ANY,ANY,ANY-method}
+% \alias{[,Binmat,ANY,ANY,NULL-method}
+% \alias{dim,Binmat-method}
+% \alias{dim<-,Binmat-method}
+% \alias{dimnames,Binmat-method}
+% \alias{dimnames<-,Binmat-method}
+% \alias{dimnames<-,Binmat,ANY-method}
+% \alias{colnames,Binmat-method}
+% \alias{colnames<-,Binmat-method}
+% \alias{rownames,Binmat-method}
+% \alias{rownames<-,Binmat-method}
+% \alias{cbind,Binmat-method}
+% \alias{rbind,Binmat-method}
+% \alias{initialize,Binmat-method}
+% \alias{show,Binmat-method}
 
 \title{Binmat: On-disk matrix class using on-demand disk access}
 

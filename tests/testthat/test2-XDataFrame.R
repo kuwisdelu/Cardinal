@@ -13,4 +13,8 @@ test_that("XDataFrame basics", {
 
 	expect_true(validObject(xdf))
 
+	xdf$z <- NULL
+
+	expect_true(validObject(xdf))
+
 })

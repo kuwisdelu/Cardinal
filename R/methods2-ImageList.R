@@ -95,3 +95,24 @@ setMethod("dims", "ImageList",
 		sapply(data, dim, USE.NAMES=TRUE)
 	})
 
+# show
+
+setMethod("show", "SimpleImageList",
+	function(object) {
+		callNextMethod(object)
+		# get class / dim information
+		if ( length(object) == 0 )
+			return(matrix(nrow=0, ncol=0))
+		data <- as(object, "SimpleList", strict=FALSE)
+		dims <- sapply(data, function(x) {
+			d <- paste0(dim(x), collapse=" x ")
+			paste0("<", d, ">")
+		})
+		dims <- paste0(dims, collapse=" ")
+		classes <- paste0(sapply(data, class), collapse=" ")
+		cat(sprintf("classes(%d): %s\n", length(classes), classes))
+		cat(sprintf("dims(%d): %s\n", length(dims), dims))
+	}
+)
+
+
