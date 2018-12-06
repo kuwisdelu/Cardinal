@@ -13,6 +13,7 @@ setMethod("summarize", "SparseImagingExperiment",
 		.checkForIncompleteProcessing(.data)
 		.by <- match.arg(.by)
 		if ( .by == "feature" ) {
+			len <- ncol(.data)
 			ans <- fData(.data)[,integer(),drop=FALSE]
 			e <- as.env(pData(.data), enclos=parent.frame(2))
 			if ( missing(.group_by) ) {
@@ -21,6 +22,7 @@ setMethod("summarize", "SparseImagingExperiment",
 				groups <- .try_eval(substitute(.group_by), envir=e)
 			}
 		} else if ( .by == "pixel" ) {
+			len <- nrow(.data)
 			ans <- pData(.data)[,integer(),drop=FALSE]
 			e <- as.env(fData(.data), enclos=parent.frame(2))
 			if ( missing(.group_by) ) {
@@ -36,8 +38,9 @@ setMethod("summarize", "SparseImagingExperiment",
 		if ( is.list(groups) ) {
 			groups <- lapply(groups, as.factor)
 			groups <- factor(do.call("paste", c(groups, list(sep="."))))
-
-		} else if ( !is.null(groups) ) {
+		}
+		if ( !is.null(groups) ) {
+			groups <- rep_len(groups, len)
 			groups <- as.factor(groups)
 		}
 		groupnames <- levels(groups)
@@ -55,8 +58,7 @@ setMethod("summarize", "SparseImagingExperiment",
 				ecolnames <- paste0(rep(ecolnames, each=ngroups), ".",
 					rep(unlist(groupnames), times=length(ecolnames)))
 			}
-			ecols <- .summarize_expr(.data, .by,
-				groups, expr, .tform, BPPARAM)
+			ecols <- .summarize_expr(.data, .by, groups, expr, .tform, BPPARAM)
 			ans[,ecolnames] <- ecols
 		}
 		if ( !missing(.stat) || length(expr) == 0 ) {
@@ -73,8 +75,7 @@ setMethod("summarize", "SparseImagingExperiment",
 				scolnames <- paste0(rep(scolnames, each=ngroups), ".",
 					rep(unlist(groupnames), times=length(scolnames)))
 			}
-			scols <- .summarize_stat(.data, .by,
-				groups, .stat, .tform, BPPARAM)
+			scols <- .summarize_stat(.data, .by, groups, .stat, .tform, BPPARAM)
 			ans[,scolnames] <- scols
 		}
 		ans
