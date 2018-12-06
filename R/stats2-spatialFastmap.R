@@ -94,7 +94,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			.init=init, .params=spatial$weights, ...)
 		proj[,j] <- comp_j
 	}
-	bind_r <- function(ans) do.call("rbind", ans)
+	do_rbind <- function(ans) do.call("rbind", ans)
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {
 			vapply(1:ncomp, function(j) {
@@ -106,7 +106,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 				}
 			}, numeric(1))
 		}))
-	}, .blocks=TRUE, .simplify=bind_r, ...)
+	}, .blocks=TRUE, .simplify=do_rbind, ...)
 	colnames(proj) <- paste("FC", 1:ncomp, sep="")
 	colnames(corr) <- paste("FC", 1:ncomp, sep="")
 	pivots <- as.data.frame(pivots)

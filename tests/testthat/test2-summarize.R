@@ -103,7 +103,7 @@ test_that("summarize stat", {
 
 	expect_equal(ncol(tmp2), 4L)
 
-	tmp3 <- summarize(msdata, .stat=c("mean", "sum"), .group_by=~cond * run)
+	tmp3 <- summarize(msdata, .stat=c("sd", "mean"), .group_by=~cond * run)
 
 	expect_equal(ncol(tmp3), 8L)
 
@@ -127,7 +127,7 @@ test_that("summarize stat", {
 
 	expect_equal(ncol(tmp7), 8L)
 
-	tmp8 <- summarize(msdata2, .stat=c("min", "max", "mean", "sd"))
+	tmp8 <- summarize(msdata2, .stat=c("mean", "sd", "min", "max"))
 
 	expect_equal(ncol(tmp8), 4L)
 

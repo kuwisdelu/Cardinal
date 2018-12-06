@@ -202,6 +202,7 @@ setMethod("summarize", "SparseImagingExperiment",
 			if ( "var" %in% stat )
 				ret$var <- bias * var
 		}
+		ret <- ret[stat]
 		ret <- do.call("rbind", ret)
 		as.data.frame(t(ret))
 	}
