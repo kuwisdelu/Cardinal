@@ -11,6 +11,31 @@
 	}
 }
 
+# Tabulate-apply that returns a 'list' instead of array
+.tapply <- function(x, index, fun, ...) {
+	index <- as.factor(index)
+	ans <- lapply(levels(index), function(i) {
+		i2 <- which(index == i)
+		if ( length(i2) > 0L ) {
+			fun(x[i2], ...)
+		} else {
+			NA
+		}
+	})
+	setNames(ans, levels(index))
+}
+
+# Apply an expression or function to an object '.'
+.do_dot_expr <- function(x, what, env) {
+	assign(".", x, env)
+	y <- eval(what, envir=env)
+	if ( is.function(y) ) {
+		y(x)
+	} else {
+		y
+	}
+}
+
 # Try eval in specified envir, otherwise try in current envir
 .try_eval <- function(expr, envir) {
 	p <- parent.frame()
@@ -97,7 +122,7 @@
 }
 
 # Combine many lists/dataframes into a single result
-.bind_results <- function(data, guess = 100L) {
+.bind_as_df <- function(data, guess = 100L) {
 	dhead <- lapply(head(data, n=guess), as.data.frame,
 		check.names=FALSE, fix.empty.names=FALSE,
 		check.rows=FALSE, stringsAsFactors=FALSE)
@@ -124,8 +149,8 @@
 {
 	if ( is.null(vals) ) vals <- character()
 	vals <- ifelse(nzchar(vals), vals, "''")
-	lbls <- paste(selectSome(vals), collapse=collapse)
-	txt <- sprintf(x, length(vals), lbls)
+	labels <- paste(selectSome(vals), collapse=collapse)
+	txt <- sprintf(x, length(vals), labels)
 	cat(strwrap(txt, exdent=exdent, prefix=prefix, ...), sep="\n")
 }
 
@@ -136,6 +161,22 @@
 	layout(matrix(seq_len(prod(layout)),
 		ncol=layout[1], nrow=layout[2],
 		byrow=TRUE))
+}
+
+# Auto plotting layout
+.auto.layout <- function(x) {
+	n <- .num.panels(x)
+	nr <- ceiling(sqrt(n))
+	nc <- n %/% nr
+	.setup.layout(c(nc, nr))
+}
+
+# Number of panels in a facet plot
+.num.panels <- function(x) {
+	x <- lapply(x$layers,
+		function(l1) lapply(l1,
+			function(l2) l2$add))
+	sum(!unlist(x))
 }
 
 # Draw strip labels

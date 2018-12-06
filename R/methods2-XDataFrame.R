@@ -68,28 +68,6 @@ setMethod("rbind", "XDataFrame",
 
 setReplaceMethod("[[", "XDataFrame",
 	function(x, i, j,..., value) {
-		nrx <- nrow(x)
-		lv <- NROW(value)
-		if (!missing(j) || length(list(...)) > 0)
-			warning("arguments beyond 'i' ignored")
-		if (missing(i))
-			stop("subscript is missing")
-		if (!is.character(i) && !is.numeric(i))
-			stop("invalid subscript type")
-		if (length(i) < 1L)
-			stop("attempt to select less than one element")
-		if (length(i) > 1L)
-			stop("attempt to select more than one element")
-		if (is.numeric(i) && (i < 1L || i > ncol(x) + 1L))
-			stop("subscript out of bounds")
-		if (!is.null(value) && (nrx != lv)) {
-			if ((nrx == 0) || (lv == 0) || (nrx %% lv != 0)) {
-				stop(paste(lv, "elements in value to replace",
-					nrx, "elements"))
-			} else {
-				value <- rep(value, length.out = nrx)
-			}
-		}
 		if ( is.null(value) ) {
 			x <- callNextMethod(x, i, ..., value=value)
 		} else {

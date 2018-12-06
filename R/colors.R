@@ -25,7 +25,7 @@ intensity.colors <- function(n = 100, alpha = 1) {
 	col2 <- rainbow(3*n, alpha=alpha)[(2*n):1]
 	f <- colorRamp(c("black", rainbow(3*n)[2*n]))
 	alpha <- col2rgb(col2, alpha=TRUE)[[4]]
-	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 		c(as.list(f(i)), maxColorValue=255, alpha=alpha)))
 	cols <- c(col1, col2)
 	cols[seq(from=1, to=3*n, by=3)]
@@ -43,9 +43,9 @@ jet.colors <- function(n = 100, alpha = 1) {
 	f <- colorRamp(c("darkred", rainbow(n)[1]))
 	g <- colorRamp(c(col2[length(col2)], "darkblue"))
 	alpha <- col2rgb(col2, alpha=TRUE)[[4]]
-	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 		c(as.list(f(i)), maxColorValue=255, alpha=alpha)))
-	col3 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	col3 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 		c(as.list(g(i)), maxColorValue=255, alpha=alpha)))
 	cols <- rev(c(col1, col2, col3))
 	cols[seq(from=1, to=8*n, by=8)]
@@ -59,9 +59,9 @@ divergent.colors <- function(n = 100, start = "#00AAEE",
 	alpha <- round(alpha * 255)
 	f1 <- colorRamp(c(start, middle))
 	f2 <- colorRamp(c(middle, end))
-	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	col1 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 			c(as.list(f1(i)), maxColorValue=255, alpha=alpha)))
-	col2 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	col2 <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 			c(as.list(f2(i)), maxColorValue=255, alpha=alpha)))
 	cols <- c(col1, col2)
 	cols[seq(from=1, to=2*n, by=2)]
@@ -78,7 +78,7 @@ risk.colors <- function(n = 100, alpha = 1)
 gradient.colors <- function(n = 100, start = "#000000", end = "#00AAFF", alpha = 1) {
 	alpha <- round(alpha * 255)
 	f <- colorRamp(c(start, end))
-	cols <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call(rgb,
+	cols <- sapply(seq(from=0, to=1, length.out=n), function(i) do.call("rgb",
 			c(as.list(f(i)), maxColorValue=255, alpha=alpha)))
 	cols
 }
@@ -92,7 +92,7 @@ bw.colors <- function(n = 100, alpha = 1) {
 ## Discrete color scale
 discrete.colors <- function(n = 2, chroma = 150, luminance = 65, alpha = 1) {
 	if ( n == 1L )
-		return(rgb(0, 0, 0, alpha))
+		return(rgb(0, 4/9, 2/3, alpha))
 	hue <- c(0, 360) + 15
 	if ( diff(hue) %% 360 < 1 )
 		hue[2] <- hue[2] - 360 / n
@@ -103,7 +103,7 @@ discrete.colors <- function(n = 2, chroma = 150, luminance = 65, alpha = 1) {
 }
 
 ## Convert a color or vector of colors to be translucent
-alpha.colors <- function(col, n = 100, alpha.power = 2, alpha = (seq_len(n)/n)^alpha.power) {
+alpha.colors <- function(col, n = 100, alpha = (seq_len(n)/n)^alpha.power, alpha.power = 2) {
 	if ( missing(n) )
 		n <- length(col)
 	if ( length(col) != n )
@@ -111,7 +111,7 @@ alpha.colors <- function(col, n = 100, alpha.power = 2, alpha = (seq_len(n)/n)^a
 	if ( length(alpha) != n )
 		alpha <- rep(alpha, length.out=n)
 	cols <- col2rgb(col, alpha=TRUE)
-	alphas <- 255 * alpha / max(alpha, na.rm=TRUE)
+	alphas <- 255 * alpha
 	cols <- rgb(cols[1,], cols[2,], cols[3,],
 		alpha=as.integer(alphas),
 		maxColorValue=255)

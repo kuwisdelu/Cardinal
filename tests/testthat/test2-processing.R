@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("new processing")
 
-test_that("Cardinal delayed processing", {
+test_that("Cardinalv2 delayed processing", {
 
 	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 

@@ -145,7 +145,7 @@ affine <- function(x, translate=c(0,0), rotate=0,
 }
 
 # Logical local maxima in a window
-localMaximaLogical <- function(x, window=5, .C=TRUE, ...) {
+localMaximaLogical <- function(x, window=5, ...) {
 	if ( length(x) < 3L )
 		return(logical(length(x)))
 	halfWindow <- floor(min(window, length(x)) / 2)

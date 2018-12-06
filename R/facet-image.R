@@ -236,7 +236,7 @@ facet.image <- function(args, formula, obj,
 		add <- FALSE
 	}
 	if ( missing(layout) )
-		layout <- NULL
+		layout <- TRUE
 	for ( i in seq_along(layers) )
 		if ( !is.null(attr(layers[[i]], "colorkey")) )
 			attr(layers[[i]], "colorkey")$text <- round(valrange, 2)
@@ -277,8 +277,11 @@ facet.image <- function(args, formula, obj,
 
 print.facet.image <- function(x, ...) {
 	obj <- x
-	if ( !is.null(obj$layout) )
+	if ( isTRUE(obj$layout) ) {
+		.auto.layout(obj)
+	} else if ( is.numeric(obj$layout) ) {
 		.setup.layout(obj$layout)
+	}
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
 			if ( obj$is3d ) {

@@ -207,11 +207,11 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 }
 
 .spatialShrunkenCentroids.predict <- function(x, classes, centers,
-	priors, spatial, sd, s0=median(sd), .C=TRUE)
+	priors, spatial, sd, s0=median(sd))
 {
 	start.time <- proc.time()
 	scores <- .calculateSpatialDiscriminantScores(x, centers=centers,
-		priors=priors, spatial=spatial, sd=sd, s0=s0, .C=.C) # NaNs -> Inf
+		priors=priors, spatial=spatial, sd=sd, s0=s0) # NaNs -> Inf
 	probabilities <- .calculateClassProbabilities(scores) # NaNs -> 0
 	empty <- which(table(classes) == 0)
 	clusters <- apply(probabilities, 1, function(p) {
@@ -274,7 +274,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 }
 
 .calculateSpatialDiscriminantScores <- function(x, centers,
-	priors, spatial, sd, s0=median(sd), .C=TRUE)
+	priors, spatial, sd, s0=median(sd))
 {
 	scores <- mapply(function(ii, wt) {
 		.Call("spatialZScores", iData(x)[,ii,drop=FALSE],

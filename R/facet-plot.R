@@ -148,7 +148,7 @@ facet.plot <- function(args, formula, obj,
 		add <- FALSE
 	}
 	if ( missing(layout) )
-		layout <- NULL
+		layout <- TRUE
 	if ( missing(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) )
@@ -169,8 +169,11 @@ facet.plot <- function(args, formula, obj,
 
 print.facet.plot <- function(x, ...) {
 	obj <- x
-	if ( !is.null(obj$layout) )
+	if ( isTRUE(obj$layout) ) {
+		.auto.layout(obj)
+	} else if ( is.numeric(obj$layout) ) {
 		.setup.layout(obj$layout)
+	}
 	nil <- c(list(x=0, y=0), obj$par)
 	nil$type <- 'n'
 	for ( layer in obj$layers ) {

@@ -130,7 +130,7 @@ setMethod("process", "SparseImagingExperiment",
 		by_pixels <- "pixel" %in% queue$info$kind
 		by_features <- "feature" %in% queue$info$kind
 		if ( getOption("Cardinal.verbose") && (by_pixels || by_features) ) {
-			labels <- selectSome(paste0("[", queue$info$label, "]"))
+			labels <- paste0("[", queue$info$label, "]")
 			.message("processing ", paste0(labels, collapse=" "), " ...")
 		}
 		fdata <- force(featureData(object))
