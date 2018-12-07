@@ -78,7 +78,7 @@ setMethod("process", "SparseImagingExperiment",
 				.warning("plot=TRUE only allowed for SerialParam()")
 				plot <- FALSE
 				par <- NULL
-			} else if ( plot && !is.null(par$layout) ) {
+			} else if ( plot && is.numeric(par$layout) ) {
 				.setup.layout(par$layout)
 				par$layout <- NULL
 			}
