@@ -246,7 +246,7 @@ setMethod("as.env", "PositionDataFrame",
 	})
 
 setMethod("[", "PositionDataFrame",
-	function(x, i, j, ..., drop = TRUE) {
+	function(x, i, j, ..., drop = FALSE) {
 		lst <- (nargs() - !missing(drop)) < 3L
 		if ( lst )
 			return(x[,i,drop=FALSE])

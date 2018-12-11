@@ -42,6 +42,11 @@ import("methods")
 
 import("stats4")
 
+importFrom("Matrix",
+	"t",
+	"solve",
+	"chol")
+
 importFrom("dplyr",
 	"arrange",
 	"filter",
@@ -159,8 +164,10 @@ export(
 	"MSImagingExperiment")
 
 export(
+	"addShape",
 	"alpha.colors",
 	"bw.colors",
+	"col.map",
 	"color.map",
 	"discrete.colors",
 	"divergent.colors",
@@ -173,6 +180,8 @@ export(
 	"readAnalyze",
 	"readImzML",
 	"readMSIData",
+	"simulateImage",
+	"simulateSpectrum",
 	"writeAnalyze",
 	"writeImzML",
 	"writeMSIData")
@@ -396,6 +405,10 @@ exportMethods(
 	"featureApply",
 	"pixelApply",
 	"spatialApply")
+
+exportMethods(
+	"findNeighbors",
+	"spatialWeights")
 
 exportMethods(
 	"batchProcess",

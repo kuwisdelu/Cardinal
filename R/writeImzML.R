@@ -67,7 +67,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 			extent=imageData(info)[["external array length"]],
 			datamode=Ctypeof(intensity.type))
 		for ( i in seq_len(ncol(x)) )
-			pspectra[,i] <- spectra(x)[,i]	
+			pspectra[,i] <- iData(x)[,i]
 	} else if ( metadata(info)[["ibd binary type"]] == "processed" ) {
 		# write 'processed' imzML
 		pmz <- matter_list(paths=file, filemode="rb+",

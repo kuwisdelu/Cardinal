@@ -22,7 +22,7 @@ setMethod("plot",
 		if ( !missing(formula) && missing(pixel) && missing(coord) )
 			return(callNextMethod(x, formula=formula, ...,
 				xlab=xlab, ylab=ylab, type=type))
-		if ( missing(formula) ) {
+		if ( missing(formula) && missing(xlab) && missing(ylab) ) {
 			xlab <- expression(italic(m/z))
 			ylab <- expression(italic(Intensity))
 		}
@@ -31,24 +31,31 @@ setMethod("plot",
 				coord <- Cardinal::coord(x)[pixel,]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
 			 	if ( is.null(pixelNames(x)) ) {
-					pixel.groups <- unname(.format.data.labels(coord(x)[pixel,]))
+			 		pixel.names <- data.frame(run=run(x)[pixel], coord(x)[pixel,])
+					pixel.groups <- unname(.format.data.labels(pixel.names))
 				} else {
 					pixel.groups <- pixelNames(x)[pixel]
 				}
 			 } else {
 			 	coord <- as.data.frame(coord)
-			 	pixel.groups <- unname(.format.data.labels(coord,
+			 	coord.groups <- unname(.format.data.labels(coord,
 			 		append=paste0(" \u00b1 ", abs(plusminus))))
+			 	run.groups <- .format.data.labels(list(run=runNames(x)))
+			 	coord.groups <- rep(coord.groups, each=length(run.groups))
+			 	pixel.groups <- paste(run.groups, coord.groups, sep=", ")
 			 	dxy <- rep_len(abs(plusminus), ncol(coord(x)))
-				pixel.list <- lapply(seq_len(nrow(coord)), function(i) {
-					p <- mapply(function(xyi, coordi, dxyi) {
-						coordi >= xyi - dxyi & coordi <= xyi + dxyi
-					}, coord[i,], coord(x), dxy, SIMPLIFY=TRUE)
-					p <- which(apply(as.matrix(p), 1, all))
-					if ( length(p) == 0L )
-						.warning("no pixels in range; removing ", pixel.groups[i])
-					p
-				})
+			 	pixel.list <- lapply(runNames(x), function(run) {
+			 		lapply(seq_len(nrow(coord)), function(i) {
+						p <- mapply(function(pos, coords, dxyi) {
+							coords >= pos - dxyi & coords <= pos + dxyi
+						}, coord[i,], coord(x), dxy, SIMPLIFY=TRUE)
+						p <- which(run == run(x) & apply(as.matrix(p), 1, all))
+						if ( length(p) == 0L )
+							.warning("no pixels in range; removing ", pixel.groups[i])
+						p
+					})
+		 		})
+		 		pixel.list <- unlist(pixel.list, recursive=FALSE)
 				pixel.groups <- rep.int(pixel.groups, lengths(pixel.list))
 				pixel <- unlist(pixel.list)
 			}

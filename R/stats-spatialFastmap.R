@@ -70,8 +70,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 }
 
 .spatialDistanceFun <- function(x, r, method) {
-	bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
-	spatial <- .spatialInfo(x, r=r, bilateral=bilateral)
+	spatial <- .spatialInfo(x, r=r, method=method)
 	X <- iData(x)
 	function(x, i, j) {
 		xi <- X[,spatial$neighbors[[i]],drop=FALSE]

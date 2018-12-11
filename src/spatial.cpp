@@ -170,8 +170,7 @@ SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 template<typename T1, typename T2>
 SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 {
-	int npixels = ncols(x);
-	int nfeatures = nrows(x);
+	int npixels = nrows(offsets);
 	int ndims = ncols(offsets);
 	SEXP w, alpha, beta;
 	PROTECT(w = NEW_LIST(2));
@@ -179,11 +178,10 @@ SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 	PROTECT(beta = NEW_NUMERIC(npixels));
 	double * pAlpha = REAL(alpha);
 	double * pBeta = REAL(beta);
-	T1 * pX = DataPtr<T1>(x);
 	T2 * pOffsets = DataPtr<T2>(offsets);
 	int k; // center pixel
 	bool is_center;
-	double d1, d2, max_d2, min_d2, lambda, sigma2 = sigma * sigma;
+	double d1, d2, sigma2 = sigma * sigma;
 	for ( int i = 0; i < npixels; ++i ) {
 		d2 = 0;
 		is_center = true;
@@ -199,8 +197,9 @@ SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 	}
 	if ( bilateral )
 	{
-		min_d2 = R_PosInf;
-		max_d2 = R_NegInf;
+		int nfeatures = nrows(x);
+		T1 * pX = DataPtr<T1>(x);
+		double lambda, max_d2 = R_NegInf, min_d2 = R_PosInf;
 		for ( int i = 0; i < npixels; ++i ) {
 			d2 = 0;
 			for ( int j = 0; j < nfeatures; ++j ) {
@@ -281,13 +280,13 @@ SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 	SEXP scores;
 	PROTECT(scores = NEW_NUMERIC(nrefs));
 	double * pScores = REAL(scores);
-	double a_i, dist, wscale = 0;
+	double a_i, dist, wsum = 0;
 	for ( int i = 0; i < npixels; ++i )
-		wscale += alpha[i] * beta[i];
+		wsum += alpha[i] * beta[i];
 	for ( int k = 0; k < nrefs; ++k ) {
 		pScores[k] = 0;
 		for ( int i = 0; i < npixels; ++i ) {
-			a_i = alpha[i] * beta[i] / wscale;
+			a_i = alpha[i] * beta[i] / wsum;
 			double score_i = 0;
 			for ( int j = 0; j < nfeatures; ++j ) {
 				dist = pX[i * nfeatures + j] - pRef[k * nfeatures + j];

@@ -33,6 +33,8 @@ setMethod("pixelApply", "SparseImagingExperiment",
 		ans <- bplapply(idx, function(i) {
 			suppressPackageStartupMessages(require(Cardinal))
 			x <- iData(.object)[,i,drop=!.blocks]
+			if ( !is.null(dim(x)) )
+				x <- as.matrix(x)
 			attr(x, "idx") <- i
 			attr(x, "mcols") <- fData(.object)
 			res <- .fun(x, ...)

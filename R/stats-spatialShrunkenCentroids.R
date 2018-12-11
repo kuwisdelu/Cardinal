@@ -14,7 +14,7 @@ setMethod("spatialShrunkenCentroids",
 		.message("spatialShrunkenCentroids: Initializing classes.")
 		initial <- spatialKMeans(x, r=rs, k=ks, method=method, ...)
 		result <- unlist(lapply(initial@resultData, function(init) {
-			spatial <- .spatialInfo(x, r=init$r, bilateral=method=="adaptive")
+			spatial <- .spatialInfo(x, r=init$r, method=method)
 			lapply(ss, function(s) {
 				.message("spatialShrunkenCentroids: Fitting r = ", init$r, ", k = ", init$k, ", s = ", s, ".")
 				append(.spatialShrunkenCentroids.cluster(x,
@@ -121,7 +121,7 @@ setMethod("predict",
 			missing.newy <- FALSE
 		}
 		result <- lapply(object@resultData, function(res) {
-			spatial <- .spatialInfo(newx, r=res$r, bilateral=res$method=="adaptive")
+			spatial <- .spatialInfo(newx, r=res$r, method=res$method)
 			.message("spatialShrunkenCentroids: Predicting classes for r = ", res$r, ", k = ", res$k, ", s = ", res$s, ".")
 			pred <- .spatialShrunkenCentroids.predict(newx, classes=res$y,
 				centers=res$centers, priors=res$priors,

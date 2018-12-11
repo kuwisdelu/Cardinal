@@ -50,7 +50,7 @@ setMethod("spatialApply", "SparseImagingExperiment",
 			.message(progress="start", max=length(idx))
 		ans <- bplapply(idx, function(i) {
 			suppressPackageStartupMessages(require(Cardinal))
-			x <- iData(.object)[,i,drop=FALSE]
+			x <- as.matrix(iData(.object)[,i,drop=FALSE])
 			ci <- attr(i, "centers")
 			ni <- lapply(spatial$neighbors[ci], match, i)
 			attr(x, "idx") <- i

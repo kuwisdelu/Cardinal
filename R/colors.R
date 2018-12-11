@@ -20,6 +20,8 @@ color.map <- function(map = c("redblack", "greenblack", "blueblack",
 		cool = gradient.colors(n, "cyan", "magenta"))
 }
 
+col.map <- function(...) color.map(...)
+
 ## Colors for image intensities
 intensity.colors <- function(n = 100, alpha = 1) {
 	col2 <- rainbow(3*n, alpha=alpha)[(2*n):1]

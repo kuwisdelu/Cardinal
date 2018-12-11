@@ -98,7 +98,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 			}
 		})
 		if ( is.null(args$lhs) ) {
-			xi <- iData(x)[,pixel,drop=FALSE]
+			xi <- as.matrix(iData(x)[,pixel,drop=FALSE])
 			args$lhs <- .fastFeatureApply2(xi, fun, condition)
 			if ( is.null(pixel.groups) && !is.null(names(imageData(x))) ) {
 				names(args$lhs) <- rep_len(names(imageData(x))[1], length(args$lhs))

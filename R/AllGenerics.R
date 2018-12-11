@@ -157,6 +157,7 @@ setGeneric("summarize")	# from 'dplyr'
 #### Spatial utilities ####
 ## ---------------------
 setGeneric("findNeighbors", function(x, ...) standardGeneric("findNeighbors"))
+setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------

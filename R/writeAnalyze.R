@@ -111,7 +111,7 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		row <- coord(x)[i,1]
 		col <- coord(x)[i,2]
 		j <- row + dim[1] * (col - 1)
-		img[,j] <- spectra(x)[,i]
+		img[,j] <- iData(x)[,i]
 	}
 	options(matter.cast.warning=warn)
 	img

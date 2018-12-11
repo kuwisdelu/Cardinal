@@ -1,5 +1,6 @@
 \name{intensity.colors}
 
+\alias{col.map}
 \alias{color.map}
 \alias{intensity.colors}
 \alias{jet.colors}
@@ -17,8 +18,11 @@
 }
 
 \usage{
-color.map(map = c("redblack", "greenblack", "blueblack", "parula",
-    "darkrainbow", "rainbow", "grayscale", "jet", "hot", "cool"), n = 100)
+color.map(map = c("redblack", "greenblack", "blueblack",
+    "parula", "darkrainbow", "rainbow",
+    "grayscale", "jet", "hot", "cool"), n = 100)
+
+col.map(\dots)
 
 intensity.colors(n = 100, alpha = 1)
 
@@ -29,14 +33,16 @@ divergent.colors(n = 100, start = "#00AAEE",
 
 risk.colors(n = 100, alpha = 1)
 
-gradient.colors(n = 100, start = "#000000", end = "#00AAFF", alpha = 1)
+gradient.colors(n = 100, start = "#000000",
+    end = "#00AAFF", alpha = 1)
 
 bw.colors(n = 100, alpha = 1)
 
 discrete.colors(n = 2, chroma = 150, luminance = 65, alpha = 1)
 
-alpha.colors(col, n = 100, alpha.power = 2,
-    alpha = (seq_len(n)/n)^alpha.power)
+alpha.colors(col, n = 100,
+    alpha = (seq_len(n)/n)^alpha.power,
+    alpha.power = 2)
 }
 
 \arguments{

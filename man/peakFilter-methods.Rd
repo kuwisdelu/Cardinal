@@ -30,7 +30,9 @@ peakFilter.freq(x, freq.min=0.01, \dots)
     \item{x}{The vector of ion image intensities to filter.}
 }
 \details{
-    Unlike most other processing methods, \code{peakFilter} operates on the feature space (ion images) of the dataset.
+    When applied to a \code{MSImagingExperiment} object, \code{peakFilter} uses the \code{summarize()} to generate useful statistics about the detected peaks. These include the `min', `max', `mean', `sum', `sd', and `var' of the detected peaks. These can be used in logical expressions to filter the peaks.
+
+    When applied to a \code{MSImageSet} object, unlike most other processing methods, \code{peakFilter} operates on the feature space (ion images) of the dataset.
 
     Peak filtering is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:
 

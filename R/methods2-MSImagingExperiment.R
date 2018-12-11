@@ -270,6 +270,7 @@ setMethod("pixels", "MSImagingExperiment",
 					lxy <- which(apply(lxy, 1, all))
 				}
 			}))
+			pixels <- as.integer(pixels)
 			if ( length(list(...)) > 0 ) {
 				keep <- pixels %in% callNextMethod(object, ..., .env=.env)
 				pixels <- pixels[keep]

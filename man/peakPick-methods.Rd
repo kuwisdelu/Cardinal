@@ -52,7 +52,9 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
         \item{\code{\dots}: Additional arguments.}
     }
 
-    A user-created function should return a \code{list} with two vectors of the same length as \code{x}:
+    When applied to an \code{MSImagingExperiment} object, a user-created function should return a \code{integer} vector giving the indices of the detected peaks.
+
+    When applied to an \code{MSImageSet} object, a user-created function should return a \code{list} with two vectors of the same length as \code{x}:
 
     \itemize{
         \item{\code{peaks}: A \code{logical} vector indicating peaks.}

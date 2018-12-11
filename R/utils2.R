@@ -36,6 +36,11 @@
 	}
 }
 
+# Unlist (once) and re-order output of spatialApply
+.unlist_and_reorder <- function(ans) {
+	unlist(ans, recursive=FALSE)[order(unlist(attr(ans, "idx")))]
+}
+
 # Try eval in specified envir, otherwise try in current envir
 .try_eval <- function(expr, envir) {
 	p <- parent.frame()
@@ -166,8 +171,8 @@
 # Auto plotting layout
 .auto.layout <- function(x) {
 	n <- .num.panels(x)
-	nr <- ceiling(sqrt(n))
-	nc <- n %/% nr
+	nc <- ceiling(sqrt(n))
+	nr <- n %/% nc
 	.setup.layout(c(nc, nr))
 }
 

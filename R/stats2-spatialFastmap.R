@@ -45,8 +45,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 
 .spatialFastmap2 <- function(x, r, ncomp, method, iter.max = 2, ...) {
 	init <- TRUE
-	bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
-	spatial <- .spatialInfo(x, r=r, bilateral=bilateral)
+	spatial <- .spatialInfo(x, r=r, method=method)
 	proj <- matrix(0, nrow=ncol(x), ncol=ncomp)
 	pivots <- matrix(NA_integer_, nrow=ncomp, ncol=2)
 	progress <- getOption("Cardinal.progress")
@@ -160,10 +159,6 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		iter <- iter + 1
 	}
 	structure(c(oa, ob), init=init)
-}
-
-.unlist_and_reorder <- function(ans) {
-	unlist(ans)[order(unlist(attr(ans, "idx")))]
 }
 
 .spatialDistance2 <- function(x, y, xoffsets, yoffsets,
