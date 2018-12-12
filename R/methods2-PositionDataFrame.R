@@ -200,50 +200,25 @@ setReplaceMethod("resolution", "PositionDataFrame",
 setMethod("dims", "PositionDataFrame",
 	function(x) .getDimsFromResolution(x@coord, x@resolution))
 
+# format names for printing includes 'coord' slot-columns
+setMethod("showNames", "PositionDataFrame",
+	function(object) {
+		cnm <- paste0("coord:", names(coord(object)))
+		c(":run:", cnm, names(object))
+	})
+
+
 # includes 'run' and 'coord' slot in the list by default
 setMethod("as.list", "PositionDataFrame",
-	function(x, use.names = TRUE, format.run=":", format.coord="coord:")
+	function(x, use.names = TRUE, slots = TRUE)
 	{
 		ans <- x@listData
-		if ( !is.null(format.coord) ) {
-			pos <- coord(x)
-			if ( length(pos) > 0 )
-				names(pos) <- paste0(format.coord, names(pos))
-			ans <- append(as.list(pos), x@listData)
-		}
-		if ( !is.null(format.run) ) {
-			nmr <- paste0(format.run, "run", format.run)
-			run <- setNames(list(run(x)), nmr)
-			ans <- append(run, ans)
-		}
-		if ( !use.names )
-			names(ans) <- NULL
+		if ( slots )
+			ans <- c(list(run=run(x)), as.list(coord(x)), ans)
 		ans
 	})
 
-# includes 'run' and 'coord' slot in the data.frame by default
-setMethod("as.data.frame", "PositionDataFrame",
-	function(x, ..., slots = TRUE)
-	{
-		if ( slots ) {
-			as.data.frame(as.list(x, format.run="", format.coord=""), ...)
-		} else {
-			as.data.frame(x@listData, ...)
-		}
-	})
-
-# includes 'run' and 'coord' slot in the env by default
-setMethod("as.env", "PositionDataFrame",
-	function(x, enclos = parent.frame(2), ..., slots = TRUE)
-	{
-		enclos <- force(enclos)
-		if ( slots ) {
-			x <- as.list(x, format.run="", format.coord="")
-		} else {
-			x <- x@listData
-		}
-		as.env(x, enclos=enclos, ...)
-	})
+# subsetting
 
 setMethod("[", "PositionDataFrame",
 	function(x, i, j, ..., drop = FALSE) {
@@ -284,6 +259,8 @@ setMethod("[", "PositionDataFrame",
 			metadata=metadata(x))
 		x
 	})
+
+# combining
 
 setMethod("cbind", "PositionDataFrame",
 	function(..., deparse.level = 1) {

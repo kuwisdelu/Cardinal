@@ -105,7 +105,7 @@ setMethod("plot",
 	signature = c(x = "CrossValidated", y = "missing"),
 	function(x, fold = 1:length(x), layout, ...)
 	{
-		if ( !missing(layout) ) .setup.layout(layout)
+		if ( !missing(layout) ) .setup.layout(rev(layout))
 		for ( i in fold ) plot(resultData(x)[[i]], ...)
 	})
 

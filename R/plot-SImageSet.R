@@ -149,14 +149,14 @@ setMethod("plot",
 			# plot it with lattice
 			xyplot(fm, data=data, groups=groups, subset=subset,
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim, type=type,
-				col=col, key=key, strip=strip, layout=layout,
+				col=col, key=key, strip=strip, layout=rev(layout),
 				panel=function(x, y, col, ...) {
 					panel.abline(h=0, lwd=0.2)
 					panel.xyplot(x, y, col=col, ...)
 				}, ...)
 		} else {
 			# setup plotting layout
-			if ( !is.null(layout) ) .setup.layout(layout)
+			if ( !is.null(layout) ) .setup.layout(rev(layout))
 			# check which conditions should create new plots
 			if ( superpose ) {
 				superposed <- which(names(condition) == ".pixel.groups")

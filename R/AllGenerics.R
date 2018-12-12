@@ -49,6 +49,7 @@ setGeneric("run", function(object) standardGeneric("run"))
 setGeneric("run<-", function(object, value) standardGeneric("run<-"))
 setGeneric("runNames", function(object) standardGeneric("runNames"))
 setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
+setGeneric("showNames", function(object) standardGeneric("showNames"))
 
 #### Supplement ProtGenerics  ####
 ## -------------------------------

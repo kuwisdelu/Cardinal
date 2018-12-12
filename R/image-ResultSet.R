@@ -92,7 +92,7 @@ setMethod("image",
 	signature = c(x = "CrossValidated"),
 	function(x, fold = 1:length(x), layout, ...)
 	{
-		if ( !missing(layout) ) .setup.layout(layout)
+		if ( !missing(layout) ) .setup.layout(rev(layout))
 		for ( i in fold ) image(resultData(x)[[i]], ...)
 	})
 
@@ -100,7 +100,7 @@ setMethod("image3D",
 	signature = c(x = "CrossValidated"),
 	function(x, fold = 1:length(x), layout, ...)
 	{
-		if ( !missing(layout) ) .setup.layout(layout)
+		if ( !missing(layout) ) .setup.layout(rev(layout))
 		for ( i in fold ) image3D(resultData(x)[[i]], ...)
 	})
 

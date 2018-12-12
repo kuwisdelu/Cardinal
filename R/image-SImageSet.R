@@ -215,7 +215,7 @@ setMethod("image",
 			subset <- subset[!nas]
 			groups <- groups[!nas]
 			# plot it with lattice
-			levelplot(fm, data=data, groups=groups, subset=subset, layout=layout,
+			levelplot(fm, data=data, groups=groups, subset=subset, layout=rev(layout),
 				xlab=xlab, xlim=xlim, ylab=ylab, ylim=rev(ylim), aspect="iso",
 				at=seq(from=zlim[1], to=zlim[2], length.out=length(col.regions)),
 				col.regions=col.regions, colorkey=colorkey, key=key, strip=strip,
@@ -261,7 +261,7 @@ setMethod("image",
 				ncond <- nrow(condition)
 			}
 			# setup plotting layout
-			if ( !is.null(layout) ) .setup.layout(layout)
+			if ( !is.null(layout) ) .setup.layout(rev(layout))
 			# check which conditions should create new plots
 			if ( superpose ) {
 				superposed <- which(names(condition) == ".feature.groups")

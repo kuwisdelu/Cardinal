@@ -32,7 +32,7 @@ setMethod("batchProcess", "MSImageSet",
 		if ( missing(layout) )
 			layout <- NULL
 		if ( !is.null(layout) && plot )
-			.setup.layout(layout)
+			.setup.layout(rev(layout))
 		out <- list()
 		data <- pixelApply(object, function(s) {
 			# handle feature-preserving pre-processing first

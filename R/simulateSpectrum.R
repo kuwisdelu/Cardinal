@@ -20,25 +20,37 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 			baseline=baseline, decay=decay, units=units)$intensity)
 	} else {
 		dmz <- mz / resolution
-		sd <- qnorm(1 - fmax / 2) * dmz
-		x <- numeric(length(m))
-		x <- x + baseline * exp(-(decay/max(m)) * (m - min(m)))
-		for ( i in seq_along(intensity) ) {
-			if ( intensity[i] <= 0 )
-				next
-			err <- switch(units, ppm=1e-6 * sdmz * mz[i], mz=sdmz)
-			mzi <- mz[i] + rnorm(1, sd=err)
-			xi <- dnorm(m, mzi, sd[i])
-			peakerr <- rlnorm(1, sdlog=sdpeaks)
-			yi <- intensity[i] + (peakerr - min(peakerr))
-			x <- x + yi * (xi / max(xi))
-		}
-		spectrumerr <- rlnorm(length(x), sdlog=sdnoise)
-		x <- x + (spectrumerr - min(spectrumerr))
+		sdwidth <- qnorm(1 - fmax / 2) * dmz
+		sdpeaks <- rep_len(sdpeaks, peaks)
+		mzerr <- rnorm(1) * switch(units, ppm=1e-6 * mz * sdmz, mz=sdmz)
+		mzobs <- mz + mzerr
+		b <- baseline * exp(-(decay/max(m)) * (m - min(m)))
+		x <- .simulateSpectrum(mzobs, intensity,
+			peakwidth=sdwidth, sdpeaks=sdpeaks, sdnoise=sdnoise,
+			mzrange=c(from, to), mzout=m)
+		x <- pmax(b + x, 0)
 		if ( representation == "centroid" ) {
 			x <- approx(m, x, mz)$y
 			m <- mz
 		}
 	}
 	list(mz=m, intensity=x)
+}
+
+.simulateSpectrum <- function(mz, intensity,
+	peakwidth, sdpeaks, sdnoise, mzrange, mzout)
+{
+	x <- numeric(length(mzout))
+	for ( i in seq_along(mz) ) {
+		if ( intensity[i] <= 0 || mz[i] < mzrange[1] || mz[i] > mzrange[2] )
+			next
+		xi <- dnorm(mzout, mean=mz[i], sd=peakwidth[i])
+		intensityerr <- rlnorm(1, sdlog=sdpeaks[i])
+		intensityerr <- intensityerr - exp(sdpeaks[i]^2 / 2)
+		yi <- intensity[i] + intensityerr
+		x <- x + yi * (xi / max(xi))
+	}
+	noise <- rlnorm(length(x), sdlog=sdnoise)
+	noise <- noise - exp(sdnoise^2 / 2)
+	x + noise
 }

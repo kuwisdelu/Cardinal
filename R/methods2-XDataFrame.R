@@ -27,6 +27,26 @@ setMethod("lapply", "XDataFrame",
 		}
 	})
 
+setMethod("as.data.frame", "XDataFrame",
+	function(x, ..., slots = TRUE)
+	{
+		if ( slots ) {
+			as.data.frame(as.list(x), ...)
+		} else {
+			as.data.frame(x@listData, ...)
+		}
+	})
+
+setMethod("as.matrix", "XDataFrame",
+	function(x, ..., slots = TRUE)
+	{
+		if ( slots ) {
+			as.matrix(as.data.frame(as.list(x)), ...)
+		} else {
+			as.matrix(as.data.frame(x@listData), ...)
+		}
+	})
+
 setMethod("as.env", "list",
 	function(x, enclos = parent.frame(2), tform = identity) {
 		env <- new.env(parent = enclos)
@@ -44,7 +64,7 @@ setMethod("as.env", "list",
 	})
 
 setMethod("as.env", "XDataFrame",
-	function(x, enclos = parent.frame(2), ..., slots = FALSE) {
+	function(x, enclos = parent.frame(2), ..., slots = TRUE) {
 		enclos <- force(enclos)
 		if ( slots ) {
 			as.env(as.list(x), enclos=enclos, ...)
@@ -76,9 +96,21 @@ setReplaceMethod("[[", "XDataFrame",
 		x
 	})
 
+# Overwrite default behavior to drop = FALSE
+
+setMethod("[", "XDataFrame",
+	function(x, i, j, ..., drop = FALSE) {
+		callNextMethod(x, i, j, ..., drop=drop)
+	})
+
 # Subclasses should define an 'as.list' method to include
 # the additional slot-columns by default, or instead redefine
 # an 'lapply' method to include them when 'slots = TRUE'
+# They also need to define a 'showNames' method that returns
+# the names of slot-columns + regular columns for printing
+
+setMethod("showNames", "XDataFrame",
+	function(object) names(object))
 
 setMethod("show", "XDataFrame",
 	function(object)
@@ -87,7 +119,7 @@ setMethod("show", "XDataFrame",
 	ntail <- get_showTailLines()
 	nr <- nrow(object)
 	nc <- ncol(object)
-	true_nc <- length(lapply(object, function(x) NULL, slots=TRUE))
+	true_nc <- length(as.list(object))
 	cat(class(object), " with ",
 		nr, ifelse(nr == 1, " row and ", " rows and "),
 		nc, ifelse(nc == 1, " column\n", " columns\n"),
@@ -120,6 +152,7 @@ setMethod("show", "XDataFrame",
 					use.names = FALSE), nrow = 1,
 				dimnames = list("", colnames(out)))
 		out <- rbind(classinfo, out)
+		colnames(out) <- showNames(object)
 		print(out, quote = FALSE, right = TRUE)
 	}
 })

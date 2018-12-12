@@ -164,8 +164,7 @@
 	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
 		cex.axis=0.8, cex.lab=0.8)
 	layout(matrix(seq_len(prod(layout)),
-		ncol=layout[1], nrow=layout[2],
-		byrow=TRUE))
+		nrow=layout[1], ncol=layout[2], byrow=TRUE))
 }
 
 # Auto plotting layout
@@ -173,7 +172,7 @@
 	n <- .num.panels(x)
 	nc <- ceiling(sqrt(n))
 	nr <- n %/% nc
-	.setup.layout(c(nc, nr))
+	.setup.layout(c(nr, nc))
 }
 
 # Number of panels in a facet plot

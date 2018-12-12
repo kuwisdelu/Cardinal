@@ -83,44 +83,21 @@ setReplaceMethod("resolution", "MassDataFrame",
 			object
 	})
 
+# format names for printing includes 'mz' slot-column
+setMethod("showNames", "MassDataFrame",
+	function(object) c(":mz:", names(object)))
+
 # includes 'mz' slot in the list by default
 setMethod("as.list", "MassDataFrame",
-	function(x, use.names = TRUE, format.mz = ":")
+	function(x, ..., slots = TRUE)
 	{
 		ans <- x@listData
-		if ( !is.null(format.mz) ) {
-			nmz <- paste0(format.mz, "mz", format.mz)
-			lmz <- setNames(list(mz(x)), nmz)
-			ans <- append(lmz, ans)
-		}
-		if ( !use.names )
-			names(ans) <- NULL
+		if ( slots )
+			ans <- c(list(mz=mz(x)), ans)
 		ans
 	})
 
-# includes 'mz' slot in the data.frame by default
-setMethod("as.data.frame", "MassDataFrame",
-	function(x, ..., slots = TRUE)
-	{
-		if ( slots ) {
-			as.data.frame(as.list(x, format.mz=""), ...)
-		} else {
-			as.data.frame(x@listData, ...)
-		}
-	})
-
-# includes 'mz' slot in the env by default
-setMethod("as.env", "MassDataFrame",
-	function(x, enclos = parent.frame(2), ..., slots = TRUE)
-	{
-		enclos <- force(enclos)
-		if ( slots ) {
-			x <- as.list(x, format.mz="")
-		} else {
-			x <- x@listData
-		}
-		as.env(x, enclos=enclos, ...)
-	})
+# subsetting
 
 setMethod("[", "MassDataFrame",
 	function(x, i, j, ..., drop = FALSE) {
@@ -158,6 +135,8 @@ setMethod("[", "MassDataFrame",
 			metadata=metadata(x))
 		x
 	})
+
+# combining
 
 setMethod("cbind", "MassDataFrame",
 	function(..., deparse.level = 1) {
