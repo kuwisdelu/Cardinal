@@ -42,7 +42,7 @@ mz(object) <- value
 }
 
 \examples{
-mz(from=100, to=105, by=300, units="ppm")
+mz(from=200, to=220, by=300, units="ppm")
 }
 
 \keyword{methods}

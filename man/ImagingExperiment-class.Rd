@@ -126,10 +126,10 @@
 }
 
 \examples{
-## Cannot create an ImagingExperiment object
+## cannot create an ImagingExperiment object
 try(new("ImagingExperiment"))
 
-## Create an ImagingExperiment derived class
+## create an ImagingExperiment derived class
 MyImagingExperiment <- setClass("MyImagingExperiment", contains="ImagingExperiment")
 MyImagingExperiment()
 

@@ -115,9 +115,10 @@
 }
 
 \examples{
-data <- matrix(1:9^2, nrow=9, ncol=9)
-mz <- seq(from=100, to=105, length.out=9)
+mz <- mz(from=200, to=220, by=400)
 coord <- expand.grid(x=1:3, y=1:3)
+data <- matrix(runif(length(mz) * nrow(coord)),
+    nrow=length(mz), ncol=nrow(coord))
 
 x <- MSImagingExperiment(
     imageData=ImageArrayList(data),

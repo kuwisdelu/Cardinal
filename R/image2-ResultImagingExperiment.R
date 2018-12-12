@@ -3,20 +3,11 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	function(x, formula,
 		model = modelData(x),
 		superpose = TRUE,
-		strip = TRUE,
-		key = superpose,
 		column,
 	    ...,
-		xlab, xlim,
-		ylab, ylim,
-		zlab, zlim,
-		asp = 1,
-		layout,
-		col = discrete.colors,
 		colorscale = divergent.colors,
 		colorkey = !is3d && !superpose,
-		subset = TRUE,
-		add = FALSE)
+		subset = TRUE)
 {
 	.checkForIncompleteProcessing(x)
 	args <- .parseFormula2(formula)
@@ -43,13 +34,9 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	feature <- intersect(feature1, feature2)
 	feature.groups <- featureData(newx)[["column"]][feature]
 	image(newx, formula=formula2, feature=feature,
-		feature.groups=feature.groups,
-		superpose=superpose, strip=strip, key=key,
-		xlab=xlab, ylab=ylab, zlab=zlab,
-		xlim=xlim, ylim=ylim, zlim=zlim,
-		asp=asp, layout=layout, col=col,
+		feature.groups=feature.groups, superpose=superpose,
 		colorscale=colorscale, colorkey=colorkey,
-		subset=subset, add=add, ...)
+		subset=subset, ...)
 })
 
 ## SpatialFastmap2

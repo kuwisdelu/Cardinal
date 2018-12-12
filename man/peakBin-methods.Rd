@@ -37,7 +37,6 @@
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
     \code{\link{peakPick}},
     \code{\link{peakAlign}},
@@ -45,5 +44,18 @@
     \code{\link{reduceDimension}},
     \code{\link{pixelApply}},
     \code{\link{process}}
+}
+\examples{
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
+ref <- mz(metadata(data)$design$featureData)
+
+# queue peak binning
+data <- peakBin(data, ref=ref, type="height")
+
+# apply peak binning
+data_peaks <- process(data, plot=interactive())
 }
 \keyword{methods}

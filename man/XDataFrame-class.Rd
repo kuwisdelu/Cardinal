@@ -5,14 +5,21 @@
 \alias{XDataFrame}
 \alias{XDataFrame-class}
 
+\alias{showNames}
+\alias{showNames,XDataFrame-method}
+
 \alias{names,XDataFrame-method}
 \alias{length,XDataFrame-method}
 \alias{lapply,XDataFrame-method}
+\alias{as.data.frame,XDataFrame-method}
+\alias{as.matrix,XDataFrame-method}
 \alias{as.env,XDataFrame-method}
 \alias{as.env,list-method}
 \alias{show,XDataFrame-method}
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
+
+\alias{[,XDataFrame,ANY,ANY,ANY-method}
 
 \alias{[[<-,XDataFrame,ANY,ANY-method}
 \alias{$<-,XDataFrame-method}
@@ -45,6 +52,8 @@ XDataFrame(\dots)
 
 \details{
 	For the most part, \code{XDataFrame} behaves identically to \code{DataFrame}, with the exception of certain methods being overwritten to account for the additional eXtra "slot-columns" not counted among those returned by \code{ncol(x)}. These additional columns should typically have their own getter and setter methods.
+
+	To implement a subclass of \code{XDataFrame}, one needs to implement two methods to allow the slot-columns to be printed by \code{show} and retained during coercion: (1) the subclass should implement an \code{as.list()} method that includes the slot columns in the resulting list by default and (2) the subclass should implement a \code{showNames()} method that returns the names of all the printable columns (including slot-columns) in the same order as they are returned by \code{as.list()}.
 }
 
 \author{Kylie A. Bemis}

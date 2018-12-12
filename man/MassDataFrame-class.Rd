@@ -11,7 +11,7 @@
 \alias{resolution,MassDataFrame-method}
 \alias{resolution<-,MassDataFrame-method}
 \alias{as.list,MassDataFrame-method}
-\alias{as.env,MassDataFrame-method}
+\alias{showNames,MassDataFrame-method}
 \alias{[,MassDataFrame,ANY,ANY,ANY-method}
 \alias{cbind,MassDataFrame-method}
 \alias{rbind,MassDataFrame-method}
@@ -57,12 +57,12 @@ MassDataFrame(mz, \dots, row.names = NULL, check.names = TRUE)
 }
 
 \examples{
-## Create an MassDataFrame object
-mz <- seq(from=100, to=150, by=1.5)
-values <- seq_len(length(mz))
+## create an MassDataFrame object
+mz <- mz(from=200, to=220, by=200)
+values <- runif(length(mz))
 fdata <- MassDataFrame(mz=mz, values=values)
 
-## Check the mass-to-charge ratio properties
+## check the mass-to-charge ratio properties
 head(mz(fdata))
 resolution(fdata)
 }

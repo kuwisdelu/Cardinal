@@ -24,6 +24,8 @@
 \alias{length,ImageList-method}
 \alias{as.list,ImageList-method}
 
+\alias{show,SimpleImageList-method}
+
 \alias{[,ImageArrayList,ANY,ANY,ANY-method}
 \alias{[<-,ImageArrayList,ANY,ANY,ANY-method}
 \alias{cbind,ImageArrayList-method}
@@ -95,17 +97,17 @@ MSProcessedImagingSpectraList(data)
 }
 
 \examples{
-## Create an ImageList object
+## create an ImageList object
 data0 <- matrix(1:9, nrow=3)
 data1 <- matrix(10:18, nrow=3)
 data2 <- matrix(19:27, nrow=3)
 idata <- ImageArrayList(list(d0=data0, d1=data1, d2=data2))
 
-# Subset all arrays at once
+# subset all arrays at once
 idataS <- idata[1:2,1:2]
 all.equal(idataS[["d0"]], data0[1:2,1:2])
 
-# Combine over "column" dimension
+# combine over "column" dimension
 idataB <- cbind(idata, idata)
 all.equal(idataB[["d0"]], cbind(data0, data0))
 }

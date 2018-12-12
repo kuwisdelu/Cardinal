@@ -52,8 +52,8 @@ peakFilter.freq(x, freq.min=0.01, \dots)
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{peakPick}},
     \code{\link{peakAlign}},
     \code{\link{peakBin}},
@@ -62,9 +62,17 @@ peakFilter.freq(x, freq.min=0.01, \dots)
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(diag(2), as="MSImageSet")
-peaks <- peakPick(data, method="simple", plot=interactive())
-peaks <- peakAlign(peaks, method="diff", plot=interactive())
-peaks <- peakFilter(peaks, method="freq")
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
+
+# queue peak picking, alignment, and filtering
+data <- peakPick(data, method="simple", SNR=6)
+data <- peakAlign(data, tolerance=200, units="ppm")
+data <- peakFilter(data, freq.min=0.2)
+
+# apply peak picking, alignment, and filtering
+data_peaks <- process(data, plot=interactive())
 }
 \keyword{methods}

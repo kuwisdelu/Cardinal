@@ -20,7 +20,7 @@
 \S4method{mutate}{ImagingExperiment}(.data, \dots)
 
 \S4method{summarize}{SparseImagingExperiment}(.data, \dots,
-    .by = c("feature", "pixel"),
+    .by = c("feature", "pixel"), .group_by,
     .stat = c("min", "max", "mean", "sum", "sd", "var"),
     .tform = identity,
     BPPARAM = bpparam())
@@ -30,6 +30,7 @@
     \item{\dots}{Conditions describing rows or columns to be retained, name-value pairs to be added as metadata columns, or name-value pairs of summary functions. See Details.}
     \item{.id}{Select rows (features) or columns (pixels) by index.}
     \item{.by}{Should the summarization be performed over pixels or features?}
+    \item{.group_by}{A column or list of columns (from the pixelData or featureData) to group by for summarization.}
     \item{.stat}{Summary statistics to be computed in an efficient manner.}
     \item{.tform}{How should each feature-vector of image-vector be transformed before summarization?}
     \item{BPPARAM}{An optional \code{BiocParallelParam} instance to be passed to \code{bplapply()}.}
@@ -50,25 +51,27 @@
 	Kylie A. Bemis
 }
 \examples{
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
- NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
- 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
- 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+register(SerialParam())
 
 set.seed(1)
-msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100, as="MSImageSet")
+msset <- simulateImage(preset=1, npeaks=9, dim=c(9,9))
 
-msset <- as(msset, "MSImagingExperiment")
+# filter features to mass range 1000 - 1500
+filter(msset, 1000 < mz, mz < 1500)
 
-filter(msset, mz > 2000, mz < 3000)
+# select pixels to coordinates x = 1..3, y = 1..3
+select(msset, x <= 3, y <= 3)
 
-select(msset, x <= 4, y <= 4)
-
+# summarize mean spectrum
 sm1 <- summarize(msset, .stat="mean")
 
+# summarize image by TIC
 sm2 <- summarize(msset, .stat=c(tic="sum"), .by="pixel")
 
+# add a TIC column
 mutate(msset, tic=sm2$tic)
+
+# summarize mean spectrum grouped by pixels in/out of circle
+sm3 <- summarize(msset, .stat="mean", .group_by=circle)
 }
 \keyword{manip}

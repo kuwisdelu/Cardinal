@@ -48,6 +48,7 @@ alpha.colors(col, n = 100,
 \arguments{
     \item{map}{the name of the colormap}
     \item{n}{the number of colors}
+    \item{\dots}{arguments passed to \code{color.map()}}
     \item{alpha}{a vector of alpha values between 0 and 1}
     \item{start}{the start color value}
     \item{middle}{the middle color value}
@@ -66,9 +67,8 @@ alpha.colors(col, n = 100,
 }
 \examples{
 col <- gradient.colors(100^2)
-if ( interactive() ) {
+if ( interactive() )
 	image(matrix(1:(100^2), nrow=100), col=col)
-}
 }
 
 \keyword{color}

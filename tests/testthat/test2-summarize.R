@@ -115,19 +115,19 @@ test_that("summarize stat", {
 
 	spectra(msdata2) <- matter::as.sparse(spectra(msdata2))
 
-	tmp5 <- summarize(msdata2, .stat="mean", .group_by=run)
+	tmp5 <- summarize(msdata2, .stat="mean")
 
-	expect_equal(ncol(tmp5), 2L)
+	expect_equal(ncol(tmp5), 1L)
 
-	tmp6 <- summarize(msdata2, .stat=c("mean", "var"), .group_by=run)
+	tmp6 <- summarize(msdata2, .stat="mean", .group_by=run)
 
-	expect_equal(ncol(tmp6), 4L)
+	expect_equal(ncol(tmp6), 2L)
 
-	tmp7 <- summarize(msdata2, .stat=c("mean", "var"), .group_by=~run * cond)
+	tmp7 <- summarize(msdata2, .stat=c("mean", "sd"), .group_by=~run * cond)
 
 	expect_equal(ncol(tmp7), 8L)
 
-	tmp8 <- summarize(msdata2, .stat=c("mean", "sd", "min", "max"))
+	tmp8 <- summarize(msdata2, .stat=c("mean", "var", "min", "max"))
 
 	expect_equal(ncol(tmp8), 4L)
 

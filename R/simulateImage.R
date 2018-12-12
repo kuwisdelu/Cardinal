@@ -1,8 +1,8 @@
 
 # Simulate a mass spectrometry imaging experiment
-simulateImage <- function(pixelData, featureData,
+simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR", preset,
+	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
 	as = c("MSImagingExperiment", "SparseImagingExperiment"), ...)
 {

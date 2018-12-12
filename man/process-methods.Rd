@@ -34,7 +34,7 @@
     \item{plotfun}{A function to be used to plot the output of \code{fun}, taking at least two arguments: (1) the resulting vector and (2) the input vector.}
     \item{label}{The label of the processing step. This is used to identify it in the queue, and is printed as it is being processed.}
     \item{delay}{Should the function \code{fun} be applied now, or queued and delayed until \code{process()} is called again?}
-    \item{plot}{Plot the function for each pixel or feature while it is being processed?}
+    \item{plot}{Plot the function for each pixel or feature while it is being processed? Only possible if \code{BPPARAM=SerialParam()}.}
     \item{par}{Plotting parameters to be passed to \code{plotfun}.}
     \item{outpath}{The path to a file where the results will be written by \code{pixelApply} or \code{featureApply}. If NULL, then the results are returned in-memory.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}

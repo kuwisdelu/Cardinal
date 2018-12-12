@@ -30,6 +30,7 @@
 \alias{dims,SparseImagingExperiment-method}
 \alias{cbind,SparseImagingExperiment-method}
 \alias{rbind,SparseImagingExperiment-method}
+\alias{combine,SparseImagingExperiment,ANY-method}
 
 \title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 

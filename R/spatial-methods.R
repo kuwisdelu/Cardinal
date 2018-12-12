@@ -154,9 +154,9 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	attr(neighbors, "offsets") <- NULL
 	if ( weights ) {
 		weights <- spatialWeights(x, r=r, method=method)
-		list(neighbors=neighbors, offsets=offsets, weights=weights)
+		list(neighbors=neighbors, offsets=offsets, weights=weights, r=r)
 	} else {
-		list(neighbors=neighbors, offsets=offsets)
+		list(neighbors=neighbors, offsets=offsets, r=r)
 	}
 }
 

@@ -82,7 +82,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		if ( !is.null(args$g) ) {
 			condition <- as.data.frame(args$g)[feature,,drop=FALSE]
 		} else {
-			condition <- data.frame(row.names=feature)
+			condition <- data.frame(row.names=make.names(feature, unique=TRUE))
 		}
 		if ( !is.null(feature.groups) ) {
 			condition$`..feature.groups..` <- feature.groups

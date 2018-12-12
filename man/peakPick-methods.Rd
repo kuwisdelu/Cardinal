@@ -64,7 +64,7 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     Internally, \code{\link{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
 }
 \value{
-    An object of the same class with the peak picking spectra.
+    An object of the same class with the peak picked spectra. Note that the full mass range is retained and the peaks are unaligned, so \code{\link{peakAlign}} should be called before applying further methods.
 }
 \author{
 	Kylie A. Bemis
@@ -73,8 +73,8 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     Mantini, D., Petrucci, F., Pieragostino, D., Del Boccio, P., Di Nicola, M., Di Ilio, C., et al. (2007). LIMPIC: a computational method for the separation of protein MALDI-TOF-MS signals from noise. BMC Bioinformatics, 8(101), 101. doi:10.1186/1471-2105-8-101
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{peakAlign}},
     \code{\link{peakFilter}},
     \code{\link{peakBin}},
@@ -83,7 +83,15 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(as="MSImageSet")
-peakPick(data, method="simple", plot=interactive())
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
+
+# queue peak picking
+data <- peakPick(data, method="simple", SNR=6)
+
+# apply peak picking
+data_peaks <- process(data, plot=interactive())
 }
 \keyword{methods}

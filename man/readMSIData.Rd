@@ -27,8 +27,8 @@ readAnalyze(name, folder=getwd(), attach.only=FALSE,
 	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
 	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time, as otherwise it is read and calculated from the dataset directly.}
 	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
-	\item{units}{The units for 'resolution'.}
-	\item{as}{After reading in the data, what class of object should be returned (i.e., 'MSImageSet' or 'MSImagingExperiment')?}
+	\item{units}{The units for \code{resolution}. Either parts-per-million or absolute m/z units.}
+	\item{as}{After reading in the data, what class of object should be returned (\code{MSImageSet} or \code{MSImagingExperiment})?}
 	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{

@@ -10,12 +10,10 @@
 \alias{[,ResultSet,ANY,ANY,ANY-method}
 \alias{[[,ResultSet-method}
 \alias{[[,ResultSet,ANY,ANY-method}
-\alias{resultData}
-\alias{resultData<-}
 \alias{resultData,ResultSet-method}
 \alias{resultData<-,ResultSet-method}
-\alias{modelData}
-\alias{modelData<-}
+\alias{resultData,ResultSet,ANY-method}
+\alias{resultData<-,ResultSet,missing-method}
 \alias{modelData,ResultSet-method}
 \alias{modelData<-,ResultSet-method}
 \alias{length,ResultSet-method}

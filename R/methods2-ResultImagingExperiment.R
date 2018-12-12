@@ -24,6 +24,24 @@ setMethod("resultData", c("ResultImagingExperiment", "ANY"),
 		}
 	})
 
+setReplaceMethod("resultData", c("ResultImagingExperiment", "missing"), 
+	function(object, ..., value) {
+		object@resultData <- value
+		if ( validObject(object) )
+			object
+	})
+
+setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"), 
+	function(object, i, j, ..., value) {
+		if ( missing(j) ) {
+			object@resultData[[i, exact=TRUE]] <- value
+		} else {
+			object@resultData[[i, exact=TRUE]][[j, exact=TRUE]] <- value
+		}
+		if ( validObject(object) )
+			object
+	})
+
 setMethod("resultNames", "ResultImagingExperiment", 
 	function(object, i, ...) {
 		if ( missing(i) ) {

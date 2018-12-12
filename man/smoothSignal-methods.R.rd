@@ -62,13 +62,21 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(as="MSImageSet")
-smoothSignal(data, method="gaussian", plot=interactive())
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
+
+# queue smoothing
+data <- smoothSignal(data, method="ma", window=9)
+
+# apply smoothing
+data_smooth <- process(data, plot=interactive())
 }
 \keyword{methods}

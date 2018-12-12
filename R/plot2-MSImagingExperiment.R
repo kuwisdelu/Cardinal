@@ -37,7 +37,7 @@ setMethod("plot",
 					pixel.groups <- pixelNames(x)[pixel]
 				}
 			 } else {
-			 	coord <- as.data.frame(coord)
+			 	coord <- as.data.frame(as.list(coord))
 			 	coord.groups <- unname(.format.data.labels(coord,
 			 		append=paste0(" \u00b1 ", abs(plusminus))))
 			 	run.groups <- .format.data.labels(list(run=runNames(x)))

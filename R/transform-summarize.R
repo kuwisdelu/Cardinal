@@ -153,7 +153,7 @@ setMethod("summarize", "SparseImagingExperiment",
 	# summarize while iterating over minor dimension
 	tfun <- function(x) {
 		i <- attr(x, "idx")
-		apply(tform(x), margin, function(xi) {
+		ans <- .apply(tform(x), margin, function(xi) {
 			s <- list()
 			if ( is.null(groups) ) {
 				if ( "min" %in% stat )
@@ -176,6 +176,7 @@ setMethod("summarize", "SparseImagingExperiment",
 			}
 			unlist(s)
 		})
+		do.call("cbind", ans)
 	}
 	tsimplify <- function(ans) {
 		nm <- rownames(ans[[1]])

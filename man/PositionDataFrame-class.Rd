@@ -43,7 +43,7 @@
 \alias{resolution<-,PositionDataFrame-method}
 \alias{dims,PositionDataFrame-method}
 \alias{as.list,PositionDataFrame-method}
-\alias{as.env,PositionDataFrame-method}
+\alias{showNames,PositionDataFrame-method}
 \alias{[,PositionDataFrame,ANY,ANY,ANY-method}
 \alias{cbind,PositionDataFrame-method}
 \alias{rbind,PositionDataFrame-method}

@@ -27,7 +27,7 @@
 \description{
     The Binmat class implements on-disk matrices with efficient access to columns. Values within each column are contiguously stored in a binary file on disk. The columns themselves need not be stored contiguously. Only the accessed elements of the matrix are loaded into memory.
 
-    New code should use the \code{\linkS4class{matter_mat}} class from the \code{matter} package instead.
+    New code should use the \code{\linkS4class{matter_mat}} class from the \code{matter} package instead. The \code{Binmat} constructor now passes its arguments to \code{matter_mat()}.
 }
 
 \usage{
@@ -68,61 +68,59 @@ Binmat(
 
 }
 
-\section{Slots}{
-    \describe{
-        \item{\code{files}:}{A \code{factor} giving the full file paths of the binary files storing the matrix (or matrices) on disk. Length must be equal to the number of columns.}
+% \section{Slots}{
+%     \describe{
+%         \item{\code{files}:}{A \code{factor} giving the full file paths of the binary files storing the matrix (or matrices) on disk. Length must be equal to the number of columns.}
 
-        \item{\code{offsets}:}{A \code{numeric} vector giving the positions of the first value of each column in number of bytes from the beginning of the file.}
+%         \item{\code{offsets}:}{A \code{numeric} vector giving the positions of the first value of each column in number of bytes from the beginning of the file.}
 
-        \item{\code{extents}:}{A \code{numeric} vector giving the length of each column.}
+%         \item{\code{extents}:}{A \code{numeric} vector giving the length of each column.}
 
-        \item{\code{datatype}:}{A \code{factor} vector giving the binary data types of each element of the matrix (or matrices) on disk. Length must be equal to the number of columns.}
+%         \item{\code{datatype}:}{A \code{factor} vector giving the binary data types of each element of the matrix (or matrices) on disk. Length must be equal to the number of columns.}
         
-        \item{\code{dim}:}{A length 2 integer vector analogous to the 'dim' attribute of an ordinary R matrix.}
+%         \item{\code{dim}:}{A length 2 integer vector analogous to the 'dim' attribute of an ordinary R matrix.}
 
-        \item{\code{dimnames}:}{A length 2 \code{list} analogous to the 'dimnames' attribute of an ordinary R matrix.}
+%         \item{\code{dimnames}:}{A length 2 \code{list} analogous to the 'dimnames' attribute of an ordinary R matrix.}
 
-        \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
-    }
-}
+%         \item{\code{.__classVersion__}:}{A \code{Versions} object describing the version of the class used to created the instance. Intended for developer use.}
+%     }
+% }
 
-\section{Extends}{
-   \code{\linkS4class{Versioned}}
-}
+% \section{Extends}{
+%    \code{\linkS4class{Versioned}}
+% }
 
-\section{Creating Objects}{
-    \code{Binmat} instances are usually created through \code{Binmat()}.
-}
+% \section{Creating Objects}{
+%     \code{Binmat} instances are usually created through \code{Binmat()}.
+% }
 
-\section{Methods}{
-    Standard generic methods:
-    \describe{
-        \item{\code{dim(x), dim(x) <- value}:}{Return or set the dimensions of the on-disk matrix.}
+% \section{Methods}{
+%     Standard generic methods:
+%     \describe{
+%         \item{\code{dim(x), dim(x) <- value}:}{Return or set the dimensions of the on-disk matrix.}
 
-        \item{\code{dimnames(x), dimnames(x) <- value}:}{Return or set the 'dimnames' of the on-disk matrix.}
+%         \item{\code{dimnames(x), dimnames(x) <- value}:}{Return or set the 'dimnames' of the on-disk matrix.}
 
-        \item{\code{colnames(x), colnames(x) <- value}:}{Return or set the column names of the on-disk matrix.}
+%         \item{\code{colnames(x), colnames(x) <- value}:}{Return or set the column names of the on-disk matrix.}
 
-        \item{\code{rownames(x), rownames(x) <- value}:}{Return or set the row names of the on-disk matrix.}
+%         \item{\code{rownames(x), rownames(x) <- value}:}{Return or set the row names of the on-disk matrix.}
 
-        \item{\code{ncol}:}{Return the number of columns in the on-disk matrix.}
+%         \item{\code{ncol}:}{Return the number of columns in the on-disk matrix.}
 
-        \item{\code{nrow}:}{Return the number of columns in the on-disk matrix.}
+%         \item{\code{nrow}:}{Return the number of columns in the on-disk matrix.}
 
-        \item{\code{cbind}:}{Combine on-disk matrices by columns.}
+%         \item{\code{cbind}:}{Combine on-disk matrices by columns.}
 
-        \item{\code{rbind}:}{Not allowed for on-disk matrices. (Always returns an error.)}
+%         \item{\code{rbind}:}{Not allowed for on-disk matrices. (Always returns an error.)}
 
-        \item{\code{Binmat[i, j, ..., drop]}:}{Access elements in the on-disk matrix. A Binmat on-disk matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Assignment is not currently allowed.}
-    }
-}
+%         \item{\code{Binmat[i, j, ..., drop]}:}{Access elements in the on-disk matrix. A Binmat on-disk matrix can be indexed like an ordinary R matrix. Note however that linear indexing is not supported. Assignment is not currently allowed.}
+%     }
+% }
 
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\link{matrix}},
-    \code{\linkS4class{Hashmat}},
-    \code{\linkS4class{SImageSet}}
+    \code{\link{matter_mat}}
 }
 
 \examples{

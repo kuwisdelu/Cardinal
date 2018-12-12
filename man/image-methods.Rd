@@ -8,6 +8,10 @@
 \alias{image,PositionDataFrame-method}
 \alias{image,SparseImagingExperiment-method}
 \alias{image,MSImagingExperiment-method}
+\alias{image,SparseResultImagingExperiment-method}
+\alias{image,SpatialFastmap2-method}
+\alias{image,SpatialKMeans2-method}
+\alias{image,SpatialShrunkenCentroids2-method}
 
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
@@ -33,17 +37,17 @@
 \alias{image3D,SpatialKMeans-method}
 \alias{image3D,SpatialShrunkenCentroids-method}
 
-\title{Plot the pixel data of an imaging dataset}
+\title{Plot an image of the pixel data of an imaging dataset}
 
 \description{
-    Create and display plots for the pixel data of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
+    Create and display images for the pixel data of an imaging dataset using a formula interface.
 }
 
 \usage{
 \S4method{image}{formula}(x, data = environment(x), \dots,
     xlab, ylab, zlab, subset)
 
-#### Methods for Cardinal version >= 2.0.0 classes
+#### Methods for Cardinal >= 2.x classes ####
 
 \S4method{image}{PositionDataFrame}(x, formula,
         groups = NULL,
@@ -95,7 +99,25 @@
         plusminus,
         \dots)
 
-#### Methods for Cardinal version >= 1.0.0 classes
+\S4method{image}{SparseResultImagingExperiment}(x, formula,
+        model = modelData(x),
+        superpose = TRUE,
+        column,
+        \dots,
+        colorscale = divergent.colors,
+        colorkey = !is3d && !superpose,
+        subset = TRUE)
+
+\S4method{image}{SpatialKMeans2}(x, formula,
+    values = "cluster", \dots)
+
+\S4method{image}{SpatialFastmap2}(x, formula,
+    values = "scores", \dots)
+
+\S4method{image}{SpatialShrunkenCentroids2}(x, formula,
+    values = c("probabilities", "classes", "scores"), \dots)
+
+#### Methods for Cardinal 1.x classes ####
 
 \S4method{image}{SImageSet}(x, formula = ~ x * y,
     feature,
@@ -143,13 +165,7 @@
 
 \S4method{image}{CrossValidated}(x, fold = 1:length(x), layout, \dots)
 
-\S4method{image3D}{CrossValidated}(x, fold = 1:length(x), layout, \dots)
-
 \S4method{image}{PCA}(x, formula = substitute(mode ~ x * y),
-    mode = "scores",
-    \dots)
-
-\S4method{image3D}{PCA}(x, formula = substitute(mode ~ x * y * z),
     mode = "scores",
     \dots)
 
@@ -157,15 +173,7 @@
     mode = c("fitted", "scores", "y"),
     \dots)
 
-\S4method{image3D}{PLS}(x, formula = substitute(mode ~ x * y * z),
-    mode = c("fitted", "scores", "y"),
-    \dots)
-
 \S4method{image}{OPLS}(x, formula = substitute(mode ~ x * y),
-    mode = c("fitted", "scores", "Oscores", "y"),
-    \dots)
-
-\S4method{image3D}{OPLS}(x, formula = substitute(mode ~ x * y * z),
     mode = c("fitted", "scores", "Oscores", "y"),
     \dots)
 
@@ -173,26 +181,13 @@
     mode = "scores",
     \dots)
 
-\S4method{image3D}{SpatialFastmap}(x, formula = substitute(mode ~ x * y * z),
-    mode = "scores",
-    \dots)
-
 \S4method{image}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y),
-    mode = c("probabilities", "classes", "scores"),
-    \dots)
-
-\S4method{image3D}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y * z),
     mode = c("probabilities", "classes", "scores"),
     \dots)
 
 \S4method{image}{SpatialKMeans}(x, formula = substitute(mode ~ x * y),
     mode = "cluster",
     \dots)
-
-\S4method{image3D}{SpatialKMeans}(x, formula = substitute(mode ~ x * y * z),
-    mode = "cluster",
-    \dots)
-
 }
 
 \arguments{
@@ -209,7 +204,9 @@
 
     \item{data}{A \code{list} or \code{data.frame}-like object from which variables in \code{formula} should be taken.}
 
-    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
+    \item{mz}{The m/z value(s) for which to plot the ion image(s).}
+
+    \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
     
     \item{feature}{The feature or vector of features for which to plot the image. This is an expression that evaluates to a logical or integer indexing vector.}
 
@@ -256,22 +253,22 @@
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
+    
+    \item{\dots}{additional arguments passed to the underlying \code{\link{plot}} functions.}
+
+    \item{fold}{What folds of the cross-validation should be plotted.}
+
+    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
+
+    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
+
+    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultImagingExperiment} object. Renamed from \code{mode} to avoid ambiguity.}
+
+    \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
 
     \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
-    
-    \item{\dots}{additional arguments passed to the underlying \code{\link{plot}} functions.}
-
-    \item{mz}{The m/z value for which to plot the ion image.}
-
-    \item{plusminus}{If specified, a window of m/z values surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the range of the window on either side.}
-
-    \item{fold}{What folds of the cross-validation should be plotted.}
-
-    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
-
-    \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
 }
 
@@ -285,44 +282,22 @@
 
 \seealso{
     \code{\link{plot}},
-    \code{\link{select}}
+    \code{\link{selectROI}}
 }
 
 \examples{
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
- NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
- 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
- 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+x <- simulateImage(preset=2, npeaks=9, dim=c(9,9))
+m <- mz(metadata(x)$design$featureData)
 
-mycol <- gradient.colors(100, "red", "black")
+image(x, mz=m[1], plusminus=0.5)
+image(x, mz=m[1], smooth.image="gaussian", contrast.enhance="histogram")
+image(x, mz=m[1], colorscale=col.map("grayscale"))
+image(x, mz=m[4:6])
+image(x, mz=m[c(1,8)], normalize.image="linear", superpose=TRUE)
 
-set.seed(1)
-sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100)
+pixelData(x)$tic <- summarize(x, .by="pixel", .stat=c(tic="sum"))$tic
 
-pData(sset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
-fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "red"))
-fData(sset)$fg[2950 < fData(sset)$t & fData(sset)$t < 3050] <- "black"
-fData(sset)$fg[3950 < fData(sset)$t & fData(sset)$t < 4050] <- "red"
-
-image(sset, feature=1, col=mycol)
-
-image(sset, feature=fData(sset)$fg=="black", col=mycol)
-
-image(sset, feature=fData(sset)$fg=="red", col=mycol)
-
-image(sset, ~ x * y | fg, feature=1:nrow(sset), lattice=TRUE, col=mycol)
-
-image(sset, feature=1:nrow(sset), feature.groups=fg, lattice=TRUE, col=mycol)
-
-set.seed(1)
-msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100, as="MSImageSet")
-
-image(msset, mz=3000, col=mycol)
-
-image(msset, mz=4000, col=mycol)
-
-image(msset, mz=3500, plusminus=500, col=mycol)
+image(x, tic ~ x * y, colorscale=col.map("hot"))
 }
 
 \keyword{hplot}

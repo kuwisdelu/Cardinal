@@ -10,6 +10,11 @@
 \alias{plot,SparseImagingExperiment,formula-method}
 \alias{plot,MSImagingExperiment,missing-method}
 \alias{plot,MSImagingExperiment,formula-method}
+\alias{plot,SparseResultImagingExperiment,missing-method}
+\alias{plot,SparseResultImagingExperiment,formula-method}
+\alias{plot,SpatialFastmap2,missing-method}
+\alias{plot,SpatialKMeans2,missing-method}
+\alias{plot,SpatialShrunkenCentroids2,missing-method}
 
 \alias{plot,SImageSet,missing-method}
 \alias{plot,SImageSet,formula-method}
@@ -25,15 +30,15 @@
 \alias{plot,SpatialKMeans,missing-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
 
-\title{Plot the feature data of an imaging dataset}
+\title{Plot a signal from the feature data of an imaging dataset}
 
 \description{
-	Create and display plots for the feature data of an imaging dataset. This uses a formula interface inspired by the \code{\link{lattice}} graphics package.
+	Create and display plots for the feature data of an imaging dataset using a formula interface.
 }
 
 \usage{
 
-## Methods for Cardinal version >= 2.0.0 classes
+#### Methods for Cardinal >= 2.x classes ####
 
 \S4method{plot}{XDataFrame,missing}(x, formula,
         groups = NULL,
@@ -73,7 +78,25 @@
         xlab, ylab,
         type = if (centroided(x)) 'h' else 'l')
 
-## Methods for Cardinal version >= 1.0.0 classes
+\S4method{plot}{SparseResultImagingExperiment,missing}(x, formula,
+        model = modelData(x),
+        superpose = TRUE,
+        column,
+        \dots,
+        xlab, ylab,
+        type = 'h',
+        subset = TRUE)
+
+\S4method{plot}{SpatialFastmap2,missing}(x, formula,
+    values = "correlations", \dots)
+
+\S4method{plot}{SpatialKMeans2,missing}(x, formula,
+    values = c("centers", "betweenss", "withinss"), \dots)
+
+\S4method{plot}{SpatialShrunkenCentroids2,missing}(x, formula,
+    values = c("centers", "tstatistics"), \dots)
+
+#### Methods for Cardinal 1.x classes ####
 
 \S4method{plot}{SImageSet,missing}(x, formula = ~ Feature,
     pixel,
@@ -136,7 +159,7 @@
     \dots)
 
 \S4method{plot}{SpatialFastmap,missing}(x, formula = substitute(mode ~ mz),
-    mode = "cor",
+    mode = "correlations",
     type = 'h',
     \dots)
 
@@ -149,7 +172,6 @@
     mode = c("centers", "betweenss", "withinss"),
     type = 'h',
     \dots)
-
 }
 
 \arguments{
@@ -164,7 +186,9 @@
 
     The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose = TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
 
-    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
+    \item{coord}{A named vector or list giving the coordinate(s) of the pixel(s) to plot.}
+
+    \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
     
     \item{pixel}{The pixel or vector of pixels for which to plot the feature vectors. This is an expression that evaluates to a logical or integer indexing vector.}
 
@@ -196,22 +220,21 @@
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 
-    \item{lattice}{Should lattice graphics be used to create the plot?}
-
-    \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
-
     \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} or \code{\link{xyplot}} functions.}
-
-    \item{coord}{A named vector or list giving the coordinate of the pixel to plot.}
-
-    \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
 
     \item{fold}{What folds of the cross-validation should be plotted.}
 
+    \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
+
     \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
+
+    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultImagingExperiment} object. Renamed from \code{mode} to avoid ambiguity.}
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
+    \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 }
 
 \author{
@@ -223,40 +246,22 @@
 }
 
 \examples{
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
- NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
- 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
- 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+register(SerialParam())
 
-set.seed(1)
-sset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100)
+x <- simulateImage(preset=2, npeaks=9, dim=c(9,9))
+m <- mz(metadata(x)$design$featureData)
 
-pData(sset)$pg <- factor(data[is.finite(data)], labels=c("black", "red"))
-fData(sset)$fg <- factor(rep("bg", nrow(fData(sset))), levels=c("bg", "black", "red"))
-fData(sset)$fg[2950 < fData(sset)$t & fData(sset)$t < 3050] <- "black"
-fData(sset)$fg[3950 < fData(sset)$t & fData(sset)$t < 4050] <- "red"
+plot(x, pixel=1)
+plot(x, coord=c(x=2, y=2), plusminus=1)
+plot(x, coord=c(x=3, y=3), groups=mz > 1000)
+plot(x, coord=c(x=7, y=7), superpose=TRUE)
 
-plot(sset, pixel=1)
+sm <- summarize(x, .stat=c("mean", "sd"))
 
-plot(sset, ~ t, pixel=1:ncol(sset))
+featureData(x)$mean <- sm$mean
+featureData(x)$sd <- sm$sd
 
-plot(sset, ~ t | pg, pixel=1:ncol(sset), lattice=TRUE)
-
-plot(sset, ~ t, pixel.groups=pg, pixel=1:ncol(sset), lattice=TRUE, superpose=TRUE)
-
-plot(sset, ~ t | pg, groups=fg, pixel=1:ncol(sset), lattice=TRUE)
-
-set.seed(1)
-msset <- generateImage(data, as="MSImageSet", resolution=50)
-
-plot(msset, pixel=1)
-
-plot(msset, coord=list(x=3, y=1))
-
-plot(msset, coord=list(x=3, y=1), plusminus=1)
-
-plot(msset, coord=list(x=5, y=5), plusminus=c(2, 1))
+plot(x, mean + I(-sd) ~ mz, superpose=TRUE)
 }
 
 \keyword{hplot}

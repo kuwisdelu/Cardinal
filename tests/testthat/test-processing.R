@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("processing")
 
-test_that("Cardinal pre-processing", {
+test_that("Cardinal 1.x pre-processing", {
 
 	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 
@@ -123,7 +123,7 @@ test_that("Cardinal pre-processing", {
 
 })
 
-test_that("Cardinal batch pre-processing", {
+test_that("Cardinal 1.x batch pre-processing", {
 
 	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 

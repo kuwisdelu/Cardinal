@@ -51,13 +51,21 @@ normalize.tic(x, tic=length(x), \dots)
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(as="MSImageSet")
-normalize(data, method="tic", plot=interactive())
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
+
+# queue normalization
+data <- normalize(data, method="tic")
+
+# apply normalization
+data_normalized <- process(data)
 }
 \keyword{methods}

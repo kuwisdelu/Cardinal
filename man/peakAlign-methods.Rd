@@ -40,7 +40,7 @@ peakAlign.diff(x, y, diff.max=200, units=c("ppm", "mz"), \dots)
 peakAlign.DP(x, y, gap=0, \dots)
 }
 \arguments{
-    \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
+    \item{object}{An imaging dataset.}
     \item{ref}{A reference to which to align the peaks.}
     \item{tolerance}{The tolerance to be used when aligning detected peaks to the reference.}
     \item{units}{The units to use for the \code{tolerance}. Either parts-per-million or the raw m/z values.}
@@ -75,8 +75,8 @@ peakAlign.DP(x, y, gap=0, \dots)
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{peakPick}},
     \code{\link{peakFilter}},
     \code{\link{peakBin}},
@@ -85,8 +85,16 @@ peakAlign.DP(x, y, gap=0, \dots)
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(diag(2), as="MSImageSet")
-peaks <- peakPick(data, method="simple", plot=interactive())
-peaks <- peakAlign(peaks, data, method="diff", plot=interactive())
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
+
+# queue peak picking and alignment
+data <- peakPick(data, method="simple", SNR=6)
+data <- peakAlign(data, tolerance=200, units="ppm")
+
+# apply peak picking and alignment
+data_peaks <- process(data, plot=interactive())
 }
 \keyword{methods}

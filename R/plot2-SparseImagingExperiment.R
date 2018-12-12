@@ -83,7 +83,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		if ( !is.null(args$g) ) {
 			condition <- as.data.frame(args$g)[pixel,,drop=FALSE]
 		} else {
-			condition <- data.frame(row.names=pixel)
+			condition <- data.frame(row.names=make.names(pixel, unique=TRUE))
 		}
 		if ( !is.null(pixel.groups) ) {
 			condition$`..pixel.groups..` <- pixel.groups

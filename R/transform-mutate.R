@@ -17,6 +17,8 @@ setMethod("mutate", "ImagingExperiment",
 			for ( i in seq_along(expr) ) {
 				col <- eval(expr[[i]], envir=e)
 				col <- rep_len(col, nrow(mdata))
+				if ( nm[i] %in% ls(e) )
+					rm(list=nm[i], pos=e)
 				assign(nm[i], col, e)
 				mdata[[nm[i]]] <- col
 			}

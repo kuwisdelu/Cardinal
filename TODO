@@ -3,10 +3,9 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
-- Deprecate and remove Binmat class
-- Finish Cardinal v2 classes/methods
 - Add analysis methods for new classes
-- Add results classes and plotting
+- Switch applicable process methods to 'SparseImagingExperiment'
+- Update examples and tests to use simulateImage()
 
 Priority: Medium
 - Graphical user interface

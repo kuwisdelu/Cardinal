@@ -14,9 +14,7 @@ Cardinal provides an abstracted interface to manipulating mass spectrometry imag
 
 While pre-processing steps including normalization, baseline correction, and peak-picking are provided, the core functionality of the package is statistical analysis. The package includes classification and clustering methods based on nearest shrunken centroids, as well as traditional tools like PCA and PLS.
 
-Type \code{vignette("Cardinal-demo")} for a brief walkthrough of common workflows.
-
-To view other vignettes, type \code{browseVignettes("Cardinal")}.
+Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of common workflows.
 }
 
 \author{

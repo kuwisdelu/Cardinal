@@ -6,17 +6,11 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 	function(x, formula,
 		model = modelData(x),
 		superpose = TRUE,
-		strip = TRUE,
-		key = superpose,
 		column,
 	    ...,
-		xlab, xlim,
-		ylab, ylim,
-		layout,
+		xlab, ylab,
 		type = 'h',
-		col = discrete.colors,
-		subset = TRUE,
-		add = FALSE)
+		subset = TRUE)
 {
 	.checkForIncompleteProcessing(x)
 	args <- .parseFormula2(formula)
@@ -48,17 +42,14 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 	if ( missing(ylab) )
 		ylab <- names(args$lhs)
 	plot(newx, formula=formula2, pixel=pixel, pixel.groups=pixel.groups,
-		superpose=superpose, strip=strip, key=key,
-		xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
-		layout=layout, type=type, col=col,
-		subset=subset, add=add, ...)
+		superpose=superpose, xlab=xlab, ylab=ylab, type=type, subset=subset, ...)
 })
 
 ## SpatialFastmap2
 
 setMethod("plot",
 	signature = c(x = "SpatialFastmap2", y = "missing"),
-	function(x, formula, values = "cor", ...)
+	function(x, formula, values = "correlations", ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_feature_results(x, match.arg(values))
@@ -126,7 +117,7 @@ setMethod("plot",
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])
 		coord <- DataFrame(column_id=seq_len(len), model_id=i)
-		PositionDataFrame(r=factor(1), coord=coord, par)
+		PositionDataFrame(run=factor(1), coord=coord, par)
 	})
 	pdata <- do.call("rbind", pdata)
 	data <- SimpleList(do.call("cbind", data))

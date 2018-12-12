@@ -47,19 +47,27 @@ reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
     Internally, \code{\link{pixelApply}} is used to apply the baseline reduction. See its documentation page for more details on additional objects available to the environment installed to the baseline reduction function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the baseline-subtracted spectra.
+    An object of the same class with the baseline-subtracted spectra.
 }
 \author{
 	Kylie A. Bemis
 }
 \seealso{
-    \code{\linkS4class{MSImageSet}},
     \code{\linkS4class{MSImagingExperiment}},
+    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }
 \examples{
-data <- generateImage(as="MSImageSet")
-reduceBaseline(data, method="median", plot=interactive())
+register(SerialParam())
+
+set.seed(1)
+data <- simulateImage(preset=3, npeaks=9, dim=c(3,3), baseline=2)
+
+# queue baseline reduction
+data <- reduceBaseline(data, method="median", blocks=100)
+
+# apply baseline reduction
+data_nobaseline <- process(data, plot=interactive())
 }
 \keyword{methods}
