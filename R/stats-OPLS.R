@@ -23,7 +23,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		}
 		.time.start()
 		.message("OPLS: Centering data.")
-		Xt <- t(as.matrixlike(iData(x), supported="matrix"))
+		Xt <- t(as.matrix(iData(x)))
 		Xt <- scale(Xt, center=center, scale=scale)
 		Y <- scale(y, center=center, scale=scale)
 		if ( center ) {
@@ -92,7 +92,7 @@ setMethod("predict", "OPLS",
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
-		Xt <- t(as.matrixlike(iData(newx), supported="matrix"))
+		Xt <- t(as.matrix(iData(newx)))
 		Xt <- scale(Xt, center=object$center[[1]], scale=object$scale[[1]])
 		Y <- object$y[[1]]
 		if ( missing(newy) ) {

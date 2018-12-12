@@ -1,4 +1,29 @@
 
+CHANGES IN VERSION 2.1.3 [2018-12-12]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'ResultImagingExperiment' class for results
+        of statistical analyses of imaging experiments
+    o Added 'spatialFastmap' method for 'SparseImagingExperiment'
+    o Updated 'summarize' to accept a '.group_by' argument
+    o Added 'simulateSpectrum' and 'simulateImage' functions
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Automatically detect and setup 'layout' for new classes
+    o Using 'layout' now assumes (row, column) order
+        when creating facet plots for new classes (only)
+    o Updated examples in documentation to use new classes
+
+BUG FIXES
+
+    o Fixed bug in 'spatialKMeans' that caused 'spatialFastmap'
+        to fail for datasets with fewer features than components
+    o Fixed bug where 'plot' did not facet over runs
+        of a 'SparseImagingExperiment' when using 'plusminus'
+
 CHANGES IN VERSION 2.1.2 [2018-11-30]
 -----------------------------------
 

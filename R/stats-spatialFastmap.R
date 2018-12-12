@@ -5,14 +5,13 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 		iter.max = 1, ...)
 	{
 		method <- match.arg(method)
+		iData(x) <- as.matrix(iData(x))
 		rs <- sort(r)
 		ncomps <- sort(ncomp)
 		if ( max(ncomps) > nrow(x) )
 			.stop("spatialFastmap: Can't fit more components than extent of dataset")
 		.time.start()
 		.message("spatialFastmap: Fitting FastMap components.")
-		if ( max(ncomps) > nrow(x) )
-			.stop("spatialFastmap: Can't fit more components than extent of dataset")
 		result <- unlist(lapply(rs, function(r) {
 			.message("spatialFastmap: Fitting r = ", r)
 			fit <- .spatialFastmap(x, r=r, ncomp=max(ncomps),

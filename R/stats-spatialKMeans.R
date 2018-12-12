@@ -9,10 +9,11 @@ setMethod("spatialKMeans",
 		ncomp = 10, ...)
 	{
 		method <- match.arg(method)
-		iData(x) <- as.matrixlike(iData(x), supported="matrix")
+		iData(x) <- as.matrix(iData(x))
 		save.seed()
 		rs <- sort(r)
 		ks <- sort(k)
+		ncomp <- min(ncomp, nrow(x))
 		w <- rep(weights, length.out=nrow(iData(x)))
 		.time.start()
 		result <- unlist(lapply(rs, function(r){

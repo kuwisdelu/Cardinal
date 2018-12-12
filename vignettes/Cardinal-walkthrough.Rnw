@@ -766,12 +766,12 @@ skm <- spatialKMeans(msset7, r=2, k=3, method="adaptive")
 @
 
 <<skmplot>>=
-plot(skm, col=c("black", "blue", "red"), type=c('p','h'), key=FALSE)
+plot(skm, col=c("darkred", "black", "red"), type=c('p','h'), key=FALSE)
 @
 
 
 <<skmimage>>=
-image(skm, col=c("black", "blue", "red"), key=FALSE)
+image(skm, col=c("darkred", "black", "red"), key=FALSE)
 @
 
 \setkeys{Gin}{width=\textwidth}
@@ -811,15 +811,15 @@ Below, we create a spatial segmentation using the spatial shrunken centroids met
 
 <<ssc>>=
 set.seed(1)
-ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=3, method="adaptive")
+ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=0, method="adaptive")
 @
 
 <<sscplot>>=
-plot(ssc, col=c("blue", "red", "black"), type=c('p','h'), key=FALSE)
+plot(ssc, col=c("red", "black"), type=c('p','h'), key=FALSE)
 @
 
 <<sscimage>>=
-image(ssc, col=c("blue", "red", "black"), key=FALSE)
+image(ssc, col=c("red", "black"), key=FALSE)
 @
 
 \setkeys{Gin}{width=\textwidth}

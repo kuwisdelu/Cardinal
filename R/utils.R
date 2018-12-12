@@ -256,16 +256,6 @@ Ctypeof <- function(type) {
 	}, character(1))
 }
 
-## Coerce to a supported matrix-like array object
-as.matrixlike <- function(x, supported="matrix") {
-	err <- function(e) .stop("this function supports only in-memory R matrices")
-	if ( any(sapply(supported, is, object=x)) ) {
-		x
-	} else {
-		tryCatch(as.matrix(x), error=err)
-	}
-}
-
 ## Make an annotation (factor) from regions-of-interest (logical)
 make.annotation <- function(...) {
 	regions <- data.frame(...)
