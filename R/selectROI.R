@@ -6,8 +6,8 @@ setMethod("selectROI", "SparseImagingExperiment",
 		mode <- match.arg(mode)
 		p <- image(object, ...)
 		print(p)
-		title(sub="Select pixels", col.sub="red")
-		.message("Select pixels; press ESC or 2nd mouse button to stop")
+		title(sub="select pixels", col.sub="red")
+		.message("select pixels; press ESC or 2nd mouse button to stop")
 		if ( mode == "region" ) {
 			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
 			.selectRegion(loc, pixelData(object),
@@ -32,14 +32,14 @@ setMethod("selectROI",
 		if ( missing(main) )
 			main <- paste("Select", mode)
 		if ( lattice )
-			.stop("select: Selection not currently supported for lattice graphics.")
+			.stop("selection is not supported for lattice graphics.")
 		subset2 <- tryCatch(eval(substitute(subset), envir=pData(object),
 			enclos=environment(formula)), error = function(e) eval(subset))
 		image(object, formula=formula, ..., main=main, subset=subset2, lattice=lattice)
 		model <- .parseImageFormula(formula, object=object, enclos=environment(formula))
 		if ( length(subset2) < ncol(object) )
 			subset2 <- rep(subset2, length.out=ncol(object))
-		.message("Select pixels and press ESC or second mouse button when done")
+		.message("select pixels and press ESC or second mouse button when done")
 		if ( mode == "region" ) {
 			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
 			if ( is.null(loc) ) return(NULL)

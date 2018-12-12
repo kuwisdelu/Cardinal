@@ -12,29 +12,35 @@
 readMSIData(file, \dots)
 
 ## Read imzML files
-readImzML(name, folder=getwd(), attach.only=FALSE,
-	mass.range=NULL, resolution=200, units=c("ppm", "mz"),
-	as=c("MSImageSet", "MSImagingExperiment"), \dots)
+readImzML(name, folder = getwd(), attach.only = TRUE,
+	mass.range = NULL, resolution = 200, units = c("ppm", "mz"),
+	as = c("MSImagingExperiment", "MSImageSet"),
+	BPPARAM = bpparam(), \dots)
 
 ## Read Analyze 7.5 files
-readAnalyze(name, folder=getwd(), attach.only=FALSE,
-	as=c("MSImageSet", "MSImagingExperiment"), \dots)
+readAnalyze(name, folder = getwd(), attach.only = TRUE,
+	as = c("MSImagingExperiment", "MSImageSet"), \dots)
 }
 \arguments{
 	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
 	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
 	\item{folder}{The path to the folder containing the data files.}
-	\item{attach.only}{Attach the file as a \code{\linkS4class{Binmat}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
+	\item{attach.only}{Attach the file as a \code{\linkS4class{matter}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
 	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time, as otherwise it is read and calculated from the dataset directly.}
 	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
 	\item{units}{The units for \code{resolution}. Either parts-per-million or absolute m/z units.}
 	\item{as}{After reading in the data, what class of object should be returned (\code{MSImageSet} or \code{MSImagingExperiment})?}
+	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. This is only used when \code{mass.range=NULL} and \code{attach.only=TRUE}, when reading the mass range from the data.}
 	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{
 	In the current implementation, the file extensions must match exactly: '.imzML' and '.ibd' for imzML and '.hdr', '.t2m', and '.img' for Analyze 7.5.
 
 	The \code{readImzML} function supports reading and returning both the 'continuous' and 'processed' formats.
+
+	When \code{attach.only=TRUE}, the data is not loaded into memory; only the experimental metadata is read, and the intensity data will only be accessed on-demand. For large datasets, this is memory-efficient. For smaller datasets, this may be slower than simply reading the entire dataset into memory.
+
+	If the mass range is known, setting \code{mass.range} will make attaching the dataset much faster for very large datasets.
 }
 \value{
 	A \code{\linkS4class{MSImageSet}} object.

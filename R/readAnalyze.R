@@ -2,32 +2,32 @@
 #### Read Analyze 7.5 files ####
 ## ----------------------------
 
-readAnalyze <- function(name, folder=getwd(), attach.only=FALSE,
-	as = c("MSImageSet", "MSImagingExperiment"), ...)
+readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
+	as = c("MSImagingExperiment", "MSImageSet"), ...)
 {
 	# get output format
 	outclass <- match.arg(as)
 	# check for files
 	hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(hdrpath) ) .stop("readAnalyze: ", hdrpath, " does not exist")
+	if ( !file.exists(hdrpath) ) .stop("expected file ", hdrpath, " does not exist")
 	t2mpath <- normalizePath(file.path(folder, paste(name, ".t2m", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(t2mpath) ) .stop("readAnalyze: ", t2mpath, " does not exist")
+	if ( !file.exists(t2mpath) ) .stop("expected file ", t2mpath, " does not exist")
 	imgpath <- normalizePath(file.path(folder, paste(name, ".img", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(imgpath) ) .stop("readAnalyze: ", imgpath, " does not exist")
+	if ( !file.exists(imgpath) ) .stop("expected file ", imgpath, " does not exist")
 	# parse header
-	.message("readAnalyze: Reading header file '", hdrpath, "'")
+	.message("reading header file: '", hdrpath, "'")
 	hdr <- .readAnalyzeHDR(hdrpath)
 	dim <- as.integer(c(hdr$dime$dim[2], hdr$dime$dim[c(3,4,5)]))
 	sdim <- c(dim[1], prod(dim[c(2,3,4)]))
 	datatype <- as.integer(hdr$dime$datatype)
 	# read m/z values
-	.message("readAnalyze: Reading T2M file '", t2mpath, "'")
+	.message("reading t2m file: '", t2mpath, "'")
 	mz <- .readAnalyzeT2M(t2mpath, n=dim[1])
 	# read image file
-	.message("readAnalyze: Reading IMG file '", imgpath, "'")
+	.message("reading img file: '", imgpath, "'")
 	type <- switch(as.character(datatype),
 		`4` = "short",
 		`8` = "int",
@@ -65,7 +65,7 @@ readAnalyze <- function(name, folder=getwd(), attach.only=FALSE,
 		stop("unrecognized outclass")
 	}
 	if ( validObject(object) ) {
-		.message("readAnalyze: Done.")
+		.message("done.")
 		object
 	}
 }

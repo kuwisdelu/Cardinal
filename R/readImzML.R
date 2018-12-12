@@ -2,9 +2,10 @@
 #### Read imzML files ####
 ## ----------------------
 
-readImzML <- function(name, folder = getwd(), attach.only = FALSE,
+readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	mass.range = NULL, resolution = 200, units = c("ppm", "mz"),
-	as = c("MSImageSet", "MSImagingExperiment"), ...)
+	as = c("MSImagingExperiment", "MSImageSet"),
+	BPPARAM = bpparam(), ...)
 {
 	# check input
 	dots <- list(...)
@@ -23,22 +24,22 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 	# check for files
 	xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(xmlpath) ) .stop("readImzML: ", xmlpath, " does not exist")
+	if ( !file.exists(xmlpath) ) .stop("expected file ", xmlpath, " does not exist")
 	ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
 		mustWork=FALSE)
-	if ( !file.exists(ibdpath) ) .stop("readImzML: ", ibdpath, " does not exist")
+	if ( !file.exists(ibdpath) ) .stop("expected file ", ibdpath, " does not exist")
 	# read imzML file
-	.message("readImzML: Reading imzML file '", xmlpath, "'")
+	.message("reading imzML file: '", xmlpath, "'")
 	info <- .readImzML(xmlpath)
 	# read ibd file
 	metadata(info)[["files"]] <- c(xmlpath, ibdpath)
 	metadata(info)[["name"]] <- name
 	units <- match.arg(units)
-	.message("readImzML: Reading ibd file '", ibdpath, "'")
+	.message("reading ibd file: '", ibdpath, "'")
 	object <- .readIbd(ibdpath, info, outclass=outclass, attach.only=attach.only,
-		mass.range=mass.range, resolution=resolution, units=units)
+		mass.range=mass.range, resolution=resolution, units=units, BPPARAM=BPPARAM)
 	if ( validObject(object) ) {
-		.message("readImzML: Done.")
+		.message("done.")
 		object
 	}
 }
@@ -55,7 +56,7 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 }
 
 .readIbd <- function(file, info, outclass, attach.only,
-	mass.range, resolution, units)
+	mass.range, resolution, units, BPPARAM)
 {
 	file <- normalizePath(file)
 	ibdtype <- metadata(info)[["ibd binary type"]]
@@ -87,9 +88,14 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 			offset=imageData(info)[["external offset"]],
 			extent=imageData(info)[["external array length"]])
 		if ( is.null(mass.range) ) {
-			mzvec <- as(mz, "matter_vec")
-			chunksize(mzvec) <- 1e8L # read chunks of 800 MB
-			mz.range <- range(mzvec)
+			.message("determining mass range...")
+			if ( attach.only ) {
+				mz.range <- range(sapply(mz, range, BPPARAM=BPPARAM))
+			} else {
+				mz.range <- range(sapply(mz[], range))
+			}
+			.message("detected mass range: ",
+				round(mz.range[1L], 4), " to ", round(mz.range[2L], 4))
 		} else {
 			mz.range <- mass.range
 		}
@@ -97,7 +103,7 @@ readImzML <- function(name, folder = getwd(), attach.only = FALSE,
 		mz.max <- mz.range[2]
 		if ( units == "ppm" ) {
 			if ( floor(mz.min) <= 0 )
-				.stop("readImzML: m/z values must be positive for units='ppm'")
+				.stop("m/z values must be positive for units='ppm'")
 			mzout <- seq.ppm(
 				from=floor(mz.min),
 				to=ceiling(mz.max),

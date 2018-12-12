@@ -12,7 +12,7 @@ writeMSIData <- function(object, file, outformat = c("imzML", "Analyze"), ...) {
 	} else if ( outformat == "Analyze" ) {
 		result <- writeAnalyze(object, name, folder, ...)
 	} else {
-		.stop("writeMSIData: only 'imzML' and 'Analyze' are supported")
+		.stop("only 'imzML' and 'Analyze' are supported")
 	}
 	invisible(result)
 }

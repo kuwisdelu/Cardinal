@@ -6,7 +6,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 		mz.type = "32-bit float", intensity.type = "32-bit float", ...)
 	{
 		if ( merge )
-			.stop("writeImzML: 'merge = TRUE' is not supported")
+			.stop("option 'merge = TRUE' is not supported")
 		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
@@ -30,18 +30,18 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 		# check for files
 		xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(xmlpath) ) .stop("writeImzML: ", xmlpath, " already exists")
+		if ( file.exists(xmlpath) ) .stop("file ", xmlpath, " already exists")
 		ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(ibdpath) ) .stop("writeImzML: ", ibdpath, " already exists")
+		if ( file.exists(ibdpath) ) .stop("file ", ibdpath, " already exists")
 		# read ibd file
-		.message("writeImzML: Writing ibd file '", ibdpath, "'")
+		.message("writing ibd file '", ibdpath, "'")
 		info <- .writeIbd(object, ibdpath, mz.type, intensity.type)
 		# read imzML file
-		.message("writeImzML: Writing imzML file '", xmlpath, "'")
+		.message("writing imzML file '", xmlpath, "'")
 		result <- .writeImzML(info, xmlpath)
 		if ( result )
-			.message("writeImzML: Done.")
+			.message("done.")
 		invisible(result)
 	}
 

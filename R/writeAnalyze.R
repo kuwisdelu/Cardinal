@@ -28,27 +28,27 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		# check for files
 		hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(hdrpath) ) .stop("writeAnalyze: ", hdrpath, " already exists")
+		if ( file.exists(hdrpath) ) .stop("file ", hdrpath, " already exists")
 		t2mpath <- normalizePath(file.path(folder, paste(name, ".t2m", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(t2mpath) ) .stop("writeAnalyze: ", t2mpath, " already exists")
+		if ( file.exists(t2mpath) ) .stop("file ", t2mpath, " already exists")
 		imgpath <- normalizePath(file.path(folder, paste(name, ".img", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(imgpath) ) .stop("writeAnalyze: ", imgpath, " already exists")
+		if ( file.exists(imgpath) ) .stop("file ", imgpath, " already exists")
 		# pixel datatype
 		datatype <- Ctypeof(intensity.type)
 		# write image file
-		.message("writeAnalyze: Writing IMG file '", imgpath, "'")
+		.message("writing img file '", imgpath, "'")
 		img <- .writeAnalyzeIMG(object, imgpath, datatype)
 		# write m/z values
-		.message("writeAnalyze: Writing T2M file '", t2mpath, "'")
+		.message("writing t2m file '", t2mpath, "'")
 		t2m <- .writeAnalyzeT2M(object, t2mpath)
 		# write header
-		.message("writeAnalyze: Writing header file '", hdrpath, "'")
+		.message("writing header file '", hdrpath, "'")
 		hdr <- .writeAnalyzeHDR(object, hdrpath, datatype)
 		result <- TRUE
 		if ( result )
-			.message("writeAnalyze: Done.")
+			.message("done.")
 		invisible(result)
 	}
 
