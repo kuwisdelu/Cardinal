@@ -41,7 +41,7 @@ setMethod("plot",
 			 	coord.groups <- unname(.format.data.labels(coord,
 			 		append=paste0(" \u00b1 ", abs(plusminus))))
 			 	run.groups <- .format.data.labels(list(run=runNames(x)))
-			 	coord.groups <- rep(coord.groups, each=length(run.groups))
+			 	run.groups <- rep(run.groups, each=length(coord.groups))
 			 	pixel.groups <- paste(run.groups, coord.groups, sep=", ")
 			 	dxy <- rep_len(abs(plusminus), ncol(coord(x)))
 			 	pixel.list <- lapply(runNames(x), function(run) {

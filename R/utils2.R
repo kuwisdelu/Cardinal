@@ -160,18 +160,22 @@
 }
 
 # Setup plotting layout
-.setup.layout <- function(layout) {
+.setup.layout <- function(layout, byrow = TRUE) {
+	if ( length(layout) < 1L )
+		layout <- rep_len(c(layout, 1L), 2)
+	if ( length(layout) > 2L )
+		byrow <- layout[3L] <= 1L
 	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
 		cex.axis=0.8, cex.lab=0.8)
 	layout(matrix(seq_len(prod(layout)),
-		nrow=layout[1], ncol=layout[2], byrow=TRUE))
+		nrow=layout[1L], ncol=layout[2L], byrow=byrow))
 }
 
 # Auto plotting layout
 .auto.layout <- function(x) {
 	n <- .num.panels(x)
 	nc <- ceiling(sqrt(n))
-	nr <- n %/% nc
+	nr <- ceiling(n / nc)
 	.setup.layout(c(nr, nc))
 }
 

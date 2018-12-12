@@ -6,7 +6,7 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
 	sdnoise = 0.1, sdmz = 10, resolution = 1000, fmax = 0.5,
 	baseline = 0, decay = 10, units=c("ppm", "mz"),
-	representation = c("profile", "centroid"))
+	representation = c("profile", "centroid"), ...)
 {
 	if ( length(mz) != length(intensity) )
 		stop("length of mz and peaks must match")
@@ -44,11 +44,12 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	for ( i in seq_along(mz) ) {
 		if ( intensity[i] <= 0 || mz[i] < mzrange[1] || mz[i] > mzrange[2] )
 			next
-		xi <- dnorm(mzout, mean=mz[i], sd=peakwidth[i])
+		nearmz <- which(mz[i] - 6 * peakwidth[i] < mzout & mzout < mz[i] + 6 * peakwidth[i])
+		xi <- dnorm(mzout[nearmz], mean=mz[i], sd=peakwidth[i])
 		intensityerr <- rlnorm(1, sdlog=sdpeaks[i])
 		intensityerr <- intensityerr - exp(sdpeaks[i]^2 / 2)
 		yi <- intensity[i] + intensityerr
-		x <- x + yi * (xi / max(xi))
+		x[nearmz] <- x[nearmz] + yi * (xi / max(xi))
 	}
 	noise <- rlnorm(length(x), sdlog=sdnoise)
 	noise <- noise - exp(sdnoise^2 / 2)

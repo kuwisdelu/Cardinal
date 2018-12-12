@@ -180,6 +180,7 @@ export(
 	"readAnalyze",
 	"readImzML",
 	"readMSIData",
+	"presetImageDef",
 	"simulateImage",
 	"simulateSpectrum",
 	"writeAnalyze",

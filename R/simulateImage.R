@@ -7,7 +7,7 @@ simulateImage <- function(pixelData, featureData,
 	as = c("MSImagingExperiment", "SparseImagingExperiment"), ...)
 {
 	if ( !missing(preset) && (missing(pixelData) || missing(featureData)) ) {
-		preset <- .presetImage(preset)
+		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
 	}
@@ -95,17 +95,19 @@ addShape <- function(pixelData, center, size,
 	pixelData
 }
 
-.presetImage <- function(i, nrow = 20, ncol = 20, npeaks = 20) {
+presetImageDef <- function(preset = 1L, npeaks = 30L,
+	dim = c(20L, 20L), peakheight = 1, peakdiff = 1, ...)
+{
+	ncol <- unname(dim[1L])
+	nrow <- unname(dim[2L])
 	coords <- expand.grid(x=1:nrow, y=1:ncol)
 	pdata_a <- PositionDataFrame(coords, run="sample1")
 	pdata_b <- PositionDataFrame(coords, run="sample2")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
-	diff <- 1 # difference in conditions
-	peakheight <- 1 # peak heights
-	i <- abs(i - 1) %% 9 + 1
-	if ( i %in% c(1, 2) ) {
+	i <- (abs(preset) - 1L) %% 9L + 1L
+	if ( i %in% c(1L, 2L) ) {
 		# non-overlapping circle + square w/ 1 or 2 samples
-		if ( i == 1 ) {
+		if ( i == 1L ) {
 			pdata <- pdata_a
 		} else {
 			pdata <- rbind(pdata_a, pdata_b)
@@ -116,14 +118,15 @@ addShape <- function(pixelData, center, size,
 			size=(rx + ry) / 2, shape = "circle")
 		pdata <- addShape(pdata, center=c(x=rx * 3, y=ry * 3),
 			size=(rx + ry) / 2, shape = "square")
-		n1 <- floor(npeaks / 2)
-		n2 <- npeaks - n1
+		n1 <- floor(npeaks / 3)
+		n2 <- floor(npeaks / 3)
+		n3 <- npeaks - n1 - n2
 		fdata <- MassDataFrame(mz=mzs,
-			circle=c(abs(rnorm(n1, peakheight)), rep(0, n2)),
-			square=c(rep(0, n1), abs(rnorm(n2, peakheight))))
-	} else if ( i %in% c(3, 4) ) {
+			circle=c(abs(rnorm(n1 + n2, peakheight)), rep(0, n3)),
+			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight))))
+	} else if ( i %in% c(3L, 4L) ) {
 		# overlapping circle + square w/ 1 or 2 samples
-		if ( i == 3 ) {
+		if ( i == 3L ) {
 			pdata <- pdata_a
 		} else {
 			pdata <- rbind(pdata_a, pdata_b)
@@ -140,9 +143,9 @@ addShape <- function(pixelData, center, size,
 		fdata <- MassDataFrame(mz=mzs,
 			circle=c(abs(rnorm(n1 + n2, peakheight)), rep(0, n3)),
 			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight))))
-	} else if ( i %in% c(5, 6) ) {
+	} else if ( i %in% c(5L, 6L) ) {
 		# 2 squares + overlapping center circle w/ 1 or 2 samples
-		if ( i == 5 ) {
+		if ( i == 5L ) {
 			pdata <- pdata_a
 		} else {
 			pdata <- rbind(pdata_a, pdata_b)
@@ -162,7 +165,7 @@ addShape <- function(pixelData, center, size,
 			square1=c(abs(rnorm(n1 + n2, peakheight)), rep(0, n3)),
 			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight))),
 			circle=c(rep(0, n1), abs(rnorm(n2, peakheight)), rep(0, n3)))
-	} else if ( i == 7 ) {
+	} else if ( i == 7L ) {
 		# circle + square w/ diff conditions between 2 samples
 		rx <- ncol / 4
 		ry <- nrow / 4
@@ -186,10 +189,10 @@ addShape <- function(pixelData, center, size,
 			square1=c(abs(rnorm(n1, peakheight)),
 				rep(0, n2), rep(peakheight, n3)),
 			circle2=c(abs(rnorm(n1, peakheight)),
-				rep(peakheight + diff, n2), rep(0, n3)),
+				rep(peakheight + peakdiff, n2), rep(0, n3)),
 			square2=c(abs(rnorm(n1, peakheight)),
-				rep(0, n2), rep(peakheight + diff, n3)))
-	} else if ( i == 8 ) {
+				rep(0, n2), rep(peakheight + peakdiff, n3)))
+	} else if ( i == 8L ) {
 		# 2 squares + overlapping circle w/ diff conditions (squares)
 		rx <- ncol / 4
 		ry <- nrow / 4
@@ -215,11 +218,11 @@ addShape <- function(pixelData, center, size,
 			square1b=c(abs(rnorm(n1, peakheight)),
 				rep(0, n2), rep(peakheight, n3)),
 			square2a=c(abs(rnorm(n1, peakheight)),
-				rep(peakheight + diff, n2), rep(0, n3)),
+				rep(peakheight + peakdiff, n2), rep(0, n3)),
 			square2b=c(abs(rnorm(n1, peakheight)),
-				rep(0, n2), rep(peakheight + diff, n3)),
+				rep(0, n2), rep(peakheight + peakdiff, n3)),
 			circle=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight))))
-	} else if ( i == 9 ) {
+	} else if ( i == 9L ) {
 		# 2 squares + overlapping circle w/ diff conditions (cicle)
 		rx <- ncol / 4
 		ry <- nrow / 4
@@ -239,11 +242,10 @@ addShape <- function(pixelData, center, size,
 		n3 <- npeaks - n1 - n2
 		fdata <- MassDataFrame(mz=mzs,
 			circle1=c(rep(0, n1), rep(peakheight, n2 + n3)),
-			circle2=c(rep(0, n1), rep(peakheight + diff, n2 + n3)),
+			circle2=c(rep(0, n1), rep(peakheight + peakdiff, n2 + n3)),
 			square1=c(abs(rnorm(n1 + n2, peakheight)), rep(0, n3)),
 			square2=c(abs(rnorm(n1 + n2, peakheight)), rep(0, n3)))
 	}
 	list(pixelData=pdata, featureData=fdata)
 }
-
 
