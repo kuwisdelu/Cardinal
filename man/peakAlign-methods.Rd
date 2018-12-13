@@ -54,7 +54,9 @@ peakAlign.DP(x, y, gap=0, \dots)
     \item{gap}{The gap penalty for the dynamic programming sequence alignment.}
 }
 \details{
-    If a \code{MSImageSet} object is used as the reference then the local maxima in its mean spectrum will be calculated and used as the reference m/z values. The method looks for a ``mean'' column in the object's \code{featureData}, and if it does not exist, then the mean spectrum will be calculated using \code{featureApply(ref, mean)}. If the reference is missing, the method will use the object itself as the reference.
+    When applied to a \code{MSImagingExperiment} object with no other reference, \code{peakAlign} uses the \code{summarize()} to calculate the mean spectrum, and then uses the local maxima  of the mean spectrum as the reference. Alternatively, a vector of m/z values or a column name in the featureData that should be used as the reference may be provided. Finally, if the featureData has an numeric vector element named ``reference peaks'' among its \code{metadata()}, this vector is used as the reference.
+
+    When applied to a \code{MSImageSet} object, if a \code{MSImageSet} object is used as the reference then the local maxima in its mean spectrum will be calculated and used as the reference m/z values. The method looks for a ``mean'' column in the object's \code{featureData}, and if it does not exist, then the mean spectrum will be calculated using \code{featureApply(ref, mean)}. If the reference is missing, the method will use the object itself as the reference.
 
     Peak alignment is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:
 
