@@ -1,4 +1,19 @@
 
+CHANGES IN VERSION 2.1.4 [2018-12-12]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o In 'readImzML' and 'readAnalyze', changed defaults
+        from 'attach.only=FALSE' to 'attach.only=TRUE'
+    o In 'readImzML' and 'readAnalyze', changed defaults
+        from 'as=MSImageSet' to 'as=MSImagingExperiment'
+
+BUG FIXES
+
+    o Subsetting large 'SparseImagingExperiment' objects
+        with 'sparse_mat' imageData should no longer hang
+
 CHANGES IN VERSION 2.1.3 [2018-12-12]
 -----------------------------------
 

@@ -146,21 +146,21 @@ setMethod("preproc", "SparseImagingExperiment",
 
 setMethod("[", "SparseImagingExperiment",
 	function(x, i, j, ..., drop) {
-		if ( missing(i) ) {
-			i <- seq_len(nrow(x))
-		} else {
-			i2 <- seq_len(nrow(x))
-			i <- setNames(i2, rownames(x))[i]
+		if ( !missing(i) && (is.character(i) || is.factor(i)) )
+			i <- match(i, featureNames(x))
+		if ( !missing(j) && (is.character(j) || is.factor(j)) )
+			j <- match(j, pixelNames(x))
+		if ( !missing(i) && !missing(j) ) {
+			x@imageData <- x@imageData[i,j,drop=NULL]
+			x@featureData <- x@featureData[i,,drop=FALSE]
+			x@elementMetadata <- x@elementMetadata[j,,drop=FALSE]	
+		} else if ( !missing(i) ) {
+			x@imageData <- x@imageData[i,,drop=NULL]
+			x@featureData <- x@featureData[i,,drop=FALSE]
+		} else if ( !missing(j) ) {
+			x@imageData <- x@imageData[,j,drop=NULL]
+			x@elementMetadata <- x@elementMetadata[j,,drop=FALSE]
 		}
-		if ( missing(j) ) {
-			j <- seq_len(ncol(x))
-		} else {
-			j2 <- seq_len(ncol(x))
-			j <- setNames(j2, colnames(x))[j]
-		}
-		x@imageData <- x@imageData[i,j,drop=NULL]
-		x@featureData <- x@featureData[i,,drop=FALSE]
-		x@elementMetadata <- x@elementMetadata[j,,drop=FALSE]
 		x
 	})
 
