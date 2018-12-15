@@ -59,7 +59,7 @@ writeAnalyze <- function(object, name, folder = getwd(),
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
 	dim <- sapply(coord(x)[,c(1,2)], max)
-	hdr <- .makeAnalyzeHDR(file, "rb+")
+	hdr <- .makeAnalyzeHDR(file, mode="rw")
 	hdr$hk[] <- rep(list(0), length(hdr$hk))
 	hdr$hk$sizeof_hdr <- 348L # byte size of hdr
 	hdr$hk$extents <- 16384L # must be 16384
@@ -91,7 +91,7 @@ writeAnalyze <- function(object, name, folder = getwd(),
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
 	t2m <- matter_vec(datamode="float", paths=file,
-		length=length(mz(x)), filemode="rb+")
+		length=length(mz(x)), filemode="rw")
 	t2m[] <- mz(x)
 	options(matter.cast.warning=warn)
 	t2m
@@ -105,7 +105,7 @@ writeAnalyze <- function(object, name, folder = getwd(),
 	options(matter.cast.warning=FALSE)
 	dim <- sapply(coord(x)[,c(1,2)], max)
 	img <- matter_mat(datamode=type, paths=file,
-		nrow=nrow(x), ncol=prod(dim), filemode="rb+")
+		nrow=nrow(x), ncol=prod(dim), filemode="rw")
 	img[] <- 0
 	for ( i in seq_len(ncol(x)) ) {
 		row <- coord(x)[i,1]

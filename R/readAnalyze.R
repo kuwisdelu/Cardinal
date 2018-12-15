@@ -129,7 +129,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 
 .readAnalyzeHDR <- function(file) {
 	file <- normalizePath(file)
-	hdr <- .makeAnalyzeHDR(file, "rb")
+	hdr <- .makeAnalyzeHDR(file, mode="r")
 	hdr
 }
 

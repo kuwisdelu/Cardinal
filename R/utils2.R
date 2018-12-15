@@ -73,7 +73,7 @@
 		if ( !is.numeric(x) )
 			stop("non-numeric output not allowed for remote writing")
 		res <- matter::matter_vec(x, datamode=typeof(x),
-			filemode="rb+", offset=eof, paths=path)
+			filemode="rw", offset=eof, paths=path)
 		ipcunlock(pid)
 		c(mode=datamode(res), offset=eof, length=length(res))
 	}
@@ -93,13 +93,13 @@
 			extent <- nrow(ans)
 			mode <- mode[1L]
 		}
-		x <- matter::matter_vec(datamode=mode, filemode="rb+",
+		x <- matter::matter_vec(datamode=mode, filemode="rw",
 				offset=offset, extent=extent, paths=path)
 	} else if ( simplify && length(unique(extent)) == 1L ) {
-		x <- matter::matter_mat(datamode=mode, filemode="rb+",
+		x <- matter::matter_mat(datamode=mode, filemode="rw",
 			offset=offset, extent=extent, paths=path)
 	} else {
-		x <- matter::matter_list(datamode=mode, filemode="rb+",
+		x <- matter::matter_list(datamode=mode, filemode="rw",
 			offset=offset, extent=extent, paths=path)
 	}
 	x

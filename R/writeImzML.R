@@ -53,16 +53,16 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
 	id <- uuid(uppercase=FALSE)
-	pid <- matter_vec(length=16, paths=file, filemode="rb+", datamode="raw")
+	pid <- matter_vec(length=16, paths=file, filemode="rw", datamode="raw")
 	pid[] <- id$bytes
 	if ( metadata(info)[["ibd binary type"]] == "continuous" ) {
 		# write 'continuous' imzML
-		pmz <- matter_vec(length=nrow(x), paths=file, filemode="rb+",
+		pmz <- matter_vec(length=nrow(x), paths=file, filemode="rw",
 			offset=mzData(info)[["external offset"]][1L],
 			extent=mzData(info)[["external array length"]][1L],
 			datamode=Ctypeof(mz.type))
 		pmz[] <- mz(x)
-		pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rb+",
+		pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rw",
 			offset=imageData(info)[["external offset"]],
 			extent=imageData(info)[["external array length"]],
 			datamode=Ctypeof(intensity.type))
@@ -70,11 +70,11 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 			pspectra[,i] <- iData(x)[,i]
 	} else if ( metadata(info)[["ibd binary type"]] == "processed" ) {
 		# write 'processed' imzML
-		pmz <- matter_list(paths=file, filemode="rb+",
+		pmz <- matter_list(paths=file, filemode="rw",
 			offset=mzData(info)[["external offset"]],
 			extent=mzData(info)[["external array length"]],
 			datamode=Ctypeof(mz.type))
-		pspectra <- matter_list(paths=file, filemode="rb+",
+		pspectra <- matter_list(paths=file, filemode="rw",
 			offset=imageData(info)[["external offset"]],
 			extent=imageData(info)[["external array length"]],
 			datamode=Ctypeof(intensity.type))
