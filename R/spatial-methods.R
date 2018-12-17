@@ -4,51 +4,54 @@
 ## Find neighborhood members
 
 setMethod("findNeighbors", "ImagingExperiment",
-	function(x, r, groups = run(x), ...)
+	function(x, r = 1, groups = run(x), ...)
 	{
 		findNeighbors(pixelData(x), r=r, groups=groups, ...)
 	})
 
 setMethod("findNeighbors", "PositionDataFrame",
-	function(x, r, groups = run(x), offsets = FALSE, matrix = FALSE, ...)
+	function(x, r = 1, groups = run(x), dist = "chebyshev",
+		offsets = FALSE, matrix = FALSE, ...)
 	{
-		if ( length(r) != length(coord(x)) ) {
-			r <- rep_len(unname(r), length(coord(x)))
-		} else if ( !is.null(names(r)) ) {
-			r <- r[names(coord(x))]
+		if ( length(r) > 1L ) {
+			.warning("r has length > 1; using r = ", r[1])
+			r <- r[1]
 		}
 		coord <- as.matrix(coord(x))
-		nb <- .findNeighbors(coord, r=r, groups=groups, matrix=matrix)
+		nb <- .findNeighbors(coord, r=r, groups=groups, dist=dist, matrix=matrix)
 		if ( offsets )
 			attr(nb, "offsets") <- .getSpatialOffsets(coord, nb)
 		nb
 	})
 
 setMethod("findNeighbors", "iSet",
-	function(x, r, groups = x$sample, ...)
+	function(x, r = 1, groups = x$sample, ...)
 	{
 		findNeighbors(pixelData(x), r=r, groups=groups, ...)
 	})
 
 setMethod("findNeighbors", "IAnnotatedDataFrame",
-	function(x, r, groups = x$sample, offsets = FALSE, matrix = FALSE, ...)
+	function(x, r = 1, groups = x$sample, dist = "chebyshev",
+		offsets = FALSE, matrix = FALSE, ...)
 	{
-		if ( length(r) != length(coordLabels(x)) ) {
-			r <- rep_len(unname(r), length(coordLabels(x)))
-		} else if ( !is.null(names(r)) ) {
-			r <- r[coordLabels(x)]
+		if ( length(r) > 1L ) {
+			.warning("r has length > 1; using r = ", r[1])
+			r <- r[1]
 		}
 		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
-		nb <- .findNeighbors(coord, r=r, groups=groups, matrix=matrix)
+		nb <- .findNeighbors(coord, r=r, groups=groups, dist=dist, matrix=matrix)
 		if ( offsets )
 			attr(nb, "offsets") <- .getSpatialOffsets(coord, nb)
 		nb
 	})
 
-.findNeighbors <- function(coord, r, groups, matrix = FALSE) {
+.findNeighbors <- function(coord, r, groups, dist, matrix = FALSE) {
 	if ( !is.matrix(coord) )
 		coord <- as.matrix(coord)
-	nb <- .Call("findNeighbors", coord, as.numeric(r), as.integer(groups), PACKAGE="Cardinal")
+	dist.types <- c("radial", "manhattan", "minkowski", "chebyshev")
+	dist <- factor(match.arg(dist, dist.types), levels=dist.types)
+	nb <- .Call("findNeighbors", coord, as.numeric(r),
+		as.integer(groups), as.integer(dist), PACKAGE="Cardinal")
 	if ( matrix ) {
 		ones <- lapply(nb, function(i) rep_len(1L, length(i)))
 		nb <- sparse_mat(data=list(keys=nb, values=ones),
@@ -70,12 +73,16 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 ## Calculate spatial weights
 
 setMethod("spatialWeights", "ImagingExperiment",
-	function(x, r, method = c("gaussian", "adaptive"), matrix = FALSE,
+	function(x, r = 1, method = c("gaussian", "adaptive"), matrix = FALSE,
 		BPPARAM = bpparam(), ...)
 	{
 		method <- match.arg(method)
 		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
-		sigma <- ((2 * mean(r)) + 1) / 4
+		if ( length(r) > 1L ) {
+			.warning("r has length > 1; using r = ", r[1])
+			r <- r[1]
+		}
+		sigma <- ((2 * r) + 1) / 4
 		fun <- function(xbl) {
 			neighbors <- attr(xbl, "neighbors")
 			offsets <- attr(xbl, "offsets")
@@ -84,7 +91,7 @@ setMethod("spatialWeights", "ImagingExperiment",
 					offsets=pos, sigma=sigma, bilateral=bilateral)
 			}, neighbors, offsets, SIMPLIFY=FALSE)
 		}
-		weights <- spatialApply(x, .r=r, .fun=fun, .blocks=TRUE,
+		weights <- spatialApply(x, .r=r, .fun=fun, ..., .blocks=TRUE,
 			.simplify=.unlist_and_reorder, .init=TRUE, BPPARAM=BPPARAM)
 		nb <- attr(weights, "init")$spatial$neighbors
 		attr(weights, "init") <- NULL
@@ -97,18 +104,22 @@ setMethod("spatialWeights", "ImagingExperiment",
 	})
 
 setMethod("spatialWeights", "PositionDataFrame",
-	function(x, r, matrix = FALSE, ...)
+	function(x, r = 1, matrix = FALSE, ...)
 	{
-		.getSpatialWeights(x, r=r, matrix=matrix)
+		.getSpatialWeights(x, r=r, matrix=matrix, ...)
 	})
 
 setMethod("spatialWeights", "iSet",
-	function(x, r, method = c("gaussian", "adaptive"), matrix = FALSE, ...)
+	function(x, r = 1, method = c("gaussian", "adaptive"), matrix = FALSE, ...)
 	{
 		method <- match.arg(method)
 		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
-		sigma <- ((2 * mean(r)) + 1) / 4
-		nb <- findNeighbors(x, r=r, offsets=TRUE)
+		if ( length(r) > 1L ) {
+			.warning("r has length > 1; using r = ", r[1])
+			r <- r[1]
+		}
+		sigma <- ((2 * r) + 1) / 4
+		nb <- findNeighbors(x, r=r, offsets=TRUE, ...)
 		offsets <- attr(nb, "offsets")
 		weights <- mapply(function(ii, pos) {
 			.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
@@ -123,15 +134,15 @@ setMethod("spatialWeights", "iSet",
 	})
 
 setMethod("spatialWeights", "IAnnotatedDataFrame",
-	function(x, r, matrix = FALSE, ...)
+	function(x, r = 1, matrix = FALSE, ...)
 	{
-		.getSpatialWeights(x, r=r, matrix=matrix)
+		.getSpatialWeights(x, r=r, matrix=matrix, ...)
 	})
 
-.getSpatialWeights <- function(x, r, matrix = FALSE) {
-	nb <- findNeighbors(x, r=r, offsets=TRUE)
+.getSpatialWeights <- function(x, r, matrix = FALSE, ...) {
+	nb <- findNeighbors(x, r=r, offsets=TRUE, ...)
 	offsets <- attr(nb, "offsets")
-	sigma <- ((2 * mean(r)) + 1) / 4
+	sigma <- ((2 * r[1]) + 1) / 4
 	weights <- mapply(function(pos) {
 		.spatialWeights(NULL, offsets=pos,
 			sigma=sigma, bilateral=FALSE)
@@ -146,10 +157,14 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 }
 
 # summarize spatial information
-.spatialInfo <- function(x, r, weights = TRUE,
-	method = c("gaussian", "adaptive"), ...)
+.spatialInfo <- function(x, r, dist = "chebyshev",
+	weights = TRUE, method = c("gaussian", "adaptive"), ...)
 {
-	neighbors <- findNeighbors(x, r=r, offsets=TRUE)
+	if ( length(r) > 1L ) {
+		.warning("r has length > 1; using r = ", r[1])
+		r <- r[1]
+	}
+	neighbors <- findNeighbors(x, r=r, offsets=TRUE, dist=dist)
 	offsets <- attr(neighbors, "offsets")
 	attr(neighbors, "offsets") <- NULL
 	if ( weights ) {

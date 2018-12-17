@@ -1,6 +1,6 @@
 
 #include <R.h>
-#include <Rdefines.h>
+#include <Rinternals.h>
 
 #include "utils.h"
 
@@ -8,7 +8,7 @@ template<typename T>
 SEXP find_local_maxima(SEXP x, int r) {
 	int len = LENGTH(x);
 	SEXP isLocMax;
-	PROTECT(isLocMax = NEW_LOGICAL(len));
+	PROTECT(isLocMax = allocVector(LGLSXP, len));
 	int * locmax = LOGICAL(isLocMax);
 	for ( int i = 0; i < len; ++i )
 		locmax[i] = false;

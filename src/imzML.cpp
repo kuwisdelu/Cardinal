@@ -1,6 +1,6 @@
 
 #include <R.h>
-#include <Rdefines.h>
+#include <Rinternals.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -642,8 +642,8 @@ SEXP read_experiment_metadata(pugi::xml_node root) {
 
 	SEXP imzList, imzNames;
 
-	PROTECT(imzList = NEW_LIST(15));
-	PROTECT(imzNames = NEW_STRING(15));
+	PROTECT(imzList = allocVector(VECSXP, 15));
+	PROTECT(imzNames = allocVector(STRSXP, 15));
 
 	pugi::xml_node fileContent = root.child("mzML").child("fileDescription").child("fileContent");
 
@@ -754,13 +754,13 @@ SEXP read_spectrum_metadata(pugi::xml_node run) {
 
 	SEXP spectrumList, spectrumNames;
 
-	PROTECT(spectrumList = NEW_LIST(2));
-	PROTECT(spectrumNames = NEW_STRING(2));
+	PROTECT(spectrumList = allocVector(VECSXP, 2));
+	PROTECT(spectrumNames = allocVector(STRSXP, 2));
 
 	SEXP scanPolarity, spectrumRepresentation;
 
-	PROTECT(scanPolarity = NEW_STRING(n));
-	PROTECT(spectrumRepresentation = NEW_STRING(n));
+	PROTECT(scanPolarity = allocVector(STRSXP, n));
+	PROTECT(spectrumRepresentation = allocVector(STRSXP, n));
 
 	pugi::xml_node spectrum = run.child("spectrumList").first_child();
 
@@ -795,20 +795,20 @@ SEXP read_scan_metadata(pugi::xml_node run) {
 
 	SEXP scanList, scanNames;
 
-	PROTECT(scanList = NEW_LIST(6));
-	PROTECT(scanNames = NEW_STRING(6));
+	PROTECT(scanList = allocVector(VECSXP, 6));
+	PROTECT(scanNames = allocVector(STRSXP, 6));
 
 	SEXP x, y, z;
 
 	SEXP x3d, y3d, z3d;
 
-	PROTECT(x = NEW_INTEGER(n));
-	PROTECT(y = NEW_INTEGER(n));
-	PROTECT(z = NEW_INTEGER(n));
+	PROTECT(x = allocVector(INTSXP, n));
+	PROTECT(y = allocVector(INTSXP, n));
+	PROTECT(z = allocVector(INTSXP, n));
 	
-	PROTECT(x3d = NEW_NUMERIC(n));
-	PROTECT(y3d = NEW_NUMERIC(n));
-	PROTECT(z3d = NEW_NUMERIC(n));
+	PROTECT(x3d = allocVector(REALSXP, n));
+	PROTECT(y3d = allocVector(REALSXP, n));
+	PROTECT(z3d = allocVector(REALSXP, n));
 
 	int * pX = INTEGER(x);
 	int * pY = INTEGER(y);
@@ -863,15 +863,15 @@ SEXP read_mz_metadata(pugi::xml_node run) {
 
 	SEXP binaryDataArrayList, binaryDataArrayNames;
 
-	PROTECT(binaryDataArrayList = NEW_LIST(4));
-	PROTECT(binaryDataArrayNames = NEW_STRING(4));
+	PROTECT(binaryDataArrayList = allocVector(VECSXP, 4));
+	PROTECT(binaryDataArrayNames = allocVector(STRSXP, 4));
 
 	SEXP offset, arrayLength, encodedLength, dataType;
 
-	PROTECT(offset = NEW_NUMERIC(n));
-	PROTECT(arrayLength = NEW_INTEGER(n));
-	PROTECT(encodedLength = NEW_INTEGER(n));
-	PROTECT(dataType = NEW_STRING(n));
+	PROTECT(offset = allocVector(REALSXP, n));
+	PROTECT(arrayLength = allocVector(INTSXP, n));
+	PROTECT(encodedLength = allocVector(INTSXP, n));
+	PROTECT(dataType = allocVector(STRSXP, n));
 	
 	double * pOffset = REAL(offset);
 	int * pArrayLength = INTEGER(arrayLength);
@@ -918,15 +918,15 @@ SEXP read_intensity_metadata(pugi::xml_node run) {
 
 	SEXP binaryDataArrayList, binaryDataArrayNames;
 
-	PROTECT(binaryDataArrayList = NEW_LIST(4));
-	PROTECT(binaryDataArrayNames = NEW_STRING(4));
+	PROTECT(binaryDataArrayList = allocVector(VECSXP, 4));
+	PROTECT(binaryDataArrayNames = allocVector(STRSXP, 4));
 
 	SEXP offset, arrayLength, encodedLength, dataType;
 
-	PROTECT(offset = NEW_NUMERIC(n));
-	PROTECT(arrayLength = NEW_INTEGER(n));
-	PROTECT(encodedLength = NEW_INTEGER(n));
-	PROTECT(dataType = NEW_STRING(n));
+	PROTECT(offset = allocVector(REALSXP, n));
+	PROTECT(arrayLength = allocVector(INTSXP, n));
+	PROTECT(encodedLength = allocVector(INTSXP, n));
+	PROTECT(dataType = allocVector(STRSXP, n));
 	
 	double * pOffset = REAL(offset);
 	int * pArrayLength = INTEGER(arrayLength);
@@ -1137,8 +1137,8 @@ extern "C"
 
 		SEXP imzML, imzMLNames;
 
-		PROTECT(imzML = NEW_LIST(4));
-		PROTECT(imzMLNames = NEW_STRING(4));
+		PROTECT(imzML = allocVector(VECSXP, 4));
+		PROTECT(imzMLNames = allocVector(STRSXP, 4));
 
 		pugi::xml_node run = doc.child("mzML").child("run");
 

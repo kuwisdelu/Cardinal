@@ -49,7 +49,7 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 
 setMethod("plot",
 	signature = c(x = "SpatialFastmap2", y = "missing"),
-	function(x, formula, values = "correlations", ...)
+	function(x, formula, values = "correlation", ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_feature_results(x, match.arg(values))
@@ -95,7 +95,7 @@ setMethod("plot",
 
 .format_feature_results <- function(object, name) {
 	data <- lapply(resultData(object), function(res) {
-		res <- res[[name]]
+		res <- res[[name, exact=FALSE]]
 		if ( is.factor(res) || is.character(res) ) {
 			.factor_matrix(res)
 		} else if ( is.vector(res) ) {

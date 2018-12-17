@@ -1,6 +1,7 @@
 
 setMethod("spatialApply", "SparseImagingExperiment",
 	function(.object, .r, .fun, ...,
+			.dist = "chebyshev",
 			.blocks = FALSE,
 			.simplify = TRUE,
 			.use.names = TRUE,
@@ -16,7 +17,8 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		if ( is.list(.init) ) {
 			spatial <- .init$spatial
 		} else {
-			spatial <- .spatialInfo(.object, r=.r, weights=FALSE)
+			spatial <- .spatialInfo(.object, r=.r,
+				dist=.dist, weights=FALSE)
 		}
 		if ( .blocks ) {
 			if ( !is.logical(.simplify) )

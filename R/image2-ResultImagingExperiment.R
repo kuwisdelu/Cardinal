@@ -83,7 +83,7 @@ setMethod("image",
 
 .format_pixel_results <- function(object, name) {
 	data <- lapply(resultData(object), function(res) {
-		res <- res[[name]]
+		res <- res[[name, exact=FALSE]]
 		if ( is.factor(res) || is.character(res) ) {
 			.factor_matrix(res)
 		} else if ( is.vector(res) ) {
@@ -104,7 +104,7 @@ setMethod("image",
 		par[["model"]] <- .format.data.labels(par)
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])
-		par1 <- DataFrame(column_id=seq_len(len), model_id=i)
+		par1 <- DataFrame(model_id=i, column_id=seq_len(len))
 		par2 <- DataFrame(par)		
 		cbind(par1, par2)
 	})

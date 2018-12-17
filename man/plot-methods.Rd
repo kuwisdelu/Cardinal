@@ -88,7 +88,7 @@
         subset = TRUE)
 
 \S4method{plot}{SpatialFastmap2,missing}(x, formula,
-    values = "correlations", \dots)
+    values = "correlation", \dots)
 
 \S4method{plot}{SpatialKMeans2,missing}(x, formula,
     values = c("centers", "betweenss", "withinss"), \dots)
@@ -159,7 +159,7 @@
     \dots)
 
 \S4method{plot}{SpatialFastmap,missing}(x, formula = substitute(mode ~ mz),
-    mode = "correlations",
+    mode = "correlation",
     type = 'h',
     \dots)
 

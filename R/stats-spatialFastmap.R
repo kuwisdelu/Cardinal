@@ -18,10 +18,10 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 				method=method, iter.max=iter.max)
 			lapply(ncomps, function(ncomp) {
 				scores <- fit$scores[,1:ncomp,drop=FALSE]
-				correlations <- fit$correlations[,1:ncomp,drop=FALSE]
+				correlation <- fit$correlation[,1:ncomp,drop=FALSE]
 				pivot.array <- fit$pivot.array[1:ncomp,,drop=FALSE]
 				sdev <- fit$sdev[1:ncomp]
-				list(scores=scores, correlations=correlations,
+				list(scores=scores, correlation=correlation,
 					pivot.array=pivot.array, sdev=sdev,
 					r=r, ncomp=ncomp)
 			})
@@ -49,7 +49,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 .spatialFastmap <- function(x, r, ncomp, method, ...) {
 	distfun <- .spatialDistanceFun(x, r, method)
 	fmap <- fastmap(x, distfun=distfun, ncomp=ncomp, ...)
-	fmap$correlations <- t(apply(iData(x), 1, function(xi) {
+	fmap$correlation <- t(apply(iData(x), 1, function(xi) {
 		vapply(1:ncomp, function(nc) {
 			si <- fmap$scores[,nc]
 			if ( all(si == 0) ) {
@@ -59,9 +59,9 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 			}
 		}, numeric(1))
 	}))
-	fmap <- fmap[c("scores", "correlations", "pivot.array")]
+	fmap <- fmap[c("scores", "correlation", "pivot.array")]
 	colnames(fmap$scores) <- paste("FC", 1:ncomp, sep="")
-	colnames(fmap$correlations) <- paste("FC", 1:ncomp, sep="")
+	colnames(fmap$correlation) <- paste("FC", 1:ncomp, sep="")
 	fmap$pivot.array <- as.data.frame(fmap$pivot.array)
 	names(fmap$pivot.array) <- c("Oa", "Ob")
 	fmap$sdev <- apply(fmap$scores, 2, sd)

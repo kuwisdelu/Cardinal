@@ -28,10 +28,11 @@
 
 \S4method{findNeighbors}{ImagingExperiment}(x, r, groups = run(x), \dots)
 
-\S4method{findNeighbors}{PositionDataFrame}(x, r, groups = run(x), offsets = FALSE, matrix = FALSE, \dots)
+\S4method{findNeighbors}{PositionDataFrame}(x, r, groups = run(x), dist = "chebyshev", 
+    offsets = FALSE, matrix = FALSE, \dots)
 
-\S4method{spatialWeights}{ImagingExperiment}(x, r, method = c("gaussian", "adaptive"), matrix = FALSE,
-        BPPARAM = bpparam(), \dots)
+\S4method{spatialWeights}{ImagingExperiment}(x, r, method = c("gaussian", "adaptive"),
+    matrix = FALSE, BPPARAM = bpparam(), \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r, matrix = FALSE, \dots)
 
@@ -39,16 +40,19 @@
 
 \S4method{findNeighbors}{iSet}(x, r, groups = x$sample, \dots)
 
-\S4method{findNeighbors}{IAnnotatedDataFrame}(x, r, groups = x$sample, offsets = FALSE, matrix = FALSE, \dots)
+\S4method{findNeighbors}{IAnnotatedDataFrame}(x, r, groups = x$sample, dist = "chebyshev",
+    offsets = FALSE, matrix = FALSE, \dots)
 
-\S4method{spatialWeights}{iSet}(x, r, method = c("gaussian", "adaptive"), matrix = FALSE, \dots)
+\S4method{spatialWeights}{iSet}(x, r, method = c("gaussian", "adaptive"),
+    matrix = FALSE, \dots)
 
 \S4method{spatialWeights}{IAnnotatedDataFrame}(x, r, matrix = FALSE, \dots)
 }
 \arguments{
     \item{x}{An imaging dataset or data frame with spatial dimensions.}
-    \item{r}{The radius or distance. (Maximum in each dimension.)}
+    \item{r}{The spatial radius or distance.}
     \item{groups}{A \code{factor} giving which pixels should be treated as spatially-independent. Pixels in the same group are assumed to have a spatial relationship.}
+    \item{dist}{The type of distance metric to use. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{offsets}{Should the coordinate offsets from the center of each neighborhood be returned?}
     \item{matrix}{Should the result be returned as a sparse matrix instead of a list?}
     \item{method}{The method to use to calculate the spatial weights. The 'gaussian' method refers to Gaussian-distributed distance-based weights (\code{alpha} weights), and 'adaptive' refers to structurally-adaptive weights for bilaterla filtering (\code{beta} weights).}

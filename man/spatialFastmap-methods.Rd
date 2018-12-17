@@ -19,6 +19,7 @@
 \usage{
 \S4method{spatialFastmap}{SparseImagingExperiment}(x, r = 1, ncomp = 2,
     method = c("gaussian", "adaptive"),
+    dist = "chebyshev", tol.dist = 1e-9,
     iter.max = 1,
     BPPARAM = bpparam(), \dots)
 
@@ -31,6 +32,8 @@
     \item{r}{The neighborhood spatial smoothing radius.}
     \item{ncomp}{The number of FastMap components to calculate.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
+    \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
+    \item{tol.dist}{The distance tolerance used for matching pixels when calculating pairwise distances between neighborhoods. This parameter should only matter when the data is not gridded. (Only considers `radial' distance.)}
     \item{iter.max}{The number of iterations to perform when choosing the pivot vectors for each dimension.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{\dots}{Arguments passed to \code{spatialApply}.}

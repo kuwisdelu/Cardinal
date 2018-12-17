@@ -16,7 +16,7 @@
 \usage{
 \S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 2,
     method = c("gaussian", "adaptive"),
-    weights = 1, iter.max = 10, nstart = 1,
+    iter.max = 10, nstart = 1,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
         "MacQueen"),
     ncomp = 10, \dots)
@@ -26,7 +26,6 @@
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
     \item{k}{The number of clusters. This can be a vector to try different numbers of clusters.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) clustering, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) clustering.}
-    \item{weights}{An optional vector of feature weights to be applied to the features during the clustering.}
     \item{iter.max}{The maximum number of k-means iterations.}
     \item{nstart}{The number of restarts for the k-means algorithm.}
     \item{algorithm}{The k-means algorithm to use. See \code{\link{kmeans}} for details.}

@@ -3,7 +3,11 @@ TODO for Cardinal package
 -------------------------
 
 Priority: High
+- Add c('radial', 'manhattan', 'minkowski', 'chebyshev')
+	distance metric options for findNeighbors methods
+- Add 'tol.dist' argument to spatialFastmap,SparseImagingExperiment
 - Add analysis methods for new classes
+- Improve efficiency for plotting 'SparseResultImagingExperiment'
 - Switch applicable process methods to 'SparseImagingExperiment'
 - Update examples and tests to use simulateImage()
 

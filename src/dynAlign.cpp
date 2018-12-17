@@ -1,6 +1,6 @@
 
 #include <R.h>
-#include <Rdefines.h>
+#include <Rinternals.h>
 
 #include "utils.h"
 
@@ -16,9 +16,9 @@ SEXP dyn_align(SEXP similarity, SEXP score, SEXP tracking, SEXP gap)
 	double * pScore = REAL(score);
 	int * pTracking = INTEGER(tracking);
 	SEXP ret, x, y;
-	PROTECT(ret = NEW_LIST(2));
-	PROTECT(x = NEW_INTEGER(nrow - 1));
-	PROTECT(y = NEW_INTEGER(ncol - 1));
+	PROTECT(ret = allocVector(VECSXP, 2));
+	PROTECT(x = allocVector(INTSXP, nrow - 1));
+	PROTECT(y = allocVector(INTSXP, ncol - 1));
 	SET_VECTOR_ELT(ret, 0, x);
 	SET_VECTOR_ELT(ret, 1, y);
 	UNPROTECT(2);

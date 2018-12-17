@@ -177,7 +177,7 @@ setMethod("summary", "SpatialFastmap",
 			r <- x$r
 			ncomp <- x$ncomp
 			data.frame(r=r, ncomp=ncomp,
-				correlations=as.vector(x$correlations[,ncomp,drop=FALSE]))
+				correlation=as.vector(x$correlation[,ncomp,drop=FALSE]))
 		}))
 		row.names(topLabels) <- NULL
 		rs <- sort(unique(unlist(object$r)))

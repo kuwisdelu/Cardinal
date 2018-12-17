@@ -1,22 +1,28 @@
 
 #include <R.h>
-#include <Rdefines.h>
+#include <Rinternals.h>
 
 #include <cmath>
 
 #include "utils.h"
 
+#define RADIAL		1
+#define MANHATTAN 	2
+#define MINKOWSKI	3
+#define CHEBYSHEV	4
+
 template<typename T>
-SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups)
+SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups, SEXP dist)
 {
 	int nrow = nrows(coord);
 	int ncol = ncols(coord);
 	T * pCoord = DataPtr<T>(coord);
-	double * pR = REAL(r);
 	int * pGroups = INTEGER(groups);
 	bool is_neighbor[nrow];
+	double R = asReal(r);
+	int dist_type = asInteger(dist);
 	SEXP ret;
-	PROTECT(ret = NEW_LIST(nrow));
+	PROTECT(ret = allocVector(VECSXP, nrow));
 	for ( int i = 0; i < nrow; ++i ) {
 		int num_neighbors = 0;
 		for ( int ii = 0; ii < nrow; ++ii ) {
@@ -25,16 +31,42 @@ SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups)
 				is_neighbor[ii] = false;
 				continue;
 			}
+			double d, d2 = 0;
 			for ( int j = 0; j < ncol; ++j ) {
-				double d = pCoord[j * nrow + i] - pCoord[j * nrow + ii];
-				if ( fabs(d) > pR[j] )
-					is_neighbor[ii] = false;
+				d = pCoord[j * nrow + i] - pCoord[j * nrow + ii];
+				switch ( dist_type ) {
+					case RADIAL:
+						d2 += d * d;
+						break;
+					case MANHATTAN:
+						d2 += fabs(d);
+						break;
+					case MINKOWSKI:
+						d2 += pow(fabs(d), ncol);
+					case CHEBYSHEV:
+						d2 = fabs(d) > d2 ? fabs(d) : d2;
+						break;
+				}
+			}
+			switch ( dist_type ) {
+				case RADIAL:
+					is_neighbor[ii] = sqrt(d2) <= R ? true : false;
+					break;
+				case MANHATTAN:
+					is_neighbor[ii] = d2 <= R ? true : false;
+					break;
+				case MINKOWSKI:
+					is_neighbor[ii] = pow(d2, 1.0 / ncol) <= R ? true : false;
+					break;
+				case CHEBYSHEV:
+					is_neighbor[ii] = d2 <= R ? true : false;
+					break;
 			}
 			if ( is_neighbor[ii] )
 				num_neighbors++;
 		}
 		SEXP neighbors;
-		PROTECT(neighbors = NEW_INTEGER(num_neighbors));
+		PROTECT(neighbors = allocVector(INTSXP, num_neighbors));
 		int * pNeighbors = INTEGER(neighbors);
 		int ix = 0;
 		for ( int ii = 0; ii < nrow && ix < num_neighbors; ++ii ) {
@@ -61,14 +93,14 @@ SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
 	int * pGroups = INTEGER(groups);
 	bool within_block[nrow];
 	SEXP ret;
-	PROTECT(ret = NEW_LIST(ngroups));
+	PROTECT(ret = allocVector(VECSXP, ngroups));
 	for ( int k = 0; k < ngroups; ++k ) {
 		SEXP info = VECTOR_ELT(block_info, k);
 		SEXP limits = VECTOR_ELT(info, 0);
 		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
 		int nblocks = nrows(VECTOR_ELT(info, 1));
 		SEXP blocks;
-		PROTECT(blocks = NEW_LIST(nblocks));
+		PROTECT(blocks = allocVector(VECSXP, nblocks));
 		for ( int l = 0; l < nblocks; ++l ) {
 			int blocksize = 0;
 			for ( int i = 0; i < nrow; ++i ) {
@@ -91,7 +123,7 @@ SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
 					blocksize++;
 			}
 			SEXP members;
-			PROTECT(members = NEW_INTEGER(blocksize));
+			PROTECT(members = allocVector(INTSXP, blocksize));
 			int * pMembers = INTEGER(members);
 			int ix = 0;
 			for ( int ii = 0; ii < nrow && ix < blocksize; ++ii ) {
@@ -115,7 +147,7 @@ SEXP which_spatial_blocks(SEXP neighbors, SEXP blocks)
 	int npixels = LENGTH(neighbors);
 	int nblocks = LENGTH(blocks);
 	SEXP which;
-	PROTECT(which = NEW_INTEGER(npixels));
+	PROTECT(which = allocVector(INTSXP, npixels));
 	int * pWhich = INTEGER(which);
 	int * pNeighbors, * pBlock;
 	for ( int i = 0; i < npixels; ++i ) {
@@ -173,9 +205,9 @@ SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 	int npixels = nrows(offsets);
 	int ndims = ncols(offsets);
 	SEXP w, alpha, beta;
-	PROTECT(w = NEW_LIST(2));
-	PROTECT(alpha = NEW_NUMERIC(npixels));
-	PROTECT(beta = NEW_NUMERIC(npixels));
+	PROTECT(w = allocVector(VECSXP, 2));
+	PROTECT(alpha = allocVector(REALSXP, npixels));
+	PROTECT(beta = allocVector(REALSXP, npixels));
 	double * pAlpha = REAL(alpha);
 	double * pBeta = REAL(beta);
 	T2 * pOffsets = DataPtr<T2>(offsets);
@@ -278,7 +310,7 @@ SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 	T1 * pX = DataPtr<T1>(x);
 	T2 * pRef = DataPtr<T2>(ref);
 	SEXP scores;
-	PROTECT(scores = NEW_NUMERIC(nrefs));
+	PROTECT(scores = allocVector(REALSXP, nrefs));
 	double * pScores = REAL(scores);
 	double a_i, dist, wsum = 0;
 	for ( int i = 0; i < npixels; ++i )
@@ -301,11 +333,11 @@ SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 
 extern "C" {
 
-	SEXP findNeighbors(SEXP coord, SEXP r, SEXP group) {
+	SEXP findNeighbors(SEXP coord, SEXP r, SEXP group, SEXP dist) {
 		if ( TYPEOF(coord) == INTSXP )
-			return find_neighbors<int>(coord, r, group);
+			return find_neighbors<int>(coord, r, group, dist);
 		else if ( TYPEOF(coord) == REALSXP )
-			return find_neighbors<double>(coord, r, group);
+			return find_neighbors<double>(coord, r, group, dist);
 		else
 			return R_NilValue;
 	}

@@ -39,6 +39,7 @@
     BPPARAM = bpparam())
 
 \S4method{spatialApply}{SparseImagingExperiment}(.object, .r, .fun, \dots,
+    .dist = "chebyshev",
     .blocks = FALSE,
     .simplify = TRUE,
     .use.names = TRUE,
@@ -71,8 +72,9 @@
 \arguments{
     \item{.object}{An imaging dataset.}
     \item{.fun}{The function to be applied.}
-    \item{.r}{The maximum radius or distance for which pixels are considered to be neighbors.}
+    \item{.r}{The maximum spatial radius or distance for which pixels are considered to be neighbors.}
     \item{\dots}{Additional arguments passed to \code{.fun}.}
+    \item{.dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a positive integer, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getOption("Cardinal.nblocks")} will be used.}
     \item{.simplify}{If applying over blocks, then a function to be used to simplify the list of results. Otherwise, a logical value giving whether the results should be simplified into a matrix or array rather than a list.}
     \item{.use.names}{Should the names of elements of \code{.object} (either pixel names or feature names, as appropriate) be used for the names of the result?}

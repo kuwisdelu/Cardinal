@@ -17,6 +17,8 @@ setMethod("resultData", c("ResultImagingExperiment", "missing"),
 
 setMethod("resultData", c("ResultImagingExperiment", "ANY"), 
 	function(object, i, j, ...) {
+		if ( is.list(i) )
+			i <- subset_rows(modelData(object), i)
 		if ( missing(j) ) {
 			object@resultData[[i, exact=FALSE]]
 		} else {
@@ -33,6 +35,8 @@ setReplaceMethod("resultData", c("ResultImagingExperiment", "missing"),
 
 setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"), 
 	function(object, i, j, ..., value) {
+		if ( is.list(i) )
+			i <- subset_rows(modelData(object), i)
 		if ( missing(j) ) {
 			object@resultData[[i, exact=TRUE]] <- value
 		} else {
@@ -44,6 +48,8 @@ setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"),
 
 setMethod("resultNames", "ResultImagingExperiment", 
 	function(object, i, ...) {
+		if ( is.list(i) )
+			i <- subset_rows(modelData(object), i)
 		if ( missing(i) ) {
 			lapply(resultData(object), names)
 		} else {
@@ -61,14 +67,13 @@ setReplaceMethod("modelData", "ResultImagingExperiment",
 			object			
 	})
 
-setMethod("[[", c("ResultImagingExperiment", "ANY", "missing"),
-	function(x, i, j, ...) {
-		lapply(x@resultData, function(res) res[[i]])
-	})
-
 setMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
 	function(x, i, j, ...) {
-		x@resultData[[i]][[j]]
+		if ( !missing(j) ) {
+			x@resultData[[i]][[j]]
+		} else {
+			lapply(x@resultData, function(res) res[[i]])
+		}
 	})
 
 .DollarNames.ResultImagingExperiment <- function(x, pattern = "")

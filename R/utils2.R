@@ -48,6 +48,15 @@
 		error=function(e) eval(expr, envir=p))
 }
 
+# Make sure nested parallel calls don'tt overload sockets
+.protect_nested_BPPARAM <- function(BPPARAM) {
+	if ( !is.list(BPPARAM) ) {
+		BPPARAM <- list(BPPARAM, SerialParam())
+	} else {
+		BPPARAM
+	}
+}
+
 # Transform a factor into a matrix of indicator variables
 .factor_matrix <- function(fc) {
 	fc <- as.factor(fc)

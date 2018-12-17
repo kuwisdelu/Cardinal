@@ -3,7 +3,7 @@ setMethod("spatialKMeans",
 	signature = c(x = "SImageSet"),
 	function(x, r = 1, k = 2,
 		method = c("gaussian", "adaptive"),
-		weights = 1, iter.max = 10, nstart = 1,
+		iter.max = 10, nstart = 1,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
 			"MacQueen"),
 		ncomp = 10, ...)
@@ -14,7 +14,8 @@ setMethod("spatialKMeans",
 		rs <- sort(r)
 		ks <- sort(k)
 		ncomp <- min(ncomp, nrow(x))
-		w <- rep(weights, length.out=nrow(iData(x)))
+		if ( "weights" %in% names(list(...)) )
+			.warning("'weights' is deprecated.\n")
 		.time.start()
 		result <- unlist(lapply(rs, function(r){
 			.message("spatialKMeans: Initializing clusters for r = ", r, ".")
@@ -24,8 +25,7 @@ setMethod("spatialKMeans",
 				.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
 				append(.spatialKMeans(x, fastmap=fastmap, k=k,
 					iter.max=iter.max, nstart=nstart, algorithm=algorithm),
-					list(r=r, k=k, method=method, weights=weights,
-						fastmap=fastmap))
+					list(r=r, k=k, method=method, fastmap=fastmap))
 			})
 		}), recursive=FALSE)
 		.message("spatialKMeans: Preparing results.")
