@@ -168,7 +168,10 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	offsets <- attr(neighbors, "offsets")
 	attr(neighbors, "offsets") <- NULL
 	if ( weights ) {
+		progress <- getOption("Cardinal.progress")
+		options(Cardinal.progress=FALSE)
 		weights <- spatialWeights(x, r=r, method=method)
+		options(Cardinal.progress=progress)
 		list(neighbors=neighbors, offsets=offsets, weights=weights, r=r)
 	} else {
 		list(neighbors=neighbors, offsets=offsets, r=r)

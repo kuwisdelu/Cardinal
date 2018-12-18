@@ -22,14 +22,14 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	if ( is.null(names(model)) ) {
 		feature1 <- subset_rows(fData(newx), list(model_id=model))
 	} else {
-		feature1 <- subset_rows(featureData(newx), as.list(model))
+		feature1 <- subset_rows(fData(newx), as.list(model))
 	}
 	if ( missing(column) )
 		column <- sort(unique(fData(newx)[["column"]]))
 	if ( is.numeric(column) ) {
 		feature2 <- subset_rows(fData(newx), list(column_id=column))
 	} else {
-		feature2 <- subset_rows(featureData(newx), list(column=column))
+		feature2 <- subset_rows(fData(newx), list(column=column))
 	}
 	feature <- intersect(feature1, feature2)
 	feature.groups <- featureData(newx)[["column"]][feature]

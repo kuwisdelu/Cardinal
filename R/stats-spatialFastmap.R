@@ -22,7 +22,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 				pivot.array <- fit$pivot.array[1:ncomp,,drop=FALSE]
 				sdev <- fit$sdev[1:ncomp]
 				list(scores=scores, correlation=correlation,
-					pivot.array=pivot.array, sdev=sdev,
+					pivots=pivot.array, sdev=sdev,
 					r=r, ncomp=ncomp)
 			})
 		}), recursive=FALSE)

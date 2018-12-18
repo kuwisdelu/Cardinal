@@ -7,7 +7,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 		BPPARAM = bpparam(), ...)
 	{
 		.checkForIncompleteProcessing(x)
-		BPPARAM <- .protect_nested_BPPARAM(BPPARAM)
+		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
 		if ( max(ncomp) > ncol(x) )
 			.stop("can't fit more components than number of pixels")
@@ -20,7 +20,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 		.message("fitting ", ncomp, " FastMap components with ",
 			method, " spatial weights")
 		results <- bplapply(r, function(ri, BPPARAM) {
-			.message("r = ", ri)
+			.message("r = ", ri, " ", appendLF=FALSE)
 			.spatialFastmap2(x=x, r=ri, ncomp=ncomp, method=method,
 				dist=dist, tol.dist=tol.dist, iter.max=iter.max,
 				BPPARAM=BPPARAM, ...)
@@ -72,7 +72,6 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			attr(xbl, "offsets"), attr(xbl, "params"))
 	}
 	for ( j in seq_len(ncomp) ) {
-		.message("projecting component ", j)
 		o_ab <- .findDistantObjects2(x, proj=proj, spatial=spatial,
 			tol.dist=tol.dist, init=init, iter.max=iter.max, ...)
 		if ( any(is.na(o_ab)) )
@@ -97,8 +96,10 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
 			.init=init, .params=spatial$weights, ...)
+		.message(".", appendLF=FALSE)
 		proj[,j] <- comp_j
 	}
+	.message(" ")
 	do_rbind <- function(ans) do.call("rbind", ans)
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {

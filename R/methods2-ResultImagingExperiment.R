@@ -48,7 +48,7 @@ setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"),
 
 setMethod("resultNames", "ResultImagingExperiment", 
 	function(object, i, ...) {
-		if ( is.list(i) )
+		if ( !missing(i) && is.list(i) )
 			i <- subset_rows(modelData(object), i)
 		if ( missing(i) ) {
 			lapply(resultData(object), names)

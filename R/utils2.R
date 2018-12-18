@@ -1,4 +1,13 @@
 
+# Make sure nested parallel calls don'tt overload sockets
+.protectNestedBPPARAM <- function(BPPARAM) {
+	if ( !is.list(BPPARAM) ) {
+		BPPARAM <- list(BPPARAM, SerialParam())
+	} else {
+		BPPARAM
+	}
+}
+
 # Apply that returns a 'list' instead of array
 .apply <- function(x, margin, fun, ...) {
 	fun <- match.fun(fun)
@@ -46,15 +55,6 @@
 	p <- parent.frame()
 	tryCatch(eval(expr, envir),
 		error=function(e) eval(expr, envir=p))
-}
-
-# Make sure nested parallel calls don'tt overload sockets
-.protect_nested_BPPARAM <- function(BPPARAM) {
-	if ( !is.list(BPPARAM) ) {
-		BPPARAM <- list(BPPARAM, SerialParam())
-	} else {
-		BPPARAM
-	}
 }
 
 # Transform a factor into a matrix of indicator variables
