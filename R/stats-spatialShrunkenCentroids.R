@@ -188,11 +188,10 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	xbar.k <- sapply(levels(classes), function(Ck) {
 		rowMeans(iData(x)[,classes==Ck,drop=FALSE]) # may introduce NaNs
 	})
-	sd <- .calculateWithinClassPooledSD(x, classes=classes, centroid=xbar)
+	sd <- .calculateWithinClassPooledSD(x, classes=classes, centers=xbar.k)
 	if ( missing(s0) ) s0 <- median(sd)
 	xdiff <- xbar.k - xbar
-	se <- .calculateWithinClassPooledSE(x, classes=classes, centroid=xbar,
-		sd=sd, s0=s0)
+	se <- .calculateWithinClassPooledSE(x, classes=classes, sd=sd, s0=s0)
 	tstatistics.k <- xdiff / se
 	tstatistics <- soft(tstatistics.k, s)
 	tstatistics[is.na(tstatistics)] <- 0  # NaNs -> 0
@@ -250,23 +249,24 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	x
 }
 
-.calculateWithinClassPooledSE <- function(x, classes, centroid, sd, s0) {
+.calculateWithinClassPooledSE <- function(x, classes, sd, s0) {
 	m.k <- sqrt((1 / table(classes)) - (1 / length(classes)))
 	se <- rep(m.k, each=nrow(iData(x))) * (sd + s0)
 	dim(se) <- c(nrow(x), nlevels(classes))
 	se
 }
 
-.calculateWithinClassPooledSD <- function(x, classes, centroid) {
-	wcss <- sqrt(rowSums(.calculateFeaturewiseWCSS(x, classes, centroid)))
+.calculateWithinClassPooledSD <- function(x, classes, centers) {
+	wcss <- sqrt(rowSums(.calculateFeaturewiseWCSS(x, classes, centers)))
 	wcss / sqrt(length(classes) - nlevels(classes))
 }
 
-.calculateFeaturewiseWCSS <- function(x, classes, centroid) {
-	sapply(levels(classes), function(Ck) {
+.calculateFeaturewiseWCSS <- function(x, classes, centers) {
+	sapply(seq_along(levels(classes)), function(i) {
+		Ck <- levels(classes)[i]
 		ok <- classes == Ck
 		if ( any(ok) ) {
-			rowSums((iData(x)[,ok,drop=FALSE] - centroid)^2)
+			rowSums((iData(x)[,ok,drop=FALSE] - centers[,i])^2, na.rm=TRUE)
 		} else {
 			rep(0, nrow(iData(x)))
 		}

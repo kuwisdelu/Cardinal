@@ -60,7 +60,7 @@ presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
 
     \item{sdmz}{The standard deviation of the mass error in the observed m/z values of peaks, in units indicated by \code{units}.}
 
-    \item{resolution}{The mass resolution as defined by \code{m / dm}, where \code{m} is the observed mass and \code{dm} width of the peak at a proportion of its maximum height defined by \code{fmax} (defaults to full-width-at-half-maximum -- FWHM -- definition). Note that this is NOT the same as the definition of \code{resolution} in the \code{\link{readImzML}} function.}
+    \item{resolution}{The mass resolution as defined by \code{m / dm}, where \code{m} is the observed mass and \code{dm} is the width of the peak at a proportion of its maximum height defined by \code{fmax} (defaults to full-width-at-half-maximum -- FWHM -- definition). Note that this is NOT the same as the definition of \code{resolution} in the \code{\link{readImzML}} function.}
 
     \item{fmax}{The proportion of the maximum peak height to use when defining the mass resolution.}
 
@@ -119,9 +119,9 @@ presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
 	For \code{simulateSpectrum}, a \code{list} with elements:
 
 	\itemize{
-        \item{\code{mz}: \code{numeric}, a numeric vector of the observed m/z values}
+        \item{\code{mz}: a numeric vector of the observed m/z values}
 
-        \item{\code{intensity}: \code{numeric}, a vector or column-matrix of intensities}
+        \item{\code{intensity}: a numeric vector or matrix of the intensities}
     }
 
     For \code{simulateImage}, a \code{\linkS4class{MSImagingExperiment}} or a \code{\linkS4class{SparseImagingExperiment}}.

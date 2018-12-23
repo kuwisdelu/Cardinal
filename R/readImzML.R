@@ -114,9 +114,9 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
-				by=resolution * 2)  # by == full-bin-widths
+				by=resolution)  # by == full-bin-widths
 			error <- rep(resolution, length(mzout))
-			tol <- c(absolute = resolution)
+			tol <- c(absolute = resolution / 2)
 		}
 		mz.bins <- c(mzout[1] - error[1], mzout + error)
 		if ( attach.only ) {

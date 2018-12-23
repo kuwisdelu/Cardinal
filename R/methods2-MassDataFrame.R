@@ -47,15 +47,17 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 	x
 }
 
-.estimateMassResolution <- function(mz) {
+.estimateMassResolution <- function(mz, tol=1e-6) {
 	if ( length(mz) <= 1L || is.unsorted(mz) )
 		return(NA_real_)
 	bwidth <- diff(mz)
-	ppm <- 1e6 * bwidth / mz[-length(mz)]
-	if ( diff(range(bwidth)) < min(bwidth) ) {
-		res <- c("mz" = mean(bwidth))
-	} else if ( diff(range(ppm)) < min(ppm) ) {
+	to <- mz[-1]
+	from <- mz[-length(mz)]
+	ppm <- 1e6 * ((to / from ) - 1) / ((to / from) + 1)
+	if ( diff(range(ppm)) <= tol * min(ppm) ) {
 		res <- c("ppm" = mean(ppm))
+	} else if ( diff(range(bwidth)) <= tol * min(mz) ) {
+		res <- c("mz" = mean(bwidth))
 	} else {
 		res <- NA_real_
 	}

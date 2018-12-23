@@ -811,7 +811,7 @@ Below, we create a spatial segmentation using the spatial shrunken centroids met
 
 <<ssc>>=
 set.seed(1)
-ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=0, method="adaptive")
+ssc <- spatialShrunkenCentroids(msset7, r=1, k=5, s=3, method="adaptive")
 @
 
 <<sscplot>>=
@@ -844,7 +844,7 @@ image(ssc, col=c("red", "black"), key=FALSE)
 \caption{\small Spatially-aware nearest shrunken centroids clustering.}
 \end{figure}
 
-A unique property of \Rpackage{Cardinal}'s spatial shrunken centroids method is that it allows for the automated selection of the number of clusters, driven in part by the sparsity paramter. Although we initialized the clustering above with 5 clusters, only 3 were used in the final segmentation.
+A unique property of \Rpackage{Cardinal}'s spatial shrunken centroids method is that it allows for the automated selection of the number of clusters, driven in part by the sparsity paramter. Although we initialized the clustering above with 5 clusters, only 2 were used in the final segmentation.
 
 See \verb|?spatialShrunkenCentroids| for more options and details.
 

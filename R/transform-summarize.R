@@ -36,8 +36,14 @@ setMethod("summarize", "SparseImagingExperiment",
 		if ( is.character(groups) && all(groups %in% ls(e)) )
 			groups <- lapply(groups, function(name) e[[name]])
 		if ( is.list(groups) ) {
-			groups <- lapply(groups, as.factor)
-			groups <- factor(do.call("paste", c(groups, list(sep="."))))
+			if ( length(groups) > 1L ) {
+				groups <- lapply(groups, as.factor)
+				levels <- rev(expand.grid(rev(lapply(groups, levels))))
+				levels <- apply(levels, 1, paste, collapse=".")
+				groups <- factor(do.call("paste", c(groups, list(sep="."))), levels=levels)
+			} else {
+				groups <- groups[[1]]
+			}
 		}
 		if ( !is.null(groups) ) {
 			groups <- rep_len(groups, len)
@@ -124,7 +130,7 @@ setMethod("summarize", "SparseImagingExperiment",
 			feature = ncol(object),
 			pixel = nrow(object))
 	} else {
-		n <- tabulate(groups)
+		n <- as.integer(table(groups))
 	}
 	colclasses <- c("matter_matc", "sparse_matc")
 	rowclasses <- c("matter_matr", "sparse_matr")

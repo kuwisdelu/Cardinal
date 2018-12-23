@@ -4,9 +4,9 @@ TODO for Cardinal package
 
 Priority: High
 - Add analysis methods for new classes
-- Improve efficiency for plotting 'SparseResultImagingExperiment'
-- Switch applicable process methods to 'SparseImagingExperiment'
-- Update examples and tests to use simulateImage()
+- Improve resolution()<- for MassDataFrame + PositionDataFrame
+- Add collect() method to pull all data into R matrices
+- Switch applicable process methods to SparseImagingExperiment
 
 Priority: Medium
 - Graphical user interface

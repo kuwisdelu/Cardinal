@@ -90,7 +90,7 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 	dims
 }
 
-.estimateSpatialResolution <- function(coord) {
+.estimateSpatialResolution <- function(coord, tol=1e-6) {
 	res <- sapply(coord, function(x) {
 		x <- sort(unique(as.numeric(x)))
 		if ( length(x) < 2 )
@@ -98,7 +98,7 @@ setValidity("PositionDataFrame", .valid.PositionDataFrame)
 		dx <- diff(x)
 		rx <- min(dx, na.rm=TRUE)
 		off <- (dx / rx) %% 1
-		if ( sum(off) > 0 ) {
+		if ( any(off > tol) ) {
 			NA_real_
 		} else {
 			rx

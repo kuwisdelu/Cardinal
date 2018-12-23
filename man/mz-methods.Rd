@@ -18,7 +18,7 @@ mz(object, \dots)
 
 mz(object) <- value
 
-\S4method{mz}{missing}(from, to, by = 400, units = c("ppm", "mz"), \dots)
+\S4method{mz}{missing}(from, to, by, resolution = 200, units = c("ppm", "mz"), \dots)
 }
 
 \arguments{
@@ -30,7 +30,9 @@ mz(object) <- value
 
     \item{by}{The (approximate) interval between m/z values. For \code{units="ppm"}, rather than an exact step size, this actually corresponds to a binwidth, where each element of the sequence is considered the center of a bin.}
 
-	\item{units}{The units for \code{by}. Either parts-per-million or absolute m/z increments.}
+    \item{resolution}{Another way to specify the interval between m/z values. For \code{units="mz"}, this is the same as \code{by}. For \code{units="ppm"}, this is the half-binwdith.}
+
+	\item{units}{The units for \code{by} and \code{resolution}. Either parts-per-million or absolute m/z increments.}
 
 	\item{\dots}{Additional arguments (ignored).}
 }

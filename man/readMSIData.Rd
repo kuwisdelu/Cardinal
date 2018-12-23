@@ -26,11 +26,11 @@ readAnalyze(name, folder = getwd(), attach.only = TRUE,
 	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
 	\item{folder}{The path to the folder containing the data files.}
 	\item{attach.only}{Attach the file as a \code{\linkS4class{matter}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
-	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time, as otherwise it is read and calculated from the dataset directly.}
-	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. This should be set to the native accuracy of the mass spectrometer, if known.}
+	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time dramatically, as otherwise it is calculated from reading the dataset directly.}
+	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. For \code{units="ppm"}, this is the half-binwidth, and should be set to the native accuracy of the mass spectrometer, if known. For \code{units="mz"}, this is simply the step size between m/z bins.}
 	\item{units}{The units for \code{resolution}. Either parts-per-million or absolute m/z units.}
 	\item{as}{After reading in the data, what class of object should be returned (\code{MSImageSet} or \code{MSImagingExperiment})?}
-	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. This is only used when \code{mass.range=NULL} and \code{attach.only=TRUE}, when reading the mass range from the data.}
+	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. This is only used when \code{mass.range=NULL} and \code{attach.only=TRUE}, when reading the mass range from the m/z data.}
 	\item{\dots}{Additional arguments passed to read functions.}
 }
 \details{
@@ -40,7 +40,7 @@ readAnalyze(name, folder = getwd(), attach.only = TRUE,
 
 	When \code{attach.only=TRUE}, the data is not loaded into memory; only the experimental metadata is read, and the intensity data will only be accessed on-demand. For large datasets, this is memory-efficient. For smaller datasets, this may be slower than simply reading the entire dataset into memory.
 
-	If the mass range is known, setting \code{mass.range} will make attaching the dataset much faster for very large datasets.
+	If the mass range is known, setting \code{mass.range} will make reading data much faster for very large datasets.
 }
 \value{
 	A \code{\linkS4class{MSImageSet}} object.
