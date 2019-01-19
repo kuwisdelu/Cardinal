@@ -31,10 +31,10 @@
 \S4method{predict}{SpatialShrunkenCentroids}(object, newx, newy, \dots)
 }
 \arguments{
-    \item{x}{The imaging dataset to cluster.}
+    \item{x}{The imaging dataset to segment or classify.}
     \item{y}{A \code{factor} or \code{character} response.}
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
-    \item{k}{The number of clusters. This can be a vector to try different numbers of clusters.}
+    \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
     \item{s}{The sparsity thresholding parameter by which to shrink the t-statistics.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{iter.max}{The maximum number of clustering iterations.}

@@ -30,9 +30,12 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
-			metadata=list(resultType=list(
-				feature="correlation",
-				pixel="scores")),
+			metadata=list(
+				resultType=list(
+					feature="correlation",
+					pixel="scores"),
+				modelParam=names(models),
+				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

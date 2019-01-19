@@ -73,8 +73,8 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 ## Calculate spatial weights
 
 setMethod("spatialWeights", "ImagingExperiment",
-	function(x, r = 1, method = c("gaussian", "adaptive"), matrix = FALSE,
-		BPPARAM = bpparam(), ...)
+	function(x, r = 1, method = c("gaussian", "adaptive"),
+		dist = "chebyshev", matrix = FALSE, BPPARAM = bpparam(), ...)
 	{
 		method <- match.arg(method)
 		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
@@ -91,8 +91,9 @@ setMethod("spatialWeights", "ImagingExperiment",
 					offsets=pos, sigma=sigma, bilateral=bilateral)
 			}, neighbors, offsets, SIMPLIFY=FALSE)
 		}
-		weights <- spatialApply(x, .r=r, .fun=fun, ..., .blocks=TRUE,
-			.simplify=.unlist_and_reorder, .init=TRUE, BPPARAM=BPPARAM)
+		weights <- spatialApply(x, .r=r, .fun=fun, ..., .dist=dist,
+			.blocks=TRUE, .simplify=.unlist_and_reorder,
+			.init=TRUE, BPPARAM=BPPARAM)
 		nb <- attr(weights, "init")$spatial$neighbors
 		attr(weights, "init") <- NULL
 		if ( matrix ) {
@@ -170,7 +171,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	if ( weights ) {
 		progress <- getOption("Cardinal.progress")
 		options(Cardinal.progress=FALSE)
-		weights <- spatialWeights(x, r=r, method=method)
+		weights <- spatialWeights(x, r=r, method=method, ...)
 		options(Cardinal.progress=progress)
 		list(neighbors=neighbors, offsets=offsets, weights=weights, r=r)
 	} else {

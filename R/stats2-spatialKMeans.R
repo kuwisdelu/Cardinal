@@ -29,15 +29,17 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 			}, BPPARAM=BPPARAM)
 		}
 		results <- do.call("c", results)
-		models <- DataFrame(expand.grid(k=k, r=r))
-		models <- models[c("r", "k")]
+		models <- DataFrame(rev(expand.grid(k=k, r=r)))
 		.SpatialKMeans2(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
-			metadata=list(resultType=list(
-				feature=c("centers", "correlation"),
-				pixel="cluster")),
+			metadata=list(
+				resultType=list(
+					feature=c("centers", "correlation"),
+					pixel="cluster"),
+				modelParam=names(models),
+				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

@@ -37,6 +37,7 @@ setMethod("featureApply", "SparseImagingExperiment",
 				x <- as.matrix(x)
 			attr(x, "idx") <- i
 			attr(x, "mcols") <- pData(.object)
+			attr(x, "by") <- "feature"
 			res <- .fun(x, ...)
 			if ( output )
 				res <- rwrite(res)

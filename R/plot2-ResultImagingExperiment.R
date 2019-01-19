@@ -60,7 +60,7 @@ setMethod("plot",
 
 setMethod("plot",
 	signature = c(x = "SpatialKMeans2", y = "missing"),
-	function(x, formula, values = c("centers", "betweenss", "withinss"), ...)
+	function(x, formula, values = c("centers", "correlation"), ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_feature_results(x, match.arg(values))
@@ -71,7 +71,7 @@ setMethod("plot",
 
 setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids2", y = "missing"),
-	function(x, formula, values = c("centers", "tstatistics"), ...)
+	function(x, formula, values = c("centers", "statistic"), ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_feature_results(x, match.arg(values))
@@ -111,8 +111,13 @@ setMethod("plot",
 			colnames(x)
 		}
 	})
+	if ( is.null(metadata(object)$modelParam) ) {
+		pnm <- names(modelData(object))
+	} else {
+		pnm <- metadata(object)$modelParam
+	}
 	pdata <- lapply(seq_along(cols), function(i) {
-		par <- as.list(modelData(object)[i,])
+		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
 		par[["model"]] <- .format.data.labels(par)
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])

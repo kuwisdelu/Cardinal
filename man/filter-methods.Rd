@@ -1,6 +1,11 @@
 \name{filter-methods}
 \docType{methods}
 
+\alias{filter}
+\alias{select}
+\alias{mutate}
+\alias{summarize}
+
 \alias{filter,ImagingExperiment-method}
 \alias{select,ImagingExperiment-method}
 \alias{mutate,ImagingExperiment-method}

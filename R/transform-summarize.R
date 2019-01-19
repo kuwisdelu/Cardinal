@@ -94,7 +94,7 @@ setMethod("summarize", "SparseImagingExperiment",
 	len <- switch(by,
 		feature = nrow(object),
 		pixel = ncol(object))
-	fun <- function(x) {
+	fun <- function(x, ...) {
 		env <- attr(expr, "environment")
 		s <- lapply(expr, function(e) {
 			if ( is.null(groups) ) {
@@ -136,7 +136,7 @@ setMethod("summarize", "SparseImagingExperiment",
 	rowclasses <- c("matter_matr", "sparse_matr")
 	bias <- (n / (n - 1))
 	# summarize while iterating over major dimension
-	fun <- function(x) {
+	fun <- function(x, ...) {
 		ans <- .apply(tform(x), margin, function(xi) {
 			if ( is.null(groups) ) {
 				vapply(stat, function(f) {
@@ -157,7 +157,7 @@ setMethod("summarize", "SparseImagingExperiment",
 		as.data.frame(ans)
 	}
 	# summarize while iterating over minor dimension
-	tfun <- function(x) {
+	tfun <- function(x, ...) {
 		i <- attr(x, "idx")
 		ans <- .apply(tform(x), margin, function(xi) {
 			s <- list()

@@ -37,6 +37,7 @@ setMethod("pixelApply", "SparseImagingExperiment",
 				x <- as.matrix(x)
 			attr(x, "idx") <- i
 			attr(x, "mcols") <- fData(.object)
+			attr(x, "by") <- "pixel"
 			res <- .fun(x, ...)
 			if ( output )
 				res <- rwrite(res)

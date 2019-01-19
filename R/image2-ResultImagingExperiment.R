@@ -65,7 +65,7 @@ setMethod("image",
 
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids2"),
-	function(x, formula, values = c("probabilities", "classes", "scores"), ...)
+	function(x, formula, values = c("probability", "class", "scores"), ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_pixel_results(x, match.arg(values))
@@ -99,8 +99,13 @@ setMethod("image",
 			colnames(x)
 		}
 	})
+	if ( is.null(metadata(object)$modelParam) ) {
+		pnm <- names(modelData(object))
+	} else {
+		pnm <- metadata(object)$modelParam
+	}
 	fdata <- lapply(seq_along(cols), function(i) {
-		par <- as.list(modelData(object)[i,])
+		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
 		par[["model"]] <- .format.data.labels(par)
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])

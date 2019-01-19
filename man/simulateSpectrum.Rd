@@ -92,7 +92,7 @@ presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
 
     \item{dim}{The dimensions of the preset image.}
 
-    \item{peakheight}{A reference intensity used for peak heights by the preset.}
+    \item{peakheight}{Reference intensities used for peak heights by the preset.}
 
     \item{peakdiff}{A reference intensity difference used for the mean peak height difference between conditions, for presets that simulate multiple conditions.}
 

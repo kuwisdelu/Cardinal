@@ -101,13 +101,16 @@
 
     For \code{spatialApply}, the function is applied to neighborhoods of feature-vectors corresponding to neighboring pixels. The maximum distance in each dimension for a pixel to be considered a neighbor is given by \code{.r}. The first argument to \code{.fun} is a matrix of column-vectors.
 
-    If \code{.blocks} is provided (either TRUE or a positive integer), then the data is split into blocks beforehand, and entire blocks are loaded and passed to the function as a matrix of column-vectors. Otherwise, single vectors are passed to the function individually. If blocks are used, then \code{.simplify} should be a function that simplifies a \code{list} of results. Note that for \code{spatialApply}, if blocks are used, the result is NOT guaranteed to be in the correct order; instead the result will have a \code{attr(ans, "idx")} attribute giving the proper order (pixel IDs) of the results, and the \code{.simplify} function should likely re-order the results.
+    If \code{.blocks} is provided (either TRUE or a positive integer), then the data is split into blocks beforehand, and entire blocks are loaded and passed to the function as a matrix of column-vectors. Otherwise, single vectors are passed to the function individually. If blocks are used, then \code{.simplify} should be a function that simplifies a \code{list} of results.
+
+    Note that for \code{spatialApply} (only), if blocks are used, the result is NOT guaranteed to be in the correct order; instead the result will have a \code{attr(ans, "idx")} attribute giving the proper order (pixel IDs) of the results, and the \code{.simplify} function should likely re-order the results.
 
     The following attributes are assigned to the object passed to \code{.fun}, accessible via \code{attr()}:
 
     \itemize{
         \item{\code{idx}: The indices of the current pixel(s) or feature(s).}
-        \item{\code{mcols}: Either the \code{pixelData} for \code{featureApply} or the \code{featureData} for \code{pixelApply}.}
+        \item{\code{mcols}: Either \code{featureData(.object)} for \code{pixelApply} or \code{pixelData(.object)} for \code{featureApply}.}
+        \item{\code{by}: A string giving either "pixel" for \code{pixelApply} or "feature" for \code{featureApply}. This attribute is to facilitate determining whether this is a call to \code{pixelApply} or \code{featureApply} within methods that may select one or the other to use depending on the internal data structure.}
     }
 
     Additionally, the following attributes are made available during a call to \code{spatialyApply()}:
