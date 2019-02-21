@@ -18,7 +18,7 @@
     See the descriptions below for details.
 }
 \usage{
-\S4method{filter}{ImagingExperiment}(.data, \dots, .id)
+\S4method{filter}{ImagingExperiment}(.data, \dots, .id, .preserve=FALSE)
 
 \S4method{select}{ImagingExperiment}(.data, \dots, .id)
 
@@ -34,6 +34,7 @@
     \item{.data}{An imaging dataset.}
     \item{\dots}{Conditions describing rows or columns to be retained, name-value pairs to be added as metadata columns, or name-value pairs of summary functions. See Details.}
     \item{.id}{Select rows (features) or columns (pixels) by index.}
+    \item{.preserve}{Ignored, provided for compatibility with dplyr.}
     \item{.by}{Should the summarization be performed over pixels or features?}
     \item{.group_by}{A column or list of columns (from the pixelData or featureData) to group by for summarization.}
     \item{.stat}{Summary statistics to be computed in an efficient manner.}
