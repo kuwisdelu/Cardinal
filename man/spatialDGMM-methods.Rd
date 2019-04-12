@@ -12,7 +12,7 @@
     Fits spatially-aware Dirichlet Gaussian mixture models to each feature and each run in an imaging experiment. Each image is segmented and the means and variances of all Gaussian components are estimated. A linear filter with a spatially-aware kernel is applied to the component probabilities to achieve spatial smoothing. Simulated annealing is used in the EM-algorithm to avoid local optimia and achieve more accurate parameter estimates.
 }
 \usage{
-\S4method{spatialDGMM}{SparseImagingExperiment}(x, r = 1, k = 3,
+\S4method{spatialDGMM}{SparseImagingExperiment}(x, r = 1, k = 3, groups = run(x),
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", annealing = TRUE,
     iter.max = 100, tol = 1e-9,
@@ -23,11 +23,12 @@
     \item{x}{The imaging dataset to segment or classify.}
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
     \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
+    \item{groups}{Pixels from different groups will be segmented separately. For the validity of downstream statistical analysis, it is important that \emph{each distinct observational unit (e.g., tissue sample) is assigned to a unique group}.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{annealing}{Should simulated annealing be used during the optimization process to improve parameter estimates?}
     \item{iter.max}{The maximum number of EM-algorithm iterations.}
-    \item{tol}{The tolerance convergence criterion for the EM-algorithm. Corresponds to the chance in log-likelihood.}
+    \item{tol}{The tolerance convergence criterion for the EM-algorithm. Corresponds to the change in log-likelihood.}
     \item{collate.results}{Should the results of different groups be re-combined for compatibility with downstream methods? For advanced users only.}
     \item{\dots}{Passed to internal methods.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}

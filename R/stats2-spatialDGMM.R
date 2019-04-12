@@ -1,6 +1,6 @@
 
 setMethod("spatialDGMM", "SparseImagingExperiment",
-	function(x, r = 1, k = 3,
+	function(x, r = 1, k = 3, groups = run(x),
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", annealing = TRUE,
 		iter.max = 100, tol = 1e-9,
@@ -10,7 +10,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
-		groups <- as.factor(run(x))
+		groups <- as.factor(groups)
 		.message("calculating spatial weights...")
 		r.gweights <- list(r=r, w=lapply(r, function(ri) {
 			bplapply(levels(groups), function(gi, BPPARAM) {
@@ -60,7 +60,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			metadata=list(
 				resultType=resultType,
 				modelParam=c("r", "k", "feature"),
-				method=method, dist=dist),
+				method=method, dist=dist,
+				groups=groups),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

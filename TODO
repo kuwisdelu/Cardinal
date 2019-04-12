@@ -2,8 +2,8 @@
 TODO for Cardinal package
 -------------------------
 
-- Add spatialMixtureModel() for segmentation tests
-- Add all analysis methods for new classes
+- Add spatial mixture model and segmentation tests
+- Finish adding all analysis methods for new classes
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
 - Add collect() method to pull data into in-memory R matrices
 - Multimodal image registration (w/ optical images, etc.)
