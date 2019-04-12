@@ -1,7 +1,8 @@
 
 ## Preset color maps
 color.map <- function(map = c("redblack", "greenblack", "blueblack",
-	"parula", "darkrainbow", "rainbow", "grayscale",
+	"viridis", "cividis", "magma", "inferno", "plasma",
+	"rainbow", "darkrainbow", "grayscale",
 	"jet", "hot", "cool"), n = 100)
 {
 	map <- match.arg(map)
@@ -9,7 +10,11 @@ color.map <- function(map = c("redblack", "greenblack", "blueblack",
 		redblack = gradient.colors(n, end="#EE2200"),
 		greenblack = gradient.colors(n, end="#00FF44"),
 		blueblack = gradient.colors(n, end="#00AAFF"),
-		parula = topo.colors(n),
+		viridis = viridis(n),
+		cividis = cividis(n),
+		magma = magma(n),
+		inferno = inferno(n),
+		plasma = plasma(n),
 		darkrainbow = intensity.colors(n),
 		rainbow = intensity.colors2(n),
 		grayscale = bw.colors(n),

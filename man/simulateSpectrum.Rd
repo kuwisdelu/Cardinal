@@ -29,12 +29,14 @@ simulateImage(pixelData, featureData, preset,
     from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
     sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
     representation = c("profile", "centroid"), units=c("ppm", "mz"),
-    as = c("MSImagingExperiment", "SparseImagingExperiment"), \dots)
+    as = c("MSImagingExperiment", "SparseImagingExperiment"),
+    BPPARAM = bpparam(), \dots)
 
 addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
 
-presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
-    peakheight = 1, peakdiff = 1, \dots)
+presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
+    dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
+    jitter = TRUE, \dots)
 }
 
 \arguments{
@@ -72,11 +74,15 @@ presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
 
     \item{representation}{Should a profile spectrum be returned or only the centroided peaks?}
 
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
     \item{pixelData}{A \code{\linkS4class{PositionDataFrame}} giving the pixel design of the experiment. The names of the columns should match the names of columns in \code{featureData}. Each column should be a logical vector corresponding to a morphological substructure, indicate which pixels belong to that substructure.}
 
     \item{featureData}{A \code{\linkS4class{MassDataFrame}} giving the feature design of the experiment. Each row should correspond to an expected peak. The names of the columns should match the names of columns in \code{pixelData}. Each column should be a numeric vector corresponding to a morphological substructure, giving the mean intensity of that peak for that substructure.}
 
     \item{preset}{A number indicating a preset image definition to use.}
+
+    \item{nruns}{The number of runs to simulate.}
 
     \item{sdrun}{A standard deviation giving the run-to-run variance.}
 
@@ -95,6 +101,8 @@ presetImageDef(preset = 1L, npeaks = 30L, dim = c(20L, 20L),
     \item{peakheight}{Reference intensities used for peak heights by the preset.}
 
     \item{peakdiff}{A reference intensity difference used for the mean peak height difference between conditions, for presets that simulate multiple conditions.}
+
+    \item{jitter}{Should random noise be added to the location and size of the shapes?}
 
     \item{center}{The center of the shape.}
 

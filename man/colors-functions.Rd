@@ -19,8 +19,9 @@
 
 \usage{
 color.map(map = c("redblack", "greenblack", "blueblack",
-    "parula", "darkrainbow", "rainbow",
-    "grayscale", "jet", "hot", "cool"), n = 100)
+    "viridis", "cividis", "magma", "inferno", "plasma",
+    "rainbow", "darkrainbow", "grayscale",
+    "jet", "hot", "cool"), n = 100)
 
 col.map(\dots)
 
@@ -64,6 +65,13 @@ alpha.colors(col, n = 100,
 }
 \author{
 	Kylie A. Bemis
+}
+\seealso{
+    \code{\link{viridis}},
+    \code{\link{cividis}},
+    \code{\link{magma}},
+    \code{\link{inferno}},
+    \code{\link{plasma}}
 }
 \examples{
 col <- gradient.colors(100^2)

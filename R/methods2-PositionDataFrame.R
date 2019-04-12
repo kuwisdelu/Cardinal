@@ -21,7 +21,7 @@ PositionDataFrame <- function(coord, run, ...,
 		return(.PositionDataFrame())
 	coord <- DataFrame(coord)
 	if ( missing(run) ) {
-		run <- rep(factor(1), length.out=nrow(coord))
+		run <- rep(factor("run0"), length.out=nrow(coord))
 		if ( any(duplicated(coord)) )
 			warning("rows of 'coord' are not unique")
 	} else {

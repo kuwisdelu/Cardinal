@@ -3,6 +3,11 @@
 \docType{import}
 
 \alias{\%>\%}
+\alias{viridis}
+\alias{cividis}
+\alias{magma}
+\alias{inferno}
+\alias{plasma}
 
 \title{Objects exported from other packages}
 
@@ -11,5 +16,7 @@
 
   \describe{
         \item{\code{maggritr}:}{\code{\%>\%}}
+
+        \item{\code{viridisLite}:}{\code{viridis}, \code{cividis}, \code{magma}, \code{inferno}, \code{plasma}}
     }
 }

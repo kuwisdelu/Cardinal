@@ -4,39 +4,47 @@ simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
-	as = c("MSImagingExperiment", "SparseImagingExperiment"), ...)
+	as = c("MSImagingExperiment", "SparseImagingExperiment"),
+	BPPARAM = bpparam(), ...)
 {
 	if ( !missing(preset) && (missing(pixelData) || missing(featureData)) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
 	}
-	if ( !all(names(pixelData) %in% names(featureData)) )
-		stop("column names of pixelData and featureData must match")
-	if ( !all(sapply(pixelData, is.logical, slots=FALSE)) )
-		stop("all columns of pixelData must be logical vectors")
-	if ( !all(sapply(featureData, is.numeric, slots=FALSE)) )
-		stop("all columns of featureData must be logical vectors")
-	mz <- mz(featureData)
+	pData <- pixelData[sapply(pixelData, is.logical, slots=FALSE)]
+	fData <- featureData[sapply(featureData, is.numeric, slots=FALSE)]
+	if ( !all(names(pData) %in% names(fData)) )
+		stop("column names of pixelData and featureData do not match")
+	mz <- mz(fData)
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	as <- match.arg(as)
 	m <- mz(from=from, to=to, by=by, units=units)
-	nm <- names(pixelData)
-	data <- lapply(runNames(pixelData), function(run) {
-		ii <- run == run(pixelData)
-		classes <- as.matrix(pixelData[ii,,drop=FALSE], slots=FALSE)
-		peaks <- as.matrix(featureData[,nm,drop=FALSE], slots=FALSE)
+	nm <- names(pData)
+	rngseeds <- generateRNGStreams(nlevels(run(pData)))
+	data <- bpmapply(function(run, seed) {
+		.message("simulating ", nrow(pData), " spectra for ", run)
+		# set up RNG streams
+		oseed <- getRNGStream()
+		on.exit(setRNGStream(oseed))
+		setRNGStream(seed)
+		# extract run information
+		ii <- run == run(pData)
+		classes <- as.matrix(pData[ii,,drop=FALSE], slots=FALSE)
+		peaks <- as.matrix(fData[,nm,drop=FALSE], slots=FALSE)
 		runerr <- rnorm(nrow(peaks), sd=sdrun)
-		pixelerr <- rnorm(nrow(pixelData), sd=sdpixel)
+		pixelerr <- rnorm(nrow(pData), sd=sdpixel)
+		# calculate spatial covariance
 		if ( spcorr > 0 ) {
-			W <- as.matrix(spatialWeights(pixelData, r=1, matrix=TRUE))
+			W <- as.matrix(spatialWeights(pData, r=1, matrix=TRUE))
 			IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
 			SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
 			SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)
 			pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
 			pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
 		}
+		# simulate spectra
 		spectra <- sapply(1:nrow(classes), function(i) {
 			j <- classes[i,]
 			if ( any(j) ) {
@@ -51,6 +59,7 @@ simulateImage <- function(pixelData, featureData, preset,
 				from=from, to=to, by=by, units=units,
 				representation=representation, ...)$intensity
 		})
+		# return data
 		if ( representation == "profile" ) {
 			MSImagingExperiment(spectra,
 				featureData=MassDataFrame(mz=m),
@@ -60,11 +69,12 @@ simulateImage <- function(pixelData, featureData, preset,
 				featureData=MassDataFrame(mz=mz),
 				pixelData=pixelData[ii,])
 		}
-	})
+	}, runNames(pData), rngseeds, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 	data <- do.call("cbind", data)
-	# iData(data) <- iData(data) - min(iData(data))
-	if ( representation == "centroid" )
+	if ( representation == "centroid" ) {
 		featureData(data)[names(featureData)] <- featureData
+		centroided(data) <- TRUE
+	}
 	if ( as == "SparseImagingExperiment" )
 		data <- SparseImagingExperiment(iData(data),
 			featureData=as(featureData(data), "XDataFrame"),
@@ -95,29 +105,59 @@ addShape <- function(pixelData, center, size,
 	pixelData
 }
 
-presetImageDef <- function(preset = 1L, npeaks = 30L,
-	dim = c(20L, 20L), peakheight = 1, peakdiff = 1, ...)
+presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
+	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
+	jitter = TRUE, ...)
 {
 	ncol <- unname(dim[1L])
 	nrow <- unname(dim[2L])
+	sdx <- jitter * ncol / 20
+	sdy <- jitter * nrow / 20
+	sdr <- jitter * sqrt(sdx * sdy)
 	coords <- expand.grid(x=1:nrow, y=1:ncol)
-	pdata_a <- PositionDataFrame(coords, run="sample1")
-	pdata_b <- PositionDataFrame(coords, run="sample2")
+	pdata <- PositionDataFrame(coords, run="run0")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
 	i <- (abs(preset) - 1L) %% 9L + 1L
-	if ( i %in% c(1L, 2L) ) {
-		# non-overlapping circle + square w/ 1 or 2 samples
-		if ( i == 1L ) {
-			pdata <- pdata_a
-		} else {
-			pdata <- rbind(pdata_a, pdata_b)
-		}
+	if ( i == 1L ) {
+		# centered circle
+		rx <- ncol / 2
+		ry <- nrow / 2
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 3 + rnorm(1, sd=sdr),
+				shape = "circle")
+			runNames(pdata_i) <- paste0("run", i-1)
+			pdata_i
+		})
+		pdata <- do.call("rbind", pdata)
+		fdata <- MassDataFrame(mz=mzs,
+			circle=c(abs(rnorm(npeaks, peakheight))))
+	} else if ( i == 2L ) {
+		# topleft circle + bottomright square
 		rx <- ncol / 4
 		ry <- nrow / 4
-		pdata <- addShape(pdata, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "circle")
-		pdata <- addShape(pdata, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square")
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "circle")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "square")
+			runNames(pdata_i) <- paste0("run", i-1)
+			pdata_i
+		})
+		pdata <- do.call("rbind", pdata)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
@@ -125,41 +165,34 @@ presetImageDef <- function(preset = 1L, npeaks = 30L,
 		fdata <- MassDataFrame(mz=mzs,
 			circle=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
 			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))))
-	} else if ( i %in% c(3L, 4L) ) {
-		# overlapping circle + square w/ 1 or 2 samples
-		if ( i == 3L ) {
-			pdata <- pdata_a
-		} else {
-			pdata <- rbind(pdata_a, pdata_b)
-		}
-		rx <- ncol / 3
-		ry <- nrow / 3
-		pdata <- addShape(pdata, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "circle")
-		pdata <- addShape(pdata, center=c(x=rx * 2, y=ry * 2),
-			size=(rx + ry) / 2, shape = "square")
-		n1 <- floor(npeaks / 3)
-		n2 <- floor(npeaks / 3)
-		n3 <- npeaks - n1 - n2
-		peakheight <- rep_len(peakheight, 2)
-		fdata <- MassDataFrame(mz=mzs,
-			circle=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
-			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))))
-	} else if ( i %in% c(5L, 6L) ) {
-		# 2 squares + overlapping center circle w/ 1 or 2 samples
-		if ( i == 5L ) {
-			pdata <- pdata_a
-		} else {
-			pdata <- rbind(pdata_a, pdata_b)
-		}
+	} else if ( i == 3L ) {
+		# 2 corner squares + centered circle
 		rx <- ncol / 4
 		ry <- nrow / 4
-		pdata <- addShape(pdata, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "square", name = "square1")
-		pdata <- addShape(pdata, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "square2")
-		pdata <- addShape(pdata, center=c(x=rx * 2, y=ry * 2),
-			size=(rx + ry) / 2, shape = "circle")
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "square", name = "square1")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "square", name = "square2")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 2 + rnorm(1, sd=sdx),
+					y=ry * 2 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "circle")
+			runNames(pdata_i) <- paste0("run", i-1)
+			pdata_i
+		})
+		pdata <- do.call("rbind", pdata)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
@@ -168,89 +201,168 @@ presetImageDef <- function(preset = 1L, npeaks = 30L,
 			square1=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
 			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
 			circle=c(rep(0, n1), abs(rnorm(n2, peakheight[3])), rep(0, n3)))
-	} else if ( i == 7L ) {
-		# circle + square w/ diff conditions between 2 samples
+	} else if ( i == 4L ) {
+		# centered circle w/ diff conditions
+		rx <- ncol / 2
+		ry <- nrow / 2
+		pdata_a <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 3 + rnorm(1, sd=sdr),
+				shape = "circle", name="circleA")
+			pdata_i[,"circleB"] <- FALSE
+			runNames(pdata_i) <- paste0("runA", i)
+			pdata_i
+		})
+		pdata_a <- do.call("rbind", pdata_a)
+		pdata_a$condition <- "A"
+		pdata_b <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 3 + rnorm(1, sd=sdr),
+				shape = "circle", name="circleB")
+			pdata_i[,"circleA"] <- FALSE
+			runNames(pdata_i) <- paste0("runB", i)
+			pdata_i
+		})
+		pdata_b <- do.call("rbind", pdata_b)
+		pdata_b$condition <- "B"
+		pdata <- rbind(pdata_a, pdata_b)
+		pdata$condition <- as.factor(pdata$condition)
+		n1 <- floor(npeaks / 2)
+		n2 <- npeaks - n1
+		fdata <- MassDataFrame(mz=mzs,
+			circleA=c(abs(rnorm(npeaks, peakheight))),
+			circleB=c(abs(rnorm(n1, peakheight + peakdiff)),
+				abs(rnorm(n2, peakheight))),
+			diff=c(rep(TRUE, n1), rep(FALSE, n2)))
+	} else if ( i == 5L ) {
+		# topleft circle + bottomright square w/ diff conditions
 		rx <- ncol / 4
 		ry <- nrow / 4
-		pdata_a <- addShape(pdata_a, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "circle", name = "circleA")
-		pdata_a <- addShape(pdata_a, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "squareA")
-		pdata_a[,c("circleB", "squareB")] <- FALSE
-		pdata_b <- addShape(pdata_b, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "circle", name = "circleB")
-		pdata_b <- addShape(pdata_b, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "squareB")
-		pdata_b[,c("circleA", "squareA")] <- FALSE
+		pdata_a <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleA")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "square", name = "squareA")
+			pdata_i[,"circleB"] <- FALSE
+			pdata_i[,"squareB"] <- FALSE
+			runNames(pdata_i) <- paste0("runA", i)
+			pdata_i
+		})
+		pdata_a <- do.call("rbind", pdata_a)
+		pdata_a$condition <- "A"
+		pdata_b <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleB")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "square", name = "squareB")
+			pdata_i[,"circleA"] <- FALSE
+			pdata_i[,"squareA"] <- FALSE
+			runNames(pdata_i) <- paste0("runB", i)
+			pdata_i
+		})
+		pdata_b <- do.call("rbind", pdata_b)
+		pdata_b$condition <- "B"
 		pdata <- rbind(pdata_a, pdata_b)
+		pdata$condition <- as.factor(pdata$condition)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
 		fdata <- MassDataFrame(mz=mzs,
-			circleA=c(abs(rnorm(n1, peakheight[1])),
-				rep(peakheight[1], n2), rep(0, n3)),
-			squareA=c(abs(rnorm(n1, peakheight[2])),
-				rep(0, n2), rep(peakheight[2], n3)),
-			circleB=c(abs(rnorm(n1, peakheight[1])),
-				rep(peakheight[1] + peakdiff, n2), rep(0, n3)),
-			squareB=c(abs(rnorm(n1, peakheight[2])),
-				rep(0, n2), rep(peakheight[2] + peakdiff, n3)))
-	} else if ( i == 8L ) {
-		# 2 squares + overlapping circle w/ diff conditions (squares)
+			circleA=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
+			squareA=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
+			circleB=c(abs(rnorm(n1, peakheight[1] + peakdiff)),
+				abs(rnorm(n2, peakheight[1])), rep(0, n3)),
+			squareB=c(rep(0, n1), abs(rnorm(n2, peakheight[2])),
+				abs(rnorm(n3, peakheight[2] + peakdiff))),
+			diff.circle=c(rep(TRUE, n1), rep(FALSE, n2 + n3)),
+			diff.square=c(rep(FALSE, n1 + n2), rep(TRUE, n3)))
+	}  else if ( i == 6L ) {
+		# 2 corner squares + centered circle w/ diff conditions
 		rx <- ncol / 4
 		ry <- nrow / 4
-		pdata_a <- addShape(pdata_a, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "square", name = "square1A")
-		pdata_a <- addShape(pdata_a, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "square2A")
-		pdata_a[,c("square1B", "square2B")] <- FALSE
-		pdata_b <- addShape(pdata_b, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "square", name = "square1B")
-		pdata_b <- addShape(pdata_b, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "square2B")
-		pdata_b[,c("square1A", "square2A")] <- FALSE
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "square", name = "square1")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "square", name = "square2")
+			pdata_i
+		})
+		pdata_a <- mapply(function(pdata_i, i) {
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 2 + rnorm(1, sd=sdx),
+					y=ry * 2 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleA")
+			pdata_i[,"circleB"] <- FALSE
+			runNames(pdata_i) <- paste0("runA", i)
+			pdata_i
+		}, pdata, 1:nruns, SIMPLIFY=FALSE)
+		pdata_a <- do.call("rbind", pdata_a)
+		pdata_a$condition <- "A"
+		pdata_b <- mapply(function(pdata_i, i) {
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 2 + rnorm(1, sd=sdx),
+					y=ry * 2 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleB")
+			pdata_i[,"circleA"] <- FALSE
+			runNames(pdata_i) <- paste0("runB", i)
+			pdata_i
+		}, pdata, 1:nruns, SIMPLIFY=FALSE)
+		pdata_b <- do.call("rbind", pdata_b)
+		pdata_b$condition <- "B"
 		pdata <- rbind(pdata_a, pdata_b)
-		pdata <- addShape(pdata, center=c(x=rx * 2, y=ry * 2),
-			size=(rx + ry) / 2, shape = "circle")
+		pdata$condition <- as.factor(pdata$condition)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		fdata <- MassDataFrame(mz=mzs,
-			square1A=c(abs(rnorm(n1, peakheight[1])),
-				rep(peakheight[1], n2), rep(0, n3)),
-			square2A=c(abs(rnorm(n1, peakheight[2])),
-				rep(0, n2), rep(peakheight[2], n3)),
-			square1B=c(abs(rnorm(n1, peakheight[1])),
-				rep(peakheight[1] + peakdiff, n2), rep(0, n3)),
-			square2B=c(abs(rnorm(n1, peakheight[2])),
-				rep(0, n2), rep(peakheight[2] + peakdiff, n3)),
-			circle=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[3]))))
-	} else if ( i == 9L ) {
-		# 2 squares + overlapping circle w/ diff conditions (cicle)
-		rx <- ncol / 4
-		ry <- nrow / 4
-		pdata_a <- addShape(pdata_a, center=c(x=rx * 2, y=ry * 2),
-			size=(rx + ry) / 2, shape = "circle", name = "circleA")
-		pdata_a[["circleB"]] <- FALSE
-		pdata_b <- addShape(pdata_b, center=c(x=rx * 2, y=ry * 2),
-			size=(rx + ry) / 2, shape = "circle", name = "circleB")
-		pdata_b[["circleA"]] <- FALSE
-		pdata <- rbind(pdata_a, pdata_b)
-		pdata <- addShape(pdata, center=c(x=rx, y=ry),
-			size=(rx + ry) / 2, shape = "square", name = "square1")
-		pdata <- addShape(pdata, center=c(x=rx * 3, y=ry * 3),
-			size=(rx + ry) / 2, shape = "square", name = "square2")
-		n1 <- floor(npeaks / 3)
-		n2 <- floor(npeaks / 3)
-		n3 <- npeaks - n1 - n2
-		peakheight <- rep_len(peakheight, 3)
-		fdata <- MassDataFrame(mz=mzs,
-			circleA=c(rep(0, n1), rep(peakheight[1], n2 + n3)),
-			circleB=c(rep(0, n1), rep(peakheight[1] + peakdiff, n2 + n3)),
-			square1=c(abs(rnorm(n1 + n2, peakheight[2])), rep(0, n3)),
-			square2=c(abs(rnorm(n1 + n2, peakheight[3])), rep(0, n3)))
+			square1=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
+			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
+			circleA=c(rep(0, n1), abs(rnorm(n2, peakheight[3])),
+				rep(0, n3)),
+			circleB=c(rep(0, n1), abs(rnorm(n2, peakheight[3] + peakdiff)),
+				rep(0, n3)),
+			diff.circle=c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3)))
 	}
 	list(pixelData=pdata, featureData=fdata)
 }

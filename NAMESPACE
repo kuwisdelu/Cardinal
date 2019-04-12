@@ -79,6 +79,13 @@ importFrom("grDevices",
 	"topo.colors",
 	"trans3d")
 
+importFrom("viridisLite",
+	"viridis",
+	"cividis",
+	"magma",
+	"inferno",
+	"plasma")
+
 importFrom("grid",
 	"grid.raster")
 
@@ -460,6 +467,14 @@ exportMethods(
 	"mutate",
 	"select",
 	"summarize")
+
+export(
+	"viridis",
+	"cividis",
+	"magma",
+	"inferno",
+	"plasma",
+	"cividis")
 
 export("%>%")
 

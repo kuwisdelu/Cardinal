@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 2.1.10 [2019-4-12]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated 'simulateImage' presets to handle multiple runs
+
 CHANGES IN VERSION 2.1.9 [2019-4-11]
 -----------------------------------
 
