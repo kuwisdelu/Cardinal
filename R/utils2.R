@@ -1,5 +1,5 @@
 
-# Make sure nested parallel calls don'tt overload sockets
+# Make sure nested parallel calls don't overload sockets
 .protectNestedBPPARAM <- function(BPPARAM) {
 	if ( !is.list(BPPARAM) ) {
 		BPPARAM <- list(BPPARAM, SerialParam())

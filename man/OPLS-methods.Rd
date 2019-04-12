@@ -18,7 +18,7 @@
     Performs orthogonal partial least squares (also called orthogonal projection to latent structures or O-PLS) on an imaging dataset. This will also perform discriminant analysis (O-PLS-DA) if the response is a \code{factor}.
 }
 \usage{
-\S4method{OPLS}{SImageSet,matrix}(x, y, ncomp = 2,
+\S4method{OPLS}{SImageSet,matrix}(x, y, ncomp = 3,
     method = "nipals",
     center = TRUE,
     scale = FALSE,

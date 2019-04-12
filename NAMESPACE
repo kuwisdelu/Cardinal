@@ -22,11 +22,15 @@ importFrom("stats",
 	"convolve",
 	"kmeans",
 	"median",
+	"optim",
 	"p.adjust",
 	"pt",
 	"quantile",
 	"setNames",
 	"smooth.spline")
+
+importFrom("parallel",
+	"nextRNGStream")
 
 import("BiocGenerics")
 
@@ -88,6 +92,10 @@ importFrom("lattice",
 	"panel.xyplot",
 	"panel.levelplot",
 	"simpleKey")
+
+importFrom("mclust",
+	"Mclust",
+	"mclustBIC")
 
 importFrom("signal",
 	"interp1",
@@ -432,6 +440,8 @@ export("standardizeSamples")
 
 exportMethods("selectROI")
 
+export("makeFactor")
+
 exportMethods("coregister")
 
 exportMethods(
@@ -440,7 +450,8 @@ exportMethods(
 	"OPLS",
 	"spatialFastmap",
 	"spatialKMeans",
-	"spatialShrunkenCentroids")
+	"spatialShrunkenCentroids",
+	"spatialDGMM")
 
 exportMethods("topLabels")
 

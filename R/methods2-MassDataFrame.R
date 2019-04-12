@@ -3,9 +3,9 @@
 ## ------------------------------------
 
 setMethod("initialize", "MassDataFrame",
-	function(.Object, mz, ...) {
+	function(.Object, ..., mz) {
 		if ( missing(mz) )
-			mz <- numeric()
+			mz <- .Object@mz
 		.Object <- .setResolutionfromMass(.Object, mz)
 		callNextMethod(.Object, mz=mz, ...)
 	})

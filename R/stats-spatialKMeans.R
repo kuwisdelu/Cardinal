@@ -1,7 +1,7 @@
 
 setMethod("spatialKMeans",
 	signature = c(x = "SImageSet"),
-	function(x, r = 1, k = 2,
+	function(x, r = 1, k = 3,
 		method = c("gaussian", "adaptive"),
 		iter.max = 10, nstart = 1,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
@@ -10,7 +10,7 @@ setMethod("spatialKMeans",
 	{
 		method <- match.arg(method)
 		iData(x) <- as.matrix(iData(x))
-		save.seed()
+		oseed <- getRNGStream()
 		rs <- sort(r)
 		ks <- sort(k)
 		ncomp <- min(ncomp, nrow(x))
@@ -23,7 +23,7 @@ setMethod("spatialKMeans",
 			fastmap <- resultData(fastmap)[[1]][c("scores", "pivot.array")]
 			lapply(ks, function(k) {
 				.message("spatialKMeans: Fitting r = ", r, ", k = ", k, ".")
-				append(.spatialKMeans(x, fastmap=fastmap, k=k,
+				append(.spatialKMeans(x, k=k, fastmap=fastmap, seed=oseed,
 					iter.max=iter.max, nstart=nstart, algorithm=algorithm),
 					list(r=r, k=k, method=method, fastmap=fastmap))
 			})
@@ -51,9 +51,9 @@ setMethod("spatialKMeans",
 		object
 	})
 
-.spatialKMeans <- function(x, fastmap, k, iter.max, nstart, algorithm) {
-	restore.seed()
+.spatialKMeans <- function(x, k, fastmap, seed, iter.max, nstart, algorithm) {
 	start.time <- proc.time()
+	setRNGStream(seed)
 	cluster <- kmeans(fastmap$scores, centers=k,
 		iter.max=iter.max, nstart=nstart,
 		algorithm=algorithm)$cluster

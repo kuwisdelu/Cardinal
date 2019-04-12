@@ -1,9 +1,9 @@
 require(testthat)
 require(Cardinal)
 
-context("new processing")
+context("processing 2")
 
-test_that("Cardinal 2.x delayed processing", {
+test_that("Cardinal >=2 delayed processing", {
 
 	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 

@@ -1,7 +1,7 @@
 
 setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "missing"),
-	function(x, y, r = 1, k = 2, s = 0,
+	function(x, r = 1, k = 3, s = 0,
 		method = c("gaussian", "adaptive"),
 		iter.max=10, ...)
 	{

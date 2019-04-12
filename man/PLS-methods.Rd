@@ -18,7 +18,7 @@
 	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform discriminant analysis (PLS-DA) if the response is a \code{factor}.
 }
 \usage{
-\S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 2,
+\S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 3,
     method = "nipals",
     center = TRUE,
     scale = FALSE,

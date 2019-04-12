@@ -91,10 +91,10 @@
     values = "correlation", \dots)
 
 \S4method{plot}{SpatialKMeans2,missing}(x, formula,
-    values = c("centers", "betweenss", "withinss"), \dots)
+    values = c("centers", "correlation"), \dots)
 
 \S4method{plot}{SpatialShrunkenCentroids2,missing}(x, formula,
-    values = c("centers", "tstatistics"), \dots)
+    values = c("centers", "statistic"), \dots)
 
 #### Methods for Cardinal 1.x classes ####
 

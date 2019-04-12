@@ -16,7 +16,6 @@
 		start=NULL,
 		stop=NULL,
 		flush=0),
-	.Random.seed=NULL,
 	processing=FALSE,
 	trans3d=NULL))
 
@@ -28,8 +27,6 @@ globalVariables(".Index")
 	options(Cardinal.nblocks=20) # public
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
-	if ( !exists(".Random.seed", globalenv()) )
-		set.seed(Sys.time())
 }
 
 .onAttach <- function(libname, pkgname) {

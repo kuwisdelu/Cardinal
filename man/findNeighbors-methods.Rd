@@ -32,7 +32,7 @@
     offsets = FALSE, matrix = FALSE, \dots)
 
 \S4method{spatialWeights}{ImagingExperiment}(x, r, method = c("gaussian", "adaptive"),
-    matrix = FALSE, BPPARAM = bpparam(), \dots)
+    dist = "chebyshev", matrix = FALSE, BPPARAM = bpparam(), \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r, matrix = FALSE, \dots)
 

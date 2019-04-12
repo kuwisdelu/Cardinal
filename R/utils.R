@@ -13,6 +13,12 @@ l2norm <- function(x) sqrt(sum(x^2))
 # Soft thresholding
 soft <- function(x, delta) sign(x) * pmax(0, abs(x) - delta)
 
+# Regularize a matrix of probabilities
+regpr <- function(x, lambda = median(x)) {
+	x <- x + lambda
+	x / rowSums(x)
+}
+
 # Cube root
 cbrt <- function(x) x^(1/3)
 
@@ -322,12 +328,28 @@ wrap <- function(exprs, ..., signature) {
 	.local(...)
 }
 
-## Saves the current .Random.seed
-save.seed <- function() {
-	.Cardinal$.Random.seed <- get(".Random.seed", envir=globalenv())
+## Gets the current .Random.seed
+getRNGStream <- function() {
+	if ( exists(".Random.seed", envir=globalenv()) ) {
+		get(".Random.seed", envir=globalenv())
+	} else {
+		NULL
+	}
 }
 
-## Restores the saved .Random.seed
-restore.seed <- function() {
-	assign(".Random.seed", .Cardinal$.Random.seed, envir=globalenv())
+## Sets the .Random.seed
+setRNGStream <- function(seed = NULL) {
+	if ( !is.null(seed) && is.integer(seed) )
+		assign(".Random.seed", seed, envir=globalenv())
+}
+
+## Generates RNG seeds for parallel computation
+generateRNGStreams <- function(n = 1) {
+	seeds <- vector("list", n)
+	seeds[[1]] <- getRNGStream()
+	if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
+		for ( i in seq_len(n)[-1] )
+			seeds[[i]] <- nextRNGStream(seeds[[i - 1]])
+	}
+	seeds
 }

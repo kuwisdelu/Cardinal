@@ -2,15 +2,14 @@
 TODO for Cardinal package
 -------------------------
 
-Priority: High
-- Add analysis methods for new classes
+- Add spatialMixtureModel() for segmentation tests
+- Add all analysis methods for new classes
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
-- Add collect() method to pull all data into R matrices
-- Switch applicable process methods to SparseImagingExperiment
+- Add collect() method to pull data into in-memory R matrices
+- Multimodal image registration (w/ optical images, etc.)
+- More normalization methods (median, quantile, etc.)
+- Shiny GUI
 
-Priority: Medium
-- Graphical user interface
-- Optical image registration
-
-Priority: Low
-- Additional normalization methods
+BUGS for Cardinal package
+-------------------------
+- Fix integer overflow when writing large imzML files

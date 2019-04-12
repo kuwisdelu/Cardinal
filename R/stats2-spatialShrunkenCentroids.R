@@ -1,11 +1,10 @@
 
 setMethod("spatialShrunkenCentroids",
 	signature = c("SparseImagingExperiment", "missing"),
-	function(x, r = 1, k = 2, s = 0,
+	function(x, r = 1, k = 3, s = 0,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", droplevels = TRUE,
-		init = NULL, iter.init = 10,
-		seed = 1, iter.max = 10,
+		init = NULL, iter.max = 10,
 		BPPARAM = bpparam(), ...)
 	{
 		.checkForIncompleteProcessing(x)
@@ -25,8 +24,8 @@ setMethod("spatialShrunkenCentroids",
 			}
 		} else {
 			.message("initializing shrunken centroids clustering with k-means")
-			init <- suppressWarnings(spatialKMeans(x, r=r, k=k, method=method,
-				dist=dist, seed=seed, iter.max=iter.init, BPPARAM=BPPARAM, ...))
+			init <- suppressWarnings(spatialKMeans(x, r=r, k=k,
+				method=method, dist=dist, BPPARAM=BPPARAM, ...))
 		}
 		.message("calculating global centroid...")
 		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
@@ -38,7 +37,7 @@ setMethod("spatialShrunkenCentroids",
 		results <- list()
 		par <- expand.grid(k=k, r=r)
 		.message("fitting spatial shrunken centroids...")
-		for ( i in nrow(par) ) {
+		for ( i in 1:nrow(par) ) {
 			weights <- r.weights$w[[which(r.weights$r == par$r[i])]]
 			if ( is.list(init) ) {
 				init.class <- init$class[[which(init$k == par$k[i])]]
@@ -51,7 +50,7 @@ setMethod("spatialShrunkenCentroids",
 					", ", "s = ", si, " ", appendLF = FALSE)
 				.spatialShrunkenCentroids2_cluster(x=x,
 					r=par$r[i], k=par$k[i], s=si, mean=mean,
-					class=init.class, weights=weights, dist=dist,
+					class=init.class, weights=weights,
 					droplevels=droplevels, iter.max=iter.max,
 					BPPARAM=BPPARAM, ...)
 			}, BPPARAM=BPPARAM)
@@ -89,25 +88,30 @@ setMethod("spatialShrunkenCentroids",
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
-		e <- as.env(featureData(x), enclos=parent.frame(2))
+		e <- as.env(pixelData(x), enclos=parent.frame(2))
 		y <- .try_eval(substitute(y), envir=e)
-		if ( is.character(y) && length(y) == 1L && y %in% names(fData(x)) ) {
+		if ( is.character(y) && length(y) == 1L && y %in% names(pData(x)) ) {
 			yname <- y
-			y <- as.factor(featureData(x)[[yname]])
+			y <- as.factor(pixelData(x)[[yname]])
 		} else {
-			yname <- "response"
+			yname <- "..y.."
 			y <- as.factor(y)
 		}
 		.message("calculating global centroid...")
 		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
-		par <- expand.grid(s=s, r=r)
+		.message("calculating spatial weights...")
+		r.weights <- list(r=r, w=lapply(r, function(ri) {
+			spatialWeights(x, r=ri, method=method,
+				dist=dist, BPPARAM=BPPARAM[[1]])
+		}))
 		.message("fitting spatial shrunken centroids...")
-		results <- bpmapply(function(ri, si) {
-			.message("r = ", ri, ", ", "s = ", si, " ", appendLF = FALSE)
-			weights <- r.weights$w[[which(r.weights$r == par$ri)]]
+		par <- expand.grid(s=s, r=r)
+		results <- bpmapply(function(ri, si, BPPARAM) {
+			.message("r = ", ri, ", ", "s = ", si, " ")
+			weights <- r.weights$w[[which(r.weights$r == ri)]]
 			.spatialShrunkenCentroids2_fit(x, s=s,
 				mean=mean, class=y, BPPARAM=BPPARAM)
-		}, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
+		}, par$r, par$s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		models <- DataFrame(rev(expand.grid(s=s, r=r)))
 		out <- .SpatialShrunkenCentroids2(
 			imageData=.SimpleImageArrayList(),
@@ -126,71 +130,62 @@ setMethod("spatialShrunkenCentroids",
 		modelData(out)$num_features <- sapply(results, function(res) {
 			round(mean(colSums(res$statistic != 0)), 1)
 		})
-		featureData(out)[[yname]] <- y
+		pixelData(out)[[yname]] <- y
 		predict(out, newx=x, method=method, BPPARAM=BPPARAM)
 	})
 
 setMethod("predict", "SpatialShrunkenCentroids2",
-	function(object, newx, newy, r = 1, method = c("gaussian", "adaptive"),
-		dist = "chebyshev", priors = NULL, BPPARAM = bpparam(), ...)
+	function(object, newx, newy, BPPARAM = bpparam(), ...)
 	{
 		if ( !is(newx, "SparseImagingExperiment") )
 			.stop("'newx' must inherit from 'SparseImagingExperiment'")
-		.checkForIncompleteProcessing(x)
+		.checkForIncompleteProcessing(newx)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		e <- as.env(featureData(x), enclos=parent.frame(2))
+		e <- as.env(pixelData(newx), enclos=parent.frame(2))
 		if ( missing(newy) ) {
 			if ( !is.null(metadata(object)$responseName) ) {
-				newy <- featureData(object)[[metadata(object)$responseName]]
+				newy <- pixelData(object)[[metadata(object)$responseName]]
 			} else {
 				newy <- NULL
 			}
 		} else {
 			newy <- .try_eval(substitute(newy), envir=e)
-			if ( is.character(newy) && length(newy) == 1L && newy %in% names(fData(object)) ) {
+			if ( is.character(newy) && length(newy) == 1L && newy %in% names(pData(object)) ) {
 				yname <- newy
-				newy <- as.factor(featureData(object)[[yname]])
+				newy <- as.factor(pixelData(object)[[yname]])
 			} else {
 				yname <- "response"
 				newy <- as.factor(newy)
 			}
 		}
-		if ( missing(r) )
-			r <- modelData(object)$r
-		if ( missing(method) && !is.null(metadata(object)$method) ) {
-			method <- metadata(object)$method
-		} else {
-			method <- match.arg(method)
-		}
-		if ( missing(dist) && !is.null(metadata(object)$dist) )
-			dist <- metadata(object)$dist
-		if ( missing(priors) && !is.null(metadata(object)$priors) )
-			priors <- metadata(object)$priors
-		.message("calculating global centroid...")
-		mean <- summarize(newx, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
+		r <- modelData(object)$r
+		s <- modelData(object)$s
+		method <- metadata(object)$method
+		dist <- metadata(object)$dist
+		priors <- metadata(object)$priors
 		.message("calculating spatial weights...")
-		r.weights <- list(r=r, w=lapply(r, function(ri) {
+		r.weights <- list(r=unique(r), w=lapply(r, function(ri) {
 			spatialWeights(newx, r=ri, method=method,
 				dist=dist, BPPARAM=BPPARAM[[1]])
 		}))
-		results <- bplapply(resultData(object), function(res) {
-			weights <- r.weights$w[[which(r.weights$r == par$r[i])]]
+		.message("predicting using spatial shrunken centroids...")
+		results <- bpmapply(function(res, ri, si, BPPARAM) {
+			.message("r = ", ri, ", ", "s = ", si, " ")
+			weights <- r.weights$w[[which(r.weights$r == ri)]]
 			if ( is.null(newy) ) {
 				class <- factor(seq_len(ncol(res$centers)))
 			} else {
 				class <- newy
 			}
-			pred <- .spatialShrunkenCentroids2_predict(x,
-				r=r, mean=mean, class=class, weights=weights,
-				centers=fit$centers, sd=fit$sd, priors=priors,
-				init=NULL, BPPARAM=BPPARAM)
+			pred <- .spatialShrunkenCentroids2_predict(newx,
+				r=ri, class=class, weights=weights, centers=res$centers,
+				sd=res$sd, priors=priors, init=NULL, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
-		}, BPPARAM=BPPARAM)
+		}, resultData(object), r, s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		if ( !is.null(newy) ) {
-			modelData(object)$accuracy <- sapply(results, function(res) {
-				mean(res$class == newy, na.rm=TRUE)
-			})
+			modelData(object)$accuracy <- sapply(results,
+				function(res) mean(res$class == newy, na.rm=TRUE))
 		}
 		resultData(object) <- as(results, "List")
 		object
@@ -209,36 +204,43 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	})
 
 .spatialShrunkenCentroids2_cluster <- function(x, r, k, s, mean, class, weights,
-									dist, droplevels, iter.max, BPPARAM, ...)
+											droplevels, iter.max, BPPARAM, ...)
 {
 	iter <- 1
 	init <- TRUE
+	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
+	# cluster the data
 	while ( iter <= iter.max ) {
 		if ( droplevels )
 			class <- factor(as.integer(droplevels(class)))
 		fit <- .spatialShrunkenCentroids2_fit(x,
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)
 		pred <- .spatialShrunkenCentroids2_predict(x,
-			r=r, mean=mean, class=class, weights=weights,
-			centers=fit$centers, sd=fit$sd, priors=NULL,
-			init=init, BPPARAM=BPPARAM)
+			r=r, class=class, weights=weights, centers=fit$centers,
+			sd=fit$sd, priors=NULL, init=init, BPPARAM=BPPARAM)
 		class <- pred$class
 		init <- pred$init
 		iter <- iter + 1
 		.message(".", appendLF=FALSE)
 	}
 	.message(" ")
-	options(Cardinal.progress=progress)
 	list(class=pred$class, probability=pred$probability, scores=pred$scores,
 		centers=fit$centers, statistic=fit$statistic, sd=fit$sd)
 }
 
 .spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM, ...)
 {
+	# suppress progress in inner parallel loop
+	progress <- getOption("Cardinal.progress")
+	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
+	# suppress verbosity in inner parallel loop
 	verbose <- getOption("Cardinal.verbose")
 	options(Cardinal.verbose=FALSE)
+	on.exit(options(Cardinal.verbose=verbose))
 	# calculate class centers
 	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
@@ -251,6 +253,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 			"feature" = (xbl - centers[i,iclass,drop=FALSE])^2,
 			"pixel" = (xbl - centers[,iclass[i],drop=FALSE])^2)
 	}
+	# calculate standard errors
 	wcss <- summarize(x, .stat="sum", .group_by=class, .tform=tform, BPPARAM=BPPARAM)
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
@@ -265,13 +268,16 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	# calculate and return shrunken centroids
 	centers <- mean + se * statistic
 	colnames(centers) <- levels(class)
-	options(Cardinal.verbose=verbose)
 	list(centers=centers, statistic=statistic, sd=sd)
 }
 
-.spatialShrunkenCentroids2_predict <- function(x, r, mean, class, weights,
-									centers, sd, priors, init, BPPARAM, ...)
+.spatialShrunkenCentroids2_predict <- function(x, r, class, weights,
+							centers, sd, priors, init, BPPARAM, ...)
 {
+	# suppress progress in inner parallel loop
+	progress <- getOption("Cardinal.progress")
+	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
 		idx <- attr(xbl, "idx")

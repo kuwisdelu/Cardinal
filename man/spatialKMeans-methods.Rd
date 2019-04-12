@@ -4,6 +4,9 @@
 \alias{class:SpatialKMeans}
 \alias{SpatialKMeans-class}
 \alias{spatialKMeans-methods}
+
+\alias{spatialKMeans,SparseImagingExperiment-method}
+
 \alias{spatialKMeans,SImageSet-method}
 \alias{summary,SpatialKMeans-method}
 \alias{print.summary.SpatialKMeans}
@@ -14,7 +17,14 @@
     Performs spatially-aware (SA) or spatially-aware structurally-adaptive (SASA) clustering of imaging data. The data are first projected into an embedded feature space where spatial structure is maintained using the Fastmap algorithm, and then ordinary k-means clustering is performed on the projected dataset.
 }
 \usage{
-\S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 2,
+\S4method{spatialKMeans}{SparseImagingExperiment}(x, r = 1, k = 3,
+    method = c("gaussian", "adaptive"),
+    dist = "chebyshev", tol.dist = 1e-9,
+    iter.max = 10, nstart = 1,
+    algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
+    ncomp = 10, BPPARAM = bpparam(), \dots)
+
+\S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 3,
     method = c("gaussian", "adaptive"),
     iter.max = 10, nstart = 1,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
@@ -26,10 +36,13 @@
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
     \item{k}{The number of clusters. This can be a vector to try different numbers of clusters.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) clustering, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) clustering.}
+    \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
+    \item{tol.dist}{The distance tolerance used for matching pixels when calculating pairwise distances between neighborhoods. This parameter should only matter when the data is not gridded. (Only considers `radial' distance.)}
     \item{iter.max}{The maximum number of k-means iterations.}
     \item{nstart}{The number of restarts for the k-means algorithm.}
     \item{algorithm}{The k-means algorithm to use. See \code{\link{kmeans}} for details.}
     \item{ncomp}{The number of fastmap components to calculate.}
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{\dots}{Ignored.}
 }
 \value{

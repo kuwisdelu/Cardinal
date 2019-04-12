@@ -14,7 +14,8 @@ setClass("XDataFrame", contains = "DataFrame")
 		resolution = "numeric"),
 	prototype = prototype(
 		run = factor(),
-		coord = DataFrame(),
+		coord = DataFrame(x=numeric(), y=numeric()),
+		gridded = NA,
 		resolution = c(NA_real_, NA_real_),
 		rownames = NULL,
 		nrows = 0L,
@@ -126,6 +127,8 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 .SpatialKMeans2 <- setClass("SpatialKMeans2", contains="SparseResultImagingExperiment")
 
 .SpatialShrunkenCentroids2 <- setClass("SpatialShrunkenCentroids2", contains="SparseResultImagingExperiment")
+
+.SpatialDGMM <- setClass("SpatialDGMM", contains="SparseResultImagingExperiment")
 
 #### Class for mass spectrometry imaging experiments ####
 ## -------------------------------------------------------

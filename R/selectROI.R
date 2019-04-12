@@ -86,6 +86,21 @@ setMethod("selectROI",
 	pixels
 }
 
+# make a factor from logicals
+
+makeFactor <- function(..., ordered = FALSE) {
+	inds <- list(...)
+	labs <- sapply(substitute(...()), deparse)
+	if ( !is.null(names(inds)) ) {
+		nz <- nzchar(names(inds))
+		labs[nz] <- names(inds)[nz]
+	}
+	names(labs) <- NULL
+	inds <- do.call("cbind", inds)
+	inds <- apply(inds, 1, function(i) which(i)[1L])
+	factor(labs[inds], levels=labs, ordered=ordered)
+}
+
 # deprecated
 
 setMethod("select", "SImageSet",

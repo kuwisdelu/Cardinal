@@ -1,6 +1,6 @@
 
 setMethod("spatialFastmap", "SparseImagingExperiment",
-	function(x, r = 1, ncomp = 2,
+	function(x, r = 1, ncomp = 3,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", tol.dist = 1e-9,
 		iter.max = 1,
@@ -54,8 +54,11 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	spatial <- .spatialInfo(x, r=r, method=method, dist=dist)
 	proj <- matrix(0, nrow=ncol(x), ncol=ncomp)
 	pivots <- matrix(NA_integer_, nrow=ncomp, ncol=2)
+	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
+	# spatially-aware distance functions
 	fun <- function(xbl, xa, xb) {
 		idx <- attr(xbl, "idx")
 		f <- function(i, neighbors, offsets, weights) {
@@ -74,6 +77,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		mapply(f, attr(xbl, "centers"), attr(xbl, "neighbors"),
 			attr(xbl, "offsets"), attr(xbl, "params"))
 	}
+	# iterate over FastMap components
 	for ( j in seq_len(ncomp) ) {
 		o_ab <- .findDistantObjects2(x, proj=proj, spatial=spatial,
 			tol.dist=tol.dist, init=init, iter.max=iter.max, ...)
@@ -121,7 +125,6 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	pivots <- as.data.frame(pivots)
 	names(pivots) <- c("Oa", "Ob")
 	sdev <- apply(proj, 2, sd)
-	options(Cardinal.progress=progress)
 	SimpleList(scores=proj, correlation=corr, pivots=pivots, sdev=sdev)
 }
 

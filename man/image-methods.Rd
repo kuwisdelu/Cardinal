@@ -115,7 +115,7 @@
     values = "scores", \dots)
 
 \S4method{image}{SpatialShrunkenCentroids2}(x, formula,
-    values = c("probabilities", "classes", "scores"), \dots)
+    values = c("probability", "class", "scores"), \dots)
 
 #### Methods for Cardinal 1.x classes ####
 

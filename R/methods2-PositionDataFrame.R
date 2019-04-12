@@ -3,18 +3,11 @@
 ## ------------------------------------
 
 setMethod("initialize", "PositionDataFrame",
-	function(.Object, coord, run, ...) {
-		if ( missing(coord) || length(coord) == 0 )
-			coord <- DataFrame(x=numeric(), y=numeric())
-		if ( missing(run) ) {
-			if ( nrow(coord) == 0 ) {
-				run <- factor()
-			} else {
-				run <- factor(1)
-			}
-		} else if ( !is.factor(run) ) {
-			run <- as.factor(run)
-		}
+	function(.Object, ..., coord, run) {
+		if ( missing(coord) )
+			coord <- .Object@coord
+		if ( missing(run) )
+			run <- .Object@run
 		if ( length(run) != nrow(coord) )
 			run <- rep(run, length.out=nrow(coord))
 		.Object <- .setResolutionfromCoord(.Object, coord)
@@ -28,9 +21,11 @@ PositionDataFrame <- function(coord, run, ...,
 		return(.PositionDataFrame())
 	coord <- DataFrame(coord)
 	if ( missing(run) ) {
+		run <- rep(factor(1), length.out=nrow(coord))
 		if ( any(duplicated(coord)) )
 			warning("rows of 'coord' are not unique")
 	} else {
+		run <- as.factor(run)
 		if ( any(duplicated(cbind(data.frame(run=run), coord))) )
 			warning("rows of 'coord' + 'run' are not unique")
 	}

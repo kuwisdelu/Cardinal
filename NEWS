@@ -1,4 +1,43 @@
 
+CHANGES IN VERSION 2.1.9 [2019-4-11]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'spatialDGMM' method for fitting feature-wise
+        spatially-aware Dirichlet Gaussian mixture models
+    o Added 'predict' method for 'SpatialShrunkenCentroids2'
+
+BUG FIXES
+
+    o Fixed 'spatialShrunkenCentroids' classification methods
+        for new ('SparseImagingExperiment'-based) classes
+    o Cleaned up unit tests for statistical methods
+
+CHANGES IN VERSION 2.1.8 [2019-4-1]
+-----------------------------------
+
+BUG FIXES
+
+    o Updated 'PositionDataFrame' initialization
+        due to change in S4Vectors [<-,DataFrame behavior
+    o Updated 'MassDataFrame' initialization due to change
+        in S4Vectors [<-,DataFrame behavior
+
+CHANGES IN VERSION 2.1.7 [2019-2-21]
+-----------------------------------
+
+BUG FIXES
+
+    o Updated 'filter' signature due to dplyr changes
+
+CHANGES IN VERSION 2.1.6 [2019-1-4]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added ImmunoOncology biocViews term
+
 CHANGES IN VERSION 2.1.5 [2018-12-14]
 -----------------------------------
 

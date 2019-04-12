@@ -1,6 +1,6 @@
 
 setMethod("spatialFastmap", signature = c(x = "SImageSet"),
-	function(x, r = 1, ncomp = 2,
+	function(x, r = 1, ncomp = 3,
 		method = c("gaussian", "adaptive"),
 		iter.max = 1, ...)
 	{

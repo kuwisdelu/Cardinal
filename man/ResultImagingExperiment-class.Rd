@@ -64,7 +64,7 @@
     \describe{
         \item{\code{modelData(object)}, \code{modelData(object) <- value}:}{Get or set the \code{modelData}.}
 
-        \item{\code{resultData(object, i)}, \code{resultData(object, i) <- value}:}{Get or set the corresponding element of \code{resultData}.}
+        \item{\code{resultData(object, i, j)}, \code{resultData(object, i) <- value}:}{Get or set the corresponding element of \code{resultData}.}
 
         \item{\code{resultNames(object)}:}{Get the names of the components of \code{resultData}.}
     }

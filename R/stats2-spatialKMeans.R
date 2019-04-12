@@ -1,9 +1,9 @@
 
 setMethod("spatialKMeans", "SparseImagingExperiment",
-	function(x, r = 1, k = 2,
+	function(x, r = 1, k = 3,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", tol.dist = 1e-9,
-		seed = 1, iter.max = 10, nstart = 1,
+		iter.max = 10, nstart = 1,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
 		ncomp = 10, BPPARAM = bpparam(), ...)
 	{
@@ -21,12 +21,13 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 		results <- list()
 		.message("clustering components...")
 		for ( i in r ) {
-			results[[i]] <- bplapply(k, function(ki, BPPARAM) {
+			rngseeds <- generateRNGStreams(length(k))
+			results[[i]] <- bpmapply(function(ki, seed, BPPARAM) {
 				.message("r = ", r[i], ", k = ", ki)
 				.spatialKMeans2(x=x, r=r[i], k=ki, fastmap=fastmap, seed=seed,
 					iter.max=iter.max, nstart=nstart, algorithm=algorithm,
 					BPPARAM=BPPARAM, ...)
-			}, BPPARAM=BPPARAM)
+			}, k, rngseeds, BPPARAM=BPPARAM)
 		}
 		results <- do.call("c", results)
 		models <- DataFrame(rev(expand.grid(k=k, r=r)))
@@ -55,9 +56,14 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 .spatialKMeans2 <- function(x, r, k, fastmap, seed,
 							iter.max, nstart, algorithm, ...)
 {
-	set.seed(seed)
+	oseed <- getRNGStream()
+	on.exit(setRNGStream(oseed))
+	setRNGStream(seed)
+	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
+	# cluster FastMap components using k-means
 	proj <- resultData(fastmap, list(r=r), "scores")
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
@@ -76,6 +82,5 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 			}, numeric(1))
 		}))
 	}, .blocks=TRUE, .simplify=do_rbind, ...)
-	options(Cardinal.progress=progress)
 	SimpleList(cluster=cluster, centers=centers, correlation=corr)
 }

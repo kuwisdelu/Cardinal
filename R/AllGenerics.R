@@ -168,6 +168,7 @@ setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("spatialFastmap", function(x, ...) standardGeneric("spatialFastmap"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
+setGeneric("spatialDGMM", function(x, ...) standardGeneric("spatialDGMM"))
 
 #### Results ####
 ## --------------

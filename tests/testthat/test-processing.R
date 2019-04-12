@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("processing")
 
-test_that("Cardinal 1.x pre-processing", {
+test_that("Cardinal <= 1 pre-processing", {
 
 	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 
