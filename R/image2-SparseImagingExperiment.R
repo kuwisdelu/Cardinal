@@ -21,7 +21,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		asp = 1,
 		layout,
 		col = discrete.colors,
-		colorscale = gradient.colors,
+		colorscale = viridis,
 		colorkey = !is3d,
 		subset = TRUE,
 		add = FALSE)
