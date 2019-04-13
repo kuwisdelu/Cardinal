@@ -55,6 +55,12 @@ groupVar <- function(x, f) {
 	(Sfx2 / n) - xbar^2
 }
 
+# Mode of a vector
+Mode <- function(x) {
+	ux <- unique(x)
+	ux[which.max(tabulate(match(x, ux)))]
+}
+
 # Kurtosis of a vector
 kurtosis <- function(x, na.rm=FALSE) {
 	if ( na.rm ) x <- x[!is.na(x)]

@@ -53,7 +53,7 @@
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
     \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
     \item{s}{The sparsity thresholding parameter by which to shrink the t-statistics.}
-    \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
+    \item{method}{The method to use to calculate the spatial smoothing weights. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{init}{Initial cluster configuration. This may either be the result of a call to \code{spatialKMeans}, or a list of factors giving the initial cluster configurations.}
     \item{iter.max}{The maximum number of clustering iterations.}

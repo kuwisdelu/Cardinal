@@ -24,7 +24,7 @@
     \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
     \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
     \item{groups}{Pixels from different groups will be segmented separately. For the validity of downstream statistical analysis, it is important that \emph{each distinct observational unit (e.g., tissue sample) is assigned to a unique group}.}
-    \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
+    \item{method}{The method to use to calculate the spatial smoothing weights. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{annealing}{Should simulated annealing be used during the optimization process to improve parameter estimates?}
     \item{init}{Should the parameter estimates be initialized using k-means ('kmeans') or Gaussian mixture model ('gmm')?}

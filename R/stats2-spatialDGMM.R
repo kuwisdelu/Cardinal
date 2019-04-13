@@ -9,8 +9,16 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
+		e <- as.env(pixelData(x), enclos=parent.frame(2))
+		groups <- .try_eval(substitute(groups), envir=e)
+		if ( is.character(groups) && length(groups) == 1L && groups %in% names(pData(x)) ) {
+			gname <- groups
+			groups <- as.factor(pixelData(x)[[gname]])
+		} else {
+			gname <- "..groups.."
+			groups <- as.factor(groups)
+		}
 		method <- match.arg(method)
-		groups <- as.factor(groups)
 		init <- match.arg(init)
 		.message("calculating spatial weights...")
 		r.gweights <- list(r=r, w=lapply(r, function(ri) {
@@ -36,31 +44,31 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 					group.weights=gweights, annealing=annealing,
 					init=init, iter.max=iter.max, tol=tol, p0=p0,
 					seed=rngseeds[fid], ...)
-				res <- .spatialDGMM_collate(res, groups)
+				res <- .spatialDGMM_collate(x, res, groups)
 				res
 			}, .simplify=FALSE, BPPARAM=BPPARAM[[1]])
 			options(Cardinal.progress=progress)
 		}
 		results <- do.call("c", results)
 		models <- DataFrame(rev(expand.grid(feature=1:nrow(x), k=k, r=r)))
-		models$mz <- mz(x)
-		models$num_segments <- sapply(results, function(res) {
-			nlevels(res$class)
-		})
-		resultType <- list(
-			feature=character(),
-			pixel=c("class", "pixel"))
-		.SpatialDGMM(
+		out <- .SpatialDGMM(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=resultType,
+				resultType=list(
+					feature=character(),
+					pixel=c("class", "pixel")),
 				modelParam=c("r", "k", "feature"),
-				method=method, dist=dist,
-				groups=groups),
+				groupsName=gname,
+				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
+		modelData(out)$num_segments <- sapply(results, function(res) {
+			nlevels(res$class)
+		})
+		pixelData(out)[[gname]] <- groups
+		out
 	})
 
  .spatialDGMM_cluster <- function(xi, k, method, groups, group.weights,
@@ -82,33 +90,35 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	results
 }
 
-.spatialDGMM_collate <- function(results, groups) {
-	classnames <- unlist(lapply(levels(groups), function(gi)
+.spatialDGMM_collate <- function(x, results, groups, rename = FALSE) {
+	cnames <- unlist(lapply(levels(groups), function(gi)
 		paste(gi, seq_along(results[[gi]]$params$mu), sep=".")))
 	class <- character(length(groups))
 	for ( gi in levels(groups) ) {
 		class[groups == gi] <- paste(gi, results[[gi]]$class, sep=".")
 	}
-	class <- factor(class, levels=classnames)
-	probability <- lapply(levels(groups), function(gi) {
-		probs <- matrix(NA_real_, nrow=length(groups),
-			ncol=ncol(results[[gi]]$probability))
-		probs[groups == gi,] <- results[[gi]]$probability
+	class <- factor(class, levels=cnames)
+	if ( !rename ) {
+		cnames <- paste0(seq_along(cnames))
+		levels(class) <- cnames
+	}
+	probability <- mapply(function(res, gi) {
+		probs <- matrix(NA_real_,
+			nrow=length(groups),
+			ncol=ncol(res$probability))
+		probs[groups == gi,] <- res$probability
 		probs
-	})
+	}, results, levels(groups), SIMPLIFY=FALSE)
 	probability <- do.call("cbind", probability)
-	colnames(probability) <- classnames
-	params <- list(
-		mu=setNames(unlist(lapply(results,
-			function(res) res$params$mu)), classnames),
-		sigma=setNames(unlist(lapply(results,
-			function(res) res$params$sigma)), classnames),
-		alpha=setNames(unlist(lapply(results,
-			function(res) res$params$alpha)), classnames),
-		beta=setNames(unlist(lapply(results,
-			function(res) res$params$beta)), levels(groups)))
-	if ( !is.null(results[[1]]$params$trace) )
-		params$trace <- lapply(results, function(res) res$params$trace)
+	colnames(probability) <- cnames
+	params <- do.call("rbind", mapply(function(res, gi) {
+		data.frame(group=gi,
+			class=NA_character_,
+			mean=res$params$mu,
+			var=res$params$sigma)
+	}, results, levels(groups), SIMPLIFY=FALSE))
+	row.names(params) <- cnames
+	params$class <- cnames
 	list(params=params, probability=probability, class=class)
 }
  
