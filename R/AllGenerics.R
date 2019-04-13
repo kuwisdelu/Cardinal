@@ -141,8 +141,8 @@ setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseli
 setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
 setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardizeRuns"))
 
-#### Data alignment ####
-## ---------------------
+#### Data alignment and matching ####
+## ----------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 
 #### Data transformation ####
@@ -162,9 +162,9 @@ setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
-setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
+setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
 setGeneric("spatialFastmap", function(x, ...) standardGeneric("spatialFastmap"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))

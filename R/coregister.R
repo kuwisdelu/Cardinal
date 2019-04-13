@@ -1,6 +1,6 @@
 
 setMethod("coregister",
-	signature = c(object = "SpatialShrunkenCentroids", ref = "missing"),
+	signature = c("SpatialShrunkenCentroids", "missing"),
 	function(object, ...) {
 		ks <- unlist(object$k)
 		nclasses <- sapply(object$classes, function(cs) length(unique(cs)))
@@ -26,7 +26,7 @@ setMethod("coregister",
 	})
 
 setMethod("coregister",
-	signature = c(object = "SpatialKMeans", ref = "missing"),
+	signature = c("SpatialKMeans", "missing"),
 	function(object, ...) {
 		ks <- unlist(object$k)
 		regorder <- order(ks)
