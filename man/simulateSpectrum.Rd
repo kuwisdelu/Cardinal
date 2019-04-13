@@ -82,7 +82,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     \item{preset}{A number indicating a preset image definition to use.}
 
-    \item{nruns}{The number of runs to simulate.}
+    \item{nruns}{The number of runs to simulate for each condition.}
 
     \item{sdrun}{A standard deviation giving the run-to-run variance.}
 

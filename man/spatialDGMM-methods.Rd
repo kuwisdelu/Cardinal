@@ -15,8 +15,8 @@
 \S4method{spatialDGMM}{SparseImagingExperiment}(x, r = 1, k = 3, groups = run(x),
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", annealing = TRUE,
+    init = c("kmeans", "gmm"), p0 = 0.05,
     iter.max = 100, tol = 1e-9,
-    collate.results = TRUE,
     BPPARAM = bpparam(), \dots)
 }
 \arguments{
@@ -27,9 +27,10 @@
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{annealing}{Should simulated annealing be used during the optimization process to improve parameter estimates?}
+    \item{init}{Should the parameter estimates be initialized using k-means ('kmeans') or Gaussian mixture model ('gmm')?}
+    \item{p0}{A regularization parameter applied to estimated posterior class probabilities. Must be positive for successful gradient descent optimization. Changing this value (within reason) should have only minimal impact on values of parameter estimates, but may affect the algorithm's speed and stability.}
     \item{iter.max}{The maximum number of EM-algorithm iterations.}
     \item{tol}{The tolerance convergence criterion for the EM-algorithm. Corresponds to the change in log-likelihood.}
-    \item{collate.results}{Should the results of different groups be re-combined for compatibility with downstream methods? For advanced users only.}
     \item{\dots}{Passed to internal methods.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }

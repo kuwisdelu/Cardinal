@@ -5,7 +5,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		superpose = TRUE,
 		column,
 	    ...,
-		colorscale = divergent.colors,
+		colorscale = cividis,
 		colorkey = !is3d && !superpose,
 		subset = TRUE)
 {
@@ -22,10 +22,13 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	if ( is.null(names(model)) ) {
 		feature1 <- subset_rows(fData(newx), list(model_id=model))
 	} else {
+		model <- model[names(model) %in% names(fData(newx))]
 		feature1 <- subset_rows(fData(newx), as.list(model))
 	}
+	cols <- sort(unique(fData(newx)[["column"]]))
+	nc <- length(cols)
 	if ( missing(column) )
-		column <- sort(unique(fData(newx)[["column"]]))
+		column <- cols
 	if ( is.numeric(column) ) {
 		feature2 <- subset_rows(fData(newx), list(column_id=column))
 	} else {
@@ -66,6 +69,17 @@ setMethod("image",
 setMethod("image",
 	signature = c(x = "SpatialShrunkenCentroids2"),
 	function(x, formula, values = c("probability", "class", "scores"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## SpatialDGMM
+
+setMethod("image",
+	signature = c(x = "SpatialDGMM"),
+	function(x, formula, values = c("probability", "class"), ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_pixel_results(x, match.arg(values))

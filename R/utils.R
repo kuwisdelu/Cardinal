@@ -14,7 +14,7 @@ l2norm <- function(x) sqrt(sum(x^2))
 soft <- function(x, delta) sign(x) * pmax(0, abs(x) - delta)
 
 # Regularize a matrix of probabilities
-regpr <- function(x, lambda = median(x)) {
+regpr <- function(x, lambda = 0.1) {
 	x <- x + lambda
 	x / rowSums(x)
 }

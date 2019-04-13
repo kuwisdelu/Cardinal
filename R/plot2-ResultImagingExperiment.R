@@ -26,14 +26,17 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 	if ( is.null(names(model)) ) {
 		pixel1 <- subset_rows(coord(newx), list(model_id=model))
 	} else {
-		pixel1 <- subset_rows(pixelData(newx), as.list(model))
+		model <- model[names(model) %in% names(pData(newx))]
+		pixel1 <- subset_rows(pData(newx), as.list(model))
 	}
+	cols <- sort(unique(pData(newx)[["column"]]))
+	nc <- length(cols)
 	if ( missing(column) )
-		column <- sort(unique(pData(newx)[["column"]]))
+		column <- cols
 	if ( is.numeric(column) ) {
 		pixel2 <- subset_rows(coord(newx), list(column_id=column))
 	} else {
-		pixel2 <- subset_rows(pixelData(newx), list(column=column))
+		pixel2 <- subset_rows(pData(newx), list(column=column))
 	}
 	pixel <- intersect(pixel1, pixel2)
 	pixel.groups <- pixelData(newx)[["column"]][pixel]

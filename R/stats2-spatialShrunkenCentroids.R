@@ -3,9 +3,8 @@ setMethod("spatialShrunkenCentroids",
 	signature = c("SparseImagingExperiment", "missing"),
 	function(x, r = 1, k = 3, s = 0,
 		method = c("gaussian", "adaptive"),
-		dist = "chebyshev", droplevels = TRUE,
-		init = NULL, iter.max = 10,
-		BPPARAM = bpparam(), ...)
+		dist = "chebyshev", init = NULL,
+		iter.max = 10, BPPARAM = bpparam(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
@@ -51,7 +50,7 @@ setMethod("spatialShrunkenCentroids",
 				.spatialShrunkenCentroids2_cluster(x=x,
 					r=par$r[i], k=par$k[i], s=si, mean=mean,
 					class=init.class, weights=weights,
-					droplevels=droplevels, iter.max=iter.max,
+					drop.empty=TRUE, iter.max=iter.max,
 					BPPARAM=BPPARAM, ...)
 			}, BPPARAM=BPPARAM)
 		}
@@ -204,7 +203,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	})
 
 .spatialShrunkenCentroids2_cluster <- function(x, r, k, s, mean, class, weights,
-											droplevels, iter.max, BPPARAM, ...)
+											drop.empty, iter.max, BPPARAM, ...)
 {
 	iter <- 1
 	init <- TRUE
@@ -214,7 +213,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	on.exit(options(Cardinal.progress=progress))
 	# cluster the data
 	while ( iter <= iter.max ) {
-		if ( droplevels )
+		if ( drop.empty )
 			class <- factor(as.integer(droplevels(class)))
 		fit <- .spatialShrunkenCentroids2_fit(x,
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)

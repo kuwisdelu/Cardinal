@@ -12,6 +12,7 @@
 \alias{image,SpatialFastmap2-method}
 \alias{image,SpatialKMeans2-method}
 \alias{image,SpatialShrunkenCentroids2-method}
+\alias{image,SpatialDGMM-method}
 
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
@@ -104,7 +105,7 @@
         superpose = TRUE,
         column,
         \dots,
-        colorscale = divergent.colors,
+        colorscale = cividis,
         colorkey = !is3d && !superpose,
         subset = TRUE)
 
@@ -116,6 +117,9 @@
 
 \S4method{image}{SpatialShrunkenCentroids2}(x, formula,
     values = c("probability", "class", "scores"), \dots)
+
+\S4method{image}{SpatialDGMM}(x, formula,
+    values = c("probability", "class"), \dots)
 
 #### Methods for Cardinal 1.x classes ####
 

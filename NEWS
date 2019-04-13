@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 2.1.11 [2019-4-12]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added option to set the probability regularization
+        parameter (p0) to 'spatialDGMM' method
+    o Added option to initialize 'spatialDGMM' algorithm
+        with either k-means or Gaussian mixture model
+
 CHANGES IN VERSION 2.1.10 [2019-4-12]
 -----------------------------------
 

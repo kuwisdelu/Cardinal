@@ -3,14 +3,15 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	function(x, r = 1, k = 3, groups = run(x),
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", annealing = TRUE,
+		init = c("kmeans", "gmm"), p0 = 0.05,
 		iter.max = 100, tol = 1e-9,
-		collate.results = TRUE,
 		BPPARAM = bpparam(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
 		groups <- as.factor(groups)
+		init <- match.arg(init)
 		.message("calculating spatial weights...")
 		r.gweights <- list(r=r, w=lapply(r, function(ri) {
 			bplapply(levels(groups), function(gi, BPPARAM) {
@@ -30,12 +31,12 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			results[[i]] <- featureApply(x, function(xi) {
 				fid <- attr(xi, "idx")
 				.message("r = ", par$r[i], ", k = ", par$k[i],
-					", ", "feature = ", fid, " ", appendLF = TRUE)
+					", ", "feature = ", fid, " ", appendLF = FALSE)
 				res <- .spatialDGMM_cluster(xi=xi, k=par$k[i], groups=groups,
 					group.weights=gweights, annealing=annealing,
-					iter.max=iter.max, tol=tol, seed=rngseeds[fid], ...)
-				if ( collate.results )
-					res <- .spatialDGMM_collate(res, groups)
+					init=init, iter.max=iter.max, tol=tol, p0=p0,
+					seed=rngseeds[fid], ...)
+				res <- .spatialDGMM_collate(res, groups)
 				res
 			}, .simplify=FALSE, BPPARAM=BPPARAM[[1]])
 			options(Cardinal.progress=progress)
@@ -46,13 +47,9 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 		models$num_segments <- sapply(results, function(res) {
 			nlevels(res$class)
 		})
-		if ( collate.results ) {
-			resultType <- list(
-				feature=character(),
-				pixel=c("class", "pixel"))
-		} else {
-			resultType <- NULL
-		}
+		resultType <- list(
+			feature=character(),
+			pixel=c("class", "pixel"))
 		.SpatialDGMM(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
@@ -67,23 +64,27 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	})
 
  .spatialDGMM_cluster <- function(xi, k, method, groups, group.weights,
-									annealing, iter.max, tol, seed)
+							annealing, init, iter.max, tol, p0, seed)
 {
  	oseed <- getRNGStream()
 	on.exit(setRNGStream(oseed))
 	setRNGStream(seed)
 	results <- mapply(function(gi, w) {
 		xgi <- as.numeric(xi)[groups == gi]
-		.spatialDGMM_fit1(xgi, k=k, neighbors=attr(w, "neighbors"), weights=w,
-			annealing=annealing, iter.max=iter.max, tol=tol, trace=FALSE)
+		res <- .spatialDGMM_fit1(xgi, k=k, neighbors=attr(w, "neighbors"),
+			weights=w, annealing=annealing, init=init, iter.max=iter.max,
+			tol=tol, p0=p0, trace=FALSE, verbose=FALSE)
+		.message(".", appendLF=FALSE)
+		res
 	}, levels(groups), group.weights, SIMPLIFY=FALSE)
+	.message(" ")
 	names(results) <- levels(groups)
 	results
 }
 
 .spatialDGMM_collate <- function(results, groups) {
-	classnames <- unlist(lapply(levels(groups),
-		function(gi) paste(gi, unique(results[[gi]]$class), sep=".")))
+	classnames <- unlist(lapply(levels(groups), function(gi)
+		paste(gi, seq_along(results[[gi]]$params$mu), sep=".")))
 	class <- character(length(groups))
 	for ( gi in levels(groups) ) {
 		class[groups == gi] <- paste(gi, results[[gi]]$class, sep=".")
@@ -106,11 +107,13 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			function(res) res$params$alpha)), classnames),
 		beta=setNames(unlist(lapply(results,
 			function(res) res$params$beta)), levels(groups)))
-	list(params=params, class=class, probability=probability)
+	if ( !is.null(results[[1]]$params$trace) )
+		params$trace <- lapply(results, function(res) res$params$trace)
+	list(params=params, probability=probability, class=class)
 }
  
-.spatialDGMM_fit1 <- function(xi, k, neighbors, weights, annealing, tol,
-								iter.max, trace = FALSE, verbose = FALSE)
+.spatialDGMM_fit1 <- function(xi, k, neighbors, weights, annealing,
+								init, iter.max, tol, p0, trace, verbose)
 {
 	# simplify up spatial weights
 	weights <- lapply(weights, function(wt) wt$alpha * wt$beta)
@@ -122,18 +125,24 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	K <- gmm$G
 	N <- length(xi)
 	# initialize parameters (theta: mu, sigma, alpha, beta)
-	mu <- gmm$parameters$mean
-	sigma <- gmm$parameters$variance$sigmasq
+	if ( init == "kmeans" && K > 1 ) {
+		km <- kmeans(xi, centers=gmm$parameters$mean)
+		mu <- as.numeric(km$centers)
+		sigma <- as.numeric(tapply(xi, km$cluster, var))
+	} else {
+		mu <- gmm$parameters$mean
+		sigma <- gmm$parameters$variance$sigmasq
+	}
 	alpha <- rep(1, K)
 	beta <- 1
-	# initialize prior probability
-	prior <-matrix(1 / K, nrow=N, ncol=K)
 	# initialize p(x|mu, sigma)
 	px <- matrix(0, nrow=length(xi), ncol=length(mu))
 	for ( j in 1:length(mu) )
 		px[,j] <- sqrt(1/(2 * pi * sigma[j])) * exp(-(xi - mu[j])^2 / (2 * sigma[j]))
+	# initialize prior probability
+	prior <- matrix(1 / K, nrow=N, ncol=K)
 	# initialize posterior probability p(z)
-	y <- regpr(px * prior / rowSums(px * prior))
+	y <- regpr(px * prior / rowSums(px * prior), lambda=p0)
 	# trace
 	trace_out <- list(
 		mu=matrix(ncol=K, nrow=iter.max),
@@ -151,7 +160,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	for ( i in 1:iter.max ) {
 		## E-step
 		E <- .spatialDGMM_Estep(xi, mu=mu, sigma=sigma,
-			alpha=alpha, beta=beta, y=y, spatial=spatial)
+			alpha=alpha, beta=beta, y=y, p0=p0, spatial=spatial)
 		# update spatial posterior
 		ybar <- E$ybar
 		# update prior
@@ -172,7 +181,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			M <- .spatialDGMM_Mstep(xi, mu=mu, sigma=sigma,
 				alpha=alpha, beta=beta, y=y, ybar=ybar, eta=exp(eta))
 			E <- .spatialDGMM_Estep(xi, mu=M$mu, sigma=M$sigma,
-				alpha=M$alpha, beta=M$beta, y=y, spatial=spatial)
+				alpha=M$alpha, beta=M$beta, y=y, p0=p0, spatial=spatial)
 			structure(E$error, loglik=E$loglik)
 		}
 		# find log(eta) that optimizes in direction of gradient
@@ -193,7 +202,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 				mu_a <- mu
 				mu_a[j] <- rnorm(1, mean=mu[j], sd=sqrt(sigma[j] * tt))
 				E <- .spatialDGMM_Estep(xi, mu=mu_a, sigma=sigma,
-					alpha=alpha, beta=beta, y=y, spatial=spatial)
+					alpha=alpha, beta=beta, y=y, p0=p0, spatial=spatial)
 				if ( E$loglik > loglik_a ) {
 					if ( verbose )
 						message("simulated annealing: loglik = ", E$loglik)
@@ -222,7 +231,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	list(params=params, probability=y, class=z)
 }
 
-.spatialDGMM_Estep <- function(xi, mu, sigma, alpha, beta, y, spatial)
+.spatialDGMM_Estep <- function(xi, mu, sigma, alpha, beta, y, p0, spatial)
 {
 	# calculate spatial posterior probability p(z|neighbors)
 	ybar <- mapply(function(nb, wt) {
@@ -237,12 +246,11 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	px <- matrix(0, nrow=length(xi), ncol=length(mu))
 	for ( j in 1:length(mu) )
 		px[,j] <- sqrt(1/(2 * pi * sigma[j])) * exp(-(xi - mu[j])^2 / (2 * sigma[j]))
-	px <- regpr(px)
 	# calculate prior probability
 	prior <- t(alpha^2 * t(ybar)^beta)
 	prior <- prior / rowSums(prior)
 	# calculate new posterior probability p(z)
-	y <- regpr(px * prior / rowSums(px * prior))
+	y <- regpr(px * prior / rowSums(px * prior), lambda=p0)
 	# log-likelihood and error function
 	loglik <- sum(log(rowSums(prior * px)))
 	error <- -sum(log(rowSums((prior * px)^y)))

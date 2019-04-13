@@ -25,9 +25,8 @@
 \usage{
 \S4method{spatialShrunkenCentroids}{SparseImagingExperiment,missing}(x, r = 1, k = 3, s = 0,
     method = c("gaussian", "adaptive"),
-    dist = "chebyshev", droplevels = TRUE,
-    init = NULL, iter.max = 10,
-    BPPARAM = bpparam(), \dots)
+    dist = "chebyshev", init = NULL,
+    iter.max = 10, BPPARAM = bpparam(), \dots)
 
 \S4method{spatialShrunkenCentroids}{SparseImagingExperiment,ANY}(x, y, r = 1, s = 0,
     method = c("gaussian", "adaptive"),
@@ -56,7 +55,6 @@
     \item{s}{The sparsity thresholding parameter by which to shrink the t-statistics.}
     \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
     \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
-    \item{droplevels}{Should the result use exactly 'k' clusters, or should the empty clusters be dropped?}
     \item{init}{Initial cluster configuration. This may either be the result of a call to \code{spatialKMeans}, or a list of factors giving the initial cluster configurations.}
     \item{iter.max}{The maximum number of clustering iterations.}
     \item{priors}{Prior probabilities on the classes for classification. Improper priors will be normalized automatically.}

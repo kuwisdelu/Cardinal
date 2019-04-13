@@ -20,8 +20,7 @@
 \S4method{spatialFastmap}{SparseImagingExperiment}(x, r = 1, ncomp = 3,
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", tol.dist = 1e-9,
-    iter.max = 1,
-    BPPARAM = bpparam(), \dots)
+    iter.max = 1, BPPARAM = bpparam(), \dots)
 
 \S4method{spatialFastmap}{SImageSet}(x, r = 1, ncomp = 3,
     method = c("gaussian", "adaptive"),
