@@ -29,6 +29,9 @@ importFrom("stats",
 	"setNames",
 	"smooth.spline")
 
+importFrom("nlme",
+	"lme")
+
 importFrom("parallel",
 	"nextRNGStream")
 
@@ -458,7 +461,8 @@ exportMethods(
 	"spatialFastmap",
 	"spatialKMeans",
 	"spatialShrunkenCentroids",
-	"spatialDGMM")
+	"spatialDGMM",
+	"segmentationTest")
 
 exportMethods("topLabels")
 

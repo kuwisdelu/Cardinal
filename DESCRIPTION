@@ -12,8 +12,8 @@ License: Artistic-2.0
 Depends: BiocGenerics, BiocParallel, EBImage, graphics,
 		methods, S4Vectors, stats, ProtGenerics
 Imports: Biobase, dplyr, grid, irlba, lattice, Matrix,
-		matter, magrittr, mclust, parallel, signal, sp,
-		stats4, utils, viridisLite
+		matter, magrittr, mclust, nlme, parallel,
+		signal, sp, stats4, utils, viridisLite
 Suggests: BiocStyle, testthat
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 		MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,

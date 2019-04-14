@@ -237,11 +237,13 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		pdata$condition <- as.factor(pdata$condition)
 		n1 <- floor(npeaks / 2)
 		n2 <- npeaks - n1
+		diff <- c(rep(TRUE, n1), rep(FALSE, n2))
+		peakheight_circle <- abs(rnorm(npeaks, peakheight))
+		peakdiff_circle <- diff * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			circleA=c(abs(rnorm(npeaks, peakheight))),
-			circleB=c(abs(rnorm(n1, peakheight + peakdiff)),
-				abs(rnorm(n2, peakheight))),
-			diff=c(rep(TRUE, n1), rep(FALSE, n2)))
+			circleA=peakheight_circle,
+			circleB=peakheight_circle + peakdiff_circle,
+			diff=diff)
 	} else if ( i == 5L ) {
 		# topleft circle + bottomright square w/ diff conditions
 		rx <- ncol / 4
@@ -294,15 +296,18 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
+		diff.circle <- c(rep(TRUE, n1), rep(FALSE, n2 + n3))
+		diff.square <- c(rep(FALSE, n1 + n2), rep(TRUE, n3))
+		peakheight_circle <- c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3))
+		peakheight_square <- c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2])))
+		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
+		peakdiff_square <- diff.square * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			circleA=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
-			squareA=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
-			circleB=c(abs(rnorm(n1, peakheight[1] + peakdiff)),
-				abs(rnorm(n2, peakheight[1])), rep(0, n3)),
-			squareB=c(rep(0, n1), abs(rnorm(n2, peakheight[2])),
-				abs(rnorm(n3, peakheight[2] + peakdiff))),
-			diff.circle=c(rep(TRUE, n1), rep(FALSE, n2 + n3)),
-			diff.square=c(rep(FALSE, n1 + n2), rep(TRUE, n3)))
+			circleA=peakheight_circle,
+			circleB=peakheight_circle + peakdiff_circle,
+			squareA=peakheight_square,
+			squareB=peakheight_square + peakdiff_square,
+			diff.circle=diff.circle, diff.square=diff.square)
 	}  else if ( i == 6L ) {
 		# 2 corner squares + centered circle w/ diff conditions
 		rx <- ncol / 4
@@ -355,14 +360,15 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
+		diff.circle <- c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3))
+		peakheight_circle <- c(rep(0, n1), abs(rnorm(n2, peakheight[3])), rep(0, n3))
+		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
 			square1=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
 			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
-			circleA=c(rep(0, n1), abs(rnorm(n2, peakheight[3])),
-				rep(0, n3)),
-			circleB=c(rep(0, n1), abs(rnorm(n2, peakheight[3] + peakdiff)),
-				rep(0, n3)),
-			diff.circle=c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3)))
+			circleA=peakheight_circle,
+			circleB=peakheight_circle + peakdiff_circle,
+			diff.circle=diff.circle)
 	}
 	list(pixelData=pdata, featureData=fdata)
 }

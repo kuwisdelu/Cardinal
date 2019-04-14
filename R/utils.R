@@ -56,7 +56,9 @@ groupVar <- function(x, f) {
 }
 
 # Mode of a vector
-Mode <- function(x) {
+Mode <- function(x, na.rm = FALSE) {
+	if ( na.rm )
+		x <- x[!is.na(x)]
 	ux <- unique(x)
 	ux[which.max(tabulate(match(x, ux)))]
 }
@@ -94,6 +96,23 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 		iter <- iter + 1
 	}
 	i
+}
+
+# Vectorized maximum
+is.max <- function(x) {
+	i <- seq_along(x)
+	i == which.max(x)
+}
+
+# Vectorized maximum
+is.min <- function(x) {
+	i <- seq_along(x)
+	i == which.min(x)
+}
+
+# Match score between two logical vectors
+Mscore <- function(a, b) {
+	sum(a & b, na.rm=TRUE) / sum(a | b, na.rm=TRUE)
 }
 
 # Bin a signal
@@ -307,7 +326,11 @@ match.method <- function(method, options) {
 ## Programmatic friendly version of base::subset
 subset_data <- function(data, subset, select, drop=FALSE) {
 	subset <- subset_rows(data, subset=subset)
-	data[subset,select,drop=drop]
+	if ( missing(select) ) {
+		data[subset,,drop=drop]
+	} else {
+		data[subset,select,drop=drop]
+	}
 }
 
 ## Programmatic friendly version of base::subset (only return row indices)

@@ -144,6 +144,7 @@ setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardize
 #### Data alignment and matching ####
 ## ----------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
+setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalized"))
 
 #### Data transformation ####
 ## --------------------------
@@ -169,6 +170,8 @@ setGeneric("spatialFastmap", function(x, ...) standardGeneric("spatialFastmap"))
 setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 setGeneric("spatialDGMM", function(x, ...) standardGeneric("spatialDGMM"))
+setGeneric("meansTest", function(x, ...) standardGeneric("meansTest"))
+setGeneric("segmentationTest", function(x, ...) standardGeneric("segmentationTest"))
 
 #### Results ####
 ## --------------

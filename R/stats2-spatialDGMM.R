@@ -15,7 +15,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			gname <- groups
 			groups <- as.factor(pixelData(x)[[gname]])
 		} else {
-			gname <- "..groups.."
+			gname <- "..group.."
 			groups <- as.factor(groups)
 		}
 		method <- match.arg(method)
@@ -135,8 +135,13 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	K <- gmm$G
 	N <- length(xi)
 	# initialize parameters (theta: mu, sigma, alpha, beta)
-	if ( init == "kmeans" && K > 1 ) {
-		km <- kmeans(xi, centers=gmm$parameters$mean)
+	km <- try(kmeans(xi, centers=gmm$parameters$mean), silent=TRUE)
+	if ( inherits(km, "try-error") ) {
+		ncl <- 0
+	} else {
+		ncl <- tabulate(km$cluster)
+	}
+	if ( init == "kmeans" && K > 1 && all(ncl > 1) ) {
 		mu <- as.numeric(km$centers)
 		sigma <- as.numeric(tapply(xi, km$cluster, var))
 	} else {
