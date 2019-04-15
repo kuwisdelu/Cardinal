@@ -19,7 +19,9 @@
 \alias{show,ResultImagingExperiment-method}
 \alias{$,ResultImagingExperiment-method}
 \alias{[[,ResultImagingExperiment,ANY,ANY-method}
-\alias{[[,ResultImagingExperiment,ANY,missing-method}
+\alias{[[<-,ResultImagingExperiment,ANY,ANY-method}
+\alias{[[,SparseResultImagingExperiment,ANY,ANY-method}
+\alias{[[<-,SparseResultImagingExperiment,ANY,ANY-method}
 \alias{modelData,ResultImagingExperiment-method}
 \alias{modelData<-,ResultImagingExperiment-method}
 \alias{resultData,ResultImagingExperiment,ANY-method}

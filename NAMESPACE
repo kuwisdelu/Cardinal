@@ -21,9 +21,11 @@ importFrom("stats",
 	"runif",
 	"convolve",
 	"kmeans",
+	"lm",
 	"median",
 	"optim",
 	"p.adjust",
+	"pf",
 	"pt",
 	"quantile",
 	"setNames",
@@ -462,6 +464,7 @@ exportMethods(
 	"spatialKMeans",
 	"spatialShrunkenCentroids",
 	"spatialDGMM",
+	"meansTest",
 	"segmentationTest")
 
 exportMethods("topLabels")

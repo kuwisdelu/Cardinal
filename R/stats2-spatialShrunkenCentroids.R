@@ -241,7 +241,8 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	options(Cardinal.verbose=FALSE)
 	on.exit(options(Cardinal.verbose=verbose))
 	# calculate class centers
-	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
+	..class.. <- class
+	centers <- summarize(x, .stat="mean", .group_by=..class.., BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
@@ -253,7 +254,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 			"pixel" = (xbl - centers[,iclass[i],drop=FALSE])^2)
 	}
 	# calculate standard errors
-	wcss <- summarize(x, .stat="sum", .group_by=class, .tform=tform, BPPARAM=BPPARAM)
+	wcss <- summarize(x, .stat="sum", .group_by=..class.., .tform=tform, BPPARAM=BPPARAM)
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
 	s0 <- median(sd)

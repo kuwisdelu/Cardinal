@@ -67,8 +67,8 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	proj <- resultData(fastmap, list(r=r), "scores")
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
-	cluster <- factor(cluster)
-	centers <- summarize(x, .stat="mean", .group_by=cluster, ...)$mean
+	..cluster.. <- cluster <- factor(cluster)
+	centers <- summarize(x, .stat="mean", .group_by=..cluster.., ...)$mean
 	do_rbind <- function(ans) do.call("rbind", ans)
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {

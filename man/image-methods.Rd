@@ -13,6 +13,7 @@
 \alias{image,SpatialKMeans2-method}
 \alias{image,SpatialShrunkenCentroids2-method}
 \alias{image,SpatialDGMM-method}
+\alias{image,SegmentationTest-method}
 
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
@@ -120,6 +121,9 @@
 
 \S4method{image}{SpatialDGMM}(x, formula,
     values = c("probability", "class"), \dots)
+
+\S4method{image}{SegmentationTest}(x, formula,
+    values = "mapping", \dots)
 
 #### Methods for Cardinal 1.x classes ####
 

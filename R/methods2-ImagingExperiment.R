@@ -180,10 +180,10 @@ setMethod("pixels", "ImagingExperiment",
 
 ## Subsetting
 
-setMethod("[[", c("ImagingExperiment", "ANY", "missing"),
+setMethod("[[", c("ImagingExperiment", "ANY", "ANY"),
 	function(x, i, j, ...) pixelData(x)[[i, ...]])
 
-setReplaceMethod("[[", c("ImagingExperiment", "ANY", "missing"),
+setReplaceMethod("[[", c("ImagingExperiment", "ANY", "ANY"),
 	function(x, i, j, ..., value) {
 		pixelData(x)[[i, ...]] <- value
 		x

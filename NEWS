@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 2.1.12 [2019-4-14]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'meansTest' method for linear model-based
+        hypothesis tests of mean-summarized images
+    o Added 'segmentationTest' method for linear model-based
+        hypothesis tests of spatially-segmented images
+
 CHANGES IN VERSION 2.1.11 [2019-4-12]
 -----------------------------------
 

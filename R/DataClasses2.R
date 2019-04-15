@@ -130,6 +130,10 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 
 .SpatialDGMM <- setClass("SpatialDGMM", contains="SparseResultImagingExperiment")
 
+.MeansTest <- setClass("MeansTest", contains="SparseResultImagingExperiment")
+
+.SegmentationTest <- setClass("SegmentationTest", contains="SparseResultImagingExperiment")
+
 #### Class for mass spectrometry imaging experiments ####
 ## -------------------------------------------------------
 .MSImagingExperiment <- setClass("MSImagingExperiment",

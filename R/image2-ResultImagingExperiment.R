@@ -86,6 +86,17 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+## SegmentationTest
+
+setMethod("image",
+	signature = c(x = "SegmentationTest"),
+	function(x, formula, values = "mapping", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
 # format formula
 
 .formula_pixel_results <- function(x, lhs) {

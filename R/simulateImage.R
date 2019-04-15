@@ -24,13 +24,13 @@ simulateImage <- function(pixelData, featureData, preset,
 	nm <- names(pData)
 	rngseeds <- generateRNGStreams(nlevels(run(pData)))
 	data <- bpmapply(function(run, seed) {
-		.message("simulating ", nrow(pData), " spectra for ", run)
+		ii <- run == run(pData)
+		.message("simulating ", sum(ii), " spectra for ", run)
 		# set up RNG streams
 		oseed <- getRNGStream()
 		on.exit(setRNGStream(oseed))
 		setRNGStream(seed)
 		# extract run information
-		ii <- run == run(pData)
 		classes <- as.matrix(pData[ii,,drop=FALSE], slots=FALSE)
 		peaks <- as.matrix(fData[,nm,drop=FALSE], slots=FALSE)
 		runerr <- rnorm(nrow(peaks), sd=sdrun)

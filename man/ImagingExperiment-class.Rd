@@ -40,8 +40,8 @@
 \alias{length,ImagingExperiment-method}
 \alias{$,ImagingExperiment-method}
 \alias{$<-,ImagingExperiment-method}
-\alias{[[,ImagingExperiment,ANY,missing-method}
-\alias{[[<-,ImagingExperiment,ANY,missing-method}
+\alias{[[,ImagingExperiment,ANY,ANY-method}
+\alias{[[<-,ImagingExperiment,ANY,ANY-method}
 \alias{dim,ImagingExperiment-method}
 \alias{dimnames,ImagingExperiment-method}
 \alias{imageData,ImagingExperiment-method}

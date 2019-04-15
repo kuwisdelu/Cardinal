@@ -57,7 +57,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			elementMetadata=pixelData(x),
 			metadata=list(
 				resultType=list(
-					feature=character(),
+					feature=NULL,
 					pixel=c("class", "pixel")),
 				modelParam=c("r", "k", "feature"),
 				groupsName=gname,

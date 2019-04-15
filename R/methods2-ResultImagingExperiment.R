@@ -72,7 +72,34 @@ setMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
 		if ( !missing(j) ) {
 			x@resultData[[i]][[j]]
 		} else {
-			lapply(x@resultData, function(res) res[[i]])
+			x@resultData[[i]]
+		}
+	})
+
+setReplaceMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
+	function(x, i, j, ..., value) {
+		if ( !missing(j) ) {
+			x@resultData[[i]][[j]] <- value
+		} else {
+			x@resultData[[i]] <- value
+		}
+	})
+
+setMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
+	function(x, i, j, ...) {
+		if ( !missing(j) ) {
+			x@resultData[[i]][[j]]
+		} else {
+			x@resultData[[i]]
+		}
+	})
+
+setReplaceMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
+	function(x, i, j, ..., value) {
+		if ( !missing(j) ) {
+			x@resultData[[i]][[j]] <- value
+		} else {
+			x@resultData[[i]] <- value
 		}
 	})
 
