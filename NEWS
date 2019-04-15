@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 2.1.13 [2019-4-15]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added message when printing a 'SparseImagingExperiment'
+        object without un-applied pre-processing steps
+
+BUG FIXES
+
+    o Added C routine registration with "C_" prefix for .Call
+    o Cleaned up '.o' objects in /src created by accident
+
 CHANGES IN VERSION 2.1.12 [2019-4-14]
 -----------------------------------
 
