@@ -45,7 +45,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 }
 
 .readImzML <- function(file) {
-	parse <- .Call("readImzML", normalizePath(file), PACKAGE="Cardinal")
+	parse <- .Call("C_readImzML", normalizePath(file), PACKAGE="Cardinal")
 	len <- sapply(parse$experimentMetadata, nchar, type="bytes")
 	experimentMetadata <- parse$experimentMetadata[len > 0]
 	new("MSImagingInfo",

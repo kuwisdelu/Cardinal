@@ -217,6 +217,9 @@ setMethod("combine", "SparseImagingExperiment",
 
 setMethod("show", "SparseImagingExperiment",
 	function(object) {
+		# check for processing
+		.checkForIncompleteProcessing(object, message.only=TRUE)
+		# print parent information
 		callNextMethod(object)
 		# processingData()
 		if ( length(processingData(object)) > 0L ) {

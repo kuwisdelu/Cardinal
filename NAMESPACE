@@ -485,4 +485,4 @@ export(
 
 export("%>%")
 
-useDynLib("Cardinal")
+useDynLib("Cardinal", .registration=TRUE)

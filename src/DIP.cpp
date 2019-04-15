@@ -1,23 +1,20 @@
 
-#include <R.h>
-#include <Rinternals.h>
+#include "Cardinal.h"
 
 #include <cmath>
-
-#include "utils.h"
 
 template<typename T>
 SEXP gaussian_filter(SEXP x, int r, double sd, SEXP weights)
 {
-	int nrow = nrows(x);
-	int ncol = ncols(x);
+	int nrow = Rf_nrows(x);
+	int ncol = Rf_ncols(x);
 	int size = static_cast<int>(pow((2 * static_cast<double>(r)) + 1, 2));
 	double gamma[size];
 	double alpha, beta;
 	int ix = 0;
 	T * pX = DataPtr<T>(x);
 	SEXP x_new;
-	PROTECT(x_new = allocMatrix(REALSXP, nrow, ncol));
+	PROTECT(x_new = Rf_allocMatrix(REALSXP, nrow, ncol));
     double * pX_new = REAL(x_new);
 	for ( int i = 0; i < nrow; ++i ) {
 		for ( int j = 0; j < ncol; ++j ) {
@@ -78,13 +75,13 @@ SEXP gaussian_filter(SEXP x, int r, double sd, SEXP weights)
 
 template<typename T>
 SEXP bilateral_weights(SEXP x, int r) {
-	int nrow = nrows(x);
-	int ncol = ncols(x);
+	int nrow = Rf_nrows(x);
+	int ncol = Rf_ncols(x);
 	int size = pow((2 * r) + 1, 2);
 	int ix = 0;
 	T * pX = DataPtr<T>(x);
 	SEXP beta;
-	PROTECT(beta = allocMatrix(REALSXP, size, LENGTH(x)));
+	PROTECT(beta = Rf_allocMatrix(REALSXP, size, LENGTH(x)));
     double * pBeta = REAL(beta);
 	for ( int i = 0; i < nrow; ++i ) {
 		for ( int j = 0; j < ncol; ++j ) {
@@ -142,9 +139,9 @@ extern "C" {
 
 	SEXP gaussianFilter(SEXP x, SEXP r, SEXP sd) {
 		if ( TYPEOF(x) == INTSXP )
-			return gaussian_filter<int>(x, asInteger(r), asReal(sd), R_NilValue);
+			return gaussian_filter<int>(x, Rf_asInteger(r), Rf_asReal(sd), R_NilValue);
 		else if ( TYPEOF(x) == REALSXP )
-			return gaussian_filter<double>(x, asInteger(r), asReal(sd), R_NilValue);
+			return gaussian_filter<double>(x, Rf_asInteger(r), Rf_asReal(sd), R_NilValue);
 		else
 			return R_NilValue;
 	}
@@ -153,14 +150,14 @@ extern "C" {
 		SEXP x_new, weights;
 		if ( TYPEOF(x) == INTSXP )
 		{
-			PROTECT(weights = bilateral_weights<int>(x, asInteger(r)));
-			PROTECT(x_new = gaussian_filter<int>(x, asInteger(r), asReal(sd), weights));
+			PROTECT(weights = bilateral_weights<int>(x, Rf_asInteger(r)));
+			PROTECT(x_new = gaussian_filter<int>(x, Rf_asInteger(r), Rf_asReal(sd), weights));
 			UNPROTECT(2);
 		}
 		else if ( TYPEOF(x) == REALSXP )
 		{
-			PROTECT(weights = bilateral_weights<double>(x, asInteger(r)));
-			PROTECT(x_new = gaussian_filter<double>(x, asInteger(r), asReal(sd), weights));
+			PROTECT(weights = bilateral_weights<double>(x, Rf_asInteger(r)));
+			PROTECT(x_new = gaussian_filter<double>(x, Rf_asInteger(r), Rf_asReal(sd), weights));
 			UNPROTECT(2);
 		}
 		else

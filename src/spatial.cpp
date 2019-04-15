@@ -1,10 +1,7 @@
 
-#include <R.h>
-#include <Rinternals.h>
+#include "Cardinal.h"
 
 #include <cmath>
-
-#include "utils.h"
 
 #define RADIAL		1
 #define MANHATTAN 	2
@@ -14,15 +11,15 @@
 template<typename T>
 SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups, SEXP dist)
 {
-	int nrow = nrows(coord);
-	int ncol = ncols(coord);
+	int nrow = Rf_nrows(coord);
+	int ncol = Rf_ncols(coord);
 	T * pCoord = DataPtr<T>(coord);
 	int * pGroups = INTEGER(groups);
 	bool is_neighbor[nrow];
-	double R = asReal(r);
-	int dist_type = asInteger(dist);
+	double R = Rf_asReal(r);
+	int dist_type = Rf_asInteger(dist);
 	SEXP ret;
-	PROTECT(ret = allocVector(VECSXP, nrow));
+	PROTECT(ret = Rf_allocVector(VECSXP, nrow));
 	for ( int i = 0; i < nrow; ++i ) {
 		int num_neighbors = 0;
 		for ( int ii = 0; ii < nrow; ++ii ) {
@@ -66,7 +63,7 @@ SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups, SEXP dist)
 				num_neighbors++;
 		}
 		SEXP neighbors;
-		PROTECT(neighbors = allocVector(INTSXP, num_neighbors));
+		PROTECT(neighbors = Rf_allocVector(INTSXP, num_neighbors));
 		int * pNeighbors = INTEGER(neighbors);
 		int ix = 0;
 		for ( int ii = 0; ii < nrow && ix < num_neighbors; ++ii ) {
@@ -86,21 +83,21 @@ template<typename T>
 SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
 {
 	int ngroups = LENGTH(block_info);
-	int nrow = nrows(coord);
-	int ncol = ncols(coord);
+	int nrow = Rf_nrows(coord);
+	int ncol = Rf_ncols(coord);
 	T * pCoord = DataPtr<T>(coord);
 	double * pR = REAL(r);
 	int * pGroups = INTEGER(groups);
 	bool within_block[nrow];
 	SEXP ret;
-	PROTECT(ret = allocVector(VECSXP, ngroups));
+	PROTECT(ret = Rf_allocVector(VECSXP, ngroups));
 	for ( int k = 0; k < ngroups; ++k ) {
 		SEXP info = VECTOR_ELT(block_info, k);
 		SEXP limits = VECTOR_ELT(info, 0);
 		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
-		int nblocks = nrows(VECTOR_ELT(info, 1));
+		int nblocks = Rf_nrows(VECTOR_ELT(info, 1));
 		SEXP blocks;
-		PROTECT(blocks = allocVector(VECSXP, nblocks));
+		PROTECT(blocks = Rf_allocVector(VECSXP, nblocks));
 		for ( int l = 0; l < nblocks; ++l ) {
 			int blocksize = 0;
 			for ( int i = 0; i < nrow; ++i ) {
@@ -123,7 +120,7 @@ SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
 					blocksize++;
 			}
 			SEXP members;
-			PROTECT(members = allocVector(INTSXP, blocksize));
+			PROTECT(members = Rf_allocVector(INTSXP, blocksize));
 			int * pMembers = INTEGER(members);
 			int ix = 0;
 			for ( int ii = 0; ii < nrow && ix < blocksize; ++ii ) {
@@ -147,7 +144,7 @@ SEXP which_spatial_blocks(SEXP neighbors, SEXP blocks)
 	int npixels = LENGTH(neighbors);
 	int nblocks = LENGTH(blocks);
 	SEXP which;
-	PROTECT(which = allocVector(INTSXP, npixels));
+	PROTECT(which = Rf_allocVector(INTSXP, npixels));
 	int * pWhich = INTEGER(which);
 	int * pNeighbors, * pBlock;
 	for ( int i = 0; i < npixels; ++i ) {
@@ -185,12 +182,12 @@ template<typename T>
 SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 {
 	int nrow = LENGTH(neighbors);
-	int ncol = ncols(coord);
-	int n = nrows(coord);
+	int ncol = Rf_ncols(coord);
+	int n = Rf_nrows(coord);
 	T * pCoord = DataPtr<T>(coord);
 	int * ii = INTEGER(neighbors);
 	SEXP offsets;
-	PROTECT(offsets = allocMatrix(DataType<T>(), nrow, ncol));
+	PROTECT(offsets = Rf_allocMatrix(DataType<T>(), nrow, ncol));
 	T * pOffsets = DataPtr<T>(offsets);
 	for ( int i = 0; i < nrow; ++i )
 		for ( int j = 0; j < ncol; ++j )
@@ -202,16 +199,16 @@ SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 template<typename T1, typename T2>
 SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 {
-	int npixels = nrows(offsets);
-	int ndims = ncols(offsets);
+	int npixels = Rf_nrows(offsets);
+	int ndims = Rf_ncols(offsets);
 	SEXP w, alpha, beta;
-	PROTECT(w = allocVector(VECSXP, 2));
-	PROTECT(alpha = allocVector(REALSXP, npixels));
-	PROTECT(beta = allocVector(REALSXP, npixels));
+	PROTECT(w = Rf_allocVector(VECSXP, 2));
+	PROTECT(alpha = Rf_allocVector(REALSXP, npixels));
+	PROTECT(beta = Rf_allocVector(REALSXP, npixels));
 	double * pAlpha = REAL(alpha);
 	double * pBeta = REAL(beta);
 	T2 * pOffsets = DataPtr<T2>(offsets);
-	int k; // center pixel
+	int k = 0; // center pixel
 	bool is_center;
 	double d1, d2, sigma2 = sigma * sigma;
 	for ( int i = 0; i < npixels; ++i ) {
@@ -229,7 +226,7 @@ SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 	}
 	if ( bilateral )
 	{
-		int nfeatures = nrows(x);
+		int nfeatures = Rf_nrows(x);
 		T1 * pX = DataPtr<T1>(x);
 		double lambda, max_d2 = R_NegInf, min_d2 = R_PosInf;
 		for ( int i = 0; i < npixels; ++i ) {
@@ -264,10 +261,10 @@ template<typename T1, typename T2>
 double get_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
 	SEXP x_weights, SEXP y_weights, double tol_dist)
 {
-	int ndims = ncols(x_offsets);
-	int nfeatures = nrows(x);
-	int nx = ncols(x);
-	int ny = ncols(y);
+	int ndims = Rf_ncols(x_offsets);
+	int nfeatures = Rf_nrows(x);
+	int nx = Rf_ncols(x);
+	int ny = Rf_ncols(y);
 	double * x_alpha = REAL(VECTOR_ELT(x_weights, 0));
 	double * x_beta = REAL(VECTOR_ELT(x_weights, 1));
 	double * y_alpha = REAL(VECTOR_ELT(y_weights, 0));
@@ -301,16 +298,16 @@ double get_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
 template<typename T1, typename T2>
 SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 {
-	int nfeatures = nrows(x);
-	int npixels = ncols(x);
-	int nrefs = ncols(ref);
+	int nfeatures = Rf_nrows(x);
+	int npixels = Rf_ncols(x);
+	int nrefs = Rf_ncols(ref);
 	double * alpha = REAL(VECTOR_ELT(weights, 0));
 	double * beta = REAL(VECTOR_ELT(weights, 1));
 	double * sdev = REAL(sd);
 	T1 * pX = DataPtr<T1>(x);
 	T2 * pRef = DataPtr<T2>(ref);
 	SEXP scores;
-	PROTECT(scores = allocVector(REALSXP, nrefs));
+	PROTECT(scores = Rf_allocVector(REALSXP, nrefs));
 	double * pScores = REAL(scores);
 	double a_i, dist, wsum = 0;
 	for ( int i = 0; i < npixels; ++i )
@@ -357,22 +354,22 @@ extern "C" {
 
 	SEXP spatialOffsets(SEXP coord, SEXP neighbors, SEXP k) {
 		if ( TYPEOF(coord) == INTSXP )
-			return get_spatial_offsets<int>(coord, neighbors, asInteger(k));
+			return get_spatial_offsets<int>(coord, neighbors, Rf_asInteger(k));
 		else if ( TYPEOF(coord) == REALSXP )
-			return get_spatial_offsets<double>(coord, neighbors, asInteger(k));
+			return get_spatial_offsets<double>(coord, neighbors, Rf_asInteger(k));
 		else
 			return R_NilValue;
 	}
 
 	SEXP spatialWeights(SEXP x, SEXP offsets, SEXP sigma, SEXP bilateral) {
 		if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == INTSXP )
-			return get_spatial_weights<int,int>(x, offsets, asReal(sigma), asLogical(bilateral));
+			return get_spatial_weights<int,int>(x, offsets, Rf_asReal(sigma), Rf_asLogical(bilateral));
 		else if ( TYPEOF(x) == INTSXP && TYPEOF(offsets) == REALSXP )
-			return get_spatial_weights<int,double>(x, offsets, asReal(sigma), asLogical(bilateral));
+			return get_spatial_weights<int,double>(x, offsets, Rf_asReal(sigma), Rf_asLogical(bilateral));
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == INTSXP )
-			return get_spatial_weights<double,int>(x, offsets, asReal(sigma), asLogical(bilateral));
+			return get_spatial_weights<double,int>(x, offsets, Rf_asReal(sigma), Rf_asLogical(bilateral));
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(offsets) == REALSXP )
-			return get_spatial_weights<double,double>(x, offsets, asReal(sigma), asLogical(bilateral));
+			return get_spatial_weights<double,double>(x, offsets, Rf_asReal(sigma), Rf_asLogical(bilateral));
 		else
 			return R_NilValue;
 	}
@@ -381,13 +378,13 @@ extern "C" {
 		SEXP x_weights, SEXP y_weights, SEXP tol_dist)
 	{
 		if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == INTSXP )
-			return ScalarReal(get_spatial_distance<int,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+			return Rf_ScalarReal(get_spatial_distance<int,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, Rf_asReal(tol_dist)));
 		else if ( TYPEOF(x) == INTSXP && TYPEOF(x_offsets) == REALSXP )
-			return ScalarReal(get_spatial_distance<int,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+			return Rf_ScalarReal(get_spatial_distance<int,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, Rf_asReal(tol_dist)));
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == INTSXP )
-			return ScalarReal(get_spatial_distance<double,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+			return Rf_ScalarReal(get_spatial_distance<double,int>(x, y, x_offsets, y_offsets, x_weights, y_weights, Rf_asReal(tol_dist)));
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(x_offsets) == REALSXP )
-			return ScalarReal(get_spatial_distance<double,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, asReal(tol_dist)));
+			return Rf_ScalarReal(get_spatial_distance<double,double>(x, y, x_offsets, y_offsets, x_weights, y_weights, Rf_asReal(tol_dist)));
 		else
 			return R_NilValue;
 	}

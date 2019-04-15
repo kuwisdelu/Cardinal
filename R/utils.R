@@ -180,7 +180,7 @@ localMaximaLogical <- function(x, window=5, ...) {
 	if ( length(x) < 3L )
 		return(logical(length(x)))
 	halfWindow <- floor(min(window, length(x)) / 2)
-	.Call("localMaxima", x, halfWindow, PACKAGE="Cardinal")
+	.Call("C_localMaxima", x, halfWindow, PACKAGE="Cardinal")
 }
 
 # Local maxima in a window
@@ -238,7 +238,7 @@ dynamicAlign <- function(x, y, gap=0, score=function(x, y) ifelse(x==y, 1, -1), 
 	tracking.mat[,1] <- 0L
 	tracking.mat[1,] <- 1L
 	tracking.mat[1,1] <- 2L
-	aligned <- .Call("dynAlign", similarity.mat,
+	aligned <- .Call("C_dynAlign", similarity.mat,
 		score.mat, tracking.mat, gap, PACKAGE="Cardinal")
 	names(aligned) <- c("x", "y")
 	aligned$x <- aligned$x[aligned$x > 0]

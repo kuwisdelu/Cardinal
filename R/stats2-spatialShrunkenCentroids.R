@@ -282,7 +282,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	fun <- function(xbl) {
 		idx <- attr(xbl, "idx")
 		f <- function(i, neighbors, weights) {
-			.Call("spatialZScores", xbl[,neighbors,drop=FALSE],
+			.Call("C_spatialZScores", xbl[,neighbors,drop=FALSE],
 				centers, weights, sd + s0, PACKAGE="Cardinal")
 		}
 		mapply(f, attr(xbl, "centers"),

@@ -199,10 +199,16 @@ setMethod("process", "SparseImagingExperiment",
 	list(index=index, info=mcols(y)[index,], queue=y[index])
 }
 
-.checkForIncompleteProcessing <- function(object) {
+.checkForIncompleteProcessing <- function(object, message.only = FALSE) {
 	anyPending <- any(mcols(processingData(object))$pending)
-	if ( anyPending && !.Cardinal$processing )
-		.stop("object has incomplete processing steps; ",
+	if ( anyPending && !.Cardinal$processing ) {
+		msg <- paste0("object has incomplete processing steps; ",
 			"run process() on it to apply them")
+		if ( message.only ) {
+			.message("Note: ", msg)
+		} else {
+			.stop(msg)
+		}
+	}
 }
 

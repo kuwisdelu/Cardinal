@@ -1,6 +1,5 @@
 
-#include <R.h>
-#include <Rinternals.h>
+#include "Cardinal.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -10,14 +9,13 @@
 #include "obo/OBO-UO.h"
 
 #include "pugixml.h"
-#include "utils.h"
 
 // utility functions for parsing imzML
 
 SEXP get_listElement(SEXP x, const char * name)
 {
 	SEXP elt = R_NilValue;
-	SEXP names = getAttrib(x, R_NamesSymbol);
+	SEXP names = Rf_getAttrib(x, R_NamesSymbol);
 	for ( int i = 0; i < LENGTH(x); i++ )
 		if( strcmp(CHAR(STRING_ELT(names, i)), name) == 0 ) {
 			elt = VECTOR_ELT(x, i);
@@ -642,57 +640,57 @@ SEXP read_experiment_metadata(pugi::xml_node root) {
 
 	SEXP imzList, imzNames;
 
-	PROTECT(imzList = allocVector(VECSXP, 15));
-	PROTECT(imzNames = allocVector(STRSXP, 15));
+	PROTECT(imzList = Rf_allocVector(VECSXP, 15));
+	PROTECT(imzNames = Rf_allocVector(STRSXP, 15));
 
 	pugi::xml_node fileContent = root.child("mzML").child("fileDescription").child("fileContent");
 
-	SET_STRING_ELT(imzNames, 0, mkChar(MS_SPECTRUM_REPRESENTATION_NAME));
-	SET_VECTOR_ELT(imzList, 0, mkString(get_spectrum_representation(fileContent)));
+	SET_STRING_ELT(imzNames, 0, Rf_mkChar(MS_SPECTRUM_REPRESENTATION_NAME));
+	SET_VECTOR_ELT(imzList, 0, Rf_mkString(get_spectrum_representation(fileContent)));
 
-	SET_STRING_ELT(imzNames, 1, mkChar(IMS_IBD_BINARY_TYPE_NAME));
-	SET_VECTOR_ELT(imzList, 1, mkString(get_ibd_binary_type(root)));
+	SET_STRING_ELT(imzNames, 1, Rf_mkChar(IMS_IBD_BINARY_TYPE_NAME));
+	SET_VECTOR_ELT(imzList, 1, Rf_mkString(get_ibd_binary_type(root)));
 
-	SET_STRING_ELT(imzNames, 2, mkChar(IMS_UNIVERSALLY_UNIQUE_IDENTIFIER_NAME));
-	SET_VECTOR_ELT(imzList, 2, mkString(get_ibd_identification(root)));
+	SET_STRING_ELT(imzNames, 2, Rf_mkChar(IMS_UNIVERSALLY_UNIQUE_IDENTIFIER_NAME));
+	SET_VECTOR_ELT(imzList, 2, Rf_mkString(get_ibd_identification(root)));
 
-	SET_STRING_ELT(imzNames, 3, mkChar(IMS_IBD_MD5_NAME));
-	SET_VECTOR_ELT(imzList, 3, mkString(get_ibd_md5(root)));
+	SET_STRING_ELT(imzNames, 3, Rf_mkChar(IMS_IBD_MD5_NAME));
+	SET_VECTOR_ELT(imzList, 3, Rf_mkString(get_ibd_md5(root)));
 
-	SET_STRING_ELT(imzNames, 4, mkChar(IMS_IBD_SHA1_NAME));
-	SET_VECTOR_ELT(imzList, 4, mkString(get_ibd_sha1(root)));
+	SET_STRING_ELT(imzNames, 4, Rf_mkChar(IMS_IBD_SHA1_NAME));
+	SET_VECTOR_ELT(imzList, 4, Rf_mkString(get_ibd_sha1(root)));
 
-	SET_STRING_ELT(imzNames, 5, mkChar(MS_CONTACT_NAME_NAME));
-	SET_VECTOR_ELT(imzList, 5, mkString(get_contact_name(root)));
+	SET_STRING_ELT(imzNames, 5, Rf_mkChar(MS_CONTACT_NAME_NAME));
+	SET_VECTOR_ELT(imzList, 5, Rf_mkString(get_contact_name(root)));
 
-	SET_STRING_ELT(imzNames, 6, mkChar(MS_CONTACT_ORGANIZATION_NAME));
-	SET_VECTOR_ELT(imzList, 6, mkString(get_contact_organization(root)));
+	SET_STRING_ELT(imzNames, 6, Rf_mkChar(MS_CONTACT_ORGANIZATION_NAME));
+	SET_VECTOR_ELT(imzList, 6, Rf_mkString(get_contact_organization(root)));
 
-	SET_STRING_ELT(imzNames, 7, mkChar(MS_CONTACT_ADDRESS_NAME));
-	SET_VECTOR_ELT(imzList, 7, mkString(get_contact_address(root)));
+	SET_STRING_ELT(imzNames, 7, Rf_mkChar(MS_CONTACT_ADDRESS_NAME));
+	SET_VECTOR_ELT(imzList, 7, Rf_mkString(get_contact_address(root)));
 
-	SET_STRING_ELT(imzNames, 8, mkChar(MS_CONTACT_EMAIL_NAME));
-	SET_VECTOR_ELT(imzList, 8, mkString(get_contact_email(root)));
+	SET_STRING_ELT(imzNames, 8, Rf_mkChar(MS_CONTACT_EMAIL_NAME));
+	SET_VECTOR_ELT(imzList, 8, Rf_mkString(get_contact_email(root)));
 
-	SET_STRING_ELT(imzNames, 9, mkChar(IMS_LINE_SCAN_DIRECTION_NAME));
-	SET_VECTOR_ELT(imzList, 9, mkString(get_line_scan_direction(root)));
+	SET_STRING_ELT(imzNames, 9, Rf_mkChar(IMS_LINE_SCAN_DIRECTION_NAME));
+	SET_VECTOR_ELT(imzList, 9, Rf_mkString(get_line_scan_direction(root)));
 
-	SET_STRING_ELT(imzNames, 10, mkChar(IMS_LINESCAN_SEQUENCE_NAME));
-	SET_VECTOR_ELT(imzList, 10, mkString(get_scan_direction(root)));
+	SET_STRING_ELT(imzNames, 10, Rf_mkChar(IMS_LINESCAN_SEQUENCE_NAME));
+	SET_VECTOR_ELT(imzList, 10, Rf_mkString(get_scan_direction(root)));
 
-	SET_STRING_ELT(imzNames, 11, mkChar(IMS_SCAN_PATTERN_NAME));
-	SET_VECTOR_ELT(imzList, 11, mkString(get_scan_pattern(root)));
+	SET_STRING_ELT(imzNames, 11, Rf_mkChar(IMS_SCAN_PATTERN_NAME));
+	SET_VECTOR_ELT(imzList, 11, Rf_mkString(get_scan_pattern(root)));
 
-	SET_STRING_ELT(imzNames, 12, mkChar(IMS_SCAN_TYPE_NAME));
-	SET_VECTOR_ELT(imzList, 12, mkString(get_scan_type(root)));
+	SET_STRING_ELT(imzNames, 12, Rf_mkChar(IMS_SCAN_TYPE_NAME));
+	SET_VECTOR_ELT(imzList, 12, Rf_mkString(get_scan_type(root)));
 
-	SET_STRING_ELT(imzNames, 13, mkChar(IMS_MAX_COUNT_OF_PIXELS_X_NAME));
-	SET_VECTOR_ELT(imzList, 13, ScalarInteger(get_max_count_of_pixel_x(root)));
+	SET_STRING_ELT(imzNames, 13, Rf_mkChar(IMS_MAX_COUNT_OF_PIXELS_X_NAME));
+	SET_VECTOR_ELT(imzList, 13, Rf_ScalarInteger(get_max_count_of_pixel_x(root)));
 
-	SET_STRING_ELT(imzNames, 14, mkChar(IMS_MAX_COUNT_OF_PIXELS_Y_NAME));
-	SET_VECTOR_ELT(imzList, 14, ScalarInteger(get_max_count_of_pixel_y(root)));
+	SET_STRING_ELT(imzNames, 14, Rf_mkChar(IMS_MAX_COUNT_OF_PIXELS_Y_NAME));
+	SET_VECTOR_ELT(imzList, 14, Rf_ScalarInteger(get_max_count_of_pixel_y(root)));
 
-	setAttrib(imzList, R_NamesSymbol, imzNames);
+	Rf_setAttrib(imzList, R_NamesSymbol, imzNames);
 	UNPROTECT(2);
 
 	return imzList;
@@ -708,42 +706,42 @@ void write_experiment_metadata(pugi::xml_node root, SEXP experimentMetadata)
 	pugi::xml_node spectrum1 = refGroupList.find_child_by_attribute("referenceableParamGroup", "id", "spectrum1");
 
 	SEXP spectrumRepresentation = get_listElement(experimentMetadata, MS_SPECTRUM_REPRESENTATION_NAME);
-	if ( !isNull(spectrumRepresentation) ) {
-		set_spectrum_representation(fileContent, CHAR(asChar(spectrumRepresentation)));
-		set_spectrum_representation(spectrum1, CHAR(asChar(spectrumRepresentation)));
+	if ( !Rf_isNull(spectrumRepresentation) ) {
+		set_spectrum_representation(fileContent, CHAR(Rf_asChar(spectrumRepresentation)));
+		set_spectrum_representation(spectrum1, CHAR(Rf_asChar(spectrumRepresentation)));
 	}
 
 	SEXP ibdIdentification = get_listElement(experimentMetadata, IMS_UNIVERSALLY_UNIQUE_IDENTIFIER_NAME);
-	if ( !isNull(ibdIdentification) )
-		set_ibd_identification(root, CHAR(asChar(ibdIdentification)));
+	if ( !Rf_isNull(ibdIdentification) )
+		set_ibd_identification(root, CHAR(Rf_asChar(ibdIdentification)));
 
 	SEXP ibdMD5 = get_listElement(experimentMetadata, IMS_IBD_MD5_NAME);
-	if ( !isNull(ibdMD5) )
-		set_ibd_md5(root, CHAR(asChar(ibdMD5)));
+	if ( !Rf_isNull(ibdMD5) )
+		set_ibd_md5(root, CHAR(Rf_asChar(ibdMD5)));
 
 	SEXP ibdSHA1 = get_listElement(experimentMetadata, IMS_IBD_SHA1_NAME);
-	if ( !isNull(ibdSHA1) )
-		set_ibd_sha1(root, CHAR(asChar(ibdSHA1)));
+	if ( !Rf_isNull(ibdSHA1) )
+		set_ibd_sha1(root, CHAR(Rf_asChar(ibdSHA1)));
 
 	SEXP ibdBinaryType = get_listElement(experimentMetadata, IMS_IBD_BINARY_TYPE_NAME);
-	if ( !isNull(ibdBinaryType) )
-		set_ibd_binary_type(root, CHAR(asChar(ibdBinaryType)));
+	if ( !Rf_isNull(ibdBinaryType) )
+		set_ibd_binary_type(root, CHAR(Rf_asChar(ibdBinaryType)));
 
 	SEXP lineScanDirection = get_listElement(experimentMetadata, IMS_LINE_SCAN_DIRECTION_NAME);
-	if ( !isNull(lineScanDirection) )
-		set_line_scan_direction(root, CHAR(asChar(lineScanDirection)));
+	if ( !Rf_isNull(lineScanDirection) )
+		set_line_scan_direction(root, CHAR(Rf_asChar(lineScanDirection)));
 
 	SEXP scanType = get_listElement(experimentMetadata, IMS_SCAN_TYPE_NAME);
-	if ( !isNull(scanType) )
-		set_scan_type(root, CHAR(asChar(scanType)));
+	if ( !Rf_isNull(scanType) )
+		set_scan_type(root, CHAR(Rf_asChar(scanType)));
 
 	SEXP scanPattern = get_listElement(experimentMetadata, IMS_SCAN_PATTERN_NAME);
-	if ( !isNull(scanPattern) )
-		set_scan_pattern(root, CHAR(asChar(scanPattern)));
+	if ( !Rf_isNull(scanPattern) )
+		set_scan_pattern(root, CHAR(Rf_asChar(scanPattern)));
 
 	SEXP scanDirection = get_listElement(experimentMetadata, IMS_LINESCAN_SEQUENCE_NAME);
-	if ( !isNull(scanDirection) )
-		set_scan_direction(root, CHAR(asChar(scanDirection)));
+	if ( !Rf_isNull(scanDirection) )
+		set_scan_direction(root, CHAR(Rf_asChar(scanDirection)));
 }
 
 // read all spectrum-level metadata
@@ -754,13 +752,13 @@ SEXP read_spectrum_metadata(pugi::xml_node run) {
 
 	SEXP spectrumList, spectrumNames;
 
-	PROTECT(spectrumList = allocVector(VECSXP, 2));
-	PROTECT(spectrumNames = allocVector(STRSXP, 2));
+	PROTECT(spectrumList = Rf_allocVector(VECSXP, 2));
+	PROTECT(spectrumNames = Rf_allocVector(STRSXP, 2));
 
 	SEXP scanPolarity, spectrumRepresentation;
 
-	PROTECT(scanPolarity = allocVector(STRSXP, n));
-	PROTECT(spectrumRepresentation = allocVector(STRSXP, n));
+	PROTECT(scanPolarity = Rf_allocVector(STRSXP, n));
+	PROTECT(spectrumRepresentation = Rf_allocVector(STRSXP, n));
 
 	pugi::xml_node spectrum = run.child("spectrumList").first_child();
 
@@ -769,20 +767,20 @@ SEXP read_spectrum_metadata(pugi::xml_node run) {
 	while ( i < n && spectrum )
 	{
 		SET_STRING_ELT(spectrumRepresentation, i,
-			mkChar(get_spectrum_representation(spectrum)));
+			Rf_mkChar(get_spectrum_representation(spectrum)));
 		SET_STRING_ELT(scanPolarity, i,
-			mkChar(get_scan_polarity(spectrum)));
+			Rf_mkChar(get_scan_polarity(spectrum)));
 
 		spectrum = spectrum.next_sibling();
 		i++;
 	}
 
-	SET_STRING_ELT(spectrumNames, 0, mkChar(MS_SPECTRUM_REPRESENTATION_NAME));
+	SET_STRING_ELT(spectrumNames, 0, Rf_mkChar(MS_SPECTRUM_REPRESENTATION_NAME));
 	SET_VECTOR_ELT(spectrumList, 0, spectrumRepresentation);
-	SET_STRING_ELT(spectrumNames, 1, mkChar(MS_SCAN_POLARITY_NAME));
+	SET_STRING_ELT(spectrumNames, 1, Rf_mkChar(MS_SCAN_POLARITY_NAME));
 	SET_VECTOR_ELT(spectrumList, 1, scanPolarity);
 
-	setAttrib(spectrumList, R_NamesSymbol, spectrumNames);
+	Rf_setAttrib(spectrumList, R_NamesSymbol, spectrumNames);
 	UNPROTECT(4);
 
 	return spectrumList;
@@ -795,20 +793,20 @@ SEXP read_scan_metadata(pugi::xml_node run) {
 
 	SEXP scanList, scanNames;
 
-	PROTECT(scanList = allocVector(VECSXP, 6));
-	PROTECT(scanNames = allocVector(STRSXP, 6));
+	PROTECT(scanList = Rf_allocVector(VECSXP, 6));
+	PROTECT(scanNames = Rf_allocVector(STRSXP, 6));
 
 	SEXP x, y, z;
 
 	SEXP x3d, y3d, z3d;
 
-	PROTECT(x = allocVector(INTSXP, n));
-	PROTECT(y = allocVector(INTSXP, n));
-	PROTECT(z = allocVector(INTSXP, n));
+	PROTECT(x = Rf_allocVector(INTSXP, n));
+	PROTECT(y = Rf_allocVector(INTSXP, n));
+	PROTECT(z = Rf_allocVector(INTSXP, n));
 	
-	PROTECT(x3d = allocVector(REALSXP, n));
-	PROTECT(y3d = allocVector(REALSXP, n));
-	PROTECT(z3d = allocVector(REALSXP, n));
+	PROTECT(x3d = Rf_allocVector(REALSXP, n));
+	PROTECT(y3d = Rf_allocVector(REALSXP, n));
+	PROTECT(z3d = Rf_allocVector(REALSXP, n));
 
 	int * pX = INTEGER(x);
 	int * pY = INTEGER(y);
@@ -836,21 +834,21 @@ SEXP read_scan_metadata(pugi::xml_node run) {
 		i++;
 	}
 
-	SET_STRING_ELT(scanNames, 0, mkChar(IMS_POSITION_X_NAME));
+	SET_STRING_ELT(scanNames, 0, Rf_mkChar(IMS_POSITION_X_NAME));
 	SET_VECTOR_ELT(scanList, 0, x);
-	SET_STRING_ELT(scanNames, 1, mkChar(IMS_POSITION_Y_NAME));
+	SET_STRING_ELT(scanNames, 1, Rf_mkChar(IMS_POSITION_Y_NAME));
 	SET_VECTOR_ELT(scanList, 1, y);
-	SET_STRING_ELT(scanNames, 2, mkChar(IMS_POSITION_Z_NAME));
+	SET_STRING_ELT(scanNames, 2, Rf_mkChar(IMS_POSITION_Z_NAME));
 	SET_VECTOR_ELT(scanList, 2, z);
 
-	SET_STRING_ELT(scanNames, 3, mkChar("3DPositionX"));
+	SET_STRING_ELT(scanNames, 3, Rf_mkChar("3DPositionX"));
 	SET_VECTOR_ELT(scanList, 3, x3d);
-	SET_STRING_ELT(scanNames, 4, mkChar("3DPositionY"));
+	SET_STRING_ELT(scanNames, 4, Rf_mkChar("3DPositionY"));
 	SET_VECTOR_ELT(scanList, 4, y3d);
-	SET_STRING_ELT(scanNames, 5, mkChar("3DPositionZ"));
+	SET_STRING_ELT(scanNames, 5, Rf_mkChar("3DPositionZ"));
 	SET_VECTOR_ELT(scanList, 5, z3d);
 
-	setAttrib(scanList, R_NamesSymbol, scanNames);
+	Rf_setAttrib(scanList, R_NamesSymbol, scanNames);
 	UNPROTECT(8);
 
 	return scanList;
@@ -863,15 +861,15 @@ SEXP read_mz_metadata(pugi::xml_node run) {
 
 	SEXP binaryDataArrayList, binaryDataArrayNames;
 
-	PROTECT(binaryDataArrayList = allocVector(VECSXP, 4));
-	PROTECT(binaryDataArrayNames = allocVector(STRSXP, 4));
+	PROTECT(binaryDataArrayList = Rf_allocVector(VECSXP, 4));
+	PROTECT(binaryDataArrayNames = Rf_allocVector(STRSXP, 4));
 
 	SEXP offset, arrayLength, encodedLength, dataType;
 
-	PROTECT(offset = allocVector(REALSXP, n));
-	PROTECT(arrayLength = allocVector(INTSXP, n));
-	PROTECT(encodedLength = allocVector(INTSXP, n));
-	PROTECT(dataType = allocVector(STRSXP, n));
+	PROTECT(offset = Rf_allocVector(REALSXP, n));
+	PROTECT(arrayLength = Rf_allocVector(INTSXP, n));
+	PROTECT(encodedLength = Rf_allocVector(INTSXP, n));
+	PROTECT(dataType = Rf_allocVector(STRSXP, n));
 	
 	double * pOffset = REAL(offset);
 	int * pArrayLength = INTEGER(arrayLength);
@@ -890,22 +888,22 @@ SEXP read_mz_metadata(pugi::xml_node run) {
 		pEncodedLength[i] = get_external_encoded_length(binaryDataArray);
 		
 		SET_STRING_ELT(dataType, i,
-			mkChar(get_binary_data_type(binaryDataArray)));
+			Rf_mkChar(get_binary_data_type(binaryDataArray)));
 
 		spectrum = spectrum.next_sibling();
 		i++;
 	}
 
-	SET_STRING_ELT(binaryDataArrayNames, 0, mkChar(IMS_EXTERNAL_OFFSET_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 0, Rf_mkChar(IMS_EXTERNAL_OFFSET_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 0, offset);
-	SET_STRING_ELT(binaryDataArrayNames, 1, mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 1, Rf_mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 1, arrayLength);
-	SET_STRING_ELT(binaryDataArrayNames, 2, mkChar(IMS_EXTERNAL_ENCODED_LENGTH_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 2, Rf_mkChar(IMS_EXTERNAL_ENCODED_LENGTH_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 2, encodedLength);
-	SET_STRING_ELT(binaryDataArrayNames, 3, mkChar(MS_BINARY_DATA_TYPE_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 3, Rf_mkChar(MS_BINARY_DATA_TYPE_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 3, dataType);
 
-	setAttrib(binaryDataArrayList, R_NamesSymbol, binaryDataArrayNames);
+	Rf_setAttrib(binaryDataArrayList, R_NamesSymbol, binaryDataArrayNames);
 	UNPROTECT(6);
 
 	return binaryDataArrayList;
@@ -918,15 +916,15 @@ SEXP read_intensity_metadata(pugi::xml_node run) {
 
 	SEXP binaryDataArrayList, binaryDataArrayNames;
 
-	PROTECT(binaryDataArrayList = allocVector(VECSXP, 4));
-	PROTECT(binaryDataArrayNames = allocVector(STRSXP, 4));
+	PROTECT(binaryDataArrayList = Rf_allocVector(VECSXP, 4));
+	PROTECT(binaryDataArrayNames = Rf_allocVector(STRSXP, 4));
 
 	SEXP offset, arrayLength, encodedLength, dataType;
 
-	PROTECT(offset = allocVector(REALSXP, n));
-	PROTECT(arrayLength = allocVector(INTSXP, n));
-	PROTECT(encodedLength = allocVector(INTSXP, n));
-	PROTECT(dataType = allocVector(STRSXP, n));
+	PROTECT(offset = Rf_allocVector(REALSXP, n));
+	PROTECT(arrayLength = Rf_allocVector(INTSXP, n));
+	PROTECT(encodedLength = Rf_allocVector(INTSXP, n));
+	PROTECT(dataType = Rf_allocVector(STRSXP, n));
 	
 	double * pOffset = REAL(offset);
 	int * pArrayLength = INTEGER(arrayLength);
@@ -945,22 +943,22 @@ SEXP read_intensity_metadata(pugi::xml_node run) {
 		pEncodedLength[i] = get_external_encoded_length(binaryDataArray);
 
 		SET_STRING_ELT(dataType, i,
-			mkChar(get_binary_data_type(binaryDataArray)));
+			Rf_mkChar(get_binary_data_type(binaryDataArray)));
 
 		spectrum = spectrum.next_sibling();
 		i++;
 	}
 
-	SET_STRING_ELT(binaryDataArrayNames, 0, mkChar(IMS_EXTERNAL_OFFSET_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 0, Rf_mkChar(IMS_EXTERNAL_OFFSET_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 0, offset);
-	SET_STRING_ELT(binaryDataArrayNames, 1, mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 1, Rf_mkChar(IMS_EXTERNAL_ARRAY_LENGTH_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 1, arrayLength);
-	SET_STRING_ELT(binaryDataArrayNames, 2, mkChar(IMS_EXTERNAL_ENCODED_LENGTH_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 2, Rf_mkChar(IMS_EXTERNAL_ENCODED_LENGTH_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 2, encodedLength);
-	SET_STRING_ELT(binaryDataArrayNames, 3, mkChar(MS_BINARY_DATA_TYPE_NAME));
+	SET_STRING_ELT(binaryDataArrayNames, 3, Rf_mkChar(MS_BINARY_DATA_TYPE_NAME));
 	SET_VECTOR_ELT(binaryDataArrayList, 3, dataType);
 
-	setAttrib(binaryDataArrayList, R_NamesSymbol, binaryDataArrayNames);
+	Rf_setAttrib(binaryDataArrayList, R_NamesSymbol, binaryDataArrayNames);
 	UNPROTECT(6);
 
 	return binaryDataArrayList;
@@ -1015,22 +1013,22 @@ void write_scan_metadata(pugi::xml_node run, SEXP scanMetadata)
 		sprintf(buffer, "%d", INTEGER(y)[i]);
 		set_position_y(spectrum, buffer);
 
-		if ( !isNull(z) ) {
+		if ( !Rf_isNull(z) ) {
 			sprintf(buffer, "%d", INTEGER(z)[i]);
 			set_position_z(spectrum, buffer);
 		}
 
-		if ( !isNull(x3d) ) {
+		if ( !Rf_isNull(x3d) ) {
 			sprintf(buffer, "%f", REAL(x3d)[i]);
 			set_3D_position_x(spectrum, buffer);
 		}
 
-		if ( !isNull(y3d) ) {
+		if ( !Rf_isNull(y3d) ) {
 			sprintf(buffer, "%f", REAL(y3d)[i]);
 			set_3D_position_y(spectrum, buffer);
 		}
 
-		if ( !isNull(z3d) ) {
+		if ( !Rf_isNull(z3d) ) {
 			sprintf(buffer, "%f", REAL(z3d)[i]);
 			set_3D_position_z(spectrum, buffer);
 		}
@@ -1137,27 +1135,27 @@ extern "C"
 
 		SEXP imzML, imzMLNames;
 
-		PROTECT(imzML = allocVector(VECSXP, 4));
-		PROTECT(imzMLNames = allocVector(STRSXP, 4));
+		PROTECT(imzML = Rf_allocVector(VECSXP, 4));
+		PROTECT(imzMLNames = Rf_allocVector(STRSXP, 4));
 
 		pugi::xml_node run = doc.child("mzML").child("run");
 
-		SET_STRING_ELT(imzMLNames, 0, mkChar("experimentMetadata"));
+		SET_STRING_ELT(imzMLNames, 0, Rf_mkChar("experimentMetadata"));
 		SET_VECTOR_ELT(imzML, 0, read_experiment_metadata(doc.root()));
 
-		SET_STRING_ELT(imzMLNames, 1, mkChar("scanList"));
+		SET_STRING_ELT(imzMLNames, 1, Rf_mkChar("scanList"));
 		SET_VECTOR_ELT(imzML, 1, read_scan_metadata(run));
 
-		SET_STRING_ELT(imzMLNames, 2, mkChar("mzArrayList"));
+		SET_STRING_ELT(imzMLNames, 2, Rf_mkChar("mzArrayList"));
 		SET_VECTOR_ELT(imzML, 2, read_mz_metadata(run));
 
-		SET_STRING_ELT(imzMLNames, 3, mkChar("intensityArrayList"));
+		SET_STRING_ELT(imzMLNames, 3, Rf_mkChar("intensityArrayList"));
 		SET_VECTOR_ELT(imzML, 3, read_intensity_metadata(run));
 
-		// SET_STRING_ELT(imzMLNames, 4, mkChar("spectrumList"));
+		// SET_STRING_ELT(imzMLNames, 4, Rf_mkChar("spectrumList"));
 		// SET_VECTOR_ELT(imzML, 4, read_spectrum_metadata(run));
 
-		setAttrib(imzML, R_NamesSymbol, imzMLNames);
+		Rf_setAttrib(imzML, R_NamesSymbol, imzMLNames);
 		UNPROTECT(2);
 
 		return imzML;
@@ -1169,10 +1167,10 @@ extern "C"
 		const char * tmp = CHAR(STRING_ELT(tmpl, 0));
 		pugi::xml_document doc;
 		pugi::xml_parse_result result = doc.load_string(tmp);
-		if ( !result ) return ScalarLogical(false);
+		if ( !result ) return Rf_ScalarLogical(false);
 
 		SEXP experimentMetadata = get_listElement(metadata, "experimentMetadata");
-		if ( !isNull(experimentMetadata) )
+		if ( !Rf_isNull(experimentMetadata) )
 			write_experiment_metadata(doc.root(), experimentMetadata);
 
 		pugi::xml_node run = doc.child("mzML").child("run");
@@ -1182,21 +1180,21 @@ extern "C"
 			write_spectra(run, n);
 
 		SEXP scanList = get_listElement(metadata, "scanList");
-		if ( !isNull(scanList) )
+		if ( !Rf_isNull(scanList) )
 			write_scan_metadata(run, scanList);
 
 		SEXP mzArrayList = get_listElement(metadata, "mzArrayList");
-		if ( !isNull(mzArrayList) )
+		if ( !Rf_isNull(mzArrayList) )
 			write_mz_metadata(run, mzArrayList);
 
 		SEXP intensityArrayList = get_listElement(metadata, "intensityArrayList");
-		if ( !isNull(intensityArrayList) )
+		if ( !Rf_isNull(intensityArrayList) )
 			write_intensity_metadata(run, intensityArrayList);
 
 		const char * filename = CHAR(STRING_ELT(filepath, 0));
 		bool is_saved = doc.save_file(filename);
 
-		return ScalarLogical(is_saved);
+		return Rf_ScalarLogical(is_saved);
 	}
 
 } // end extern 'C' (for calling from R)

@@ -1,24 +1,21 @@
 
-#include <R.h>
-#include <Rinternals.h>
-
-#include "utils.h"
+#include "Cardinal.h"
 
 template<typename T>
 SEXP dyn_align(SEXP similarity, SEXP score, SEXP tracking, SEXP gap)
 {
 	// gap penalty
-	double gap_penalty = asReal(gap);
+	double gap_penalty = Rf_asReal(gap);
 	// matrix pointers
 	T * pSimilarity = DataPtr<T>(similarity);
-	int nrow = nrows(score);
-	int ncol = ncols(score);
+	int nrow = Rf_nrows(score);
+	int ncol = Rf_ncols(score);
 	double * pScore = REAL(score);
 	int * pTracking = INTEGER(tracking);
 	SEXP ret, x, y;
-	PROTECT(ret = allocVector(VECSXP, 2));
-	PROTECT(x = allocVector(INTSXP, nrow - 1));
-	PROTECT(y = allocVector(INTSXP, ncol - 1));
+	PROTECT(ret = Rf_allocVector(VECSXP, 2));
+	PROTECT(x = Rf_allocVector(INTSXP, nrow - 1));
+	PROTECT(y = Rf_allocVector(INTSXP, ncol - 1));
 	SET_VECTOR_ELT(ret, 0, x);
 	SET_VECTOR_ELT(ret, 1, y);
 	UNPROTECT(2);

@@ -1,14 +1,11 @@
 
-#include <R.h>
-#include <Rinternals.h>
-
-#include "utils.h"
+#include "Cardinal.h"
 
 template<typename T>
 SEXP find_local_maxima(SEXP x, int r) {
 	int len = LENGTH(x);
 	SEXP isLocMax;
-	PROTECT(isLocMax = allocVector(LGLSXP, len));
+	PROTECT(isLocMax = Rf_allocVector(LGLSXP, len));
 	int * locmax = LOGICAL(isLocMax);
 	for ( int i = 0; i < len; ++i )
 		locmax[i] = false;
@@ -46,9 +43,9 @@ extern "C" {
 	{
 		switch(TYPEOF(x)) {
 			case INTSXP:
-				return find_local_maxima<int>(x, asInteger(r));
+				return find_local_maxima<int>(x, Rf_asInteger(r));
 			case REALSXP:
-				return find_local_maxima<double>(x, asInteger(r));
+				return find_local_maxima<double>(x, Rf_asInteger(r));
 		}
 		return R_NilValue;
 	}

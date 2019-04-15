@@ -50,7 +50,7 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 		coord <- as.matrix(coord)
 	dist.types <- c("radial", "manhattan", "minkowski", "chebyshev")
 	dist <- factor(match.arg(dist, dist.types), levels=dist.types)
-	nb <- .Call("findNeighbors", coord, as.numeric(r),
+	nb <- .Call("C_findNeighbors", coord, as.numeric(r),
 		as.integer(groups), as.integer(dist), PACKAGE="Cardinal")
 	if ( matrix ) {
 		ones <- lapply(nb, function(i) rep_len(1L, length(i)))
@@ -217,7 +217,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 		grid <- as.matrix(expand.grid(grid))
 		list(limits=limits, grid=grid)
 	})
-	blocks <- .Call("findSpatialBlocks", as.matrix(coord(x)),
+	blocks <- .Call("C_findSpatialBlocks", as.matrix(coord(x)),
 		as.numeric(r), as.integer(groups), block_info, PACKAGE="Cardinal")
 	if ( length(blocks) > 1L ) {
 		blocks <- do.call("c", blocks)
@@ -240,7 +240,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 
 # assign pixels to a processing block
 .whichSpatialBlocks <- function(neighbors, blocks) {
-	.Call("whichSpatialBlocks", neighbors, blocks, PACKAGE="Cardinal")
+	.Call("C_whichSpatialBlocks", neighbors, blocks, PACKAGE="Cardinal")
 }
 
 # spatial offsets of a single neighborhood
@@ -249,7 +249,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 		coord <- as.matrix(coord)
 	if ( is.list(neighbors) )
 		neighbors <- neighbors[[i]]
-	offsets <- .Call("spatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
+	offsets <- .Call("C_spatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
 	colnames(offsets) <- colnames(coord)
 	offsets
 }
@@ -262,7 +262,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	}
 	if ( missing(sigma) )
 		sigma <- ((2 * max(abs(offsets))) + 1) / 4
-	weights <- .Call("spatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
+	weights <- .Call("C_spatialWeights", x, offsets, sigma, bilateral, PACKAGE="Cardinal")
 	names(weights) <- c("alpha", "beta")
 	weights
 }
@@ -279,7 +279,7 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 		xweights <- .spatialWeights(x, xoffsets, sigma, bilateral)
 	if ( missing(yweights) )
 		yweights <- .spatialWeights(y, yoffsets, sigma, bilateral)
-	.Call("spatialDistance", x, y, xoffsets, yoffsets,
+	.Call("C_spatialDistance", x, y, xoffsets, yoffsets,
 		xweights, yweights, tol.dist, PACKAGE="Cardinal")
 }
 
