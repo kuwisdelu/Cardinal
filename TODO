@@ -2,10 +2,15 @@
 TODO for Cardinal package
 -------------------------
 
-- Add spatial mixture model and segmentation tests
-- Finish adding all analysis methods for new classes
+- Add mzBin() processing method for binning mass spectra
+- Finish crossValidate() method with pre-processing
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
-- Add collect() method to pull data into in-memory R matrices
+- Add normalization to a reference m/z value
+- Add PCA and NMF (?) analysis methods
+- Deprecate and defunct stuff
+- Update documentation
+
+- Add ggplot2 and lattice graphics engine options
 - Multimodal image registration (w/ optical images, etc.)
 - More normalization methods (median, quantile, etc.)
 - Shiny GUI

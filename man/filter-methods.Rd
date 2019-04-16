@@ -36,7 +36,7 @@
     \item{.id}{Select rows (features) or columns (pixels) by index.}
     \item{.preserve}{Ignored, provided for compatibility with dplyr.}
     \item{.by}{Should the summarization be performed over pixels or features?}
-    \item{.group_by}{A column or list of columns (from the pixelData or featureData) to group by for summarization.}
+    \item{.group_by}{A grouping variable for summarization. The summary functions will be applied within each group.}
     \item{.stat}{Summary statistics to be computed in an efficient manner.}
     \item{.tform}{How should each feature-vector of image-vector be transformed before summarization?}
     \item{BPPARAM}{An optional \code{BiocParallelParam} instance to be passed to \code{bplapply()}.}

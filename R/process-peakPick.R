@@ -133,12 +133,13 @@ peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 
 .estimateNoiseAdaptive <- function(x, blocks=100, spar=1) {
 	t <- seq_along(x)
+	tint <- split_blocks(t, blocks=blocks)
 	xint <- split_blocks(x, blocks=blocks)
-	xlen <- sapply(xint, length)
-	noise <- sapply(xint, sd)
-	noise <- unlist(mapply(function(ns, ln) rep(ns, ln), noise, xlen))
-	cutoff <- smooth.spline(x=t, y=noise, spar=1)$y
-	noise <- interp1(t[noise <= cutoff], noise[noise <= cutoff], xi=t,
-		method="linear", extrap=median(noise, na.rm=TRUE))
+	kurt <- sapply(xint, kurtosis) - 3
+	noiseval <- sapply(xint, sd)[kurt < 1]
+	noiseidx <- sapply(tint, mean)[kurt < 1]
+	noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
+		extrap=mean(noiseval, na.rm=TRUE))
+	noise <- smooth.spline(x=t, y=noise, spar=1)$y
 	noise
 }
