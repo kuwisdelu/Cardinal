@@ -16,7 +16,7 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	if ( n > 1L ) {
 		x <- replicate(n, simulateSpectrum(mz=mz, intensity=mz,
 			from=from, to=to, by=by, sdpeaks=sdpeaks, sdpeakmult=sdpeakmult,
-			sdnoise=sdnoise, resolution=resolution, fmax=fmax,
+			sdnoise=sdnoise, sdmz=sdmz, resolution=resolution, fmax=fmax,
 			baseline=baseline, decay=decay, units=units)$intensity)
 	} else {
 		dmz <- mz / resolution

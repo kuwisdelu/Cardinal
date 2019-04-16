@@ -3,7 +3,7 @@
 ## ------------------------------
 
 setMethod("peakPick", "MSImagingExperiment",
-	function(object, method = c("simple", "adaptive"), ...)
+	function(object, method = c("mad", "simple", "adaptive"), ...)
 	{
 		fun <- peakPick_fun(peakPick.method2(method))
 		object <- process(object, fun=fun, ...,
@@ -55,14 +55,25 @@ peakPick_postfun <- function(object, ans, ...) {
 
 peakPick.method2 <- function(method) {
 	if ( is.character(method) ) {
-		method <- match.method(method, c("simple", "adaptive"))
+		method <- match.method(method, c("mad", "simple", "adaptive"))
 		switch(method,
+			mad = peakPick.mad,
 			simple = peakPick.simple2,
 			adaptive = peakPick.adaptive2,
 			match.fun(method))
 	} else {
 		match.fun(method)
 	}
+}
+
+peakPick.mad <- function(x, SNR=6, window=5, blocks=100, ...) {
+	noise <- .estimateNoiseMAD(x, blocks=blocks)
+	is.max <- localMaximaLogical(x, window=window)
+	peaks <- is.max & (x / noise) >= SNR
+	peaks[is.na(peaks)] <- FALSE
+	peaks <- which(peaks)
+	attr(peaks, "noise") <- noise
+	peaks
 }
 
 peakPick.simple2 <- function(x, ...) {
@@ -79,3 +90,16 @@ peakPick.adaptive2 <- function(x, ...) {
 	peaks
 }
 
+# Estimate noise in a signal
+
+.estimateNoiseMAD <- function(x, blocks=100) {
+	t <- seq_along(x)
+	xint <- split_blocks(x, blocks=blocks)
+	tint <- split_blocks(t, blocks=blocks)
+	noiseval <- sapply(xint, mad)
+	noiseidx <- sapply(tint, mean)
+	noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
+		extrap=median(noiseval, na.rm=TRUE))
+	noise <- supsmu(x=t, y=noise)$y
+	noise
+}
