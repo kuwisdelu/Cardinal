@@ -9,15 +9,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		e <- as.env(pixelData(x), enclos=parent.frame(2))
-		groups <- .try_eval(substitute(groups), envir=e)
-		if ( is.character(groups) && length(groups) == 1L && groups %in% names(pData(x)) ) {
-			gname <- groups
-			groups <- as.factor(pixelData(x)[[gname]])
-		} else {
-			gname <- "..group.."
-			groups <- as.factor(groups)
-		}
+		gname <- "..group.."
+		groups <- as.factor(groups)
 		method <- match.arg(method)
 		init <- match.arg(init)
 		.message("calculating spatial weights...")

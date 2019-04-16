@@ -3,7 +3,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 	function(x, fixed, random, groups = run(x),
 		BPPARAM = bpparam(), ...)
 	{
-		e1 <- environment(fixed)
+		e <- environment(fixed)
 		args <- .parseFormula2(fixed)
 		fnames <- names(args$rhs)
 		if ( !all(fnames %in% names(pixelData(x))) )
@@ -14,16 +14,9 @@ setMethod("meansTest", "SparseImagingExperiment",
 			.stop("conditioning variables via | not allowed")
 		fixed <- paste0("..response.. ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
-		environment(fixed) <- e1
-		e2 <- as.env(pixelData(x), enclos=parent.frame(2))
-		groups <- .try_eval(substitute(groups), envir=e2)
-		if ( is.character(groups) && length(groups) == 1L && groups %in% names(pData(x)) ) {
-			gname <- groups
-			groups <- as.factor(pixelData(x)[[gname]])
-		} else {
-			gname <- "..group.."
-			groups <- as.factor(groups)
-		}
+		environment(fixed) <- e
+		gname <- "..group.."
+		groups <- as.factor(groups)
 		if ( missing(random) ) {
 			random <- NULL
 			mixed <- FALSE

@@ -98,6 +98,30 @@ bisection.seq <- function(x, fun, ..., iter.max=20, epsilon=1e-6) {
 	i
 }
 
+# Sensitivity (true positive rate)
+sensitivity <- function(ref, pred, positive = levels(ref)[1]) {
+	nas <- is.na(ref) | is.na(pred)
+	if ( any(nas) ) {
+		ref <- ref[!nas]
+		pred <- pred[!nas]
+	}
+	real_pos <- ref %in% positive
+	pred_pos <- pred %in% positive
+	sum(real_pos & pred_pos) / sum(real_pos)
+}
+
+# Specificity (true negative rate)
+specificity <- function(ref, pred, positive = levels(ref)[1]) {
+	nas <- is.na(ref) | is.na(pred)
+	if (any(nas)) {
+		ref <- ref[!nas]
+		pred <- pred[!nas]
+	}
+	real_neg <- !ref %in% positive
+	pred_neg <- !pred %in% positive
+	sum(real_neg & pred_neg) / sum(real_neg)
+}
+
 # Vectorized maximum
 is.max <- function(x) {
 	i <- seq_along(x)

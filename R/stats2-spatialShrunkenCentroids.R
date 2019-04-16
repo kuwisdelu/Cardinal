@@ -87,15 +87,9 @@ setMethod("spatialShrunkenCentroids",
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
-		e <- as.env(pixelData(x), enclos=parent.frame(2))
-		y <- .try_eval(substitute(y), envir=e)
-		if ( is.character(y) && length(y) == 1L && y %in% names(pData(x)) ) {
-			yname <- y
-			y <- as.factor(pixelData(x)[[yname]])
-		} else {
-			yname <- "..y.."
-			y <- as.factor(y)
-		}
+		e <- as.env(pixelData(x), enclos=parent.frame(2), slots=FALSE)
+		yname <- "..response.."
+		y <- as.factor(y)
 		.message("calculating global centroid...")
 		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
 		.message("calculating spatial weights...")
@@ -108,7 +102,7 @@ setMethod("spatialShrunkenCentroids",
 		results <- bpmapply(function(ri, si, BPPARAM) {
 			.message("r = ", ri, ", ", "s = ", si, " ")
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
-			.spatialShrunkenCentroids2_fit(x, s=s,
+			.spatialShrunkenCentroids2_fit(x, s=si,
 				mean=mean, class=y, BPPARAM=BPPARAM)
 		}, par$r, par$s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		models <- DataFrame(rev(expand.grid(s=s, r=r)))
@@ -140,22 +134,12 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			.stop("'newx' must inherit from 'SparseImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		e <- as.env(pixelData(newx), enclos=parent.frame(2))
+		classref <- pixelData(object)[[metadata(object)$responseName]]
+		yname <- metadata(object)$responseName
 		if ( missing(newy) ) {
-			if ( !is.null(metadata(object)$responseName) ) {
-				newy <- pixelData(object)[[metadata(object)$responseName]]
-			} else {
-				newy <- NULL
-			}
+			newy <- NULL
 		} else {
-			newy <- .try_eval(substitute(newy), envir=e)
-			if ( is.character(newy) && length(newy) == 1L && newy %in% names(pData(object)) ) {
-				yname <- newy
-				newy <- as.factor(pixelData(object)[[yname]])
-			} else {
-				yname <- "response"
-				newy <- as.factor(newy)
-			}
+			newy <- as.factor(newy)
 		}
 		r <- modelData(object)$r
 		s <- modelData(object)$s
@@ -171,13 +155,8 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		results <- bpmapply(function(res, ri, si, BPPARAM) {
 			.message("r = ", ri, ", ", "s = ", si, " ")
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
-			if ( is.null(newy) ) {
-				class <- factor(seq_len(ncol(res$centers)))
-			} else {
-				class <- newy
-			}
 			pred <- .spatialShrunkenCentroids2_predict(newx,
-				r=ri, class=class, weights=weights, centers=res$centers,
+				r=ri, class=classref, weights=weights, centers=res$centers,
 				sd=res$sd, priors=priors, init=NULL, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
@@ -185,10 +164,14 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		if ( !is.null(newy) ) {
 			modelData(object)$accuracy <- sapply(results,
 				function(res) mean(res$class == newy, na.rm=TRUE))
+			pixelData(object)[[yname]] <- newy
 		}
 		resultData(object) <- as(results, "List")
 		object
 	})
+
+setMethod("fitted", "SpatialShrunkenCentroids2",
+	function(object, ...) object$class)
 
 setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	function(from) {
@@ -207,12 +190,12 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 {
 	iter <- 1
 	init <- TRUE
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
+	# suppress messages in inner parallel loop
+	verbose <- getOption("Cardinal.verbose")
+	on.exit(options(Cardinal.verbose=verbose))
 	# cluster the data
 	while ( iter <= iter.max ) {
+		options(Cardinal.verbose=FALSE) # suppress messages
 		if ( drop.empty )
 			class <- factor(as.integer(droplevels(class)))
 		fit <- .spatialShrunkenCentroids2_fit(x,
@@ -223,6 +206,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		class <- pred$class
 		init <- pred$init
 		iter <- iter + 1
+		options(Cardinal.verbose=TRUE) # print progress now
 		.message(".", appendLF=FALSE)
 	}
 	.message(" ")
@@ -236,10 +220,6 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
 	on.exit(options(Cardinal.progress=progress))
-	# suppress verbosity in inner parallel loop
-	verbose <- getOption("Cardinal.verbose")
-	options(Cardinal.verbose=FALSE)
-	on.exit(options(Cardinal.verbose=verbose))
 	# calculate class centers
 	..class.. <- class
 	centers <- summarize(x, .stat="mean", .group_by=..class.., BPPARAM=BPPARAM)

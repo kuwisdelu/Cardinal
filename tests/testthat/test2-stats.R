@@ -8,9 +8,9 @@ options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 register(SerialParam())
 
 set.seed(1)
-x <- simulateImage(preset=2, dim=c(10,10), sdnoise=0.5,
-	npeaks=10, peakheight=c(4,8), peakdiff=4,
-	representation="centroid")
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
+	peakheight=3, peakdiff=1, representation="centroid")
+
 y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
 test_that("spatialFastmap", {

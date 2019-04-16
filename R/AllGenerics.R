@@ -123,6 +123,7 @@ setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-
 
 #### Apply-like methods ####
 ## ------------------------
+setGeneric("crossValidate", function(.x, .y, .fun, ...) standardGeneric("crossValidate"))
 setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))
 setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
 setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))

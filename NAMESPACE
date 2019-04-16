@@ -426,6 +426,7 @@ exportMethods(
 	"spectrumRepresentation<-")
 
 exportMethods(
+	"crossValidate",
 	"cvApply",
 	"featureApply",
 	"pixelApply",
