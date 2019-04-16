@@ -52,11 +52,12 @@ normalize.method <- function(method, name.only=FALSE) {
 }
 
 normalize.tic <- function(x, tic=length(x), ...) {
-	auc <- sum(x)
+	auc <- sum(abs(x), na.rm=TRUE)
 	if ( auc > 0 ) {
-		tic * x / auc
+		xnew <- tic * x / auc
 	} else {
-		rep(0, length(x))
+		xnew <- rep(0, length(x))
 	}
+	replace(xnew, is.na(xnew), 0)
 }
 
