@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("new processing")
+context("summarize")
 
 test_that("summarize expr", {
 
@@ -38,33 +38,21 @@ test_that("summarize expr", {
 
 	expect_equal(ncol(tmp2), 2L)
 
-	tmp3 <- summarize(msdata, mean(.), sum(.), .group_by=cond)
+	tmp3 <- summarize(msdata, mean(.), sum(.), .group_by=msdata$cond)
 
 	expect_equal(ncol(tmp3), 4L)
 
-	tmp4 <- summarize(msdata, mean(.), sum(.), .group_by="cond")
+	tmp4 <- summarize(msdata, mean(.), sum(.), .group_by=run(msdata))
 
 	expect_equal(ncol(tmp4), 4L)
 
-	tmp5 <- summarize(msdata, mean(.), sum(.), .group_by=c("run", "cond"))
+	tmp5 <- summarize(msdata, mean, .group_by=run(msdata))
 
-	expect_equal(ncol(tmp5), 8L)
+	expect_equal(ncol(tmp5), 2L)
 
-	tmp6 <- summarize(msdata, mean(.), sum(.), .group_by=~run * cond)
+	tmp6 <- summarize(msdata, mean, sum, .group_by=run(msdata))
 
-	expect_equal(ncol(tmp6), 8L)
-
-	tmp7 <- summarize(msdata, mean(.), sum(.), .group_by=run(msdata))
-
-	expect_equal(ncol(tmp7), 4L)
-
-	tmp8 <- summarize(msdata, mean, .group_by=run(msdata))
-
-	expect_equal(ncol(tmp8), 2L)
-
-	tmp9 <- summarize(msdata, mean, sum, .group_by=run(msdata))
-
-	expect_equal(ncol(tmp9), 4L)
+	expect_equal(ncol(tmp6), 4L)
 
 })
 
@@ -99,13 +87,13 @@ test_that("summarize stat", {
 
 	expect_equal(ncol(tmp1), 1L)
 
-	tmp2 <- summarize(msdata, .stat=c("mean", "sum"), .group_by=cond)
+	tmp2 <- summarize(msdata, .stat=c("mean", "sum"), .group_by=msdata$cond)
 
 	expect_equal(ncol(tmp2), 4L)
 
-	tmp3 <- summarize(msdata, .stat=c("sd", "mean"), .group_by=~cond * run)
+	tmp3 <- summarize(msdata, .stat=c("sd", "mean"), .group_by=run(msdata))
 
-	expect_equal(ncol(tmp3), 8L)
+	expect_equal(ncol(tmp3), 4L)
 
 	tmp4 <- summarize(msdata, .group_by=run(msdata))
 
@@ -119,13 +107,13 @@ test_that("summarize stat", {
 
 	expect_equal(ncol(tmp5), 1L)
 
-	tmp6 <- summarize(msdata2, .stat="mean", .group_by=run)
+	tmp6 <- summarize(msdata2, .stat="mean", .group_by=run(msdata2))
 
 	expect_equal(ncol(tmp6), 2L)
 
-	tmp7 <- summarize(msdata2, .stat=c("mean", "sd"), .group_by=~run * cond)
+	tmp7 <- summarize(msdata2, .stat=c("mean", "sd"), .group_by=msdata$cond)
 
-	expect_equal(ncol(tmp7), 8L)
+	expect_equal(ncol(tmp7), 4L)
 
 	tmp8 <- summarize(msdata2, .stat=c("mean", "var", "min", "max"))
 

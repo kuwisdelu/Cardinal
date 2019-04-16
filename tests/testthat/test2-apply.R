@@ -9,7 +9,7 @@ register(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=2, nruns=3, npeaks=10, dim=c(10,10),
-	peakheight=3, peakdiff=1, representation="centroid")
+	peakheight=4, peakdiff=1, representation="centroid")
 
 y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
@@ -33,8 +33,8 @@ test_that("pixelApply", {
 
 test_that("cvApply", {
 
-	out <- cvApply(x, y, .fun=spatialShrunkenCentroids)
+	out <- crossValidate(x, y, .fun=spatialShrunkenCentroids)
 
-	expect_equal(out1, out2)
+	expect_true(validObject(out))
 
 })

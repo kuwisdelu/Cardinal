@@ -114,10 +114,10 @@ setMethod("plot",
 			colnames(x)
 		}
 	})
-	if ( is.null(metadata(object)$modelParam) ) {
+	if ( is.null(metadata(object)$parameters) ) {
 		pnm <- names(modelData(object))
 	} else {
-		pnm <- metadata(object)$modelParam
+		pnm <- metadata(object)$parameters
 	}
 	pdata <- lapply(seq_along(cols), function(i) {
 		par <- as.list(modelData(object)[i,pnm,drop=FALSE])

@@ -134,6 +134,7 @@ setGeneric("spatialApply", function(.object, .r, .fun, ...) standardGeneric("spa
 setGeneric("process", function(object, ...) standardGeneric("process"))
 setGeneric("batchProcess", function(object, ...) standardGeneric("batchProcess"))
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
+setGeneric("mzBin", function(object, ref, ...) standardGeneric("mzBin"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))

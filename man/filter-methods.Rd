@@ -78,6 +78,6 @@ sm2 <- summarize(msset, .stat=c(tic="sum"), .by="pixel")
 mutate(msset, tic=sm2$tic)
 
 # summarize mean spectrum grouped by pixels in/out of circle
-sm3 <- summarize(msset, .stat="mean", .group_by=circle)
+sm3 <- summarize(msset, .stat="mean", .group_by=msset$circle)
 }
 \keyword{manip}

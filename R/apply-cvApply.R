@@ -70,7 +70,7 @@ setMethod("crossValidate", "SparseImagingExperiment",
 			featureData=featureData(.x),
 			elementMetadata=pixelData(.x),
 			metadata=list(
-				modelParam=names(models),
+				parameters=names(models),
 				responseName=yname,
 				foldsName=fname,
 				positiveClass=pos),
@@ -114,21 +114,21 @@ setMethod("cvApply", "SparseImagingExperiment",
 			.message(">>>> fold: ", fi, " <<<<")
 			if ( is.null(dim(.y)) ) {
 				# vector response
-				fit <- .fun(x[,fi!=.fold,drop=FALSE],
+				fit <- .fun(.x[,fi!=.fold,drop=FALSE],
 					.y[fi!=.fold], BPPARAM = BPPARAM, ...)
-				pred <- .predict(fit, x[,fi==.fold,drop=FALSE],
+				pred <- .predict(fit, .x[,fi==.fold,drop=FALSE],
 					.y[fi==.fold], BPPARAM = BPPARAM, ...)
 				ref <- .y[fi==.fold]
 			} else {
 				# matrix response
-				fit <- .fun(x[,fi!=.fold,drop=FALSE],
+				fit <- .fun(.x[,fi!=.fold,drop=FALSE],
 					.y[fi!=.fold,,drop=FALSE], BPPARAM = BPPARAM, ...)
-				pred <- .predict(fit, x[,fi==.fold,drop=FALSE],
+				pred <- .predict(fit, .x[,fi==.fold,drop=FALSE],
 					.y[fi==.fold,,drop=FALSE], BPPARAM = BPPARAM, ...)
 				ref <- .y[fi==.fold,,drop=FALSE]
 			}
 			if ( .simplify ) {
-				params <- metadata(fit)$modelParam
+				params <- metadata(fit)$parameters
 				if ( !is.null(params) ) {
 					models <- modelData(fit)[params]
 				} else {

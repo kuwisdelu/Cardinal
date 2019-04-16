@@ -3,8 +3,7 @@
 
 setMethod("summarize", "SparseImagingExperiment",
 	function(.data, ...,
-			.by = c("feature", "pixel"),
-			.group_by,
+			.by = c("feature", "pixel"), .group_by,
 			.stat = c("min", "max", "mean",
 				"sum", "sd", "var"),
 			.tform = identity,
@@ -15,34 +14,18 @@ setMethod("summarize", "SparseImagingExperiment",
 		if ( .by == "feature" ) {
 			len <- ncol(.data)
 			ans <- fData(.data)[,integer(),drop=FALSE]
-			e <- as.env(pData(.data), enclos=parent.frame(2))
 			if ( missing(.group_by) ) {
 				groups <- NULL
 			} else {
-				groups <- .try_eval(substitute(.group_by), envir=e)
+				groups <- .group_by
 			}
 		} else if ( .by == "pixel" ) {
 			len <- nrow(.data)
 			ans <- pData(.data)[,integer(),drop=FALSE]
-			e <- as.env(fData(.data), enclos=parent.frame(2))
 			if ( missing(.group_by) ) {
 				groups <- NULL
 			} else {
-				groups <- .try_eval(substitute(.group_by), envir=e)
-			}
-		}
-		if ( is(groups, "formula") )
-			groups <- names(.parseFormula2(groups)$rhs)
-		if ( is.character(groups) && all(groups %in% ls(e)) )
-			groups <- lapply(groups, function(name) e[[name]])
-		if ( is.list(groups) ) {
-			if ( length(groups) > 1L ) {
-				groups <- lapply(groups, as.factor)
-				levels <- rev(expand.grid(rev(lapply(groups, levels))))
-				levels <- apply(levels, 1, paste, collapse=".")
-				groups <- factor(do.call("paste", c(groups, list(sep="."))), levels=levels)
-			} else {
-				groups <- groups[[1]]
+				groups <- .group_by
 			}
 		}
 		if ( !is.null(groups) ) {

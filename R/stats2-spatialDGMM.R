@@ -9,7 +9,6 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		gname <- "..group.."
 		groups <- as.factor(groups)
 		method <- match.arg(method)
 		init <- match.arg(init)
@@ -49,18 +48,17 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=NULL,
 					pixel=c("class", "pixel")),
-				modelParam=c("r", "k", "feature"),
-				groupsName=gname,
+				parameters=c("r", "k", "feature"),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
 		modelData(out)$num_segments <- sapply(results, function(res) {
 			nlevels(res$class)
 		})
-		pixelData(out)[[gname]] <- groups
+		pixelData(out)$..group.. <- groups
 		out
 	})
 
@@ -104,15 +102,15 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	}, results, levels(groups), SIMPLIFY=FALSE)
 	probability <- do.call("cbind", probability)
 	colnames(probability) <- cnames
-	params <- do.call("rbind", mapply(function(res, gi) {
+	estimates <- do.call("rbind", mapply(function(res, gi) {
 		data.frame(group=gi,
 			class=NA_character_,
 			mean=res$params$mu,
 			var=res$params$sigma)
 	}, results, levels(groups), SIMPLIFY=FALSE))
-	row.names(params) <- cnames
-	params$class <- cnames
-	list(params=params, probability=probability, class=class)
+	row.names(estimates) <- cnames
+	estimates$class <- cnames
+	list(estimates=estimates, probability=probability, class=class)
 }
  
 .spatialDGMM_fit1 <- function(xi, k, neighbors, weights, annealing,

@@ -36,10 +36,10 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=c("centers", "correlation"),
 					pixel="cluster"),
-				modelParam=names(models),
+				parameters=names(models),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -48,7 +48,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 setAs("SpatialKMeans", "SpatialKMeans2",
 	function(from) {
 		to <- .coerce_ResultImagingExperiment(from, "SpatialKMeans2")
-		metadata(to)$resultType <- list(pixel="cluster",
+		metadata(to)$mapping <- list(pixel="cluster",
 			feature=c("centers", "betweenss", "withinss"))
 		to
 	})
@@ -67,8 +67,8 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	proj <- resultData(fastmap, list(r=r), "scores")
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
-	..cluster.. <- cluster <- factor(cluster)
-	centers <- summarize(x, .stat="mean", .group_by=..cluster.., ...)$mean
+	cluster <- factor(cluster)
+	centers <- summarize(x, .stat="mean", .group_by=cluster, ...)$mean
 	do_rbind <- function(ans) do.call("rbind", ans)
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {

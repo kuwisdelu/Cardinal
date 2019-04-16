@@ -67,10 +67,10 @@ setMethod("spatialShrunkenCentroids",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=c("centers", "statistic", "sd"),
 					pixel=c("scores", "probability", "class")),
-				modelParam=c("r", "k", "s"),
+				parameters=c("r", "k", "s"),
 				method=method),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -87,8 +87,6 @@ setMethod("spatialShrunkenCentroids",
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
-		e <- as.env(pixelData(x), enclos=parent.frame(2), slots=FALSE)
-		yname <- "..response.."
 		y <- as.factor(y)
 		.message("calculating global centroid...")
 		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
@@ -111,11 +109,10 @@ setMethod("spatialShrunkenCentroids",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=c("centers", "statistic", "sd"),
 					pixel=c("scores", "probability", "class")),
-				modelParam=c("r", "s"),
-				responseName=yname,
+				parameters=c("r", "s"),
 				method=method, dist=dist,
 				priors=priors / sum(priors)),
 			resultData=as(results, "List"),
@@ -123,7 +120,7 @@ setMethod("spatialShrunkenCentroids",
 		modelData(out)$num_features <- sapply(results, function(res) {
 			round(mean(colSums(res$statistic != 0)), 1)
 		})
-		pixelData(out)[[yname]] <- y
+		pixelData(out)$..response.. <- y
 		predict(out, newx=x, method=method, BPPARAM=BPPARAM)
 	})
 
@@ -134,8 +131,6 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			.stop("'newx' must inherit from 'SparseImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		classref <- pixelData(object)[[metadata(object)$responseName]]
-		yname <- metadata(object)$responseName
 		if ( missing(newy) ) {
 			newy <- NULL
 		} else {
@@ -155,8 +150,13 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		results <- bpmapply(function(res, ri, si, BPPARAM) {
 			.message("r = ", ri, ", ", "s = ", si, " ")
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
+			if ( is.null(res$class) ) {
+				class <- pixelData(object)$..response..
+			} else {
+				class <- res$class
+			}
 			pred <- .spatialShrunkenCentroids2_predict(newx,
-				r=ri, class=classref, weights=weights, centers=res$centers,
+				r=ri, class=class, weights=weights, centers=res$centers,
 				sd=res$sd, priors=priors, init=NULL, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
@@ -164,7 +164,7 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		if ( !is.null(newy) ) {
 			modelData(object)$accuracy <- sapply(results,
 				function(res) mean(res$class == newy, na.rm=TRUE))
-			pixelData(object)[[yname]] <- newy
+			pixelData(object)$..response.. <- newy
 		}
 		resultData(object) <- as(results, "List")
 		object
@@ -176,7 +176,7 @@ setMethod("fitted", "SpatialShrunkenCentroids2",
 setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	function(from) {
 		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
-		metadata(to)$resultType <- list(feature=c("centers", "tstatistics"),
+		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
 		resultData(to) <- endoapply(resultData(to), function(res) {
 			rename(res, tstatistics="statistic", classes="class",
@@ -198,11 +198,15 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		options(Cardinal.verbose=FALSE) # suppress messages
 		if ( drop.empty )
 			class <- factor(as.integer(droplevels(class)))
+		if ( nlevels(class) == 1L )
+			.stop("singular cluster configuration, try a different seed")
 		fit <- .spatialShrunkenCentroids2_fit(x,
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)
 		pred <- .spatialShrunkenCentroids2_predict(x,
 			r=r, class=class, weights=weights, centers=fit$centers,
 			sd=fit$sd, priors=NULL, init=init, BPPARAM=BPPARAM)
+		if ( all(class==pred$class) )
+			break
 		class <- pred$class
 		init <- pred$init
 		iter <- iter + 1
@@ -221,8 +225,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	options(Cardinal.progress=FALSE)
 	on.exit(options(Cardinal.progress=progress))
 	# calculate class centers
-	..class.. <- class
-	centers <- summarize(x, .stat="mean", .group_by=..class.., BPPARAM=BPPARAM)
+	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
@@ -234,7 +237,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 			"pixel" = (xbl - centers[,iclass[i],drop=FALSE])^2)
 	}
 	# calculate standard errors
-	wcss <- summarize(x, .stat="sum", .group_by=..class.., .tform=tform, BPPARAM=BPPARAM)
+	wcss <- summarize(x, .stat="sum", .group_by=class, .tform=tform, BPPARAM=BPPARAM)
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
 	s0 <- median(sd)

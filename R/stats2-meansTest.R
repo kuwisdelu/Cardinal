@@ -15,7 +15,6 @@ setMethod("meansTest", "SparseImagingExperiment",
 		fixed <- paste0("..response.. ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
-		gname <- "..group.."
 		groups <- as.factor(groups)
 		if ( missing(random) ) {
 			random <- NULL
@@ -38,12 +37,11 @@ setMethod("meansTest", "SparseImagingExperiment",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=NULL,
 					pixel=NULL),
-				modelParam="feature",
-				fixed=fixed, random=random,
-				groupsName=gname),
+				parameters="feature",
+				fixed=fixed, random=random),
 			resultData=as(results, "List"),
 			modelData=models)
 		modelData(out)$p.value <- sapply(results, function(res) {
@@ -53,13 +51,12 @@ setMethod("meansTest", "SparseImagingExperiment",
 		})
 		adj.p <- p.adjust(modelData(out)$p.value, method="BH")
 		modelData(out)$adj.p.value <- round(adj.p, digits=6)
-		pixelData(out)[[gname]] <- groups
+		pixelData(out)$..group.. <- groups
 		out
 	})
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
-	..groups.. <- groups
-	response <- summarize(x, .stat="mean", .group_by=..groups.., BPPARAM=BPPARAM)
+	response <- summarize(x, .stat="mean", .group_by=groups, BPPARAM=BPPARAM)
 	response <- t(as.matrix(response, slots=FALSE))
 	pdata <- as.data.frame(pData(x), slots=FALSE)
 	pdata <- cbind(data.frame(run=run(x)), pdata)

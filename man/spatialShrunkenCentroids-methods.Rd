@@ -8,6 +8,7 @@
 \alias{spatialShrunkenCentroids,SparseImagingExperiment,missing-method}
 \alias{spatialShrunkenCentroids,SparseImagingExperiment,ANY-method}
 \alias{predict,SpatialShrunkenCentroids2-method}
+\alias{fitted,SpatialShrunkenCentroids2-method}
 
 \alias{spatialShrunkenCentroids,SImageSet,missing-method}
 \alias{spatialShrunkenCentroids,SImageSet,factor-method}
@@ -34,6 +35,8 @@
     BPPARAM = bpparam(), \dots)
 
 \S4method{predict}{SpatialShrunkenCentroids2}(object, newx, newy, BPPARAM = bpparam(), \dots)
+
+\S4method{fitted}{SpatialShrunkenCentroids2}(object, \dots)
 
 \S4method{spatialShrunkenCentroids}{SImageSet,missing}(x, r = 1, k = 3, s = 0,
     method = c("gaussian", "adaptive"),

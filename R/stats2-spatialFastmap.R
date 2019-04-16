@@ -30,10 +30,10 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature="correlation",
 					pixel="scores"),
-				modelParam=names(models),
+				parameters=names(models),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -42,7 +42,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 setAs("SpatialFastmap", "SpatialFastmap2",
 	function(from) {
 		to <- .coerce_ResultImagingExperiment(from, "SpatialFastmap2")
-		metadata(to)$resultType <- list(feature="correlation", pixel="scores")
+		metadata(to)$mapping <- list(feature="correlation", pixel="scores")
 		to
 	})
 

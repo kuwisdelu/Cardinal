@@ -122,7 +122,7 @@ setMethod("[", "SparseResultImagingExperiment",
 		results <- x@resultData
 		models <- x@modelData
 		x <- callNextMethod(x, i=i, j=j, ..., drop=drop)
-		kind <- metadata(x)$resultType
+		kind <- metadata(x)$mapping
 		if ( !is.null(kind) ) {
 			results <- endoapply(results, function(res) {
 				if ( !missing(i) )

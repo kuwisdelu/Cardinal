@@ -22,12 +22,12 @@ setMethod("segmentationTest", "SpatialDGMM",
 		classControl = c("Mscore", "Ymax"), ...)
 	{
 		if ( !is.numeric(model) ) {
-			if ( is.null(metadata(x)$modelParam) ) {
-				params <- names(modelData(x))
+			if ( is.null(metadata(x)$parameters) ) {
+				estimates <- names(modelData(x))
 			} else {
-				params <- metadata(x)$modelParam
+				estimates <- metadata(x)$parameters
 			}
-			model <- model[names(model) %in% params]
+			model <- model[names(model) %in% estimates]
 			model <- subset_rows(modelData(x), as.list(model))
 		}
 		e <- environment(fixed)
@@ -66,22 +66,21 @@ setMethod("segmentationTest", "SpatialDGMM",
 			} else {
 				fit <- lm(formula=fixed, data=data, ...)
 			}
-			subset <- res$class %in% data[["..class.."]]
+			subset <- res$class %in% data$..class..
 			mapping <- replace(res$class, !subset, NA_integer_)
 			list(model=fit, data=as(data, "DataFrame"),
 				mapping=droplevels(mapping))
 		}, fullData, classControl, resultData(x), SIMPLIFY=FALSE)
-		models <- modelData(x)[model,metadata(x)$modelParam,drop=FALSE]
+		models <- modelData(x)[model,metadata(x)$parameters,drop=FALSE]
 		out <- .SegmentationTest(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				resultType=list(
+				mapping=list(
 					feature=NULL,
 					pixel="mapping"),
-				modelParam=metadata(x)$modelParam,
-				groupsName=metadata(x)$groupsName,
+				parameters=metadata(x)$parameters,
 				fixed=fixed, random=random),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -96,7 +95,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 	})
 
 .segmentationTest_testdata <- function(results) {
-	i <- which(names(pData(results)) %in% metadata(results)$groupsName)
+	i <- which(names(pData(results)) %in% "..group..")
 	groups <- pData(results)[[i]]
 	pdata <- as.data.frame(pData(results)[,-i,drop=FALSE], slots=FALSE)
 	pdata <- cbind(data.frame(run=run(results)), pdata)
@@ -113,7 +112,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 			})
 			newvar
 		})
-		out <- res$params[,c("mean", "group", "class")]
+		out <- res$estimates[,c("mean", "group", "class")]
 		names(out) <- c("..response..", "..group..", "..class..")
 		out[names(pdata)] <- vars
 		out
@@ -130,14 +129,14 @@ setMethod("segmentationTest", "SpatialDGMM",
 }
 
 .spatialDGMM_getclasses <- function(results, fc, method) {
-	groups <- pData(results)[[metadata(results)$groupsName]]
+	groups <- pixelData(results)$..group..
 	lapply(resultData(results), function(res) {
 		if ( method == "Mscore" ) {
 			out1 <- lapply(fc, function(nm) {
 				f <- pData(results)[[nm]]
 				if ( is.logical(f) ) {
 					sc <- sapply(levels(res$class), function(ci) {
-						gi <- res$params$group[res$params$class == ci][1L]
+						gi <- res$estimates$group[res$estimates$class == ci][1L]
 						cg <- (res$class == ci)[groups == gi]
 						fg <- f[groups == gi]
 						Mscore(cg, fg)
@@ -148,7 +147,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 					f <- as.factor(f)
 					sc <- lapply(levels(f), function(fi) {
 						scores <- sapply(levels(res$class), function(ci) {
-							gi <- res$params$group[res$params$class == ci][1L]
+							gi <- res$estimates$group[res$estimates$class == ci][1L]
 							cg <- (res$class == ci)[groups == gi]
 							fg <- (f == fi)[groups == gi]
 							Mscore(cg, fg)
@@ -162,9 +161,9 @@ setMethod("segmentationTest", "SpatialDGMM",
 			})
 			out1 <- do.call("cbind", out1)
 		} else {
-			out1 <- res$params[,"mean",drop=FALSE]
+			out1 <- res$estimates[,"mean",drop=FALSE]
 		}
-		out2 <- res$params[,c("group", "class")]
+		out2 <- res$estimates[,c("group", "class")]
 		names(out2) <- c("..group..", "..class..")
 		out <- cbind(out2, out1)
 		score_sums <- rowSums(out[,-c(1,2),drop=FALSE])

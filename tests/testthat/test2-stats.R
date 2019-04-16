@@ -9,7 +9,8 @@ register(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
-	peakheight=3, peakdiff=1, representation="centroid")
+	sdnoise=0.5, peakheight=c(4,8), peakdiff=1,
+	representation="centroid")
 
 y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
@@ -42,20 +43,20 @@ test_that("spatialKMeans", {
 test_that("spatialShrunkenCentroids", {
 
 	set.seed(1)
-	res1 <- spatialShrunkenCentroids(x, r=c(1,2), k=c(2,3), s=c(0,6), method="gaussian")
+	res1 <- spatialShrunkenCentroids(x, r=c(1,2), k=3, s=c(0,3,6), method="gaussian")
 
 	expect_true(validObject(res1))
 
 	set.seed(1)
-	res2 <- spatialShrunkenCentroids(x, r=c(1,2), k=c(2,3), s=c(0,6), method="adaptive")
+	res2 <- spatialShrunkenCentroids(x, r=c(1,2), k=3, s=c(0,3,6), method="adaptive")
 
 	expect_true(validObject(res2))
 
-	res3 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,6), method="gaussian")
+	res3 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,3,6), method="gaussian")
 
 	expect_true(validObject(res3))
 
-	res4 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,6), method="adaptive")
+	res4 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,3,6), method="adaptive")
 
 	expect_true(validObject(res4))
 
