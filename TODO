@@ -3,16 +3,18 @@ TODO for Cardinal package
 -------------------------
 
 - Add mzBin() processing method for binning mass spectra
+- Add mzAlign() processing method for aligning mass spectra
 - Finish crossValidate() method with pre-processing
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
-- Add normalization to a reference m/z value
+- Test normalization to a reference m/z value
+- Clean up peakBin use of metadata
+- Change applicable pre-processing methods to allow SparseImagingExperiment
 - Add PCA and NMF (?) analysis methods
 - Deprecate and defunct stuff
 - Update documentation
 
 - Add ggplot2 and lattice graphics engine options
 - Multimodal image registration (w/ optical images, etc.)
-- More normalization methods (median, quantile, etc.)
 - Shiny GUI
 
 BUGS for Cardinal package

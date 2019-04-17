@@ -277,10 +277,22 @@ facet.image <- function(args, formula, obj,
 
 print.facet.image <- function(x, ...) {
 	obj <- x
+	if ( is.null(attr(obj$layers[[1L]], "colorkey")) ) {
+		padding <- 0
+	} else {
+		padding <- 2
+	}
 	if ( isTRUE(obj$layout) ) {
-		.auto.layout(obj)
+		.auto.layout(obj, right=padding)
 	} else if ( is.numeric(obj$layout) ) {
-		.setup.layout(obj$layout)
+		.setup.layout(obj$layout, right=padding)
+	}
+	if ( "dark" %in% names(obj$par) ) {
+		if ( isTRUE(obj$par$dark) )
+			darkmode()
+		if ( isFALSE(obj$par$dark) )
+			lightmode()
+		obj$par$dark <- NULL
 	}
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {

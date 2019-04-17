@@ -121,10 +121,8 @@ setMethod("segmentationTest", "SpatialDGMM",
 
 .segmentationTest_getclasses <- function(control) {
 	lapply(control, function(ctrl) {
-		groups <- names(ctrl)
-		class <- unlist(ctrl)
-		data.frame(..group..=groups,
-			..class..=as.character(class))
+		data.frame(..group..=names(ctrl),
+			..class..=as.character(ctrl))
 	})
 }
 

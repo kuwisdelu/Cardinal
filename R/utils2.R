@@ -148,7 +148,7 @@
 }
 
 # Combine many lists/dataframes into a single result
-.bind_as_df <- function(data, guess = 100L) {
+.bind_as_dflist <- function(data, guess = 100L) {
 	dhead <- lapply(head(data, n=guess), as.data.frame,
 		check.names=FALSE, fix.empty.names=FALSE,
 		check.rows=FALSE, stringsAsFactors=FALSE)
@@ -181,23 +181,26 @@
 }
 
 # Setup plotting layout
-.setup.layout <- function(layout, byrow = TRUE) {
+.setup.layout <- function(layout, right = 0, byrow = TRUE, ...) {
 	if ( length(layout) < 1L )
 		layout <- rep_len(c(layout, 1L), 2)
 	if ( length(layout) > 2L )
 		byrow <- layout[3L] <= 1L
-	par(mar=c(3,3,2,1), mgp=c(1.5,0.5,0),
+	par(mar=c(2.6, 2.6, 2.1, 1.1 + right), mgp=c(1.4, 0.6, 0),
 		cex.axis=0.8, cex.lab=0.8)
-	layout(matrix(seq_len(prod(layout)),
-		nrow=layout[1L], ncol=layout[2L], byrow=byrow))
+	if ( byrow ) {
+		par(mfrow=layout)
+	} else {
+		par(mfcol=layout)
+	}
 }
 
 # Auto plotting layout
-.auto.layout <- function(x) {
+.auto.layout <- function(x, ...) {
 	n <- .num.panels(x)
 	nc <- ceiling(sqrt(n))
 	nr <- ceiling(n / nc)
-	.setup.layout(c(nr, nc))
+	.setup.layout(c(nr, nc), ...)
 }
 
 # Number of panels in a facet plot
@@ -217,18 +220,28 @@
 		stop("invalid 'strip' argument"))
 	if ( is.character(strip) || is.list(strip) )
 		strip <- TRUE
-	if ( !"x" %in% names(args) )
-		args$x <- "top"
-	if ( !"legend" %in% names(args) )
-		args$legend <- text
-	if ( !"x.intersp" %in% names(args) )
-		args$x.intersp <- 0
-	if ( !"bg" %in% names(args) )
-		args$bg <- rgb(1, 1, 1, 0.75)
-	if ( !"cex" %in% names(args) )
-		args$cex <- 0.8
-	if ( isTRUE(strip) && length(args$legend) != 0 )
-		do.call("legend", args)
+	if ( "oldstyle" %in% names(args) && args$oldstyle ) {
+		args$oldstyle <- NULL
+		if ( !"x" %in% names(args) )
+			args$x <- "top"
+		if ( !"legend" %in% names(args) )
+			args$legend <- text
+		if ( !"x.intersp" %in% names(args) )
+			args$x.intersp <- 0
+		if ( !"bg" %in% names(args) )
+			args$bg <- rgb(1, 1, 1, 0.75)
+		if ( !"cex" %in% names(args) )
+			args$cex <- 0.8
+		if ( isTRUE(strip) && length(args$legend) != 0 )
+			do.call("legend", args)
+	} else {
+		if ( !"text" %in% names(args) )
+			args$text <- paste0(text, collapse="\n")
+		if ( "legend" %in% names(args) )
+			args$legend <- NULL
+		if ( isTRUE(strip) )
+			do.call("mtext", args)
+	}
 }
 
 # Draw keys
@@ -246,14 +259,16 @@
 		args$legend <- text	
 	if ( !"fill" %in% names(args) )
 		args$fill <- fill
-	if ( !"bg" %in% names(args) )
-		args$bg <- rgb(1, 1, 1, 0.75)
+	if ( !"bg" %in% names(args) ) {
+		col <- as.numeric(col2rgb(par()$bg) / 255)
+		args$bg <- rgb(col[1], col[2], col[3], 0.75)
+	}
 	if ( isTRUE(key) && length(args$legend) != 0 )
 		do.call("legend", args)
 }
 
 # Draw colorkeys
-.draw.colorkey <- function(colorkey, text, col) {
+.draw.colorkey <- function(colorkey, text, col, last = TRUE) {
 	args <- switch(class(colorkey),
 		"logical"=list(),
 		"character"=list(x=colorkey),
@@ -261,22 +276,50 @@
 		stop("invalid 'colorkey' argument"))
 	if ( is.character(colorkey) || is.list(colorkey) )
 		colorkey <- TRUE
-	if ( !"x" %in% names(args) )
-		args$x <- "topright"
-	if ( !"legend" %in% names(args) )
-		args$legend <- c(text[2], rep(NA, length(col) - 2L), text[1])
-	if ( !"col" %in% names(args) )
-		args$col <- rev(col)
-	if ( !"y.intersp" %in% names(args) )
-		args$y.intersp <- 0.1
-	if ( !"bg" %in% names(args) )
-		args$bg <- rgb(1, 1, 1, 0.75)
-	if ( !"cex" %in% names(args) )
-		args$cex <- 0.6
-	if ( !"lwd" %in% names(args) )
-		args$lwd <- 2
-	if ( isTRUE(colorkey) )
-		do.call("legend", args)
+	if ( "oldstyle" %in% names(args) && args$oldstyle ) {
+		args$oldstyle <- NULL
+		if ( !"x" %in% names(args) )
+			args$x <- "topright"
+		if ( !"legend" %in% names(args) )
+			args$legend <- c(text[2], rep(NA, length(col) - 2L), text[1])
+		if ( !"col" %in% names(args) )
+			args$col <- rev(col)
+		if ( !"y.intersp" %in% names(args) )
+			args$y.intersp <- 0.1
+		if ( !"bg" %in% names(args) )
+			args$bg <- rgb(1, 1, 1, 0.75)
+		if ( !"cex" %in% names(args) )
+			args$cex <- 0.6
+		if ( !"lwd" %in% names(args) )
+			args$lwd <- 2
+		if ( isTRUE(colorkey) )
+			do.call("legend", args)
+	} else {
+		old.par <- par(no.readonly = TRUE)
+		plt <- par()$plt
+		o <- 1 - plt[2]
+		plt <- c(plt[2] + 0.2 * o, plt[2] + 0.5 * o, 0.2, 0.8)
+		range <- as.numeric(text)
+		vals <- seq(from=range[1], to=range[2], length.out=100)
+		if ( !"new" %in% args )
+			args$new <- TRUE
+		if ( !"pty" %in% args )
+			args$pty <- "m"
+		if ( !"plt" %in% args )
+			args$plt <- plt
+		if ( "x" %in% args	)
+			args$x <- NULL
+		if ( isTRUE(colorkey) ) {
+			par(args)
+			image(1, vals, t(as.matrix(vals)), col=col,
+				xaxt='n', yaxt='n', xlab="", ylab="")
+			axis(side=4, las=2)
+			mfg <- par()$mfg
+			par(old.par)
+			par(mfg=mfg, new=FALSE)
+			invisible()
+		}
+	}
 }
 
 ## Format numbered labels

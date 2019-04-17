@@ -7,6 +7,9 @@ setMethod("selectROI", "SparseImagingExperiment",
 		p <- image(object, ...)
 		print(p)
 		title(sub="select pixels", col.sub="red")
+		nruns <- nlevels(droplevels(run(object)[p$subset]))
+		if ( nruns > 1 )
+			.warning("multiple runs plotted; results may be unexpected")
 		.message("select pixels; press ESC or 2nd mouse button to stop")
 		if ( mode == "region" ) {
 			loc <- locator(type="o", pch=20, col="white", lwd=1.5)

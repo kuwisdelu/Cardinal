@@ -109,19 +109,19 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
 	jitter = TRUE, ...)
 {
-	ncol <- unname(dim[1L])
-	nrow <- unname(dim[2L])
-	sdx <- jitter * ncol / 20
-	sdy <- jitter * nrow / 20
+	nx <- unname(dim[1L])
+	ny <- unname(dim[2L])
+	sdx <- jitter * nx / 20
+	sdy <- jitter * ny / 20
 	sdr <- jitter * sqrt(sdx * sdy)
-	coords <- expand.grid(x=1:nrow, y=1:ncol)
+	coords <- expand.grid(x=1:nx, y=1:ny)
 	pdata <- PositionDataFrame(coords, run="run0")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
 	i <- (abs(preset) - 1L) %% 9L + 1L
 	if ( i == 1L ) {
 		# centered circle
-		rx <- ncol / 2
-		ry <- nrow / 2
+		rx <- nx / 2
+		ry <- ny / 2
 		pdata <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -138,8 +138,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			circle=c(abs(rnorm(npeaks, peakheight))))
 	} else if ( i == 2L ) {
 		# topleft circle + bottomright square
-		rx <- ncol / 4
-		ry <- nrow / 4
+		rx <- nx / 4
+		ry <- ny / 4
 		pdata <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -167,8 +167,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))))
 	} else if ( i == 3L ) {
 		# 2 corner squares + centered circle
-		rx <- ncol / 4
-		ry <- nrow / 4
+		rx <- nx / 4
+		ry <- ny / 4
 		pdata <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -203,8 +203,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			circle=c(rep(0, n1), abs(rnorm(n2, peakheight[3])), rep(0, n3)))
 	} else if ( i == 4L ) {
 		# centered circle w/ diff conditions
-		rx <- ncol / 2
-		ry <- nrow / 2
+		rx <- nx / 2
+		ry <- ny / 2
 		pdata_a <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -246,8 +246,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			diff=diff)
 	} else if ( i == 5L ) {
 		# topleft circle + bottomright square w/ diff conditions
-		rx <- ncol / 4
-		ry <- nrow / 4
+		rx <- nx / 4
+		ry <- ny / 4
 		pdata_a <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -310,8 +310,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			diff.circle=diff.circle, diff.square=diff.square)
 	}  else if ( i == 6L ) {
 		# 2 corner squares + centered circle w/ diff conditions
-		rx <- ncol / 4
-		ry <- nrow / 4
+		rx <- nx / 4
+		ry <- ny / 4
 		pdata <- lapply(1:nruns, function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,

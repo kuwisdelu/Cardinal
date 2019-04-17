@@ -1,4 +1,18 @@
 
+# Set to dark mode
+darkmode <- function() {
+	par(bg="black", fg="white", col="white",
+		col.lab="white", col.axis="white",
+		col.main="white", col.sub="white")
+}
+
+# Set to dark mode
+lightmode <- function() {
+	par(bg="transparent", fg="black", col="black",
+		col.lab="black", col.axis="black",
+		col.main="black", col.sub="black")
+}
+
 ## Preset color maps
 color.map <- function(map = c("redblack", "greenblack", "blueblack",
 	"viridis", "cividis", "magma", "inferno", "plasma",

@@ -174,6 +174,13 @@ print.facet.plot <- function(x, ...) {
 	} else if ( is.numeric(obj$layout) ) {
 		.setup.layout(obj$layout)
 	}
+	if ( "dark" %in% names(obj$par) ) {
+		if ( isTRUE(obj$par$dark) )
+			darkmode()
+		if ( isFALSE(obj$par$dark) )
+			lightmode()
+		obj$par$dark <- NULL
+	}
 	nil <- c(list(x=0, y=0), obj$par)
 	nil$type <- 'n'
 	for ( layer in obj$layers ) {
