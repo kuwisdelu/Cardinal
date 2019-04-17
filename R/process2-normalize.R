@@ -14,7 +14,8 @@ setMethod("normalize", "MSImagingExperiment",
 
 normalize.method2 <- function(method) {
 	if ( is.character(method) ) {
-		method <- match.method(method, c("tic", "rms", "reference"))
+		method <- match.method(method,
+			c("tic", "rms", "reference"))
 		switch(method,
 			tic = normalize.tic2,
 			rms = normalize.rms,

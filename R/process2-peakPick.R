@@ -14,6 +14,20 @@ setMethod("peakPick", "MSImagingExperiment",
 		object
 	})
 
+peakPick.method2 <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method,
+			c("mad", "simple", "adaptive"))
+		switch(method,
+			mad = peakPick.mad,
+			simple = peakPick.simple2,
+			adaptive = peakPick.adaptive2,
+			match.fun(method))
+	} else {
+		match.fun(method)
+	}
+}
+
 peakPick_fun <- function(f) {
 	fun <- function(x, ...) {
 		i <- f(x, ...)
@@ -51,19 +65,6 @@ peakPick_plotfun <- function(s2, s1, ...,
 	s2mz <- s2[1:floor(length(s2) / 2)]
 	s2i <- s2[floor(1 + (length(s2) / 2)):length(s2)]
 	lines(s2mz, s2i, col="red", type='h')
-}
-
-peakPick.method2 <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("mad", "simple", "adaptive"))
-		switch(method,
-			mad = peakPick.mad,
-			simple = peakPick.simple2,
-			adaptive = peakPick.adaptive2,
-			match.fun(method))
-	} else {
-		match.fun(method)
-	}
 }
 
 peakPick.mad <- function(x, SNR=6, window=5, blocks=100, ...) {

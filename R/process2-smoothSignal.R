@@ -13,15 +13,6 @@ setMethod("smoothSignal", "MSImagingExperiment",
 		object
 	})
 
-smoothSignal_plotfun <- function(s2, s1, ...,
-	main="Smoothing", xlab="m/z", ylab="")
-{
-	mz <- mz(attr(s1, "mcols"))
-	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
-		col="gray", type='l', ...)
-	lines(mz, s2, lwd=0.5)
-}
-
 smoothSignal.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method, c("gaussian", "sgolay", "ma"))
@@ -33,6 +24,15 @@ smoothSignal.method2 <- function(method) {
 	} else {
 		match.fun(method)
 	}
+}
+
+smoothSignal_plotfun <- function(s2, s1, ...,
+	main="Smoothing", xlab="m/z", ylab="")
+{
+	mz <- mz(attr(s1, "mcols"))
+	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+		col="gray", type='l', ...)
+	lines(mz, s2, lwd=0.5)
 }
 
 smoothSignal.ma2 <- smoothSignal.ma

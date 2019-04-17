@@ -31,7 +31,7 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 			ppm = c("relative" = tolerance * 1e-6),
 			mz = c("absolute" = tolerance))
 		type <- match.arg(type)
-		fun <- peakBin_fun(tol, type, NULL, NULL)
+		fun <- peakBin_fun(type, tol, NULL, NULL)
 		object <- process(object, fun=fun, ...,
 			label="peakBin", kind="pixel",
 			prefun=peakBin_prefun,
@@ -48,7 +48,10 @@ peakBin_fun <- function(type, tol, mz, peaks) {
 			ref <- metadata(attr(x, "mcols"))[["reference peaks"]]
 			if ( is.null(ref) )
 				.stop("couldn't find reference peaks")
-			peaks <- bsearch(ref, mzs, tol=tol, tol.ref="key")
+			tol.ref <- switch(names(tol),
+				relative = "key",
+				absolute = "none")
+			peaks <- bsearch(ref, mzs, tol=tol, tol.ref=tol.ref)
 			peaks <- peaks[!is.na(peaks)]
 		}
 		f <- switch(type, height=max, area=sum)
@@ -63,7 +66,7 @@ peakBin_fun <- function(type, tol, mz, peaks) {
 peakBin_prefun <- function(object, ..., BPPARAM) {
 	s <- summarize(object, .stat="mean",
 		.by="feature", BPPARAM=BPPARAM)$mean
-	ref <- mz(object)[localMaximaLogical(s)]
+	ref <- mz(object)[localMaxima(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object
 }

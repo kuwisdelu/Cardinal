@@ -242,6 +242,8 @@ setMethod("pixels", "MSImagingExperiment",
 		} else {
 			if ( !gridded(object) )
 				.warning("pixel coordinates are not gridded")
+			if ( is.null(names(coord)) )
+				names(coord) <- names(coord(object))
 			coord <- as.data.frame(as.list(coord))
 			pixels <- unlist(apply(coord, 1, function(xy) {
 				lxy <- sapply(seq_along(xy), function(i) {

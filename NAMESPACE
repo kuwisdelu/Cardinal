@@ -442,6 +442,7 @@ exportMethods(
 	"batchProcess",
 	"process",
 	"normalize",
+	"mzAlign",
 	"peakPick",
 	"peakAlign",
 	"peakBin",

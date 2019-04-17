@@ -13,6 +13,19 @@ setMethod("reduceBaseline", "MSImagingExperiment",
 		object
 	})
 
+reduceBaseline.method2 <- function(method) {
+	if ( is.character(method) ) {
+		method <- match.method(method,
+			c("median", "locmin"))
+		switch(method,
+			median = reduceBaseline.median2,
+			locmin = reduceBaseline.locmin,
+			match.fun(method))
+	} else {
+		match.fun(method)
+	}
+}
+
 reduceBaseline_plotfun <- function(s2, s1, ...,
 	main="Baseline reduction", xlab="m/z", ylab="")
 {
@@ -21,18 +34,6 @@ reduceBaseline_plotfun <- function(s2, s1, ...,
 		col="gray", type='l', ...)
 	lines(mz, s1 - s2, col="green")
 	lines(mz, s2, lwd=0.5)
-}
-
-reduceBaseline.method2 <- function(method) {
-	if ( is.character(method) ) {
-		method <- match.method(method, c("median", "locmin"))
-		switch(method,
-			median = reduceBaseline.median2,
-			locmin = reduceBaseline.locmin,
-			match.fun(method))
-	} else {
-		match.fun(method)
-	}
 }
 
 reduceBaseline.median2 <- reduceBaseline.median

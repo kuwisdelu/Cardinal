@@ -13,6 +13,9 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	m <- mz(from=from, to=to, by=by, units=units)
+	i <- order(mz)
+	mz <- mz[i]
+	intensity <- intensity[i]
 	if ( n > 1L ) {
 		x <- replicate(n, simulateSpectrum(mz=mz, intensity=mz,
 			from=from, to=to, by=by, sdpeaks=sdpeaks, sdpeakmult=sdpeakmult,
