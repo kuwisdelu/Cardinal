@@ -1,6 +1,6 @@
 
-#### Align spectra to reference spectrum ####
-## -----------------------------------------
+#### Bin spectra to reference m/z ####
+## -----------------------------------
 
 setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 	function(object, ref, width = 400, units = c("ppm", "mz"), fun=sum, ...)

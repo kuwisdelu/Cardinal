@@ -2,12 +2,13 @@
 #### Normalize spectra ####
 ## ------------------------
 
-setMethod("normalize", "MSImagingExperiment",
+setMethod("normalize", "SparseImagingExperiment",
 	function(object, method = c("tic", "rms", "reference"), ...)
 	{
 		fun <- normalize.method2(method)
 		object <- process(object, fun=fun, ...,
 			label="normalize", kind="pixel",
+			plotfun=normalize_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
 	})
@@ -24,6 +25,23 @@ normalize.method2 <- function(method) {
 	} else {
 		match.fun(method)
 	}
+}
+
+normalize_plotfun <- function(s2, s1, ...,
+	main="Normalization", xlab="", ylab="")
+{
+	mcols <- attr(s1, "mcols")
+	if ( is(mcols, "MassDataFrame") ) {
+		x <- mz(mcols)
+		if ( missing(xlab) )
+			xlab <- "m/z"
+	} else {
+		x <- seq(along(s2))
+	}
+	plot(range(x), range(s2), main=main,
+		xlab=xlab, ylab=ylab, type='n', ...)
+	lines(x, s1, col="gray", type='l')
+	lines(x, s2, col="black", type='l')
 }
 
 normalize.tic2 <- normalize.tic

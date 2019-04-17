@@ -2,7 +2,7 @@
 #### Estimate and subtract baseline methods ####
 ## ---------------------------------------------
 
-setMethod("reduceBaseline", "MSImagingExperiment",
+setMethod("reduceBaseline", "SparseImagingExperiment",
 	function(object, method = c("median", "locmin"), ...)
 	{
 		fun <- reduceBaseline.method2(method)
@@ -27,13 +27,20 @@ reduceBaseline.method2 <- function(method) {
 }
 
 reduceBaseline_plotfun <- function(s2, s1, ...,
-	main="Baseline reduction", xlab="m/z", ylab="")
+	main="Baseline reduction", xlab="", ylab="")
 {
-	mz <- mz(attr(s1, "mcols"))
-	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+	mcols <- attr(s1, "mcols")
+	if ( is(mcols, "MassDataFrame") ) {
+		x <- mz(mcols)
+		if ( missing(xlab) )
+			xlab <- "m/z"
+	} else {
+		x <- seq(along(s2))
+	}
+	plot(x, s1, main=main, xlab=xlab, ylab=ylab,
 		col="gray", type='l', ...)
-	lines(mz, s1 - s2, col="green")
-	lines(mz, s2, lwd=0.5)
+	lines(x, s1 - s2, col="green")
+	lines(x, s2, lwd=0.5)
 }
 
 reduceBaseline.median2 <- reduceBaseline.median

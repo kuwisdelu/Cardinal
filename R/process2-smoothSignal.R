@@ -2,7 +2,7 @@
 #### Smooth spectra ####
 ## ---------------------
 
-setMethod("smoothSignal", "MSImagingExperiment",
+setMethod("smoothSignal", "SparseImagingExperiment",
 	function(object, method = c("gaussian", "sgolay", "ma"), ...)
 	{
 		fun <- smoothSignal.method2(method)
@@ -27,12 +27,19 @@ smoothSignal.method2 <- function(method) {
 }
 
 smoothSignal_plotfun <- function(s2, s1, ...,
-	main="Smoothing", xlab="m/z", ylab="")
+	main="Smoothing", xlab="", ylab="")
 {
-	mz <- mz(attr(s1, "mcols"))
-	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+	mcols <- attr(s1, "mcols")
+	if ( is(mcols, "MassDataFrame") ) {
+		x <- mz(mcols)
+		if ( missing(xlab) )
+			xlab <- "m/z"
+	} else {
+		x <- seq(along(s2))
+	}
+	plot(x, s1, main=main, xlab=xlab, ylab=ylab,
 		col="gray", type='l', ...)
-	lines(mz, s2, lwd=0.5)
+	lines(x, s2, lwd=0.5)
 }
 
 smoothSignal.ma2 <- smoothSignal.ma

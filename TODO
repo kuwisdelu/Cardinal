@@ -2,14 +2,15 @@
 TODO for Cardinal package
 -------------------------
 
+- Add matched pairs presets for simulateImage()
 - Finish crossValidate() method with pre-processing
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
 - Add unit tests for all new processing + statistical methods
-- Change non-MS pre-processing methods to SparseImagingExperiment
-- Add updated PCA and NMF (?) analysis methods
+- Change filter() and select() to use '...' instead of '.id'
 - Deprecate and defunct stuff
 - Update documentation
 
+- Add updated PCA and NMF (?) analysis methods
 - Add ggplot2 and lattice graphics engine options
 - Multimodal image registration (w/ optical images, etc.)
 - Shiny GUI
