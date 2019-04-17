@@ -8,7 +8,8 @@ setMethod("peakFilter", "MSImagingExperiment",
 		expr <- eval(substitute(alist(...)))
 		postfun <- peakFilter_postfun(expr, freq.min)
 		object <- process(object, label="peakFilter",
-			kind="global", postfun=postfun, delay=TRUE)
+			kind="global", postfun=postfun,
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 

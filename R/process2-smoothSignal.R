@@ -9,7 +9,7 @@ setMethod("smoothSignal", "MSImagingExperiment",
 		object <- process(object, fun=fun, ...,
 			label="smoothSignal", kind="pixel",
 			plotfun=smoothSignal_plotfun,
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 

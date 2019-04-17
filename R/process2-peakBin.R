@@ -19,7 +19,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 			label="peakBin", kind="pixel",
 			postfun=peakBin_postfun,
 			plotfun=peakBin_plotfun,
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 
@@ -37,7 +37,7 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 			prefun=peakBin_prefun,
 			postfun=peakBin_postfun,
 			plotfun=peakBin_plotfun,
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 

@@ -24,7 +24,8 @@ globalVariables(".Index")
 .onLoad <- function(libname, pkgname) {
 	options(Cardinal.verbose=interactive()) # public
 	options(Cardinal.progress=interactive()) # public
-	options(Cardinal.nblocks=20) # public
+	options(Cardinal.numblocks=20) # public
+	options(Cardinal.delay=TRUE) # public
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
 	.log("Cardinal loaded.", "\n", .session())
 }

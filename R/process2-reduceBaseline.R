@@ -9,7 +9,7 @@ setMethod("reduceBaseline", "MSImagingExperiment",
 		object <- process(object, fun=fun, ...,
 			label="reduceBaseline", kind="pixel",
 			plotfun=reduceBaseline_plotfun,
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 

@@ -16,7 +16,7 @@ setMethod("pixelApply", "SparseImagingExperiment",
 				reduce_blocks <- match.fun(.simplify)
 			.simplify <- !is.logical(.simplify)
 			if ( !is.numeric(.blocks) )
-				.blocks <- getOption("Cardinal.nblocks")
+				.blocks <- getOption("Cardinal.numblocks")
 			idx <- split_blocks(seq_len(ncol(.object)), .blocks)
 		} else {
 			idx <- seq_len(ncol(.object))

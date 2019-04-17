@@ -18,7 +18,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 		object <- process(object, fun=fun, ...,
 			label="mzAlign", kind="pixel",
 			plotfun=mzAlign_plotfun,
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 
@@ -83,7 +83,7 @@ mzAlign_prefun <- function(object, ..., BPPARAM) {
 }
 
 mzAlign_plotfun <- function(s2, s1, ...,
-	main="Spectrum alignment", xlab="m/z", ylab="")
+	main="Spectral alignment", xlab="m/z", ylab="")
 {
 	mz <- mz(attr(s1, "mcols"))
 	ref <- metadata(attr(s1, "mcols"))[["reference spectrum"]]

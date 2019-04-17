@@ -25,7 +25,7 @@ setMethod("spatialApply", "SparseImagingExperiment",
 				reduce_blocks <- match.fun(.simplify)
 			.simplify <- !is.logical(.simplify)
 			if ( !is.numeric(.blocks) )
-				.blocks <- getOption("Cardinal.nblocks")
+				.blocks <- getOption("Cardinal.numblocks")
 			if ( is.list(.init) ) {
 				idx <- .init$idx
 			} else {

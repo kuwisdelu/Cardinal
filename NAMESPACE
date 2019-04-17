@@ -442,14 +442,15 @@ exportMethods(
 	"batchProcess",
 	"process",
 	"normalize",
+	"smoothSignal",
+	"reduceBaseline",
 	"mzAlign",
+	"mzBin",
 	"peakPick",
 	"peakAlign",
 	"peakBin",
 	"peakFilter",
-	"reduceBaseline",
 	"reduceDimension",
-	"smoothSignal",
 	"standardizeRuns")
 
 export("standardizeSamples")

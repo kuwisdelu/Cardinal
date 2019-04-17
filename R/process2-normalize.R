@@ -8,7 +8,7 @@ setMethod("normalize", "MSImagingExperiment",
 		fun <- normalize.method2(method)
 		object <- process(object, fun=fun, ...,
 			label="normalize", kind="pixel",
-			delay=TRUE)
+			delay=getOption("Cardinal.delay"))
 		object
 	})
 
