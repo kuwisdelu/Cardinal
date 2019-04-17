@@ -14,20 +14,6 @@ setMethod("peakPick", "MSImagingExperiment",
 		object
 	})
 
-peakPick_plotfun <- function(s2, s1, ...,
-	main="Peak picking", xlab="m/z", ylab="")
-{
-	mz <- mz(attr(s1, "mcols"))
-	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
-		col="gray", type='l', ...)
-	noise <- attr(s2, "noise")
-	if ( !is.null(noise) )
-		lines(mz, noise, col="blue", lwd=0.5)
-	s2mz <- s2[1:floor(length(s2) / 2)]
-	s2i <- s2[floor(1 + (length(s2) / 2)):length(s2)]
-	lines(s2mz, s2i, col="red", type='h')
-}
-
 peakPick_fun <- function(f) {
 	fun <- function(x, ...) {
 		i <- f(x, ...)
@@ -51,6 +37,20 @@ peakPick_postfun <- function(object, ans, ...) {
 	imageData(object) <- MSProcessedImagingSpectraList(data)
 	object <- as(object, "MSProcessedImagingExperiment")
 	object
+}
+
+peakPick_plotfun <- function(s2, s1, ...,
+	main="Peak picking", xlab="m/z", ylab="")
+{
+	mz <- mz(attr(s1, "mcols"))
+	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,
+		col="gray", type='l', ...)
+	noise <- attr(s2, "noise")
+	if ( !is.null(noise) )
+		lines(mz, noise, col="blue", lwd=0.5)
+	s2mz <- s2[1:floor(length(s2) / 2)]
+	s2i <- s2[floor(1 + (length(s2) / 2)):length(s2)]
+	lines(s2mz, s2i, col="red", type='h')
 }
 
 peakPick.method2 <- function(method) {

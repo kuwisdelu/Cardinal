@@ -6,10 +6,9 @@ TODO for Cardinal package
 - Add mzAlign() processing method for aligning mass spectra
 - Finish crossValidate() method with pre-processing
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
-- Test normalization to a reference m/z value
-- Clean up peakBin use of metadata
-- Change applicable pre-processing methods to allow SparseImagingExperiment
-- Add PCA and NMF (?) analysis methods
+- Test normalize() method = "reference"
+- Change non-MS pre-processing methods to SparseImagingExperiment
+- Add updated PCA and NMF (?) analysis methods
 - Deprecate and defunct stuff
 - Update documentation
 
