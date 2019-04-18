@@ -28,7 +28,7 @@
 \details{
     Peak binning is performed by first matching the m/z-values in the dataset to those in the reference, and then finding the boundaries of the peak by detecting the nearest local minima. Then either the maximum height or the area under the curve of the peak are returned.
 
-    Internally, \code{\link{pixelApply}} is used to apply the filtering. See its documentation page for more details on additional objects available to the environment installed to the peak binning function.
+    Internally, \code{\link{pixelApply}} is used to apply the binning. See its documentation page for more details.
 }
 \value{
     An object of the same class with the binned peaks.
