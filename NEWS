@@ -7,9 +7,9 @@ NEW FEATURES
     o New 'mzAlign' processing method for spectral alignment
     o New 'mzBin' processing method for spectral binning
     o New 'crossValidate' method that cleans up 'cvApply' output
-    o New 'rms' and 'reference' methods for normalization
-    o New 'locmin' method for baseline reduction
-    o New 'mad' method for peak picking
+    o New normalization methods: 'rms' and 'reference'
+    o New baseline reduction method: 'locmin'
+    o New peak picking method: 'mad'
     o New 'darkmode' and 'lightmode' plotting options
     o Added 'cvApply' methods for new classes
 
