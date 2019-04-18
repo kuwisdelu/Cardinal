@@ -13,7 +13,7 @@ MSContinuousImagingSpectraList <- function(data) {
 		inames <- .format.numbered("intensity", length(data))
 		names(data) <- inames
 	}
-	object <- as(data, "MSContinuousImagingSpectraList", strict=FALSE)
+	object <- .to_MSContinuousImagingSpectraList(data)
 	if ( validObject(object) )
 		object
 }
@@ -41,7 +41,7 @@ setReplaceMethod("[[", "MSContinuousImagingSpectraList",
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
-.to.MSContinuousImagingSpectraList <- function(from) {
+.to_MSContinuousImagingSpectraList <- function(from) {
 	fun <- function(x) {
 		if ( !inherits(x, c("matrix", "matter_matc")) ) {
 			as.matrix(x)

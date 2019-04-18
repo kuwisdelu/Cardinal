@@ -200,7 +200,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		fdata <- MassDataFrame(mz=mzs,
-			square1=c(pos(rnorm(n1 + n2, peakheight[1]), sd=sdsample), rep(0, n3)),
+			square1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
 			square2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))),
 			circle=c(rep(0, n1), pos(rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3)))
 	} else if ( i == 4L ) {

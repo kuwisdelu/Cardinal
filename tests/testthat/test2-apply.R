@@ -8,10 +8,10 @@ options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 register(SerialParam())
 
 set.seed(1)
-x <- simulateImage(preset=2, nruns=3, npeaks=10, dim=c(10,10),
-	peakheight=4, peakdiff=1, representation="centroid")
+x <- simulateImage(preset=7, nruns=3, npeaks=10, dim=c(10,10),
+	peakheight=2, peakdiff=2, representation="centroid")
 
-y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
+y <- makeFactor(A=pData(x)$circleA, B=pData(x)$circleB)
 
 test_that("featureApply", {
 
@@ -20,21 +20,40 @@ test_that("featureApply", {
 
 	expect_equal(out1, out2)
 
+	out3 <- featureApply(x, mean, .outpath=tempfile())
+
+	expect_equal(out1, out3[])
+
 })
 
 test_that("pixelApply", {
 
-	out1 <- pixelApply(x, mean)
-	out2 <- apply(iData(x), 2, mean)
+	out1 <- pixelApply(x, sum)
+	out2 <- apply(iData(x), 2, sum)
 
 	expect_equal(out1, out2)
+
+	out3 <- pixelApply(x, sum, .outpath=tempfile())
+
+	expect_equal(out1, out3[])
 
 })
 
 test_that("cvApply", {
 
-	out <- crossValidate(x, y, .fun=spatialShrunkenCentroids)
+	out1 <- cvApply(x, y, s=c(0,3,6),
+		.fun=spatialShrunkenCentroids)
 
-	expect_true(validObject(out))
+	acc1 <- rowMeans(sapply(out1,
+		function(o) modelData(o)$accuracy))
+
+	out2 <- crossValidate(x, y, s=c(0,3,6),
+		.fun=spatialShrunkenCentroids)
+
+	acc2 <- modelData(out2)$accuracy
+
+	expect_true(validObject(out2))
+
+	expect_equal(acc1, acc2)
 
 })

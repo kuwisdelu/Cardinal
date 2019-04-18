@@ -62,6 +62,7 @@ peakPick_plotfun <- function(s2, s1, ...,
 	noise <- attr(s2, "noise")
 	if ( !is.null(noise) )
 		lines(mz, noise, col="blue", lwd=0.5)
+	# need to flatten data (to allow outpath=TRUE)
 	s2mz <- s2[1:floor(length(s2) / 2)]
 	s2i <- s2[floor(1 + (length(s2) / 2)):length(s2)]
 	lines(s2mz, s2i, col="red", type='h')

@@ -13,7 +13,7 @@ MSProcessedImagingSpectraList <- function(data) {
 		inames <- .format.numbered("intensity", length(data))
 		names(data) <- inames
 	}
-	object <- as(data, "MSProcessedImagingSpectraList", strict=FALSE)
+	object <- .to_MSProcessedImagingSpectraList(data)
 	if ( validObject(object) )
 		object
 }
@@ -44,18 +44,20 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
-.to.MSProcessedImagingSpectraList <- function(from, mz) {
-	tol <- c(absolute=min(abs(diff(mz))) / 2)
+.to_MSProcessedImagingSpectraList <- function(from, mz) {
 	fun <- function(x) {
-		keys <- rep_vt(list(mz), length.out=ncol(x))
-		if ( inherits(x, "matter_matc") ) {
-			values <- as(x, "matter_list")
-		} else if ( !inherits(x, "sparse_matc") ) {
-			values <- lapply(seq_len(ncol(x)), function(i) x[,i])
+		if ( !inherits(x, "sparse_matc") ) {
+			tol <- c(absolute=min(abs(diff(mz))) / 2)
+			keys <- rep_vt(list(mz), length.out=ncol(x))
+			if ( inherits(x, "matter_matc") ) {
+				values <- as(x, "matter_list")
+			} else {
+				values <- lapply(seq_len(ncol(x)), function(i) x[,i])
+			}
+			x <- sparse_mat(list(keys=keys, values=values),
+				nrow=nrow(x), ncol=ncol(x), keys=mz,
+				tolerance=tol, combiner="sum")
 		}
-		x <- sparse_mat(list(keys=keys, values=values),
-			nrow=nrow(x), ncol=ncol(x), keys=mz,
-			tolerance=tol, combiner="sum")
 		x
 	}
 	data <- as(from, "SimpleList", strict=FALSE)

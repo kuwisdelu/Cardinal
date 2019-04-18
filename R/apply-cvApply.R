@@ -1,36 +1,93 @@
 
-# setMethod("crossValidate", "MSImagingExperiment",
-# 	function(.x, .y, .fun,
-# 		.fold = run(.x),
-# 		.predict = predict,
-# 		.process = !centroided(.x),
-# 		BPPARAM = bpparam(), ...)
-# 	{
-# 		.fun <- match.fun(.fun)
-# 		.predict <- match.fun(.predict)
-# 		# modify functions for preprocessing
-# 		.myfun <- .fun
-# 		.mypredict <- .predict
-# 		# apply cross-validation
-# 		callNextMethod(.x, .y, .fun=.myfun, .fold=.fold,
-# 			.predict=.mypredict, BPPARAM=BPPARAM, ...)
-# 	})
+setMethod("crossValidate", "MSImagingExperiment",
+	function(.x, .y, .fun,
+		.fold = run(.x),
+		.predict = predict,
+		.process = FALSE,
+		.processControl = list(),
+		.peaks = NULL,
+		BPPARAM = bpparam(), ...)
+	{
+		.fun <- match.fun(.fun)
+		.predict <- match.fun(.predict)
+		# get peakAlign and peakBin arguments
+		alignArgs <- list()
+		binArgs <- list()
+		if ( "tolerance" %in% names(.processControl) ) {
+			alignArgs$tolerance <- .processControl$tolerance
+			binArgs$tolerance <- .processControl$tolerance
+			.processControl$tolerance <- NULL
+		} else if ( "units" %in% names(.processControl) ) {
+			alignArgs$units <- .processControl$units
+			binArgs$units <- .processControl$units
+			.processControl$units <- NULL
+		} else if ( "type" %in% names(.processControl) ) {
+			binArgs$type <- .processControl$type
+			.processControl$tyle <- NULL
+		}
+		# get peakFilter arguments
+		if ( length(.processControl) > 1L ) {
+			filterArgs <- .processControl
+		} else {
+			filterArgs <- list()
+		}
+		# pre-processing
+		if ( .process ) {
+			if ( is.null(.peaks) ) {
+				FUN <- function(x, y, ..., BPPARAM) {
+					peaks <- do.call(peakAlign, c(list(x), alignArgs))
+					peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
+					peaks <- process(peaks, BPPARAM=BPPARAM)
+					.fun(peaks, y, ..., BPPARAM=BPPARAM)
+				}
+				PREDICT <- function(fit, newx, newy, ..., BPPARAM) {
+					peaks <- do.call(peakAlign, c(list(newx, mz(fData(fit))), alignArgs))
+					peaks <- process(peaks, BPPARAM=BPPARAM)
+					.predict(fit, peaks, newy, ..., BPPARAM=BPPARAM)
+				}
+			} else {
+				if ( is(.peaks, "MSImagingExperiment") ) {
+					iData(.x, "..peaks..") <- iData(.peaks)
+				} else {
+					iData(.x, "..peaks..") <- .peaks
+				}
+				FUN <- function(x, y, ..., BPPARAM) {
+					peaks <- x
+					imageData(peaks) <- ImageArrayList(iData(x, "..peaks.."))
+					peaks <- do.call(peakAlign, c(list(peaks), alignArgs))
+					peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
+					peaks <- process(peaks, BPPARAM=BPPARAM)
+					x <- do.call(peakBin, c(list(x, mz(peaks)), binArgs))
+					x <- process(x, BPPARAM=BPPARAM)
+					.fun(x, y, ..., BPPARAM=BPPARAM)
+				}
+				PREDICT <- function(fit, newx, newy, ..., BPPARAM) {
+					newx <- do.call(peakBin, c(list(newx, mz(fData(fit))), binArgs))
+					newx <- process(newx, BPPARAM=BPPARAM)
+					.predict(fit, newx, newy, ..., BPPARAM=BPPARAM)
+				}
+			}
+		} else {
+			FUN <- .fun
+			PREDICT <- .predict
+		}
+		# apply cross-validation
+		callNextMethod(.x, .y, .fun=FUN, .fold=.fold,
+			.predict=PREDICT, BPPARAM=BPPARAM, ...)
+	})
 
 setMethod("crossValidate", "SparseImagingExperiment",
 	function(.x, .y, .fun, .fold = run(.x),
 		BPPARAM = bpparam(), ...)
 	{
-		# get folds and response
-		yname <- "..response.."
-		.y <- force(.y)
-		fname <- "..fold.."
+		# get cross-validation folds
 		.fold <- as.factor(.fold)
 		# apply cross-validation
 		cv <- cvApply(.x, .y, .fun=.fun, .fold=.fold,
 			.simplify=TRUE, BPPARAM=BPPARAM, ...)
 		# collate results
 		models <- attr(cv[[1]], "models")
-		reference <- lapply(cv, function(f) attr(f, "reference"))
+		reference <- lapply(cv, function(f) attr(f, "y"))
 		if ( !is.numeric(fitted) ) {
 			isClassification <- TRUE
 			.y <- as.factor(.y)
@@ -46,12 +103,13 @@ setMethod("crossValidate", "SparseImagingExperiment",
 					mean(pred == ref, na.rm=TRUE)
 				}, fitted, reference)
 				sens <- mapply(function(pred, ref) {
-					sensitivity(pred, ref, positive=pos)
+					sensitivity(ref, pred, positive=pos)
 				}, fitted, reference)
 				spec <- mapply(function(pred, ref) {
-					specificity(pred, ref, positive=pos)
+					specificity(ref, pred, positive=pos)
 				}, fitted, reference)
-				res <- list(fitted=fitted, accuracy=acc,
+				res <- list(y=reference,
+					fitted=fitted, accuracy=acc,
 					sensitivity=sens, specificity=spec)
 			} else {
 				rmse <- mapply(function(pred, ref) {
@@ -60,7 +118,8 @@ setMethod("crossValidate", "SparseImagingExperiment",
 				mae <- mapply(function(pred, ref) {
 					mean(abs(pred - ref), na.rm=TRUE)
 				}, fitted, reference)
-				res <- list(fitted=fitted, rmse=rmse, mae=mae)
+				res <- list(y=reference, fitted=fitted,
+					rmse=rmse, mae=mae)
 			}
 			res
 		})
@@ -71,13 +130,11 @@ setMethod("crossValidate", "SparseImagingExperiment",
 			elementMetadata=pixelData(.x),
 			metadata=list(
 				parameters=names(models),
-				responseName=yname,
-				foldsName=fname,
-				positiveClass=pos),
+				`positive class`=pos),
 			resultData=as(results, "List"),
 			modelData=models)
-		pixelData(out)[[yname]] <- .y
-		pixelData(out)[[fname]] <- .fold
+		pixelData(out)[["..response.."]] <- .y
+		pixelData(out)[["..fold.."]] <- .fold
 		if ( isClassification ) {
 			modelData(out)$accuracy <- sapply(results,
 				function(res) mean(res$accuracy, na.rm=TRUE))
@@ -99,7 +156,7 @@ setMethod("cvApply", "SparseImagingExperiment",
 		.fold = run(.x),
 		.predict = predict,
 		.fitted = fitted,
-		.simplify = TRUE,
+		.simplify = FALSE,
 		BPREDO = list(),
 		BPPARAM = bpparam(), ...)
 	{
@@ -114,18 +171,18 @@ setMethod("cvApply", "SparseImagingExperiment",
 			.message(">>>> fold: ", fi, " <<<<")
 			if ( is.null(dim(.y)) ) {
 				# vector response
-				fit <- .fun(.x[,fi!=.fold,drop=FALSE],
-					.y[fi!=.fold], BPPARAM = BPPARAM, ...)
+				fit <- .fun(.x[,fi!=.fold,drop=FALSE], .y[fi!=.fold],
+					BPPARAM = BPPARAM, ...) # train
 				pred <- .predict(fit, .x[,fi==.fold,drop=FALSE],
-					.y[fi==.fold], BPPARAM = BPPARAM, ...)
-				ref <- .y[fi==.fold]
+					.y[fi==.fold], BPPARAM = BPPARAM, ...) # test
+				data <- .y[fi==.fold] # save test data
 			} else {
 				# matrix response
-				fit <- .fun(.x[,fi!=.fold,drop=FALSE],
-					.y[fi!=.fold,,drop=FALSE], BPPARAM = BPPARAM, ...)
+				fit <- .fun(.x[,fi!=.fold,drop=FALSE], .y[fi!=.fold,,drop=FALSE],
+					BPPARAM = BPPARAM, ...) # train
 				pred <- .predict(fit, .x[,fi==.fold,drop=FALSE],
-					.y[fi==.fold,,drop=FALSE], BPPARAM = BPPARAM, ...)
-				ref <- .y[fi==.fold,,drop=FALSE]
+					.y[fi==.fold,,drop=FALSE], BPPARAM = BPPARAM, ...) # test
+				data <- .y[fi==.fold,,drop=FALSE]  # save test data
 			}
 			if ( .simplify ) {
 				params <- metadata(fit)$parameters
@@ -134,9 +191,9 @@ setMethod("cvApply", "SparseImagingExperiment",
 				} else {
 					models <- modelData(fit)
 				}
-				pred <- .fitted(pred)
+				pred <- .fitted(pred) # extract predicted values
 				attr(pred, "models") <- models
-				attr(pred, "reference") <- ref
+				attr(pred, "y") <- data # observed values
 			}
 			.message("<<<< done: ", fi, " >>>>\n")
 			pred

@@ -139,7 +139,8 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 		if ( length(value) != length(mz(object)) ) {
 			if ( ncol(featureData(object)) > 0L ) {
 				drop <- names(featureData(object))
-				.warning("dropping feature metadata cols: ", drop)
+				.warning("dropping feature metadata cols: ",
+					paste0(drop, collapse=" "))
 			}
 			mcols <- MassDataFrame(mz=value)
 			metadata(mcols) <- metadata(object@featureData)
@@ -301,7 +302,7 @@ setMethod("cbind", "MSImagingExperiment",
 setAs("MSImagingExperiment", "MSContinuousImagingExperiment",
 	function(from) {
 		if ( !is(imageData(from), "MSContinuousImagingSpectraList") )
-			imageData(from) <- .to.MSContinuousImagingSpectraList(imageData(from))
+			imageData(from) <- .to_MSContinuousImagingSpectraList(imageData(from))
 		class(from) <- "MSContinuousImagingExperiment"
 		from
 	})
@@ -309,7 +310,7 @@ setAs("MSImagingExperiment", "MSContinuousImagingExperiment",
 setAs("MSImagingExperiment", "MSProcessedImagingExperiment",
 	function(from) {
 		if ( !is(imageData(from), "MSProcessedImagingSpectraList") )
-			imageData(from) <- .to.MSProcessedImagingSpectraList(imageData(from), mz(from))
+			imageData(from) <- .to_MSProcessedImagingSpectraList(imageData(from), mz(from))
 		class(from) <- "MSProcessedImagingExperiment"
 		from
 	})

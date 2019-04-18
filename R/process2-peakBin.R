@@ -15,7 +15,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 		type <- match.arg(type)
 		fun <- peakBin_fun(type, tol, mz, peaks)
 		metadata(featureData(object))[["reference peaks"]] <- ref
-		object <- process(object, fun=fun, ...,
+		object <- process(object, fun=fun,
 			label="peakBin", kind="pixel",
 			postfun=peakBin_postfun,
 			plotfun=peakBin_plotfun,

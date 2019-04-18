@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
 
-- Finish crossValidate() method with pre-processing
 - Improve resolution()<- for MassDataFrame + PositionDataFrame
 - Add unit tests for all new processing + statistical methods
 - Change filter() and select() to use '...' instead of '.id'

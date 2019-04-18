@@ -161,13 +161,22 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
 		}, resultData(object), r, s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
+		out <- .SpatialShrunkenCentroids2(
+			imageData=.SimpleImageArrayList(),
+			featureData=featureData(newx),
+			elementMetadata=pixelData(newx),
+			metadata=metadata(object),
+			resultData=as(results, "List"),
+			modelData=modelData(object))
+		modelData(out)$num_features <- sapply(results, function(res) {
+			round(mean(colSums(res$statistic != 0)), 1)
+		})
 		if ( !is.null(newy) ) {
-			modelData(object)$accuracy <- sapply(results,
+			modelData(out)$accuracy <- sapply(results,
 				function(res) mean(res$class == newy, na.rm=TRUE))
-			pixelData(object)$..response.. <- newy
+			pixelData(out)$..response.. <- newy
 		}
-		resultData(object) <- as(results, "List")
-		object
+		out
 	})
 
 setMethod("fitted", "SpatialShrunkenCentroids2",
@@ -190,9 +199,12 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 {
 	iter <- 1
 	init <- TRUE
-	# suppress messages in inner parallel loop
+	# suppress messages
 	verbose <- getOption("Cardinal.verbose")
-	on.exit(options(Cardinal.verbose=verbose))
+	# suppress progress in inner parallel loop
+	progress <- getOption("Cardinal.progress")
+	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
 	# cluster the data
 	while ( iter <= iter.max ) {
 		options(Cardinal.verbose=FALSE) # suppress messages
@@ -210,9 +222,10 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		class <- pred$class
 		init <- pred$init
 		iter <- iter + 1
-		options(Cardinal.verbose=TRUE) # print progress now
+		options(Cardinal.verbose=verbose) # print progress now
 		.message(".", appendLF=FALSE)
 	}
+	options(Cardinal.verbose=verbose) # restore
 	.message(" ")
 	list(class=pred$class, probability=pred$probability, scores=pred$scores,
 		centers=fit$centers, statistic=fit$statistic, sd=fit$sd)
@@ -220,10 +233,6 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 
 .spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM, ...)
 {
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
 	# calculate class centers
 	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
@@ -257,10 +266,6 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 .spatialShrunkenCentroids2_predict <- function(x, r, class, weights,
 							centers, sd, priors, init, BPPARAM, ...)
 {
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
 		idx <- attr(xbl, "idx")
