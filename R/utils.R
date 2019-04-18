@@ -22,11 +22,11 @@ regpr <- function(x, lambda = 0.1) {
 # Cube root
 cbrt <- function(x) x^(1/3)
 
-# Return a vector multiplied by positive 1
-pos <- function(x) x
+# Return positive part
+pos <- function(x) pmax(x, 0)
 
-# Return a vector multiplied by negative 1
-neg <- function(x) -x
+# Return negative part
+neg <- function(x) pmin(x, 0)
 
 # Combined (pooked) mean of multiple subsets
 combinedMean <- function(xbar, n) {

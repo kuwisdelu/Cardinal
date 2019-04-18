@@ -2,7 +2,7 @@
 # Simulate a mass spectrometry imaging experiment
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
+	sdruns = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
 	as = c("MSImagingExperiment", "SparseImagingExperiment"),
 	BPPARAM = bpparam(), ...)
@@ -33,7 +33,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		# extract run information
 		classes <- as.matrix(pData[ii,,drop=FALSE], slots=FALSE)
 		peaks <- as.matrix(fData[,nm,drop=FALSE], slots=FALSE)
-		runerr <- rnorm(nrow(peaks), sd=sdrun)
+		runerr <- rnorm(nrow(peaks), sd=sdruns)
 		pixelerr <- rnorm(nrow(pData), sd=sdpixel)
 		# calculate spatial covariance
 		if ( spcorr > 0 ) {
@@ -107,8 +107,9 @@ addShape <- function(pixelData, center, size,
 
 presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
-	jitter = TRUE, ...)
+	sdsample = 0.2, jitter = TRUE, ...)
 {
+	numPresets <- 8L
 	nx <- unname(dim[1L])
 	ny <- unname(dim[2L])
 	sdx <- jitter * nx / 20
@@ -117,7 +118,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 	coords <- expand.grid(x=1:nx, y=1:ny)
 	pdata <- PositionDataFrame(coords, run="run0")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
-	i <- (abs(preset) - 1L) %% 9L + 1L
+	i <- (abs(preset) - 1L) %% numPresets + 1L
+	.message("using image preset = ", i)
 	if ( i == 1L ) {
 		# centered circle
 		rx <- nx / 2
@@ -135,7 +137,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata <- do.call("rbind", pdata)
 		fdata <- MassDataFrame(mz=mzs,
-			circle=c(abs(rnorm(npeaks, peakheight))))
+			circle=c(pos(rnorm(npeaks, peakheight, sd=sdsample))))
 	} else if ( i == 2L ) {
 		# topleft circle + bottomright square
 		rx <- nx / 4
@@ -163,8 +165,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
 		fdata <- MassDataFrame(mz=mzs,
-			circle=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
-			square=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))))
+			circle=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			square=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))))
 	} else if ( i == 3L ) {
 		# 2 corner squares + centered circle
 		rx <- nx / 4
@@ -198,9 +200,9 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		fdata <- MassDataFrame(mz=mzs,
-			square1=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
-			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
-			circle=c(rep(0, n1), abs(rnorm(n2, peakheight[3])), rep(0, n3)))
+			square1=c(pos(rnorm(n1 + n2, peakheight[1]), sd=sdsample), rep(0, n3)),
+			square2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))),
+			circle=c(rep(0, n1), pos(rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3)))
 	} else if ( i == 4L ) {
 		# centered circle w/ diff conditions
 		rx <- nx / 2
@@ -238,7 +240,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n1 <- floor(npeaks / 2)
 		n2 <- npeaks - n1
 		diff <- c(rep(TRUE, n1), rep(FALSE, n2))
-		peakheight_circle <- abs(rnorm(npeaks, peakheight))
+		peakheight_circle <- pos(rnorm(npeaks, peakheight, sd=sdsample))
 		peakdiff_circle <- diff * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
 			circleA=peakheight_circle,
@@ -298,8 +300,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		peakheight <- rep_len(peakheight, 2)
 		diff.circle <- c(rep(TRUE, n1), rep(FALSE, n2 + n3))
 		diff.square <- c(rep(FALSE, n1 + n2), rep(TRUE, n3))
-		peakheight_circle <- c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3))
-		peakheight_square <- c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2])))
+		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakheight_square <- c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample)))
 		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
 		peakdiff_square <- diff.square * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
@@ -361,14 +363,106 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		diff.circle <- c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3))
-		peakheight_circle <- c(rep(0, n1), abs(rnorm(n2, peakheight[3])), rep(0, n3))
+		peakheight_circle <- c(rep(0, n1), pos(rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3))
 		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			square1=c(abs(rnorm(n1 + n2, peakheight[1])), rep(0, n3)),
-			square2=c(rep(0, n1), abs(rnorm(n2 + n3, peakheight[2]))),
+			square1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			square2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))),
 			circleA=peakheight_circle,
 			circleB=peakheight_circle + peakdiff_circle,
 			diff.circle=diff.circle)
+	} else if ( i == 7L ) {
+		# pairs of circles w/ diff conditions + ref peak
+		rx <- nx / 4
+		ry <- ny / 4
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2 + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleA")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2  + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleB")
+			runNames(pdata_i) <- paste0("run", i-1)
+			pdata_i
+		})
+		pdata <- do.call("rbind", pdata)
+		pdata$ref <- TRUE
+		conditionA <- (coord(pdata)$x <= nx / 2) &  (coord(pdata)$y <= ny / 2)
+		conditionB <- (coord(pdata)$x >= nx / 2) &  (coord(pdata)$y >= ny / 2)
+		pdata$condition <- makeFactor(A=conditionA, B=conditionB)
+		n1 <- floor(npeaks / 3)
+		n2 <- floor(npeaks / 3)
+		n3 <- npeaks - n1 - n2
+		peakheight <- rep_len(peakheight, 2)
+		diff <- c(rep(TRUE, n1), rep(FALSE, n2), rep(FALSE, n3))
+		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakdiff_circle <- diff * rep_len(peakdiff, npeaks)
+		fdata <- MassDataFrame(mz=mzs,
+			ref=c(rep(0, n1 + n2), pos(rnorm(n3, peakheight[2], sd=sdsample))),
+			circleA=peakheight_circle,
+			circleB=peakheight_circle + peakdiff_circle,
+			diff=diff)
+	} else if ( i == 8L ) {
+		# pairs of circles + squares w/ diff conditions + ref peak
+		rx <- nx / 4
+		ry <- ny / 4
+		pdata <- lapply(1:nruns, function(i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 1.5 + rnorm(1, sd=sdr),
+				shape = "square", name = "squareA")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 1.5  + rnorm(1, sd=sdr),
+				shape = "square", name = "squareB")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2.5 + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleA")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx * 3 + rnorm(1, sd=sdx),
+					y=ry * 3 + rnorm(1, sd=sdy)),
+				size=(rx + ry) / 2.5  + rnorm(1, sd=sdr),
+				shape = "circle", name = "circleB")
+			runNames(pdata_i) <- paste0("run", i-1)
+			pdata_i
+		})
+		pdata <- do.call("rbind", pdata)
+		pdata$ref <- TRUE
+		pdata$condition <- makeFactor(A=pdata$squareA, B=pdata$squareB)
+		n1 <- floor(npeaks / 3)
+		n2 <- floor(npeaks / 3)
+		n3 <- npeaks - n1 - n2
+		peakheight <- rep_len(peakheight, 3)
+		diff.circle <- c(rep(TRUE, n1), rep(FALSE, n2), rep(FALSE, n3))
+		diff.square <- c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3))
+		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[2], sd=sdsample)), rep(0, n3))
+		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
+		peakheight_square <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakdiff_square <- diff.square * rep_len(peakdiff, npeaks)
+		fdata <- MassDataFrame(mz=mzs,
+			ref=c(rep(0, n1 + n2), pos(rnorm(n3, peakheight[3], sd=sdsample))),
+			squareA=peakheight_square,
+			squareB=peakheight_square + peakdiff_square,
+			circleA=peakheight_circle,
+			circleB=peakheight_circle + peakdiff_circle,
+			diff.circle=diff.circle,
+			diff.square=diff.square)
 	}
 	list(pixelData=pdata, featureData=fdata)
 }
