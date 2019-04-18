@@ -4,18 +4,18 @@
 \alias{smoothSignal}
 \alias{smoothSignal-methods}
 \alias{smoothSignal,MSImageSet-method}
-\alias{smoothSignal,MSImagingExperiment-method}
+\alias{smoothSignal,SparseImagingExperiment-method}
 
 \alias{smoothSignal.gaussian}
 \alias{smoothSignal.sgolay}
 \alias{smoothSignal.ma}
 
-\title{Smooth the spectra of a spectral imaging dataset}
+\title{Smooth the signals of a imaging dataset}
 \description{
-	Apply smoothing to a mass spectrometry imaging dataset.
+	Apply smoothing to the feature vectors of an imaging dataset.
 }
 \usage{
-\S4method{smoothSignal}{MSImagingExperiment}(object, method = c("gaussian", "sgolay", "ma"), \dots)
+\S4method{smoothSignal}{SparseImagingExperiment}(object, method = c("gaussian", "sgolay", "ma"), \dots)
 
 \S4method{smoothSignal}{MSImageSet}(object, method = c("gaussian", "sgolay", "ma"),
     \dots,
@@ -35,9 +35,9 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
     \item{object}{An imaging dataset.}
     \item{method}{The smoothing method to use.}
     \item{pixel}{The pixels to smooth. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
+    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the smoothing method.}
-    \item{x}{The mass spectrum to be smoothed.}
+    \item{x}{The signal to be smoothed.}
     \item{sd}{The standard deviation for the Gaussian kernel.}
     \item{window}{The smoothing window.}
     \item{order}{The order of the smoothing filter.}

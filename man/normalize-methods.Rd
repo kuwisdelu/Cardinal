@@ -4,33 +4,44 @@
 \alias{normalize}
 \alias{normalize-methods}
 \alias{normalize,MSImageSet-method}
-\alias{normalize,MSImagingExperiment-method}
+\alias{normalize,SparseImagingExperiment-method}
 
 \alias{normalize.tic}
+\alias{normalize.rms}
+\alias{normalize.reference}
 
 \title{Normalize an imaging dataset}
 \description{
-	Apply normalization to a mass spectrometry imaging dataset.
+	Apply normalization to the feature vectors of an imaging dataset.
 }
 \usage{
-\S4method{normalize}{MSImagingExperiment}(object, method = "tic", \dots)
+\S4method{normalize}{SparseImagingExperiment}(object, method = c("tic", "rms", "reference"), \dots)
 
 \S4method{normalize}{MSImageSet}(object, method = "tic",
 	\dots,
 	pixel = pixels(object),
 	plot = FALSE)
 
-## TIC normalization
+## Totial-ion-current normalization
 normalize.tic(x, tic=length(x), \dots)
+
+## Root-mean-square normalization
+normalize.rms(x, rms=1, \dots)
+
+## Reference normalization
+normalize.reference(x, feature, scale=1, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The normalization method to use.}
     \item{pixel}{The pixels to normalize. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
+    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the normalization method.}
-    \item{x}{The mass spectrum to be normalized.}
+    \item{x}{The signal to be normalized.}
     \item{tic}{The value to which to normalize the total ion current.}
+    \item{rms}{The value to which to normalize the root-mean-square.}
+    \item{feature}{The feature to use as a reference for normalization.}
+    \item{scale}{The value to which to normalize the reference.}
 }
 \details{
     Normalization is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:

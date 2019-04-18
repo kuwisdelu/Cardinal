@@ -36,7 +36,7 @@ addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
 
 presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
     dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
-    jitter = TRUE, \dots)
+    sdsample = 0.2, jitter = TRUE, \dots)
 }
 
 \arguments{
@@ -101,6 +101,8 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
     \item{peakheight}{Reference intensities used for peak heights by the preset.}
 
     \item{peakdiff}{A reference intensity difference used for the mean peak height difference between conditions, for presets that simulate multiple conditions.}
+
+    \item{sdsample}{A standard deviation giving the amount of variation from the true peak heights for this simulated sample.}
 
     \item{jitter}{Should random noise be added to the location and size of the shapes?}
 

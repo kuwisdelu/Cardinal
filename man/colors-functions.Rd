@@ -11,6 +11,9 @@
 \alias{discrete.colors}
 \alias{alpha.colors}
 
+\alias{darkmode}
+\alias{lightmode}
+
 \title{Color palettes for imaging}
 
 \description{
@@ -44,6 +47,10 @@ discrete.colors(n = 2, chroma = 150, luminance = 65, alpha = 1)
 alpha.colors(col, n = 100,
     alpha = (seq_len(n)/n)^alpha.power,
     alpha.power = 2)
+
+darkmode()
+
+lightmode()
 }
 
 \arguments{
@@ -59,7 +66,13 @@ alpha.colors(col, n = 100,
     \item{col}{the color(s) to expand with transparency}
     \item{alpha.power}{how the alpha should ramp as it increases}
 }
+\details{
+    Most of these functions return a vector of colors.
 
+    Several of the options made available by \code{color.map} are borrowed from the \code{viridisLite} package, including 'viridis', 'cividis', 'magma', 'inferno', and 'plasma'. The original functions for these color palettes are also re-exported for use by users. See the documention for them in that package.
+
+    The \code{darkmode} and \code{lightmode} functions change the graphical parameters for the current graphics device accordingly. The new themes will be used for any subsequent plots.
+}
 \value{
 	A palette of colors.
 }

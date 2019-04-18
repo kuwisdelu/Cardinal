@@ -35,7 +35,7 @@ reduceBaseline_plotfun <- function(s2, s1, ...,
 		if ( missing(xlab) )
 			xlab <- "m/z"
 	} else {
-		x <- seq(along(s2))
+		x <- seq_along(s2)
 	}
 	plot(x, s1, main=main, xlab=xlab, ylab=ylab,
 		col="gray", type='l', ...)

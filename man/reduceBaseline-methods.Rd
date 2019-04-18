@@ -4,35 +4,40 @@
 \alias{reduceBaseline}
 \alias{reduceBaseline-methods}
 \alias{reduceBaseline,MSImageSet-method}
-\alias{reduceBaseline,MSImagingExperiment-method}
+\alias{reduceBaseline,SparseImagingExperiment-method}
 
 \alias{reduceBaseline.median}
+\alias{reduceBaseline.locmin}
 
 \title{Reduce the baseline for an imaging dataset}
 \description{
-	Apply baseline reduction to a mass spectrometry imaging dataset.
+	Apply baseline reduction to the feature vectors of an imaging dataset.
 }
 \usage{
-\S4method{reduceBaseline}{MSImagingExperiment}(object, method = "median", \dots)
+\S4method{reduceBaseline}{SparseImagingExperiment}(object, method = c("median", "locmin"), \dots)
 
 \S4method{reduceBaseline}{MSImageSet}(object, method = "median",
     \dots,
     pixel = pixels(object),
     plot = FALSE)
 
-## Median baseline reduction
+## Interpolated median baseline reduction
 reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
+
+## Local minima baseline reduction
+reduceBaseline.locmin(x, window=5, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The baseline reduction method to use.}
     \item{pixel}{The pixels to baseline subtract. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
+    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the baseline reduction method.}
-    \item{x}{The mass spectrum to be baseline subtracted.}
+    \item{x}{The signal to be baseline-corrected.}
     \item{blocks}{The number of intervals to break the mass spectrum into in order to choose minima or medians from which to interpolate the baseline.}
     \item{fun}{Function used to determine the points from which the baseline will be interpolated.}
     \item{spar}{Smoothing parameter for the spline smoothing applied to the spectrum in order to decide the cutoffs for throwing away baseline references that might occur inside peaks.}
+    \item{window}{The sliding window (number of data points) to consider when determining the local minima.}
 }
 \details{
     Baseline reduction is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:

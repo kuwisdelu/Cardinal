@@ -2,7 +2,7 @@
 # Simulate a mass spectrometry imaging experiment
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-	sdruns = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
+	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
 	as = c("MSImagingExperiment", "SparseImagingExperiment"),
 	BPPARAM = bpparam(), ...)
@@ -33,7 +33,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		# extract run information
 		classes <- as.matrix(pData[ii,,drop=FALSE], slots=FALSE)
 		peaks <- as.matrix(fData[,nm,drop=FALSE], slots=FALSE)
-		runerr <- rnorm(nrow(peaks), sd=sdruns)
+		runerr <- rnorm(nrow(peaks), sd=sdrun)
 		pixelerr <- rnorm(nrow(pData), sd=sdpixel)
 		# calculate spatial covariance
 		if ( spcorr > 0 ) {

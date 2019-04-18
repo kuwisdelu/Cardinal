@@ -6,6 +6,7 @@
 \alias{peakPick,MSImageSet-method}
 \alias{peakPick,MSImagingExperiment-method}
 
+\alias{peakPick.mad}
 \alias{peakPick.simple}
 \alias{peakPick.adaptive}
 \alias{peakPick.limpic}
@@ -15,17 +16,20 @@
 	Apply peak picking to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakPick}{MSImagingExperiment}(object, method = c("simple", "adaptive"), \dots)
+\S4method{peakPick}{MSImagingExperiment}(object, method = c("mad", "simple", "adaptive"), \dots)
 
 \S4method{peakPick}{MSImageSet}(object, method = c("simple", "adaptive", "limpic"),
     \dots,
     pixel = pixels(object),
     plot = FALSE)
 
-## Local maxima and SNR with constant noise
+## Local maxima and SNR with noise based on local MAD
+peakPick.mad(x, SNR=6, window=5, blocks=100, \dots)
+
+## Local maxima and SNR with constant noise based on SD
 peakPick.simple(x, SNR=6, window=5, blocks=100, \dots)
 
-## Local maxima and SNR with adaptive noise
+## Local maxima and SNR with adaptive noise based on SD
 peakPick.adaptive(x, SNR=6, window=5, blocks=100, spar=1, \dots)
 
 ## LIMPIC peak detection
@@ -89,7 +93,7 @@ set.seed(1)
 data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
 
 # queue peak picking
-data <- peakPick(data, method="simple", SNR=6)
+data <- peakPick(data, method="mad", SNR=6)
 
 # apply peak picking
 data_peaks <- process(data, plot=interactive())

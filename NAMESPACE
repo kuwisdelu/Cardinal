@@ -1,6 +1,7 @@
 
 importFrom("graphics",
 	"abline",
+	"axis",
 	"legend",
 	"lines",
 	"locator",
@@ -22,6 +23,7 @@ importFrom("stats",
 	"convolve",
 	"kmeans",
 	"lm",
+	"loess",
 	"median",
 	"optim",
 	"p.adjust",
@@ -29,7 +31,9 @@ importFrom("stats",
 	"pt",
 	"quantile",
 	"setNames",
-	"smooth.spline")
+	"smooth.spline",
+	"splinefun",
+	"supsmu")
 
 importFrom("nlme",
 	"lme")
