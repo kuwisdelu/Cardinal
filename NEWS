@@ -1,4 +1,29 @@
 
+CHANGES IN VERSION 2.1.14 [2019-4-18]
+-----------------------------------
+
+NEW FEATURES
+
+    o New 'mzAlign' processing method for spectral alignment
+    o New 'mzBin' processing method for spectral binning
+    o New 'crossValidate' method that cleans up 'cvApply' output
+    o New 'rms' and 'reference' methods for normalization
+    o New 'locmin' method for baseline reduction
+    o New 'mad' method for peak picking
+    o New 'darkmode' and 'lightmode' plotting options
+    o Added 'cvApply' methods for new classes
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Image plotting now uses different 'colorkey' legend
+        placed beside plot that no longer obscures the image
+    o All plotting now uses different 'strip' labels
+        placed above plot that no longer obscures the plot area
+    o All plotting now accept hidden 'dark=TRUE' argument to
+        switch to plotting in new "dark mode"
+    o Changed/updated presets for 'presetImageDef' which
+        provides presets for 'simulateImage' function
+
 CHANGES IN VERSION 2.1.13 [2019-4-15]
 -----------------------------------
 
