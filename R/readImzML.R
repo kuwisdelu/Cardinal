@@ -10,14 +10,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	# check input
 	dots <- list(...)
 	if ( "mass.accuracy" %in% names(dots) ) {
-		.warning("'mass.accuracy' is deprecated.\n",
+		.stop("'mass.accuracy' is defunct.\n",
 			"Use 'resolution' instead.")
-		resolution <- dots$mass.accuracy
 	}
 	if ( "units.accuracy" %in% names(dots) ) {
-		.warning("'units.accuracy' is deprecated.\n",
+		.stop("'units.accuracy' is defunct.\n",
 			"Use 'units' instead.")
-		units <- dots$units.accuracy
 	}
 	# get output format
 	outclass <- match.arg(as)

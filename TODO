@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
 
-- Deprecate and defunct stuff
 - Change filter() and select() to use '...' instead of '.id'
 - Add updated/missing unit tests
 - Update documentation

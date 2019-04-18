@@ -14,7 +14,7 @@
 \usage{
 \S4method{standardizeRuns}{MSImageSet}(object, method = "sum", \dots)
 
-## TIC normalization
+## Sum normalization
 standardizeRuns.sum(x, sum=length(x), \dots)
 }
 \arguments{

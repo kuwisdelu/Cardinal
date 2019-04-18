@@ -104,11 +104,10 @@ makeFactor <- function(..., ordered = FALSE) {
 	factor(labs[inds], levels=labs, ordered=ordered)
 }
 
-# deprecated
+# defunct
 
 setMethod("select", "SImageSet",
 	function(.data, ...) {
-		.Deprecated("selectROI")
-		selectROI(.data, ...)
+		.Defunct("selectROI")
 	})
 
