@@ -16,6 +16,8 @@
 \alias{show,MSImagingExperiment-method}
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}
+\alias{resolution,MSImagingExperiment-method}
+\alias{resolution<-,MSImagingExperiment-method}
 \alias{spectra,MSImagingExperiment-method}
 \alias{spectra<-,MSImagingExperiment-method}
 \alias{peaks,MSImagingExperiment-method}
@@ -86,7 +88,9 @@ MSImagingExperiment(
     All methods for \code{\linkS4class{ImagingExperiment}} and \code{\linkS4class{SparseImagingExperiment}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
-        \item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the experimental run slot-column from \code{pixelData}.}
+        \item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the m/z values from \code{pixelData}.}
+
+        \item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the m/z resolution of the dataset. Typically, this should not be set manually.}
 
         \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the spectra (alias for \code{iData(object)}).}
 

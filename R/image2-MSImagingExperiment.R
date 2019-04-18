@@ -12,7 +12,7 @@ setMethod("image",
 		...)
 	{
 		if ( !missing(formula) && missing(feature) && missing(mz) )
-			return(callNextMethod(x, formula=formula, ...))
+			return(callNextMethod(as(x, "SparseImagingExperiment"), formula=formula, ...))
 		if ( (!missing(feature) || !missing(mz)) && missing(feature.groups) ) {
 			if ( missing(mz) )
 				mz <- Cardinal::mz(x)[feature]
@@ -47,7 +47,7 @@ setMethod("image",
 				envir=as.env(featureData(x),
 				enclos=environment(formula)))
 		}
-		callNextMethod(x,
+		callNextMethod(as(x, "SparseImagingExperiment"),
 			formula=formula,
 			feature=feature,
 			feature.groups=feature.groups,

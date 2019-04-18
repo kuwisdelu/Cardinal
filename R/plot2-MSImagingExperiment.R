@@ -20,8 +20,8 @@ setMethod("plot",
 		type = if (centroided(x)) 'h' else 'l')
 	{
 		if ( !missing(formula) && missing(pixel) && missing(coord) )
-			return(callNextMethod(x, formula=formula, ...,
-				xlab=xlab, ylab=ylab, type=type))
+			return(callNextMethod(as(x, "SparseImagingExperiment"),
+				formula=formula, ..., xlab=xlab, ylab=ylab, type=type))
 		if ( missing(formula) && missing(xlab) && missing(ylab) ) {
 			xlab <- expression(italic(m/z))
 			ylab <- expression(italic(Intensity))
@@ -67,7 +67,7 @@ setMethod("plot",
 				envir=as.env(pixelData(x),
 				enclos=environment(formula)))
 		}
-		callNextMethod(x,
+		callNextMethod(as(x, "SparseImagingExperiment"),
 			formula=formula,
 			pixel=pixel,
 			pixel.groups=pixel.groups,

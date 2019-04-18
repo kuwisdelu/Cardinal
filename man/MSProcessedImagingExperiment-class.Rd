@@ -6,6 +6,7 @@
 \alias{MSProcessedImagingExperiment-class}
 
 \alias{mz<-,MSProcessedImagingExperiment-method}
+\alias{resolution<-,MSProcessedImagingExperiment-method}
 
 \alias{iData<-,MSProcessedImagingExperiment,ANY-method}
 \alias{iData<-,MSProcessedImagingExperiment,missing-method}
@@ -52,6 +53,12 @@
     All methods for \code{\linkS4class{ImagingExperiment}} and \code{\linkS4class{SparseImagingExperiment}} also work on \code{MSProcessedImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
+        \item{\code{mz(object) <- value}:}{Setting the m/z values changes the m/z binning scheme for the entire dataset (without modifying the underlying data).}
+
+        \item{\code{resolution(object) <- value}:}{Setting the m/z resolution changes the m/z binning scheme for the entire dataset (without modifying the underlying data).}
+
+        \item{\code{tolerance(object)}, \code{tolerance(object) <- value}:}{Get or set the binning tolerance for sparse spectra or peaks.}
+
         \item{\code{mzData(object)}, \code{mzData(object) <- value}:}{Get or set the underlying (pre-binned) m/z values associated with the sparse mass spectra.}
 
         \item{\code{peakData(object)}, \code{peakData(object) <- value}:}{Get or set the underlying (pre-binned) intensity values associated with the sparse mass spectra.}

@@ -2,13 +2,12 @@
 TODO for Cardinal package
 -------------------------
 
-- Improve resolution()<- for MassDataFrame + PositionDataFrame
-- Add unit tests for all new processing + statistical methods
-- Change filter() and select() to use '...' instead of '.id'
 - Deprecate and defunct stuff
+- Change filter() and select() to use '...' instead of '.id'
+- Add updated/missing unit tests
 - Update documentation
 
-- Add updated PCA and NMF (?) analysis methods
+- Add updated PCA and PLS analysis methods
 - Add ggplot2 and lattice graphics engine options
 - Multimodal image registration (w/ optical images, etc.)
 - Shiny GUI

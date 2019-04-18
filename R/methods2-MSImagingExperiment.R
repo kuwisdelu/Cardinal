@@ -103,6 +103,15 @@ setReplaceMethod("peaks", "MSImagingExperiment",
 		object
 	})
 
+setMethod("resolution", "MSImagingExperiment",
+	function(object) resolution(featureData(object)))
+
+setReplaceMethod("resolution", "MSImagingExperiment",
+	function(object, value) {
+		resolution(featureData(object)) <- value
+		object
+	})
+
 # 'continuous' imaging experiments
 
 setReplaceMethod("imageData", "MSContinuousImagingExperiment",
@@ -153,6 +162,19 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 			tolerance(object@imageData) <- attr(value, "tolerance")
 		if ( validObject(object) )
 			object
+	})
+
+setReplaceMethod("resolution", "MSProcessedImagingExperiment",
+	function(object, value) {
+		if ( !is.null(names(value)) ) {
+			units <- switch(names(value), ppm="ppm", mz="mz")
+		} else if ( !is.null(names(resolution(object))) ) {
+			units <- switch(names(resolution(object)), ppm="ppm", mz="mz")
+		}
+		mz <- mz(from=min(mz(object)), to=max(mz(object)),
+			resolution=value, units=units)
+		mz(object) <- mz
+		object
 	})
 
 setReplaceMethod("imageData", "MSProcessedImagingExperiment",

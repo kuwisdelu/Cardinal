@@ -14,11 +14,11 @@
 }
 
 \usage{
+\S4method{mz}{missing}(from, to, by, resolution = 200, units = c("ppm", "mz"), \dots)
+
 mz(object, \dots)
 
 mz(object) <- value
-
-\S4method{mz}{missing}(from, to, by, resolution = 200, units = c("ppm", "mz"), \dots)
 }
 
 \arguments{

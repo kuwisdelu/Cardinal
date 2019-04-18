@@ -1,4 +1,4 @@
-\name{filter-methods}
+\name{dplyr-methods}
 \docType{methods}
 
 \alias{filter}

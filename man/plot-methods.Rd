@@ -248,6 +248,7 @@
 \examples{
 register(SerialParam())
 
+set.seed(1)
 x <- simulateImage(preset=2, npeaks=9, dim=c(9,9))
 m <- mz(metadata(x)$design$featureData)
 
