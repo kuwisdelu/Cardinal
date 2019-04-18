@@ -122,7 +122,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     A number of presets are defined by \code{presetImageDef()}, which returns only the \code{pixelData} and \code{featureData} necessary to define the experiment for \code{simulateImage()}. These can be referenced for help in understanding how to define experiments for \code{simulateImage()}.
 
-    The \code{addShape()} function is provided for convenience when generating the \code{pixelData} for \code{simulateImage()}, as a way of simply adding morphological substructures using basic shapes such as squares and circles.
+    The \code{addShape()} function is provided for convenience when generating the \code{pixelData} for \code{simulateImage()}, as a simple way of adding morphological substructures using basic shapes such as squares and circles.
 }
 
 \value{

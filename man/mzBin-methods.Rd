@@ -28,7 +28,7 @@
     \item{\dots}{Ignored.}
 }
 \details{
-    The reference masses are considered to be the center of each bin. The bin is then expanded on either side according to half the value of \code{width}, and the intensities in the bin are summarized using \code{fun}.
+    The reference masses are considered to be the center of each bin. The bin is then expanded on either side according to half the value of \code{width}, and the intensities in each bin are summarized by applying \code{fun}.
 
     Internally, \code{\link{pixelApply}} is used to apply the binning. See its documentation page for more details.
 }

@@ -27,7 +27,7 @@
     \item{\dots}{Ignored.}
 }
 \details{
-    Mass binning is performed by first selecting reference points in the reference spectrum by detecting local maxima. The top quantile of these reference points are used for alignment. The nearest local maxima to the reference points are detected in the unaligned spectra (within \code{tolerance}), and then the unaligned spectra are warped to maximize correlation with the reference spectrum.
+    Mass binning is performed by first selecting reference points in the reference spectrum by detecting local maxima. Some number of these reference points with the highest intensities (determined by \code{quantile}) are then used for alignment. The nearest local maxima to the reference points are detected in each unaligned spectrum (within \code{tolerance}), and then the unaligned spectra are warped to maximize correlation with the reference spectrum.
 
     Internally, \code{\link{pixelApply}} is used to perform the alignment. See its documentation page for more details.
 }

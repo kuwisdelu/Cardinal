@@ -55,6 +55,8 @@ PositionDataFrame <- function(coord, run, ...,
 		errors <- c(errors, "'gridded' must have length 1")
 	if ( length(object@resolution) != length(object@coord) )
 		errors <- c(errors, "length of 'resolution' and 'coord' must match")
+	if ( any(names(object@resolution) != names(object@coord)) )
+		errors <- c(errors, "names of 'resolution' and 'coord' must match")
 	if ( is.null(errors) ) TRUE else errors
 }
 
@@ -185,7 +187,18 @@ setMethod("resolution", "PositionDataFrame",
 
 setReplaceMethod("resolution", "PositionDataFrame",
 	function(object, value) {
+		oldres <- object@resolution
 		object@resolution <- value
+		fun <- function(oldres, newres, x) {
+			if ( is.na(oldres) || is.na(newres) ) {
+				x
+			} else {
+				newres * x / oldres
+			}
+		}
+		names(object@resolution) <- names(oldres)
+		object@coord[] <- mapply(fun, oldres,
+			object@resolution, object@coord, SIMPLIFY=FALSE)
 		if ( validObject(object) )
 			object
 	})

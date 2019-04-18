@@ -46,7 +46,7 @@
     \item{.x}{An imaging dataset.}
     \item{.y}{The response variable for prediction.}
     \item{.fun}{A function for training a model where the first two arguments are the dataset and the response.}
-    \item{.fold}{A variable determining the cross-validation folds. When specifying custom folds, it is important to make sure that data points from the same experimental run are not split among different folds. I.e., all data points from each run should belong to the same CV fold.}
+    \item{.fold}{A variable determining the cross-validation folds. When specifying custom folds, it is important to make sure that data points from the same experimental run are not split among different folds. I.e., all data points from a run should belong to the same CV fold.}
     \item{.predict}{A function for predicting from a trained model. The first two arguments are the model and a new dataset.}
     \item{.fitted}{A function for extracting the predicted values from the result of a call to \code{.predict}.}
     \item{.simplify}{If FALSE (the default), the output of \code{.predict} is returned. If TRUE, then \code{.fitted} is applied to the results to extract fitted values. Only the fitted values, observed values, and basic model information is returned.}
@@ -68,7 +68,7 @@
 
     If \code{.process=TRUE} and \code{.peaks} is given, then the data should be a dataset consisting of profile spectra, and \code{.peaks} should be a peak-picked version of the same dataset \emph{before peak alignment}. The pre-processing will consist of peak alignment to the mean spectrum of the training sets, peak filtering, and peak binning the full data to the aligned peaks.
 
-    The \code{crossValidate} function called \code{cvApply} internally and then post-processes the result. Accuracy metrics are reported for each set of modeling parameters.
+    The \code{crossValidate} function calls \code{cvApply} internally and then post-processes the result to be more easily-interpretable and space-efficient. Accuracy metrics are reported for each set of modeling parameters.
 }
 \value{
     An object of class 'CrossValidated', which is derived from \code{\linkS4class{ResultSet}}, or an object of class 'CrossValidated2', which is derived from \code{\linkS4class{ResultImagingExperiment}}.
