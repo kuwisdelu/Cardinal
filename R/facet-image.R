@@ -329,6 +329,7 @@ print.facet.image <- function(x, ...) {
 			.draw.colorkey(colorkey$colorkey,
 				colorkey$text, colorkey$col)
 	}
+	.Cardinal$lastplot <- x
 	invisible(x)
 }
 

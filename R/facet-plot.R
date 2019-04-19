@@ -206,6 +206,7 @@ print.facet.plot <- function(x, ...) {
 		if ( !is.null(key) )
 			.draw.key(key$key, key$text, key$fill)
 	}
+	.Cardinal$lastplot <- x
 	invisible(x)
 }
 

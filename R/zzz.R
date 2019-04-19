@@ -17,7 +17,8 @@
 		stop=NULL,
 		flush=0),
 	processing=FALSE,
-	trans3d=NULL))
+	trans3d=NULL,
+	lastplot=NULL))
 
 globalVariables(".Index")
 

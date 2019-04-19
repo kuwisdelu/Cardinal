@@ -2,24 +2,19 @@
 #### Select a Region-of-Interest ####
 
 setMethod("selectROI", "SparseImagingExperiment",
-	function(object, ..., mode = c("region", "pixels")) {
+	function(object, ..., mode = c("region", "pixels"))
+	{
 		mode <- match.arg(mode)
-		p <- image(object, ...)
-		print(p)
-		title(sub="select pixels", col.sub="red")
-		nruns <- nlevels(droplevels(run(object)[p$subset]))
-		if ( nruns > 1 )
-			.warning("multiple runs plotted; results may be unexpected")
-		.message("select pixels; press ESC or 2nd mouse button to stop")
-		if ( mode == "region" ) {
-			loc <- locator(type="o", pch=20, col="white", lwd=1.5)
-			.selectRegion(loc, pixelData(object),
-				subset=p$subset, axs=p$coordnames)
+		dots <- match.call(expand.dots=FALSE)$...
+		if ( length(dots) > 0L ) {
+			p <- image(object, ...)
+			print(p)
 		} else {
-			loc <- locator(type="p", pch=4, col="white")
-			.selectPixels(loc, pixelData(object),
-				subset=p$subset, axs=p$coordnames)
+			p <- .Cardinal$lastplot
+			if ( is.null(dev.list()) )
+				print(p)
 		}
+		.selectROI(object, p, mode)
 	})
 
 setMethod("selectROI",
@@ -65,6 +60,27 @@ setMethod("selectROI",
 		}
 		selected
 	})
+
+# selector functions
+
+.selectROI <- function(object, plot, mode) {
+	if ( is.null(dev.list()) )
+		.stop("no open plot to use")
+	title(sub="select pixels", col.sub="red")
+	nruns <- nlevels(droplevels(run(object)[plot$subset]))
+	if ( nruns > 1 )
+		.warning("multiple runs plotted; results may be unexpected")
+	.message("select pixels; press ESC or 2nd mouse button to stop")
+	if ( mode == "region" ) {
+		loc <- locator(type="o", pch=20, col="white", lwd=1.5)
+		.selectRegion(loc, pixelData(object),
+			subset=plot$subset, axs=plot$coordnames)
+	} else {
+		loc <- locator(type="p", pch=4, col="white")
+		.selectPixels(loc, pixelData(object),
+			subset=plot$subset, axs=plot$coordnames)
+	}
+}
 
 .selectRegion <- function(loc, pdata, subset, axs = c("x", "y")) {
 	roi <- rep(FALSE, nrow(pdata))
