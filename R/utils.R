@@ -1,4 +1,9 @@
 
+# Check for whole numbers in a vector
+is.wholenumber <- function(x)  {
+	abs(x - round(x)) < .Machine$double.eps^0.5
+}
+
 # Round to an arbitrary precision
 roundnear <- function(x, precision=0.1) {
 	round(x / precision) * precision

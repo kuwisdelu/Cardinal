@@ -12,10 +12,8 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			.stop("can't fit more components than number of pixels")
 		if ( max(ncomp) > nrow(x) )
 			.stop("can't fit more components than number of features")
-		if ( length(ncomp) > 1L ) {
+		if ( length(ncomp) > 1L )
 			ncomp <- max(ncomp)
-			.warning("ncomp has length > 1; using ncomp = ", ncomp)
-		}
 		.message("fitting ", ncomp, " FastMap components with ",
 			method, " spatial weights")
 		results <- bplapply(r, function(ri, BPPARAM) {

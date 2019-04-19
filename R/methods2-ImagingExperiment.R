@@ -131,19 +131,29 @@ setMethod("features", "ImagingExperiment",
 		conditions <- eval(substitute(alist(...)))
 		e <- as.env(fdata, enclos=.env)
 		if ( length(conditions) > 0 ) {
-			features <- sapply(conditions, function(ci) {
+			features <- lapply(conditions, function(ci) {
 				ci <- eval(ci, envir=e)
-				if ( !is.logical(ci) ) 
-					.stop("arguments must be logical vectors")
-				rep_len(ci, nrow(fdata))
+				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
+					.stop("arguments must be integer or logical vectors")
+				if ( is.logical(ci) ) {
+					rep_len(ci, nrow(fdata))
+				} else {
+					ci
+				}
 			})
-			if ( nrow(fdata) == 1 )
-				features <- t(features)
-			if ( is.null(dim(features)) ) {
-				features <- which(features)
+			if ( length(features) == 1 && is.logical(features[[1]]) ) {
+				features <- which(features[[1]])
 			} else {
-				features <- which(apply(features, 1, all))
-			}	
+				conds <- sapply(features, is.logical)
+				if ( any(conds) ) {
+					ll <- do.call("cbind", features[conds])
+					i1 <- which(apply(ll, 1, all))
+				} else {
+					i1 <- seq_len(nrow(fdata))
+				}
+				i2 <- unlist(features[!conds])
+				features <- sort(intersect(i1, i2))
+			}
 		} else {
 			features <- seq_len(nrow(fdata))
 		}
@@ -157,21 +167,31 @@ setMethod("pixels", "ImagingExperiment",
 		conditions <- eval(substitute(alist(...)))
 		e <- as.env(pdata, enclos=.env)
 		if ( length(conditions) > 0 ) {
-			pixels <- sapply(conditions, function(ci) {
+			pixels <- lapply(conditions, function(ci) {
 				ci <- eval(ci, envir=e)
-				if ( !is.logical(ci) ) 
-					.stop("argments must be logical vectors")
-				rep_len(ci, nrow(pdata))
+				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
+					.stop("arguments must be integer or logical vectors")
+				if ( is.logical(ci) ) {
+					rep_len(ci, nrow(pdata))
+				} else {
+					ci
+				}
 			})
-			if ( nrow(pdata) == 1 )
-				pixels <- t(pixels)
-			if ( is.null(dim(pixels)) ) {
-				pixels <- which(pixels)
+			if ( length(pixels) == 1 && is.logical(pixels[[1]]) ) {
+				pixels <- which(pixels[[1]])
 			} else {
-				pixels <- which(apply(pixels, 1, all))
+				conds <- sapply(pixels, is.logical)
+				if ( any(conds) ) {
+					ll <- do.call("cbind", pixels[conds])
+					i1 <- which(apply(ll, 1, all))
+				} else {
+					i1 <- seq_len(nrow(pdata))
+				}
+				i2 <- unlist(pixels[!conds])
+				pixels <- sort(intersect(i1, i2))
 			}
 		} else {
-			pixels <- seq_len(nrow(pixelData(object)))
+			pixels <- seq_len(nrow(pdata))
 		}
 		names(pixels) <- pixelNames(object)[pixels]
 		pixels

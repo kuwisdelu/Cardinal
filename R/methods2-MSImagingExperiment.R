@@ -248,8 +248,13 @@ setMethod("features", "MSImagingExperiment",
 			features <- callNextMethod(object, ..., .env=.env)
 		} else {
 			mz <- as.numeric(mz)
+			mzrange <- range(mz(object))
+			outofrange <- mz < mzrange[1] | mz > mzrange[2]
+			if ( any(outofrange) )
+				.warning("mz out of range: ", paste0(mz[outofrange], collapse=" "))
 			features <- bsearch(mz, mz(object), nearest=TRUE)
-			if ( length(list(...)) > 0 ) {
+			features <- features[!outofrange]
+			if ( length(match.call(expand.dots=FALSE)$...) > 0 ) {
 				keep <- features %in% callNextMethod(object, ..., .env=.env)
 				features <- features[keep]
 			}
@@ -282,7 +287,7 @@ setMethod("pixels", "MSImagingExperiment",
 				}
 			}))
 			pixels <- as.integer(pixels)
-			if ( length(list(...)) > 0 ) {
+			if ( length(match.call(expand.dots=FALSE)$...) > 0 ) {
 				keep <- pixels %in% callNextMethod(object, ..., .env=.env)
 				pixels <- pixels[keep]
 			}
