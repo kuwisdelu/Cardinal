@@ -153,21 +153,16 @@ setMethod("predict", "OPLS",
 		stop("OPLS method ", method, " not found")
 	}
 	fit <- nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
-	fit$loadings <- matrix(nrow=ncol(X), ncol=ncomp)
-	fit$weights <- matrix(nrow=ncol(X), ncol=ncomp)
-	fit$Yweights <- matrix(nrow=ncol(Y), ncol=ncomp)
-	for ( nc in 1:ncomp ) {
-		Oloadings <- fit$Oloadings[,1:nc,drop=FALSE]
-		Oweights <- fit$Oweights[,1:nc,drop=FALSE]
-		Oscores <- X %*% Oweights
-		Xortho <- tcrossprod(Oscores, Oloadings)
-		Xnew <- X - Xortho
-		nas <- apply(Y, 1, anyNA)
-		fit1 <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
-		fit$loadings[,nc] <- fit1$loadings[,1]
-		fit$weights[,nc] <- fit1$weights[,1]
-		fit$Yweights[,nc] <- fit1$Yweights[,1]
-	}
+	Oloadings <- fit$Oloadings[,1:ncomp,drop=FALSE]
+	Oweights <- fit$Oweights[,1:ncomp,drop=FALSE]
+	Oscores <- X %*% Oweights
+	Xortho <- tcrossprod(Oscores, Oloadings)
+	Xnew <- X - Xortho
+	nas <- apply(Y, 1, anyNA)
+	fit1 <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
+	fit$loadings <- fit1$loadings
+	fit$weights <- fit1$weights
+	fit$Yweights <- fit1$Yweights
 	fit
 }
 
@@ -179,7 +174,7 @@ setMethod("predict", "OPLS",
 	Oscores <- X %*% Oweights
 	Xortho <- tcrossprod(Oscores, Oloadings)
 	Xnew <- X - Xortho
-	pred <- .PLS.predict(Xnew, Y, ncomp=ncomp, loadings=loadings,
+	pred <- .PLS.predict(Xnew, Y, ncomp=1, loadings=loadings,
 		weights=weights, Yweights=Yweights)
 	append(pred, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
 		Oloadings=Oloadings, Oweights=Oweights))

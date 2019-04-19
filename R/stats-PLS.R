@@ -101,7 +101,7 @@ setMethod("predict", "PLS",
 		}
 		result <- lapply(object@resultData, function(res) {
 			.message("PLS: Predicting for ncomp = ", res$ncomp, ".")
-			pred <- .PLS.predict(Xt, Y, ncomp=1:res$ncomp,
+			pred <- .PLS.predict(Xt, Y, ncomp=res$ncomp,
 				loadings=res$loadings, weights=res$weights,
 				Yweights=res$Yweights)
 			if ( is.logical(res$Ycenter) && !Ycenter ) {
@@ -149,9 +149,9 @@ setMethod("predict", "PLS",
 }
 
 .PLS.predict <- function(X, Y, ncomp, loadings, weights, Yweights) {
-	loadings.i <- loadings[,ncomp,drop=FALSE]
-	weights.i <- weights[,ncomp,drop=FALSE]
-	Yweights.i <- Yweights[,ncomp,drop=FALSE]
+	loadings.i <- loadings[,1:ncomp,drop=FALSE]
+	weights.i <- weights[,1:ncomp,drop=FALSE]
+	Yweights.i <- Yweights[,1:ncomp,drop=FALSE]
 	projection <- weights.i %*% solve(crossprod(loadings.i, weights.i))
 	coefficients <- tcrossprod(projection, Yweights.i)
 	scores <- X %*% projection
@@ -166,9 +166,9 @@ setMethod("predict", "PLS",
 		colnames(fitted) <- colnames(Y)
 	}
 	list(scores=scores, fitted=fitted,
-		loadings=loadings[,1:max(ncomp),drop=FALSE],
-		weights=weights[,1:max(ncomp),drop=FALSE],
-		Yweights=Yweights[,1:max(ncomp),drop=FALSE],
+		loadings=loadings[,1:ncomp,drop=FALSE],
+		weights=weights[,1:ncomp,drop=FALSE],
+		Yweights=Yweights[,1:ncomp,drop=FALSE],
 		projection=projection, coefficients=coefficients)
 }
 
