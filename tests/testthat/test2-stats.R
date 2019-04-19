@@ -14,6 +14,11 @@ x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
 
 y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
+set.seed(1)
+testdata <- simulateImage(preset=4, npeaks=10, nruns=3,
+	dim=c(10,10), sdnoise=0.5, peakheight=c(4,8),
+	peakdiff=1, representation="centroid")
+
 test_that("spatialFastmap", {
 
 	res1 <- spatialFastmap(x, r=c(1,2), ncomp=2, method="gaussian")
@@ -71,6 +76,20 @@ test_that("spatialDGMM", {
 
 	set.seed(1)
 	res2 <- spatialDGMM(x, r=1, k=3, method="adaptive")
+
+	expect_true(validObject(res2))
+
+})
+
+test_that("meansTest", {
+
+	res1 <- meansTest(testdata, ~ condition)
+
+	expect_true(validObject(res1))
+
+	set.seed(1)
+	res2 <- segmentationTest(testdata, ~ condition,
+		classControl="Ymax")
 
 	expect_true(validObject(res2))
 

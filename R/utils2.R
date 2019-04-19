@@ -228,8 +228,10 @@
 			args$legend <- text
 		if ( !"x.intersp" %in% names(args) )
 			args$x.intersp <- 0
-		if ( !"bg" %in% names(args) )
-			args$bg <- rgb(1, 1, 1, 0.75)
+		if ( !"bg" %in% names(args) ) {
+			col <- as.numeric(col2rgb(par()$bg) / 255)
+			args$bg <- rgb(col[1], col[2], col[3], 0.75)
+		}
 		if ( !"cex" %in% names(args) )
 			args$cex <- 0.8
 		if ( isTRUE(strip) && length(args$legend) != 0 )
@@ -237,6 +239,8 @@
 	} else {
 		if ( !"text" %in% names(args) )
 			args$text <- paste0(text, collapse="\n")
+		if ( !"cex" %in% names(args) )
+			args$cex <- par()$cex
 		if ( "legend" %in% names(args) )
 			args$legend <- NULL
 		if ( isTRUE(strip) )
@@ -286,8 +290,10 @@
 			args$col <- rev(col)
 		if ( !"y.intersp" %in% names(args) )
 			args$y.intersp <- 0.1
-		if ( !"bg" %in% names(args) )
-			args$bg <- rgb(1, 1, 1, 0.75)
+		if ( !"bg" %in% names(args) ) {
+			col <- as.numeric(col2rgb(par()$bg) / 255)
+			args$bg <- rgb(col[1], col[2], col[3], 0.75)
+		}
 		if ( !"cex" %in% names(args) )
 			args$cex <- 0.6
 		if ( !"lwd" %in% names(args) )

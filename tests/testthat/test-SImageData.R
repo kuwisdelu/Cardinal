@@ -83,41 +83,18 @@ test_that("SImageData combine", {
 
 })
 
-# test_that("SImageData combine", {
+test_that("generatePositionArray", {
+	
+	coord1 <- expand.grid(x=1:3, y=1:3)
+	pos1 <- Cardinal:::generatePositionArray(coord1)
+	expect_equivalent(pos1, matrix(1:9, nrow=3))
+	expect_identical(names(dim(pos1)), c("x", "y"))
 
-# 	data1 <- array(1:27, dim=c(3,3,3))
-# 	sdata1 <- SImageData(data=data1)
-# 	dim(data1) <- c(3, 9)
-# 	expect_equal(iData(sdata1), data1)
+	coord2 <- data.frame(x=1:3, y=1:3)
+	pos2 <- Cardinal:::generatePositionArray(coord2)
+	x <- matrix(NA, nrow=3, ncol=3)
+	diag(x) <- 1:3
+	expect_equivalent(pos2, x)
+	expect_identical(names(dim(pos2)), c("x", "y"))
 
-# 	sdata2 <- sdata1
-# 	featureNames(sdata1) <- 1:3
-# 	pixelNames(sdata1) <- 1:9
-# 	featureNames(sdata2) <- c(1:3)
-# 	pixelNames(sdata2) <- c(10, 2:9)
-
-# 	x1 <- iData(sdata1)
-# 	x2 <- iData(sdata1)
-# 	dimnames(x1) <- list(featureNames(sdata1), pixelNames(sdata1))
-# 	dimnames(x2) <- list(featureNames(sdata2), pixelNames(sdata2))
-
-# 	combdata <- combine(sdata1, sdata2)
-# 	expect_equivalent(iData(combdata), combine(x1, x2))
-
-# 	featureNames(sdata2) <- 2:4
-# 	expect_error(combine(sdata1, sdata2))
-
-# 	featureNames(sdata2) <- 1:3
-
-# 	sdata3 <- sdata2
-# 	featureNames(sdata3) <- 1:3
-# 	pixelNames(sdata3) <- 11:19
-
-# 	x3 <- iData(sdata3)
-# 	dimnames(x3) <- list(featureNames(sdata3), pixelNames(sdata3))
-
-# 	multicombdata <- combine(sdata1, sdata2, sdata3)
-# 	expect_equivalent(iData(multicombdata), combine(x1, x2, x3))
-
-# })
-
+})

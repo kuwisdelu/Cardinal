@@ -62,9 +62,9 @@ setMethod("segmentationTest", "SpatialDGMM",
 		results <- mapply(function(data, ctrl, res) {
 			data <- subset_data(data, ctrl)
 			if ( mixed ) {
-				fit <- lme(fixed=fixed, random=random, data=data, ...)
+				fit <- try(lme(fixed=fixed, random=random, data=data, ...))
 			} else {
-				fit <- lm(formula=fixed, data=data, ...)
+				fit <- try(lm(formula=fixed, data=data, ...))
 			}
 			subset <- res$class %in% data$..class..
 			mapping <- replace(res$class, !subset, NA_integer_)
@@ -84,13 +84,18 @@ setMethod("segmentationTest", "SpatialDGMM",
 				fixed=fixed, random=random),
 			resultData=as(results, "List"),
 			modelData=models)
-		modelData(out)$p.value <- sapply(results, function(res) {
-			f <- summary(res$model)$fstatistic
-			p <- pf(f[1], f[2], f[3], lower.tail=FALSE)
-			round(p, digits=6)
-		})
-		adj.p <- p.adjust(modelData(out)$p.value, method="BH")
-		modelData(out)$adj.p.value <- round(adj.p, digits=6)
+		errors <- sapply(results, function(res) inherits(res$model, "try-error"))
+		if ( any(errors) ) {
+			.warning("there were 1 or more errors while fitting models")
+		} else {
+			modelData(out)$p.value <- sapply(results, function(res) {
+				f <- summary(res$model)$fstatistic
+				p <- pf(f[1], f[2], f[3], lower.tail=FALSE)
+				round(p, digits=6)
+			})
+			adj.p <- p.adjust(modelData(out)$p.value, method="BH")
+			modelData(out)$adj.p.value <- round(adj.p, digits=6)
+		}
 		out
 	})
 
