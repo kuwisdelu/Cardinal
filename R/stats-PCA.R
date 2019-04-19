@@ -67,7 +67,7 @@ setMethod("predict", "PCA",
 
 .PCA.fit <- function(x, ncomp, method, center, scale, iter.max) {
 	if ( method == "irlba" ) {
-		if ( is.matrix(x) || is(iData(x), "matter_matc") ) {
+		if ( is(iData(x), "matter_matc") ) {
 			Xt <- t(iData(x))
 		} else {
 			Xt <- t(as.matrix(iData(x)))
