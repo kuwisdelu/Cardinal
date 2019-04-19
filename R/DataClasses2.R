@@ -120,7 +120,7 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 
 .PLS2 <- setClass("PLS2", contains="SparseResultImagingExperiment")
 
-.OPLS2 <- setClass("OPLS2", contains="SparseResultImagingExperiment")
+.OPLS2 <- setClass("OPLS2", contains="PLS2")
 
 .SpatialFastmap2 <- setClass("SpatialFastmap2", contains="SparseResultImagingExperiment")
 

@@ -148,10 +148,27 @@ setMethod("predict", "OPLS",
 
 .OPLS.fit <- function(X, Y, ncomp, method, iter.max) {
 	if ( method == "nipals" ) {
-		nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
+		fit <- nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
 	} else {
 		stop("OPLS method ", method, " not found")
 	}
+	fit <- nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
+	fit$loadings <- matrix(nrow=ncol(X), ncol=ncomp)
+	fit$weights <- matrix(nrow=ncol(X), ncol=ncomp)
+	fit$Yweights <- matrix(nrow=ncol(Y), ncol=ncomp)
+	for ( nc in 1:ncomp ) {
+		Oloadings <- fit$Oloadings[,1:nc,drop=FALSE]
+		Oweights <- fit$Oweights[,1:nc,drop=FALSE]
+		Oscores <- X %*% Oweights
+		Xortho <- tcrossprod(Oscores, Oloadings)
+		Xnew <- X - Xortho
+		nas <- apply(Y, 1, anyNA)
+		fit1 <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
+		fit$loadings[,nc] <- fit1$loadings[,1]
+		fit$weights[,nc] <- fit1$weights[,1]
+		fit$Yweights[,nc] <- fit1$Yweights[,1]
+	}
+	fit
 }
 
 .OPLS.predict <- function(X, Y, ncomp, method, loadings, Oloadings,
@@ -162,18 +179,8 @@ setMethod("predict", "OPLS",
 	Oscores <- X %*% Oweights
 	Xortho <- tcrossprod(Oscores, Oloadings)
 	Xnew <- X - Xortho
-	if ( is.null(loadings) || is.null(weights) || is.null(Yweights) ) {
-		nas <- apply(Y, 1, function(yi) any(is.na(yi)))
-		if ( method == "nipals" ) {
-			fit <- nipals.PLS(Xnew[!nas,], Y[!nas,], ncomp=1)
-		} else {
-			stop("PLS method ", method, " not found")
-		}
-	} else {
-		fit <- list(loadings=loadings, weights=weights, Yweights=Yweights)
-	}
-	pred <- .PLS.predict(Xnew, Y, ncomp=1, loadings=fit$loadings,
-		weights=fit$weights, Yweights=fit$Yweights)
+	pred <- .PLS.predict(Xnew, Y, ncomp=ncomp, loadings=loadings,
+		weights=weights, Yweights=Yweights)
 	append(pred, list(Xnew=Xnew, Xortho=Xortho, Oscores=Oscores,
 		Oloadings=Oloadings, Oweights=Oweights))
 }

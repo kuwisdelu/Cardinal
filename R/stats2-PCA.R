@@ -10,20 +10,28 @@ setMethod("PCA", "SparseImagingExperiment",
 		if ( length(ncomp) > 1L )
 			ncomp <- max(ncomp)
 		.message("projecting ", ncomp, " principal components...")
-		results <- lapply(ncomp, function(nc) {
-			.PCA2_fit(x, ncomp=nc, center=center, scale=scale)
-		})
+		if ( is(iData(x), "matter_mat") ) {
+			Xt <- t(iData(x))
+		} else {
+			Xt <- t(as.matrix(iData(x)))
+		}
+		Xt <- scale(Xt, center=center, scale=scale)
+		if ( isTRUE(center) )
+			center <- attr(Xt, "scaled:center")
+		if ( isTRUE(scale) )
+			scale <- attr(Xt, "scaled:scale")
+		results <- .PCA2_fit(Xt, ncomp=ncomp)
+		scaled <- SimpleList(center=center, scale=scale)
 		models <- DataFrame(ncomp=ncomp)
 		.PCA2(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
 			elementMetadata=pixelData(x),
 			metadata=list(
-				mapping=list(
-					feature="loadings",
-					pixel="scores"),
-				parameters=names(models)),
-			resultData=as(results, "List"),
+				mapping=metadata(x)$mapping,
+				parameters=names(models),
+				scaled=scaled),
+			resultData=as(list(results), "List"),
 			modelData=models)
 	})
 
@@ -36,10 +44,16 @@ setMethod("predict", "PCA2",
 		if ( missing(ncomp) )
 			ncomp <- max(modelData(object)$ncomp)
 		.message("projecting ", ncomp, " principal components...")
-		results <- lapply(resultData(object), function(res) {
-			.PCA2_predict(newdata, ncomp=ncomp, loadings=res$loadings,
-				center=res$center, scale=res$scale)
-		})
+		if ( is(iData(newdata), "matter_mat") ) {
+			Xt <- t(iData(newdata))
+		} else {
+			Xt <- t(as.matrix(iData(newdata)))
+		}
+		scaled <- metadata(object)$scaled
+		Xt <- scale(Xt, center=scaled$center, scale=scaled$scale)
+		results <- mapply(function(res, nc) {
+			.PCA2_predict(Xt, ncomp=nc, loadings=res$loadings)
+		}, resultData(object), ncomp, SIMPLIFY=FALSE)
 		models <- DataFrame(ncomp=ncomp)
 		.PCA2(
 			imageData=.SimpleImageArrayList(),
@@ -54,38 +68,20 @@ setMethod("predict", "PCA2",
 			modelData=models)
 	})
 
-.PCA2_fit <- function(x, ncomp, center, scale, ...) {
-	if ( is(iData(x), "matter_mat") ) {
-		Xt <- t(iData(x))
-	} else {
-		Xt <- t(as.matrix(iData(x)))
-	}
-	Xt <- scale(Xt, center=center, scale=scale)
-	if ( isTRUE(center) )
-		center <- attr(Xt, "scaled:center")
-	if ( isTRUE(scale) )
-		scale <- attr(Xt, "scaled:scale")
-	sv <- irlba(Xt, nu=ncomp, nv=ncomp, fastpath=is.matrix(Xt))
-	sdev <- sv$d[1:ncomp] / sqrt(max(1, nrow(Xt) - 1))
+.PCA2_fit <- function(x, ncomp, ...) {
+	sv <- irlba(x, nu=ncomp, nv=ncomp, fastpath=is.matrix(x))
+	sdev <- sv$d[1:ncomp] / sqrt(max(1, nrow(x) - 1))
 	loadings <- sv$v
-	scores <- Xt %*% loadings
+	scores <- x %*% loadings
 	colnames(loadings) <- paste("PC", 1:ncomp, sep="")
 	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev,
-		center=center, scale=scale)
+	list(scores=scores, loadings=loadings, sdev=sdev)
 }
 
-.PCA2_predict <- function(x, ncomp, loadings, center, scale, ...) {
-	if ( is(iData(x), "matter_mat") ) {
-		Xt <- t(iData(x))
-	} else {
-		Xt <- t(as.matrix(iData(x)))
-	}
-	Xt <- scale(Xt, center=center, scale=scale)
-	scores <- Xt %*% loadings[,1:ncomp,drop=FALSE]
+.PCA2_predict <- function(x, ncomp, loadings, ...) {
+	scores <- x %*% loadings[,1:ncomp,drop=FALSE]
 	sdev <- apply(scores, 2, sd)
 	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev,
-		center=center, scale=scale)
+	list(scores=scores, loadings=loadings, sdev=sdev)
 }
 

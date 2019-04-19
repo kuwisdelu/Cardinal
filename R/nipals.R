@@ -87,6 +87,7 @@ nipals.PLS <- function(X, Y, ncomp=2, tol=1e-6, iter.max=100) {
 	colnames(scores) <- paste("C", 1:ncomp, sep="")
 	colnames(Yweights) <- paste("C", 1:ncomp, sep="")
 	colnames(Yscores) <- paste("C", 1:ncomp, sep="")
+	rownames(Yweights) <- colnames(Y)
 	list(scores=scores, loadings=loadings, weights=weights, Yweights=Yweights,
 		Yscores=Yscores, projection=H, coefficients=Bhat, fitted=Yhat)
 }

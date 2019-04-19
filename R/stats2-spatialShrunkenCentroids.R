@@ -120,7 +120,6 @@ setMethod("spatialShrunkenCentroids",
 		modelData(out)$num_features <- sapply(results, function(res) {
 			round(mean(colSums(res$statistic != 0)), 1)
 		})
-		pixelData(out)$..response.. <- y
 		predict(out, newx=x, method=method, BPPARAM=BPPARAM)
 	})
 
@@ -131,11 +130,8 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			.stop("'newx' must inherit from 'SparseImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		if ( missing(newy) ) {
-			newy <- NULL
-		} else {
+		if ( !missing(newy) )
 			newy <- as.factor(newy)
-		}
 		r <- modelData(object)$r
 		s <- modelData(object)$s
 		method <- metadata(object)$method
@@ -171,7 +167,7 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		modelData(out)$num_features <- sapply(results, function(res) {
 			round(mean(colSums(res$statistic != 0)), 1)
 		})
-		if ( !is.null(newy) ) {
+		if ( !missing(newy) ) {
 			modelData(out)$accuracy <- sapply(results,
 				function(res) mean(res$class == newy, na.rm=TRUE))
 			pixelData(out)$..response.. <- newy
