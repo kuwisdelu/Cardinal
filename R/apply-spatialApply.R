@@ -17,8 +17,8 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		if ( is.list(.init) ) {
 			spatial <- .init$spatial
 		} else {
-			spatial <- .spatialInfo(.object, r=.r,
-				dist=.dist, weights=FALSE)
+			nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)
+			spatial <- list(neighbors=nb, offsets=attr(nb, "offsets"))
 		}
 		if ( .blocks ) {
 			if ( !is.logical(.simplify) )

@@ -62,7 +62,11 @@
 \value{
     Either a list of neighbors/weights or a sparse matrix (\code{\linkS4class{sparse_mat}}) giving the neighbors and weights for each pixel.
 
-    For \code{spatialWeights}, two types of weights are calculated and returned as a list. The \code{alpha} weights are distance-based, following a Gaussian distributed that produces smaller weights for larger distances. The \code{beta} weights are adaptive weights used for bilateral filtering, which are based on the difference in the feature-vectors between pixels. If \code{method="gaussian"} only the \code{alpha} weights are calcualated and the \code{beta} weights are all set to 1. If \code{matrix=TRUE}, the \code{alpha} and \code{beta} weights are multiplied together to produce the weights for the matrix; otherwise, both are returned separately.
+    For \code{spatialWeights}, two types of weights are calculated and returned as a list:
+
+    The \code{alpha} weights are distance-based, following a Gaussian distributed that produces smaller weights for larger distances. The \code{beta} weights are adaptive weights used for bilateral filtering, which are based on the difference in the feature-vectors between pixels.
+
+    If \code{method="gaussian"} only the \code{alpha} weights are calcualated and the \code{beta} weights are all set to 1. If \code{matrix=TRUE}, the \code{alpha} and \code{beta} weights are multiplied together to produce the weights for the matrix; otherwise, both are returned separately.
 }
 \author{
 	Kylie A. Bemis

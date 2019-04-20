@@ -79,3 +79,24 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 			spatial$weights[[i]], spatial$weights[[j]])
 	}
 }
+
+.spatialInfo <- function(x, r, dist = "chebyshev",
+	weights = TRUE, method = c("gaussian", "adaptive"), ...)
+{
+	if ( length(r) > 1L ) {
+		.warning("r has length > 1; using r = ", r[1])
+		r <- r[1]
+	}
+	neighbors <- findNeighbors(x, r=r, offsets=TRUE, dist=dist)
+	offsets <- attr(neighbors, "offsets")
+	attr(neighbors, "offsets") <- NULL
+	if ( weights ) {
+		progress <- getOption("Cardinal.progress")
+		options(Cardinal.progress=FALSE)
+		weights <- spatialWeights(x, r=r, method=method, ...)
+		options(Cardinal.progress=progress)
+		list(neighbors=neighbors, offsets=offsets, weights=weights, r=r)
+	} else {
+		list(neighbors=neighbors, offsets=offsets, r=r)
+	}
+}

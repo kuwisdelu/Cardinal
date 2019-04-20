@@ -48,7 +48,10 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 							tol.dist, iter.max = 2, ...)
 {
 	init <- TRUE
-	spatial <- .spatialInfo(x, r=r, method=method, dist=dist)
+	wts <- spatialWeights(x, r=r, method=method, dist=dist)
+	spatial <- list(r=r, weights=c(wts),
+		neighbors=attr(wts, "neighbors"),
+		offsets=attr(wts, "offsets"))
 	proj <- matrix(0, nrow=ncol(x), ncol=ncomp)
 	pivots <- matrix(NA_integer_, nrow=ncomp, ncol=2)
 	# suppress progress in inner parallel loop

@@ -105,15 +105,14 @@ test_that("spatialDGMM", {
 
 })
 
-test_that("meansTest", {
+test_that("meansTest + segmentationTest", {
 
 	res1 <- meansTest(testdata, ~ condition)
 
 	expect_true(validObject(res1))
 
 	set.seed(1)
-	res2 <- segmentationTest(testdata, ~ condition,
-		classControl="Ymax")
+	res2 <- segmentationTest(testdata, ~ condition, classControl="Ymax")
 
 	expect_true(validObject(res2))
 

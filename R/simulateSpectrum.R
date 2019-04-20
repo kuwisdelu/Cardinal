@@ -9,7 +9,7 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	representation = c("profile", "centroid"), ...)
 {
 	if ( length(mz) != length(intensity) )
-		stop("length of mz and peaks must match")
+		stop("length of mz and intensity must match")
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	m <- mz(from=from, to=to, by=by, units=units)

@@ -7,7 +7,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	as = c("MSImagingExperiment", "SparseImagingExperiment"),
 	BPPARAM = bpparam(), ...)
 {
-	if ( !missing(preset) && (missing(pixelData) || missing(featureData)) ) {
+	if ( !missing(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
@@ -17,6 +17,11 @@ simulateImage <- function(pixelData, featureData, preset,
 	if ( !all(names(pData) %in% names(fData)) )
 		stop("column names of pixelData and featureData do not match")
 	mz <- mz(fData)
+	if ( (!missing(from) || !missing(to)) && !missing(preset) ) {
+		mz <- (mz - min(mz)) / max(mz - min(mz))
+		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
+		mz(fData) <- mz(featureData) <- mz
+	}
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	as <- match.arg(as)

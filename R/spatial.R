@@ -101,10 +101,11 @@ setMethod("spatialWeights", "ImagingExperiment",
 		attr(weights, "init") <- NULL
 		if ( matrix ) {
 			w <- lapply(weights, function(w) w$alpha * w$beta)
-			weights <- sparse_mat(data=list(keys=nb, values=w),
+			weights <- sparse_mat(data=list(keys=c(nb), values=w),
 				nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
 		} else {
-			attr(weights, "neighbors") <- nb
+			attr(weights, "offsets") <- attr(nb, "offsets")
+			attr(weights, "neighbors") <- c(nb) # remove attr
 		}
 		weights
 	})
@@ -131,12 +132,12 @@ setMethod("spatialWeights", "iSet",
 			.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
 		}, nb, offsets, SIMPLIFY=FALSE)
 		if ( matrix ) {
-			attr(nb, "offsets") <- NULL
 			w <- lapply(weights, function(w) w$alpha * w$beta)
-			weights <- sparse_mat(data=list(keys=nb, values=w),
+			weights <- sparse_mat(data=list(keys=c(nb), values=w),
 				nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
 		} else {
-			attr(weights, "neighbors") <- nb
+			attr(weights, "offsets") <- offsets
+			attr(weights, "neighbors") <- c(nb) # remove attr
 		}
 		weights
 	})
@@ -164,28 +165,6 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 		attr(weights, "neighbors") <- nb
 	}
 	weights
-}
-
-# summarize spatial information (for old-style class methods)
-.spatialInfo <- function(x, r, dist = "chebyshev",
-	weights = TRUE, method = c("gaussian", "adaptive"), ...)
-{
-	if ( length(r) > 1L ) {
-		.warning("r has length > 1; using r = ", r[1])
-		r <- r[1]
-	}
-	neighbors <- findNeighbors(x, r=r, offsets=TRUE, dist=dist)
-	offsets <- attr(neighbors, "offsets")
-	attr(neighbors, "offsets") <- NULL
-	if ( weights ) {
-		progress <- getOption("Cardinal.progress")
-		options(Cardinal.progress=FALSE)
-		weights <- spatialWeights(x, r=r, method=method, ...)
-		options(Cardinal.progress=progress)
-		list(neighbors=neighbors, offsets=offsets, weights=weights, r=r)
-	} else {
-		list(neighbors=neighbors, offsets=offsets, r=r)
-	}
 }
 
 # split data into spatially-aware blocks for processing
