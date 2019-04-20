@@ -1,4 +1,27 @@
 
+CHANGES IN VERSION 2.1.15 [2019-4-19]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added new 'PCA' method for 'SparseImagingExperiment'
+    o Added new 'PLS' method for 'SparseImagingExperiment'
+    o Added new 'OPLS' method for 'SparseImagingExperiment'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The 'selectROI' method will now use the last plot
+        if no additional plotting arguments are given
+    o Setting 'resolution' on 'MSProcessedImagingExperiment'
+        will now update the m/z values binning scheme
+    o The 'select' and 'filter' methods now using integers
+        as row/col IDs without the '.id' argument
+
+BUG FIXES
+
+    o Fixed bug in 'OPLS' methods causing cross-validation 
+        to produce slightly optimistic results
+
 CHANGES IN VERSION 2.1.14 [2019-4-18]
 -----------------------------------
 
