@@ -143,6 +143,57 @@ setMethod("predict", "PLS2",
 		out
 	})
 
+setMethod("fitted", "PLS2",
+	function(object, ...) {
+		if ( metadata(object)$type == "classification" ) {
+			object$class
+		} else {
+			object$fitted
+		}
+	})
+
+setAs("PLS", "PLS2",
+	function(from) {
+		to <- .coerce_ResultImagingExperiment(from, "PLS2")
+		metadata(to)$mapping <- list(
+					feature=c("coefficients", "loadings", "weights"),
+					pixel=c("fitted", "scores"))
+		if ( !is.null(resultData(to, 1, "y")) ) {
+			y <- resultData(to, 1, "y")
+			if ( is.factor(y) || is.character(y) ) {
+				resultData(to) <- endoapply(resultData(to),
+					function(res) rename(res, classes="class"))
+				metadata(to)$type <- "classification"
+			} else {
+				metadata(to)$type <- "regression"
+			}
+			if ( is.null(dim(y)) )
+				pixelData(to)$..response.. <- y
+		}
+		to
+	})
+
+setAs("OPLS", "OPLS2",
+	function(from) {
+		to <- .coerce_ResultImagingExperiment(from, "OPLS2")
+		metadata(to)$mapping <- list(
+					feature=c("coefficients", "loadings", "weights"),
+					pixel=c("fitted", "scores"))
+		if ( !is.null(resultData(to, 1, "y")) ) {
+			y <- resultData(to, 1, "y")
+			if ( is.factor(y) || is.character(y) ) {
+				resultData(to) <- endoapply(resultData(to),
+					function(res) rename(res, classes="class"))
+				metadata(to)$type <- "classification"
+			} else {
+				metadata(to)$type <- "regression"
+			}
+			if ( is.null(dim(y)) )
+				pixelData(to)$..response.. <- y
+		}
+		to
+	})
+
 .PLS2_fit <- function(X, Y, ncomp, method, iter.max) {
 	nas <- apply(Y, 1, anyNA)
 	X <- X[!nas,,drop=FALSE]

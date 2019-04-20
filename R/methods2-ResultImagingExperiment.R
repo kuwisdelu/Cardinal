@@ -190,7 +190,6 @@ setMethod("show", "SparseResultImagingExperiment",
 # coerce from ResultSet
 
 .coerce_ResultImagingExperiment <- function(from, toclass) {
-	results <-lapply(resultData(from), as, "List")
 	new(toclass,
 		imageData=.SimpleImageArrayList(),
 		featureData=XDataFrame(fData(from)),
@@ -198,7 +197,7 @@ setMethod("show", "SparseResultImagingExperiment",
 			coord=DataFrame(coord(from)[,coordLabels(from)],
 				row.names=NULL),
 			run=pixelData(from)$sample),
-		resultData=as(results, "List"),
+		resultData=as(resultData(from), "List"),
 		modelData=DataFrame(pData(modelData(from))))
 }
 

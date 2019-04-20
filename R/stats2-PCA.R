@@ -68,6 +68,20 @@ setMethod("predict", "PCA2",
 			modelData=models)
 	})
 
+setAs("PCA", "PCA2",
+	function(from) {
+		to <- .coerce_ResultImagingExperiment(from, "PCA2")
+		metadata(to)$mapping <- list(feature="loadings", pixel="scores")
+		i <- which.max(modelData(to)$ncomp)
+		.PCA2(
+			imageData=.SimpleImageArrayList(),
+			featureData=featureData(to),
+			elementMetadata=pixelData(to),
+			metadata=metadata(to),
+			resultData=resultData(to)[i],
+			modelData=modelData(to)[i,,drop=FALSE])
+	})
+
 .PCA2_fit <- function(x, ncomp, ...) {
 	sv <- irlba(x, nu=ncomp, nv=ncomp, fastpath=is.matrix(x))
 	sdev <- sv$d[1:ncomp] / sqrt(max(1, nrow(x) - 1))

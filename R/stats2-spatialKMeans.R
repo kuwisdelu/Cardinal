@@ -82,5 +82,5 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 			}, numeric(1))
 		}))
 	}, .blocks=TRUE, .simplify=do_rbind, ...)
-	SimpleList(cluster=cluster, centers=centers, correlation=corr)
+	list(cluster=cluster, centers=centers, correlation=corr)
 }

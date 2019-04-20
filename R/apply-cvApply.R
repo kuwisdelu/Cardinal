@@ -86,68 +86,22 @@ setMethod("crossValidate", "SparseImagingExperiment",
 		cv <- cvApply(.x, .y, .fun=.fun, .fold=.fold,
 			.simplify=TRUE, BPPARAM=BPPARAM, ...)
 		# collate results
-		models <- attr(cv[[1]], "models")
-		reference <- lapply(cv, function(f) attr(f, "y"))
-		if ( !is.numeric(fitted) ) {
-			isClassification <- TRUE
-			.y <- as.factor(.y)
-			pos <- levels(.y)[1]
-		} else {
-			isClassification <- FALSE
-		}
-		results <- lapply(1:nrow(models), function(i) {
-			fitted <- lapply(cv, function(f) f[[i]])
-			names(fitted) <- levels(.fold)
-			if ( isClassification ) {
-				acc <- mapply(function(pred, ref) {
-					mean(pred == ref, na.rm=TRUE)
-				}, fitted, reference)
-				sens <- mapply(function(pred, ref) {
-					sensitivity(ref, pred, positive=pos)
-				}, fitted, reference)
-				spec <- mapply(function(pred, ref) {
-					specificity(ref, pred, positive=pos)
-				}, fitted, reference)
-				res <- list(y=reference,
-					fitted=fitted, accuracy=acc,
-					sensitivity=sens, specificity=spec)
-			} else {
-				rmse <- mapply(function(pred, ref) {
-					sqrt(mean((pred - ref)^2, na.rm=TRUE))
-				}, fitted, reference)
-				mae <- mapply(function(pred, ref) {
-					mean(abs(pred - ref), na.rm=TRUE)
-				}, fitted, reference)
-				res <- list(y=reference, fitted=fitted,
-					rmse=rmse, mae=mae)
-			}
-			res
-		})
+		cv <- .cv_collate(cv, .y, .fold)
 		# return results
 		out <- .CrossValidated2(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(.x),
 			elementMetadata=pixelData(.x),
 			metadata=list(
-				parameters=names(models),
-				`positive class`=pos),
-			resultData=as(results, "List"),
-			modelData=models)
+				parameters=names(cv$models),
+				type=cv$type),
+			resultData=as(cv$results, "List"),
+			modelData=cv$models)
 		pixelData(out)[["..response.."]] <- .y
 		pixelData(out)[["..fold.."]] <- .fold
-		if ( isClassification ) {
-			modelData(out)$accuracy <- sapply(results,
-				function(res) mean(res$accuracy, na.rm=TRUE))
-			modelData(out)$sensitivity <- sapply(results,
-				function(res) mean(res$sensitivity, na.rm=TRUE))
-			modelData(out)$specificity <- sapply(results,
-				function(res) mean(res$specificity, na.rm=TRUE))
-		} else {
-			modelData(out)$rmse <- sapply(results,
-				function(res) mean(res$rmse, na.rm=TRUE))
-			modelData(out)$mae <- sapply(results,
-				function(res) mean(res$mae, na.rm=TRUE))
-		}
+		if ( cv$type == "classification" )
+			metadata(out)[["positive class"]] <- cv$pos
+		out <- .cv_accuracy(out)
 		out
 	})
 
@@ -184,21 +138,125 @@ setMethod("cvApply", "SparseImagingExperiment",
 					.y[fi==.fold,,drop=FALSE], BPPARAM = BPPARAM, ...) # test
 				data <- .y[fi==.fold,,drop=FALSE]  # save test data
 			}
-			if ( .simplify ) {
-				params <- metadata(fit)$parameters
-				if ( !is.null(params) ) {
-					models <- modelData(fit)[params]
-				} else {
-					models <- modelData(fit)
-				}
-				pred <- .fitted(pred) # extract predicted values
-				attr(pred, "models") <- models
-				attr(pred, "y") <- data # observed values
-			}
+			if ( .simplify )
+				pred <- .cv_simplify(pred, data, .fitted)
 			.message("<<<< done: ", fi, " >>>>\n")
 			pred
 		}, BPREDO=BPREDO, BPPARAM=BPPARAM)
 	})
+
+setAs("CrossValidated", "CrossValidated2",
+	function(from) {
+		cv <- lapply(resultData(from), function(pred) {
+			if ( is(pred, "PLS") ) {
+				pred <- as(pred, "PLS2")
+			} else if ( is(pred, "OPLS") ) {
+				pred <- as(pred, "OPLS2")
+			} else if ( is(pred, "SpatialShrunkenCentroids") ) {
+				pred <- as(pred, "SpatialShrunkenCentroids2")
+			} else {
+				pred <- .coerce_ResultImagingExperiment(pred,
+					"SparseResultImagingExperiment")
+			}
+			.cv_simplify(pred, .fitted=fitted)
+		})
+		y <- attr(cv[[1]], "y")
+		cv <- .cv_collate(cv, y, .fold=pData(from)$sample)
+		out <- .CrossValidated2(
+			imageData=.SimpleImageArrayList(),
+			featureData=XDataFrame(fData(from)),
+			elementMetadata=PositionDataFrame(
+				coord=DataFrame(coord(from)[,coordLabels(from)],
+					row.names=NULL),
+				run=pixelData(from)$sample),
+			metadata=list(
+				parameters=names(cv$models),
+				type=cv$type),
+			resultData=as(cv$results, "List"),
+			modelData=cv$models)
+		pixelData(out)[["..fold.."]] <- pData(from)$sample
+		if ( cv$type == "classification" )
+			metadata(out)[["positive class"]] <- cv$pos
+		out <- .cv_accuracy(out)
+		out
+	})
+
+.cv_accuracy <- function(object) {
+	if ( metadata(object)$type == "classification" ) {
+		modelData(object)$accuracy <- sapply(resultData(object),
+			function(res) mean(res$accuracy, na.rm=TRUE))
+		modelData(object)$sensitivity <- sapply(resultData(object),
+			function(res) mean(res$sensitivity, na.rm=TRUE))
+		modelData(object)$specificity <- sapply(resultData(object),
+			function(res) mean(res$specificity, na.rm=TRUE))
+	} else {
+		modelData(object)$rmse <- sapply(resultData(object),
+			function(res) mean(res$rmse, na.rm=TRUE))
+		modelData(object)$mae <- sapply(resultData(object),
+			function(res) mean(res$mae, na.rm=TRUE))
+	}
+	object
+}
+
+.cv_collate <- function(cv, y, .fold) {
+	models <- attr(cv[[1]], "models")
+	reference <- lapply(cv, function(f) attr(f, "y"))
+	if ( !is.numeric(y) ) {
+		type <- "classification"
+		y <- as.factor(y)
+		pos <- levels(y)[1]
+	} else {
+		type <- "regression"
+	}
+	results <- lapply(1:nrow(models), function(i) {
+		fitted <- lapply(cv, function(f) f[[i]])
+		names(fitted) <- levels(.fold)
+		if ( type == "classification" ) {
+			acc <- mapply(function(pred, ref) {
+				mean(pred == ref, na.rm=TRUE)
+			}, fitted, reference)
+			sens <- mapply(function(pred, ref) {
+				sensitivity(ref, pred, positive=pos)
+			}, fitted, reference)
+			spec <- mapply(function(pred, ref) {
+				specificity(ref, pred, positive=pos)
+			}, fitted, reference)
+			res <- list(y=reference,
+				fitted=fitted, accuracy=acc,
+				sensitivity=sens, specificity=spec)
+		} else {
+			rmse <- mapply(function(pred, ref) {
+				sqrt(mean((pred - ref)^2, na.rm=TRUE))
+			}, fitted, reference)
+			mae <- mapply(function(pred, ref) {
+				mean(abs(pred - ref), na.rm=TRUE)
+			}, fitted, reference)
+			res <- list(y=reference, fitted=fitted,
+				rmse=rmse, mae=mae)
+		}
+		res
+	})
+	if ( type == "classification" ) {
+		list(results=results, models=models, type=type, pos=pos)
+	} else {
+		list(results=results, models=models, type=type)
+	}
+}
+
+.cv_simplify <- function(pred, data, .fitted) {
+	if ( missing(data) )
+		data <- pixelData(pred)$..response..
+	params <- metadata(pred)$parameters
+	if ( !is.null(params) ) {
+		models <- modelData(pred)[params]
+	} else {
+		models <- modelData(pred)
+	}
+	pred <- .fitted(pred)
+	attr(pred, "models") <- models
+	attr(pred, "y") <- data
+	pred
+}
 
 setMethod("cvApply", "SImageSet",
 	function(.x, .y, .fun, .fold = sample, ...)

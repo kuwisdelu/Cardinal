@@ -178,10 +178,16 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
 		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
+		metdadata(to)$parameters <- c("r", "k", "s")
 		resultData(to) <- endoapply(resultData(to), function(res) {
 			rename(res, tstatistics="statistic", classes="class",
 				probabilities="probability")
 		})
+		modelData(to)$num_features <- sapply(resultData(ti), function(res) {
+			round(mean(colSums(res$statistic != 0)), 1)
+		})
+		if ( !is.null(resultData(to, 1, "y")) )
+			pixelData(to)$..response.. <- resultData(to, 1, "y")
 		to
 	})
 
@@ -190,12 +196,12 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 {
 	iter <- 1
 	init <- TRUE
-	# suppress messages
-	verbose <- getOption("Cardinal.verbose")
 	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
 	on.exit(options(Cardinal.progress=progress))
+	# suppress messages
+	verbose <- getOption("Cardinal.verbose")
 	# cluster the data
 	while ( iter <= iter.max ) {
 		options(Cardinal.verbose=FALSE) # suppress messages
@@ -224,6 +230,14 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 
 .spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM, ...)
 {
+	# suppress progress in inner parallel loop
+	progress <- getOption("Cardinal.progress")
+	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
+	# suppress progress in inner parallel loop
+	verbose <- getOption("Cardinal.verbose")
+	options(Cardinal.verbose=FALSE)
+	on.exit(options(Cardinal.verbose=verbose))
 	# calculate class centers
 	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
@@ -257,6 +271,10 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 .spatialShrunkenCentroids2_predict <- function(x, r, class, weights,
 							centers, sd, priors, init, BPPARAM, ...)
 {
+	# suppress progress in inner parallel loop
+	progress <- getOption("Cardinal.progress")
+	options(Cardinal.progress=FALSE)
+	on.exit(options(Cardinal.progress=progress))
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
 		idx <- attr(xbl, "idx")

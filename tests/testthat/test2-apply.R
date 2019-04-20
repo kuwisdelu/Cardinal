@@ -41,14 +41,11 @@ test_that("pixelApply", {
 
 test_that("cvApply", {
 
-	out1 <- cvApply(x, y, s=c(0,3,6),
-		.fun=spatialShrunkenCentroids)
+	out1 <- cvApply(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
 
-	acc1 <- rowMeans(sapply(out1,
-		function(o) modelData(o)$accuracy))
+	acc1 <- rowMeans(sapply(out1, function(o) modelData(o)$accuracy))
 
-	out2 <- crossValidate(x, y, s=c(0,3,6),
-		.fun=spatialShrunkenCentroids)
+	out2 <- crossValidate(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
 
 	acc2 <- modelData(out2)$accuracy
 
@@ -56,11 +53,11 @@ test_that("cvApply", {
 
 	expect_equal(acc1, acc2)
 
-	out3 <- crossValidate(x, y, ncomp=1:3, .fun=PLS)
+	out3 <- crossValidate(x, y, ncomp=1:5, .fun=PLS)
 
 	expect_true(validObject(out3))
 
-	out4 <- crossValidate(x, y, ncomp=1:3, .fun=OPLS)
+	out4 <- crossValidate(x, y, ncomp=1:5, .fun=OPLS)
 
 	expect_true(validObject(out4))
 

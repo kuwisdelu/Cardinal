@@ -122,7 +122,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	pivots <- as.data.frame(pivots)
 	names(pivots) <- c("Oa", "Ob")
 	sdev <- apply(proj, 2, sd)
-	SimpleList(scores=proj, correlation=corr, pivots=pivots, sdev=sdev)
+	list(scores=proj, correlation=corr, pivots=pivots, sdev=sdev)
 }
 
 .findDistantObjects2 <- function(x, proj, spatial,
