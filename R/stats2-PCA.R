@@ -36,18 +36,18 @@ setMethod("PCA", "SparseImagingExperiment",
 	})
 
 setMethod("predict", "PCA2",
-	function(object, newdata, ncomp, ...)
+	function(object, newx, ncomp, ...)
 	{
-		if ( !is(newdata, "SparseImagingExperiment") )
-			.stop("'newdata' must inherit from 'SparseImagingExperiment'")
-		.checkForIncompleteProcessing(newdata)
+		if ( !is(newx, "SparseImagingExperiment") )
+			.stop("'newx' must inherit from 'SparseImagingExperiment'")
+		.checkForIncompleteProcessing(newx)
 		if ( missing(ncomp) )
 			ncomp <- max(modelData(object)$ncomp)
 		.message("projecting ", ncomp, " principal components...")
-		if ( is(iData(newdata), "matter_mat") ) {
-			Xt <- t(iData(newdata))
+		if ( is(iData(newx), "matter_mat") ) {
+			Xt <- t(iData(newx))
 		} else {
-			Xt <- t(as.matrix(iData(newdata)))
+			Xt <- t(as.matrix(iData(newx)))
 		}
 		scaled <- metadata(object)$scaled
 		Xt <- scale(Xt, center=scaled$center, scale=scaled$scale)
@@ -57,8 +57,8 @@ setMethod("predict", "PCA2",
 		models <- DataFrame(ncomp=ncomp)
 		.PCA2(
 			imageData=.SimpleImageArrayList(),
-			featureData=featureData(newdata),
-			elementMetadata=pixelData(newdata),
+			featureData=featureData(newx),
+			elementMetadata=pixelData(newx),
 			metadata=list(
 				mapping=list(
 					feature="loadings",

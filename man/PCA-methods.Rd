@@ -1,9 +1,14 @@
 \name{PCA-methods}
 \docType{methods}
+
 \alias{PCA}
 \alias{class:PCA}
 \alias{PCA-class}
 \alias{PCA-methods}
+
+\alias{PCA,SparseImagingExperiment-method}
+\alias{predict,PCA2-method}
+
 \alias{PCA,SImageSet-method}
 \alias{predict,PCA-method}
 \alias{predict,PCA-method}
@@ -16,6 +21,10 @@
 	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
 }
 \usage{
+\S4method{PCA}{SparseImagingExperiment}(x, ncomp = 3, center = TRUE, scale = FALSE, \dots)
+
+\S4method{predict}{PCA2}(object, newx, ncomp, \dots)
+
 \S4method{PCA}{SImageSet}(x, ncomp = 3,
     method = c("irlba", "nipals", "svd"),
     center = TRUE,

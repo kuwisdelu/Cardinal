@@ -81,6 +81,7 @@ import("ProtGenerics")
 importFrom("grDevices",
 	"col2rgb",
 	"colorRamp",
+	"dev.list",
 	"hcl",
 	"heat.colors",
 	"rainbow",

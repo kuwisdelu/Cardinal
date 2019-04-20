@@ -12,6 +12,8 @@
 \alias{plot,MSImagingExperiment,formula-method}
 \alias{plot,SparseResultImagingExperiment,missing-method}
 \alias{plot,SparseResultImagingExperiment,formula-method}
+\alias{plot,PCA2,missing-method}
+\alias{plot,PLS2,missing-method}
 \alias{plot,SpatialFastmap2,missing-method}
 \alias{plot,SpatialKMeans2,missing-method}
 \alias{plot,SpatialShrunkenCentroids2,missing-method}
@@ -86,6 +88,12 @@
         xlab, ylab,
         type = 'h',
         subset = TRUE)
+
+\S4method{plot}{PCA2,missing}(x, formula,
+    values = "loadings", \dots)
+
+\S4method{plot}{PLS2,missing}(x, formula,
+    values = c("coefficients", "loadings", "weights"), \dots)
 
 \S4method{plot}{SpatialFastmap2,missing}(x, formula,
     values = "correlation", \dots)

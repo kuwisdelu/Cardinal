@@ -2,8 +2,7 @@
 TODO for Cardinal package
 -------------------------
 
-- Add updated PCA and PLS analysis methods
-- Add updated/missing unit tests
+- Add summary methods for analysis results
 - Update vignettes
 
 - Multimodal image registration (w/ optical images, etc.)

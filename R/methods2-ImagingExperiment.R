@@ -151,7 +151,11 @@ setMethod("features", "ImagingExperiment",
 				} else {
 					i1 <- seq_len(nrow(fdata))
 				}
-				i2 <- unlist(features[!conds])
+				if ( any(!conds) ) {
+					i2 <- unlist(features[!conds])
+				} else {
+					i2 <- seq_len(nrow(fdata))
+				}
 				features <- sort(intersect(i1, i2))
 			}
 		} else {
@@ -187,7 +191,11 @@ setMethod("pixels", "ImagingExperiment",
 				} else {
 					i1 <- seq_len(nrow(pdata))
 				}
-				i2 <- unlist(pixels[!conds])
+				if ( any(!conds) ) {
+					i2 <- unlist(pixels[!conds])
+				} else {
+					i2 <- seq_len(nrow(pdata))
+				}
 				pixels <- sort(intersect(i1, i2))
 			}
 		} else {

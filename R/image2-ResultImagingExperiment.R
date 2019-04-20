@@ -42,6 +42,28 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		subset=subset, ...)
 })
 
+## PCA2
+
+setMethod("image",
+	signature = c(x = "PCA2"),
+	function(x, formula, values = "scores", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## PLS2
+
+setMethod("image",
+	signature = c(x = "PLS2"),
+	function(x, formula, values = c("fitted", "scores"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
 ## SpatialFastmap2
 
 setMethod("image",

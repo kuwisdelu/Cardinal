@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("stats 2")
 
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
 
 register(SerialParam())
 
@@ -18,6 +18,30 @@ set.seed(1)
 testdata <- simulateImage(preset=4, npeaks=10, nruns=3,
 	dim=c(10,10), sdnoise=0.5, peakheight=c(4,8),
 	peakdiff=1, representation="centroid")
+
+test_that("PCA", {
+
+	res1 <- PCA(x, ncomp=2)
+
+	expect_true(validObject(res1))
+
+})
+
+test_that("PLS", {
+
+	res1 <- PLS(x, y, ncomp=2)
+
+	expect_true(validObject(res1))
+
+})
+
+test_that("OPLS", {
+
+	res1 <- OPLS(x, y, ncomp=2)
+
+	expect_true(validObject(res1))
+
+})
 
 test_that("spatialFastmap", {
 

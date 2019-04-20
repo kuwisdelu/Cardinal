@@ -9,6 +9,8 @@
 \alias{image,SparseImagingExperiment-method}
 \alias{image,MSImagingExperiment-method}
 \alias{image,SparseResultImagingExperiment-method}
+\alias{image,PCA2-method}
+\alias{image,PLS2-method}
 \alias{image,SpatialFastmap2-method}
 \alias{image,SpatialKMeans2-method}
 \alias{image,SpatialShrunkenCentroids2-method}
@@ -110,11 +112,17 @@
         colorkey = !is3d && !superpose,
         subset = TRUE)
 
-\S4method{image}{SpatialKMeans2}(x, formula,
-    values = "cluster", \dots)
+\S4method{image}{PCA2}(x, formula,
+    values = "scores", \dots)
+
+\S4method{image}{PLS2}(x, formula,
+    values = c("fitted", "scores"), \dots)
 
 \S4method{image}{SpatialFastmap2}(x, formula,
     values = "scores", \dots)
+
+\S4method{image}{SpatialKMeans2}(x, formula,
+    values = "cluster", \dots)
 
 \S4method{image}{SpatialShrunkenCentroids2}(x, formula,
     values = c("probability", "class", "scores"), \dots)

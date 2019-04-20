@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("apply")
 
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
 
 register(SerialParam())
 
@@ -55,5 +55,13 @@ test_that("cvApply", {
 	expect_true(validObject(out2))
 
 	expect_equal(acc1, acc2)
+
+	out3 <- crossValidate(x, y, ncomp=1:3, .fun=PLS)
+
+	expect_true(validObject(out3))
+
+	out4 <- crossValidate(x, y, ncomp=1:3, .fun=OPLS)
+
+	expect_true(validObject(out4))
 
 })

@@ -65,24 +65,18 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		predict(object, newx=newx, newy=newy)
 	})
 
-setMethod("PLS", signature = c(x = "SImageSet", y = "numeric"), 
+setMethod("PLS", signature = c(x = "SImageSet", y = "ANY"), 
 	function(x, y,  ...)
 	{
-		PLS(x, as.matrix(y), ...)
-	})
-
-setMethod("PLS", signature = c(x = "SImageSet", y = "factor"), 
-	function(x, y, ...)
-	{
-		newy <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-		attr(newy, "PLS:y") <- y
-		PLS(x, newy, ...)
-	})
-
-setMethod("PLS", signature = c(x = "SImageSet", y = "character"), 
-	function(x, y, ...)
-	{
-		PLS(x, factor(y), ...)
+		if ( is.numeric(y) ) {
+			PLS(x, as.matrix(y), ...)
+		} else {
+			y <- as.factor(y)
+			newy <- sapply(levels(y),
+				function(Ck) as.integer(y == Ck))
+			attr(newy, "PLS:y") <- y
+			PLS(x, newy, ...)
+		}
 	})
 
 setMethod("predict", "PLS",
@@ -208,24 +202,18 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		predict(object, newx=newx, newy=newy, keep.Xnew=keep.Xnew, ...)
 	})
 
-setMethod("OPLS", signature = c(x = "SImageSet", y = "numeric"), 
+setMethod("OPLS", signature = c(x = "SImageSet", y = "ANY"), 
 	function(x, y,  ...)
 	{
-		OPLS(x, as.matrix(y), ...)
-	})
-
-setMethod("OPLS", signature = c(x = "SImageSet", y = "factor"), 
-	function(x, y, ...)
-	{
-		newy <- sapply(levels(y), function(Ck) as.integer(y == Ck))
-		attr(newy, "OPLS:y") <- y
-		OPLS(x, newy, ...)
-	})
-
-setMethod("OPLS", signature = c(x = "SImageSet", y = "character"), 
-	function(x, y, ...)
-	{
-		OPLS(x, factor(y), ...)
+		if ( is.numeric(y) ) {
+			OPLS(x, as.matrix(y), ...)
+		} else {
+			y <- as.factor(y)
+			newy <- sapply(levels(y),
+				function(Ck) as.integer(y == Ck))
+			attr(newy, "OPLS:y") <- y
+			OPLS(x, newy, ...)
+		}
 	})
 
 setMethod("predict", "OPLS",

@@ -3,32 +3,32 @@ require(Cardinal)
 
 context("summarize")
 
+options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
+
+register(SerialParam())
+
+xn <- 15
+yn <- 10
+
+pdata <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
+	run=factor("sample1"), vals=rnorm(xn*yn),
+	cond=factor(c(rep("a", 50), rep("b", 100))))
+
+pdata2 <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
+	run=factor("sample2"), vals=rnorm(xn*yn),
+	cond=factor(c(rep("a", 100), rep("b", 50))))
+
+pdata3 <- rbind(pdata, pdata2)
+
+fdata <- MassDataFrame(mz(from=100, to=102.4, by=200))
+
+s <- matrix(nrow=nrow(fdata), ncol=nrow(pdata3))
+s[] <- rnorm(prod(dim(s)))
+data <- ImageList(list(spectra1=s, spectra2=s))
+
+msdata <- MSImagingExperiment(data, fdata, pdata3)
+
 test_that("summarize expr", {
-
-	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-	register(SerialParam())
-
-	xn <- 15
-	yn <- 10
-
-	pdata <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
-		run=factor("sample1"), vals=rnorm(xn*yn),
-		cond=factor(c(rep("a", 50), rep("b", 100))))
-
-	pdata2 <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
-		run=factor("sample2"), vals=rnorm(xn*yn),
-		cond=factor(c(rep("a", 100), rep("b", 50))))
-
-	pdata3 <- rbind(pdata, pdata2)
-
-	fdata <- MassDataFrame(mz(from=100, to=102.4, by=200))
-
-	s <- matrix(nrow=nrow(fdata), ncol=nrow(pdata3))
-	s[] <- rnorm(prod(dim(s)))
-	data <- ImageList(list(spectra1=s, spectra2=s))
-
-	msdata <- MSImagingExperiment(data, fdata, pdata3)
 
 	tmp1 <- summarize(msdata, mean(.))
 
@@ -57,31 +57,6 @@ test_that("summarize expr", {
 })
 
 test_that("summarize stat", {
-
-	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-	register(SerialParam())
-
-	xn <- 15
-	yn <- 10
-
-	pdata <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
-		run=factor("sample1"), vals=rnorm(xn*yn),
-		cond=factor(c(rep("a", 50), rep("b", 100))))
-
-	pdata2 <- PositionDataFrame(expand.grid(x=1:xn, y=1:yn),
-		run=factor("sample2"), vals=rnorm(xn*yn),
-		cond=factor(c(rep("a", 100), rep("b", 50))))
-
-	pdata3 <- rbind(pdata, pdata2)
-
-	fdata <- MassDataFrame(mz(from=100, to=102.4, by=200))
-
-	s <- matrix(nrow=nrow(fdata), ncol=nrow(pdata3))
-	s[] <- rnorm(prod(dim(s)))
-	data <- ImageList(list(spectra1=s, spectra2=s))
-
-	msdata <- MSImagingExperiment(data, fdata, pdata3)
 
 	tmp1 <- summarize(msdata, .stat="mean")
 

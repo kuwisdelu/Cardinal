@@ -3,11 +3,11 @@ require(Cardinal)
 
 context("processing 2")
 
+options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
+
+register(SerialParam())
+
 test_that("Cardinal >=2 delayed processing", {
-
-	options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-	register(SerialParam())
 
 	data <- simulateImage(preset=1, dim=c(10,10))
 

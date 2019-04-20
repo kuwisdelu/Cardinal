@@ -16,6 +16,7 @@ setMethod("PLS",
 		} else {
 			nc <- ncomp
 		}
+		.message("preparing data...")
 		if ( is.factor(y) || is.character(y) ) {
 			type <- "classification"
 			Y <- .factor_matrix(y)
@@ -58,7 +59,9 @@ setMethod("PLS",
 				type=type),
 			resultData=as(list(results), "List"),
 			modelData=models)
-		predict(out, newx=x, newy=y, ncomp=ncomp)
+		if ( method == "opls" )
+			out <- as(out, "OPLS2")
+		predict(out, newx=x, newy=y, ncomp=nc)
 	})
 
 setMethod("OPLS",
@@ -77,10 +80,12 @@ setMethod("predict", "PLS2",
 		if ( missing(ncomp) )
 			ncomp <- modelData(object)$ncomp
 		type <- metadata(object)$type
+		.message("preparing data...")
 		Xt <- t(as.matrix(iData(newx)))
 		scaled <- metadata(object)$scaled
 		method <- metadata(object)$method
 		Xt <- scale(Xt, center=scaled$center, scale=scaled$scale)
+		result_t <- resultData(object)[which.max(modelData(object)$ncomp)]
 		results <- mapply(function(res, nc) {
 			.message("predicting using ", nc, " latent components...")
 			res <- .PLS2_predict(Xt, ncomp=nc, method=method,
@@ -105,7 +110,7 @@ setMethod("predict", "PLS2",
 					labels=colnames(res$fitted))
 			}
 			res
-		}, resultData(object), ncomp, SIMPLIFY=FALSE)
+		}, result_t, ncomp, SIMPLIFY=FALSE)
 		models <- DataFrame(ncomp=ncomp)
 		out <- .PLS2(
 			imageData=.SimpleImageArrayList(),
@@ -179,10 +184,12 @@ setMethod("predict", "PLS2",
 		loadings_t <- loadings[,ncomp,drop=FALSE]
 		weights_t <- weights[,ncomp,drop=FALSE]
 		Yweights_t <- Yweights[,ncomp,drop=FALSE]
+		opls_out <- list(Oloadings=Oloadings, Oweights=Oweights)
 	} else {
 		loadings_t <- loadings[,1:ncomp,drop=FALSE]
 		weights_t <- weights[,1:ncomp,drop=FALSE]
 		Yweights_t <- Yweights[,1:ncomp,drop=FALSE]
+		opls_out <- list()
 	}
 	projection <- weights_t %*% solve(crossprod(loadings_t, weights_t))
 	coefficients <- tcrossprod(projection, Yweights_t)
@@ -195,11 +202,6 @@ setMethod("predict", "PLS2",
 		weights=weights[,1:ncomp,drop=FALSE],
 		Yweights=Yweights[,1:ncomp,drop=FALSE],
 		projection=projection, coefficients=coefficients)
-	if ( is.null(Oloadings) || is.null(Oweights) ) {
-		opls_out <- list()
-	} else {
-		opls_out <- list(Oloadings, Oweights)
-	}
 	c(pls_out, opls_out)
 }
 

@@ -146,13 +146,8 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 		results <- bpmapply(function(res, ri, si, BPPARAM) {
 			.message("r = ", ri, ", ", "s = ", si, " ")
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
-			if ( is.null(res$class) ) {
-				class <- pixelData(object)$..response..
-			} else {
-				class <- res$class
-			}
 			pred <- .spatialShrunkenCentroids2_predict(newx,
-				r=ri, class=class, weights=weights, centers=res$centers,
+				r=ri, class=NULL, weights=weights, centers=res$centers,
 				sd=res$sd, priors=priors, init=NULL, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
@@ -280,19 +275,19 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		init <- attr(scores, "init")
 		attr(scores, "init") <- NULL
 	}
-	if ( is.null(priors) )
+	if ( is.null(priors) && !is.null(class) )
 		priors <- table(class) / sum(table(class))
 	scores <- t(scores) - 2 * log(rep(priors, each=ncol(x)))
-	colnames(scores) <- levels(class)
+	colnames(scores) <- colnames(centers)
 	# calculate posterior class probabilities
 	probability <- t(apply(scores, 1, function(sc) {
 		sc <- exp(-0.5 * sc) / sum(exp(-0.5 * sc))
 		pmax(sc, 0, na.rm=TRUE)
 	}))
-	colnames(probability) <- levels(class)
+	colnames(probability) <- colnames(centers)
 	# calculate and return new class assignments
 	class <- factor(apply(probability, 1, which.max),
-		levels=seq_len(nlevels(class)), labels=levels(class))
+		levels=seq_len(ncol(centers)), labels=colnames(centers))
 	list(scores=scores, probability=probability, class=class, init=init)
 }
 

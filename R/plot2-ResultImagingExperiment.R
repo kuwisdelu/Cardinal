@@ -48,6 +48,28 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 		superpose=superpose, xlab=xlab, ylab=ylab, type=type, subset=subset, ...)
 })
 
+## PCA2
+
+setMethod("plot",
+	signature = c(x = "PCA2", y = "missing"),
+	function(x, formula, values = "loadings", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_feature_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## PLS2
+
+setMethod("plot",
+	signature = c(x = "PLS2", y = "missing"),
+	function(x, formula, values = c("coefficients", "loadings", "weights"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_feature_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
 ## SpatialFastmap2
 
 setMethod("plot",
