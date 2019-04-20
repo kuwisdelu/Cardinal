@@ -71,7 +71,7 @@ setMethod("spatialShrunkenCentroids",
 					feature=c("centers", "statistic", "sd"),
 					pixel=c("scores", "probability", "class")),
 				parameters=c("r", "k", "s"),
-				method=method),
+				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

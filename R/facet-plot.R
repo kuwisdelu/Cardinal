@@ -100,9 +100,8 @@ facet.plot <- function(args, formula, obj,
 			sublayers <- list()
 			for ( g in levels(groups) ) {
 				gi <- groups
-				xi <- x
-				yi <- y
-				yi[gi != g] <- NA
+				xi <- x[gi == g]
+				yi <- y[gi == g]
 				if ( has_cats ) {
 					if ( has_groups ) {
 						cat <- g
