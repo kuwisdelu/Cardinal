@@ -1,7 +1,9 @@
 
 #### Classes to overwrite 'show' method for DataFrame ###
 ## -----------------------------------------------------
-setClass("XDataFrame", contains = "DataFrame")
+setClass("XDataFrame",
+	contains = "DataFrame",
+	slots=c(groups = "list"))
 
 #### DataFrame with position information for imaging data ####
 ## -----------------------------------------------------------

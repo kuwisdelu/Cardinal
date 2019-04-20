@@ -27,7 +27,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 				.spatialKMeans2(x=x, r=r[i], k=ki, fastmap=fastmap, seed=seed,
 					iter.max=iter.max, nstart=nstart, algorithm=algorithm,
 					BPPARAM=BPPARAM, ...)
-			}, k, rngseeds, BPPARAM=BPPARAM)
+			}, k, rngseeds, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		}
 		results <- do.call("c", results)
 		models <- DataFrame(rev(expand.grid(k=k, r=r)))

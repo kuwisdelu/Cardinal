@@ -111,8 +111,6 @@ test_that("PositionDataFrame binding", {
 	expect_equal(ncol(pdataB), 2)
 	expect_equal(mcols(pdataB), rbind(mcols(pdata1), mcols(pdata1)))
 
-	# expect_error(rbind(pdata1, pdata1)) # allow duplicate coords?
-
 	pdataB <- rbind(pdata1, pdata2)
 	
 	expect_true(validObject(pdataB))

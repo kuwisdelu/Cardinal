@@ -178,12 +178,12 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
 		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
-		metdadata(to)$parameters <- c("r", "k", "s")
+		metadata(to)$parameters <- c("r", "k", "s")
 		resultData(to) <- endoapply(resultData(to), function(res) {
 			rename(res, tstatistics="statistic", classes="class",
 				probabilities="probability")
 		})
-		modelData(to)$num_features <- sapply(resultData(ti), function(res) {
+		modelData(to)$num_features <- sapply(resultData(to), function(res) {
 			round(mean(colSums(res$statistic != 0)), 1)
 		})
 		if ( !is.null(resultData(to, 1, "y")) )
