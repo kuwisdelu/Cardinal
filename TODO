@@ -2,7 +2,8 @@
 TODO for Cardinal package
 -------------------------
 
-- Add summary methods results
+- Add summary plot methods (?)
+- Update topLabels -> topFeatures 
 - Update vignettes
 
 - Multimodal image registration (w/ optical images, etc.)

@@ -130,11 +130,10 @@ setMethod("predict", "PLS2",
 				pixelData(out)$..response.. <- as.factor(newy)
 			} else {
 				newy <- as.matrix(newy)
-				ii <- if (ncol(newy) > 1) seq_len(ncol(newy)) else ""
-				nm <- paste0("..response..", ii)
-				pixelData(out)[nm] <- as.data.frame(newy)
+				i <- if (ncol(newy) > 1) seq_len(ncol(newy)) else ""
+				nms <- paste0("..response..", i)
+				pixelData(out)[nms] <- as.data.frame(newy)
 			}
-
 		}
 		out
 	})

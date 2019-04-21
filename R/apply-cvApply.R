@@ -97,11 +97,17 @@ setMethod("crossValidate", "SparseImagingExperiment",
 				type=cv$type),
 			resultData=as(cv$results, "List"),
 			modelData=cv$models)
-		pixelData(out)[["..response.."]] <- .y
-		pixelData(out)[["..fold.."]] <- .fold
+		if ( is.factor(.y) || is.character(.y) ) {
+			pixelData(out)$..response.. <- as.factor(.y)
+		} else {
+			.y <- as.matrix(.y)
+			i <- if (ncol(.y) > 1) seq_len(ncol(.y)) else ""
+			nms <- paste0("..response..", i)
+			pixelData(out)[nms] <- as.data.frame(.y)
+		}
+		pixelData(out)$..fold.. <- .fold
 		if ( cv$type == "classification" )
 			metadata(out)[["positive class"]] <- cv$pos
-		out <- .cv_accuracy(out)
 		out
 	})
 
@@ -174,29 +180,11 @@ setAs("CrossValidated", "CrossValidated2",
 				type=cv$type),
 			resultData=as(cv$results, "List"),
 			modelData=cv$models)
-		pixelData(out)[["..fold.."]] <- pData(from)$sample
+		pixelData(out)$..fold.. <- pData(from)$sample
 		if ( cv$type == "classification" )
 			metadata(out)[["positive class"]] <- cv$pos
-		out <- .cv_accuracy(out)
 		out
 	})
-
-.cv_accuracy <- function(object) {
-	if ( metadata(object)$type == "classification" ) {
-		modelData(object)$accuracy <- sapply(resultData(object),
-			function(res) mean(res$accuracy, na.rm=TRUE))
-		modelData(object)$sensitivity <- sapply(resultData(object),
-			function(res) mean(res$sensitivity, na.rm=TRUE))
-		modelData(object)$specificity <- sapply(resultData(object),
-			function(res) mean(res$specificity, na.rm=TRUE))
-	} else {
-		modelData(object)$rmse <- sapply(resultData(object),
-			function(res) mean(res$rmse, na.rm=TRUE))
-		modelData(object)$mae <- sapply(resultData(object),
-			function(res) mean(res$mae, na.rm=TRUE))
-	}
-	object
-}
 
 .cv_collate <- function(cv, y, .fold) {
 	models <- attr(cv[[1]], "models")

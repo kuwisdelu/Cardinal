@@ -106,7 +106,7 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		elementMetadata = .PositionDataFrame(),
 		processing = SimpleList()))
 
-#### Class for imaging experiment analysis results ####
+#### Classes for imaging experiment analysis results ####
 ## -------------------------------------------------------
 .ResultImagingExperiment <- setClass("ResultImagingExperiment",
 	contains = c("ImagingExperiment", "VIRTUAL"),
@@ -139,6 +139,27 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 .MeansTest <- setClass("MeansTest", contains="SparseResultImagingExperiment")
 
 .SegmentationTest <- setClass("SegmentationTest", contains="SparseResultImagingExperiment")
+
+#### Classes for imaging experiment analysis summaries ####
+## -------------------------------------------------------
+
+setClass("SummaryCrossValidated", contains="SummaryDataFrame")
+
+setClass("SummaryPCA", contains="SummaryDataFrame")
+
+setClass("SummaryPLS", contains="SummaryDataFrame")
+
+setClass("SummarySpatialFastmap", contains="SummaryDataFrame")
+
+setClass("SummarySpatialKMeans", contains="SummaryDataFrame")
+
+setClass("SummarySpatialShrunkenCentroids", contains="SummaryDataFrame")
+
+setClass("SummarySpatialDGMM", contains="SummaryDataFrame")
+
+setClass("SummaryMeansTest", contains="SummaryDataFrame")
+
+setClass("SummarySegmentationTest", contains="SummaryDataFrame")
 
 #### Class for mass spectrometry imaging experiments ####
 ## -------------------------------------------------------

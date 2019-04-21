@@ -47,7 +47,7 @@ test_that("cvApply", {
 
 	out2 <- crossValidate(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
 
-	acc2 <- modelData(out2)$accuracy
+	acc2 <- summary(out2)$Accuracy
 
 	expect_true(validObject(out2))
 

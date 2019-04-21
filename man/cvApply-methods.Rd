@@ -11,6 +11,7 @@
 \alias{cvApply,SparseImagingExperiment-method}
 \alias{crossValidate,SparseImagingExperiment-method}
 \alias{crossValidate,MSImagingExperiment-method}
+\alias{summary,CrossValidated2-method}
 
 \alias{summary,CrossValidated-method}
 \alias{print.summary.CrossValidated}
@@ -40,6 +41,8 @@
         BPREDO = list(),
         BPPARAM = bpparam(), \dots)
 
+\S4method{summary}{CrossValidated2}(object, \dots)
+
 \S4method{cvApply}{SImageSet}(.x, .y, .fun, .fold = sample, \dots)
 }
 \arguments{
@@ -56,6 +59,7 @@
     \item{BPREDO}{See documentation for \code{\link{bplapply}}.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{\dots}{Additional arguments passed to \code{.fun}.}
+    \item{object}{A fitted model object to summarize.}
 }
 \details{
     This method is designed to be used with the provided classification methods, but can also be used with user-provided functions and methods as long as they fulfill certain expectations.
