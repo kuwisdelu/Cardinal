@@ -51,13 +51,9 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 				mapping=list(
 					feature=NULL,
 					pixel=c("class", "pixel")),
-				parameters=c("r", "k", "feature"),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
-		modelData(out)$num_segments <- sapply(results, function(res) {
-			nlevels(res$class)
-		})
 		pixelData(out)$..group.. <- groups
 		out
 	})

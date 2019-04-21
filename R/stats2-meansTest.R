@@ -5,8 +5,8 @@ setMethod("meansTest", "SparseImagingExperiment",
 	{
 		e <- environment(fixed)
 		args <- .parseFormula2(fixed)
-		fnames <- names(args$rhs)
-		if ( !all(fnames %in% names(pixelData(x))) )
+		vars <- names(args$rhs)[sapply(args$rhs, is.language)]
+		if ( !all(vars %in% names(pixelData(x))) )
 			.stop("all variables in formula must appear in pixelData")
 		if ( !is.null(args$lhs) )
 			.stop("lhs of formula must be empty")
@@ -40,25 +40,57 @@ setMethod("meansTest", "SparseImagingExperiment",
 				mapping=list(
 					feature=NULL,
 					pixel=NULL),
-				parameters="feature",
 				fixed=fixed, random=random),
 			resultData=as(results, "List"),
 			modelData=models)
 		errors <- sapply(results, function(res) inherits(res$model, "try-error"))
-		if ( any(errors) ) {
+		if ( any(errors) )
 			.warning("there were 1 or more errors while fitting models")
-		} else {
-			modelData(out)$p.value <- sapply(results, function(res) {
-				f <- summary(res$model)$fstatistic
-				p <- pf(f[1], f[2], f[3], lower.tail=FALSE)
-				round(p, digits=6)
-			})
-			adj.p <- p.adjust(modelData(out)$p.value, method="BH")
-			modelData(out)$adj.p.value <- round(adj.p, digits=6)
-		}
 		pixelData(out)$..group.. <- groups
 		out
 	})
+
+.meansTest_LRT <- function(object) {
+	tests <- lapply(resultData(object), function(res) {
+		data <- res$data
+		full <- res$model
+		if ( inherits(full, "lm") ) {
+			null <- update(full, . ~ 1, data=data)
+			numer <- sum(residuals(null)^2) - sum(residuals(full)^2)
+			denom <- sum(residuals(full)^2) / full$df.residual
+			df <- abs(null$df.residual - full$df.residual)
+			LR <- numer / denom
+			PValue <- pchisq(LR, df, lower.tail = FALSE)
+		} else if ( inherits(full, "lme") ) {
+			full <- update(full, . ~ ., data=data, method="ML")
+			null <- update(full, . ~ 1, data=data, method="ML")
+			aov <- anova(null, full)
+			df <- abs(diff(aov[,"df"]))
+			LR <- aov[2,"L.Ratio"]
+			PValue <- aov[2,"p-value"]
+		} else {
+			PValue <- NULL
+			LR <- NULL
+		}
+		list(LR=LR, DF=df, PValue=PValue)
+	})
+	LR <- sapply(tests, function(tt) {
+		if ( is.null(tt) ) {
+			NA_real_
+		} else {
+			tt$LR
+		}
+	})
+	DF <- sapply(tests, function(tt) tt$df)
+	PValue <- sapply(tests, function(tt) {
+		if ( is.null(tt) ) {
+			NA_real_
+		} else {
+			tt$PValue
+		}
+	})
+	list(LR=LR, DF=DF, PValue=PValue)
+}
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
 	response <- summarize(x, .stat="mean", .group_by=groups, BPPARAM=BPPARAM)

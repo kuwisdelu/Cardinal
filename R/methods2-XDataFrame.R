@@ -2,9 +2,12 @@
 #### Methods for XDataFrame ####
 ## ------------------------------
 
-XDataFrame <- function(...)  as(DataFrame(...), "XDataFrame")
+XDataFrame <- function(...) as(DataFrame(...), "XDataFrame")
 
 setAs("data.frame", "XDataFrame",
+	function(from) as(as(from, "DataFrame"), "XDataFrame"))
+
+setAs("SummaryDataFrame", "XDataFrame",
 	function(from) as(as(from, "DataFrame"), "XDataFrame"))
 
 # Need to overwrite 'names', 'length', and 'show' methods
@@ -206,10 +209,11 @@ setMethod("show", "XDataFrame",
 		cols <- groupnames %in% colnames
 		if ( any(!cols) )
 			.data[groupnames] <- groups(.data)[groupnames]
-		.data <- grouped_df(as_tibble(.data), groupnames)
+		.data <- as.data.frame(as.list(.data), optional=TRUE)
+		.data <- grouped_df(.data, groupnames)
 		.data <- .data[colnames]
 	} else {
-		.data <- as_tibble(.data)
+		.data <- as.data.frame(as.list(.data), optional=TRUE)
 	}
-	.data
+	as_tibble(.data)
 }

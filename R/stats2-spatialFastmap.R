@@ -20,7 +20,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			.message("r = ", ri, " ", appendLF=FALSE)
 			.spatialFastmap2(x=x, r=ri, ncomp=ncomp, method=method,
 				dist=dist, tol.dist=tol.dist, iter.max=iter.max,
-				BPPARAM=BPPARAM, ...)
+				BPPARAM=BPPARAM)
 		}, BPPARAM=BPPARAM)
 		models <- DataFrame(r=r, ncomp=ncomp)
 		.SpatialFastmap2(
@@ -31,7 +31,6 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 				mapping=list(
 					feature="correlation",
 					pixel="scores"),
-				parameters=names(models),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -45,10 +44,10 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	})
 
 .spatialFastmap2 <- function(x, r, ncomp, method, dist,
-							tol.dist, iter.max = 2, ...)
+							tol.dist, iter.max = 2, BPPARAM)
 {
 	init <- TRUE
-	wts <- spatialWeights(x, r=r, method=method, dist=dist)
+	wts <- spatialWeights(x, r=r, method=method, dist=dist, BPPARAM=BPPARAM)
 	spatial <- list(r=r, weights=c(wts),
 		neighbors=attr(wts, "neighbors"),
 		offsets=attr(wts, "offsets"))
@@ -80,7 +79,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	# iterate over FastMap components
 	for ( j in seq_len(ncomp) ) {
 		o_ab <- .findDistantObjects2(x, proj=proj, spatial=spatial,
-			tol.dist=tol.dist, init=init, iter.max=iter.max, ...)
+			tol.dist=tol.dist, init=init, iter.max=iter.max, BPPARAM=BPPARAM)
 		if ( any(is.na(o_ab)) )
 			break		
 		if ( !is.null(attr(o_ab, "init")) )
@@ -102,7 +101,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			i=oa, j=ob, proj=proj, tol.dist=tol.dist)
 		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights, ...)
+			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		.message(".", appendLF=FALSE)
 		proj[,j] <- comp_j
 	}
@@ -119,7 +118,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 				}
 			}, numeric(1))
 		}))
-	}, .blocks=TRUE, .simplify=do_rbind, ...)
+	}, .blocks=TRUE, .simplify=do_rbind, BPPARAM=BPPARAM)
 	colnames(proj) <- paste("FC", 1:ncomp, sep="")
 	colnames(corr) <- paste("FC", 1:ncomp, sep="")
 	pivots <- as.data.frame(pivots)
@@ -129,7 +128,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 }
 
 .findDistantObjects2 <- function(x, proj, spatial,
-							tol.dist, init, iter.max, ...)
+							tol.dist, init, iter.max, BPPARAM)
 {
 	iter <- 1
 	oa <- 1
@@ -153,7 +152,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xa, "weights") <- spatial$weights[[oa]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xa,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights, ...)
+			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		if ( !is.null(attr(dists, "init")) )
 			init <- attr(dists, "init")
 		cand <- which.max(dists)
@@ -168,7 +167,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xb, "weights") <- spatial$weights[[ob]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xb,
 			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=init, .params=spatial$weights, ...)
+			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		oa <- which.max(dists)
 		if ( dists[oa] == 0 )
 			return(structure(c(NA, NA), init=init))

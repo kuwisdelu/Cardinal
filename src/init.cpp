@@ -17,7 +17,7 @@ extern "C" {
         {"C_spatialOffsets", (DL_FUNC) &spatialOffsets, 3},
         {"C_spatialWeights", (DL_FUNC) &spatialWeights, 4},
         {"C_spatialDistance", (DL_FUNC) &spatialDistance, 7},
-        {"C_spatialZScores", (DL_FUNC) &spatialZScores, 4},
+        {"C_spatialScores", (DL_FUNC) &spatialScores, 4},
         {NULL, NULL, 0}
     };
 

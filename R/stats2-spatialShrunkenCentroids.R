@@ -70,7 +70,6 @@ setMethod("spatialShrunkenCentroids",
 				mapping=list(
 					feature=c("centers", "statistic", "sd"),
 					pixel=c("scores", "probability", "class")),
-				parameters=c("r", "k", "s"),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -112,15 +111,11 @@ setMethod("spatialShrunkenCentroids",
 				mapping=list(
 					feature=c("centers", "statistic", "sd"),
 					pixel=c("scores", "probability", "class")),
-				parameters=c("r", "s"),
 				method=method, dist=dist,
 				priors=priors / sum(priors)),
 			resultData=as(results, "List"),
 			modelData=models)
-		modelData(out)$num_features <- sapply(results, function(res) {
-			round(mean(colSums(res$statistic != 0)), 1)
-		})
-		predict(out, newx=x, method=method, BPPARAM=BPPARAM)
+		predict(out, newx=x, newy=y, method=method, BPPARAM=BPPARAM)
 	})
 
 setMethod("predict", "SpatialShrunkenCentroids2",
@@ -159,14 +154,8 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			metadata=metadata(object),
 			resultData=as(results, "List"),
 			modelData=modelData(object))
-		modelData(out)$num_features <- sapply(results, function(res) {
-			round(mean(colSums(res$statistic != 0)), 1)
-		})
-		if ( !missing(newy) ) {
-			modelData(out)$accuracy <- sapply(results,
-				function(res) mean(res$class == newy, na.rm=TRUE))
+		if ( !missing(newy) )
 			pixelData(out)$..response.. <- newy
-		}
 		out
 	})
 
@@ -178,13 +167,9 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
 		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
-		metadata(to)$parameters <- c("r", "k", "s")
 		resultData(to) <- endoapply(resultData(to), function(res) {
 			rename(res, tstatistics="statistic", classes="class",
 				probabilities="probability")
-		})
-		modelData(to)$num_features <- sapply(resultData(to), function(res) {
-			round(mean(colSums(res$statistic != 0)), 1)
 		})
 		if ( !is.null(resultData(to, 1, "y")) )
 			pixelData(to)$..response.. <- resultData(to, 1, "y")
@@ -250,8 +235,8 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 			"feature" = (xbl - centers[i,iclass,drop=FALSE])^2,
 			"pixel" = (xbl - centers[,iclass[i],drop=FALSE])^2)
 	}
-	# calculate standard errors
 	wcss <- summarize(x, .stat="sum", .group_by=class, .tform=tform, BPPARAM=BPPARAM)
+	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
 	s0 <- median(sd)
@@ -279,7 +264,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	fun <- function(xbl) {
 		idx <- attr(xbl, "idx")
 		f <- function(i, neighbors, weights) {
-			.Call("C_spatialZScores", xbl[,neighbors,drop=FALSE],
+			.Call("C_spatialScores", xbl[,neighbors,drop=FALSE],
 				centers, weights, sd + s0, PACKAGE="Cardinal")
 		}
 		mapply(f, attr(xbl, "centers"),

@@ -5,8 +5,8 @@ setMethod("segmentationTest", "SparseImagingExperiment",
 		BPPARAM = bpparam(), ...)
 	{
 		args <- .parseFormula2(fixed)
-		fnames <- names(args$rhs)
-		if ( !all(fnames %in% names(pixelData(x))) )
+		vars <- names(args$rhs)[sapply(args$rhs, is.language)]
+		if ( !all(vars %in% names(pixelData(x))) )
 			.stop("all variables in formula must appear in pixelData")
 		if ( !is.null(args$lhs) )
 			.stop("lhs of formula must be empty")
@@ -22,18 +22,14 @@ setMethod("segmentationTest", "SpatialDGMM",
 		classControl = c("Mscore", "Ymax"), ...)
 	{
 		if ( !is.numeric(model) ) {
-			if ( is.null(metadata(x)$parameters) ) {
-				estimates <- names(modelData(x))
-			} else {
-				estimates <- metadata(x)$parameters
-			}
+			estimates <- names(modelData(x))
 			model <- model[names(model) %in% estimates]
 			model <- subset_rows(modelData(x), as.list(model))
 		}
 		e <- environment(fixed)
 		args <- .parseFormula2(fixed)
-		fnames <- names(args$rhs)
-		if ( !all(fnames %in% names(pixelData(x))) )
+		vars <- names(args$rhs)[sapply(args$rhs, is.language)]
+		if ( !all(vars %in% names(pixelData(x))) )
 			.stop("all variables in formula must appear in pixelData")
 		if ( !is.null(args$lhs) )
 			.stop("lhs of formula must be empty")
@@ -42,8 +38,8 @@ setMethod("segmentationTest", "SpatialDGMM",
 		fixed <- paste0("..response.. ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
-		fc <- fnames[!sapply(pixelData(x)[fnames], is.numeric)]
-		if ( length(fc) == 0L )
+		fc <- vars[!sapply(pixelData(x)[vars], is.numeric)]
+		if ( classControl == "Mscore" && length(fc) == 0L )
 			.stop("at least one variable must be non-numeric")
 		if ( is.character(classControl) ) {
 			classControl <- match.arg(classControl)
@@ -71,7 +67,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 			list(model=fit, data=as(data, "DataFrame"),
 				mapping=droplevels(mapping))
 		}, fullData, classControl, resultData(x), SIMPLIFY=FALSE)
-		models <- modelData(x)[model,metadata(x)$parameters,drop=FALSE]
+		models <- modelData(x)[model,,drop=FALSE]
 		out <- .SegmentationTest(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
@@ -80,22 +76,12 @@ setMethod("segmentationTest", "SpatialDGMM",
 				mapping=list(
 					feature=NULL,
 					pixel="mapping"),
-				parameters=metadata(x)$parameters,
 				fixed=fixed, random=random),
 			resultData=as(results, "List"),
 			modelData=models)
 		errors <- sapply(results, function(res) inherits(res$model, "try-error"))
-		if ( any(errors) ) {
+		if ( any(errors) )
 			.warning("there were 1 or more errors while fitting models")
-		} else {
-			modelData(out)$p.value <- sapply(results, function(res) {
-				f <- summary(res$model)$fstatistic
-				p <- pf(f[1], f[2], f[3], lower.tail=FALSE)
-				round(p, digits=6)
-			})
-			adj.p <- p.adjust(modelData(out)$p.value, method="BH")
-			modelData(out)$adj.p.value <- round(adj.p, digits=6)
-		}
 		out
 	})
 

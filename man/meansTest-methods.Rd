@@ -12,9 +12,11 @@
 \alias{segmentationTest-methods}
 
 \alias{meansTest,SparseImagingExperiment-method}
+\alias{summary,MeansTest-method}
 
 \alias{segmentationTest,SparseImagingExperiment-method}
 \alias{segmentationTest,SpatialDGMM-method}
+\alias{summary,SegmentationTest-method}
 
 \title{Linear model-based testing for summarized imaging experiments}
 \description{
@@ -30,6 +32,10 @@
 
 \S4method{segmentationTest}{SpatialDGMM}(x, fixed, random, model = modelData(x),
         classControl = c("Mscore", "Ymax"), ...)
+
+\S4method{summary}{MeansTest}(object, \dots)
+
+\S4method{summary}{SegmentationTest}(object, \dots)
 }
 \arguments{
     \item{x}{An imaging dataset or segmented/summarized imaging dataset.}
@@ -38,7 +44,8 @@
     \item{groups}{The summarization units. Pixels from different groups will be segmented/summarized separately. \emph{Each distinct observational unit (e.g., tissue sample) should be assigned to a unique group}.}
     \item{model}{An integer vector or \code{list} specifying which fitted model to plot. If this is an integer vector, it should give the rows indices of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
     \item{classControl}{Either the method used to match segmented classes to the fixed effects, or a list where each element is a vector of name-value pairs giving the mapping between groups and classes (e.g., group1=class1). For automated matching methods, 'Mscore' means to use a match score quantifying the overlap between classes and fixed effects, while 'Ymax' means to use the classes with the highest mean response for each group.}
-    \item{\dots}{Arguments passed to the segmentation/summarization method or the underlying modeling function (either \code{\link{lm}} or \code{\link{lme}}).}
+    \item{\dots}{Passed to internal linear modeling methods.}
+    \item{object}{A fitted model object to summarize.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{

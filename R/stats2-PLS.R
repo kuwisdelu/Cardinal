@@ -53,15 +53,13 @@ setMethod("PLS",
 				mapping=list(
 					feature=c("coefficients", "loadings", "weights"),
 					pixel=c("fitted", "scores")),
-				parameters=names(models),
-				method=method,
-				scaled=scaled,
+				method=method, scaled=scaled,
 				type=type),
 			resultData=as(list(results), "List"),
 			modelData=models)
 		if ( method == "opls" )
 			out <- as(out, "OPLS2")
-		predict(out, newx=x, newy=y, ncomp=nc)
+		predict(out, newx=x, newy=y, ncomp=ncomp)
 	})
 
 setMethod("OPLS",
@@ -130,8 +128,6 @@ setMethod("predict", "PLS2",
 		if ( !missing(newy) ) {
 			if ( is.factor(newy) || is.character(newy) ) {
 				pixelData(out)$..response.. <- as.factor(newy)
-				modelData(out)$accuracy <- sapply(results,
-					function(res) mean(res$class == newy, na.rm=TRUE))
 			} else {
 				newy <- as.matrix(newy)
 				ii <- if (ncol(newy) > 1) seq_len(ncol(newy)) else ""

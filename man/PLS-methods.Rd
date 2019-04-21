@@ -15,6 +15,7 @@
 \alias{OPLS,SparseImagingExperiment,ANY-method}
 \alias{predict,PLS2-method}
 \alias{fitted,PLS2-method}
+\alias{summary,PLS2-method}
 
 \alias{PLS,SImageSet,matrix-method}
 \alias{PLS,SImageSet,ANY-method}
@@ -44,6 +45,8 @@
 \S4method{predict}{PLS2}(object, newx, newy, ncomp, \dots)
 
 \S4method{fitted}{PLS2}(object, \dots)
+
+\S4method{summary}{PLS2}(object, \dots)
 
 \S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 3,
     method = "nipals",

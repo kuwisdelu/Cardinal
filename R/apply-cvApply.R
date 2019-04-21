@@ -246,12 +246,7 @@ setAs("CrossValidated", "CrossValidated2",
 .cv_simplify <- function(pred, data, .fitted) {
 	if ( missing(data) )
 		data <- pixelData(pred)$..response..
-	params <- metadata(pred)$parameters
-	if ( !is.null(params) ) {
-		models <- modelData(pred)[params]
-	} else {
-		models <- modelData(pred)
-	}
+	models <- modelData(pred)
 	pred <- .fitted(pred)
 	attr(pred, "models") <- models
 	attr(pred, "y") <- data

@@ -277,7 +277,7 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 	priors, spatial, sd, s0=median(sd))
 {
 	scores <- mapply(function(ii, wt) {
-		.Call("C_spatialZScores", iData(x)[,ii,drop=FALSE],
+		.Call("C_spatialScores", iData(x)[,ii,drop=FALSE],
 			centers, wt, sd + s0, PACKAGE="Cardinal")
 	}, spatial$neighbors, spatial$weights)
 	scores[is.na(scores)] <- Inf

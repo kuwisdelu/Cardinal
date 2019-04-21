@@ -24,9 +24,9 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 			rngseeds <- generateRNGStreams(length(k))
 			results[[i]] <- bpmapply(function(ki, seed, BPPARAM) {
 				.message("r = ", r[i], ", k = ", ki)
-				.spatialKMeans2(x=x, r=r[i], k=ki, fastmap=fastmap, seed=seed,
-					iter.max=iter.max, nstart=nstart, algorithm=algorithm,
-					BPPARAM=BPPARAM, ...)
+				.spatialKMeans2(x=x, r=r[i], k=ki, fastmap=fastmap,
+					seed=seed, iter.max=iter.max, nstart=nstart,
+					algorithm=algorithm, BPPARAM=BPPARAM)
 			}, k, rngseeds, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		}
 		results <- do.call("c", results)
@@ -39,7 +39,6 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 				mapping=list(
 					feature=c("centers", "correlation"),
 					pixel="cluster"),
-				parameters=names(models),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
@@ -53,8 +52,8 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 		to
 	})
 
-.spatialKMeans2 <- function(x, r, k, fastmap, seed,
-							iter.max, nstart, algorithm, ...)
+.spatialKMeans2 <- function(x, r, k, fastmap, seed, iter.max,
+									nstart, algorithm, BPPARAM)
 {
 	oseed <- getRNGStream()
 	on.exit(setRNGStream(oseed))
@@ -68,8 +67,10 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
-	centers <- summarize(x, .stat="mean", .group_by=cluster, ...)$mean
+	centers <- summarize(x, .stat="mean", .group_by=cluster,
+		BPPARAM=BPPARAM)$mean
 	do_rbind <- function(ans) do.call("rbind", ans)
+	# calculate correlation with clusters
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {
 			vapply(levels(cluster), function(l) {
@@ -81,6 +82,6 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 				}
 			}, numeric(1))
 		}))
-	}, .blocks=TRUE, .simplify=do_rbind, ...)
+	}, .blocks=TRUE, .simplify=do_rbind, BPPARAM=BPPARAM)
 	list(cluster=cluster, centers=centers, correlation=corr)
 }

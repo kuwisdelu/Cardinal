@@ -173,11 +173,18 @@
 # Select and concatenate metadata for show() method
 .scat <- function(x, vals=character(), collapse=" ", exdent=4, prefix="", ...)
 {
+	cat(.spaste(x, vals=vals, collapse=collapse,
+		exdent=exdent, prefix=prefix, ...), sep="\n")
+}
+
+# Select values for show() method (without printing)
+.spaste <- function(x, vals=character(), collapse=" ", exdent=4, prefix="", ...)
+{
 	if ( is.null(vals) ) vals <- character()
 	vals <- ifelse(nzchar(vals), vals, "''")
 	labels <- paste(selectSome(vals), collapse=collapse)
 	txt <- sprintf(x, length(vals), labels)
-	cat(strwrap(txt, exdent=exdent, prefix=prefix, ...), sep="\n")
+	strwrap(txt, exdent=exdent, prefix=prefix, ...)
 }
 
 # Setup plotting layout

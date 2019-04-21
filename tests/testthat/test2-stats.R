@@ -21,7 +21,7 @@ testdata <- simulateImage(preset=4, npeaks=10, nruns=3,
 
 test_that("PCA", {
 
-	res1 <- PCA(x, ncomp=2)
+	res1 <- PCA(x, ncomp=1:3)
 
 	expect_true(validObject(res1))
 
@@ -29,7 +29,7 @@ test_that("PCA", {
 
 test_that("PLS", {
 
-	res1 <- PLS(x, y, ncomp=2)
+	res1 <- PLS(x, y, ncomp=1:3)
 
 	expect_true(validObject(res1))
 

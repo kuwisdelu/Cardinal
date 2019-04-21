@@ -296,7 +296,7 @@ double get_spatial_distance(SEXP x, SEXP y, SEXP x_offsets, SEXP y_offsets,
 }
 
 template<typename T1, typename T2>
-SEXP get_spatial_zscores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
+SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 {
 	int nfeatures = Rf_nrows(x);
 	int npixels = Rf_ncols(x);
@@ -389,15 +389,15 @@ extern "C" {
 			return R_NilValue;
 	}
 
-	SEXP spatialZScores(SEXP x, SEXP ref, SEXP weights, SEXP sd) {
+	SEXP spatialScores(SEXP x, SEXP ref, SEXP weights, SEXP sd) {
 		if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == INTSXP )
-			return get_spatial_zscores<int,int>(x, ref, weights, sd);
+			return get_spatial_scores<int,int>(x, ref, weights, sd);
 		else if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == REALSXP )
-			return get_spatial_zscores<int,double>(x, ref, weights, sd);
+			return get_spatial_scores<int,double>(x, ref, weights, sd);
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == INTSXP )
-			return get_spatial_zscores<double,int>(x, ref, weights, sd);
+			return get_spatial_scores<double,int>(x, ref, weights, sd);
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == REALSXP )
-			return get_spatial_zscores<double,double>(x, ref, weights, sd);
+			return get_spatial_scores<double,double>(x, ref, weights, sd);
 		else
 			return R_NilValue;
 	}

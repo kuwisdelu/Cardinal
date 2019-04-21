@@ -13,6 +13,7 @@ importFrom("graphics",
 	"title")
 
 importFrom("stats",
+	"anova",
 	"approx",
 	"as.formula",
 	"dnorm",
@@ -27,6 +28,7 @@ importFrom("stats",
 	"median",
 	"optim",
 	"p.adjust",
+	"pchisq",
 	"pf",
 	"pt",
 	"quantile",
@@ -166,6 +168,7 @@ export(
 	"SImageSet")
 
 exportClasses(
+	"SummaryDataFrame",
 	"XDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
@@ -183,6 +186,7 @@ exportClasses(
 	"MSImagingInfo")
 
 export(
+	"SummaryDataFrame",
 	"XDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",

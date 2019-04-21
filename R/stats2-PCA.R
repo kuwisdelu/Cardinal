@@ -29,7 +29,6 @@ setMethod("PCA", "SparseImagingExperiment",
 			elementMetadata=pixelData(x),
 			metadata=list(
 				mapping=metadata(x)$mapping,
-				parameters=names(models),
 				scaled=scaled),
 			resultData=as(list(results), "List"),
 			modelData=models)
@@ -62,8 +61,7 @@ setMethod("predict", "PCA2",
 			metadata=list(
 				mapping=list(
 					feature="loadings",
-					pixel="scores"),
-				parameters=names(models)),
+					pixel="scores")),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

@@ -43,7 +43,7 @@ test_that("cvApply", {
 
 	out1 <- cvApply(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
 
-	acc1 <- rowMeans(sapply(out1, function(o) modelData(o)$accuracy))
+	acc1 <- rowMeans(sapply(out1, function(o) summary(o)$Accuracy))
 
 	out2 <- crossValidate(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
 

@@ -6,6 +6,7 @@
 \alias{spatialDGMM-methods}
 
 \alias{spatialDGMM,SparseImagingExperiment-method}
+\alias{summary,SpatialDGMM-method}
 
 \title{Spatially-aware Dirichlet Gaussian mixture model}
 \description{
@@ -18,6 +19,8 @@
     init = c("kmeans", "gmm"), p0 = 0.05,
     iter.max = 100, tol = 1e-9,
     BPPARAM = bpparam(), \dots)
+
+\S4method{summary}{SpatialDGMM}(object, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset to segment or classify.}
@@ -32,6 +35,7 @@
     \item{iter.max}{The maximum number of EM-algorithm iterations.}
     \item{tol}{The tolerance convergence criterion for the EM-algorithm. Corresponds to the change in log-likelihood.}
     \item{\dots}{Passed to internal methods.}
+    \item{object}{A fitted model object to summarize.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{

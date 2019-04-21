@@ -8,6 +8,7 @@
 
 \alias{PCA,SparseImagingExperiment-method}
 \alias{predict,PCA2-method}
+\alias{summary,PCA2-method}
 
 \alias{PCA,SImageSet-method}
 \alias{predict,PCA-method}
@@ -24,6 +25,8 @@
 \S4method{PCA}{SparseImagingExperiment}(x, ncomp = 3, center = TRUE, scale = FALSE, \dots)
 
 \S4method{predict}{PCA2}(object, newx, ncomp, \dots)
+
+\S4method{summary}{PCA2}(object, \dots)
 
 \S4method{PCA}{SImageSet}(x, ncomp = 3,
     method = c("irlba", "nipals", "svd"),

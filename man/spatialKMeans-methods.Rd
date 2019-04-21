@@ -6,6 +6,7 @@
 \alias{spatialKMeans-methods}
 
 \alias{spatialKMeans,SparseImagingExperiment-method}
+\alias{summary,SpatialKMeans2-method}
 
 \alias{spatialKMeans,SImageSet-method}
 \alias{summary,SpatialKMeans-method}
@@ -23,6 +24,8 @@
     iter.max = 10, nstart = 1,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
     ncomp = 10, BPPARAM = bpparam(), \dots)
+
+\S4method{summary}{SpatialKMeans2}(object, \dots)
 
 \S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 3,
     method = c("gaussian", "adaptive"),
@@ -42,8 +45,9 @@
     \item{nstart}{The number of restarts for the k-means algorithm.}
     \item{algorithm}{The k-means algorithm to use. See \code{\link{kmeans}} for details.}
     \item{ncomp}{The number of fastmap components to calculate.}
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{\dots}{Ignored.}
+    \item{object}{A fitted model object to summarize.}
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
     An object of class \code{SpatialKMeans}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
