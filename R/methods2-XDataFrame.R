@@ -4,6 +4,9 @@
 
 XDataFrame <- function(...)  as(DataFrame(...), "XDataFrame")
 
+setAs("data.frame", "XDataFrame",
+	function(from) as(as(from, "DataFrame"), "XDataFrame"))
+
 # Need to overwrite 'names', 'length', and 'show' methods
 # for XDataFrame which may have special eXtra columns that
 # must be printed but not counted as part of 'ncol'.
@@ -16,6 +19,17 @@ setMethod("names", "XDataFrame",
 setMethod("length", "XDataFrame", 
 	function(x) {
 		length(x@listData)
+	})
+
+setMethod("groups", "XDataFrame", 
+	function(x) {
+		x@groups
+	})
+
+setReplaceMethod("groups", "XDataFrame", 
+	function(x, value) {
+		x@groups <- value
+		x
 	})
 
 setMethod("lapply", "XDataFrame", 
@@ -155,6 +169,12 @@ setMethod("show", "XDataFrame",
 		colnames(out) <- showNames(object)
 		print(out, quote = FALSE, right = TRUE)
 	}
+	if ( length(groups(object)) > 0 ) {
+		ngroups <- sapply(groups(object), nlevels)
+		groupnames <- names(groups(object))
+		cat("Groups: ", paste0(groupnames, collapse=", "),
+			" [", prod(ngroups), "]\n", sep="")
+	}
 })
 
 # copied from S4Vectors::show,DataTable
@@ -176,4 +196,20 @@ setMethod("show", "XDataFrame",
 			s2 <- paste0(tail(nms, ntail))
 	}
 	c(s1, "...", s2)
+}
+
+# coerce to tibble
+.XDataFrame_to_tbl <- function(.data) {
+	if ( length(groups(.data)) > 0L ) {
+		colnames <- names(.data)
+		groupnames <- names(groups(.data))
+		cols <- groupnames %in% colnames
+		if ( any(!cols) )
+			.data[groupnames] <- groups(.data)[groupnames]
+		.data <- grouped_df(as_tibble(.data), groupnames)
+		.data <- .data[colnames]
+	} else {
+		.data <- as_tibble(.data)
+	}
+	.data
 }

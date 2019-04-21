@@ -6,12 +6,27 @@
 \alias{mutate}
 \alias{summarize}
 
+\alias{filter,DataFrame-method}
+\alias{select,DataFrame-method}
+\alias{mutate,DataFrame-method}
+\alias{arrange,DataFrame-method}
+\alias{summarize,DataFrame-method}
+\alias{group_by,DataFrame-method}
+
+\alias{filter,XDataFrame-method}
+\alias{select,XDataFrame-method}
+\alias{mutate,XDataFrame-method}
+\alias{arrange,XDataFrame-method}
+\alias{summarize,XDataFrame-method}
+\alias{group_by,XDataFrame-method}
+\alias{ungroup,XDataFrame-method}
+
 \alias{filter,ImagingExperiment-method}
 \alias{select,ImagingExperiment-method}
 \alias{mutate,ImagingExperiment-method}
 \alias{summarize,SparseImagingExperiment-method}
 
-\title{Data transformation and summarization for imaging experiments}
+\title{Data transformation and summarization}
 \description{
 	These methods provide analogs of data manipulation verbs from the \code{dplyr} package, with appropriate semantics for imaging experiments. Due to the differences between imaging datasets and standard data frames, they do not always work identically.
 
@@ -37,7 +52,7 @@
     \item{.by}{Should the summarization be performed over pixels or features?}
     \item{.group_by}{A grouping variable for summarization. The summary functions will be applied within each group.}
     \item{.stat}{Summary statistics to be computed in an efficient manner.}
-    \item{.tform}{How should each feature-vector of image-vector be transformed before summarization?}
+    \item{.tform}{How should each feature-vector or image-vector be transformed before summarization?}
     \item{BPPARAM}{An optional \code{BiocParallelParam} instance to be passed to \code{bplapply()}.}
 }
 \details{

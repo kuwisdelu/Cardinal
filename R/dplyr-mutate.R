@@ -1,4 +1,21 @@
 
+## Add columns to a DataFrame
+
+setMethod("mutate", "DataFrame",
+	function(.data, ...)
+	{
+		mutate(as(.data, "XDataFrame"), ...)
+	})
+
+setMethod("mutate", "XDataFrame",
+	function(.data, ...)
+	{
+		x <- mutate(.XDataFrame_to_tbl(.data), ...)
+		x <- as(x, class(.data))
+		groups(x) <- groups(.data)
+		x
+	})
+
 ## Add metadata columns to an imaging experiment
 
 setMethod("mutate", "ImagingExperiment",
@@ -26,3 +43,4 @@ setMethod("mutate", "ImagingExperiment",
 		}
 		.data
 	})
+

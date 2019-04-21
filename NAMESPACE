@@ -63,13 +63,16 @@ importFrom("Matrix",
 	"chol")
 
 importFrom("dplyr",
-	"arrange",
-	"filter",
-	"group_by",
+	"as_tibble",
 	"mutate",
 	"select",
-	"summarise",
-	"summarize")
+	"filter",
+	"summarize",
+	"arrange",
+	"group_by",
+	"ungroup",
+	"groups",
+	"grouped_df")
 
 importFrom("magrittr",
 	"%>%")
@@ -480,10 +483,14 @@ exportMethods(
 exportMethods("topLabels")
 
 exportMethods(
-	"filter",
 	"mutate",
+	"filter",
 	"select",
-	"summarize")
+	"summarize",
+	"arrange",
+	"group_by",
+	"ungroup",
+	"groups")
 
 export(
 	"viridis",

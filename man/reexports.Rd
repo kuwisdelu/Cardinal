@@ -3,6 +3,11 @@
 \docType{import}
 
 \alias{\%>\%}
+
+\alias{groups}
+\alias{group_by}
+\alias{ungroup}
+
 \alias{viridis}
 \alias{cividis}
 \alias{magma}
@@ -16,6 +21,8 @@
 
   \describe{
         \item{\code{maggritr}:}{\code{\%>\%}}
+
+		\item{\code{dplyr}:}{\code{group_by}, \code{ungroup}, \code{groups}}
 
         \item{\code{viridisLite}:}{\code{viridis}, \code{cividis}, \code{magma}, \code{inferno}, \code{plasma}}
     }

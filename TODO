@@ -2,7 +2,7 @@
 TODO for Cardinal package
 -------------------------
 
-- Add summary methods for analysis results
+- Add summary methods results
 - Update vignettes
 
 - Multimodal image registration (w/ optical images, etc.)

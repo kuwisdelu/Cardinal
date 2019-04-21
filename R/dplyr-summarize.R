@@ -1,4 +1,20 @@
 
+## Summarize a DataFrame
+
+setMethod("summarize", "DataFrame",
+	function(.data, ...)
+	{
+		summarize(as(.data, "XDataFrame"), ...)
+	})
+
+setMethod("summarize", "XDataFrame",
+	function(.data, ...)
+	{
+		x <- summarize(.XDataFrame_to_tbl(.data), ...)
+		x <- as(x, class(.data))
+		x
+	})
+
 ## Summarize the pixels or features of an imaging dataset
 
 setMethod("summarize", "SparseImagingExperiment",

@@ -14,6 +14,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		strip = TRUE,
 		key = superpose || !is.null(groups),
 		fun = mean,
+		hline = 0,
 	    ...,
 		xlab, xlim,
 		ylab, ylim,
@@ -161,6 +162,10 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 	} else {
 		facets <- NULL
 	}
+	if ( !isFALSE(hline) ) {
+		call <- substitute(abline(h=hline, lwd=0.2))
+		preplot <- list(call=call, envir=NULL)
+	}
 	facet.plot(args, formula=formula, obj=x,
 		facets=facets, groups=groups,
 		superpose=superpose,
@@ -168,8 +173,8 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		...,
 		xlab=xlab, xlim=xlim,
 		ylab=ylab, ylim=ylim,
-		layout=layout, col=col,
-		subset=subset, add=add)
+		layout=layout, preplot=preplot,
+		col=col, subset=subset, add=add)
 })
 
 .fastFeatureApply2 <- function(x, fun, groups) {

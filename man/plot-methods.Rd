@@ -4,6 +4,7 @@
 \alias{plot}
 \alias{plot-methods}
 
+\alias{plot,DataFrame,ANY-method}
 \alias{plot,XDataFrame,missing-method}
 \alias{plot,XDataFrame,formula-method}
 \alias{plot,SparseImagingExperiment,missing-method}
@@ -42,6 +43,8 @@
 
 #### Methods for Cardinal >= 2.x classes ####
 
+\S4method{plot}{DataFrame,ANY}(x, y, \dots)
+
 \S4method{plot}{XDataFrame,missing}(x, formula,
         groups = NULL,
         superpose = FALSE,
@@ -63,6 +66,7 @@
         strip = TRUE,
         key = superpose || !is.null(groups),
         fun = mean,
+        hline = 0,
         \dots,
         xlab, xlim,
         ylab, ylim,
@@ -186,7 +190,7 @@
     
     \item{x}{An imaging dataset.}
     
-    \item{formula}{A formula of the form 'y ~ x | g1 * g2 * ...' (or equivalently, 'y ~ x | g1 + g2 + ...'), indicating a LHS 'y' (on the y-axis) versus a RHS 'x' (on the x-axis) and conditioning variables 'g1, g2, ...'.
+    \item{formula, y}{A formula of the form 'y ~ x | g1 * g2 * ...' (or equivalently, 'y ~ x | g1 + g2 + ...'), indicating a LHS 'y' (on the y-axis) versus a RHS 'x' (on the x-axis) and conditioning variables 'g1, g2, ...'.
 
     Usually, the LHS is not supplied, and the formula is of the form '~ x | g1 * g2 * ...', and the y-axis is implicityl assumed to be the feature vectors corresponding to each pixel in the imaging dataset specified by the object 'x'. However, a variable evaluating to a feature vector, or a sequence of such variables, can also be supplied.
 
@@ -211,6 +215,8 @@
     \item{key}{A logical, or \code{list} containing components to be used as a key for the plot. This is passed to 'key' in \code{\link{levelplot}} if 'lattice = TRUE'.}
 
     \item{fun}{A function to apply over feature vectors grouped together by 'pixel.groups'. By default, this is used for averaging over pixels.}
+
+    \item{hline}{The y-value(s) for a horizontal reference line(s).}
 
     \item{xlab}{Character or expression giving the label for the x-axis.}
 

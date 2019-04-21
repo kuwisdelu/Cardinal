@@ -1,8 +1,8 @@
 
 facet.plot <- function(args, formula, obj,
 	facets, groups, superpose, strip, key, ...,
-	xlab, xlim, ylab, ylim, layout,
-	col, subset, add)
+	xlab, xlim, ylab, ylim, layout, col,
+	subset, preplot, add)
 {
 	dots <- list(...)
 	e <- environment(formula)
@@ -14,7 +14,7 @@ facet.plot <- function(args, formula, obj,
 	if ( superpose && !is.null(groups) )
 		.stop("cannot specify 'superpose' and 'groups' in same call")
 	if ( !is.null(groups) ) {
-		has_groups <- TRUE		
+		has_groups <- TRUE
 	} else {
 		groups <- rep_len(factor(1), n)
 		has_groups <- FALSE
@@ -148,6 +148,8 @@ facet.plot <- function(args, formula, obj,
 	}
 	if ( missing(layout) )
 		layout <- TRUE
+	if ( missing(preplot) )
+		preplot <- NULL
 	if ( missing(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) )
@@ -161,6 +163,7 @@ facet.plot <- function(args, formula, obj,
 		groups=levels(groups),
 		subset=subset,
 		layout=layout,
+		preplot=preplot,
 		par=c(par, dots))
 	class(out) <- "facet.plot"
 	out
@@ -194,7 +197,11 @@ print.facet.plot <- function(x, ...) {
 			new <- !sublayer$add
 			if ( new ) {
 				do.call("plot", nil)
-				abline(h=0, lwd=0.2)
+				if ( !is.null(obj$preplot) ) {
+					call <- obj$preplot$call
+					e <- obj$preplot$envir
+					eval(call, envir=e)
+				}
 			}	
 			do.call("points", args)
 		}

@@ -154,11 +154,12 @@ setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalize
 setGeneric("mutate", signature=".data") # from 'dplyr'
 setGeneric("select", signature=".data") # from 'dplyr'
 setGeneric("filter", signature=".data") # from 'dplyr'
-setGeneric("summarise", signature=".data") # from 'dplyr'
 setGeneric("summarize", signature=".data")	# from 'dplyr'
 setGeneric("arrange", signature=".data") # from 'dplyr'
 setGeneric("group_by", signature=".data") # from 'dplyr'
 setGeneric("ungroup", signature="x") # from 'dplyr'
+setGeneric("groups", signature="x") # from 'dplyr'
+setGeneric("groups<-", function(x, value) standardGeneric("groups<-"))
 
 #### Spatial utilities ####
 ## ---------------------
