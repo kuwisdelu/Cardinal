@@ -25,18 +25,18 @@ print.summary.iSet <- function(x, ...) {
 
 setMethod("summary", "PCA",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			ncomp <- x$ncomp
 			data.frame(ncomp=ncomp,
 				loadings=as.vector(x$loadings[,ncomp,drop=FALSE]))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		which <- which.max(unlist(object$ncomp))
 		ncomp <- object$ncomp[[which]]
 		sdev <- object$sdev[[which]]
 		importance <- matrix(sdev, ncol=ncomp,
 			dimnames=list("Standard deviation", paste0("PC", 1:ncomp)))
-		out <- list(topLabels=topLabels, importance=importance,
+		out <- list(topFeatures=topFeatures, importance=importance,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PCA"
 		out
@@ -55,7 +55,7 @@ plot.summary.PCA <- function(x, y, ...) {
 
 setMethod("summary", "PLS",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
 			ncomp <- x$ncomp
@@ -73,7 +73,7 @@ setMethod("summary", "PLS",
 				weights=as.vector(x$weights[,ncomp,drop=FALSE]),
 				row.names=seq_len(nclasses * nrow(object)))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			if ( is.factor(x$y) ) {
 				.summarize.factor(x$y, x$classes)
@@ -88,7 +88,7 @@ setMethod("summary", "PLS",
 		}
 		attr(accuracy, "gridsearch:x") <- "ncomp"
 		attr(accuracy, "gridsearch:xlab") <- "Number of Components"
-		out <- list(topLabels=topLabels, accuracy=accuracy,
+		out <- list(topFeatures=topFeatures, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.PLS"
 		out
@@ -108,7 +108,7 @@ plot.summary.PLS <- function(x, y, ...) {
 
 setMethod("summary", "OPLS",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
 			ncomp <- x$ncomp
@@ -127,7 +127,7 @@ setMethod("summary", "OPLS",
 				weights=as.vector(x$weights),
 				Oweights=as.vector(x$Oweights[,ncomp,drop=FALSE]))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			if ( is.factor(x$y) ) {
 				.summarize.factor(x$y, x$classes)
@@ -142,7 +142,7 @@ setMethod("summary", "OPLS",
 		}
 		attr(accuracy, "gridsearch:x") <- "ncomp"
 		attr(accuracy, "gridsearch:xlab") <- "Number of Components"
-		out <- list(topLabels=topLabels, accuracy=accuracy,
+		out <- list(topFeatures=topFeatures, accuracy=accuracy,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.OPLS"
 		out
@@ -162,13 +162,13 @@ plot.summary.OPLS <- function(x, y, ...) {
 
 setMethod("summary", "SpatialFastmap",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			r <- x$r
 			ncomp <- x$ncomp
 			data.frame(r=r, ncomp=ncomp,
 				correlation=as.vector(x$correlation[,ncomp,drop=FALSE]))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		rs <- sort(unique(unlist(object$r)))
 		importance <- t(sapply(rs, function(r) {
 			rss <- unlist(object$r)
@@ -182,7 +182,7 @@ setMethod("summary", "SpatialFastmap",
 		}))
 		rownames(importance) <- paste0("Standard deviation, r = ", rs)
 		colnames(importance) <- paste0("FC", 1:max(unlist(object$ncomp)))
-		out <- list(topLabels=topLabels, importance=importance,
+		out <- list(topFeatures=topFeatures, importance=importance,
 			model=modelData(object), method=object[[1]]$method)
 		class(out) <- "summary.SpatialFastmap"
 		out
@@ -208,7 +208,7 @@ plot.summary.SpatialFastmap <- function(x, y, ...) {
 
 setMethod("summary", "SpatialKMeans",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- tabulate(x$cluster)
 			n <- rep(n, each=nrow(object))
@@ -221,12 +221,12 @@ setMethod("summary", "SpatialKMeans",
 				betweenss=as.vector(x$betweenss),
 				row.names=seq_len(k * nrow(object)))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		withinss <- sapply(resultData(object), function(x) sum(x$withinss))
 		betweenss <- sapply(resultData(object), function(x) sum(x$betweenss))
 		totss <- sapply(resultData(object), function(x) sum(x$totss))
 		time <- sapply(resultData(object), function(x) x$time[[3]])
-		out <- list(topLabels=topLabels,
+		out <- list(topFeatures=topFeatures,
 			withinss=withinss, betweenss=betweenss, totss=totss,
 			model=modelData(object), method=object[[1]]$method, time=time)
 		class(out) <- "summary.SpatialKMeans"
@@ -251,7 +251,7 @@ plot.summary.SpatialKMeans <- function(x, y, ...) {
 
 setMethod("summary", "SpatialShrunkenCentroids",
 	function(object, ...) {
-		topLabels <- do.call("rbind", lapply(resultData(object), function(x) {
+		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- table(x$classes)
 			n <- rep(n, each=nrow(object))
@@ -268,7 +268,7 @@ setMethod("summary", "SpatialShrunkenCentroids",
 				adj.p.values=adj.p.values,
 				row.names=seq_len(k * nrow(object)))
 		}))
-		row.names(topLabels) <- NULL
+		row.names(topFeatures) <- NULL
 		accuracy <- lapply(resultData(object), function(x) {
 			.summarize.factor(x$y, x$classes)
 		})
@@ -285,7 +285,7 @@ setMethod("summary", "SpatialShrunkenCentroids",
 			round(mean(nz))
 		})
 		time <- sapply(resultData(object), function(x) x$time[[3]])
-		out <- list(topLabels=topLabels, accuracy=accuracy,
+		out <- list(topFeatures=topFeatures, accuracy=accuracy,
 			nclasses=nclasses, nzfeatures=nzfeatures,
 			model=modelData(object), method=object[[1]]$method, time=time)
 		class(out) <- "summary.SpatialShrunkenCentroids"
@@ -299,10 +299,6 @@ print.summary.SpatialShrunkenCentroids <- function(x, ...) {
 	model[["time"]] <- x$time
 	model[["Predicted # of Classes"]] <- x$nclasses
 	model[["Mean # of Features per Class"]] <- x$nzfeatures
-	# if ( !is.null(x$accuracy[[1]]) ) {
-	# 	model[["Accuracy"]] <- sapply(x$accuracy,
-	# 		function(s) s["Accuracy", 1])
-	# }
 	print(model)
 }
 

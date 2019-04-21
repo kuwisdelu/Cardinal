@@ -1,50 +1,50 @@
-\name{topLabels-methods}
+\name{topFeatures-methods}
 \docType{methods}
-\alias{topLabels}
-\alias{topLabels-methods}
-\alias{topLabels,ResultSet-method}
-\alias{topLabels,PCA-method}
-\alias{topLabels,PLS-method}
-\alias{topLabels,OPLS-method}
-\alias{topLabels,SpatialKMeans-method}
-\alias{topLabels,SpatialShrunkenCentroids-method}
-\alias{topLabels,CrossValidated-method}
+\alias{topFeatures}
+\alias{topFeatures-methods}
+\alias{topFeatures,ResultSet-method}
+\alias{topFeatures,PCA-method}
+\alias{topFeatures,PLS-method}
+\alias{topFeatures,OPLS-method}
+\alias{topFeatures,SpatialKMeans-method}
+\alias{topFeatures,SpatialShrunkenCentroids-method}
+\alias{topFeatures,CrossValidated-method}
 
 \title{Retrieve top-ranked features from analysis results}
 \description{
     The generic function is a convenience method for retrieving top-ranked features from the results of imaging experiment analyses. For mass spectrometry-based imaging experiments, this can be used for identifying important masses from an analysis.
 }
 \usage{
-\S4method{topLabels}{ResultSet}(object, n = 6,
+\S4method{topFeatures}{ResultSet}(object, n = 6,
     model = pData(modelData(object)),
     type = c('+', '-', 'b'),
     sort.by = fvarLabels(object),
     filter = list(),
     \dots)
 
-\S4method{topLabels}{PCA}(object, n = 6,
+\S4method{topFeatures}{PCA}(object, n = 6,
     sort.by = "loadings",
     \dots)
 
-\S4method{topLabels}{PLS}(object, n = 6,
+\S4method{topFeatures}{PLS}(object, n = 6,
     sort.by = c("coefficients", "loadings", "weights"),
     \dots)
 
-\S4method{topLabels}{OPLS}(object, n = 6,
+\S4method{topFeatures}{OPLS}(object, n = 6,
     sort.by = c("coefficients",
             "loadings", "Oloadings",
             "weights", "Oweights"),
     \dots)
 
-\S4method{topLabels}{SpatialKMeans}(object, n = 6,
+\S4method{topFeatures}{SpatialKMeans}(object, n = 6,
     sort.by = c("betweenss", "withinss"),
     \dots)
 
-\S4method{topLabels}{SpatialShrunkenCentroids}(object, n = 6,
+\S4method{topFeatures}{SpatialShrunkenCentroids}(object, n = 6,
     sort.by = c("tstatistics", "p.values"),
     \dots)
 
-\S4method{topLabels}{CrossValidated}(object, \dots)
+\S4method{topFeatures}{CrossValidated}(object, \dots)
 }
 \arguments{
     \item{object}{A \code{\linkS4class{ResultSet}} derived object.}
@@ -81,11 +81,11 @@ msset <- generateImage(data, range=c(200, 300), step=1, as="MSImageSet")
 
 clust1 <- spatialShrunkenCentroids(msset, r=c(1,2), k=c(2,3), s=c(0,1), method="gaussian")
 
-topLabels(clust1)
+topFeatures(clust1)
 
-topLabels(clust1, filter=list(classes=1))
+topFeatures(clust1, filter=list(classes=1))
 
-topLabels(clust1, filter=list(r=1, k=2, s=1))
+topFeatures(clust1, filter=list(r=1, k=2, s=1))
 }
 
 \keyword{methods}

@@ -1,5 +1,5 @@
 
-setMethod("topLabels", "ResultSet",
+setMethod("topFeatures", "ResultSet",
 	function(object, n = 6,
 		model = pData(modelData(object)),
 		type = c('+', '-', 'b'),
@@ -13,21 +13,21 @@ setMethod("topLabels", "ResultSet",
 		} else {
 			model <- pData(modelData(object))[model,,drop=FALSE]
 		}
-		topLabels <- summary(object)$topLabels
+		topFeatures <- summary(object)$topFeatures
 		fData <- do.call(rbind, rep(list(fData(object))))
-		topLabels <- data.frame(fData, topLabels, row.names=seq_len(nrow(topLabels)))
-		sort.by <- match.arg(sort.by[[1]], choices=names(topLabels))
+		topFeatures <- data.frame(fData, topFeatures, row.names=seq_len(nrow(topFeatures)))
+		sort.by <- match.arg(sort.by[[1]], choices=names(topFeatures))
 		filter <- append(model, filter)
-		topLabels <- subset_data(topLabels, subset=filter)
-		topLabels <- switch(type,
-			`+` = topLabels[order(topLabels[[sort.by]], decreasing=TRUE),],
-			`-` = topLabels[order(topLabels[[sort.by]], decreasing=FALSE),],
-			'b' = topLabels[order(abs(topLabels[[sort.by]]), decreasing=TRUE),])
-		row.names(topLabels) <- NULL
-		head(topLabels, n=n, ...)
+		topFeatures <- subset_data(topFeatures, subset=filter)
+		topFeatures <- switch(type,
+			`+` = topFeatures[order(topFeatures[[sort.by]], decreasing=TRUE),],
+			`-` = topFeatures[order(topFeatures[[sort.by]], decreasing=FALSE),],
+			'b' = topFeatures[order(abs(topFeatures[[sort.by]]), decreasing=TRUE),])
+		row.names(topFeatures) <- NULL
+		head(topFeatures, n=n, ...)
 	})
 
-setMethod("topLabels", "PCA",
+setMethod("topFeatures", "PCA",
 	function(object, n = 6,
 		sort.by = "loadings",
 		...)
@@ -35,7 +35,7 @@ setMethod("topLabels", "PCA",
 		callNextMethod(object=object, n=n, sort.by=sort.by, ...)
 	})
 
-setMethod("topLabels", "PLS",
+setMethod("topFeatures", "PLS",
 	function(object, n = 6,
 		sort.by = c("coefficients", "loadings", "weights"),
 		...)
@@ -43,7 +43,7 @@ setMethod("topLabels", "PLS",
 		callNextMethod(object=object, n=n, sort.by=sort.by, ...)
 	})
 
-setMethod("topLabels", "OPLS",
+setMethod("topFeatures", "OPLS",
 	function(object, n = 6,
 		sort.by = c("coefficients",
 			"loadings", "Oloadings",
@@ -53,7 +53,7 @@ setMethod("topLabels", "OPLS",
 		callNextMethod(object=object, n=n, sort.by=sort.by, ...)
 	})
 
-setMethod("topLabels", "SpatialKMeans",
+setMethod("topFeatures", "SpatialKMeans",
 	function(object, n = 6,
 		sort.by = c("betweenss", "withinss"),
 		...)
@@ -61,7 +61,7 @@ setMethod("topLabels", "SpatialKMeans",
 		callNextMethod(object=object, n=n, sort.by=sort.by, ...)
 	})
 
-setMethod("topLabels", "SpatialShrunkenCentroids",
+setMethod("topFeatures", "SpatialShrunkenCentroids",
 	function(object, n = 6,
 		sort.by = c("tstatistics", "p.values"),
 		...)
@@ -69,8 +69,15 @@ setMethod("topLabels", "SpatialShrunkenCentroids",
 		callNextMethod(object=object, n=n, sort.by=sort.by, ...)
 	})
 
-setMethod("topLabels", "CrossValidated",
+setMethod("topFeatures", "CrossValidated",
 	function(object, ...)
 	{
-		lapply(resultData(object), topLabels, ...)
+		lapply(resultData(object), topFeatures, ...)
+	})
+
+setMethod("topLabels", "ANY",
+	function(object, ...)
+	{
+		.Deprecated("topFeatures")
+		topFeatures(object, ...)
 	})

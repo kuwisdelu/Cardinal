@@ -485,7 +485,9 @@ exportMethods(
 	"meansTest",
 	"segmentationTest")
 
-exportMethods("topLabels")
+exportMethods(
+	"topLabels",
+	"topFeatures")
 
 exportMethods(
 	"mutate",

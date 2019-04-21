@@ -5,6 +5,9 @@
 \alias{Binmat}
 \alias{Binmat-class}
 
+\alias{topLabels}
+\alias{topLabels,ANY-method}
+
 \title{Deprecated functions and methods in Cardinal}
 
 \description{
@@ -12,5 +15,7 @@
 
   \describe{
         \item{\code{Binmat}:}{\code{\link{matter_mat}}}
+
+        \item{\code{topLabels}:}{\code{\link{topFeatures}}}
     }
 }
