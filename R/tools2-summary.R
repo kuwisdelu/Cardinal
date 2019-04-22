@@ -165,7 +165,6 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 					paste0(" Distance = ", metadata(object)$dist, "\n")))
 		}
 		metadata(out)$modelData <- modelData(object)
-		metadata(out)$type <- metadata(object)$type
 		as(out, "SummarySpatialShrunkenCentroids")
 	})
 

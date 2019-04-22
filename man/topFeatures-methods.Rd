@@ -2,6 +2,11 @@
 \docType{methods}
 \alias{topFeatures}
 \alias{topFeatures-methods}
+
+\alias{topFeatures,MeansTest-method}
+\alias{topFeatures,SegmentationTest-method}
+\alias{topFeatures,SpatialShrunkenCentroids2-method}
+
 \alias{topFeatures,ResultSet-method}
 \alias{topFeatures,PCA-method}
 \alias{topFeatures,PLS-method}
@@ -10,11 +15,22 @@
 \alias{topFeatures,SpatialShrunkenCentroids-method}
 \alias{topFeatures,CrossValidated-method}
 
-\title{Retrieve top-ranked features from analysis results}
+\title{Top-ranked features from imaging analysis results}
 \description{
-    The generic function is a convenience method for retrieving top-ranked features from the results of imaging experiment analyses. For mass spectrometry-based imaging experiments, this can be used for identifying important masses from an analysis.
+    Extract the top-ranked features from the results of imaging analysis, based on test statistics, p-values, or adjusted p-values. The result is sorted data frame that can be further manipulated for downstream postprocessing.
 }
 \usage{
+
+#### Methods for Cardinal >= 2.x classes ####
+
+\S4method{topFeatures}{SpatialShrunkenCentroids2}(object, n = 10, \dots, model = modelData(object))
+
+\S4method{topFeatures}{MeansTest}(object, n = 10, \dots, p.adjust = "BH")
+
+\S4method{topFeatures}{SegmentationTest}(object, n = 10, \dots, model = modelData(object), p.adjust = "BH")
+
+#### Methods for Cardinal 1.x classes ####
+
 \S4method{topFeatures}{ResultSet}(object, n = 6,
     model = pData(modelData(object)),
     type = c('+', '-', 'b'),
@@ -47,26 +63,24 @@
 \S4method{topFeatures}{CrossValidated}(object, \dots)
 }
 \arguments{
-    \item{object}{A \code{\linkS4class{ResultSet}} derived object.}
+    \item{object}{The results of an imaging experiment analysis.}
     \item{n}{The number of top-ranked records to return.}
-    \item{model}{If more than one model was fitted, results from which should be shown? Defaults to all models in the \code{ResultSet}. This can name the models explicitly or specify a list of parameter values.}
+    \item{model}{If more than one model was fitted, results from which should be shown? Defaults to all models in the object This can name the models explicitly or specify a list of parameter values.}
+    \item{p.adjust}{The \code{p.adjust} method used adjust p-values to account for multiple testing. Defaults to Benjamini \& Hochberg ("BH") to control the false discovery rate (FDR).}
+    \item{\dots}{For newer classes, additional arguments to be passed to \code{filter}, to further filter the results.}
     \item{type}{How should the records be ranked? '+' shows greatest values first (decreasing order), '-' shows least values first (increasing order), and 'b' uses decreasing order based on absolute values.}
     \item{sort.by}{What variable should be used for sorting?}
     \item{filter}{A list of named variables with values to use to filter the results. For example, for testing or classification, this can be used to only show rankings for a particular condition.}
-    \item{\dots}{Passed to the 'head' function when sorting the final list of results.}
 }
 \value{
-    A \code{data.frame} with the top-ranked labels from the analysis.
+    A data frame with the top-ranked features.
 }
 \author{
     Kylie A. Bemis
 }
-\seealso{
-    \code{\linkS4class{ResultSet}},
-    \code{\link{PCA}},
-    \code{\link{PLS}},
-    \code{\link{OPLS}},
-    \code{\link{spatialKMeans}},
+\seealso{ 
+    \code{\link{meansTest}},
+    \code{\link{segmentationTest}},
     \code{\link{spatialShrunkenCentroids}}
 }
 \examples{

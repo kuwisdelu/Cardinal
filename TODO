@@ -1,11 +1,8 @@
 
 TODO for Cardinal package
 -------------------------
-
-- Add summary plot methods (?)
-- Update topLabels -> topFeatures 
+ 
 - Update vignettes
-
 - Multimodal image registration (w/ optical images, etc.)
 - Add ggplot2 and lattice graphics engine options (?)
 - Shiny GUI
