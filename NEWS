@@ -1,4 +1,18 @@
 
+CHANGES IN VERSION 2.1.17 [2019-4-22]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'topFeatures' method for extracting top-ranked
+        features from statistical analyses
+    o Added 'summary' methods for new results objects
+    o Added 'SummaryDataFrame' for printing result summaries
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Deprecated 'topLabels' method -> use 'topFeatures'
+
 CHANGES IN VERSION 2.1.16 [2019-4-20]
 -----------------------------------
 
