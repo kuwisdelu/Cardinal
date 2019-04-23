@@ -55,7 +55,7 @@ reduceBaseline.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
-reduceBaseline.median <- function(x, blocks=500, fun=min, spar=1, ...) {
+reduceBaseline.median <- function(x, blocks=500, fun=median, spar=1, ...) {
 	xint <- split_blocks(x, blocks=blocks)
 	baseval <- sapply(xint, fun)
 	baseidx <- sapply(xint, function(xi) which.min(abs(fun(xi) - xi)))

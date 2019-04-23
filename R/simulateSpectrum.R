@@ -12,12 +12,16 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 		stop("length of mz and intensity must match")
 	units <- match.arg(units)
 	representation <- match.arg(representation)
+	if ( missing(mz) && (!missing(from) || !missing(to)) ) {
+		mz <- (mz - min(mz)) / max(mz - min(mz))
+		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
+	}
 	m <- mz(from=from, to=to, by=by, units=units)
 	i <- order(mz)
 	mz <- mz[i]
 	intensity <- intensity[i]
 	if ( n > 1L ) {
-		x <- replicate(n, simulateSpectrum(mz=mz, intensity=mz,
+		x <- replicate(n, simulateSpectrum(mz=mz, intensity=intensity,
 			from=from, to=to, by=by, sdpeaks=sdpeaks, sdpeakmult=sdpeakmult,
 			sdnoise=sdnoise, sdmz=sdmz, resolution=resolution, fmax=fmax,
 			baseline=baseline, decay=decay, units=units)$intensity)

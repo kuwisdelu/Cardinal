@@ -3,7 +3,7 @@
 ## ------------------------------
 
 setMethod("peakPick", "MSImagingExperiment",
-	function(object, method = c("mad", "simple", "adaptive"), ...)
+	function(object, method = c("simple", "adaptive", "mad"), ...)
 	{
 		fun <- peakPick_fun(peakPick.method2(method))
 		object <- process(object, fun=fun, ...,
@@ -17,11 +17,11 @@ setMethod("peakPick", "MSImagingExperiment",
 peakPick.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
-			c("mad", "simple", "adaptive"))
+			c("simple", "adaptive", "mad"))
 		switch(method,
-			mad = peakPick.mad,
 			simple = peakPick.simple2,
 			adaptive = peakPick.adaptive2,
+			mad = peakPick.mad,
 			match.fun(method))
 	} else {
 		match.fun(method)

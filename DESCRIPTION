@@ -1,7 +1,7 @@
 Package: Cardinal
 Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
-Version: 2.1.17
+Version: 2.1.18
 Date: 2015-1-12
 Author: Kylie A. Bemis <k.bemis@northeastern.edu>
 Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
@@ -14,7 +14,8 @@ Depends: BiocGenerics, BiocParallel, EBImage, graphics,
 Imports: Biobase, dplyr, grid, irlba, lattice, Matrix,
 		matter, magrittr, mclust, nlme, parallel,
 		signal, sp, stats4, utils, viridisLite
-Suggests: BiocStyle, testthat
+Suggests: BiocStyle, testthat, knitr, rmarkdown
+VignetteBuilder: knitr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 		MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,
 		Normalization, Clustering, Classification, Regression

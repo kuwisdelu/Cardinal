@@ -1,0 +1,1078 @@
+---
+title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
+author: "Kylie Ariel Bemis"
+date: "April 22, 2019"
+output:
+  BiocStyle::html_document:
+  toc: true
+vignette: >
+  %\VignetteIndexEntry{Cardinal 2: User guide for mass spectrometry imaging analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo=FALSE, results='asis'}
+BiocStyle::markdown()
+```
+
+```{r setup, echo=FALSE, message=FALSE}
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=120)
+register(SerialParam())
+RNGkind("Mersenne-Twister")
+```
+
+# Introduction 
+
+
+*Cardinal 2* provides new classes and methods for the manipulation, transformation, visualization, and analysis of imaging experiments--specifically mass spectrometry (MS) imaging experiments.
+
+MS imaging is a rapidly advancing field with consistent improvements in instrumentation for both MALDI and DESI imaging experiments. Both mass resolution and spatial resolution are steadily increasing, and MS imaging experiments grow increasingly complex.
+
+The first version of *Cardinal* was written making certain assumptions about MS imaging data that are no longer true. For example, the basic assumption that the raw spectra can be fully loaded into memory is unreasonable for many MS imaging experiments today.
+
+*Cardinal 2* was re-written from the ground up to handle the evolving needs of high-resolution MS imaging experiments. Some advancements include:
+
+- New imaging data classes such as `ImagingExperiment`, `SparseImagingExperiment`, and `MSImagingExperiment` provide better support for out-of-memory datasets and a more flexible representation of complex experiments
+
+- New imaging metadata classes such as `PositionDataFrame` and `MassDataFrame` which make it easier to manipulate experimental runs, pixel coordinates, and *m/z*-values by storing them as separate slots rather than ordinary columns
+
+- New `plot()` and `image()` visualization methods that can handle non-gridded pixel coordinates and allow assigning the resulting plot (and data) to a variable for later re-plotting
+
+- Support for writing imzML in addition to reading; improved support and options for importing out-of-memory imzML for both *"continuous"* and *"processed"* formats
+
+- Data manipulation and summarization verbs borrowed from *dplyr* such as `select()`, `filter()`, `mutate()`, and `summarize()` for easier transformation, subsetting, and summarization of imaging datasets
+
+- Delayed pre-processing via a new `process()` method that allows queueing of pre-processing methods such as `normalize()` and `peakPick()` for later parallel execution
+
+- Parallel processing support via the *BiocParallel* package for all pre-processing methods and most statistical analysis methods
+
+Classes and methods from older versions of Cardinal will continue to be supported; however, new code should use the new classes and methods implemented by *Cardinal 2*.
+
+> Note that *Cardinal 2* uses parallel execution using the registered *BiocParallel* backend by default. This may not be appropriate for all situations. If you run into problems, try using `register(SerialParam())` to run code serially instead.
+
+
+
+
+
+# Installation
+
+*Cardinal* can be installed via the *BiocManager* package.
+
+```{r install, eval=FALSE}
+install.packages("BiocManager")
+BiocManager::install("Cardinal")
+```
+
+The same function can be used to update *Cardinal* and other Bioconductor packages.
+
+Once installed, *Cardinal* can be loaded with `library()`:
+
+```{r library, eval=FALSE}
+library(Cardinal)
+```
+
+
+
+
+
+
+# Components of an `MSImagingExperiment`
+
+In *Cardinal*, imaging experiment datasets are composed of multiple sets of metadata, in addition to the actual experimental data. These are (1) pixel metadata, (2) feature ($m/z$) metadata, (3) the actual imaging data, and (4) a class that holds all of these and represents the experiment as a whole.
+
+`MSImagingExperiment` is a matrix-like container for complete MS imaging experiments, where the "rows" represent the mass features, and the columns represent the pixels. An `MSImagingExperiment` object contains the following components:
+
+- `pixelData()` accesses the pixel information, stored in a `PositionDataFrame`
+
+- `featureData()` accesses the feature information, stored in `MassDataFrame`
+
+- `imageData()` accesses the spectral information, stored in a `ImageArrayList`
+
+Unlike many software packages designed for analysis of MS imaging experiments, *Cardinal* is designed to work with multiple datasets simultaneously and can integrate all aspects of experimental design and metadata.
+
+## Example data
+
+We will use `simulateImage()` to prepare an example dataset.
+
+```{r example-data}
+set.seed(2020)
+mse <- simulateImage(preset=1, npeaks=10, nruns=2, baseline=1)
+mse
+```
+
+## Pixel metadata with `PositionDataFrame`
+
+The `pixelData()` accessor extracts the pixel information for an `MSImagingExperiment`. The pixel data are stored in a `PositionDataFrame` object, which is a type of data frame that separately tracks pixel coordinates and experimental run information.
+
+```{r pixel-data}
+pixelData(mse)
+```
+
+The `coord()` accessor specifically extracts the data frame of pixel coordinates.
+
+```{r coord-access}
+coord(mse)
+```
+
+The `run()` accessor specifically extracts the vector of experimental runs.
+
+```{r run-access}
+run(mse)[1:10]
+```
+
+## Feature metadata with `MassDataFrame`
+
+The `featureData()` accessor extracts the feature information for an `MSImagingExperiment`. The feature data are stored in a `MassDataFrame` object, which is a type of data frame that separately tracks the *m/z*-values associated with the mass spectral features.
+
+```{r feature-data}
+featureData(mse)
+```
+
+The `mz()` accessor specifically extracts the vector of *m/z*-values.
+
+```{r mz-access}
+mz(mse)[1:10]
+```
+
+## Accessing spectra and image data
+
+The `imageData()` accessor extracts the image data for an `MSImagingExperiment`. The data are stored in an `ImageArrayList`, which is a list of matrix-like objects.
+
+It is possible to store multiple matrices of intensities in this list. Typically, only the first entry will be used by pre-processing and analysis methods.
+
+```{r image-data}
+imageData(mse)
+```
+
+Entries in this list can be extracted by name with `iData()`.
+
+```{r image-data-extract, eval=FALSE}
+iData(mse, "intensity")
+```
+
+The `spectra()` accessor is a shortcut for accessing the first data matrix.
+
+```{r spectra-access}
+spectra(mse)[1:5, 1:5]
+```
+
+Rows of these matrices correspond to mass features. Columns correspond to pixels. In other words, each column is a mass spectrum, and each row is a flattened vector of images.
+
+## Specialized classes
+
+In order to specialize to the needs of different datasets, *Cardinal* provides two extensions of `MSImagingExperiment` that reflect different storage strategies for the spectral intensities.
+
+### "Continuous" MS imaging experiments
+
+The `MSContinuousImagingExperiment` is a specialization that enforces the data matrices be stored as dense, column-major matrices. These include R's native `matrix` and `matter_matc` objects from the *matter* package.
+
+```{r msi-continuous}
+mse
+imageData(mse)
+```
+
+### "Processed" MS imaging experiments
+
+The `MSProcessedImagingExperiment` is a specialization that enforces the data matrices be stored as sparse, column-major matrices. These include `sparse_matc` objects from the *matter* package. This specialization is useful for processed data.
+
+```{r msi-processed}
+set.seed(2020)
+mse2 <- simulateImage(preset=3, npeaks=10, nruns=2)
+mse3 <- as(mse2, "MSProcessedImagingExperiment")
+mse3
+imageData(mse3)
+```
+
+Because the data is stored sparsely, spectra from `MSProcessedImagingExperiment` objects are binned on-the-fly to the *m/z*-values specified by `mz()`.
+
+The resolution of the binning can be accessed by `resolution()`.
+
+```{r resolution-access}
+resolution(mse3)
+```
+
+The resolution can be set to change how the binning is performed.
+
+```{r resolution-update-1}
+resolution(mse3) <- c(ppm=400)
+```
+
+Changing the binned mass resolution will typically change the effective dimensions of the experiment.
+
+```{r resolution-update-2}
+dim(mse2)
+dim(mse3)
+```
+
+The effective *m/z*-values are also updated to reflect the new bins.
+
+```{r resolution-update-3}
+mz(mse2)[1:10]
+mz(mse3)[1:10]
+```
+
+Note that the underlying data will remain unchanged, but the binned values for the intensities will be different.
+
+
+
+
+
+
+
+# Data import and export
+
+*Cardinal 2* natively supports reading and writing imzML (both "continuous" and "processed" versions) and Analyze 7.5 formats via the `readMSIData()` and `writeMSIData()` functions.
+
+We will focus on imzML.
+
+The imzML format is an open standard designed specifically for interchange of mass spectrometry imaging datasets. Many other formats can be converted to imzML with the help of free applications available online at [](http://www.imzml.org).
+
+Let's create a small image to demonstrate data import/export.
+
+```{r tiny-1}
+set.seed(2020)
+tiny <- simulateImage(preset=1, from=500, to=600, dim=c(3,3))
+tiny
+```
+
+We'll also create a "processed" version for writing "processed" imzML.
+
+```{r tiny-2}
+tiny2 <- as(tiny, "MSProcessedImagingExperiment")
+tiny2
+```
+
+Note that despite the name, the only difference between "continuous" and "processed" imzML is how the data are stored, rather than what processing has been applied to the data. "Continuous" imzML stores spectra densely, with each spectrum sharing the same *m/z*-values. "Processed" imzML stores spectra sparsely, and each spectrum can have its own distinct *m/z*-values.
+
+## Writing imzML
+
+Use `writeMSIData()` to write datasets to imzML and Analyze formats.
+
+### Writing "continuous" imzML
+
+Internally, `writeMSIData()` will call either `writeImzML()` or `writeAnalyze()` depending on the value of `outformat`. The default is `outformat="imzML")`.
+
+```{r writeMSIData-continous}
+path <- tempfile()
+writeMSIData(tiny, file=path, outformat="imzML")
+```
+
+Two files are produced with extensions ".imzML" and ".ibd". The former contains an XML description of the dataset, and the latter contains the actual intensity data.
+
+```{r writeMSIData-showfiles, echo=FALSE}
+grep(basename(path), list.files(dirname(path)), value=TRUE)
+```
+
+Because `tiny` is a `MSContinuousImagingExperiment`, it is written as "continuous" imzML.
+
+```{r writeMSIData-show-continuous-tag}
+mzml <- readLines(paste0(path, ".imzML"))
+grep("continuous", mzml, value=TRUE)
+```
+
+### Writing "processed" imzML
+
+We can also write "processed" imzML if we export a `MSProcessedImagingExperiment` file.
+
+```{r writeMSIData-processed}
+path2 <- tempfile()
+writeMSIData(tiny2, file=path2, outformat="imzML")
+```
+
+```{r writeMSIData-show-processed-tag}
+mzml2 <- readLines(paste0(path2, ".imzML"))
+grep("processed", mzml2, value=TRUE)
+```
+
+### Writing datasets with multiple runs
+
+If an experiment contains multiple runs, then each run will be written to a separate imzML file.
+
+```{r tiny-3}
+set.seed(2020)
+tiny3 <- simulateImage(preset=1, from=500, to=600, dim=c(3,3), nruns=2)
+runNames(tiny3)
+```
+
+```{r writeMSIData-multiple-runs}
+path3 <- tempfile()
+writeMSIData(tiny3, file=path3, outformat="imzML")
+```
+
+```{r writeMSIData-multiple-runs-showfiles, echo=FALSE}
+grep(basename(path3), list.files(dirname(path3)), value=TRUE)
+```
+
+## Reading imzML
+
+Use `readMSIData()` to read datasets in imzML or Analyze formats.
+
+### Reading "continuous" imzML
+
+Internally, `readMSIData()` will guess the format based on the file extension (which must be included) and call either `readImzML()` or `readAnalyze()`.
+
+```{r readMSIData-continuos}
+path_in <- paste0(path, ".imzML")
+tiny_in <- readMSIData(path_in, attach.only=TRUE)
+tiny_in
+```
+
+The `attach.only` argument is used to specify that the intensity data should not be loaded into memory, but instead attached as a file-based matrix using the *matter* package.
+
+Starting in *Cardinal 2*, the default is `attach.only=TRUE`. This is more memory-efficient, but some methods may be more time-consuming due to the file I/O.
+
+```{r readMSIData-spectra}
+imageData(tiny_in)
+spectra(tiny_in)
+```
+
+An out-of-memory *matter* matrix can be subsetted like an ordinary R matrix. The data values are only read from file and loaded into memory when they are requested (via subsetting).
+
+```{r readMSIData-spectra-2}
+spectra(tiny_in)[1:5, 1:5]
+```
+
+If loading the data fully into memory is desired, either set `attach.only=FALSE` when reading the data, or use `as.matrix()` on the intensity matrix.
+
+```{r readMSIData-spectra-3}
+spectra(tiny_in) <- as.matrix(spectra(tiny_in))
+imageData(tiny_in)
+```
+
+### Reading "processed" imzML
+
+For "processed" imzML files, the spectra must be binned to common *m/z*-values. By default, `readImzML()` will detect the mass range from the data. This requires reading a large proportion of data from the file, even if `attach.only=TRUE`.
+
+```{r readMSIData-processed}
+path2_in <- paste0(path2, ".imzML")
+tiny2_in <- readMSIData(path2_in)
+tiny2_in
+```
+
+If known, it can be much more efficient to specify `mass.range` when importing "processed" imzML data. This can also be used to pre-filter the data to a smaller mass range.
+
+The size of the *m/z* bins can be changed with the `resolution` argument.
+
+```{r readMSIData-processed-2}
+tiny2_in <- readMSIData(path2_in, mass.range=c(510,590),
+						resolution=100, units="ppm")
+tiny2_in
+```
+
+The resolution for the *m/z* bins can be changed after importing the data by setting the `resolution()` of the dataset.
+
+```{r readMSIData-processed-resolution}
+resolution(tiny2_in) <- c(ppm=400)
+```
+
+## Building from scratch
+
+While importing formats besides imzML and Analyze are not explicitly supported by *Cardinal*, if the data can be read into R, it is easy to construct a `MSImagingExperiment` object from its components.
+
+```{r other-data}
+set.seed(2020)
+s <- simulateSpectrum(n=9, peaks=10, from=500, to=600)
+
+coord <- expand.grid(x=1:3, y=1:3)
+run <- factor(rep("run0", nrow(coord)))
+
+fdata <- MassDataFrame(mz=s$mz)
+pdata <- PositionDataFrame(run=run, coord=coord)
+
+out <- MSImagingExperiment(imageData=s$intensity,
+							featureData=fdata,
+							pixelData=pdata)
+out
+```
+
+For loading data into R, `read.csv()` and `read.table()` can be used to read CSV and tab-delimited text files, respectively.
+
+Likewise, `write.csv()` and `write.table()` can be used to write pixel metadata and feature metadata after coercing them to an ordinary R `data.frame` with `as.data.frame()`.
+
+Use `saveRDS()` and `readRDS()` to save and read and entire R object such as a `MSImagingExperiment`. Note that if intensity data is to be saved as well, it should be pulled into memory and coerced to an R matrix with `as.matrix()` first.
+
+
+
+
+
+
+# Visualization
+
+Visualization of mass spectra and molecular ion images is vital for exploratory analysis of MS imaging experiments. *Cardinal* provides a `plot()` method for plotting mass spectra and an `image()` method for plotting ion images.
+
+*Cardinal 2* provides some useful visualization updates compared to previous versions:
+
+- A new default color scale (viridis) for images that doesn't use the flawed rainbow color scheme
+
+- Non-gridded pixel coordinates are allowed, and plotting of non-rastered image data is better supported
+
+- The new `plot()` and `image()` methods return values that can be assigned to a variable for later re-plotting
+
+## Visualizing mass spectra with `plot()`
+
+Use `plot()` to plot mass spectra. Either `pixel` or `coord` can be specified to determine which mass spectra should be plotted.
+
+```{r plot-pixel, fig.height=3, fig.width=9}
+plot(mse, pixel=c(211, 611))
+```
+
+The `plusminus` argument can be used to specify that multiple spectra should be averaged and plotted together.
+
+```{r plot-coord, fig.height=3, fig.width=9}
+plot(mse, coord=list(x=10, y=10), plusminus=1, fun=mean)
+```
+
+A formula can be specified to further customize mass spectra plotting. The LHS of the formula should specify one or more elements of `imageData()` and the RHS of the formula should be a variable in `featureData()`.
+
+```{r plot-formula, fig.height=3, fig.width=9}
+plot(mse, intensity + I(-log1p(intensity)) ~ mz, pixel=211, superpose=TRUE)
+```
+
+## Visualizing images with `image()`
+
+Use `image()` to plot ion images. Either `feature` or `mz` can be specified to determine which mass features should be plotted.
+
+```{r image-mz, fig.height=4, fig.width=9}
+image(mse, mz=1200)
+```
+
+The `plusminus` argument can be used to specify that multiple mass features should be averaged and plotted together.
+
+```{r image-plusminus, fig.height=4, fig.width=9}
+image(mse, mz=1227, plusminus=0.5, fun=mean)
+```
+
+By default, images from all experimental runs are plotted. If this is not desired, a `subset` can be specified instead.
+
+```{r image-run, fig.height=4, fig.width=5}
+image(mse, mz=1227, subset=run(mse) == "run0")
+```
+
+```{r image-subset, fig.height=8, fig.width=9}
+image(mse, mz=c(1200, 1227), subset=circle)
+```
+
+Multiplicative variance in spectral intensities can cause images to be noisy and dark due to hot spots.
+
+Often, images may require some type of processing and enhancement to improve interpretation.
+
+```{r image-smooth, fig.height=4, fig.width=9}
+image(mse, mz=1200, smooth.image="gaussian")
+```
+
+```{r image-contrast, fig.height=4, fig.width=9}
+image(mse, mz=1200, contrast.enhance="histogram")
+```
+
+The default `viridis` colorscale is chosen to enable ease of interpretation. However, other colorscales can be chosen. All colorscales from the `viridisLite` package are available in *Cardinal*, including `cividis`, `magma`, `inferno`, and `plasma`.
+
+The `magma` colorscale is used below with a different dataset.
+
+```{r image-colorscale, fig.height=4, fig.width=9}
+image(mse2, mz=1136, colorscale=magma)
+```
+*Cardinal* will try to choose an appropriate layout for the images. However, a user-defined one can be specified by `layout`. Use `layout=NULL` to use the current plotting device as-is.
+
+```{r image-layout, fig.height=2, fig.width=9}
+image(mse2, mz=c(781, 1361), layout=c(1,4), colorscale=magma)
+```
+Multiple images can be superposed with `superpose=TRUE`. Use `normalize.image="linear"` to normalize all images to the same intensity range.
+
+```{r image-superpose, fig.height=4, fig.width=9}
+image(mse2, mz=c(781, 1361), superpose=TRUE, normalize.image="linear")
+```
+
+Like `plot()`, a formula can be specified. The LHS should specify one or more elements of `imageData()` and the RHS should specify two to three variables from `pixelData()`.
+
+```{r image-formula, fig.height=4, fig.width=9}
+image(mse2, log1p(intensity) ~ x * y, mz=1136, colorscale=magma)
+```
+
+## Region-of-interest selection
+
+Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run. Otherwise, the form of `selectROI()` is the same as `image()`.
+
+```{r select-ROI, eval=FALSE}
+sampleA <- selectROI(mse, ms=1200, subset=run(mse) == "run0")
+sampleB <- selectROI(mse, ms=1200, subset=run(mse) == "run1")
+```
+`selectROI()` returns a logical vector specifying which pixels from the imaging experiment are contained in the selected region.
+
+`makeFactor()` can then be used to combine multiple logical vectors (e.g., form `selectROI()`) into a single factor.
+
+```{r makeFactor, eval=FALSE}
+regions <- makeFactor(A=sampleA, B=sampleB)
+```
+
+## Dark themes
+
+While many software for MS imaging data use a light-on-dark theme, *Cardinal* uses a transparent background by default. However, a dark theme is also provided through `darkmode()`.
+
+```{r dark-mode-1, fig.height=4, fig.width=9}
+darkmode()
+image(mse, mz=1200)
+```
+
+```{r dark-mode-2, fig.height=4, fig.width=9}
+darkmode()
+image(mse2, mz=1135, colorscale=magma)
+```
+Any future plots on the current device will use the new mode. The default mode can be restored to the current device with `lightmode()`.
+
+```{r light-mode}
+lightmode()
+```
+
+
+
+
+
+
+# Common operations on `MSImagingExperiment`
+
+## Subsetting
+
+`MSImagingExperiment` are matrix-like objects that can be subsetted using the `[` operator.
+
+When subsetting, the "rows" are the mass features, and the "columns" are the pixels.
+
+```{r subset-1}
+# subset first 10 mass features and first 5 pixels
+mse[1:10, 1:5]
+```
+
+Subsetting the dataset this way requires knowing the desired row and column indices.
+
+`features()` returns row indices based on specified feature metadata.
+
+```{r features}
+# get row index corresponding to m/z 1200
+features(mse, mz=1200)
+
+# get row indices corresponding to m/z 1199 - 1201
+features(mse, 1199 < mz & mz < 1201)
+```
+
+`pixels()` returns column indices based on specified pixel metadata.
+
+```{r pixels}
+# get column indices corresponding to x = 10, y = 10 in all runs
+pixels(mse, coord=list(x=10, y=10))
+
+# get column indices corresponding to x <= 3, y <= 10 in "run0"
+pixels(mse, x <= 3, y <= 3, run == "run0")
+```
+
+These methods can be used to determine row/column indices of particular *m/z*-values or pixel coordinates to use for subsetting.
+
+```{r subset-2}
+fid <- features(mse, 1199 < mz & mz < 1201)
+pid <- pixels(mse, x <= 3, y <= 3, run == "run0")
+mse[fid, pid]
+```
+
+## Combining
+
+Like matrices and data frames, `rbind()` and `cbind()` can be used to combine multiple `MSImagingExperiment` objects by "row" or "column", assumping certain conditions are met.
+
+Use `cbind()` to combine datasets from different experimental runs. The *m/z*-values must match between all datasets to succesfully combine them.
+
+```{r cbind-divide}
+# divide dataset into separate objects for each run
+mse_run0 <- mse[,run(mse) == "run0"]
+mse_run1 <- mse[,run(mse) == "run1"]
+mse_run0
+mse_run1
+```
+
+```{r cbind-recombine}
+# recombine the separate datasets back together
+mse_cbind <- cbind(mse_run0, mse_run1)
+mse_cbind
+```
+
+Some processing may be necessary to ensure datasets are compatible before combining them.
+
+## Getters and setters
+
+Most components of an `MSImagingExperiment` that can be accessed through getter functions like `pixelData()`, `featureData()`, and `imageData()`, can also be re-assigned with analogous setter functions.
+
+These can likewise be used to get and set columns of the pixel and feature metadata.
+
+Note that `pData()` and `fData()` are aliases for `pixelData()` and `featureData()`, respectively.
+
+```{r pData-set}
+pData(mse)$region <- makeFactor(circle=pData(mse)$circle,
+										bg=!pData(mse)$circle)
+pData(mse)
+```
+
+`iData()` can be used to access elements of the `imageData()` list by name or index.
+
+Using `iData()` with no arguments besides the dataset will get or set the first element of `imageData()`.
+
+```{r iData-set}
+iData(mse, "log2intensity") <- log2(iData(mse) + 1)
+imageData(mse)
+```
+
+For `MSImagingExperiment`, `spectra()` is an alias for `iData()`.
+
+```{r spectra-get}
+spectra(mse, "log2intensity")[1:5, 1:5]
+```
+
+## Using *dplyr* verbs
+
+The *dplyr* package introduced popular verbs for manipulating data, and promoted widespread adoption of the expressive `%>%` piping operator used for chaining verbs together.
+
+*Cardinal 2* implements the verbs *dplyr* `filter()`, `select()`, `mutate()`, and `summarize()` for `MSImagingExperiment` objects.
+
+- `filter()` subsets an `MSImagingExperiment` by row, i.e., mass features
+
+- `select()` subsets an `MSImagingExperiment` by column, i.e., pixels
+
+- `mutate()` adds a pixel metadata column to an `MSImagingExperiment`
+
+- `summarize()` summarizes an `MSImagingExperiment` by either feature or pixel
+
+The `%>%` operator can be used to chain these operations together. For file-based data, the subsetting should be quick, as only metadata is modified.
+
+```{r dplyr, eval=FALSE}
+# filter mass range
+filter(mse, mz > 700, mz < 900)
+
+# select pixels
+select(mse, x <= 3, y <= 3, run == "run0")
+
+# chain verbs together
+mse %>%
+	filter(mz < 1000) %>%
+	select(x == 10, y == 10)
+
+# calculate mean spectrum
+summarize(mse, mean(.), .by="feature")
+
+# calculate tic
+summarize(mse, tic=sum(.), .by="pixel")
+
+# calculate mean spectrum of circle region
+mse %>%
+	select(region == "circle") %>%
+	summarize(mean(.))
+```
+
+
+
+
+
+
+# Pre-processing
+
+A major change in *Cardinal 2* from earlier versions is how pre-processing is handled.
+
+Instead of applying pre-processing immediately, each pre-processing step is queued to the dataset, and only applied once `process()` is called.
+
+This approach is more computationally and memory efficient in most cases, as ideally each spectrum is only processed once, and no extraneous copies of the data are made.
+
+## Delayed processing with `process()`
+
+On its own, the `process()` method queues a new pre-processing function, and then applies all currently queued processing functions.
+
+For example, the following code applies very basic total-ion-current (TIC) normalization to all spectra.
+
+```{r process-1}
+mse_tic <- process(mse, function(x) length(x) * x / sum(x), label="norm")
+mse_tic
+```
+
+By default, this is applied immediately. However, `delay=TRUE` delays this, and allows us to queue multiple pre-processing functions at once.
+
+```{r process-2}
+mse_pre <- mse %>%
+	process(function(x) length(x) * x / sum(x), label="norm", delay=TRUE) %>%
+	process(function(x) signal::sgolayfilt(x), label="smooth", delay=TRUE)
+
+processingData(mse_pre)
+```
+
+We can view all pending and completed pre-processing steps in more detail.
+
+```{r process-3}
+mcols(processingData(mse_pre))[,-1]
+```
+
+Calling `process()` on the dataset again without any other arguments will apply all queued pre-processing steps.
+
+```{r process-4}
+mse_proc <- process(mse_pre)
+mse_proc
+```
+
+Note that subsetting retains any queued pre-processing steps.
+
+```{r process-5}
+mse_pre %>%
+	select(x <= 3, y <= 3) %>%
+	filter(mz <= 1000) %>%
+	process()
+```
+
+All pre-processing methods for `MSImagingExperiment` queue delayed processing by default.
+
+If this is not desired, you can set `options(Cardinal.delay=FALSE)` to apply all pre-processing steps immediately.
+
+## Normalization
+
+Use `normalize()` to queue normalization to an `MSImagingExperiment`.
+
+```{r normalize}
+mse_pre <- normalize(mse, method="tic")
+```
+
+- `method="tic"` performs total-ion-current (TIC) normalization
+
+- `method="rms"` performs root-mean-square (RMS) normalization
+
+- `method="reference"` normalizes all spectra to a reference feature
+
+TIC normalization is one of the most common normalization methods for mass spectrometry imaging. For comparison between datasets, TIC normalization requires that all spectra are the same length. RMS normalization is more appropriate when spectra are of different lengths.
+
+Normalization to a reference is the most reliable form of normalization, but is only possible when the experiment contains a known reference peak with a constant abundance throughout the dataset. This is often not possible in unsupervised and exploratory analyses.
+
+## Spectral smoothing
+
+Use `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
+
+```{r smoothSignal-plot, fig.height=7, fig.width=9, results='hide'}
+mse %>% smoothSignal(method="gaussian") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE,
+			par=list(main="Gaussian smoothing", layout=c(3,1)))
+
+mse %>% smoothSignal(method="ma") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE, par=list(main="Moving average smoothing"))
+
+mse %>% smoothSignal(method="sgolay") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE, par=list(main="Savitzky-Golay smoothing"))
+```
+
+```{r smoothSignal}
+mse_pre <- smoothSignal(mse_pre, method="gaussian")
+```
+
+- `method="gaussian"` performs smoothing with a Gaussian kernel
+
+- `method="ma"` performs moving average smoothing
+
+- `method="sgolay"` applies a Savitzky-Golay smoothing filter
+
+## Baseline correction
+
+Use `reduceBaseline()` to queue baseline correction to an `MSImagingExperiment`.
+
+```{r reduceBaseline-plot, fig.height=5, fig.width=9, results='hide'}
+mse %>% reduceBaseline(method="median") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE,
+			par=list(main="Median interpolation", layout=c(2,1)))
+
+mse %>% reduceBaseline(method="locmin") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE, par=list(main="Local minima"))
+```
+
+```{r reduceBaseline}
+mse_pre <- reduceBaseline(mse_pre, method="median")
+```
+
+- `method="median"` splits a spectrum into blocks and interpolates from binned medians
+
+- `method="locmin"` interpolates a baseline from local minima
+
+## Peak processing
+
+Peak processing encompasses multiple steps, including (1) picking peaks, (2) aligning peaks, (3) filtering peaks, and (4) binning profile spectra to the detected peaks.
+
+Prior to peak detection is a good time to apply the previous processing steps.
+
+```{r process-mse, eval=FALSE}
+mse_pre <- process(mse_pre)
+```
+
+(This is optional, and not necessary if only the peaks are desired, and if it is acceptable to have peaks with intensities of zero in pixels where that peak was not detected.)
+
+### Peak picking
+
+Use `peakPick()` to queue peak picking to an `MSImagingExperiment`.
+
+```{r peakPick-plot, fig.height=7, fig.width=9, results='hide'}
+mse_pre %>% select(x==10, y==10, run=="run0") %>%
+	process() %>%
+	peakPick(method="simple") %>%
+	process(plot=TRUE,
+			par=list(main="Simple SD noise", layout=c(3,1)))
+
+mse_pre %>% select(x==10, y==10, run=="run0") %>%
+	process() %>%
+	peakPick(method="adaptive") %>%
+	process(plot=TRUE, par=list(main="Adaptive SD noise"))
+
+mse_pre %>% select(x==10, y==10, run=="run0") %>%
+	process() %>%
+	peakPick(method="mad") %>%
+	process(plot=TRUE, par=list(main="Adaptive MAD noise"))
+```
+
+```{r peakPick}
+mse_peaks <- peakPick(mse_pre, method="simple")
+```
+
+- `method="simple"` calculates a constant noise from standard deviations of low-kurtosis bins
+
+- `method="adaptive"` calculates adaptive noise from standard deviations of low-kurtosis bins
+
+- `method="mad"` calculates adaptive noise from interpolating local mean absolute deviations
+
+### Peak alignment
+
+Use `peakAlign()` to queue peak alignment to an `MSImagingExperiment`.
+
+```{r peakAlign}
+mse_peaks <- peakAlign(mse_pre, tolerance=200, units="ppm")
+```
+
+Peaks are matched based on proximity of their *m/z*-values, according to `tolerance`, in either parts-per-millin ("ppm") or absolute ("mz") `units`.
+
+The *m/z*-values of known reference peaks can be provided. If no reference is provided, the mean spectrum is calculated, and the local maxima of the mean spectrum are used as the reference.
+
+### Peak filtering
+
+Use `peakFilter()` to queue peak filtering to an `MSImagingExperiment`.
+
+```{r peakFilter}
+mse_peaks <- peakAlign(mse_pre, freq.min=0.05)
+```
+
+The proportions of pixels where a peak was detected at each *m/z*-value are calculated. Only peaks with frequencies greater than `freq.min` are retained.
+
+### Peak binning
+
+Use `peakBin()` to queue binning of spectra to reference peaks.
+
+Typically, this is applied to processed profile spectra after peak detection, to extract a more accuracy representation of the peak intensities.
+
+```{r peakBin, eval=FALSE}
+mse_peaks <- process(mse_peaks)
+mse_peaks <- peakBin(mse_pre, ref=mz(mse_peaks), type="height")
+mse_peaks <- mse_peaks %>% process()
+```
+
+A `tolerance` in either parts-per-million ("ppm") or absolute ("mz") `units` is used to match the reference peaks to local maxima in each spectrum.
+
+The peak is then expanded to the nearest local minima in both directions. The intensity of the peak is then summarized either by the maximum intensity (`type="height")` or sum of intensities (`type="area")`.
+
+Rather than use the *m/z*-values of the detected peaks, we can also use known reference peaks (in this case, from the design of the simulated data).
+
+```{r peakBin-2, fig.height=3, fig.width=9}
+mzref <- mz(metadata(mse)$design$featureData)
+mse_peaks <- peakBin(mse_pre, ref=mzref, type="height")
+mse_peaks <- mse_peaks %>% select(x %in% 9:11, y %in% 9:11) %>% process()
+plot(mse_peaks, coord=list(x=10, y=10))
+```
+
+We typically recommend binning the processed profile spectra to detected or reference peaks to produce centroided spectra suitable for downstream analysis.
+
+It is possible to use the detected and aligned peaks directly (after applying `peakAlign()` and `peakFilter()`), but pixels where a peak was not detected will have zero intensities for those peaks. Moreover, all peak intensities will be the peak heights, even when peak areas may be desired instead. However, using the detected peaks directly does mean that there is no need to calculate and store the processed profile spectra, so this saves on storage space.
+
+Generally, it is preferable and more accurate to bin the processed profile spectra to the detected peaks whenever possible and reasonable.
+
+## Mass alignment
+
+Although peak alignment and peak binning will generally account for small differences in *m/z* between spectra, alignment of the profile spectra is sometimes desireable as well.
+
+Use `mzAlign()` to queue alignment of spectra so that peaks will have a consistent *m/z*-value.
+
+First, we need to simulate spectra that are in need of calibration.
+
+```{r unaligned-spectra, fig.height=3, fig.width=9}
+set.seed(2020)
+mse4 <- simulateImage(preset=1, npeaks=10, from=500, to=600,
+							sdmz=750, units="ppm")
+
+plot(mse4, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
+```
+
+If no reference spectrum is provided, the mean spectrum is calculated and used as the reference.
+
+```{r mzAlign, fig.height=3, fig.width=9}
+mse4_align <- mzAlign(mse4, tolerance=2000, units="ppm")
+mse4_align <- process(mse4_align)
+plot(mse4_align, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
+```
+
+The algorithm will try to match the most intense peaks in the reference to local maxima in each spectrum, within `tolerance`. If `tolerance` is too small, the matching local maxima may not be found. If `tolerance` is too large, then peaks may be matched to the wrong local maxima.
+
+This method is still experimental and under development.
+
+## Mass binning
+
+While the *m/z* binning scheme of `MSProcessedImagingExperiment` objects can be adjusted on-the-fly, this does not apply to other types of `MSImagingExperiment`.
+
+Use `mzBin()` to queue binning of spectra to new *m/z*-values.
+
+```{r mzBin, fig.height=3, fig.width=9}
+mse_bin <- mzBin(mse_pre, from=1000, to=1600, resolution=400, units="ppm")
+mse_bin <- select(mse_bin, x %in% 9:11, y %in% 9:11) %>% process()
+plot(mse_bin, coord=list(x=10, y=10))
+```
+
+This is useful if you need to combine datasets with different *m/z*-values.
+
+## Example processing workflow
+
+Delayed pre-processing makes it easy to chain together multiple pre-processing steps with the `%>%` operator, and then apply them all at once.
+
+```{r process-workflow, fig.height=5, fig.width=9, results='hide'}
+mse_proc <- mse %>%
+	normalize() %>%
+	smoothSignal() %>%
+	reduceBaseline() %>%
+	peakPick()
+
+# preview processing
+mse_proc %>%
+	select(x == 10, y == 10, run == "run0") %>%
+	process(plot=TRUE, par=list(layout=c(2,2)))
+```
+
+```{r process-workflow-2, eval=FALSE}
+# process detected peaks
+mse_peakref <- mse %>%
+	peakAlign() %>%
+	peakFilter() %>%
+	process()
+
+# bin profile spectra to peaks
+mse_peaks <- mse %>%
+	normalize() %>%
+	smoothSignal() %>%
+	reduceBaseline() %>%
+	peakBin(mz(mse_peakref))
+```
+
+
+
+
+
+
+
+
+# Advanced operations on `MSImagingExperiment`
+
+Internally, most methods that iterate over pixels or mass features use some combination of `pixelApply()`, `featureApply()`, and `spatialApply()`.
+
+While `summarize()` is useful for summarizing a `MSImagingExperiment`, it is limited in that it can only apply summary functions that return a single value, which can be simplified into the columns of a `MassDataFrame` or `PositionDataFrame`.
+
+By contrast, these functions (like `apply()` and `lapply()`) can return any value.
+
+## Using `pixelApply()` and `featureApply()`
+
+`pixelApply()` is used to apply functions over pixels.
+
+```{r pixelApply, fig.height=4, fig.width=9}
+# calculate the TIC for every pixel
+tic <- pixelApply(mse, sum)
+
+image(mse, tic ~ x * y)
+```
+
+`featureApply()` is used to apply functions over features.
+
+```{r featureApply, fig.height=3, fig.width=9}
+# calculate the mean spectrum
+smean <- featureApply(mse, mean)
+
+plot(mse, smean ~ mz)
+```
+
+## Using `spatialApply()`
+
+`spatialApply()` is used to iterate over spatial neighborhoods of an imaging experiment.
+
+Rather than vectors, it operates on matrices, where each column is a mass spectrum from a different pixel in the neighborhood.
+
+```{r spatialApply, fig.height=4, fig.width=9}
+# calculate a spatially-smoothed TIC
+sptic <- spatialApply(mse, .r=1, .fun=mean)
+
+image(mse, sptic ~ x * y)
+```
+
+See `?spatialApply` for more details on attributes that are made available to the calling function (e.g., information about the neighborhood offsets, center pixel, etc.).
+
+
+
+
+
+
+
+
+# Parallel computing using *BiocParallel*
+
+All pre-processing methods and most statistical analysis methods in *Cardinal 2* can be executed in parallel using *BiocParallel*.
+
+__If your R session hangs inexplicably, try using `register(SerialParam())` to run the code serially instead.__
+
+## Using `BPPARAM`
+
+Any method that supports parallelization includes `BPPARAM` as an argument (see method documentation). The `BPPARAM` argument can be used to specify a parallel backend for the operation, such as `SerialParam()`, `MulticoreParam()`, `SnowParam()`, etc.
+
+```{r eval=FALSE}
+# run serially, rather than in parallel
+tic <- pixelApply(mse, sum, BPPARAM=SerialParam())
+```
+
+## Registering a parallel backend
+
+Registered backends can be viewed with `registered()`.
+
+```{r registered}
+registered()
+```
+
+A backend can be registered with `register()` to be used as the default backend from then on.
+
+```{r register, eval=FALSE}
+# register a SNOW backend
+register(SnowParam())
+```
+
+Note that not all backends are available on all systems. (For example, `MulticoreParam()` is only available on macOS and Linux.)
+
+See the *BiocParallel* package documentation for more details on available parallel backends.
+
+## RNG and reproducibility
+
+For methods that rely on random number generation to be reproducible when run in parallel, the RNG must be set to "L'Ecuyer-CMRG" before setting a seed.
+
+```{r RNGkind, eval=FALSE}
+RNGkind("L'Ecuyer-CMRG")
+set.seed(1)
+```
+
+
+
+# Session information
+
+```{r session-info}
+sessionInfo()
+```
+
+
+

@@ -22,7 +22,7 @@
     plot = FALSE)
 
 ## Interpolated median baseline reduction
-reduceBaseline.median(x, blocks=500, fun=min, spar=1, \dots)
+reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
 
 ## Local minima baseline reduction
 reduceBaseline.locmin(x, window=5, \dots)

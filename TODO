@@ -3,6 +3,8 @@ TODO for Cardinal package
 -------------------------
  
 - Update vignettes
+- Add colocalized() methods
+- Add collect() or pull() methods (?)
 - Multimodal image registration (w/ optical images, etc.)
 - Add ggplot2 and lattice graphics engine options (?)
 - Shiny GUI

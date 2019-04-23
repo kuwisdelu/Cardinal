@@ -59,13 +59,17 @@ mzAlign_fun <- function(tol, span, quantile) {
 		mz.ref <- mz[max.ref]
 		i <- bsearch(mz.ref, mz.test, tol=tol, tol.ref=tol.ref)
 		found <- !is.na(i)
+		if ( sum(found) < 1 ) {
+			.warning("no matching peaks found; try a larger tolerance")
+			return(x)
+		}
 		mz.ref <- mz.ref[found]
 		i <- i[found]
 		mz.test <- mz.test[i]
 		diff <- mz.ref - mz.test
 		mz.test <- c(mz[1], mz.test, mz[length(mz)])
 		diff <- c(diff[1], diff, diff[length(diff)])
-		shift <- loess(diff ~ mz.test, span=span)
+		shift <- suppressWarnings(loess(diff ~ mz.test, span=span))
 		dmz <- predict(shift, mz)
 		warp <- splinefun(mz + dmz, x)
 		s <- pmax(warp(mz), 0)

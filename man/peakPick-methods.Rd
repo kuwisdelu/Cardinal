@@ -16,21 +16,21 @@
 	Apply peak picking to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakPick}{MSImagingExperiment}(object, method = c("mad", "simple", "adaptive"), \dots)
+\S4method{peakPick}{MSImagingExperiment}(object, method = c("simple", "adaptive", "mad"), \dots)
 
 \S4method{peakPick}{MSImageSet}(object, method = c("simple", "adaptive", "limpic"),
     \dots,
     pixel = pixels(object),
     plot = FALSE)
 
-## Local maxima and SNR with noise based on local MAD
-peakPick.mad(x, SNR=6, window=5, blocks=100, \dots)
-
 ## Local maxima and SNR with constant noise based on SD
 peakPick.simple(x, SNR=6, window=5, blocks=100, \dots)
 
 ## Local maxima and SNR with adaptive noise based on SD
 peakPick.adaptive(x, SNR=6, window=5, blocks=100, spar=1, \dots)
+
+## Local maxima and SNR with noise based on local MAD
+peakPick.mad(x, SNR=6, window=5, blocks=100, \dots)
 
 ## LIMPIC peak detection
 peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)

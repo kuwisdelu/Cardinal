@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 2.1.18 [2019-4-23]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated 'Cardinal 2: User guide' vignette
+
+BUG FIXES
+
+    o Fixed bug in 'simulateSpectrum' when n > 1
+
 CHANGES IN VERSION 2.1.17 [2019-4-22]
 -----------------------------------
 
