@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("processing 2")
 
-options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
+options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 
 register(SerialParam())
 
@@ -55,7 +55,11 @@ test_that("pre-processing 2", {
 
 	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=1, units="mz") %>% process()
 
+	expect_true(validObject(data_p))
+
 	data_b <- mzBin(tmp3, to=800, resolution=400, units="ppm") %>% process()
+
+	expect_true(validObject(data_b))
 
 })
 

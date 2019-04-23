@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("stats 2")
 
-options(Cardinal.progress=interactive(), Cardinal.verbose=interactive())
+options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 
 register(SerialParam())
 
