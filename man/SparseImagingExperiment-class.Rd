@@ -31,6 +31,7 @@
 \alias{cbind,SparseImagingExperiment-method}
 \alias{rbind,SparseImagingExperiment-method}
 \alias{combine,SparseImagingExperiment,ANY-method}
+\alias{collect,SparseImagingExperiment-method}
 
 \title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 
@@ -99,6 +100,8 @@ SparseImagingExperiment(
         \item{\code{processingData(object)}, \code{processingData(object) <- value}:}{Get or set the \code{processing} slot.}
 
         \item{\code{preproc(object)}:}{List the preprocessing steps queued and applied to the dataset.}
+
+        \item{\code{collect(object)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
 
         \item{\code{object[i, j, ..., drop]}:}{Subset based on the rows (\code{featureData}) and the columns (\code{pixelData}). The result is the same class as the original object.}
 

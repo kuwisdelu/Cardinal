@@ -7,6 +7,12 @@ setMethod("summarize", "DataFrame",
 		summarize(as(.data, "XDataFrame"), ...)
 	})
 
+setMethod("summarize", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		summarize(as.data.frame(.data), ...)
+	})
+
 setMethod("summarize", "XDataFrame",
 	function(.data, ...)
 	{

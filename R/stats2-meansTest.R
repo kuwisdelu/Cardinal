@@ -50,8 +50,8 @@ setMethod("meansTest", "SparseImagingExperiment",
 		out
 	})
 
-.meansTest_LRT <- function(object) {
-	tests <- lapply(resultData(object), function(res) {
+.meansTest_LRT <- function(object, BPPARAM) {
+	tests <- bplapply(resultData(object), function(res) {
 		data <- res$data
 		full <- res$model
 		if ( inherits(full, "lm") ) {
@@ -73,7 +73,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 			LR <- NULL
 		}
 		list(LR=LR, DF=df, PValue=PValue)
-	})
+	}, BPPARAM=BPPARAM)
 	LR <- sapply(tests, function(tt) {
 		if ( is.null(tt) ) {
 			NA_real_

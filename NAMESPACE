@@ -75,7 +75,8 @@ importFrom("dplyr",
 	"group_by",
 	"ungroup",
 	"groups",
-	"grouped_df")
+	"grouped_df",
+	"collect")
 
 importFrom("magrittr",
 	"%>%")
@@ -472,7 +473,9 @@ exportMethods("selectROI")
 
 export("makeFactor")
 
-exportMethods("coregister")
+exportMethods(
+	"colocalized",
+	"coregister")
 
 exportMethods(
 	"PCA",
@@ -497,7 +500,8 @@ exportMethods(
 	"arrange",
 	"group_by",
 	"ungroup",
-	"groups")
+	"groups",
+	"collect")
 
 export(
 	"viridis",

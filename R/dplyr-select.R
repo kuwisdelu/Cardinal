@@ -7,6 +7,12 @@ setMethod("select", "DataFrame",
 		select(as(.data, "XDataFrame"), ...)
 	})
 
+setMethod("select", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		select(as.data.frame(.data), ...)
+	})
+
 setMethod("select", "XDataFrame",
 	function(.data, ...)
 	{

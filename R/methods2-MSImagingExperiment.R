@@ -324,6 +324,19 @@ setMethod("cbind", "MSImagingExperiment",
     }
 )
 
+## pull data into memory
+
+setMethod("collect", "MSImagingExperiment",
+	function(x, ...)
+	{
+		x <- as(x, "MSImagingExperiment")
+		data <- as(imageData(x), "SimpleList", strict=FALSE)
+		imageData(x) <- as(endoapply(data, as.matrix), "MSContinuousImagingSpectraList")
+		class(x) <- "MSContinuousImagingExperiment"
+		if ( validObject(x) )
+			x
+	})
+
 ## coerce to/from MSImagingExperiment subclasses
 
 setAs("MSImagingExperiment", "MSContinuousImagingExperiment",

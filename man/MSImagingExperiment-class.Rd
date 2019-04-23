@@ -28,6 +28,7 @@
 \alias{features,MSImagingExperiment-method}
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
+\alias{collect,MSImagingExperiment-method}
 
 \title{MSImagingExperiment: Mass spectrometry imaging experiments}
 

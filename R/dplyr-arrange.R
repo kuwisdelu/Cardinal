@@ -4,7 +4,13 @@
 setMethod("arrange", "DataFrame",
 	function(.data, ...)
 	{
-		select(as(.data, "XDataFrame"), ...)
+		arrange(as(.data, "XDataFrame"), ...)
+	})
+
+setMethod("arrange", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		arrange(as.data.frame(.data), ...)
 	})
 
 setMethod("arrange", "XDataFrame",

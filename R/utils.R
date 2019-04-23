@@ -140,8 +140,11 @@ is.min <- function(x) {
 }
 
 # Match score between two logical vectors
-Mscore <- function(a, b) {
-	sum(a & b, na.rm=TRUE) / sum(a | b, na.rm=TRUE)
+Mscore <- function(a, b, type=3) {
+	switch(type,
+		sum(a & b, na.rm=TRUE) / sum(a, na.rm=TRUE),
+		sum(a & b, na.rm=TRUE) / sum(b, na.rm=TRUE),
+		sum(a & b, na.rm=TRUE) / sum(a | b, na.rm=TRUE))
 }
 
 # Bin a signal

@@ -7,6 +7,12 @@ setMethod("mutate", "DataFrame",
 		mutate(as(.data, "XDataFrame"), ...)
 	})
 
+setMethod("mutate", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		mutate(as.data.frame(.data), ...)
+	})
+
 setMethod("mutate", "XDataFrame",
 	function(.data, ...)
 	{

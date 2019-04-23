@@ -195,10 +195,10 @@ setMethod("summary", "SpatialDGMM",
 	})
 
 setMethod("summary", "MeansTest",
-	function(object, ...)
+	function(object, ..., BPPARAM = bpparam())
 	{
 		groups <- pixelData(object)$..group..
-		lrt <- .meansTest_LRT(object)
+		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)
 		if ( nlevels(groups) > 1L ) {
 			description <- paste0("\n Summarized ",
 				.spaste("%d groups: %s", levels(groups)))
@@ -224,10 +224,10 @@ setMethod("summary", "MeansTest",
 	})
 
 setMethod("summary", "SegmentationTest",
-	function(object, ...)
+	function(object, ..., BPPARAM = bpparam())
 	{
 		groups <- pixelData(object)$..group..
-		lrt <- .meansTest_LRT(object)
+		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)
 		if ( nlevels(groups) > 1L ) {
 			description <- paste0("\n Summarized ",
 				.spaste("%d groups: %s", levels(groups)))

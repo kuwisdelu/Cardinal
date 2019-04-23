@@ -213,6 +213,17 @@ setMethod("cbind", "SparseImagingExperiment",
 setMethod("combine", "SparseImagingExperiment",
 	function(x, y, ...) cbind(x, y, ...))
 
+## pull data into memory
+
+setMethod("collect", "SparseImagingExperiment",
+	function(x, ...)
+	{
+		data <- as(imageData(x), "SimpleList", strict=FALSE)
+		imageData(x) <- as(endoapply(data, as.matrix), class(imageData(x)))
+		if ( validObject(x) )
+			x
+	})
+
 ## show
 
 setMethod("show", "SparseImagingExperiment",

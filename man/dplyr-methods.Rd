@@ -13,6 +13,12 @@
 \alias{summarize,DataFrame-method}
 \alias{group_by,DataFrame-method}
 
+\alias{filter,SummaryDataFrame-method}
+\alias{select,SummaryDataFrame-method}
+\alias{mutate,SummaryDataFrame-method}
+\alias{arrange,SummaryDataFrame-method}
+\alias{summarize,SummaryDataFrame-method}
+
 \alias{filter,XDataFrame-method}
 \alias{select,XDataFrame-method}
 \alias{mutate,XDataFrame-method}

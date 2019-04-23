@@ -33,7 +33,7 @@ setMethod("topFeatures", "SpatialShrunkenCentroids2",
 		if ( is.finite(n) )
 			order <- head(order, n=n)
 		out <- out[order,,drop=FALSE]
-		SummaryDataFrame(as.list(out),
+		SummaryDataFrame(as.list(out), .rownumbers=TRUE,
 			.summary="Top-ranked features:")
 	})
 
@@ -55,7 +55,7 @@ setMethod("topFeatures", "MeansTest",
 		if ( is.finite(n) )
 			order <- head(order, n=n)
 		out <- out[order,,drop=FALSE]
-		SummaryDataFrame(as.list(out),
+		SummaryDataFrame(as.list(out), .rownumbers=TRUE,
 			.summary=paste0("Top-ranked tests: ", contrast))
 	})
 
@@ -84,7 +84,7 @@ setMethod("topFeatures", "SegmentationTest",
 		if ( is.finite(n) )
 			order <- head(order, n=n)
 		out <- out[order,,drop=FALSE]
-		SummaryDataFrame(as.list(out),
+		SummaryDataFrame(as.list(out), .rownumbers=TRUE,
 			.summary=paste0("Top-ranked tests: ", contrast))
 	})
 

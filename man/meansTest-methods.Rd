@@ -31,11 +31,12 @@
         BPPARAM = bpparam(), \dots)
 
 \S4method{segmentationTest}{SpatialDGMM}(x, fixed, random, model = modelData(x),
-        classControl = c("Mscore", "Ymax"), ...)
+        classControl = c("Mscore", "Ymax"),
+        BPPARAM = bpparam(), \dots)
 
-\S4method{summary}{MeansTest}(object, \dots)
+\S4method{summary}{MeansTest}(object, \dots, BPPARAM = bpparam())
 
-\S4method{summary}{SegmentationTest}(object, \dots)
+\S4method{summary}{SegmentationTest}(object, \dots, BPPARAM = bpparam())
 }
 \arguments{
     \item{x}{An imaging dataset or segmented/summarized imaging dataset.}

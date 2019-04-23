@@ -19,7 +19,8 @@ setMethod("segmentationTest", "SparseImagingExperiment",
 
 setMethod("segmentationTest", "SpatialDGMM",
 	function(x, fixed, random, model = modelData(x),
-		classControl = c("Mscore", "Ymax"), ...)
+		classControl = c("Mscore", "Ymax"),
+		BPPARAM = bpparam(), ...)
 	{
 		if ( !is.numeric(model) ) {
 			estimates <- names(modelData(x))
@@ -43,10 +44,13 @@ setMethod("segmentationTest", "SpatialDGMM",
 			.stop("at least one variable must be non-numeric")
 		if ( is.character(classControl) ) {
 			classControl <- match.arg(classControl)
-			classControl <- .spatialDGMM_getclasses(x, fc, classControl)
+			classControl <- .segmentationTest_getclasses(x, fc, classControl, BPPARAM=BPPARAM)
 			classControl <- classControl[model]
 		} else {
-			classControl <- .segmentationTest_getclasses(classControl)
+			classControl <- lapply(classControl, function(ctrl) {
+				data.frame(..group..=names(ctrl),
+					..class..=as.character(ctrl))
+			})
 		}
 		if ( missing(random) ) {
 			random <- NULL
@@ -54,8 +58,8 @@ setMethod("segmentationTest", "SpatialDGMM",
 		} else {
 			mixed <- TRUE
 		}
-		fullData <- .segmentationTest_testdata(x)[model]
-		results <- mapply(function(data, ctrl, res) {
+		fullData <- .segmentationTest_testdata(x, BPPARAM=BPPARAM)[model]
+		results <- bpmapply(function(data, ctrl, res) {
 			data <- subset_data(data, ctrl)
 			if ( mixed ) {
 				fit <- try(lme(fixed=fixed, random=random, data=data, ...))
@@ -66,7 +70,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 			mapping <- replace(res$class, !subset, NA_integer_)
 			list(model=fit, data=as(data, "DataFrame"),
 				mapping=droplevels(mapping))
-		}, fullData, classControl, resultData(x), SIMPLIFY=FALSE)
+		}, fullData, classControl, resultData(x), SIMPLIFY=FALSE, BPPARAM=BPPARAM)
 		models <- modelData(x)[model,,drop=FALSE]
 		out <- .SegmentationTest(
 			imageData=.SimpleImageArrayList(),
@@ -85,12 +89,12 @@ setMethod("segmentationTest", "SpatialDGMM",
 		out
 	})
 
-.segmentationTest_testdata <- function(results) {
+.segmentationTest_testdata <- function(results, BPPARAM) {
 	i <- which(names(pData(results)) %in% "..group..")
 	groups <- pData(results)[[i]]
 	pdata <- as.data.frame(pData(results)[,-i,drop=FALSE], slots=FALSE)
 	pdata <- cbind(data.frame(run=run(results)), pdata)
-	lapply(resultData(results), function(res) {
+	bplapply(resultData(results), function(res) {
 		vars <- lapply(names(pdata), function(nm) {
 			newvar <- sapply(levels(res$class), function(ci) {
 				cl <- res$class == ci
@@ -107,20 +111,13 @@ setMethod("segmentationTest", "SpatialDGMM",
 		names(out) <- c("..response..", "..group..", "..class..")
 		out[names(pdata)] <- vars
 		out
-	})
+	}, BPPARAM=BPPARAM)
 }
 
-.segmentationTest_getclasses <- function(control) {
-	lapply(control, function(ctrl) {
-		data.frame(..group..=names(ctrl),
-			..class..=as.character(ctrl))
-	})
-}
-
-.spatialDGMM_getclasses <- function(results, fc, method) {
+.segmentationTest_getclasses <- function(results, fc, control, BPPARAM) {
 	groups <- pixelData(results)$..group..
-	lapply(resultData(results), function(res) {
-		if ( method == "Mscore" ) {
+	bplapply(resultData(results), function(res) {
+		if ( control == "Mscore" ) {
 			out1 <- lapply(fc, function(nm) {
 				f <- pData(results)[[nm]]
 				if ( is.logical(f) ) {
@@ -158,6 +155,6 @@ setMethod("segmentationTest", "SpatialDGMM",
 		score_sums <- rowSums(out[,-c(1,2),drop=FALSE])
 		matches <- tapply(score_sums, out[["..group.."]], is.max)
 		out[unlist(matches),c("..group..", "..class..")]
-	})
+	}, BPPARAM=BPPARAM)
 }
 

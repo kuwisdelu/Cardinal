@@ -7,6 +7,12 @@ setMethod("filter", "DataFrame",
 		filter(as(.data, "XDataFrame"), ..., .preserve=.preserve)
 	})
 
+setMethod("filter", "SummaryDataFrame",
+	function(.data, ..., .preserve = FALSE)
+	{
+		filter(as.data.frame(.data), ..., .preserve=.preserve)
+	})
+
 setMethod("filter", "XDataFrame",
 	function(.data, ..., .preserve = FALSE)
 	{

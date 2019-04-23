@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 2.1.19 [2019-4-23]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'colocalized' method for colocalization
+
 CHANGES IN VERSION 2.1.18 [2019-4-23]
 -----------------------------------
 
