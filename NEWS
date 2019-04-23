@@ -1,4 +1,22 @@
 
+CHANGES IN VERSION 2.1.20 [2019-4-23]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated documentation and simulation examples
+
+BUG FIXES
+
+    o Fixed bug in 'summary' for 'SpatialShrunkenCentroids2'
+
+CHANGES IN VERSION 2.1.19 [2019-4-23]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'colocalized' method for colocalization
+
 CHANGES IN VERSION 2.1.19 [2019-4-23]
 -----------------------------------
 
