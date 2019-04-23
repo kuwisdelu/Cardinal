@@ -80,24 +80,24 @@
 register(SerialParam())
 
 set.seed(1)
-msset <- simulateImage(preset=1, npeaks=9, dim=c(9,9))
+mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 
 # filter features to mass range 1000 - 1500
-filter(msset, 1000 < mz, mz < 1500)
+filter(mse, 1000 < mz, mz < 1500)
 
 # select pixels to coordinates x = 1..3, y = 1..3
-select(msset, x <= 3, y <= 3)
+select(mse, x <= 3, y <= 3)
 
 # summarize mean spectrum
-sm1 <- summarize(msset, .stat="mean")
+sm1 <- summarize(mse, .stat="mean")
 
 # summarize image by TIC
-sm2 <- summarize(msset, .stat=c(tic="sum"), .by="pixel")
+sm2 <- summarize(mse, .stat=c(tic="sum"), .by="pixel")
 
 # add a TIC column
-mutate(msset, tic=sm2$tic)
+mutate(mse, tic=sm2$tic)
 
 # summarize mean spectrum grouped by pixels in/out of circle
-sm3 <- summarize(msset, .stat="mean", .group_by=msset$circle)
+sm3 <- summarize(mse, .stat="mean", .group_by=mse$circle)
 }
 \keyword{manip}

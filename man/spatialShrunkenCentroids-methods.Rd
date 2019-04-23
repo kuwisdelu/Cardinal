@@ -71,21 +71,15 @@
     \item{newy}{Optionally, a new response from which residuals should be calculated.}
 }
 \value{
-    An object of class \code{SpatialShrunkenCentroids}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialShrunkenCentroids2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialShrunkenCentroids}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
-        \item{\code{classes}:}{A factor indicating the predicted class for each pixel in the dataset.}
+        \item{\code{class, classes}:}{A factor indicating the predicted class for each pixel in the dataset.}
+        \item{\code{probability, probabilities}:}{A matrix of class probabilities.}
         \item{\code{centers}:}{A matrix of shrunken class centers.}
-        \item{\code{time}:}{The amount of time the algorithm took to run.}
-        \item{\code{r}:}{The neighborhood spatial smoothing radius.}
-        \item{\code{k}:}{The number of clusters.}
-        \item{\code{s}:}{The sparsity parameter.}
-        \item{\code{method}:}{The type of spatial kernel used.}
+        \item{\code{statistic, tstatistics}:}{A matrix of shrunken t-statistics of the features.}
         \item{\code{scores}:}{A matrix of discriminant scores.}
-        \item{\code{probabilities}:}{A matrix of class probabilities.}
-        \item{\code{tstatistics}:}{A matrix of shrunken t-statistics of the features.}
         \item{\code{sd}:}{The pooled within-class standard deviations for each feature.}
-        \item{\code{iter}:}{The number of iterations performed.}
     }
 }
 \author{
@@ -102,24 +96,17 @@
     \code{\link{spatialKMeans}}
 }
 \examples{
+register(SerialParam())
+
 set.seed(1)
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
-    NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
-    1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
-    1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
-    1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+x <- simulateImage(preset=2, dim=c(10,10), npeaks=10,
+    peakheight=c(4,6,8), representation="centroid")
 
-sset <- generateImage(data, range=c(200, 300), step=1)
+res <- spatialShrunkenCentroids(x, r=1, k=5, s=c(0,3,6), method="adaptive")
 
-clust1 <- spatialShrunkenCentroids(sset, r=c(1,2), k=c(2,3), s=c(0,1), method="gaussian")
+summary(res)
 
-clust2 <- spatialShrunkenCentroids(sset, r=c(1,2), k=c(2,3), s=c(0,1), method="adaptive")
-
-y <- factor(data[!is.na(data)], labels=c("black", "red"))
-
-class1 <- spatialShrunkenCentroids(sset, y, r=c(1,2), s=c(0,1), method="gaussian")
-
-class1 <- spatialShrunkenCentroids(sset, y, r=c(1,2), s=c(0,1), method="adaptive")
+image(res, model=list(s=6))
 }
 
 \keyword{spatial}

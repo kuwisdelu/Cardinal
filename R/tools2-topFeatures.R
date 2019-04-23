@@ -5,7 +5,11 @@ setMethod("topFeatures", "SpatialShrunkenCentroids2",
 	function(object, n = 10, ..., model = modelData(object))
 	{
 		r <- modelData(object)$r
-		k <- modelData(object)$k
+		if ( is.null(modelData(object)$k) ) {
+			k <- nlevels(pData(object)$..response..)
+		} else {
+			k <- modelData(object)$k
+		}
 		s <- modelData(object)$s
 		out <- mapply(function(ri, ki, si, res) {
 			class <- res$class

@@ -89,8 +89,9 @@ peakAlign.DP(x, y, gap=0, \dots)
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
+data <- data[,pData(data)$circle]
 
 # queue peak picking and alignment
 data <- peakPick(data, method="simple", SNR=6)

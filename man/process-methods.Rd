@@ -63,17 +63,18 @@
     \code{\link{peakBin}}
 }
 \examples{
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
- NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
- 1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
- 1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
- 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+register(SerialParam())
 
-set.seed(1)
-msset <- generateImage(data, range=c(1000,5000), centers=c(3000,4000), resolution=100, as="MSImageSet")
+set.seed(2)
+data <- simulateImage(preset=1, dim=c(10,10), baseline=1)
+data_c <- data[,pData(data)$circle]
 
-msset <- as(msset, "MSImagingExperiment")
+tmp <- process(data, function(s) log2(abs(s)))
 
-l2msset <- process(msset, log2, label="log2")
+tmp1 <- process(data, abs, delay=TRUE)
+
+tmp2 <- process(tmp1, log2, delay=TRUE)
+
+process(tmp2)
 }
 \keyword{methods}

@@ -42,7 +42,7 @@
     An object of class \code{SpatialDGMM}, which is a \code{ResultImagingExperiment}, where each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
-        \item{\code{params}:}{A list giving the parameter estimates for the means (mu) and variances (sigma) for each Gaussian component, and the alpha and beta Dirichlet parameters.}
+        \item{\code{estimates}:}{A list giving the parameter estimates for the means and variances for each Gaussian component.}
         \item{\code{class}:}{The predicted Gaussian component.}
         \item{\code{probability}:}{The probability of class membership for each Gaussian component.}
     }
@@ -54,12 +54,17 @@
     Guo, D., Bemis, K., Rawlins, C., Agar, J., and Vitek, O. (2019.) Unsupervised segmentation of mass spectrometric ion images characterizes morphology of tissues. Proceedings of ISMB/ECCB, Basel, Switzerland, 2019.
 }
 \examples{
-set.seed(1)
-x <- simulateImage(preset=3, dim=c(10,10), sdnoise=0.5,
-    npeaks=10, peakheight=c(4,8), peakdiff=4,
-    representation="centroid")
+register(SerialParam())
 
-res <- spatialDGMM(x, r=1, k=5)
+set.seed(2)
+x <- simulateImage(preset=3, dim=c(10,10), npeaks=6,
+    peakheight=c(4,6,8), representation="centroid")
+
+res <- spatialDGMM(x, r=1, k=5, method="adaptive")
+
+summary(res)
+
+image(res, model=list(feature=3))
 }
 
 \keyword{spatial}

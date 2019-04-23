@@ -84,22 +84,17 @@
     \code{\link{spatialShrunkenCentroids}}
 }
 \examples{
+register(SerialParam())
+
 set.seed(1)
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
-    NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
-    1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
-    1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
-    1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
+    snoise=1, sdpeaks=1, representation="centroid")
 
-msset <- generateImage(data, range=c(200, 300), step=1, as="MSImageSet")
+y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
-clust1 <- spatialShrunkenCentroids(msset, r=c(1,2), k=c(2,3), s=c(0,1), method="gaussian")
+res <- spatialShrunkenCentroids(x, y, r=1, s=c(0,3,6))
 
-topFeatures(clust1)
-
-topFeatures(clust1, filter=list(classes=1))
-
-topFeatures(clust1, filter=list(r=1, k=2, s=1))
+topFeatures(res, model=list(s=6))
 }
 
 \keyword{methods}

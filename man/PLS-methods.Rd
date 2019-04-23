@@ -84,34 +84,26 @@
     \item{keep.Xnew}{Should the new data matrix be kept after filtering out the orthogonal variation?}
 }
 \value{
-    An object of class \code{PLS}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{PLS2}, which is a \code{ResultImagingExperiment}, or an object of class \code{PLS}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
 
     \describe{
-        \item{\code{scores}:}{A matrix with the component scores for the explanatary variable.}
+        \item{\code{fitted}:}{The fitted response.}
         \item{\code{loadings}:}{A matrix with the explanatory variable loadings.}
         \item{\code{weights}:}{A matrix with the explanatory variable weights.}
+        \item{\code{scores}:}{A matrix with the component scores for the explanatary variable.}
         \item{\code{Yscores}:}{A matrix objects with the component scores for the response variable.}
         \item{\code{Yweights}:}{A matrix objects with the response variable weights.}
-        \item{\code{projection}:}{The projection matrix.}
         \item{\code{coefficients}:}{The matrix of the regression coefficients.}
-        \item{\code{ncomp}:}{The number of PLS components.}
-        \item{\code{method}:}{The method used to calculate the projection.}
-        \item{\code{center}:}{The center of the dataset. Used for calculating PLS scores on new data.}
-        \item{\code{scale}:}{The scaling factors for the dataset. Used for PLS scores on new data.}
-        \item{\code{Ycenter}:}{The centers of the response variables. Used for predicting new observations.}
-        \item{\code{Yscale}:}{The scaling factors for the response variables. Used for predicting new observation.}
-        \item{\code{fitted}:}{The fitted response.}
     }
 
-    The following components may also be available for \code{OPLS}.
+    The following components may also be available for classes \code{OPLS} and \code{OPLS2}.
 
     \describe{
-        \item{\code{Xnew}:}{A new data matrix that has been filtered of the orthogonal variation.}
-        \item{\code{Xortho}:}{A new data matrix that consists of \emph{only} the orthogonal variation.}
-        \item{\code{Oscores}:}{A matrix with the orthogonal component scores for the explanatary variable.}
         \item{\code{Oloadings}:}{A matrix objects with the orthogonal explanatory variable loadings.}
         \item{\code{Oweights}:}{A matrix with the orthgonal explanatory variable weights.}
     }
+
+    If \code{y} is a categorical variable, then a categorical \code{class} prediction will also be available in addition to the \code{fitted} numeric response.
 }
 \author{
 	Kylie A. Bemis
@@ -124,13 +116,21 @@
     \code{\link{spatialShrunkenCentroids}},
 }
 \examples{
-sset <- generateImage(diag(4), range=c(200, 300), step=1)
+register(SerialParam())
 
-y <- factor(diag(4))
+set.seed(1)
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
+    snoise=1, sdpeaks=1, representation="centroid")
 
-pls <- PLS(sset, y, ncomp=1:2)
+y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
-opls <- OPLS(sset, y, ncomp=1:2)
+pls <- PLS(x, y, ncomp=1:3)
+
+summary(pls)
+
+opls <- OPLS(x, y, ncomp=1:3)
+
+summary(pls)
 }
 \keyword{multivariate}
 \keyword{classif}

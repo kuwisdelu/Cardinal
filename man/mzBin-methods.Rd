@@ -49,14 +49,14 @@
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
-ref <- mz(metadata(data)$design$featureData)
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
+data <- data[,pData(data)$circle]
 
-# queue peak binning
-data <- mzBin(data, ref=ref, fun=max)
+# queue m/z binning
+data <- mzBin(data, resolution=10, units="mz", fun=max)
 
-# apply peak binning
+# apply m/z binning
 data_binned <- process(data, plot=interactive())
 }
 \keyword{methods}

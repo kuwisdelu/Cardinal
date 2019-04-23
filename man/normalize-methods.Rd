@@ -70,8 +70,9 @@ normalize.reference(x, feature, scale=1, \dots)
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=1, npeaks=9, dim=c(3,3))
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
+data <- data[,pData(data)$circle]
 
 # queue normalization
 data <- normalize(data, method="tic")

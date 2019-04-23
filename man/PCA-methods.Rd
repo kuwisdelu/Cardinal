@@ -48,16 +48,12 @@
     \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
 }
 \value{
-    An object of class \code{PCA}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{PCA2}, which is a \code{ResultImagingExperiment}, or an object of class \code{PCA}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
 
     \describe{
-        \item{\code{scores}:}{A matrix with the principal component scores.}
         \item{\code{loadings}:}{A matrix with the principal component loadings.}
+        \item{\code{scores}:}{A matrix with the principal component scores.}
         \item{\code{sdev}:}{The standard deviations of the principal components.}
-        \item{\code{method}:}{The method used to calculate the principal components.}
-        \item{\code{ncomp}:}{The number of principal components calculated.}
-        \item{\code{center}:}{The center of the dataset. Used for calculating principal components scores on new data.}
-        \item{\code{scale}:}{The scaling factors for the dataset. Used for calculating principal components scores on new data.}
     }
 }
 \author{
@@ -70,9 +66,17 @@
     \code{\link{svd}}
 }
 \examples{
-sset <- generateImage(diag(4), range=c(200, 300), step=1)
+register(SerialParam())
 
-pca <- PCA(sset, ncomp=2)
+set.seed(1)
+data <- simulateImage(preset=2, npeaks=20, dim=c(6,6),
+    representation="centroid")
+
+# project to FastMap components
+pca <- PCA(data, ncomp=2)
+
+# visualize first 2 components
+image(pca, superpose=FALSE)
 }
 \keyword{multivariate}
 

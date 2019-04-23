@@ -89,11 +89,12 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
+data <- data[,pData(data)$circle]
 
 # queue peak picking
-data <- peakPick(data, method="mad", SNR=6)
+data <- peakPick(data, method="simple", SNR=6)
 
 # apply peak picking
 data_peaks <- process(data, plot=interactive())

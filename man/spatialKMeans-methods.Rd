@@ -50,17 +50,12 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{SpatialKMeans}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialKMeans2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialKMeans}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{cluster}:}{A vector of integers indicating the cluster for each pixel in the dataset.}
         \item{\code{centers}:}{A matrix of cluster centers.}
-        \item{\code{time}:}{The amount of time the algorithm took to run.}
-        \item{\code{r}:}{The neighborhood spatial smoothing radius.}
-        \item{\code{k}:}{The number of clusters.}
-        \item{\code{method}:}{The method for calculating spatial distances.}
-        \item{\code{weights}:}{The feature weights (defaults to 1s).}
-        \item{\code{fastmap}:}{A list with components giving details of the Fastmap projection.}
+        \item{\code{correlation}:}{A matrix with the feature correlations with each cluster.}
     }
 }
 \author{
@@ -75,18 +70,17 @@
     \code{\link{spatialShrunkenCentroids}}
 }
 \examples{
+register(SerialParam())
+
 set.seed(1)
-data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
-    NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
-    1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
-    1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
-    1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+x <- simulateImage(preset=3, dim=c(10,10), npeaks=10,
+    peakheight=c(4,6,8), representation="centroid")
 
-sset <- generateImage(data, range=c(200, 300), step=1)
+res <- spatialKMeans(x, r=1, k=4, method="adaptive")
 
-clust1 <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="gaussian")
+summary(res)
 
-clust2 <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="adaptive")
+image(res, model=1)
 }
 
 \keyword{spatial}

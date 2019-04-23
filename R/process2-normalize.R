@@ -5,6 +5,11 @@
 setMethod("normalize", "SparseImagingExperiment",
 	function(object, method = c("tic", "rms", "reference"), ...)
 	{
+		if ( is.character(method) && method[1] == "reference" ) {
+			dots <- match.call(expand.dots=FALSE)$...
+			if ( !"feature" %in% names(dots) )
+				.stop("feature must be specified for method = 'reference'")
+		}
 		fun <- normalize.method2(method)
 		object <- process(object, fun=fun, ...,
 			label="normalize", kind="pixel",

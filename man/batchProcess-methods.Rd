@@ -62,14 +62,14 @@
     \code{\link{pixelApply}}
 }
 \examples{
-data <- generateImage(as="MSImageSet")
+data <- generateImage(as="MSImageSet", range=c(2000, 3000))
 
 batchProcess(data, normalize=TRUE, smoothSignal=TRUE,
     reduceBaseline=TRUE, peakPick=TRUE, peakAlign=TRUE,
-    layout=c(2,2), plot=interactive())
+    layout=c(2,2), plot=FALSE)
 
 batchProcess(data, normalize=TRUE,
     reduceBaseline=list(blocks=200), peakPick=list(SNR=12),
-    layout=c(1,3), plot=interactive())
+    layout=c(1,3), plot=FALSE)
 }
 \keyword{methods}

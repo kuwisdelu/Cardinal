@@ -70,8 +70,9 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=3, npeaks=9, dim=c(3,3))
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3), baseline=1)
+data <- data[,pData(data)$circle]
 
 # queue smoothing
 data <- smoothSignal(data, method="ma", window=9)

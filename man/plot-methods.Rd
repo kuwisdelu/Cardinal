@@ -263,11 +263,11 @@
 register(SerialParam())
 
 set.seed(1)
-x <- simulateImage(preset=2, npeaks=9, dim=c(9,9))
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10))
 m <- mz(metadata(x)$design$featureData)
 
-plot(x, pixel=1)
-plot(x, coord=c(x=2, y=2), plusminus=1)
+plot(x, pixel=23)
+plot(x, coord=c(x=3, y=3), plusminus=1)
 plot(x, coord=c(x=3, y=3), groups=mz > 1000)
 plot(x, coord=c(x=7, y=7), superpose=TRUE)
 

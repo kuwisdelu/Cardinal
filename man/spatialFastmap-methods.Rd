@@ -42,16 +42,12 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{SpatialFastmap}, which is a \code{ResultSet}, where each component of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialFastmap2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialFastmap}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{scores}:}{A matrix with the FastMap component scores.}
-        \item{\code{cor}:}{A matrix with the feature correlations with each FastMap projection.}
+        \item{\code{correlation}:}{A matrix with the feature correlations with each FastMap component.}
         \item{\code{sdev}:}{The standard deviations of the FastMap scores.}
-        \item{\code{method}:}{The method used to calculate the spatially-aware weights.}
-        \item{\code{ncomp}:}{The number of FastMap components calculated.}
-        \item{\code{r}:}{The neighborhood spatial smoothing radius.}
-        \item{\code{pivot.array}:}{The pixel IDs of the selected pivot vectors for each FastMap dimension.}
     }
 }
 \author{
@@ -66,14 +62,14 @@
 register(SerialParam())
 
 set.seed(1)
-data <- simulateImage(preset=3, npeaks=9, dim=c(3,3),
+data <- simulateImage(preset=2, npeaks=20, dim=c(6,6),
     representation="centroid")
 
 # project to FastMap components
-fit <- spatialFastmap(data, r=1, ncomp=2)
+fm <- spatialFastmap(data, r=1, ncomp=2, method="adaptive")
 
 # visualize first 2 components
-image(fit, superpose=FALSE)
+image(fm, superpose=FALSE)
 }
 \keyword{spatial}
 

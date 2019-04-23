@@ -151,6 +151,9 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 }
 
 \examples{
+register(SerialParam())
+set.seed(1)
+
 # generate a spectrum
 s <- simulateSpectrum(1)
 plot(intensity ~ mz, data=s, type="l")
@@ -164,12 +167,12 @@ s <- simulateSpectrum(1, peaks=100, resolution=10000)
 plot(intensity ~ mz, data=s, type="l")
 
 # generate an image
-x <- simulateImage(preset=1, npeaks=9, dim=c(9,9))
+x <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 m <- mz(metadata(x)$design$featureData)
 
 image(x, mz=m[5])
 
-plot(x, coord=c(x=2, y=2))
+plot(x, coord=c(x=4, y=4))
 }
 
 \keyword{datagen}

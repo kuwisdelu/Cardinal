@@ -305,18 +305,18 @@
 register(SerialParam())
 
 set.seed(1)
-x <- simulateImage(preset=2, npeaks=9, dim=c(9,9))
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10))
 m <- mz(metadata(x)$design$featureData)
 
 image(x, mz=m[1], plusminus=0.5)
 image(x, mz=m[1], smooth.image="gaussian", contrast.enhance="histogram")
 image(x, mz=m[1], colorscale=col.map("grayscale"))
-image(x, mz=m[4:7])
+image(x, mz=m[4:7], colorscale=col.map("cividis"))
 image(x, mz=m[c(1,8)], normalize.image="linear", superpose=TRUE)
 
 pixelData(x)$tic <- summarize(x, .by="pixel", .stat=c(tic="sum"))$tic
 
-image(x, tic ~ x * y, colorscale=col.map("hot"))
+image(x, tic ~ x * y, colorscale=magma)
 }
 
 \keyword{hplot}

@@ -66,8 +66,9 @@ reduceBaseline.locmin(x, window=5, \dots)
 \examples{
 register(SerialParam())
 
-set.seed(1)
-data <- simulateImage(preset=3, npeaks=9, dim=c(3,3), baseline=2)
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(3,3), baseline=1)
+data <- data[,pData(data)$circle]
 
 # queue baseline reduction
 data <- reduceBaseline(data, method="median", blocks=100)

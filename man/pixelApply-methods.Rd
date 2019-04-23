@@ -150,15 +150,16 @@
     \code{\linkS4class{MSImageSet}}
 }
 \examples{
-data <- matrix(1:256, nrow=4)
-coord <- expand.grid(x=1:4, y=1:4, z=1:4)
-sset <- SImageSet(data=data, coord=coord)
+register(SerialParam())
 
-fData(sset)$flag <- rep(c(TRUE, FALSE), 2)
-pixelApply(sset, max, .feature.groups=flag)
+set.seed(2)
+data <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 
-pData(sset)$flag <- rep(c(TRUE, FALSE), 32)
-featureApply(sset, max, .pixel.groups=flag)
+# calculate TIC for each pixel
+tic <- pixelApply(data, sum)
+
+# calculate mean spectrum
+ms <- featureApply(data, mean)
 }
 \keyword{manip}
 
