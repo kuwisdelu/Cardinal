@@ -17,6 +17,22 @@ While pre-processing steps including normalization, baseline correction, and pea
 Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of common workflows.
 }
 
+
+\section{Options}{
+
+	The following options can be set via \code{options()}.
+
+	\itemize{
+		\item{\code{options(Cardinal.verbose=interactive())}: Should detailed messages be printed?}
+
+		\item{\code{options(Cardinal.progress=interactive())}: Should a progress bar be shown?}
+
+		\item{\code{options(Cardinal.numblocks=20)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
+
+		\item{\code{options(Cardinal.delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
+	}
+}
+
 \author{
 Kylie A. Bemis
 

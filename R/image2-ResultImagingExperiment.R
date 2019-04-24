@@ -7,6 +7,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	    ...,
 		colorscale = cividis,
 		colorkey = !superpose,
+		alpha.power = 2,
 		subset = TRUE)
 {
 	.checkForIncompleteProcessing(x)
@@ -39,6 +40,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	image(newx, formula=formula2, feature=feature,
 		feature.groups=feature.groups, superpose=superpose,
 		colorscale=colorscale, colorkey=colorkey,
+		alpha.power=alpha.power,
 		subset=subset, ...)
 })
 

@@ -3,7 +3,7 @@ facet.image <- function(args, formula, obj,
 	facets, groups, superpose, strip, key,
 	normalize.image, contrast.enhance, smooth.image, ...,
 	xlab, xlim, ylab, ylim, zlab, zlim, asp, layout,
-	col, colorscale, colorkey, subset, add)
+	col, colorscale, colorkey, alpha.power, subset, add)
 {
 	dots <- list(...)
 	e <- environment(formula)
@@ -179,7 +179,7 @@ facet.image <- function(args, formula, obj,
 						cols <- setNames(colors, levels)
 						cols <- cols[cat]
 						if ( !is.null(cat) && is.numeric(vals) )
-							cols <- alpha.colors(cols, 100)
+							cols <- alpha.colors(cols, 100, alpha.power=alpha.power)
 					} else {
 						cols <- colors
 					}
@@ -255,6 +255,7 @@ facet.image <- function(args, formula, obj,
 		par <- list(
 			xlab=xlab, ylab=ylab, zlab=zlab,
 			xlim=xlim, ylim=ylim, zlim=zlim,
+			alpha.power=alpha.power,
 			asp=asp)
 	} else {
 		par <- list(

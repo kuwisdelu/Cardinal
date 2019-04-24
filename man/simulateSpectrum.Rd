@@ -194,7 +194,7 @@ m <- mz(metadata(x)$design$featureData)
 
 image(x, mz=m[5])
 
-plot(x, coord=c(x=4, y=4))
+plot(x, coord=c(x=3, y=3))
 }
 
 \keyword{datagen}

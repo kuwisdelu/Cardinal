@@ -1,4 +1,17 @@
 
+
+CHANGES IN VERSION 2.1.23 [2019-4-24]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'slice' for slicing imaging datasets (as a data cube)
+    o Added 'alpha.power' argument for 'image' methods
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added documentation for options() under '?Cardinal'
+
 CHANGES IN VERSION 2.1.22 [2019-4-24]
 -----------------------------------
 

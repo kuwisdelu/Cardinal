@@ -97,6 +97,8 @@ SparseImagingExperiment(
 
         \item{\code{dims(object)}:}{Get the gridded dimensions of the spatial positions (i.e., as if projected to an image raster).}
 
+        \item{\code{slice(object, ...)}:}{Slice the data as a data cube (i.e., as if projected to an multidimensional image raster).}
+
         \item{\code{processingData(object)}, \code{processingData(object) <- value}:}{Get or set the \code{processing} slot.}
 
         \item{\code{preproc(object)}:}{List the preprocessing steps queued and applied to the dataset.}

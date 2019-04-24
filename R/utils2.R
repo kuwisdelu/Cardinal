@@ -257,6 +257,8 @@
 
 # Draw keys
 .draw.key <- function(key, text, fill) {
+	par <- par()$xpd
+	par(xpd=TRUE)
 	args <- switch(class(key),
 		"logical"=list(),
 		"character"=list(legend=key),
@@ -274,8 +276,10 @@
 		col <- as.numeric(col2rgb(par()$bg) / 255)
 		args$bg <- rgb(col[1], col[2], col[3], 0.75)
 	}
-	if ( isTRUE(key) && length(args$legend) != 0 )
+	if ( isTRUE(key) && length(args$legend) != 0 ) {
 		do.call("legend", args)
+		par(xpd=par)
+	}
 }
 
 # Draw colorkeys

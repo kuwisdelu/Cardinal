@@ -79,6 +79,7 @@
         col = discrete.colors,
         colorscale = viridis,
         colorkey = !key,
+        alpha.power = 1,
         subset = TRUE,
         add = FALSE)
 
@@ -102,10 +103,11 @@
         col = discrete.colors,
         colorscale = viridis,
         colorkey = !key,
+        alpha.power = 1,
         subset = TRUE,
         add = FALSE)
 
-\S4method{image3D}{SparseImagingExperiment}(x, formula, \dots)
+\S4method{image3D}{SparseImagingExperiment}(x, formula, \dots, alpha.power = 2)
 
 \S4method{image}{MSImagingExperiment}(x, formula,
         feature = features(x, mz=mz),
@@ -121,6 +123,7 @@
         \dots,
         colorscale = cividis,
         colorkey = !superpose,
+        alpha.power = 2,
         subset = TRUE)
 
 \S4method{image}{PCA2}(x, formula,
@@ -278,6 +281,8 @@
     \item{col.regions}{The default plotting color(s) for the z-axis of image intensities. Thus must be a vector of colors.}
 
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
+
+    \item{alpha.power}{Opacity scaling factor (1 is linear).}
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
     

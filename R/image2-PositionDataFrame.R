@@ -20,6 +20,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 		col = discrete.colors,
 		colorscale = viridis,
 		colorkey = !key,
+		alpha.power = 1,
 		subset = TRUE,
 		add = FALSE)
 {
@@ -63,7 +64,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 		zlab=zlab, zlim=zlim,
 		asp=asp, layout=layout,
 		col=col, colorscale=colorscale,
-		colorkey=colorkey,
+		colorkey=colorkey, alpha.power=alpha.power,
 		subset=subset, add=add)
 })
 

@@ -158,6 +158,7 @@ setGeneric("summarize", signature=".data")	# from 'dplyr'
 setGeneric("arrange", signature=".data") # from 'dplyr'
 setGeneric("group_by", signature=".data") # from 'dplyr'
 setGeneric("ungroup", signature="x") # from 'dplyr'
+setGeneric("slice", signature=".data") # from 'dplyr'
 setGeneric("groups", signature="x") # from 'dplyr'
 setGeneric("groups<-", function(x, value) standardGeneric("groups<-"))
 setGeneric("collect")

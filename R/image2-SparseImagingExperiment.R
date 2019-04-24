@@ -23,6 +23,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		col = discrete.colors,
 		colorscale = viridis,
 		colorkey = !key,
+		alpha.power = 1,
 		subset = TRUE,
 		add = FALSE)
 {
@@ -176,12 +177,12 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		zlab=zlab, zlim=zlim,
 		asp=asp, layout=layout,
 		col=col, colorscale=colorscale,
-		colorkey=colorkey,
+		colorkey=colorkey, alpha.power=alpha.power,
 		subset=subset, add=add)
 })
 
 setMethod("image3D", c(x = "SparseImagingExperiment"),
-	function(x, formula, ...) {
+	function(x, formula, ..., alpha.power=2) {
 		if ( missing(formula) ) {
 			valnm <- names(imageData(x))[1L]
 			if ( length(coord(x)) < 3L )
@@ -189,7 +190,7 @@ setMethod("image3D", c(x = "SparseImagingExperiment"),
 			fm <- paste0(valnm, "~", paste0(coordnames(x)[1:3], collapse="*"))
 			formula <- as.formula(fm, env=parent.frame(2))
 		}
-		image(x, formula=formula, ...)
+		image(x, formula=formula, ..., alpha.power=2)
 	})
 
 .fastPixelApply2 <- function(x, fun, groups) {

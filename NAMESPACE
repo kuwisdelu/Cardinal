@@ -74,6 +74,7 @@ importFrom("dplyr",
 	"arrange",
 	"group_by",
 	"ungroup",
+	"slice",
 	"groups",
 	"grouped_df",
 	"collect")
@@ -500,6 +501,7 @@ exportMethods(
 	"arrange",
 	"group_by",
 	"ungroup",
+	"slice",
 	"groups",
 	"collect")
 
