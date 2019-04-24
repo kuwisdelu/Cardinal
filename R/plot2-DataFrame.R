@@ -23,7 +23,7 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 	    ...,
 		xlab, xlim,
 		ylab, ylim,
-		layout,
+		layout = !add,
 		col = discrete.colors,
 		subset = TRUE,
 		add = FALSE)

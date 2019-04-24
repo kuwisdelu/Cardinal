@@ -10,6 +10,7 @@
 \alias{predict,SpatialShrunkenCentroids2-method}
 \alias{fitted,SpatialShrunkenCentroids2-method}
 \alias{summary,SpatialShrunkenCentroids2-method}
+\alias{logLik,SpatialShrunkenCentroids2-method}
 
 \alias{spatialShrunkenCentroids,SImageSet,missing-method}
 \alias{spatialShrunkenCentroids,SImageSet,factor-method}

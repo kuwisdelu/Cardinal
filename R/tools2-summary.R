@@ -117,7 +117,7 @@ setMethod("summary", "SpatialKMeans2",
 	{
 		out <- SummaryDataFrame(
 			`Radius (r)`=modelData(object)$r,
-			`Num Clusters (k)`=modelData(object)$k,
+			`Clusters (k)`=modelData(object)$k,
 			.summary=list("Spatially-aware K-means clustering:\n",
 				paste0(" Method = ", metadata(object)$method),
 				paste0(" Distance = ", metadata(object)$dist, "\n")))
@@ -139,9 +139,10 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 			out <- SummaryDataFrame(
 				`Radius (r)`=modelData(object)$r,
 				`Init (k)`=modelData(object)$k,
-				`Lambda (s)`=modelData(object)$s,
-				`Num Classes`=num_segments,
-				`Num Features / Class`=num_features,
+				`Sparse (s)`=modelData(object)$s,
+				`Classes`=num_segments,
+				`Features / Class`=num_features,
+				`BIC`=BIC(object),
 				.summary=list("Spatially-aware nearest shrunken centroids:\n",
 					description, paste0(" Method = ", metadata(object)$method),
 					paste0(" Distance = ", metadata(object)$dist, "\n")))
@@ -157,8 +158,8 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 				specificity(y, res$class, positive=pos))
 			out <- SummaryDataFrame(
 				`Radius (r)`=modelData(object)$r,
-				`Lambda (s)`=modelData(object)$s,
-				`Num Features / Class`=num_features,
+				`Sparse (s)`=modelData(object)$s,
+				`Features / Class`=num_features,
 				Accuracy=acc, Sensitivity=sens, Specificity=spec,
 				.summary=list("Spatially-aware nearest shrunken centroids:\n",
 					description, paste0(" Method = ", metadata(object)$method),
@@ -186,7 +187,7 @@ setMethod("summary", "SpatialDGMM",
 			`Radius (r)`=modelData(object)$r,
 			`Init (k)`=modelData(object)$k,
 			`Feature`=modelData(object)$feature,
-			`Num Classes / Group`=num_segments,
+			`Classes / Group`=num_segments,
 			.summary=list("Spatially-aware Dirichlet Gaussian mixture models:\n",
 				description, paste0(" Method = ", metadata(object)$method),
 				paste0(" Distance = ", metadata(object)$dist, "\n")))

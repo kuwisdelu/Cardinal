@@ -1,12 +1,12 @@
 ---
 title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "April 22, 2019"
+date: "April 26, 2019"
 output:
   BiocStyle::html_document:
   toc: true
 vignette: >
-  %\VignetteIndexEntry{Cardinal 2: User guide for mass spectrometry imaging analysis}
+  %\VignetteIndexEntry{1. Cardinal 2: User guide for mass spectrometry imaging analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

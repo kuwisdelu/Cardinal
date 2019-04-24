@@ -73,7 +73,7 @@ facet.plot <- function(args, formula, obj,
 			if ( has_groups || superpose || !is.numeric(y) ) {
 				if ( has_groups ) {
 					levels <- levels(groups)
-				} else if ( superpose ) {
+				} else if ( superpose  ) {
 					levels <- na.omit(unique(names(ys)))
 				} else {
 					levels <- na.omit(unique(y))
@@ -105,7 +105,7 @@ facet.plot <- function(args, formula, obj,
 				if ( has_cats ) {
 					if ( has_groups ) {
 						cat <- g
-					} else if ( superpose ) {
+					} else if ( superpose || key ) {
 						cat <- v
 					} else {
 						cat <- NULL

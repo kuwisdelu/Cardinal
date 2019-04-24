@@ -1,5 +1,5 @@
 
-%\VignetteIndexEntry{Cardinal: Analytic tools for mass spectrometry imaging}
+%\VignetteIndexEntry{3. Cardinal: Classic tools for mass spectrometry imaging}
 %\VignetteKeyword{Infrastructure, Bioinformatics, Proteomics, MassSpectrometry, ImagingMassSpectrometry, Clustering, Classification}
 
 \documentclass[a4paper]{article}

@@ -20,7 +20,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 \author{
 Kylie A. Bemis
 
-Maintainer: Kylie A. Bemis <kbemis@purdue.edu>
+Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
 }
 
 \keyword{package}

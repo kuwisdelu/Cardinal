@@ -2,7 +2,7 @@
 # Extract top-ranked features
 
 setMethod("topFeatures", "SpatialShrunkenCentroids2",
-	function(object, n = 10, ..., model = modelData(object))
+	function(object, ..., n = 10, model = modelData(object))
 	{
 		r <- modelData(object)$r
 		if ( is.null(modelData(object)$k) ) {
@@ -42,7 +42,7 @@ setMethod("topFeatures", "SpatialShrunkenCentroids2",
 	})
 
 setMethod("topFeatures", "MeansTest",
-	function(object, n = 10, ..., p.adjust = "BH")
+	function(object, ..., n = 10, p.adjust = "BH")
 	{
 		tests <- summary(object)
 		fData <- as.data.frame(fData(object))
@@ -64,7 +64,7 @@ setMethod("topFeatures", "MeansTest",
 	})
 
 setMethod("topFeatures", "SegmentationTest",
-	function(object, n = 10, ..., model=modelData(object), p.adjust = "BH")
+	function(object, ..., n = 10, model=modelData(object), p.adjust = "BH")
 	{
 		tests <- summary(object)
 		fData <- as.data.frame(fData(object))

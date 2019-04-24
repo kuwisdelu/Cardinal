@@ -156,6 +156,19 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 setMethod("fitted", "SpatialShrunkenCentroids2",
 	function(object, ...) object$class)
 
+setMethod("logLik", "SpatialShrunkenCentroids2", function(object, ...) {
+	logp <- sapply(object$probability, function(prob) {
+		phat <- apply(prob, 1, max)
+		sum(log(phat))
+	})
+	class(logp) <- "logLik"
+	attr(logp, "df") <- sapply(object$statistic, function(t) {
+		sum(abs(t) > 0) + length(features(object))
+	})
+	attr(logp, "nobs") <- length(pixels(object))
+	logp
+})
+
 setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	function(from) {
 		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")

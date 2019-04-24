@@ -27,11 +27,11 @@
         BPPARAM = bpparam(), \dots)
 
 \S4method{segmentationTest}{SparseImagingExperiment}(x, fixed, random, groups = run(x),
-        classControl = c("Mscore", "Ymax"),
+        classControl = c("Ymax", "Mscore"),
         BPPARAM = bpparam(), \dots)
 
 \S4method{segmentationTest}{SpatialDGMM}(x, fixed, random, model = modelData(x),
-        classControl = c("Mscore", "Ymax"),
+        classControl = c("Ymax", "Mscore"),
         BPPARAM = bpparam(), \dots)
 
 \S4method{summary}{MeansTest}(object, \dots, BPPARAM = bpparam())

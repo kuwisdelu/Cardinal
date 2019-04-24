@@ -1,7 +1,7 @@
 
 setMethod("segmentationTest", "SparseImagingExperiment",
 	function(x, fixed, random, groups = run(x),
-		classControl = c("Mscore", "Ymax"),
+		classControl = c("Ymax", "Mscore"),
 		BPPARAM = bpparam(), ...)
 	{
 		args <- .parseFormula2(fixed)
@@ -19,7 +19,7 @@ setMethod("segmentationTest", "SparseImagingExperiment",
 
 setMethod("segmentationTest", "SpatialDGMM",
 	function(x, fixed, random, model = modelData(x),
-		classControl = c("Mscore", "Ymax"),
+		classControl = c("Ymax", "Mscore"),
 		BPPARAM = bpparam(), ...)
 	{
 		if ( !is.numeric(model) ) {

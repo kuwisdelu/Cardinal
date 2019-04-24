@@ -23,11 +23,11 @@
 
 #### Methods for Cardinal >= 2.x classes ####
 
-\S4method{topFeatures}{SpatialShrunkenCentroids2}(object, n = 10, \dots, model = modelData(object))
+\S4method{topFeatures}{SpatialShrunkenCentroids2}(object, \dots, n = 10, model = modelData(object))
 
-\S4method{topFeatures}{MeansTest}(object, n = 10, \dots, p.adjust = "BH")
+\S4method{topFeatures}{MeansTest}(object, \dots, n = 10, p.adjust = "BH")
 
-\S4method{topFeatures}{SegmentationTest}(object, n = 10, \dots, model = modelData(object), p.adjust = "BH")
+\S4method{topFeatures}{SegmentationTest}(object, \dots, n = 10, model = modelData(object), p.adjust = "BH")
 
 #### Methods for Cardinal 1.x classes ####
 

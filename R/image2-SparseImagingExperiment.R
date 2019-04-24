@@ -19,7 +19,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		ylab, ylim,
 		zlab, zlim,
 		asp = 1,
-		layout,
+		layout = !add,
 		col = discrete.colors,
 		colorscale = viridis,
 		colorkey = !key,
@@ -69,14 +69,17 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		} else {
 			groups <- droplevels(groups)
 		}
-		if ( length(groups) != ncol(x) )
+		if ( length(groups) %% ncol(x) != 0L )
 			groups <- rep_len(groups, ncol(x))
 	}
 	if ( !missing(subset) ) {
 		subset <- .try_eval(substitute(subset),
 			envir=as.env(pixelData(x), enclos=e))
-		if ( is.logical(subset) )
+		if ( !is.logical(subset) ) {
+			subset <- replace(logical(ncol(x)), subset, TRUE)
+		} else if ( length(subset) %% ncol(x) != 0L ) {
 			subset <- rep_len(subset, ncol(x))
+		}
 	}
 	if ( !missing(feature) ) {
 		if ( !is.null(args$g) ) {

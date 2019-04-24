@@ -18,7 +18,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 	    ...,
 		xlab, xlim,
 		ylab, ylim,
-		layout,
+		layout = !add,
 		col = discrete.colors,
 		subset = TRUE,
 		add = FALSE)
@@ -71,14 +71,17 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		} else {
 			groups <- droplevels(groups)
 		}
-		if ( length(groups) != nrow(x) )
+		if ( length(groups) %% nrow(x) != 0L )
 			groups <- rep_len(groups, nrow(x))
 	}
 	if ( !missing(subset) ) {
 		subset <- .try_eval(substitute(subset),
 			envir=as.env(featureData(x), enclos=e))
-		if ( is.logical(subset) )
+		if ( !is.logical(subset) ) {
+			subset <- replace(logical(nrow(x)), subset, TRUE)
+		} else if ( length(subset) %% nrow(x) != 0L ) {
 			subset <- rep_len(subset, nrow(x))
+		}
 	}
 	if ( !missing(pixel) ) {
 		if ( !is.null(args$g) ) {

@@ -1,0 +1,407 @@
+---
+title: "_Cardinal 2_: Statistical methods for mass spectrometry imaging"
+author: "Kylie Ariel Bemis"
+date: "April 26, 2019"
+output:
+  BiocStyle::html_document:
+  toc: true
+vignette: >
+  %\VignetteIndexEntry{2. Cardinal 2: Statistical methods for mass spectrometry imaging}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo=FALSE, results='asis'}
+BiocStyle::markdown()
+```
+
+```{r setup, echo=FALSE, message=FALSE}
+library(Cardinal)
+options(Cardinal.verbose=FALSE)
+options(Cardinal.progress=FALSE)
+options(width=160)
+register(SerialParam())
+RNGkind("Mersenne-Twister")
+```
+
+# Introduction 
+
+*Cardinal 2* provides statistical methods for both supervised and unsupervised analysis of mass spectrometry (MS) imaging experiments. Class comparison can also be performed, provided an appropriate experimental design and sample size.
+
+Before statistical analysis, it is important to identify the statistical goal of the experiment:
+
+- __Unsupervised analysis__. The data has no class labels or conditions, and we are interested in exploratory analysis to *discover* regions of interest in the data.
+
+- __Supervised analysis__. The data has class labels and we want to train a statistical or machine learning model to *predict* the class labels of new data.
+
+- __Class comparison__. The data has class labels or conditions, and we want to *test* whether the abundance of the mass features is different between conditions.
+
+*CardinalWorkflows* provides real experimental data and more detailed discussion of the statistical methods than will be covered in this brief overview.
+
+
+
+
+
+
+
+
+
+# Exploratory analysis
+
+Suppose we are exploring an unlabeled dataset, and wish to understand the structure of the data.
+
+```{r eda-data, fig.height=3, fig.width=3, fig.align='center'}
+set.seed(2020)
+mse <- simulateImage(preset=2, npeaks=10, dim=c(20,20), sdnoise=0.5,
+					peakheight=c(2,4), representation="centroid")
+
+design <- makeFactor(circle=mse$circle, square=mse$square,
+						bg=!(mse$circle | mse$square))
+
+image(mse, design ~ x * y, key=TRUE)
+```
+
+```{r eda-image, fig.height=2, fig.width=7}
+image(mse, feature=c(1,4,7), layout=c(1,3))
+```
+
+## Principal components analysis (PCA)
+
+Principal components analysis is an unsupervised dimension reduction technique. It reduces the data to some number of "principal components" that are a linear combination of the original mass features, where each component is orthogonal to the last, and explains as much of the variance in the data as possible.
+
+Use `PCA()` to perform PCA on a `MSImagingExperiment`.
+
+```{r pca}
+pca <- PCA(mse, ncomp=3)
+
+summary(pca)
+```
+
+We can see that the first two principal components explain most of the variation in the data.
+
+```{r pca-image, fig.height=2, fig.width=7}
+image(pca, values="scores", superpose=FALSE, layout=c(1,3))
+```
+
+The loadings of the components show how each mass feature contributes to each component.
+
+```{r pca-loadings, fig.height=2, fig.width=7}
+plot(pca, values="loadings", superpose=FALSE, layout=c(1,3), lwd=2)
+```
+
+Plotting the principal component scores against each other is a useful way of visualization the separation between data classes.
+
+```{r pca-scores, fig.height=2.5, fig.width=4, fig.align='center'}
+pca_scores <- DataFrame(resultData(pca, 1, "scores"))
+
+plot(pca_scores, PC1 ~ PC2, groups=design, pch=20)
+```
+
+## Feature colocalization
+
+Finding other mass features colocalized with a particular image is a common task in analysis of MS imaging experiments.
+
+Use `colocalize()` to find mass features that are colocalized with another image.
+
+```{r colocalized}
+coloc <- colocalized(mse, mz=1023)
+coloc
+```
+
+By default, Pearson correlation is used to rank the colocalized features. Manders' colocalization coefficients (M1 and M2) are also provided.
+
+```{r colocalized-images, fig.height=2, fig.width=7}
+image(mse, mz=coloc$mz[1:3], layout=c(1,3))
+```
+
+
+
+
+
+
+
+
+# Image segmentation
+
+Segmentation (clustering) a dataset is a useful way to summarize an MS imaging experiment and discover regions of interest within the sample.
+
+## Spatial shrunken centroids clustering
+
+Spatially-aware nearest shrunken centroids clustering allows simultaneous image segmentation and feature selection.
+
+A smoothing radius `r`, initial number of clusters `k`, and sparsity parameters `s` must be provided.
+
+The larger the sparsity parameter `s`, the fewer mass features will contribute to the segmentation.
+
+Spatial shrunken centroids may result in fewer clusters than the initial number of clusters `k`, so it is recommended to use a value for `k` that is larger than the expected number of clusters, and allow the method to automatically choose the number of clusters.
+
+```{r ssc-clustering}
+ssc <- spatialShrunkenCentroids(mse, r=1, k=5, s=c(0,3,6,9))
+
+summary(ssc)
+```
+
+Plotting the predicted cluster probabilities shows a clear segmentation into the ground truth image.
+
+```{r ssc-image, fig.height=3, fig.width=3}
+image(ssc, model=list(s=9), values="probability")
+```
+
+Spatial shrunken centroids calculates t-statistics for each segment and each mass feature. These t-statistics a measure of the difference between the cluster center and the global mean.
+
+
+```{r ssc-statistic, fig.height=2.5, fig.width=4, fig.align='center'}
+plot(ssc, model=list(s=9), values="statistic", lwd=2)
+```
+
+Mass features with t-statistics of zero do not contribute to the segmentation. The sign of the t-statistic indicates whether the mass feature is over- or under-expressed in the given cluster relative to the global mean.
+
+Use `topFeatures()` to rank mass features by t-statistic.
+
+
+```{r ssc-top}
+ssc_top <- topFeatures(ssc, model=list(s=9), class == 1)
+ssc_top
+```
+
+
+## Spatial Dirichlet Gaussian mixture modeling
+
+Spatially-aware Dirichlet Gaussian mixture models (spatial-DGMM) is a method of image segmentation applied to each mass feature individually, rather than the dataset as a whole.
+
+This is useful for summarizing molecular ion images, and for discovering structures that clustering using all mass features together may miss.
+
+```{r dgmm}
+dgmm <- spatialDGMM(mse, r=1, k=5, method="adaptive")
+
+summary(dgmm)
+```
+
+A different segmentation is fit for each mass feature.
+
+```{r dgmm-image, fig.height=2, fig.width=7}
+image(dgmm, model=list(feature=c(1,4,7)), layout=c(1,3))
+```
+
+Spatial-DGMM segmentations can be especially useful for finding mass features colocalized with a region-of-interest.
+
+When applied to a `SpatialDGMM` object, `colocalize()` is able to use match scores that can have a higher specificity than using Pearson correlation on the raw ion images.
+
+```{r dgmm-colocalized}
+coloc2 <- colocalized(dgmm, mse$square)
+select(coloc2, -r, -k, -group)
+```
+
+
+
+
+
+
+
+
+
+# Classification and cross-validation
+
+Classification of pixels into different known classes (e.g., cancer vs normal) based on the mass spectra is a common application for MS imaging.
+
+```{r classification-data, fig.height=2, fig.width=7}
+set.seed(2020)
+mse2 <- simulateImage(preset=7, npeaks=10, dim=c(10,10), sdnoise=0.5,
+					nruns=3, peakdiff=2, representation="centroid")
+
+class <- makeFactor(A=mse2$circleA, B=mse2$circleB)
+
+image(mse2, class ~ x * y, key=TRUE, layout=c(1,3))
+```
+
+
+```{r classification-images, fig.height=2, fig.width=7}
+image(mse2, feature=1, layout=c(1,3))
+```
+
+When performing classification, it is important to use cross-validation so that reported accuracies are not overly optimistic.
+
+We strongly recomend making sure that all spectra from the same experiment run belong to the same fold, to reduce predictive bias due to run effects.
+
+
+
+## Projection to latent structures (PLS)
+
+Projection to latent structures (PLS), also called partial least squares, is a supervised dimension reduction technique. It can be thought of as being similar to PCA, but for classification or regression.
+
+```{r pls-cv}
+cv_pls <- crossValidate(mse2, .y=class, .fun=PLS, ncomp=1:5, .fold=run(mse2))
+
+summary(cv_pls)
+```
+
+We can see that using 3 PLS components produces the best cross-validated accuracy.
+
+```{r pls}
+pls <- PLS(mse2, y=class, ncomp=3)
+
+summary(pls)
+```
+
+We can plot the fitted values to visualize the prediction.
+
+```{r pls-image, fig.height=2, fig.width=7}
+image(pls, values="fitted", layout=c(1,3))
+```
+
+The PLS regression coefficients can be used to select influential features.
+
+```{r pls-coefficients, fig.height=2.5, fig.width=4, fig.align='center'}
+plot(pls, values="coefficients", lwd=2)
+```
+
+Like PCA, it can be useful to plot the PLS scores against each other to visualize the separation between classes.
+
+```{r pls-scores, fig.height=2.5, fig.width=4, fig.align='center'}
+pls_scores <- DataFrame(resultData(pls, 1, "scores"))
+
+plot(pls_scores, C1 ~ C2, groups=class, pch=20)
+```
+
+Note that orthgonal PLS (O-PLS) is also available via `method="opls"` or by using the separate `OPLS()` method. Typically, both methods perform similarly, although O-PLS can sometimes produce more easily interpretable regression coefficients.
+
+
+## Spatial shrunken centroids classification
+
+Spatially-aware nearest shrunken centroids classification is an extension of nearest shrunken centroids that incorporates spatial information into the model.
+
+Like in the clustering case of spatial shrunken centroids, a smoothing radius `r` must be provided along with sparsity parameters `s`.
+
+```{r ssc-cv}
+cv_ssc <- crossValidate(mse2, .y=class,
+						.fun=spatialShrunkenCentroids,
+						r=1, s=c(0,3,6,9), .fold=run(mse2))
+
+summary(cv_ssc)
+```
+
+We can see that in this case, the fully dense model (`s=0`) that uses all mass features has the best cross-validated accuracy for the data.
+
+```{r ssc-classification}
+ssc2 <- spatialShrunkenCentroids(mse2, y=class, r=1, s=0)
+
+summary(ssc2)
+```
+
+Plotting the predicted class probabilities produces a more easily interpretable visualization than PLS in this case.
+
+```{r ssc-image-2, fig.height=2, fig.width=7}
+image(ssc2, layout=c(1,3))
+```
+
+Plotting t-statistics shows the first three features have much higher abundance in condition "B".
+
+```{r ssc-statistic-2, fig.height=2.5, fig.width=4, fig.align='center'}
+plot(ssc2, values="statistic", lwd=2)
+```
+
+
+
+
+
+
+
+
+
+
+# Class comparison
+
+Statistical hypothesis testing is used to determine whether the abundance of a feature is different between two or more conditions.
+
+In order to account for additional factors like the effect of experimental runs, subject-to-subject variability, etc., this is often done most appropriately using linear models.
+
+This example uses a simple experiment with two conditions "A" and "B", with three replicates in each condition.
+
+
+```{r test-data, fig.height=5, fig.width=7}
+set.seed(2020)
+mse3 <- simulateImage(preset=4, npeaks=10, dim=c(10,10), sdnoise=0.5,
+					nruns=3, peakdiff=1, representation="centroid")
+
+trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
+
+image(mse3, trt ~ x * y, key=TRUE, layout=c(2,3))
+```
+
+```{r test-image, fig.height=5, fig.width=7}
+image(mse3, feature=1, layout=c(2,3))
+```
+
+We know from the design of the simulation that the first 5 (of 10) mass features differ between the conditions.
+
+```{r test-diff}
+featureData(mse3)
+```
+
+## Group means-based testing
+
+Use `meansTest()` to fit linear models with the most basic summarization. The `groups` indicating the observational units must be provided. Each group is summarized by its mean, and then a linear model is fit to the summaries.
+
+Here, we specify `condition` as the sole fixed effect. Internally, the model will call either `lm()` or `lme()` depending on whether any random effects are provided.
+
+```{r test-mean-test}
+mtest <- meansTest(mse3, ~ condition, groups=run(mse3))
+
+summary(mtest)
+```
+
+By default, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
+
+```{r test-mean-top}
+topFeatures(mtest, p.adjust="fdr", AdjP < .05)
+```
+
+
+## Segmentation-based testing
+
+Testing of `SpatialDGMM` objects is implemented by `segmentationTest()`. The key idea here is that spatial-DGMM segmentation captures within-sample heterogeneity, so testing between spatial-DGMM segments is more sensitive that simply summarizing a whole sample by its mean.
+
+First, we must segment the data with `spatialDGMM()`, while making sure that each observational unit is segmented within a different group (as specified by `groups`).
+
+```{r test-segment-dgmm}
+dgmm2 <- spatialDGMM(mse3, r=1, k=5, groups=run(mse3))
+```
+
+Now use `segmentationTest()` to fit the models.
+
+In order to fit the models, a representative spatial-DGMM segment must be selected for each group. There are two automated ways to do this via `classControl`: `"Ymax"` means use the segment with the highest mean, and `"Mscore"` means use the segment with the highest match score with the fixed effects.
+
+(A list of character vectors giving the explicit mapping between group and representative spatial-DGMM segment can also be given to `classControl`.)
+
+```{r test-segment-test}
+stest <- segmentationTest(dgmm2, ~ condition, classControl="Ymax")
+
+summary(stest)
+```
+
+As with `meansTest()`, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
+
+If an automated method for `classControl` was used, it can be helpful to plot the mapping to see what segments were used.
+
+```{r test-segment-mapping}
+image(stest, model=list(feature=3), values="mapping")
+```
+
+Use `topFeatures()` to extract the significant results.
+
+In this case, `segmentationTest()` finds one more significant mass feature compared to `meansTest()`.
+
+```{r test-segment-top}
+topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% select(-diff, -r, -k)
+```
+
+
+
+# Session information
+
+```{r session-info}
+sessionInfo()
+```
+
+
+
