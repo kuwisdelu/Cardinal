@@ -6,7 +6,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		column,
 	    ...,
 		colorscale = cividis,
-		colorkey = !is3d && !superpose,
+		colorkey = !superpose,
 		subset = TRUE)
 {
 	.checkForIncompleteProcessing(x)
@@ -53,6 +53,15 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "PCA2"),
+	function(x, formula, values = "scores", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		callNextMethod(x, formula=formula, ...)
+	})
+
 ## PLS2
 
 setMethod("image",
@@ -61,6 +70,15 @@ setMethod("image",
 	{
 		if ( missing(formula) )
 			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "PLS2"),
+	function(x, formula, values = c("fitted", "scores"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
 		callNextMethod(x, formula=formula, ...)
 	})
 
@@ -75,6 +93,15 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "SpatialFastmap2"),
+	function(x, formula, values = "scores", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		callNextMethod(x, formula=formula, ...)
+	})
+
 ## SpatialKMeans2
 
 setMethod("image",
@@ -83,6 +110,15 @@ setMethod("image",
 	{
 		if ( missing(formula) )
 			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "SpatialKMeans2"),
+	function(x, formula, values = "cluster", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
 		callNextMethod(x, formula=formula, ...)
 	})
 
@@ -97,6 +133,15 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "SpatialShrunkenCentroids2"),
+	function(x, formula, values = c("probability", "class", "scores"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		callNextMethod(x, formula=formula, ...)
+	})
+
 ## SpatialDGMM
 
 setMethod("image",
@@ -105,6 +150,15 @@ setMethod("image",
 	{
 		if ( missing(formula) )
 			formula <- .formula_pixel_results(x, match.arg(values))
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "SpatialDGMM"),
+	function(x, formula, values = c("probability", "class"), ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
 		callNextMethod(x, formula=formula, ...)
 	})
 
@@ -119,10 +173,23 @@ setMethod("image",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+setMethod("image3D",
+	signature = c(x = "SegmentationTest"),
+	function(x, formula, values = "mapping", ...)
+	{
+		if ( missing(formula) )
+			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		callNextMethod(x, formula=formula, ...)
+	})
+
 # format formula
 
-.formula_pixel_results <- function(x, lhs) {
-	fm <- paste0(lhs, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
+.formula_pixel_results <- function(x, lhs, is3d = FALSE) {
+	if ( is3d ) {
+		fm <- paste0(lhs, "~", paste0(coordnames(x)[1:3], collapse="*"))
+	} else {
+		fm <- paste0(lhs, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
+	}
 	formula <- as.formula(fm, env=parent.frame(3))
 }
 

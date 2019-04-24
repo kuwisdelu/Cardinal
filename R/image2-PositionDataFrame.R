@@ -19,7 +19,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 		layout,
 		col = discrete.colors,
 		colorscale = viridis,
-		colorkey = !is3d,
+		colorkey = !key,
 		subset = TRUE,
 		add = FALSE)
 {

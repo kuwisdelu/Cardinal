@@ -122,6 +122,28 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     A number of presets are defined by \code{presetImageDef()}, which returns only the \code{pixelData} and \code{featureData} necessary to define the experiment for \code{simulateImage()}. These can be referenced for help in understanding how to define experiments for \code{simulateImage()}.
 
+    The preset images are:
+
+    \itemize{
+        \item{1: a centered circle}
+
+        \item{2: a topleft circle and a bottomright square}
+
+        \item{3: two corner squares and a centered circle}
+
+        \item{4: a centered circle with conditions A and B in different runs}
+
+        \item{5: a topleft circle and a bottomright square with conditions A and B in different runs}
+
+        \item{6: two corner squares and a centered circle; the circle has conditions A and B in different runs}
+
+        \item{7: matched pairs of circles with conditions A and B within the same runs; includes reference peaks}
+
+        \item{8: matched pairs of circles inside squares with conditions A and B within the same runs; includes reference peaks}
+
+        \item{9: a small sphere inside a larger sphere (3D)}
+    }
+
     The \code{addShape()} function is provided for convenience when generating the \code{pixelData} for \code{simulateImage()}, as a simple way of adding morphological substructures using basic shapes such as squares and circles.
 }
 

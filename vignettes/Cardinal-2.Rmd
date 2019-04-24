@@ -491,6 +491,20 @@ Like `plot()`, a formula can be specified. The LHS should specify one or more el
 image(mse2, log1p(intensity) ~ x * y, mz=1136, colorscale=magma)
 ```
 
+## Visualizing 3D imaging experiments
+
+3D imaging datasets can be plotted with `image3D()`.
+
+```{r image3d}
+set.seed(1)
+mse3d <- simulateImage(preset=9, nruns=7, dim=c(7,7), npeaks=10,
+						peakheight=c(2,4), representation="centroid")
+
+image3D(mse3d, mz=c(1001, 1159), colorscale=plasma, cex=3, theta=30, phi=30)
+```
+
+Any dataset with 3 or more spatial coordinates (columns in `coord()`), can be plotted in 3D.
+
 ## Region-of-interest selection
 
 Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run. Otherwise, the form of `selectROI()` is the same as `image()`.
@@ -953,7 +967,7 @@ mse_proc %>%
 
 ```{r process-workflow-2, eval=FALSE}
 # process detected peaks
-mse_peakref <- mse %>%
+mse_peakref <- mse_proc %>%
 	peakAlign() %>%
 	peakFilter() %>%
 	process()

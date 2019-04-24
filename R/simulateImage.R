@@ -114,7 +114,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
 	sdsample = 0.2, jitter = TRUE, ...)
 {
-	numPresets <- 8L
+	numPresets <- 9L
 	nx <- unname(dim[1L])
 	ny <- unname(dim[2L])
 	sdx <- jitter * nx / 20
@@ -446,7 +446,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 				shape = "circle", name = "circleB")
 			runNames(pdata_i) <- paste0("run", i-1)
 			pdata_i
-		})
+		}) 
 		pdata <- do.call("rbind", pdata)
 		pdata$ref <- TRUE
 		pdata$condition <- makeFactor(A=pdata$squareA, B=pdata$squareB)
@@ -468,6 +468,37 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			circleB=peakheight_circle + peakdiff_circle,
 			diff.circle=diff.circle,
 			diff.square=diff.square)
+	} else if ( i == 9L ) {
+		# small spheres inside large sphere (3D)
+		rx <- nx / 2
+		ry <- ny / 2
+		runscales <- sqrt(1 + abs(1:nruns - ceiling(nruns / 2)))
+		pdata <- mapply(function(scale, i) {
+			pdata_i <- pdata
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / (scale * 2) + rnorm(1, sd=sdr),
+				shape = "circle", name = "sphere1")
+			pdata_i <- addShape(pdata_i,
+				center=c(
+					x=rx + rnorm(1, sd=sdx),
+					y=ry + rnorm(1, sd=sdy)),
+				size=(rx + ry) / (scale * 4) + rnorm(1, sd=sdr),
+				shape = "circle", name = "sphere2")
+			runNames(pdata_i) <- paste0("run", i-1)
+			coord(pdata_i)$z <- i
+			pdata_i
+		}, runscales, 1:nruns)
+		pdata <- do.call("rbind", pdata)
+		n1 <- floor(npeaks / 3)
+		n2 <- floor(npeaks / 3)
+		n3 <- npeaks - n1 - n2
+		peakheight <- rep_len(peakheight, 2)
+		fdata <- MassDataFrame(mz=mzs,
+			sphere1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			sphere2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))))
 	}
 	list(pixelData=pdata, featureData=fdata)
 }

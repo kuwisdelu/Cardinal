@@ -17,6 +17,15 @@
 \alias{image,SpatialDGMM-method}
 \alias{image,SegmentationTest-method}
 
+\alias{image3D,SparseImagingExperiment-method}
+\alias{image3D,PCA2-method}
+\alias{image3D,PLS2-method}
+\alias{image3D,SpatialFastmap2-method}
+\alias{image3D,SpatialKMeans2-method}
+\alias{image3D,SpatialShrunkenCentroids2-method}
+\alias{image3D,SpatialDGMM-method}
+\alias{image3D,SegmentationTest-method}
+
 \alias{image,SImageSet-method}
 \alias{image,MSImageSet-method}
 \alias{image,ResultSet-method}
@@ -69,7 +78,7 @@
         layout,
         col = discrete.colors,
         colorscale = viridis,
-        colorkey = !is3d,
+        colorkey = !key,
         subset = TRUE,
         add = FALSE)
 
@@ -92,9 +101,11 @@
         layout,
         col = discrete.colors,
         colorscale = viridis,
-        colorkey = !is3d,
+        colorkey = !key,
         subset = TRUE,
         add = FALSE)
+
+\S4method{image3D}{SparseImagingExperiment}(x, formula, \dots)
 
 \S4method{image}{MSImagingExperiment}(x, formula,
         feature = features(x, mz=mz),
@@ -109,7 +120,7 @@
         column,
         \dots,
         colorscale = cividis,
-        colorkey = !is3d && !superpose,
+        colorkey = !superpose,
         subset = TRUE)
 
 \S4method{image}{PCA2}(x, formula,
