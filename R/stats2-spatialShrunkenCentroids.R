@@ -56,12 +56,6 @@ setMethod("spatialShrunkenCentroids",
 		}
 		results <- do.call("c", results)
 		models <- DataFrame(rev(expand.grid(s=s, k=k, r=r)))
-		models$num_segments <- sapply(results, function(res) {
-			nlevels(res$class)
-		})
-		models$num_features <- sapply(results, function(res) {
-			round(mean(colSums(res$statistic != 0)), 1)
-		})
 		.SpatialShrunkenCentroids2(
 			imageData=.SimpleImageArrayList(),
 			featureData=featureData(x),
