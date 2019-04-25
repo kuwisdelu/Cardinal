@@ -76,9 +76,10 @@
         add = FALSE)
 
 \S4method{plot}{MSImagingExperiment,missing}(x, formula,
-        pixel = pixels(x, coord=coord),
+        pixel = pixels(x, coord=coord, run=run),
         pixel.groups,
         coord,
+        run,
         plusminus,
         \dots,
         xlab, ylab,
@@ -199,6 +200,8 @@
     The conditioning variables are evaluated in \code{pData(x)}. These can be specified in the formula as 'g1 * g2 * ...'. The argument 'pixel.groups' allows an alternate way to specify a single conditioning variable. Conditioning variables specified using the formula interface will always appear on separate plots. This can be combined with 'superpose = TRUE' to both overlay plots based on a conditioning variable and use conditioning variables to create separate plots.}
 
     \item{coord}{A named vector or list giving the coordinate(s) of the pixel(s) to plot.}
+
+    \item{run}{A character, factor, or integer vector giving the run(s) of the pixel(s) to plot.}
 
     \item{plusminus}{If specified, a window of pixels surrounding the one given by \code{coord} will be included in the plot with \code{fun} applied over them, and this indicates the number of pixels to include on either side.}
     

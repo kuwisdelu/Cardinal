@@ -264,29 +264,46 @@ setMethod("features", "MSImagingExperiment",
 	})
 
 setMethod("pixels", "MSImagingExperiment",
-	function(object, ..., coord, .env = parent.frame(2)) {
-		if ( missing(coord) ) {
+	function(object, ..., coord, run, .env = parent.frame(2)) {
+		if ( missing(coord) && missing(run) ) {
 			pixels <- callNextMethod(object, ..., .env=.env)
 		} else {
-			if ( !gridded(object) )
-				.warning("pixel coordinates are not gridded")
-			if ( is.null(names(coord)) )
-				names(coord) <- names(coord(object))
-			coord <- as.data.frame(as.list(coord))
-			pixels <- unlist(apply(coord, 1, function(xy) {
-				lxy <- sapply(seq_along(xy), function(i) {
-					nm <- names(xy)[i]
-					coord(object)[[nm]] %in% xy[i]
-				})
-				if ( nrow(coord(object)) == 1 )
-					lxy <- t(lxy)
-				if ( is.null(dim(lxy)) ) {
-					lxy <- which(lxy)
+			if ( !missing(coord) ) {
+				if ( !gridded(object) )
+					.warning("pixel coordinates are not gridded")
+				if ( is.null(names(coord)) )
+					names(coord) <- names(coord(object))
+				coord <- as.data.frame(as.list(coord))
+				i1 <- unlist(apply(coord, 1, function(xy) {
+					lxy <- sapply(seq_along(xy), function(i) {
+						nm <- names(xy)[i]
+						l <- coord(object)[[nm]] %in% xy[i]
+						if ( all(!l) )
+							.warning("coord out of range: ", nm, " = ", xy[i])
+						l
+					})
+					if ( nrow(coord(object)) == 1 )
+						lxy <- t(lxy)
+					if ( is.null(dim(lxy)) ) {
+						lxy <- which(lxy)
+					} else {
+						lxy <- which(apply(lxy, 1, all))
+					}
+				}))
+				i1 <- as.integer(i1)
+			} else {
+				i1 <- seq_len(ncol(object))
+			}
+			if ( !missing(run) ) {
+				if ( is.numeric(run) ) {
+					i2 <- which(as.integer(run(object)) %in% run)
 				} else {
-					lxy <- which(apply(lxy, 1, all))
+					i2 <- which(run(object) %in% run)
 				}
-			}))
-			pixels <- as.integer(pixels)
+			} else {
+				i2 <- seq_len(ncol(object))
+			}
+			pixels <- intersect(i1, i2)
 			if ( length(match.call(expand.dots=FALSE)$...) > 0 ) {
 				keep <- pixels %in% callNextMethod(object, ..., .env=.env)
 				pixels <- pixels[keep]

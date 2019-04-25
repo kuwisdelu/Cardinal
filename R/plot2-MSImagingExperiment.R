@@ -11,15 +11,16 @@ setMethod("plot",
 setMethod("plot",
 	signature = c(x = "MSImagingExperiment", y = "missing"),
 	function(x, formula,
-		pixel = pixels(x, coord=coord),
+		pixel = pixels(x, coord=coord, run=run),
 		pixel.groups,
 		coord,
+		run,
 		plusminus,
 		...,
 		xlab, ylab,
 		type = if (centroided(x)) 'h' else 'l')
 	{
-		if ( !missing(formula) && missing(pixel) && missing(coord) )
+		if ( !missing(formula) && missing(pixel) && missing(coord) && missing(run) )
 			return(callNextMethod(as(x, "SparseImagingExperiment"),
 				formula=formula, ..., xlab=xlab, ylab=ylab, type=type))
 		if ( missing(xlab) && missing(ylab) ) {
@@ -33,7 +34,7 @@ setMethod("plot",
 				coord <- Cardinal::coord(x)[pixel,]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
 			 	if ( is.null(pixelNames(x)) ) {
-			 		pixel.names <- data.frame(run=run(x)[pixel], coord(x)[pixel,])
+			 		pixel.names <- data.frame(run=Cardinal::run(x)[pixel], coord(x)[pixel,])
 					pixel.groups <- unname(.format.data.labels(pixel.names))
 				} else {
 					pixel.groups <- pixelNames(x)[pixel]
@@ -51,7 +52,7 @@ setMethod("plot",
 						p <- mapply(function(pos, coords, dxyi) {
 							coords >= pos - dxyi & coords <= pos + dxyi
 						}, coord[i,], coord(x), dxy, SIMPLIFY=TRUE)
-						p <- which(run == run(x) & apply(as.matrix(p), 1, all))
+						p <- which(run == Cardinal::run(x) & apply(as.matrix(p), 1, all))
 						if ( length(p) == 0L )
 							.warning("no pixels in range; removing ", pixel.groups[i])
 						p
@@ -59,8 +60,14 @@ setMethod("plot",
 		 		})
 		 		pixel.list <- unlist(pixel.list, recursive=FALSE)
 				pixel.groups <- rep.int(pixel.groups, lengths(pixel.list))
-				pixel <- unlist(pixel.list)
+				if ( !missing(run) ) {
+					pixel <- intersect(unlist(pixel), pixels(x, run=run))
+				} else {
+					pixel <- unlist(pixel.list)
+				}
 			}
+		} else if ( !missing(run) && missing(pixel.groups) ) {
+			pixel.groups <- Cardinal::run(x)
 		}
 		if ( missing(pixel.groups) ) {
 			pixel.groups <- NULL

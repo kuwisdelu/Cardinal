@@ -99,7 +99,7 @@ MSImagingExperiment(
 
         \item{\code{centroided(object)}, \code{centroided(object) <- value}:}{Get or set the spatial position slot-columns from \code{pixelData}.}
 
-        \item{\code{pixels(object, ..., coord)}:}{Returns the row indices of \code{pixelData} corresponding to conditions passed via \dots.}
+        \item{\code{pixels(object, ..., coord, run)}:}{Returns the row indices of \code{pixelData} corresponding to conditions passed via \dots.}
 
         \item{\code{features(object, ..., mz)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
 

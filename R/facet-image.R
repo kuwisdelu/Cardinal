@@ -287,7 +287,7 @@ print.facet.image <- function(x, ...) {
 	obj <- x
 	ck <- lapply(obj$layers, attr, "colorkey")
 	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$col))
-	if ( no_ck ) {
+	if ( all(no_ck) ) {
 		padding <- 0
 	} else {
 		padding <- 2
