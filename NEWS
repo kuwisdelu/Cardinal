@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.1.26 [2019-4-25]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed 'print' method for plots and images to respect
+        updating plotting parameters via '...' arguments
+
 CHANGES IN VERSION 2.1.25 [2019-4-25]
 -----------------------------------
 

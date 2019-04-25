@@ -183,6 +183,16 @@ print.facet.plot <- function(x, ...) {
 	} else if ( isFALSE(obj$dark) ) {
 		lightmode()
 	}
+	dots <- list(...)
+	if ( length(dots) > 0L ) {
+		nms <- names(dots)
+		update <- nms %in% names(obj$par)
+		if ( any(update) ) {
+			obj$par[nms[update]] <- dots[update]
+			dots[update] <- NULL
+		}
+		obj$par <- c(obj$par, dots)
+	}
 	nil <- c(list(x=0, y=0), obj$par)
 	nil$type <- 'n'
 	for ( layer in obj$layers ) {

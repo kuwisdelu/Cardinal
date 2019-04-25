@@ -249,14 +249,6 @@ facet.image <- function(args, formula, obj,
 		}
 	}
 	if ( is3d ) {
-		ckeyrange <- valrange
-	} else {
-		ckeyrange <- zlim
-	}
-	for ( i in seq_along(layers) )
-		if ( !is.null(attr(layers[[i]], "colorkey")) )
-			attr(layers[[i]], "colorkey")$text <- ckeyrange
-	if ( is3d ) {
 		par <- list(
 			xlab=xlab, ylab=ylab, zlab=zlab,
 			xlim=xlim, ylim=ylim, zlim=zlim,
@@ -265,7 +257,7 @@ facet.image <- function(args, formula, obj,
 	} else {
 		par <- list(
 			xlab=xlab, ylab=ylab,
-			xlim=xlim, ylim=rev(ylim), zlim=zlim,
+			xlim=xlim, ylim=ylim, zlim=zlim,
 			asp=asp)
 	}
 	out <- list(
@@ -275,6 +267,7 @@ facet.image <- function(args, formula, obj,
 		groups=levels(groups),
 		subset=subset,
 		coordnames=names(args$rhs),
+		valrange=valrange,
 		is3d=is3d, layout=layout,
 		par=c(par, dots))
 	if ( !missing(dark) )
@@ -301,6 +294,22 @@ print.facet.image <- function(x, ...) {
 		darkmode()
 	} else if ( isFALSE(obj$dark) ) {
 		lightmode()
+	}
+	dots <- list(...)
+	if ( length(dots) > 0L ) {
+		nms <- names(dots)
+		update <- nms %in% names(obj$par)
+		if ( any(update) ) {
+			obj$par[nms[update]] <- dots[update]
+			dots[update] <- NULL
+		}
+		obj$par <- c(obj$par, dots)
+	}
+	if ( obj$is3d ) {
+		colorkeyrange <- obj$valrange
+	} else {
+		colorkeyrange <- obj$par$zlim
+		obj$par$ylim <- rev(obj$par$ylim)
 	}
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
@@ -334,7 +343,7 @@ print.facet.image <- function(x, ...) {
 		colorkey <- attr(layer, "colorkey")
 		if ( !is.null(colorkey) )			
 			.draw.colorkey(colorkey$colorkey,
-				colorkey$text, colorkey$col)
+				colorkeyrange, colorkey$col)
 	}
 	.Cardinal$lastplot <- x
 	invisible(x)
