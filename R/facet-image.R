@@ -237,20 +237,25 @@ facet.image <- function(args, formula, obj,
 	}
 	if ( missing(layout) )
 		layout <- TRUE
-	for ( i in seq_along(layers) )
-		if ( !is.null(attr(layers[[i]], "colorkey")) )
-			attr(layers[[i]], "colorkey")$text <- round(valrange, 2)
-	if ( missing(xlim) )
+	if ( missing(xlim) || is.null(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
-	if ( missing(ylim) )
+	if ( missing(ylim) || is.null(ylim) )
 		ylim <- yrange + ry * c(-0.5, 0.5)
-	if ( missing(zlim) ) {
+	if ( missing(zlim) || is.null(zlim) ) {
 		if ( is3d ) {
 			zlim <- range(z, na.rm=TRUE) + rz * c(-0.5, 0.5)
 		} else {
 			zlim <- valrange
 		}
 	}
+	if ( is3d ) {
+		ckeyrange <- valrange
+	} else {
+		ckeyrange <- zlim
+	}
+	for ( i in seq_along(layers) )
+		if ( !is.null(attr(layers[[i]], "colorkey")) )
+			attr(layers[[i]], "colorkey")$text <- ckeyrange
 	if ( is3d ) {
 		par <- list(
 			xlab=xlab, ylab=ylab, zlab=zlab,

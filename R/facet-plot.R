@@ -150,9 +150,9 @@ facet.plot <- function(args, formula, obj,
 		layout <- TRUE
 	if ( missing(preplot) )
 		preplot <- NULL
-	if ( missing(xlim) )
+	if ( missing(xlim) || is.null(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
-	if ( missing(ylim) )
+	if ( missing(ylim) || is.null(ylim) )
 		ylim <- yrange + ry * c(-0.5, 0.5)
 	par <- list(
 		xlab=xlab, ylab=ylab,
