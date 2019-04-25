@@ -249,7 +249,7 @@ setMethod("features", "MSImagingExperiment",
 		} else {
 			mz <- as.numeric(mz)
 			mzrange <- range(mz(object))
-			outofrange <- mz < mzrange[1] | mz > mzrange[2]
+			outofrange <- mz < floor(mzrange[1]) | mz > ceiling(mzrange[2])
 			if ( any(outofrange) )
 				.warning("mz out of range: ", paste0(mz[outofrange], collapse=" "))
 			features <- bsearch(mz, mz(object), nearest=TRUE)

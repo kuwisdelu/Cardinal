@@ -22,9 +22,11 @@ setMethod("plot",
 		if ( !missing(formula) && missing(pixel) && missing(coord) )
 			return(callNextMethod(as(x, "SparseImagingExperiment"),
 				formula=formula, ..., xlab=xlab, ylab=ylab, type=type))
-		if ( missing(formula) && missing(xlab) && missing(ylab) ) {
-			xlab <- expression(italic(m/z))
-			ylab <- expression(italic(Intensity))
+		if ( missing(xlab) && missing(ylab) ) {
+			if ( missing(formula) || is.null(.parseFormula2(formula)$lhs) ) {
+				xlab <- expression(italic(m/z))
+				ylab <- expression(italic(Intensity))
+			}
 		}
 		if ( (!missing(pixel) || !missing(coord)) && missing(pixel.groups) ) {
 			if ( missing(coord) )
