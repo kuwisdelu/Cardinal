@@ -47,6 +47,10 @@ setMethod("segmentationTest", "SpatialDGMM",
 			classControl <- .segmentationTest_getclasses(x, fc, classControl, BPPARAM=BPPARAM)
 			classControl <- classControl[model]
 		} else {
+			if ( length(classControl) != nrow(modelData(x)) ) {
+				.stop("length of classControl [", length(classControl),
+					"] does not match number of models [", nrow(modelData(x)), "]")
+			}
 			classControl <- lapply(classControl, function(ctrl) {
 				data.frame(..group..=names(ctrl),
 					..class..=as.character(ctrl))

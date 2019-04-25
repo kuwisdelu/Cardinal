@@ -115,6 +115,12 @@ setMethod("$", "ResultImagingExperiment",
 
 setMethod("[", "SparseResultImagingExperiment",
 	function(x, i, j, ..., drop) {
+		lst <- (nargs() - !missing(drop)) < 3L
+		if ( lst ) {
+			x@resultData <- x@resultData[i]
+			x@modelData <- x@modelData[i,,drop=FALSE]
+			return(x)
+		}
 		if ( !missing(i) && (is.character(i) || is.factor(i)) )
 			i <- match(i, featureNames(x))
 		if ( !missing(j) && (is.character(j) || is.factor(j)) )
@@ -124,7 +130,7 @@ setMethod("[", "SparseResultImagingExperiment",
 		x <- callNextMethod(x, i=i, j=j, ..., drop=drop)
 		kind <- metadata(x)$mapping
 		if ( !is.null(kind) ) {
-			results <- endoapply(results, function(res) {
+			results <- endoapply(results, function(res, i, j) {
 				if ( !missing(i) )
 					for ( name in kind$feature )
 						res[[name]] <- res[[name]][i,,drop=FALSE]
@@ -132,7 +138,7 @@ setMethod("[", "SparseResultImagingExperiment",
 					for ( name in kind$pixel )
 						res[[name]] <- res[[name]][j,,drop=FALSE]
 				res
-			})
+			}, i=i, j=j)
 		}
 		x@resultData <- results
 		x@modelData <- models
