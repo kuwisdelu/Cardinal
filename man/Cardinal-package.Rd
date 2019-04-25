@@ -30,6 +30,8 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 		\item{\code{options(Cardinal.numblocks=20)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
 
 		\item{\code{options(Cardinal.delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
+
+		\item{\code{options(Cardinal.dark=FALSE)}: Should the default theme for new plots use dark mode?}
 	}
 }
 

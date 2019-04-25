@@ -2,7 +2,7 @@
 facet.image <- function(args, formula, obj,
 	facets, groups, superpose, strip, key,
 	normalize.image, contrast.enhance, smooth.image, ...,
-	xlab, xlim, ylab, ylim, zlab, zlim, asp, layout,
+	xlab, xlim, ylab, ylim, zlab, zlim, asp, layout, dark,
 	col, colorscale, colorkey, alpha.power, subset, add)
 {
 	dots <- list(...)
@@ -272,21 +272,17 @@ facet.image <- function(args, formula, obj,
 		coordnames=names(args$rhs),
 		is3d=is3d, layout=layout,
 		par=c(par, dots))
+	if ( !missing(dark) )
+		out$dark <- dark
 	class(out) <- "facet.image"
 	out
 }
 
 print.facet.image <- function(x, ...) {
 	obj <- x
-	if ( "dark" %in% names(obj$par) ) {
-		if ( isTRUE(obj$par$dark) )
-			darkmode()
-		if ( isFALSE(obj$par$dark) )
-			lightmode()
-		obj$par$dark <- NULL
-	}
-	ck <- attr(obj$layers[[1L]], "colorkey")
-	if ( is.null(ck) || isFALSE(ck$colorkey) ) {
+	ck <- lapply(obj$layers, attr, "colorkey")
+	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$col))
+	if ( no_ck ) {
 		padding <- 0
 	} else {
 		padding <- 2
@@ -295,6 +291,11 @@ print.facet.image <- function(x, ...) {
 		.auto.layout(obj, right=padding)
 	} else if ( is.numeric(obj$layout) ) {
 		.setup.layout(obj$layout, right=padding)
+	}
+	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
+		darkmode()
+	} else if ( isFALSE(obj$dark) ) {
+		lightmode()
 	}
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {

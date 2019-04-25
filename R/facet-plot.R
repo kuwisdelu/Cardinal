@@ -1,7 +1,7 @@
 
 facet.plot <- function(args, formula, obj,
 	facets, groups, superpose, strip, key, ...,
-	xlab, xlim, ylab, ylim, layout, col,
+	xlab, xlim, ylab, ylim, layout, dark, col,
 	subset, preplot, add)
 {
 	dots <- list(...)
@@ -165,6 +165,8 @@ facet.plot <- function(args, formula, obj,
 		layout=layout,
 		preplot=preplot,
 		par=c(par, dots))
+	if ( !missing(dark) )
+		out$dark <- dark
 	class(out) <- "facet.plot"
 	out
 }
@@ -176,12 +178,10 @@ print.facet.plot <- function(x, ...) {
 	} else if ( is.numeric(obj$layout) ) {
 		.setup.layout(obj$layout)
 	}
-	if ( "dark" %in% names(obj$par) ) {
-		if ( isTRUE(obj$par$dark) )
-			darkmode()
-		if ( isFALSE(obj$par$dark) )
-			lightmode()
-		obj$par$dark <- NULL
+	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
+		darkmode()
+	} else if ( isFALSE(obj$dark) ) {
+		lightmode()
 	}
 	nil <- c(list(x=0, y=0), obj$par)
 	nil$type <- 'n'

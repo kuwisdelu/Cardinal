@@ -547,6 +547,8 @@ Any future plots on the current device will use the new mode. The default mode c
 lightmode()
 ```
 
+The default for new plots can be changed by `options(Cardinal.dark=TRUE)`.
+
 
 
 
