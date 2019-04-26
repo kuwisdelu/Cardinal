@@ -315,7 +315,7 @@
 		old.par <- par(no.readonly = TRUE)
 		plt <- par()$plt
 		o <- 1 - plt[2]
-		plt <- c(plt[2] + 0.2 * o, plt[2] + 0.5 * o, 0.2, 0.8)
+		plt <- c(plt[2] + 0.2 * o, plt[2] + 0.45 * o, 0.2, 0.8)
 		range <- as.numeric(text)
 		vals <- seq(from=range[1], to=range[2], length.out=100)
 		if ( !"new" %in% args )
