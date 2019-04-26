@@ -297,6 +297,11 @@ print.facet.image <- function(x, ...) {
 	}
 	dots <- list(...)
 	if ( length(dots) > 0L ) {
+		lims <- c("xlim", "ylim", "zlim")
+		for ( nm in names(dots) ) {
+			if ( is.null(dots[[nm]]) && nm %in% lims )
+				dots[[nm]] <- NULL
+		}
 		nms <- names(dots)
 		update <- nms %in% names(obj$par)
 		if ( any(update) ) {
