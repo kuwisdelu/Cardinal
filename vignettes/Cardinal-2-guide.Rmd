@@ -678,6 +678,18 @@ For `MSImagingExperiment`, `spectra()` is an alias for `iData()`.
 spectra(mse, "log2intensity")[1:5, 1:5]
 ```
 
+Whether or not the spectra have been centroided or not can be accessed using `centroided()`
+
+```{r centroided-get}
+centroided(mse)
+```
+
+This can also be used to set whether the spectra should be treated as centroided or not.
+
+```{r centroided-set, eval=FALSE}
+centroided(mse) <- FALSE
+```
+
 ## Using *dplyr* verbs
 
 The *dplyr* package introduced popular verbs for manipulating data, and promoted widespread adoption of the expressive `%>%` piping operator used for chaining verbs together.
@@ -1007,6 +1019,22 @@ plot(mse_bin, coord=list(x=10, y=10))
 ```
 
 This is useful if you need to combine datasets with different *m/z*-values.
+
+## Mass filtering
+
+Sometimes it is necessary to filter the mass features of a dataset that has not been peak picked and aligned. For example, to remove noisy or low-intensity *m/z*-values.
+
+Use `mzFilter()` to queue filtering of mass features.
+
+```{r mzFilter, fig.height=3, fig.width=9}
+mse_filt <- mzFilter(mse_pre, thresh.max=0.05)
+mse_filt <- select(mse_filt, x %in% 9:11, y %in% 9:11) %>% process()
+plot(mse_filt, coord=list(x=10, y=10), type='h')
+```
+
+`mzFilter()` is just an alias for `peakFilter()`, but with more appropriate defaults for spectra that have not necessarily been peak picked and aligned.
+
+Note that `mzFilter()` this does *not* set `centroided()` to `TRUE`; it is up to the user to decide whether the result represent centroided spectra or not.
 
 ## Example processing workflow
 

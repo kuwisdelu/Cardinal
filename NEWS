@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 2.1.27 [2019-4-26]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Added 'mzFilter' as an alias for 'peakFilter' with more
+        suitable defaults for non-peak-picked spectra
+
+BUG FIXES
+
+    o Minor fixes to 'print' method for plots and images
+    o Minor fixes to margin padding for 'colorkey' in images
+
 CHANGES IN VERSION 2.1.26 [2019-4-25]
 -----------------------------------
 

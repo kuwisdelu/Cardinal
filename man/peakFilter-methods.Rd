@@ -6,14 +6,20 @@
 \alias{peakFilter,MSImageSet-method}
 \alias{peakFilter,MSImagingExperiment-method}
 
+\alias{mzFilter}
+\alias{mzFilter-methods}
+\alias{mzFilter,MSImagingExperiment-method}
+
 \alias{peakFilter.freq}
 
-\title{Peak filter an imaging dataset}
+\title{Peak filter or mass filter an imaging dataset}
 \description{
-	Apply peak filtering to a mass spectrometry imaging dataset.
+	Apply peak filtering or mass filtering to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakFilter}{MSImagingExperiment}(object, freq.min = 0.01, \dots)
+\S4method{mzFilter}{MSImagingExperiment}(object, \dots, freq.min = 0, thresh.max = 0.01)
+
+\S4method{peakFilter}{MSImagingExperiment}(object, \dots, freq.min = 0.01, thresh.max = 0)
 
 \S4method{peakFilter}{MSImageSet}(object, method = "freq", \dots, pixel, plot)
 
@@ -22,7 +28,8 @@ peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
-    \item{freq.min}{Minimum frequency density; peaks that occur in the dataset in lesser proportion than this will be dropped.}
+    \item{freq.min}{Minimum frequency; peaks that occur in the dataset in lesser proportion than this will be dropped.}
+    \item{thresh.max}{Minimum threshold relative to maximum mean intensity; features with mean intensity lesser than this, as a proportion of the maximum intensity in the mean spectrum, will be dropped.}
     \item{\dots}{Additional arguments passed to the peak filtering method, or conditions evaluating to logical vectors where only those conditions that are TRUE are retained.}
     \item{method}{The peak filtering method to use.}
     \item{pixel}{Deprecated.}
@@ -31,6 +38,8 @@ peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \details{
     When applied to a \code{MSImagingExperiment} object, \code{peakFilter} uses the \code{summarize()} to generate useful statistics about the detected peaks. These include the `min', `max', `mean', `sum', `sd', and `var' of the detected peaks. These can be used in logical expressions to filter the peaks.
+
+    Note that \code{mzFilter} is an alias for \code{peakFilter}, with different default parameters that are more appropriate for data that has not been peak picked and aligned.
 
     When applied to a \code{MSImageSet} object, unlike most other processing methods, \code{peakFilter} operates on the feature space (ion images) of the dataset.
 
