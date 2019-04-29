@@ -112,134 +112,6 @@ setReplaceMethod("resolution", "MSImagingExperiment",
 		object
 	})
 
-# 'continuous' imaging experiments
-
-setReplaceMethod("imageData", "MSContinuousImagingExperiment",
-	function(y, value) {
-		if ( !inherits(value, c("MSContinuousImagingSpectraList")) )
-			y <- as(y, "MSImagingExperiment")
-		callNextMethod(y, value=value)
-	})
-
-setReplaceMethod("iData", c("MSContinuousImagingExperiment", "missing"),
-	function(x, i, ..., value) {
-		if ( !inherits(value, c("matrix", "matter_matc")) ) {
-			x <- as(x, "MSImagingExperiment")
-			imageData(x) <- .SimpleImageArrayList(imageData(x))
-		}
-		callNextMethod(x, ..., value=value)
-	})
-
-setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
-	function(x, i, ..., value) {
-		if ( !inherits(value, c("matrix", "matter_matc")) ) {
-			x <- as(x, "MSImagingExperiment")
-			imageData(x) <- .SimpleImageArrayList(imageData(x))
-		}
-		callNextMethod(x, i=i, ..., value=value)
-	})
-
-# 'processed' imaging experiments
-
-setReplaceMethod("mz", "MSProcessedImagingExperiment",
-	function(object, value) {
-		if ( !all(mz(object@featureData) == keys(object@imageData)) )
-			return(callNextMethod(object, value))
-		if ( length(value) != length(mz(object)) ) {
-			if ( ncol(featureData(object)) > 0L ) {
-				drop <- names(featureData(object))
-				.warning("dropping feature metadata cols: ",
-					paste0(drop, collapse=" "))
-			}
-			mcols <- MassDataFrame(mz=value)
-			metadata(mcols) <- metadata(object@featureData)
-			object@featureData <- mcols
-		} else {
-			mz(object@featureData) <- value
-		}
-		keys(object@imageData) <- value
-		if ( !is.null(attr(value, "tolerance")) )
-			tolerance(object@imageData) <- attr(value, "tolerance")
-		if ( validObject(object) )
-			object
-	})
-
-setReplaceMethod("resolution", "MSProcessedImagingExperiment",
-	function(object, value) {
-		if ( !is.null(names(value)) ) {
-			units <- switch(names(value), ppm="ppm", mz="mz")
-		} else if ( !is.null(names(resolution(object))) ) {
-			units <- switch(names(resolution(object)), ppm="ppm", mz="mz")
-		}
-		mz <- mz(from=min(mz(object)), to=max(mz(object)),
-			resolution=value, units=units)
-		mz(object) <- mz
-		object
-	})
-
-setReplaceMethod("imageData", "MSProcessedImagingExperiment",
-	function(y, value) {
-		if ( !inherits(value, c("MSProcessedImagingSpectraList")) )
-			y <- as(y, "MSImagingExperiment")
-		callNextMethod(y, value=value)
-	})
-
-setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
-	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") ) {
-			x <- as(x, "MSImagingExperiment")
-			imageData(x) <- .SimpleImageArrayList(imageData(x))
-		}
-		callNextMethod(x, ..., value=value)
-	})
-
-setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
-	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") ) {
-			x <- as(x, "MSImagingExperiment")
-			imageData(x) <- .SimpleImageArrayList(imageData(x))
-		}
-		callNextMethod(x, i=i, ..., value=value)
-	})
-
-setMethod("mzData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["keys"]])
-
-setReplaceMethod("mzData", "MSProcessedImagingExperiment",
-	function(object, value) {
-		atomdata(iData(object))[["keys"]] <- value
-		if ( validObject(object) )
-			object
-	})
-
-setMethod("peakData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["values"]])
-
-setReplaceMethod("peakData", "MSProcessedImagingExperiment",
-	function(object, value) {
-		atomdata(iData(object))[["values"]] <- value
-		if ( validObject(object) )
-			object
-	})
-
-setMethod("tolerance", "MSProcessedImagingExperiment",
-	function(object) tolerance(imageData(object)))
-
-setReplaceMethod("tolerance", "MSProcessedImagingExperiment",
-	function(object, value) {
-		tolerance(imageData(object)) <- value
-		object
-	})
-
-setMethod("combiner", "MSProcessedImagingExperiment",
-	function(object) combiner(imageData(object)))
-
-setReplaceMethod("combiner", "MSProcessedImagingExperiment",
-	function(object, value) {
-		combiner(imageData(object)) <- value
-		object
-	})
-
 ## Filter pixels/features
 
 setMethod("features", "MSImagingExperiment",
@@ -341,7 +213,7 @@ setMethod("cbind", "MSImagingExperiment",
     }
 )
 
-## pull data into memory
+## Pull data into memory
 
 setMethod("collect", "MSImagingExperiment",
 	function(x, ...)

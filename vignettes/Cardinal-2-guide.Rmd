@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "April 26, 2019"
+date: "Revised: April 28, 2019"
 output:
   BiocStyle::html_document:
   toc: true
@@ -512,21 +512,42 @@ image3D(mse3d, mz=c(1001, 1159), colorscale=plasma, cex=3, theta=30, phi=30)
 
 Any dataset with 3 or more spatial coordinates (columns in `coord()`), can be plotted in 3D.
 
+
 ## Region-of-interest selection
 
 Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run. Otherwise, the form of `selectROI()` is the same as `image()`.
 
 ```{r select-ROI, eval=FALSE}
-sampleA <- selectROI(mse, ms=1200, subset=run(mse) == "run0")
-sampleB <- selectROI(mse, ms=1200, subset=run(mse) == "run1")
+sampleA <- selectROI(mse, mz=1200, subset=run(mse) == "run0")
+sampleB <- selectROI(mse, mz=1200, subset=run(mse) == "run1")
 ```
 `selectROI()` returns a logical vector specifying which pixels from the imaging experiment are contained in the selected region.
 
-`makeFactor()` can then be used to combine multiple logical vectors (e.g., form `selectROI()`) into a single factor.
+`makeFactor()` can then be used to combine multiple logical vectors (e.g., from `selectROI()`) into a single factor.
 
 ```{r makeFactor, eval=FALSE}
 regions <- makeFactor(A=sampleA, B=sampleB)
 ```
+
+## Saving plots and images
+
+Plots and images can be saved to a file by using R's built-in graphics devices.
+
+Use `pdf()` to initialize a PDF graphics device, create the plot, and then use `dev.off()` to turn off the graphics device.
+
+Any plots printed while the graphics device is active will be saved to the specified file(s).
+
+
+```{r pdf, eval=FALSE}
+pdf_file <- paste0(tempfile(), ".pdf")
+
+pdf(file=pdf_file, width=9, height=4)
+image(mse, mz=1200)
+dev.off()
+```
+
+Graphics devices for `png()`, `jpeg()`, `bmp()`, and `tiff()` are also available. See their documentation for usage.
+
 
 ## Dark themes
 
@@ -550,7 +571,21 @@ lightmode()
 The default for new plots can be changed by `options(Cardinal.dark=TRUE)`.
 
 
+## A note on plotting speed
 
+While plotting spectra should typically be fast for most datasets regardless of data format, plotting images will typically be slower for out-of-memory (file-based) datasets and for `MSProcessedImagingExperiment` objects in general.
+
+This is due to the way the spectra are stored in imzML and Analyze files, and the way sparse spectra are stored (regardless of location). Calculating and decompressing the images simply takes longer than reading the spectra.
+
+For the fastest visualization of images, experiments should be coerced to an in-memory `MSContinuousImagingExperiment`.
+
+Also note that all *Cardinal 2* visualizations produce a `print()`-able object that can be assigned to a variable and `print()`-ed later without the need to read the data again.
+
+```{r print, eval=FALSE}
+g <- image(mse, mz=1200)
+print(g)
+```
+This is useful for re-creating or updating plots without accessing the data again.
 
 
 
@@ -651,15 +686,15 @@ Some processing may be necessary to ensure datasets are compatible before combin
 
 ## Getters and setters
 
-Most components of an `MSImagingExperiment` that can be accessed through getter functions like `pixelData()`, `featureData()`, and `imageData()`, can also be re-assigned with analogous setter functions.
+Most components of an `MSImagingExperiment` that can be accessed through getter functions like `pixelData()`, `featureData()`, and `imageData()`, can also be re-assigned with analogous setter functions. These can likewise be used to get and set columns of the pixel and feature metadata.
 
-These can likewise be used to get and set columns of the pixel and feature metadata.
+`pData()` and `fData()` are aliases for `pixelData()` and `featureData()`, respectively.
 
-Note that `pData()` and `fData()` are aliases for `pixelData()` and `featureData()`, respectively.
+The `$` operator will access the corresponding columns of `pixelData()`.
 
 ```{r pData-set}
-pData(mse)$region <- makeFactor(circle=pData(mse)$circle,
-										bg=!pData(mse)$circle)
+mse$region <- makeFactor(circle=mse$circle,
+							bg=!mse$circle)
 pData(mse)
 ```
 
@@ -694,7 +729,7 @@ centroided(mse) <- FALSE
 
 The *dplyr* package introduced popular verbs for manipulating data, and promoted widespread adoption of the expressive `%>%` piping operator used for chaining verbs together.
 
-*Cardinal 2* implements the verbs *dplyr* `filter()`, `select()`, `mutate()`, and `summarize()` for `MSImagingExperiment` objects.
+*Cardinal 2* implements the *dplyr* verbs `filter()`, `select()`, `mutate()`, and `summarize()` for `MSImagingExperiment` objects.
 
 - `filter()` subsets an `MSImagingExperiment` by row, i.e., mass features
 
@@ -730,7 +765,7 @@ mse %>%
 	summarize(mean(.))
 ```
 
-## Collect into memory
+## Collect data into memory
 
 By default, *Cardinal 2* does not load the spectra from imzML and Analyze files into memory, but retrieves them from files when necessary.
 
@@ -746,14 +781,20 @@ spectra(mse)
 imageData(mse)
 ```
 
-Use `collect()` to pull all `imageData()` elements in an `MSImagingExperiment` into memory as R matrices.
+Use `collect()` to pull all `imageData()` elements in an `MSImagingExperiment` into memory.
 
 ```{r}
 mse <- collect(mse)
 imageData(mse)
 ```
 
+By default, the spectra from `MSProcessedImagingExperiment` objects will still be represented as sparse matrices after using `collect()`.
 
+To coerce sparse spectra to an R matrix as well, use `as.matrix=TRUE`.
+
+```{r eval=FALSE}
+mse3 <- collect(mse3, as.matrix=TRUE)
+```
 
 
 # Pre-processing
@@ -1102,6 +1143,9 @@ smean <- featureApply(mse, mean)
 
 plot(mse, smean ~ mz)
 ```
+
+Note that `featureApply()` will typically be slower than `pixelApply()` for out-of-memory data for `MSProcessedImagingExperiment` objects, due to the way the data is stored.
+
 
 ## Using `spatialApply()`
 

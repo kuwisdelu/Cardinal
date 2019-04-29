@@ -103,6 +103,8 @@ MSImagingExperiment(
 
         \item{\code{features(object, ..., mz)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
 
+        \item{\code{collect(x, ...)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
+
         \item{\code{msiInfo(object, ...)}:}{Returns metadata for writing the object to imzML.}
 
         \item{\code{rbind(...)}, \code{cbind(...)}:}{Combine \code{MSImagingExperiment} objects by row or column.}

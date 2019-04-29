@@ -1,4 +1,15 @@
 
+
+CHANGES IN VERSION 2.1.28 [2019-4-28]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed 'topFeatures' method for 'SpatialShrunkenCentroids2'
+        where 'statistic' was actually printing the 'centers'
+    o The 'collect' method for 'MSProcessedImagingExperiment'
+        now preserves sparseness when pulling into memory
+
 CHANGES IN VERSION 2.1.27 [2019-4-26]
 -----------------------------------
 

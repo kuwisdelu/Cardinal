@@ -43,6 +43,8 @@
 \alias{combiner,MSProcessedImagingSpectraList-method}
 \alias{combiner<-,MSProcessedImagingSpectraList-method}
 
+\alias{collect,MSProcessedImagingExperiment-method}
+
 \title{MSProcessedImagingExperiment: Dense mass spectrometry imaging experiments}
 
 \description{
@@ -66,6 +68,8 @@
         \item{\code{tolerance(object)}, \code{tolerance(object) <- value}:}{Get or set the binning tolerance for sparse spectra or peaks.}
 
         \item{\code{combiner(object)}, \code{combiner(object) <- value}:}{Get or set the binning function for sparse spectra or peaks.}
+
+        \item{\code{collect(x, ..., as.matrix=FALSE)}:}{Pull all data elements of \code{imageData} into memory as sparse matrices.}
     }
 }
 

@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 2_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "April 26, 2019"
+date: "Revised: April 28, 2019"
 output:
   BiocStyle::html_document:
   toc: true
@@ -300,7 +300,9 @@ Plotting t-statistics shows the first three features have much higher abundance 
 plot(ssc2, values="statistic", lwd=2)
 ```
 
-
+```{r ssc-top-2}
+topFeatures(ssc2, class=="B") %>% select(-diff, -r, -k, -s)
+```
 
 
 
@@ -381,7 +383,7 @@ summary(stest)
 
 As with `meansTest()`, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
 
-If an automated method for `classControl` was used, it can be helpful to plot the mapping to see what segments were used.
+If an automated method for `classControl` was used, it can be helpful to plot the mapping to see what segments were used to represent each group.
 
 ```{r test-segment-mapping}
 image(stest, model=list(feature=3), values="mapping")

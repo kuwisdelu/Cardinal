@@ -20,8 +20,8 @@ setMethod("topFeatures", "SpatialShrunkenCentroids2",
 				out1 <- DataFrame(as.list(fData(object)), r=ri, k=ki, s=si)
 			}
 			out2 <- DataFrame(class=class,
-				centers=as.vector(res$centers),
-				statistic=as.vector(res$centers))
+				centers=as.numeric(res$centers),
+				statistic=as.numeric(res$statistic))
 			cbind(out1, out2)
 		}, r, k, s, resultData(object), SIMPLIFY=FALSE)
 		if ( !is.null(names(model)) ) {
