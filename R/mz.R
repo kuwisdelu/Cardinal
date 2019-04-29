@@ -14,6 +14,10 @@ setMethod("mz", "missing",
 		tol <- switch(units,
 			ppm = c(relative = halfwidth * 1e-6),
 			mz = c(absolute = halfwidth))
+		res <- switch(units,
+			ppm = c(ppm = halfwidth),
+			mz = c(mz = 2 * halfwidth))
 		attr(mz, "tolerance") <- tol
+		attr(mz, "resolution") <- res
 		mz
 	})

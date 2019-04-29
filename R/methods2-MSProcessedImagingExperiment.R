@@ -18,8 +18,14 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 			mz(object@featureData) <- value
 		}
 		keys(object@imageData) <- value
-		if ( !is.null(attr(value, "tolerance")) )
-			tolerance(object@imageData) <- attr(value, "tolerance")
+		res <- attr(value, "resolution")
+		tol <- attr(value, "tolerance")
+		if ( !is.null(res) && is.null(tol) )
+			tol <- switch(names(res),
+				ppm = c(relative = res * 1e-6),
+				mz = c(absolute = res / 2))
+		if ( !is.null(tol) )
+			tolerance(object@imageData) <- tol
 		if ( validObject(object) )
 			object
 	})
