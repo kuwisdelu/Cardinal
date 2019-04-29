@@ -515,7 +515,7 @@ Any dataset with 3 or more spatial coordinates (columns in `coord()`), can be pl
 
 ## Region-of-interest selection
 
-Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run. Otherwise, the form of `selectROI()` is the same as `image()`.
+Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run, otherwise results may be unexpected. The form of `selectROI()` is the same as `image()`.
 
 ```{r select-ROI, eval=FALSE}
 sampleA <- selectROI(mse, mz=1200, subset=run(mse) == "run0")
@@ -620,7 +620,7 @@ features(mse, 1199 < mz & mz < 1201)
 # get column indices corresponding to x = 10, y = 10 in all runs
 pixels(mse, coord=list(x=10, y=10))
 
-# get column indices corresponding to x <= 3, y <= 10 in "run0"
+# get column indices corresponding to x <= 3, y <= 3 in "run0"
 pixels(mse, x <= 3, y <= 3, run == "run0")
 ```
 
