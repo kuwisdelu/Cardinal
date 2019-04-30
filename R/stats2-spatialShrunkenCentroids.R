@@ -175,9 +175,20 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
 		resultData(to) <- endoapply(resultData(to), function(res) {
-			rename(res, tstatistics="statistic", classes="class",
+			res <- rename(res, tstatistics="statistic", classes="class",
 				probabilities="probability")
+			if ( is.null(res$y) ) {
+				res$class <- droplevels(res$class)
+				i <- as.integer(unique(res$class))
+				res$centers <- res$centers[,i,drop=FALSE]
+				res$statistic <- res$statistic[,i,drop=FALSE]
+				res$probability <- res$probability[,i,drop=FALSE]
+				res$scores <- res$scores[,i,drop=FALSE]
+			}
+			res
 		})
+		metadata(to)$method <- resultData(to, 1, "method")
+		metadata(to)$distance <- "chebyshev"
 		if ( !is.null(resultData(to, 1, "y")) )
 			pixelData(to)$..response.. <- resultData(to, 1, "y")
 		to

@@ -49,6 +49,8 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 		to <- .coerce_ResultImagingExperiment(from, "SpatialKMeans2")
 		metadata(to)$mapping <- list(pixel="cluster",
 			feature=c("centers", "betweenss", "withinss"))
+		metadata(to)$method <- resultData(to, 1, "method")
+		metadata(to)$distance <- "chebyshev"
 		to
 	})
 

@@ -162,6 +162,7 @@ setAs("PLS", "PLS2",
 			} else {
 				metadata(to)$type <- "regression"
 			}
+			metadata(to)$method <- "pls"
 			if ( is.null(dim(y)) )
 				pixelData(to)$..response.. <- y
 		}
@@ -183,6 +184,7 @@ setAs("OPLS", "OPLS2",
 			} else {
 				metadata(to)$type <- "regression"
 			}
+			metadata(to)$method <- "opls"
 			if ( is.null(dim(y)) )
 				pixelData(to)$..response.. <- y
 		}
