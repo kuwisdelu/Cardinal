@@ -7,7 +7,7 @@ setMethod("mz", "missing",
 		units <- match.arg(units)
 		if ( missing(by) )
 			by <- switch(units, ppm=resolution * 2, mz=resolution)
-		halfwidth <- by / 2
+		halfwidth <- c(by / 2)
 		mz <- switch(units,
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
 			mz = seq(from=from, to=to, by=2 * halfwidth))
