@@ -796,6 +796,25 @@ To coerce sparse spectra to an R matrix as well, use `as.matrix=TRUE`.
 mse3 <- collect(mse3, as.matrix=TRUE)
 ```
 
+## Coercion to/from other classes
+
+Use `as()` to coerce between different `MSImagingExperiment` sub-classes.
+
+```{r coerce}
+mse3
+as(mse3, "MSContinuousImagingExperiment")
+```
+
+This will often change the underlying data representation, so some information may be lost depending on the coercion.
+
+Objects of the older `MSImageSet` class can also be coerced to `MSImagingExperiment` this way.
+
+```{r coerce-2, eval=FALSE}
+# requires CardinalWorkflows installed
+data(cardinal, package="CardinalWorkflows")
+cardinal2 <- as(cardinal, "MSImagingExperiment")
+```
+
 
 # Pre-processing
 
