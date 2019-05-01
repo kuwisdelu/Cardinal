@@ -179,7 +179,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 				probabilities="probability")
 			if ( is.null(res$y) ) {
 				res$class <- droplevels(res$class)
-				i <- as.integer(unique(res$class))
+				i <- seq_along(levels(res$class))
 				res$centers <- res$centers[,i,drop=FALSE]
 				res$statistic <- res$statistic[,i,drop=FALSE]
 				res$probability <- res$probability[,i,drop=FALSE]
@@ -236,11 +236,13 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
 	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
-	# suppress progress in inner parallel loop
+	# suppress messages in inner parallel loop
 	verbose <- getOption("Cardinal.verbose")
 	options(Cardinal.verbose=FALSE)
-	on.exit(options(Cardinal.verbose=verbose))
+	on.exit({
+		options(Cardinal.progress=progress)
+		options(Cardinal.verbose=verbose)
+	})
 	# calculate class centers
 	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
 	centers <- as.matrix(centers, slots=FALSE)
