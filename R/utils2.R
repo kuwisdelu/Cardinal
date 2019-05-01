@@ -377,7 +377,7 @@
 }
 
 ## Format m/z values
-.format.mz <- function(mz, digits=2) {
+.format.mz <- function(mz, digits=4) {
 	diffmz <- diff(mz)
 	if ( length(diffmz) > 0 ) {
 		mindiff <- signif(min(diffmz), 1)

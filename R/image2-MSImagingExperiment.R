@@ -18,12 +18,12 @@ setMethod("image",
 				mz <- Cardinal::mz(x)[feature]
 			if ( missing(plusminus) || all(plusminus == 0) ) {
 				if ( is.null(featureNames(x)) ) {
-					feature.groups <- .format.mz(mz(x)[feature], 4)
+					feature.groups <- .format.mz(mz(x)[feature])
 				} else {
 					feature.groups <- featureNames(x)[feature]
 				}
 			} else {
-				feature.groups <- paste0(.format.mz(mz, 4), " \u00b1 ", abs(plusminus))
+				feature.groups <- paste0(.format.mz(mz), " \u00b1 ", abs(plusminus))
 				dmz <- abs(plusminus)
 				feature.list <- lapply(seq_along(mz), function(i) {
 					mzi <- mz[i]
@@ -31,7 +31,7 @@ setMethod("image",
 					if ( length(f) == 0L ) {
 						mznew <- mz(x)[features(x, mz=mzi)]
 						.warning("no features in range; re-centering m/z ", mzi, " to ", mznew)
-						feature.groups[i] <<- paste0(.format.mz(mznew, 4), " \u00b1 ", dmz)
+						feature.groups[i] <- paste0(.format.mz(mznew), " \u00b1 ", dmz)
 						f <- which(mz(x) > mznew - dmz & mz(x) < mznew + dmz)
 					}
 					f
