@@ -11,7 +11,7 @@ Description: Implements statistical & computational tools for analyzing
 License: Artistic-2.0
 Depends: BiocGenerics, BiocParallel, EBImage, graphics,
 		methods, S4Vectors, stats, ProtGenerics
-Imports: Biobase, dplyr, grid, irlba, lattice, Matrix,
+Imports: Biobase, dplyr, irlba, lattice, Matrix,
 		matter, magrittr, mclust, nlme, parallel,
 		signal, sp, stats4, utils, viridisLite
 Suggests: BiocStyle, testthat, knitr, rmarkdown

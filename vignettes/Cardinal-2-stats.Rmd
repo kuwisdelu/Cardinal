@@ -19,7 +19,6 @@ BiocStyle::markdown()
 library(Cardinal)
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
-options(width=160)
 register(SerialParam())
 RNGkind("Mersenne-Twister")
 ```

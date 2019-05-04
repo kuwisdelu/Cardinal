@@ -2,10 +2,10 @@
 TODO for Cardinal package
 -------------------------
  
+- Write processed data directly to imzML while processing (?)
+- A way to "compile" images for faster image loading?
 - Multimodal image registration (w/ optical images, etc.)
-- Find a way to cache images for faster loading (?)
-- Add ggplot2 and lattice graphics engine options (?)
-- Shiny GUI
+- "MultiImagingExperiment" class for multimodal experiments
 
 BUGS for Cardinal package
 -------------------------

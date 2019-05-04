@@ -33,12 +33,5 @@ globalVariables(".Index")
 }
 
 .onAttach <- function(libname, pkgname) {
-	msg0 <- paste("\nWelcome to Cardinal (version ",
-		packageVersion("Cardinal"), ")\n\n", sep="")
-	msg1 <- "This is a big update with lots of changes!
-			See what's new by viewing 'vignette(\"Cardinal-2-guide\")'."
-	msg1 <- strwrap(paste(msg1, collapse=""), exdent=4, indent=4)
-	packageStartupMessage(msg0, paste(msg1, collapse="\n"), "\n")
-	addVigs2WinMenu("Cardinal")
 	.log("Cardinal attached.")
 }

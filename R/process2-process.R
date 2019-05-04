@@ -133,7 +133,6 @@ setMethod("process", "SparseImagingExperiment",
 			labels <- paste0("[", queue$info$label, "]")
 			.message("processing ", paste0(labels, collapse=" "), " ...")
 		}
-		fdata <- force(featureData(object))
 		if ( by_pixels ) {
 			ans <- pixelApply(object, procfun,
 				.list=proclist, .plot=plot, .par=par,

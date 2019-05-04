@@ -104,9 +104,6 @@ importFrom("viridisLite",
 	"inferno",
 	"plasma")
 
-importFrom("grid",
-	"grid.raster")
-
 importFrom("irlba",
 	"irlba")
 
