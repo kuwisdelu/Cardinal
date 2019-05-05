@@ -88,8 +88,8 @@
 \S4method{plot}{SparseResultImagingExperiment,missing}(x, formula,
         model = modelData(x),
         superpose = TRUE,
-        column,
         \dots,
+        column,
         xlab, ylab,
         type = 'h',
         subset = TRUE)
