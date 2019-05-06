@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.2.1 [2019-5-6]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in plotting results where 'column' argument
+        would get matched before the 'col' argument
+
 CHANGES IN VERSION 2.1.30 [2019-4-30]
 -----------------------------------
 
