@@ -17,9 +17,10 @@ setMethod("process", "MSImagingExperiment",
 				return(object)
 			}
 			if ( "feature" %in% queue$info$kind )
-				.stop("imzML output not allowed for feature processing")
+				.stop("imzML output not allowed for feature processing: ",
+					paste0(queue$info$label[queue$info$kind == "feature"], collapse=", "))
 			if ( "global" %in% queue$info$kind )
-				.warning("imzML output may be unexpected for global processing: ",
+				.stop("imzML output may be unexpected for global processing: ",
 					paste0(queue$info$label[queue$info$kind == "global"], collapse=", "))
 			# make file names
 			path <- normalizePath(outpath, mustWork=FALSE)
@@ -35,23 +36,36 @@ setMethod("process", "MSImagingExperiment",
 				mustWork=FALSE)
 			if ( file.exists(ibdpath) )
 				.stop("file ", ibdpath, " already exists")
-			.message("using ibd file '", ibdpath, "'")
 			# make uuid
 			id <- uuid(uppercase=FALSE)
 			pid <- matter_vec(length=16, paths=ibdpath, filemode="rw", datamode="raw")
 			pid[] <- id$bytes
 			# check output type
 			if ( "peakPick" %in% queue$info$label ) {
-				.message("peakPick detected in processing queue")
+				.message("[peakPick] detected in processing queue")
 				.message("assuming 'processed' imzML output")
 			} else {
 				.message("assuming 'continuous' imzML output")
-				.message("writing m/z values")
+				fmeta <- metadata(featureData(object))
+				if ( "mzBin" %in% queue$info$label ) {
+					.message("detected [reference mz]")
+					mzref <- fmeta[["reference mz"]]
+				} else if ( "peakBin" %in% queue$info$label ) {
+					.message("detected [reference peaks]")
+					mzref <- fmeta[["reference peaks"]]
+				} else {
+					mzref <- mz(object)
+				}
+				if ( is.numeric(mzref) ) {
+					.message("writing m/z values")
+				} else {
+					.stop("problem with m/z values")
+				}
 				warn <- getOption("matter.cast.warning")
 				options(matter.cast.warning=FALSE)
-				pmz <- matter_vec(offset=16, extent=nrow(object),
+				pmz <- matter_vec(offset=16, extent=length(mzref),
 					paths=ibdpath, filemode="rw", datamode="float")
-				pmz[] <- mz(object)
+				pmz[] <- mzref
 				options(matter.cast.warning=warn)
 			}
 			# process

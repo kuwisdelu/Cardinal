@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
  
-- Write processed data directly to imzML while processing (?)
 - A way to "compile" images for faster image loading?
 - Multimodal image registration (w/ optical images, etc.)
 - "MultiImagingExperiment" class for multimodal experiments
