@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 2.2.2 [2019-5-7]
+-----------------------------------
+
+BUG FIXES
+
+    o Removed curly braces around UUID when writing imzML
+
 CHANGES IN VERSION 2.2.1 [2019-5-6]
 -----------------------------------
 
