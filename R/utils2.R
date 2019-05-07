@@ -189,10 +189,13 @@
 
 # Setup plotting layout
 .setup.layout <- function(layout, right = 0, byrow = TRUE, ...) {
-	if ( length(layout) < 1L )
+	layout <- as.integer(layout)
+	if ( length(layout) <= 1L ) {
 		layout <- rep_len(c(layout, 1L), 2)
-	if ( length(layout) > 2L )
-		byrow <- layout[3L] <= 1L
+	} else if ( length(layout) > 2L ) {
+		byrow <- as.logical(layout[3L])
+	}
+	layout <- layout[c(1,2)]
 	par(mar=c(2.6, 2.6, 2.1, 1.1 + right), mgp=c(1.4, 0.6, 0),
 		cex.axis=0.8, cex.lab=0.8)
 	if ( byrow ) {
@@ -200,14 +203,15 @@
 	} else {
 		par(mfcol=layout)
 	}
+	list(layout=layout, byrow=byrow)
 }
 
 # Auto plotting layout
-.auto.layout <- function(x, ...) {
+.auto.layout <- function(x, byrow = TRUE, ...) {
 	n <- .num.panels(x)
 	nc <- ceiling(sqrt(n))
 	nr <- ceiling(n / nc)
-	.setup.layout(c(nr, nc), ...)
+	.setup.layout(c(nr, nc), byrow=byrow, ...)
 }
 
 # Number of panels in a facet plot
@@ -283,7 +287,7 @@
 }
 
 # Draw colorkeys
-.draw.colorkey <- function(colorkey, text, col, last = TRUE) {
+.draw.colorkey <- function(colorkey, text, col, layout = NULL) {
 	args <- switch(class(colorkey),
 		"logical"=list(),
 		"character"=list(x=colorkey),
@@ -333,7 +337,17 @@
 			axis(side=4, las=2)
 			mfg <- par()$mfg
 			par(old.par)
-			par(mfg=mfg, new=FALSE)
+			if ( is.null(layout) ) {
+				par(mfg=mfg, new=FALSE)
+			} else {
+				if ( isFALSE(layout$byrow) ) {
+					par(mfcol=layout$layout,
+						mfg=mfg, new=FALSE)
+				} else {
+					par(mfrow=layout$layout,
+						mfg=mfg, new=FALSE)
+				}
+			}
 			invisible()
 		}
 	}

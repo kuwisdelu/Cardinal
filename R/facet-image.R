@@ -286,9 +286,11 @@ print.facet.image <- function(x, ...) {
 		padding <- 2
 	}
 	if ( isTRUE(obj$layout) ) {
-		.auto.layout(obj, right=padding)
+		layout <- .auto.layout(obj, right=padding)
 	} else if ( is.numeric(obj$layout) ) {
-		.setup.layout(obj$layout, right=padding)
+		layout <- .setup.layout(obj$layout, right=padding)
+	} else {
+		layout <- NULL
 	}
 	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
 		darkmode()
@@ -318,6 +320,7 @@ print.facet.image <- function(x, ...) {
 	}
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
+			new <- !sublayer$add
 			if ( obj$is3d ) {
 				args <- c(list(
 					x=sublayer$x, y=sublayer$y, z=sublayer$z,
@@ -333,7 +336,7 @@ print.facet.image <- function(x, ...) {
 				if ( isTRUE(args$useRaster) )
 					args$z <- args$z[,ncol(args$z):1L,drop=FALSE]
 				do.call("image", args)
-			} else if ( !sublayer$add ) {
+			} else if ( new ) {
 				par <- obj$par[-which(names(obj$par) == "zlim")]
 				args <- c(list(x=0, y=0, type='n'), par)
 				do.call("plot", args)
@@ -348,7 +351,7 @@ print.facet.image <- function(x, ...) {
 		colorkey <- attr(layer, "colorkey")
 		if ( !is.null(colorkey) )			
 			.draw.colorkey(colorkey$colorkey,
-				colorkeyrange, colorkey$col)
+				colorkeyrange, colorkey$col, layout)
 	}
 	.Cardinal$lastplot <- x
 	invisible(x)

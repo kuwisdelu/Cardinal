@@ -174,9 +174,11 @@ facet.plot <- function(args, formula, obj,
 print.facet.plot <- function(x, ...) {
 	obj <- x
 	if ( isTRUE(obj$layout) ) {
-		.auto.layout(obj)
+		layout <- .auto.layout(obj)
 	} else if ( is.numeric(obj$layout) ) {
-		.setup.layout(obj$layout)
+		layout <- .setup.layout(obj$layout)
+	} else {
+		layout <- NULL
 	}
 	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
 		darkmode()
@@ -202,6 +204,7 @@ print.facet.plot <- function(x, ...) {
 	nil$type <- 'n'
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
+			new <- !sublayer$add
 			if ( !all(is.na(sublayer$x)) ) {
 				args <- c(list(
 					x=sublayer$x, y=sublayer$y,
@@ -209,7 +212,6 @@ print.facet.plot <- function(x, ...) {
 			} else {
 				args <- nil
 			}
-			new <- !sublayer$add
 			if ( new ) {
 				do.call("plot", nil)
 				if ( !is.null(obj$preplot) ) {
@@ -217,7 +219,7 @@ print.facet.plot <- function(x, ...) {
 					e <- obj$preplot$envir
 					eval(call, envir=e)
 				}
-			}	
+			}
 			do.call("points", args)
 		}
 		strip <- attr(layer, "strip")
