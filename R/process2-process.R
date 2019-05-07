@@ -10,7 +10,7 @@ setMethod("process", "MSImagingExperiment",
 			if ( !is.character(outpath) )
 				.stop("valid outpath must be provided for imzML = TRUE")
 			if ( nlevels(run(object)) > 1 )
-				.stop("imzML output only possible for single-run experiments")
+				.stop("process() imzML output only possible for single-run experiments")
 			queue <- .pendingQueue(processingData(object))
 			if ( is.null(queue) ) {
 				.warning("no pending processing steps to apply")
