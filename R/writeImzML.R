@@ -2,11 +2,9 @@
 #### Write imzML files ####
 ## ----------------------
 
-writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
+writeImzML <- function(object, name, folder = getwd(),
 		mz.type = "32-bit float", intensity.type = "32-bit float", ...)
 	{
-		if ( merge )
-			.stop("option 'merge = TRUE' is not supported")
 		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
@@ -87,7 +85,7 @@ writeImzML <- function(object, name, folder = getwd(), merge = FALSE,
 	}
 	options(matter.cast.warning=warn)
 	hash <- checksum(pspectra, algo="sha1")
-	metadata(info)[["universally unique identifier"]] <- paste0("{", id$string, "}")
+	metadata(info)[["universally unique identifier"]] <- id$string
 	metadata(info)[["ibd SHA-1"]] <- tolower(as.character(hash))
 	info
 }

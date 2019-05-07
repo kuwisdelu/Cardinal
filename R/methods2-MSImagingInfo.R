@@ -18,7 +18,8 @@ setValidity("MSImagingInfo", .valid.MSImagingInfo)
 # create MSImagingInfo
 
 setMethod("msiInfo", "MSImageSet",
-	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
+	function(object, mz.type = "32-bit float",
+					intensity.type = "32-bit float", ...)
 	{
 		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
 		info@metadata[["ibd binary type"]] <- "continuous"
@@ -27,7 +28,8 @@ setMethod("msiInfo", "MSImageSet",
 	})
 
 setMethod("msiInfo", "MSImagingExperiment",
-	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
+	function(object, mz.type = "32-bit float",
+					intensity.type = "32-bit float", ...)
 	{
 		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
 		info@metadata[["ibd binary type"]] <- "continuous"
@@ -38,9 +40,14 @@ setMethod("msiInfo", "MSImagingExperiment",
 	})
 
 setMethod("msiInfo", "MSContinuousImagingExperiment",
-	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
+	function(object, mz.type = "32-bit float",
+					intensity.type = "32-bit float", new = TRUE, ...)
 	{
-		info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
+		if ( new ) {
+			info <- .make.MSContinuousImagingInfo(object, mz.type, intensity.type)
+		} else {
+			info <- .get.MSContinuousImagingInfo(object)
+		}
 		info@metadata[["ibd binary type"]] <- "continuous"
 		info@metadata <- append(info@metadata, metadata(object))
 		info@metadata <- info@metadata[unique(names(info@metadata))]
@@ -49,9 +56,14 @@ setMethod("msiInfo", "MSContinuousImagingExperiment",
 	})
 
 setMethod("msiInfo", "MSProcessedImagingExperiment",
-	function(object, mz.type = "32-bit float", intensity.type = "32-bit float")
+	function(object, mz.type = "32-bit float",
+					intensity.type = "32-bit float", new = TRUE, ...)
 	{
-		info <- .make.MSProcessedImagingInfo(object, mz.type, intensity.type)
+		if ( new ) {
+			info <- .make.MSProcessedImagingInfo(object, mz.type, intensity.type)
+		} else {
+			info <- .get.MSProcessedImagingInfo(object)
+		}
 		info@metadata[["ibd binary type"]] <- "processed"
 		info@metadata <- append(info@metadata, metadata(object))
 		info@metadata <- info@metadata[unique(names(info@metadata))]
@@ -59,7 +71,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 			info
 	})
 
-.make.MSContinuousImagingInfo <- function(x, mz.type, intensity.type) {
+.make.MSContinuousImagingInfo <- function(x, mz.type, intensity.type)
+{
 	mz.type <- match.arg(mz.type,
 		choices=c("32-bit float", "64-bit float"))
 	intensity.type <- match.arg(intensity.type,
@@ -92,7 +105,64 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		metadata=experimentMetadata)
 }
 
-.make.MSProcessedImagingInfo <- function(x, mz.type, intensity.type) {
+.get.MSContinuousImagingInfo <- function(x) {
+	if ( !is(iData(x), "matter_matc") )
+		.stop("intensity data are not a matter_matc object")
+	if ( length(file) > 1 )
+		.stop("intensity data are from more than one file")
+	ibd <- as.list(atomdata(iData(x)))
+	mz.width <- (ibd$offset[1] - 16L) / nrow(x)
+	if ( mz.width == 4 ) {
+		mz.type <- "32-bit float"
+	} else if ( mz.width == 8 ) {
+		mz.type <- "64-bit float"
+	} else {
+		.stop("undefined m/z array byte width: ", mz.width)
+	}
+	pmz <- matter_vec(offset=16, extent=nrow(x),
+		datamode=Ctypeof(mz.type), paths=paths(iData(x)))
+	mzcheck <- all.equal(pmz[], mz(x), tolerance=1e-3,
+						check.attributes=FALSE)
+	if ( isTRUE(mzcheck) ) {
+		mzArrayList <- DataFrame(
+			"external offset"=unname(rep(16, ncol(x))),
+			"external array length"=unname(rep(nrow(x), ncol(x))),
+			"external encoded length"=unname(rep(Csizeof(mz.type) * nrow(x), ncol(x))),
+			"binary data type"=rep(mz.type, ncol(x)),
+			check.names=FALSE)
+	} else {
+		.stop("m/z array in binary file do not match mz() of object")
+	}
+	intensity.mode <- as.character(unique(ibd$datamode))
+	if ( length(intensity.mode) != 1 )
+		.stop("multiple binary types found for intensity array")
+	intensity.type <- Nametypeof(intensity.mode)
+	ibd$extent <- as.integer(ibd$extent)
+	intensityArrayList <- DataFrame(
+		"external offset"=ibd$offset,
+		"external array length"=ibd$extent,
+		"external encoded length"=unname(Csizeof(intensity.type) * ibd$extent),
+		"binary data type"=rep(intensity.type, ncol(x)),
+		check.names=FALSE)
+	scanList <- DataFrame(coord(x)[c(1,2)])
+	positionNames <- c("position x", "position y", "position z")
+	names(scanList) <- positionNames[seq_along(scanList)]
+	spectrumRepresentation <- ifelse(centroided(x),
+		"centroid spectrum", "profile spectrum")
+	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
+	id <- matter_vec(length=16, paths=paths(iData(x)), datamode="raw")
+	hash <- checksum(iData(x), algo="sha1")
+	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
+	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
+	new("MSImagingInfo",
+		scanList=scanList,
+		mzArrayList=mzArrayList,
+		intensityArrayList=intensityArrayList,
+		metadata=experimentMetadata)
+}
+
+.make.MSProcessedImagingInfo <- function(x, mz.type, intensity.type)
+{
 	mz.type <- match.arg(mz.type,
 		choices=c("32-bit float", "64-bit float"))
 	intensity.type <- match.arg(intensity.type,
@@ -122,6 +192,58 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
+	new("MSImagingInfo",
+		scanList=scanList,
+		mzArrayList=mzArrayList,
+		intensityArrayList=intensityArrayList,
+		metadata=experimentMetadata)
+}
+
+.get.MSProcessedImagingInfo <- function(x) {
+	if ( !is(iData(x), "sparse_matc") )
+		.stop("intensity data are not a sparse_matc object")
+	if ( !is(mzData(x), "matter_list") )
+		.stop("m/z array is not a matter_list object")
+	if ( !is(peakData(x), "matter_list") )
+		.stop("intensity array is not a matter_list object")
+	if ( paths(mzData(x)) > 1 || paths(peakData(x)) > 1 )
+		.stop("m/z data or intensity data are from more than one file")
+	if ( paths(mzData(x)) != paths(peakData(x)) )
+		.stop("m/z data and intensity data are from different files")
+	mz.ibd <- as.list(atomdata(mzData(x)))
+	mz.mode <- as.character(unique(mz.ibd$datamode))
+	if ( length(mz.mode) != 1 )
+		.stop("multiple binary types found for intensity array")
+	mz.type <- Nametypeof(mz.mode)
+	mz.ibd$extent <- as.integer(mz.ibd$extent)
+	mzArrayList <- DataFrame(
+		"external offset"=mz.ibd$offset,
+		"external array length"=mz.ibd$extent,
+		"external encoded length"=unname(Csizeof(mz.type) * mz.ibd$extent),
+		"binary data type"=rep(mz.type, ncol(x)),
+		check.names=FALSE)
+	intensity.ibd <- as.list(atomdata(peakData(x)))
+	intensity.mode <- as.character(unique(intensity.ibd$datamode))
+	if ( length(intensity.mode) != 1 )
+		.stop("multiple binary types found for intensity array")
+	intensity.type <- Nametypeof(intensity.mode)
+	intensity.ibd$extent <- as.integer(intensity.ibd$extent)
+	intensityArrayList <- DataFrame(
+		"external offset"=intensity.ibd$offset,
+		"external array length"=intensity.ibd$extent,
+		"external encoded length"=unname(Csizeof(intensity.type) * intensity.ibd$extent),
+		"binary data type"=rep(intensity.type, ncol(x)),
+		check.names=FALSE)
+	scanList <- DataFrame(coord(x)[c(1,2)])
+	positionNames <- c("position x", "position y", "position z")
+	names(scanList) <- positionNames[seq_along(scanList)]
+	spectrumRepresentation <- ifelse(centroided(x),
+		"centroid spectrum", "profile spectrum")
+	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
+	id <- matter_vec(length=16, paths=paths(peakData(x)), datamode="raw")
+	hash <- checksum(peakData(x), algo="sha1")
+	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
+	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
 	new("MSImagingInfo",
 		scanList=scanList,
 		mzArrayList=mzArrayList,

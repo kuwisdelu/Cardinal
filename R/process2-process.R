@@ -2,6 +2,74 @@
 #### Delayed/batched pre-processing ####
 ## -------------------------------------
 
+setMethod("process", "MSImagingExperiment",
+	function(object, ..., delay = FALSE,
+		outpath = NULL, imzML = FALSE)
+	{
+		if ( imzML && !delay ) {
+			if ( !is.character(outpath) )
+				.stop("valid outpath must be provided for imzML = TRUE")
+			if ( nlevels(run(object)) > 1 )
+				.stop("imzML output only possible for single-run experiments")
+			queue <- .pendingQueue(processingData(object))
+			if ( is.null(queue) ) {
+				.warning("no pending processing steps to apply")
+				return(object)
+			}
+			if ( "feature" %in% queue$info$kind )
+				.stop("imzML output not allowed for feature processing")
+			if ( "global" %in% queue$info$kind )
+				.warning("imzML output may be unexpected for global processing: ",
+					paste0(queue$info$label[queue$info$kind == "global"], collapse=", "))
+			# make file names
+			path <- normalizePath(outpath, mustWork=FALSE)
+			name <- basename(file_path_sans_ext(path))
+			folder <- dirname(path)
+			# make imzML filename
+			xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
+				mustWork=FALSE)
+			if ( file.exists(xmlpath) )
+				.stop("file ", xmlpath, " already exists")
+			# make ibd filename
+			ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
+				mustWork=FALSE)
+			if ( file.exists(ibdpath) )
+				.stop("file ", ibdpath, " already exists")
+			.message("using ibd file '", ibdpath, "'")
+			# make uuid
+			id <- uuid(uppercase=FALSE)
+			pid <- matter_vec(length=16, paths=ibdpath, filemode="rw", datamode="raw")
+			pid[] <- id$bytes
+			# check output type
+			if ( "peakPick" %in% queue$info$label ) {
+				.message("peakPick detected in processing queue")
+				.message("assuming 'processed' imzML output")
+			} else {
+				.message("assuming 'continuous' imzML output")
+				.message("writing m/z values")
+				warn <- getOption("matter.cast.warning")
+				options(matter.cast.warning=FALSE)
+				pmz <- matter_vec(offset=16, extent=nrow(object),
+					paths=ibdpath, filemode="rw", datamode="float")
+				pmz[] <- mz(object)
+				options(matter.cast.warning=warn)
+			}
+			# process
+			object <- callNextMethod(object, ..., delay=delay,
+									outpath=ibdpath)
+			# write imzML
+			info <- msiInfo(object, new=FALSE)
+			.message("writing imzML file '", xmlpath, "'")
+			result <- .writeImzML(info, xmlpath)
+			if ( result )
+				.message("done.")
+		} else {
+			object <- callNextMethod(object, ..., delay=delay,
+									outpath=outpath)
+		}
+		object
+	})
+
 setMethod("process", "SparseImagingExperiment",
 	function(object, fun, ...,
 			kind = c("pixel", "feature", "global"),

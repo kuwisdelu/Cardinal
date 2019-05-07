@@ -88,10 +88,11 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		if ( is.null(mass.range) ) {
 			.message("determining mass range...")
 			if ( attach.only ) {
-				mz.range <- range(sapply(mz, range, BPPARAM=BPPARAM))
+				mz.ranges <- sapply(mz, range, BPPARAM=BPPARAM)				
 			} else {
-				mz.range <- range(sapply(mz[], range))
+				mz.ranges <- sapply(mz[], range)
 			}
+			mz.range <- range(mz.ranges[is.finite(mz.ranges)])
 			.message("detected mass range: ",
 				round(mz.range[1L], 4), " to ", round(mz.range[2L], 4))
 		} else {

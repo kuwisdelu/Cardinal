@@ -319,6 +319,32 @@ Ctypeof <- function(type) {
 	}, character(1))
 }
 
+Nametypeof <- function(type) {
+	vapply(type, function(t) {
+		switch(t,
+			`short` = "16-bit integer",
+			`int` = "32-bit integer",
+			`long` = "64-bit integer",
+			`float` = "32-bit float",
+			`double` = "64-bit float",
+			stop("unrecognized binary type"))
+	}, character(1))
+}
+
+make.uuid <- function(id, uppercase=TRUE) {
+	id <- as.character(id)
+	id <- paste(paste0(id[1:4], collapse=""),
+		paste0(id[5:6], collapse=""),
+		paste0(id[7:8], collapse=""),
+		paste0(id[9:10], collapse=""),
+		paste0(id[11:16], collapse=""), sep="-")
+	if ( uppercase ) {
+		toupper(id)
+	} else {
+		tolower(id)
+	}
+}
+
 ## Make an annotation (factor) from regions-of-interest (logical)
 make.annotation <- function(...) {
 	regions <- data.frame(...)
