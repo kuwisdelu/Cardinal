@@ -148,7 +148,7 @@
 }
 
 # Combine many lists/dataframes into a single result
-.bind_as_dflist <- function(data, guess = 100L) {
+.bind_dfs_as_list <- function(data, guess = 100L) {
 	dhead <- lapply(head(data, n=guess), as.data.frame,
 		check.names=FALSE, fix.empty.names=FALSE,
 		check.rows=FALSE, stringsAsFactors=FALSE)
@@ -208,10 +208,20 @@
 
 # Auto plotting layout
 .auto.layout <- function(x, byrow = TRUE, ...) {
-	n <- .num.panels(x)
-	nc <- ceiling(sqrt(n))
-	nr <- ceiling(n / nc)
-	.setup.layout(c(nr, nc), byrow=byrow, ...)
+	if ( length(x$dpages) > 1L && length(x$facets) > 1L ) {
+		nd <- length(x$dpages)
+		nf <- length(x$facets)
+		if ( byrow ) {
+			.setup.layout(c(nd, nf), byrow=byrow, ...)
+		} else {
+			.setup.layout(c(nf, nd), byrow=byrow, ...)
+		}
+	} else {
+		n <- .num.panels(x)
+		nc <- ceiling(sqrt(n))
+		nr <- ceiling(n / nc)
+		.setup.layout(c(nr, nc), byrow=byrow, ...)
+	}
 }
 
 # Number of panels in a facet plot

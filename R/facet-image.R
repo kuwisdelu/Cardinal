@@ -2,8 +2,9 @@
 facet.image <- function(args, formula, obj,
 	facets, groups, superpose, strip, key,
 	normalize.image, contrast.enhance, smooth.image, ...,
-	xlab, xlim, ylab, ylim, zlab, zlim, asp, layout, dark,
-	col, colorscale, colorkey, alpha.power, subset, add)
+	xlab, xlim, ylab, ylim, zlab, zlim, asp,
+	layout, byrow, dark, col, colorscale, colorkey,
+	alpha.power, subset, add)
 {
 	dots <- list(...)
 	e <- environment(formula)
@@ -237,6 +238,10 @@ facet.image <- function(args, formula, obj,
 	}
 	if ( missing(layout) )
 		layout <- TRUE
+	if ( missing(byrow) )
+		byrow <- TRUE
+	if ( !is.null(layout) )
+		layout <- list(layout=layout, byrow=byrow)
 	if ( missing(xlim) || is.null(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) || is.null(ylim) )
@@ -285,10 +290,12 @@ print.facet.image <- function(x, ...) {
 	} else {
 		padding <- 2
 	}
-	if ( isTRUE(obj$layout) ) {
-		layout <- .auto.layout(obj, right=padding)
-	} else if ( is.numeric(obj$layout) ) {
-		layout <- .setup.layout(obj$layout, right=padding)
+	if ( isTRUE(obj$layout$layout) ) {
+		layout <- .auto.layout(obj,
+			byrow=obj$layout$byrow, right=padding)
+	} else if ( is.numeric(obj$layout$layout) ) {
+		layout <- .setup.layout(obj$layout$layout,
+			byrow=obj$layout$byrow, right=padding)
 	} else {
 		layout <- NULL
 	}

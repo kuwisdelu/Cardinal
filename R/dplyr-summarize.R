@@ -123,7 +123,7 @@ setMethod("summarize", "SparseImagingExperiment",
 		ans <- featureApply(object, .fun=fun,
 			.simplify=FALSE, BPPARAM=BPPARAM)
 	}
-	.bind_as_dflist(ans)
+	.bind_dfs_as_list(ans)
 }
 
 .summarize_stat <- function(object, by, groups, stat, tform, BPPARAM) {

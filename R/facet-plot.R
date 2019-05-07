@@ -1,7 +1,7 @@
 
 facet.plot <- function(args, formula, obj,
 	facets, groups, superpose, strip, key, ...,
-	xlab, xlim, ylab, ylim, layout, dark, col,
+	xlab, xlim, ylab, ylim, layout, byrow, dark, col,
 	subset, preplot, add)
 {
 	dots <- list(...)
@@ -148,6 +148,10 @@ facet.plot <- function(args, formula, obj,
 	}
 	if ( missing(layout) )
 		layout <- TRUE
+	if ( missing(byrow) )
+		byrow <- TRUE
+	if ( !is.null(layout) )
+		layout <- list(layout=layout, byrow=byrow)
 	if ( missing(preplot) )
 		preplot <- NULL
 	if ( missing(xlim) || is.null(xlim) )
@@ -173,10 +177,12 @@ facet.plot <- function(args, formula, obj,
 
 print.facet.plot <- function(x, ...) {
 	obj <- x
-	if ( isTRUE(obj$layout) ) {
-		layout <- .auto.layout(obj)
-	} else if ( is.numeric(obj$layout) ) {
-		layout <- .setup.layout(obj$layout)
+	if ( isTRUE(obj$layout$layout) ) {
+		layout <- .auto.layout(obj,
+			byrow=obj$layout$byrow)
+	} else if ( is.numeric(obj$layout$layout) ) {
+		layout <- .setup.layout(obj$layout$layout,
+			byrow=obj$layout$byrow)
 	} else {
 		layout <- NULL
 	}
