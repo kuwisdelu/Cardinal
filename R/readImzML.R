@@ -4,7 +4,7 @@
 
 readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	mass.range = NULL, resolution = 200, units = c("ppm", "mz"),
-	as = c("MSImagingExperiment", "MSImageSet"),
+	as = c("MSImagingExperiment", "MSImageSet"), parse.only=FALSE,
 	BPPARAM = bpparam(), ...)
 {
 	# check input
@@ -29,6 +29,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	# read imzML file
 	.message("reading imzML file: '", xmlpath, "'")
 	info <- .readImzML(xmlpath)
+	if ( parse.only )
+		return(info)
 	# read ibd file
 	metadata(info)[["files"]] <- c(xmlpath, ibdpath)
 	metadata(info)[["name"]] <- name
@@ -46,7 +48,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	parse <- .Call("C_readImzML", normalizePath(file), PACKAGE="Cardinal")
 	len <- sapply(parse$experimentMetadata, nchar, type="bytes")
 	experimentMetadata <- parse$experimentMetadata[len > 0]
-	new("MSImagingInfo",
+	.MSImagingInfo(
 		scanList=as(parse$scanList, "DataFrame"),
 		mzArrayList=as(parse$mzArrayList, "DataFrame"),
 		intensityArrayList=as(parse$intensityArrayList, "DataFrame"),

@@ -98,7 +98,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
-	new("MSImagingInfo",
+	.MSImagingInfo(
 		scanList=scanList,
 		mzArrayList=mzArrayList,
 		intensityArrayList=intensityArrayList,
@@ -154,7 +154,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	hash <- checksum(iData(x), algo="sha1")
 	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
 	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
-	new("MSImagingInfo",
+	.MSImagingInfo(
 		scanList=scanList,
 		mzArrayList=mzArrayList,
 		intensityArrayList=intensityArrayList,
@@ -192,7 +192,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
-	new("MSImagingInfo",
+	.MSImagingInfo(
 		scanList=scanList,
 		mzArrayList=mzArrayList,
 		intensityArrayList=intensityArrayList,
@@ -244,7 +244,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	hash <- checksum(peakData(x), algo="sha1")
 	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
 	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
-	new("MSImagingInfo",
+	.MSImagingInfo(
 		scanList=scanList,
 		mzArrayList=mzArrayList,
 		intensityArrayList=intensityArrayList,

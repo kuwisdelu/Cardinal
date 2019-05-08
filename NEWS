@@ -1,4 +1,16 @@
 
+CHANGES IN VERSION 2.3.1 [2019-5-8]
+-----------------------------------
+
+NEW FEATURES
+
+    o Output directly to imzML while processing with 'process()'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Improved auto-layout for visualization with multiple runs
+    o Added 'parse.only' option to 'readImzML()' for parsing only
+
 CHANGES IN VERSION 2.2.3 [2019-5-8]
 -----------------------------------
 

@@ -33,7 +33,13 @@
 	\item{\dots}{Additional arguments passed to write functions.}
 }
 \details{
-	The \code{writeImzML} function currently only supports writing the 'continuous' format. Exporting the metadata is lossy, and not all metadata will be preserved.
+	The \code{writeImzML} function supports writing both the 'continuous' and 'processed' formats.
+
+	Exporting the metadata is lossy, and not all metadata will be preserved. If exporting an object that was originally imported from an imzML file, any metadata that appears in \code{metadata()} of the object will be preserved when writing.
+
+	Different experimental runs are written to separate files.
+
+	The imzML files can be modified after writing (such as to add additional experimental metadata) using the Java-based imzMLValidator application: https://gitlab.com/imzML/imzMLValidator/.
 }
 \value{
 	\code{TRUE} if the file was written successfully.
