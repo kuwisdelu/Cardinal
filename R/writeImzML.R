@@ -120,7 +120,6 @@ writeImzML <- function(object, name, folder = getwd(),
 			</referenceableParamGroup>
 			<referenceableParamGroup id="scan1">
 				<cvParam cvRef="MS" accession="MS:1000093" name="increasing m/z scan" value=""/>
-				<cvParam cvRef="MS" accession="MS:1000095" name="linear" value=""/>
 			</referenceableParamGroup>
 			<referenceableParamGroup id="mzArray">
 				<cvParam cvRef="MS" accession="MS:1000576" name="no compression" value=""/>
@@ -147,12 +146,15 @@ writeImzML <- function(object, name, folder = getwd(),
 			<scanSettings id="scansettings1">
 				<cvParam cvRef="IMS" accession="IMS:1000042" name="max count of pixel x" value="%d"/>
 				<cvParam cvRef="IMS" accession="IMS:1000043" name="max count of pixel y" value="%d"/>
+				<cvParam cvRef="IMS" accession="IMS:1000044" name="max dimension x" value="%d"/>
+				<cvParam cvRef="IMS" accession="IMS:1000045" name="max dimension y" value="%d"/>
 				<cvParam cvRef="IMS" accession="IMS:1000046" name="pixel size x" value="%f"/>
 				<cvParam cvRef="IMS" accession="IMS:1000047" name="pixel size y" value="%f"/>
 			</scanSettings>
 		</scanSettingsList>
 		<instrumentConfigurationList count="1">
 			<instrumentConfiguration id="IC1">
+				<cvParam cvRef="MS" accession="MS:1000031" name="instrument model"/>
 		    </instrumentConfiguration>
 		</instrumentConfigurationList>
 		<dataProcessingList count="1">
@@ -187,8 +189,10 @@ writeImzML <- function(object, name, folder = getwd(),
 		</run>
 	</mzML>'
 	sprintf(mzml, version,
-		"max count of x" = as.integer(max(scans(x)[["position x"]])),
-		"max count of y" = as.integer(max(scans(x)[["position y"]])),
+		"max count of pixel x" = as.integer(length(unique(scans(x)[["position x"]]))),
+		"max count of pixel y" = as.integer(length(unique(scans(x)[["position y"]]))),
+		"max dimension x" = as.integer(max(scans(x)[["position x"]])),
+		"max dimension y" = as.integer(max(scans(x)[["position y"]])),
 		"pixel size x" = min(diff(sort(unique(scans(x)[["position x"]])))),
 		"pixel size x" = min(diff(sort(unique(scans(x)[["position y"]])))),
 		"count" = nrow(scans(x)))
