@@ -16,6 +16,7 @@
 \alias{coordLabels<-,SImageSet-method}
 \alias{featureNames<-,SImageSet-method}
 \alias{pixelNames<-,SImageSet-method}
+\alias{is3D,SImageSet-method}
 
 \title{SIMageSet: Class to contain pixel-sparse imaging data}
 

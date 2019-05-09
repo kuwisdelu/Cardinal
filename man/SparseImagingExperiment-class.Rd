@@ -32,6 +32,9 @@
 \alias{rbind,SparseImagingExperiment-method}
 \alias{combine,SparseImagingExperiment,ANY-method}
 \alias{collect,SparseImagingExperiment-method}
+\alias{is3D,SparseImagingExperiment-method}
+
+\alias{is3D}
 
 \title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 
@@ -96,6 +99,8 @@ SparseImagingExperiment(
         \item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the spatial resolution of the spatial positions. Typically, this should not be set manually.}
 
         \item{\code{dims(object)}:}{Get the gridded dimensions of the spatial positions (i.e., as if projected to an image raster).}
+
+        \item{\code{is3D(object)}:}{Check if the data is 3D or not.}
 
         \item{\code{slice(object, ...)}:}{Slice the data as a data cube (i.e., as if projected to an multidimensional image raster).}
 

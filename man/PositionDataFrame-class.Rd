@@ -47,6 +47,7 @@
 \alias{[,PositionDataFrame,ANY,ANY,ANY-method}
 \alias{cbind,PositionDataFrame-method}
 \alias{rbind,PositionDataFrame-method}
+\alias{is3D,PositionDataFrame-method}
 
 \title{PositionDataFrame: data frame with spatial position metadata}
 
@@ -85,6 +86,8 @@ PositionDataFrame(coord, run, \dots, row.names = NULL, check.names = TRUE)
 		\item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the spatial resolution of the spatial positions. Typically, this should not be set manually.}
 
 		\item{\code{dims(object)}:}{Get the gridded dimensions of the spatial positions (i.e., as if projected to an image raster).}
+
+		\item{\code{is3D(object)}:}{Check if the data is 3D or not.}
 
 		\item{\code{as.list(x, ..., slots = TRUE)}:}{Coerce the object to a \code{list}, where the slot-columns are included by default. Use \code{slots=FALSE} to exclude the slot-columns.}
 	}

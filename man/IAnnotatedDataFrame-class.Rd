@@ -17,6 +17,7 @@
 \alias{sampleNames<-,IAnnotatedDataFrame,ANY-method}
 \alias{combine,IAnnotatedDataFrame,IAnnotatedDataFrame-method}
 \alias{[,IAnnotatedDataFrame,ANY,ANY,ANY-method}
+\alias{is3D,IAnnotatedDataFrame-method}
 
 \title{IAnnotatedDataFrame: Class containing measured variables and their metadata for imaging experiments}
 
