@@ -332,19 +332,24 @@
 		plt <- c(plt[2] + 0.2 * o, plt[2] + 0.45 * o, 0.2, 0.8)
 		range <- as.numeric(text)
 		vals <- seq(from=range[1], to=range[2], length.out=100)
-		if ( !"new" %in% args )
+		if ( !"new" %in% names(args) )
 			args$new <- TRUE
-		if ( !"pty" %in% args )
+		if ( !"pty" %in% names(args) )
 			args$pty <- "m"
-		if ( !"plt" %in% args )
+		if ( !"plt" %in% names(args) )
 			args$plt <- plt
-		if ( "x" %in% args	)
+		if ( "x" %in% names(args) )
 			args$x <- NULL
+		if ( "cex.axis" %in% names(args)	) {
+			cex.axis <- args$cex.axis
+		} else {
+			cex.axis <- par()$cex.axis
+		}
 		if ( isTRUE(colorkey) ) {
 			par(args)
 			image(1, vals, t(as.matrix(vals)), col=col,
 				xaxt='n', yaxt='n', xlab="", ylab="")
-			axis(side=4, las=2)
+			axis(side=4, las=2, cex.axis=0.75 * cex.axis)
 			mfg <- par()$mfg
 			par(old.par)
 			if ( is.null(layout) ) {
