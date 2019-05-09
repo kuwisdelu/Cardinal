@@ -7,6 +7,3 @@ TODO for Cardinal package
 - Multimodal image registration (w/ optical images, etc.)
 - "MultiImagingExperiment" class for multimodal experiments
 
-BUGS for Cardinal package
--------------------------
-- Fix integer overflow when writing large imzML files
