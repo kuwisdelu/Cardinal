@@ -117,7 +117,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		"external encoded length"=unname(rep(Csizeof(intensity.type) * nrow(x), ncol(x))),
 		"binary data type"=rep(intensity.type, ncol(x)),
 		check.names=FALSE)
-	offset <- c(0, cumsum(intensityArrayList[["external encoded length"]][-ncol(x)]))
+	offset <- c(0, cumsum(as.numeric(intensityArrayList[["external encoded length"]][-ncol(x)])))
 	intensityArrayList[["external offset"]] <- offset + intensityArrayList[["external offset"]]
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
@@ -196,8 +196,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		.stop("lengths of intensity and m/z arrays differ")
 	mzLength <- Csizeof(mz.type) * lengths(mzData(x))
 	intensityLength <- Csizeof(intensity.type) * lengths(peakData(x))
-	mzOffset <- c(16, 16 + cumsum(mzLength + intensityLength)[-ncol(x)])
-	intensityOffset <- c(16 + cumsum(c(mzLength[1L], mzLength[-1L] + intensityLength[-ncol(x)])))
+	mzOffset <- c(16, 16 + cumsum(as.numeric(mzLength + intensityLength)[-ncol(x)]))
+	intensityOffset <- c(16 + cumsum(as.numeric(c(mzLength[1L], mzLength[-1L] + intensityLength[-ncol(x)]))))
 	mzArrayList <- DataFrame(
 		"external offset"=unname(mzOffset),
 		"external array length"=unname(lengths(mzData(x))),
