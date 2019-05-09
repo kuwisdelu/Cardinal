@@ -139,20 +139,3 @@ test_that("MSImageSet subsetting", {
 
 })
 
-# test_that("MSImageSet combine", {
-
-# 	mz <- c(101, 102, 103)
-# 	coord <- expand.grid(x=1:3, y=1:3)
-# 	spectra <- matrix(1:27, nrow=3)
-	
-# 	msset1 <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
-# 	msset2 <- MSImageSet(spectra=spectra, mz=mz, coord=coord)
-
-# 	sampleNames(msset1) <- "s1"
-# 	sampleNames(msset2) <- "s2"
-
-# 	msset3 <- combine(msset1, msset2)
-# 	expect_true(validObject(msset3))
-
-# })
-

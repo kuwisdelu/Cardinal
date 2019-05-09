@@ -10,8 +10,12 @@ allmissing <- function(x) {
 }
 
 # Check for whole numbers in a vector
-is.wholenumber <- function(x)  {
-	abs(x - round(x)) < .Machine$double.eps^0.5
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  {
+	if ( is.numeric(x) ) {
+		abs(x - round(x)) < tol
+	} else {
+		FALSE
+	}
 }
 
 # Round to an arbitrary precision

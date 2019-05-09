@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("stats 2")
+context("stats-2")
 
 options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 
@@ -115,14 +115,14 @@ test_that("spatialShrunkenCentroids", {
 test_that("spatialDGMM", {
 
 	set.seed(1)
-	res1 <- spatialDGMM(x, r=1, k=3, method="gaussian")
+	res1 <- spatialDGMM(x[1:3,], r=1, k=3, method="gaussian")
 
 	expect_true(validObject(res1))
 
 	expect_is(summary(res1), "SummarySpatialDGMM")
 
 	set.seed(1)
-	res2 <- spatialDGMM(x, r=1, k=3, method="adaptive")
+	res2 <- spatialDGMM(x[1:3,], r=1, k=3, method="adaptive")
 
 	expect_true(validObject(res2))
 
@@ -132,14 +132,14 @@ test_that("spatialDGMM", {
 
 test_that("meansTest + segmentationTest", {
 
-	res1 <- meansTest(testdata, ~ condition)
+	res1 <- meansTest(testdata[1:3,], ~ condition)
 
 	expect_true(validObject(res1))
 
 	expect_is(summary(res1), "SummaryMeansTest")
 
 	set.seed(1)
-	res2 <- segmentationTest(testdata, ~ condition, classControl="Ymax")
+	res2 <- segmentationTest(testdata[1:3,], ~ condition, classControl="Ymax")
 
 	expect_true(validObject(res2))
 

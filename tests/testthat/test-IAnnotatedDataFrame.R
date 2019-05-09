@@ -9,9 +9,9 @@ test_that("IAnnotatedDataFrame validity", {
 	expect_true(validObject(IAnnotatedDataFrame()))
 
 	df <- IAnnotatedDataFrame()
-	expect_that("sample" %in% varLabels(df), is_true())
-	expect_that("labelType" %in% names(varMetadata(df)), is_true())
-	expect_that(varMetadata(df)["sample","labelType"] == "sample", is_true())
+	expect_true("sample" %in% varLabels(df))
+	expect_true("labelType" %in% names(varMetadata(df)))
+	expect_true(varMetadata(df)["sample","labelType"] == "sample")
 
 })
 

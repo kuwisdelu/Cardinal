@@ -111,7 +111,7 @@ setReplaceMethod("run", "PositionDataFrame",
 	function(object, value) {
 		if ( length(value) != nrow(object) )
 			value <- rep(value, length.out=nrow(object))
-		object@run <- value
+		object@run <- as.factor(value)
 		if ( validObject(object) )
 			object
 	})

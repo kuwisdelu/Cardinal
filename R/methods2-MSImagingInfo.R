@@ -81,19 +81,19 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	}
 	names(scanList) <- positionNames[seq_along(scanList)]
 	# check for non-gridded x/y
-	ng <-  !is.wholenumber(scanList[[1]]) || !is.wholenumber(scanList[[2]])
-	if ( ng ) {
-		scanList[["3DPositionX"]] <- scanList[["position x"]]
-		scanList[["3DPositionY"]] <- scanList[["position y"]]
+	xNoGrid <- !all(is.wholenumber(scanList[["position x"]]))
+	yNoGrid <- !all(is.wholenumber(scanList[["position y"]]))
+	zNoGrid <- !all(is.wholenumber(scanList[["position z"]]))
+	if ( xNoGrid || yNoGrid || zNoGrid ) {
+		scanList[["3DPositionX"]] <- as.numeric(scanList[["position x"]])
+		scanList[["3DPositionY"]] <- as.numeric(scanList[["position y"]])
+		if ( is3D(x) )
+			scanList[["3DPositionZ"]] <- as.numeric(scanList[["position z"]])
 	}
-	scanList[["position x"]] <- as.integer(scanList[["position x"]])
-	scanList[["position y"]] <- as.integer(scanList[["position y"]])
-	# check for non-gridded z
-	if ( is3D(x) ) {
-		if ( !is.wholenumber(scanList[["position z"]]) )
-			scanList[["3DPositionZ"]] <- scanList[["position z"]]
-		scanList[["position z"]] <- as.integer(scanList[["position z"]])
-	}
+	scanList[["position x"]] <- as.integer(round(scanList[["position x"]]))
+	scanList[["position y"]] <- as.integer(round(scanList[["position y"]]))
+	if ( is3D(x) )
+		scanList[["position z"]] <- as.integer(round(scanList[["position z"]]))
 	scanList
 }
 

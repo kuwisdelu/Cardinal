@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("processing 2")
+context("processing-2")
 
 options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
 

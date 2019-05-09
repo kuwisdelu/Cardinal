@@ -157,7 +157,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	} else if ( allmissing(z3d) ) {
 		coord <- data.frame(x=x, y=y, z=z)
 	} else if ( nomissing(z3d) ) {
-		z <- as.integer(as.factor(z3d))
+		z <- as.integer(xtfrm(round(z3d)))
 		coord <- data.frame(x=x, y=y, z=z)
 	} else {
 		.stop("invalid pixel coordinates")
