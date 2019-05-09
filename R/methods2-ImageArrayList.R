@@ -17,6 +17,9 @@ ImageArrayList <- function(data) {
 .valid.ImageArrayList <- function(object) {
 	errors <- NULL
 	data <- as(object, "SimpleList", strict=FALSE)
+	dimlengths <- sapply(data, function(x) length(dim(x)))
+	if ( length(data) > 0 && length(unique(dimlengths)) > 1 )
+		errors <- c(errors , "elements must have the same number of dimensions")
 	dims <- sapply(data, function(x) dim(x)[c(1,2)])
 	if ( length(data) > 0 && !all(dims == dims[,1]) )
 		errors <- c(errors , "elements must have the same 'nrow' and 'ncol'")

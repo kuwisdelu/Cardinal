@@ -29,8 +29,6 @@ ImageList <- function(data) {
 	dimlengths <- sapply(data, function(x) length(dim(x)))
 	if ( length(data) > 0 && any(dimlengths == 0) )
 		errors <- c(errors , "elements must be array-like (non-NULL 'dim')")
-	if ( length(data) > 0 && length(unique(dimlengths)) > 1 )
-		errors <- c(errors , "elements must have the same number of dimensions")
 	if ( is.null(errors) ) TRUE else errors
 }
 
