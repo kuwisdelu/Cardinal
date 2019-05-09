@@ -16,6 +16,7 @@ setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 
 #### Basic accessor, setter, and manipulation ####
 ## -----------------------------------------------
+setGeneric("is3D", function(object) standardGeneric("is3D"))
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))

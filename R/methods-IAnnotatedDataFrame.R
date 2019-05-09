@@ -123,6 +123,11 @@ setReplaceMethod("coord", "IAnnotatedDataFrame",
 		object
 	})
 
+setMethod("is3D", "IAnnotatedDataFrame",
+	function(object) {
+		length(coordLabels(object)) >= 3L
+	})
+
 setMethod("[", "IAnnotatedDataFrame",
 	function(x, i, j, ..., drop = FALSE) {
 		x <- callNextMethod(x, i, j, ..., drop=drop)

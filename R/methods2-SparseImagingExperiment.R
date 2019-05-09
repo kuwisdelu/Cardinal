@@ -125,6 +125,9 @@ setReplaceMethod("resolution", "SparseImagingExperiment",
 setMethod("dims", "SparseImagingExperiment",
 	function(x) dims(pixelData(x)))
 
+setMethod("is3D", "SparseImagingExperiment",
+	function(object) is3D(pixelData(object)))
+
 # processing methods
 
 setMethod("processingData", "SparseImagingExperiment",

@@ -25,6 +25,9 @@ writeAnalyze <- function(object, name, folder = getwd(),
 			})
 			return(invisible(result))
 		}
+		# check if gridded coordinates (always true for MSImageSet)
+		if ( is(object, "MSImagingExperiment") && !gridded(object) )
+			.stop("writing Analyze format only supports gridded data")
 		# check for files
 		hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 			mustWork=FALSE)
@@ -58,14 +61,19 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		.stop(paste0("couldn't create file '", file, "'"))
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
-	dim <- sapply(coord(x)[,c(1,2)], max)
 	hdr <- .makeAnalyzeHDR(file, mode="rw")
 	hdr$hk[] <- rep(list(0), length(hdr$hk))
 	hdr$hk$sizeof_hdr <- 348L # byte size of hdr
 	hdr$hk$extents <- 16384L # must be 16384
 	hdr$hk$regular <- charToRaw("r")
 	hdr$dime[] <- rep(list(0), length(hdr$dime))
-	hdr$dime$dim[1:5] <- c(4L, nrow(x), dim[1], dim[2], 1L)
+	if ( is3D(x) ) {
+		dim <- sapply(coord(x)[,1:3], max)
+		hdr$dime$dim[1:5] <- c(4L, nrow(x), dim[1], dim[2], dim[3])
+	} else {
+		dim <- sapply(coord(x)[,c(1,2)], max)
+		hdr$dime$dim[1:5] <- c(4L, nrow(x), dim[1], dim[2], 1L)
+	}
 	hdr$dime$datatype <- switch(as.character(type),
 		"short" = 4L,
 		"int" = 8L,
@@ -103,15 +111,29 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		.stop(paste0("couldn't create file '", file, "'"))
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
-	dim <- sapply(coord(x)[,c(1,2)], max)
-	img <- matter_mat(datamode=type, paths=file,
-		nrow=nrow(x), ncol=prod(dim), filemode="rw")
-	img[] <- 0
-	for ( i in seq_len(ncol(x)) ) {
-		row <- coord(x)[i,1]
-		col <- coord(x)[i,2]
-		j <- row + dim[1] * (col - 1)
-		img[,j] <- iData(x)[,i]
+	if ( is3D(x) ) {
+		dim <- sapply(coord(x)[,1:3], max)
+		img <- matter_mat(datamode=type, paths=file,
+			nrow=nrow(x), ncol=prod(dim), filemode="rw")
+		img[] <- 0
+		for ( i in seq_len(ncol(x)) ) {
+			row <- coord(x)[i,1]
+			col <- coord(x)[i,2]
+			dep <- coord(x)[i,3]
+			j <- row + dim[1] * (col - 1) + prod(dim[c(1,2)]) * (dep - 1)
+			img[,j] <- iData(x)[,i]
+		}
+	} else {
+		dim <- sapply(coord(x)[,c(1,2)], max)
+		img <- matter_mat(datamode=type, paths=file,
+			nrow=nrow(x), ncol=prod(dim), filemode="rw")
+		img[] <- 0
+		for ( i in seq_len(ncol(x)) ) {
+			row <- coord(x)[i,1]
+			col <- coord(x)[i,2]
+			j <- row + dim[1] * (col - 1)
+			img[,j] <- iData(x)[,i]
+		}
 	}
 	options(matter.cast.warning=warn)
 	img

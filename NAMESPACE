@@ -315,6 +315,7 @@ exportMethods(
 	"imageData",
 	"imageData<-",
 	"initialize",
+	"is3D",
 	"keys",
 	"keys<-",
 	"modelData",

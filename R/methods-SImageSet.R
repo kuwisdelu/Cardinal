@@ -154,6 +154,9 @@ setMethod("combine", signature = c(x = "SImageSet", y = "SImageSet"),
 		callNextMethod(x, y, ...)
 	})
 
+setMethod("is3D", "SImageSet",
+	function(object) is3D(pixelData(object)))
+
 ## Adapted from as(ExpressionSet, data.frame) from Biobase
 setAs("SImageSet", "data.frame",
 	function(from) data.frame(t(iData(from)), pData(from)))

@@ -215,6 +215,8 @@ setMethod("showNames", "PositionDataFrame",
 		c(":run:", cnm, names(object))
 	})
 
+setMethod("is3D", "PositionDataFrame",
+	function(object) ncol(coord(object)) >= 3L)
 
 # includes 'run' and 'coord' slot in the list by default
 setMethod("as.list", "PositionDataFrame",

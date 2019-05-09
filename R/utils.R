@@ -1,4 +1,14 @@
 
+# Check for no missing values
+nomissing <- function(x) {
+	all(!is.na(x))
+}
+
+# Check for all missing values
+allmissing <- function(x) {
+	all(is.na(x))
+}
+
 # Check for whole numbers in a vector
 is.wholenumber <- function(x)  {
 	abs(x - round(x)) < .Machine$double.eps^0.5

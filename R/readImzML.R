@@ -152,13 +152,24 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	x3d <- scans(info)[["3DPositionX"]]
 	y3d <- scans(info)[["3DPositionY"]]
 	z3d <- scans(info)[["3DPositionZ"]]
-	if ( all(is.na(z)) && all(is.na(z3d)) ) {
+	if ( allmissing(z) && allmissing(z3d) ) {
 		coord <- data.frame(x=x, y=y)
-	} else if ( all(is.na(z3d)) ) {
+	} else if ( allmissing(z3d) ) {
 		coord <- data.frame(x=x, y=y, z=z)
-	} else {
+	} else if ( nomissing(z3d) ) {
 		z <- as.integer(as.factor(z3d))
 		coord <- data.frame(x=x, y=y, z=z)
+	} else {
+		.stop("invalid pixel coordinates")
+	}
+	if ( !allmissing(x3d) && !allmissing(y3d) ) {
+		if ( allmissing(z3d) ) {
+			coordExact <- scans(info)[c("3DPositionX", "3DPositionY")]
+		} else {
+			coordExact <- scans(info)[c("3DPositionX", "3DPositionY", "3DPositionZ")]
+		}
+	} else {
+		coordExact <- NULL
 	}
 	if ( outclass == "MSImageSet" ) {
 		experimentData <- new("MIAPE-Imaging")
@@ -176,8 +187,10 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			metadata=metadata(info),
 			centroided=centroided)
 	} else {
-		stop("unrecognized outclass")
+		.stop("unrecognized outclass")
 	}
+	if ( !is.null(coordExact) )
+		pixelData(object)[names(coordExact)] <- as.list(coordExact)
 	object
 }
 
