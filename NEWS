@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 2.3.3 [2019-5-10]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Improved facet plotting when 'add=TRUE'
+
+BUG FIXES
+
+    o Better 'cex.axis' defaults and user setting for colorkeys
+
 CHANGES IN VERSION 2.3.2 [2019-5-9]
 -----------------------------------
 
