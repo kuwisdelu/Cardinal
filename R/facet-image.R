@@ -126,6 +126,8 @@ facet.image <- function(args, formula, obj,
 	normalize.image <- normalize.image.method(normalize.image)
 	contrast.enhance <- contrast.enhance.method(contrast.enhance)
 	smooth.image <- smooth.image.method(smooth.image)
+	plotnew <- !add
+	add <- FALSE
 	layers <- list()
 	for ( p in levels(dpages) ) {
 		for ( f in facet_levels ) {
@@ -240,8 +242,7 @@ facet.image <- function(args, formula, obj,
 		layout <- TRUE
 	if ( missing(byrow) )
 		byrow <- TRUE
-	if ( !is.null(layout) )
-		layout <- list(layout=layout, byrow=byrow)
+	layout <- list(layout=layout, byrow=byrow)
 	if ( missing(xlim) || is.null(xlim) )
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) || is.null(ylim) )
@@ -274,6 +275,7 @@ facet.image <- function(args, formula, obj,
 		coordnames=names(args$rhs),
 		valrange=valrange,
 		is3d=is3d, layout=layout,
+		add=!plotnew,
 		par=c(par, dots))
 	if ( !missing(dark) )
 		out$dark <- dark
@@ -284,7 +286,7 @@ facet.image <- function(args, formula, obj,
 print.facet.image <- function(x, ...) {
 	obj <- x
 	ck <- lapply(obj$layers, attr, "colorkey")
-	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$col))
+	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$colorkey))
 	if ( all(no_ck) ) {
 		padding <- 0
 	} else {
@@ -297,7 +299,7 @@ print.facet.image <- function(x, ...) {
 		layout <- .setup.layout(obj$layout$layout,
 			byrow=obj$layout$byrow, right=padding)
 	} else {
-		layout <- NULL
+		layout <- obj$layout
 	}
 	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
 		darkmode()
@@ -311,6 +313,10 @@ print.facet.image <- function(x, ...) {
 			if ( is.null(dots[[nm]]) && nm %in% lims )
 				dots[[nm]] <- NULL
 		}
+		if ( "add" %in% names(dots) ) {
+			obj$add <- dots$add
+			dots$add <- NULL
+		}
 		nms <- names(dots)
 		update <- nms %in% names(obj$par)
 		if ( any(update) ) {
@@ -319,6 +325,8 @@ print.facet.image <- function(x, ...) {
 		}
 		obj$par <- c(obj$par, dots)
 	}
+	if ( obj$add )
+		.next.figure(last=TRUE)
 	if ( obj$is3d ) {
 		colorkeyrange <- obj$valrange
 	} else {
@@ -334,19 +342,29 @@ print.facet.image <- function(x, ...) {
 					values=sublayer$values, col=sublayer$col,
 					add=sublayer$add), obj$par)
 				do.call("points3d", args)
-			} else if ( !all(is.na(sublayer$values)) ) {
-				args <- c(list(
-					x=sublayer$x, y=sublayer$y,
-					z=sublayer$values,
-					col=sublayer$col,
-					add=sublayer$add), obj$par)
-				if ( isTRUE(args$useRaster) )
-					args$z <- args$z[,ncol(args$z):1L,drop=FALSE]
-				do.call("image", args)
-			} else if ( new ) {
-				par <- obj$par[-which(names(obj$par) == "zlim")]
-				args <- c(list(x=0, y=0, type='n'), par)
-				do.call("plot", args)
+			} else {
+				if ( new ) {
+					par <- obj$par[-which(names(obj$par) == "zlim")]
+					if ( !"xaxs" %in% names(par) )
+						par$xaxs <- "i"
+					if ( !"yaxs" %in% names(par) )
+						par$yaxs <- "i"
+					if ( obj$add ) {
+						.next.figure(layout)
+						do.call("plot.window", par)
+					} else {
+						nil <- c(list(x=NA, y=NA, type='n'), par)
+						do.call("plot", nil)
+					}
+				}
+				if ( !allmissing(sublayer$values) ) {
+					args <- c(list(
+						x=sublayer$x, y=sublayer$y, z=sublayer$values,
+						col=sublayer$col, add=TRUE), obj$par)
+					if ( isTRUE(args$useRaster) )
+						args$z <- args$z[,ncol(args$z):1L,drop=FALSE]
+					do.call("image", args)
+				}
 			}
 		}
 		strip <- attr(layer, "strip")

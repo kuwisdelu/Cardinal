@@ -368,6 +368,34 @@
 	}
 }
 
+.next.figure <- function(layout, byrow = TRUE, last = FALSE) {
+	if ( missing(layout) || is.null(layout$layout) ) {
+		if ( !is.null(layout$byrow) )
+			byrow <- layout$byrow
+		if ( byrow ) {
+			layout <- par()$mfrow
+		} else {
+			layout <- par()$mfcol
+		}
+	} else {
+		byrow <- layout$byrow
+		layout <- layout$layout
+	}
+	mfg <- par()$mfg
+	if ( !last ) {
+		mat <- matrix(1:prod(layout), byrow=byrow,
+			nrow=layout[1], ncol=layout[2])
+		cur <- mfg[c(1,2)]
+		cur <- mat[cur[1], cur[2]]
+		nxt <- (cur %% prod(layout)) + 1
+		nxt <- which(mat == nxt, arr.ind=TRUE)
+		mfg[c(1,2)] <- nxt
+	} else {
+		mfg[c(1,2)] <- c(layout[1], layout[2])
+	}
+	par(mfg=mfg)
+}
+
 ## Format numbered labels
 .format.numbered <- function(label, n, sep="") {
 	if ( n == 1L )

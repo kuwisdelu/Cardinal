@@ -64,6 +64,8 @@ facet.plot <- function(args, formula, obj,
 	}
 	xrange <- range(x, na.rm=TRUE)
 	yrange <- raw_ysrange
+	plotnew <- !add
+	add <- FALSE
 	layers <- list()
 	for ( f in facet_levels ) {
 		facet_ids <- subset_rows(facets, f)
@@ -150,8 +152,7 @@ facet.plot <- function(args, formula, obj,
 		layout <- TRUE
 	if ( missing(byrow) )
 		byrow <- TRUE
-	if ( !is.null(layout) )
-		layout <- list(layout=layout, byrow=byrow)
+	layout <- list(layout=layout, byrow=byrow)
 	if ( missing(preplot) )
 		preplot <- NULL
 	if ( missing(xlim) || is.null(xlim) )
@@ -168,6 +169,7 @@ facet.plot <- function(args, formula, obj,
 		subset=subset,
 		layout=layout,
 		preplot=preplot,
+		add=!plotnew,
 		par=c(par, dots))
 	if ( !missing(dark) )
 		out$dark <- dark
@@ -184,7 +186,7 @@ print.facet.plot <- function(x, ...) {
 		layout <- .setup.layout(obj$layout$layout,
 			byrow=obj$layout$byrow)
 	} else {
-		layout <- NULL
+		layout <- obj$layout
 	}
 	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
 		darkmode()
@@ -198,6 +200,10 @@ print.facet.plot <- function(x, ...) {
 			if ( is.null(dots[[nm]]) && nm %in% lims )
 				dots[[nm]] <- NULL
 		}
+		if ( "add" %in% names(dots) ) {
+			obj$add <- dots$add
+			dots$add <- NULL
+		}
 		nms <- names(dots)
 		update <- nms %in% names(obj$par)
 		if ( any(update) ) {
@@ -206,7 +212,9 @@ print.facet.plot <- function(x, ...) {
 		}
 		obj$par <- c(obj$par, dots)
 	}
-	nil <- c(list(x=0, y=0), obj$par)
+	if ( obj$add )
+		.next.figure(last=TRUE)
+	nil <- c(list(x=NA, y=NA), obj$par)
 	nil$type <- 'n'
 	for ( layer in obj$layers ) {
 		for ( sublayer in layer ) {
@@ -219,11 +227,19 @@ print.facet.plot <- function(x, ...) {
 				args <- nil
 			}
 			if ( new ) {
-				do.call("plot", nil)
-				if ( !is.null(obj$preplot) ) {
-					call <- obj$preplot$call
-					e <- obj$preplot$envir
-					eval(call, envir=e)
+				if ( obj$add ) {
+					.next.figure(layout)
+					par <- obj$par
+					if ( "type" %in% names(par) )
+						par <- par[-which(names(par) == "type")]
+					do.call("plot.window", par)
+				} else {
+					do.call("plot", nil)
+					if ( !is.null(obj$preplot) ) {
+						call <- obj$preplot$call
+						e <- obj$preplot$envir
+						eval(call, envir=e)
+					}
 				}
 			}
 			do.call("points", args)
