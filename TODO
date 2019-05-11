@@ -5,4 +5,4 @@ TODO for Cardinal package
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)
 - A way to "compile" images for faster image loading?
-- Remove unused MIAPE-Imaging setter generics
+- Clean up under-used generics, etc.

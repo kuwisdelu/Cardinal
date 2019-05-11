@@ -4,7 +4,7 @@
 
 setMethod("image", c(x = "AnnotatedImage"),
 	function(x, frame = 1, offset = coord(x), height, width,
-		xlab, ylab, xlim = NULL, ylim = NULL, xaxs = "i", yaxs = 'i',
+		xlab, ylab, xlim = NULL, ylim = NULL, xaxs = 'i', yaxs = 'i',
 		native = TRUE, interpolate = TRUE, add = FALSE, ...)
 {
 	dots <- list(...)

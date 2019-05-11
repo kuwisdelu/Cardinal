@@ -1,7 +1,7 @@
 
 ## Setup the facet plotting par + layout by row and column
 setup.layout <- function(nr = 1, nc = 1, byrow = TRUE, ...) {
-	.setup.layout(c(nr, nc), byrow=byrow, ...)
+	invisible(.setup.layout(c(nr, nc), byrow=byrow, ...))
 }
 
 # Check for no missing values
