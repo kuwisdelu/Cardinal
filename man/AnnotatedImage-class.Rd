@@ -12,6 +12,8 @@
 \alias{coordinates<-,AnnotatedImage-method}
 \alias{resolution,AnnotatedImage-method}
 \alias{resolution<-,AnnotatedImage-method}
+\alias{height}
+\alias{height<-}
 \alias{height,AnnotatedImage-method}
 \alias{height<-,AnnotatedImage-method}
 \alias{width,AnnotatedImage-method}

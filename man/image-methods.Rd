@@ -5,6 +5,7 @@
 \alias{image-methods}
 
 \alias{image,formula-method}
+
 \alias{image,PositionDataFrame-method}
 \alias{image,SparseImagingExperiment-method}
 \alias{image,MSImagingExperiment-method}
@@ -16,6 +17,8 @@
 \alias{image,SpatialShrunkenCentroids2-method}
 \alias{image,SpatialDGMM-method}
 \alias{image,SegmentationTest-method}
+
+\alias{image,AnnotatedImage-method}
 
 \alias{image3D,SparseImagingExperiment-method}
 \alias{image3D,PCA2-method}
@@ -147,10 +150,9 @@
 \S4method{image}{SegmentationTest}(x, formula,
     values = "mapping", \dots)
 
-\S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x),
-        height, width, xlim = NULL, ylim = NULL,
-        xaxs = "i", yaxs = 'i', xlab, ylab,
-        interpolate = TRUE, add = FALSE, \dots)
+\S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x), height, width,
+    xlab, ylab, xlim = NULL, ylim = NULL, xaxs = "i", yaxs = 'i',
+    native = TRUE, interpolate = TRUE, add = FALSE, \dots)
 
 #### Methods for Cardinal 1.x classes ####
 
@@ -262,8 +264,6 @@
     \item{contrast.enhance}{Contrast enhancement function to be applied to each image. The function can be user-supplied, or one of 'none', 'histogram', or 'suppression'. The 'histogram' equalization method flatterns the distribution of intensities. The hotspot 'suppression' method uses thresholding to reduce the intensities of hotspots.}
 
     \item{smooth.image}{Image smoothing function to be applied to each image. The function can be user-supplied, or one of 'none', 'gaussian', or 'adaptive'. The 'gaussian' smoothing method smooths images with a simple gaussian kernel. The 'adaptive' method uses bilateral filtering to preserve edges.}
-
-    \item{yaxs}{Character or expression giving the label for the y-axis.}
 
     \item{xlab}{Character or expression giving the label for the x-axis.}
 
