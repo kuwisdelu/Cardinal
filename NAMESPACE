@@ -244,7 +244,7 @@ S3method("print", "summary.CrossValidated")
 
 S3method("print", "facet.plot")
 S3method("print", "facet.image")
-S3method("print", "raster.image")
+S3method("print", "facet.raster")
 
 S3method("plot", "summary.PCA")
 S3method("plot", "summary.PLS")

@@ -66,7 +66,7 @@ facet.plot <- function(args, formula, obj,
 	yrange <- raw_ysrange
 	plotnew <- !add
 	add <- FALSE
-	layers <- list()
+	facets.out <- list()
 	for ( f in facet_levels ) {
 		facet_ids <- subset_rows(facets, f)
 		for ( i in facet_ids ) {
@@ -99,7 +99,7 @@ facet.plot <- function(args, formula, obj,
 			}
 			if ( !is.numeric(y) )
 				y <- as.factor(y)
-			sublayers <- list()
+			layers <- list()
 			for ( g in levels(groups) ) {
 				gi <- groups
 				xi <- x[gi == g]
@@ -122,7 +122,7 @@ facet.plot <- function(args, formula, obj,
 				} else {
 					ylabi <- ylab
 				}
-				sublayers[[length(sublayers) + 1L]] <- list(
+				layers[[length(layers) + 1L]] <- list(
 					x=xi, y=yi, col=coli, facet=f, group=g, add=add)
 				add <- TRUE
 			}
@@ -136,14 +136,14 @@ facet.plot <- function(args, formula, obj,
 						text <- c(v, text)
 					}
 				}
-				attr(sublayers, "strip") <- list(
+				attr(layers, "strip") <- list(
 					strip=strip, text=text)
 				if ( has_cats ) {
-					attr(sublayers, "key") <- list(
+					attr(layers, "key") <- list(
 						key=key, text=levels, fill=colors)
 				}
 			}
-			layers <- c(layers, list(sublayers))
+			facets.out <- c(facets.out, list(layers))
 			add <- superpose
 		}
 		add <- FALSE
@@ -163,8 +163,8 @@ facet.plot <- function(args, formula, obj,
 		xlab=xlab, ylab=ylab,
 		xlim=xlim, ylim=ylim)
 	out <- list(
-		layers=layers,
-		facets=facet_levels,
+		facets=facets.out,
+		flevels=facet_levels,
 		groups=levels(groups),
 		subset=subset,
 		layout=layout,
@@ -197,13 +197,13 @@ print.facet.plot <- function(x, ...) {
 		.next.figure(last=TRUE)
 	nil <- c(list(x=NA, y=NA), obj$par)
 	nil$type <- 'n'
-	for ( layer in obj$layers ) {
-		for ( sublayer in layer ) {
-			new <- !sublayer$add
-			if ( !all(is.na(sublayer$x)) ) {
+	for ( facet in obj$facets ) {
+		for ( layer in facet ) {
+			new <- !layer$add
+			if ( !all(is.na(layer$x)) ) {
 				args <- c(list(
-					x=sublayer$x, y=sublayer$y,
-					col=sublayer$col), obj$par)
+					x=layer$x, y=layer$y,
+					col=layer$col), obj$par)
 			} else {
 				args <- nil
 			}
@@ -225,10 +225,10 @@ print.facet.plot <- function(x, ...) {
 			}
 			do.call("points", args)
 		}
-		strip <- attr(layer, "strip")
+		strip <- attr(facet, "strip")
 		if ( !is.null(strip) )
 			.draw.strip.labels(strip$strip, strip$text)
-		key <- attr(layer, "key")
+		key <- attr(facet, "key")
 		if ( !is.null(key) )
 			.draw.key(key$key, key$text, key$fill)
 	}

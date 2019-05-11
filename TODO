@@ -6,3 +6,7 @@ TODO for Cardinal package
 - Multimodal image registration (w/ optical images, etc.)
 - A way to "compile" images for faster image loading?
 - Clean up under-used generics, etc.
+- Update facet.plot and facet.image internal structure
+	- layers -> facets.out -> facets
+	- sublayers -> layers
+	- facets -> flevels

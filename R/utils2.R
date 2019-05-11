@@ -210,9 +210,9 @@
 
 # Auto plotting layout
 .auto.layout <- function(x, byrow = TRUE, ...) {
-	if ( length(x$dpages) > 1L && length(x$facets) > 1L ) {
+	if ( length(x$flevels) > 1L && length(x$dpages) > 1L ) {
+		nf <- length(x$flevels)
 		nd <- length(x$dpages)
-		nf <- length(x$facets)
 		if ( byrow ) {
 			.setup.layout(c(nd, nf), byrow=byrow, ...)
 		} else {
@@ -232,7 +232,7 @@
 
 # Number of panels in a facet plot
 .num.panels <- function(x) {
-	x <- lapply(x$layers,
+	x <- lapply(x$facets,
 		function(l1) lapply(l1,
 			function(l2) l2$add))
 	sum(!unlist(x))

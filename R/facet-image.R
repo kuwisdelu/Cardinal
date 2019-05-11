@@ -128,7 +128,7 @@ facet.image <- function(args, formula, obj,
 	smooth.image <- smooth.image.method(smooth.image)
 	plotnew <- !add
 	add <- FALSE
-	layers <- list()
+	facets.out <- list()
 	for ( p in levels(dpages) ) {
 		for ( f in facet_levels ) {
 			facet_ids <- subset_rows(facets, f)
@@ -162,7 +162,7 @@ facet.image <- function(args, formula, obj,
 				}
 				if ( !is.numeric(vals) )
 					vals <- as.factor(vals)
-				sublayers <- list()
+				layers <- list()
 				for ( g in levels(groups) ) {
 					subscripts <- dpages == p
 					gi <- groups[subscripts]
@@ -190,7 +190,7 @@ facet.image <- function(args, formula, obj,
 						ti <- normalize.image(contrast.enhance(ti))
 						if ( !all(is.na(ti)) )
 							valrange <- range(valrange, ti, na.rm=TRUE)
-						sublayers[[length(sublayers) + 1L]] <- list(
+						layers[[length(layers) + 1L]] <- list(
 							x=xi, y=yi, z=zi, values=ti, col=cols,
 							dpage=p, facet=f, group=g, add=add)
 					} else {
@@ -201,7 +201,7 @@ facet.image <- function(args, formula, obj,
 						yj <- seq(yrange[1L], yrange[2L], length.out=dim(tproj)[2])
 						if ( !all(is.na(tproj)) )
 							valrange <- range(valrange, tproj, na.rm=TRUE)
-						sublayers[[length(sublayers) + 1L]] <- list(
+						layers[[length(layers) + 1L]] <- list(
 							x=xj, y=yj, values=tproj, col=cols,
 							dpage=p, facet=f, group=g, add=add)
 					}
@@ -219,19 +219,19 @@ facet.image <- function(args, formula, obj,
 					}
 					if ( has_dpages )
 						text <- c(p, text)
-					attr(sublayers, "strip") <- list(
+					attr(layers, "strip") <- list(
 						strip=strip, text=text)
 					if ( has_cats ) {
-						attr(sublayers, "key") <- list(
+						attr(layers, "key") <- list(
 							key=key, text=levels, fill=colors)
 					} else {
-						attr(sublayers, "colorkey") <- list(
+						attr(layers, "colorkey") <- list(
 							colorkey=colorkey,
 							text=c(NA, NA), # populate later
 							col=colors)
 					}
 				}
-				layers <- c(layers, list(sublayers))
+				facets.out <- c(facets.out, list(layers))
 				add <- superpose
 			}
 			add <- FALSE
@@ -267,9 +267,9 @@ facet.image <- function(args, formula, obj,
 			asp=asp)
 	}
 	out <- list(
-		layers=layers,
+		facets=facets.out,
+		flevels=facet_levels,
 		dpages=levels(dpages),
-		facets=facet_levels,
 		groups=levels(groups),
 		subset=subset,
 		coordnames=names(args$rhs),
@@ -285,7 +285,7 @@ facet.image <- function(args, formula, obj,
 
 print.facet.image <- function(x, ...) {
 	obj <- .update.par(x, ...)
-	ck <- lapply(obj$layers, attr, "colorkey")
+	ck <- lapply(obj$facets, attr, "colorkey")
 	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$colorkey))
 	if ( all(no_ck) ) {
 		padding <- 0
@@ -314,14 +314,14 @@ print.facet.image <- function(x, ...) {
 		colorkeyrange <- obj$par$zlim
 		obj$par$ylim <- rev(obj$par$ylim)
 	}
-	for ( layer in obj$layers ) {
-		for ( sublayer in layer ) {
-			new <- !sublayer$add
+	for ( facet in obj$facets ) {
+		for ( layer in facet ) {
+			new <- !layer$add
 			if ( obj$is3d ) {
 				args <- c(list(
-					x=sublayer$x, y=sublayer$y, z=sublayer$z,
-					values=sublayer$values, col=sublayer$col,
-					add=sublayer$add), obj$par)
+					x=layer$x, y=layer$y, z=layer$z,
+					values=layer$values, col=layer$col,
+					add=layer$add), obj$par)
 				do.call("points3d", args)
 			} else {
 				if ( new ) {
@@ -338,23 +338,23 @@ print.facet.image <- function(x, ...) {
 						do.call("plot", nil)
 					}
 				}
-				if ( !allmissing(sublayer$values) ) {
+				if ( !allmissing(layer$values) ) {
 					args <- c(list(
-						x=sublayer$x, y=sublayer$y, z=sublayer$values,
-						col=sublayer$col, add=TRUE), obj$par)
+						x=layer$x, y=layer$y, z=layer$values,
+						col=layer$col, add=TRUE), obj$par)
 					if ( isTRUE(args$useRaster) )
 						args$z <- args$z[,ncol(args$z):1L,drop=FALSE]
 					do.call("image", args)
 				}
 			}
 		}
-		strip <- attr(layer, "strip")
+		strip <- attr(facet, "strip")
 		if ( !is.null(strip) )
 			.draw.strip.labels(strip$strip, strip$text)
-		key <- attr(layer, "key")
+		key <- attr(facet, "key")
 		if ( !is.null(key) )
 			.draw.key(key$key, key$text, key$fill)
-		colorkey <- attr(layer, "colorkey")
+		colorkey <- attr(facet, "colorkey")
 		if ( !is.null(colorkey) )			
 			.draw.colorkey(colorkey$colorkey,
 				colorkeyrange, colorkey$col, layout)
