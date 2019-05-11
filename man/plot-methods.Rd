@@ -33,6 +33,8 @@
 \alias{plot,SpatialKMeans,missing-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
 
+\alias{setup.layout}
+
 \title{Plot a signal from the feature data of an imaging dataset}
 
 \description{

@@ -178,7 +178,7 @@ facet.plot <- function(args, formula, obj,
 }
 
 print.facet.plot <- function(x, ...) {
-	obj <- x
+	obj <- .update.par(x, ...)
 	if ( isTRUE(obj$layout$layout) ) {
 		layout <- .auto.layout(obj,
 			byrow=obj$layout$byrow)
@@ -192,25 +192,6 @@ print.facet.plot <- function(x, ...) {
 		darkmode()
 	} else if ( isFALSE(obj$dark) ) {
 		lightmode()
-	}
-	dots <- list(...)
-	if ( length(dots) > 0L ) {
-		lims <- c("xlim", "ylim")
-		for ( nm in names(dots) ) {
-			if ( is.null(dots[[nm]]) && nm %in% lims )
-				dots[[nm]] <- NULL
-		}
-		if ( "add" %in% names(dots) ) {
-			obj$add <- dots$add
-			dots$add <- NULL
-		}
-		nms <- names(dots)
-		update <- nms %in% names(obj$par)
-		if ( any(update) ) {
-			obj$par[nms[update]] <- dots[update]
-			dots[update] <- NULL
-		}
-		obj$par <- c(obj$par, dots)
 	}
 	if ( obj$add )
 		.next.figure(last=TRUE)

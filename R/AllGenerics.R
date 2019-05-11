@@ -33,19 +33,14 @@ setGeneric("pixelData", function(object) standardGeneric("pixelData"))
 setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-"))
 setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
 setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
-setGeneric("positionArray", function(object) standardGeneric("positionArray"))
-setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
 setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
 setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
-setGeneric("dataCube", function(object, ...) standardGeneric("dataCube"))
-setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 setGeneric("resolution", function(object) standardGeneric("resolution"))
 setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
 setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, i, ..., value) standardGeneric("resultData<-"))
 setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
 setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
-setGeneric("roiBind", function(object, ...) standardGeneric("roiBind"))
 setGeneric("run", function(object) standardGeneric("run"))
 setGeneric("run<-", function(object, value) standardGeneric("run<-"))
 setGeneric("runNames", function(object) standardGeneric("runNames"))
@@ -56,6 +51,19 @@ setGeneric("showNames", function(object) standardGeneric("showNames"))
 ## -------------------------------
 setGeneric("peaks<-", function(object, ..., value) standardGeneric("peaks<-"))
 setGeneric("spectra<-", function(object, ..., value) standardGeneric("spectra<-"))
+setGeneric("centroided", function(object) standardGeneric("centroided")) # move to ProtGenerics?
+setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-")) # move to ProtGenerics?
+
+#### Supplement S4Vectors  ####
+## ----------------------------
+setGeneric("height", function(x) standardGeneric("height"))
+setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
+
+#### Legacy generics ####
+## ----------------------
+setGeneric("positionArray", function(object) standardGeneric("positionArray"))
+setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
+setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
 
 #### MIAPE - Imaging ####
 ## ----------------------
@@ -119,8 +127,6 @@ setGeneric("spectrumRepresentation", function(object) standardGeneric("spectrumR
 setGeneric("spectrumRepresentation<-", function(object, value) standardGeneric("spectrumRepresentation<-"))
 setGeneric("peakPicking", function(object) standardGeneric("peakPicking"))
 setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking<-"))
-setGeneric("centroided", function(object) standardGeneric("centroided")) # use mzR generic?
-setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-"))
 
 #### Apply-like methods ####
 ## ------------------------

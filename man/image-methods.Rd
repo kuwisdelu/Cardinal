@@ -147,6 +147,11 @@
 \S4method{image}{SegmentationTest}(x, formula,
     values = "mapping", \dots)
 
+\S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x),
+        height, width, xlim = NULL, ylim = NULL,
+        xaxs = "i", yaxs = 'i', xlab, ylab,
+        interpolate = TRUE, add = FALSE, \dots)
+
 #### Methods for Cardinal 1.x classes ####
 
 \S4method{image}{SImageSet}(x, formula = ~ x * y,
@@ -258,6 +263,8 @@
 
     \item{smooth.image}{Image smoothing function to be applied to each image. The function can be user-supplied, or one of 'none', 'gaussian', or 'adaptive'. The 'gaussian' smoothing method smooths images with a simple gaussian kernel. The 'adaptive' method uses bilateral filtering to preserve edges.}
 
+    \item{yaxs}{Character or expression giving the label for the y-axis.}
+
     \item{xlab}{Character or expression giving the label for the x-axis.}
 
     \item{ylab}{Character or expression giving the label for the y-axis.}
@@ -269,6 +276,10 @@
     \item{ylim}{A numeric vector of length 2 giving the top and bottom limits for the y-axis.}
 
     \item{zlim}{A numeric vector of length 2 giving the lower and upper limits for the z-axis (i.e., the range of colors to be plotted).}
+
+    \item{xaxs}{The style of axis interval calculation to be used for the x-axis.}
+
+    \item{yaxs}{The style of axis interval calculation to be used for the y-axis.}
 
     \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
@@ -286,7 +297,15 @@
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
     
-    \item{\dots}{additional arguments passed to the underlying \code{\link{plot}} functions.}
+    \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} functions.}
+
+    \item{frame}{Which frame of an image should be plotted.}
+
+    \item{offset}{Absolute offset in x/y coordinates of the top-left corner of the image (from the origin).}
+
+    \item{height}{The height of the plotted image.}
+
+    \item{width}{The width of the plotted image.}
 
     \item{fold}{What folds of the cross-validation should be plotted.}
 
@@ -299,6 +318,10 @@
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
+
+    \item{native}{Should a native raster (using integer color codes) be produced, or an rgb raster (using character color codes)?}
+
+    \item{interpolate}{Should any linear interpolation be done when plotting the image?}
 
     \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 

@@ -201,3 +201,16 @@ setClass("SummarySegmentationTest", contains="SummaryDataFrame")
 		mzArrayList = DataFrame(),
 		intensityArrayList = DataFrame()))
 
+#### Classes for optical images (microscopy, etc.) ###
+## -------------------------------------------------
+.AnnotatedImage <- setClass("AnnotatedImage",
+	contains = c("Image", "Vector"),
+	slots = c(
+		offset= "numeric",
+		resolution = "numeric"),
+	prototype = prototype(
+		offset = c(0, 0),
+		resolution = 1))
+
+
+

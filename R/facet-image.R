@@ -284,7 +284,7 @@ facet.image <- function(args, formula, obj,
 }
 
 print.facet.image <- function(x, ...) {
-	obj <- x
+	obj <- .update.par(x, ...)
 	ck <- lapply(obj$layers, attr, "colorkey")
 	no_ck <- sapply(ck, function(y) is.null(y) || isFALSE(y$colorkey))
 	if ( all(no_ck) ) {
@@ -305,25 +305,6 @@ print.facet.image <- function(x, ...) {
 		darkmode()
 	} else if ( isFALSE(obj$dark) ) {
 		lightmode()
-	}
-	dots <- list(...)
-	if ( length(dots) > 0L ) {
-		lims <- c("xlim", "ylim", "zlim")
-		for ( nm in names(dots) ) {
-			if ( is.null(dots[[nm]]) && nm %in% lims )
-				dots[[nm]] <- NULL
-		}
-		if ( "add" %in% names(dots) ) {
-			obj$add <- dots$add
-			dots$add <- NULL
-		}
-		nms <- names(dots)
-		update <- nms %in% names(obj$par)
-		if ( any(update) ) {
-			obj$par[nms[update]] <- dots[update]
-			dots[update] <- NULL
-		}
-		obj$par <- c(obj$par, dots)
 	}
 	if ( obj$add )
 		.next.figure(last=TRUE)

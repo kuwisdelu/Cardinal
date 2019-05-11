@@ -188,7 +188,9 @@
 }
 
 # Setup plotting layout
-.setup.layout <- function(layout, right = 0, byrow = TRUE, ...) {
+.setup.layout <- function(layout, byrow = TRUE,
+	bottom = 0, left = 0, top = 0, right = 0, ...)
+{
 	layout <- as.integer(layout)
 	if ( length(layout) <= 1L ) {
 		layout <- rep_len(c(layout, 1L), 2)
@@ -196,8 +198,8 @@
 		byrow <- as.logical(layout[3L])
 	}
 	layout <- layout[c(1,2)]
-	par(mar=c(2.6, 2.6, 2.1, 1.1 + right), mgp=c(1.4, 0.6, 0),
-		cex.axis=0.8, cex.lab=0.8)
+	par(mar=c(2.5 + bottom, 2.5 + left, 2 + top, 1 + right) + 0.1,
+		mgp=c(1.4, 0.6, 0), cex.axis=0.8, cex.lab=0.8)
 	if ( byrow ) {
 		par(mfrow=layout)
 	} else {
@@ -217,7 +219,11 @@
 			.setup.layout(c(nf, nd), byrow=byrow, ...)
 		}
 	} else {
-		n <- .num.panels(x)
+		if ( is.numeric(x) ) {
+			n <- x
+		} else {
+			n <- .num.panels(x)
+		}
 		nc <- ceiling(sqrt(n))
 		nr <- ceiling(n / nc)
 		.setup.layout(c(nr, nc), byrow=byrow, ...)
@@ -230,6 +236,25 @@
 		function(l1) lapply(l1,
 			function(l2) l2$add))
 	sum(!unlist(x))
+}
+
+# Update a plotting object's par
+.update.par <- function(obj, ..., extra = c("layout", "add")) {
+	dots <- list(...)
+	if ( length(dots) > 0L ) {
+		if ( length(extra) > 0L ) {
+			obj[extra] <- dots[extra]
+			dots[extra] <- NULL
+		}
+		nms <- names(dots)
+		update <- nms %in% names(obj$par)
+		if ( any(update) ) {
+			obj$par[nms[update]] <- dots[nms[update]]
+			dots[nms[update]] <- NULL
+		}
+		obj$par <- c(obj$par, dots)
+	}
+	obj
 }
 
 # Draw strip labels
@@ -370,7 +395,7 @@
 
 .next.figure <- function(layout, byrow = TRUE, last = FALSE) {
 	if ( missing(layout) || is.null(layout$layout) ) {
-		if ( !is.null(layout$byrow) )
+		if ( !missing(layout) && !is.null(layout$byrow) )
 			byrow <- layout$byrow
 		if ( byrow ) {
 			layout <- par()$mfrow
