@@ -293,11 +293,11 @@ print.facet.image <- function(x, ...) {
 		padding <- 2
 	}
 	if ( isTRUE(obj$layout$layout) ) {
-		layout <- .auto.layout(obj,
-			byrow=obj$layout$byrow, right=padding)
+		layout <- .auto.layout(obj, right=padding,
+			byrow=obj$layout$byrow, par=obj$par)
 	} else if ( is.numeric(obj$layout$layout) ) {
-		layout <- .setup.layout(obj$layout$layout,
-			byrow=obj$layout$byrow, right=padding)
+		layout <- .setup.layout(obj$layout$layout, right=padding,
+			byrow=obj$layout$byrow, par=obj$par)
 	} else {
 		layout <- obj$layout
 	}

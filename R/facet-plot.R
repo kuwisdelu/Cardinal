@@ -181,10 +181,10 @@ print.facet.plot <- function(x, ...) {
 	obj <- .update.par(x, ...)
 	if ( isTRUE(obj$layout$layout) ) {
 		layout <- .auto.layout(obj,
-			byrow=obj$layout$byrow)
+			byrow=obj$layout$byrow, par=obj$par)
 	} else if ( is.numeric(obj$layout$layout) ) {
 		layout <- .setup.layout(obj$layout$layout,
-			byrow=obj$layout$byrow)
+			byrow=obj$layout$byrow, par=obj$par)
 	} else {
 		layout <- obj$layout
 	}

@@ -5,10 +5,10 @@ print.facet.raster <- function(x, ...) {
 		darkmode()
 	if ( isTRUE(obj$layout$layout) ) {
 		layout <- .auto.layout(length(obj$facets),
-			byrow=obj$layout$byrow)
+			byrow=obj$layout$byrow, par=obj$par)
 	} else if ( is.numeric(obj$layout$layout) ) {
 		layout <- .setup.layout(obj$layout$layout,
-			byrow=obj$layout$byrow)
+			byrow=obj$layout$byrow, par=obj$par)
 	} else {
 		layout <- obj$layout
 	}

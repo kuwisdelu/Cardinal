@@ -188,8 +188,8 @@
 }
 
 # Setup plotting layout
-.setup.layout <- function(layout, byrow = TRUE,
-	bottom = 0, left = 0, top = 0, right = 0, ...)
+.setup.layout <- function(layout, byrow = TRUE, ...,
+	bottom = 0, left = 0, top = 0, right = 0, par = list())
 {
 	layout <- as.integer(layout)
 	if ( length(layout) <= 1L ) {
@@ -198,8 +198,18 @@
 		byrow <- as.logical(layout[3L])
 	}
 	layout <- layout[c(1,2)]
-	par(mar=c(2.5 + bottom, 2.5 + left, 2 + top, 1 + right) + 0.1,
-		mgp=c(1.4, 0.6, 0), cex.axis=0.8, cex.lab=0.8)
+	par <- par[c("mar", "mgp", "cex.axis", "cex.lab")]
+	par <- par[!sapply(par, is.null)]
+	par <- c(par, list(...))
+	if ( is.null(par$mar) )
+		par$mar <- c(2.5 + bottom, 2.5 + left, 2 + top, 1 + right) + 0.1
+	if ( is.null(par$mgp) )
+		par$mgp <- c(1.4, 0.6, 0)
+	if ( is.null(par$cex.axis) )
+		par$cex.axis <- 0.8
+	if ( is.null(par$cex.lab) )
+		par$cex.lab <- 0.8
+	do.call("par", par)
 	if ( byrow ) {
 		par(mfrow=layout)
 	} else {
@@ -239,12 +249,13 @@
 }
 
 # Update a plotting object's par
-.update.par <- function(obj, ..., extra = c("layout", "add")) {
+.update.par <- function(obj, ..., extra = "add") {
 	dots <- list(...)
 	if ( length(dots) > 0L ) {
 		if ( length(extra) > 0L ) {
-			obj[extra] <- dots[extra]
-			dots[extra] <- NULL
+			update <- extra %in% names(dots)
+			obj[extra[update]] <- dots[extra[update]]
+			dots[extra[update]] <- NULL
 		}
 		nms <- names(dots)
 		update <- nms %in% names(obj$par)
