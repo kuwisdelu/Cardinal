@@ -45,6 +45,28 @@ SparseImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 
 setValidity("SparseImagingExperiment", .valid.SparseImagingExperiment)
 
+
+## elementMetadata methods
+
+setMethod("pixelData", "SparseImagingExperiment", 
+	function(object) object@elementMetadata)
+
+setReplaceMethod("pixelData", "SparseImagingExperiment",
+	function(object, value) {
+		object@elementMetadata <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("pixelNames", "SparseImagingExperiment",
+	function(object) rownames(elementMetadata(object)))
+
+setReplaceMethod("pixelNames", "SparseImagingExperiment",
+	function(object, value) {
+		rownames(elementMetadata(object)) <- value
+		object
+	})
+
 ## position methods
 
 setMethod("run", "SparseImagingExperiment",
@@ -144,6 +166,90 @@ setMethod("preproc", "SparseImagingExperiment",
 		p <- mcols(object@processing)
 		setNames(p$complete, p$label)
 	})
+
+
+## Filter pixels/features
+
+setMethod("features", "SparseImagingExperiment",
+	function(object, ..., .env = parent.frame(2)) {
+		fdata <- featureData(object)
+		conditions <- eval(substitute(alist(...)))
+		e <- as.env(fdata, enclos=.env)
+		if ( length(conditions) > 0 ) {
+			features <- lapply(conditions, function(ci) {
+				ci <- eval(ci, envir=e)
+				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
+					.stop("arguments must be integer or logical vectors")
+				if ( is.logical(ci) ) {
+					rep_len(ci, nrow(fdata))
+				} else {
+					ci
+				}
+			})
+			if ( length(features) == 1 && is.logical(features[[1]]) ) {
+				features <- which(features[[1]])
+			} else {
+				conds <- sapply(features, is.logical)
+				if ( any(conds) ) {
+					ll <- do.call("cbind", features[conds])
+					i1 <- which(apply(ll, 1, all))
+				} else {
+					i1 <- seq_len(nrow(fdata))
+				}
+				if ( any(!conds) ) {
+					i2 <- unlist(features[!conds])
+				} else {
+					i2 <- seq_len(nrow(fdata))
+				}
+				features <- sort(intersect(i1, i2))
+			}
+		} else {
+			features <- seq_len(nrow(fdata))
+		}
+		names(features) <- featureNames(object)[features]
+		features
+	})
+
+setMethod("pixels", "SparseImagingExperiment",
+	function(object, ..., .env = parent.frame(2)) {
+		pdata <- pixelData(object)
+		conditions <- eval(substitute(alist(...)))
+		e <- as.env(pdata, enclos=.env)
+		if ( length(conditions) > 0 ) {
+			pixels <- lapply(conditions, function(ci) {
+				ci <- eval(ci, envir=e)
+				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
+					.stop("arguments must be integer or logical vectors")
+				if ( is.logical(ci) ) {
+					rep_len(ci, nrow(pdata))
+				} else {
+					ci
+				}
+			})
+			if ( length(pixels) == 1 && is.logical(pixels[[1]]) ) {
+				pixels <- which(pixels[[1]])
+			} else {
+				conds <- sapply(pixels, is.logical)
+				if ( any(conds) ) {
+					ll <- do.call("cbind", pixels[conds])
+					i1 <- which(apply(ll, 1, all))
+				} else {
+					i1 <- seq_len(nrow(pdata))
+				}
+				if ( any(!conds) ) {
+					i2 <- unlist(pixels[!conds])
+				} else {
+					i2 <- seq_len(nrow(pdata))
+				}
+				pixels <- sort(intersect(i1, i2))
+			}
+		} else {
+			pixels <- seq_len(nrow(pdata))
+		}
+		names(pixels) <- pixelNames(object)[pixels]
+		pixels
+	})
+
 
 ## Subsetting
 
@@ -255,4 +361,11 @@ setMethod("show", "SparseImagingExperiment",
 		.scat("coord(%d): %s\n", clims, collapse=", ", prefix=t1)
 	}
 )
+
+## Additional methods
+
+setMethod("dim", "SparseImagingExperiment", function(x)
+	setNames(callNextMethod(x), c("Features", "Pixels")))
+
+
 

@@ -36,6 +36,16 @@ setReplaceMethod("iData", c("ImagingExperiment", "ANY"),
 
 ## featureData methods
 
+setMethod("fData", "ImagingExperiment",
+	function(object) object@featureData)
+
+setReplaceMethod("fData", "ImagingExperiment",
+	function(object, value) {
+		object@featureData <- value
+		if ( validObject(object) )
+			object
+	})
+
 setMethod("featureData", "ImagingExperiment", 
 	function(object) object@featureData)
 
@@ -44,15 +54,6 @@ setReplaceMethod("featureData", "ImagingExperiment",
 		object@featureData <- value
 		if ( validObject(object) )
 			object
-	})
-
-setMethod("fData", "ImagingExperiment",
-	function(object) featureData(object))
-
-setReplaceMethod("fData", "ImagingExperiment",
-	function(object, value) {
-		featureData(object) <- value
-		object
 	})
 
 setMethod("featureNames", "ImagingExperiment",
@@ -64,35 +65,50 @@ setReplaceMethod("featureNames", "ImagingExperiment",
 		object
 	})
 
-## pixelData methods
+## elementMetadata methods
 
-setMethod("pixelData", "ImagingExperiment", 
+
+setMethod("pData", "ImagingExperiment",
 	function(object) object@elementMetadata)
 
-setReplaceMethod("pixelData", "ImagingExperiment",
+setReplaceMethod("pData", "ImagingExperiment",
 	function(object, value) {
 		object@elementMetadata <- value
 		if ( validObject(object) )
 			object
 	})
 
-setMethod("pData", "ImagingExperiment",
-	function(object) pixelData(object))
+setMethod("phenoData", "ImagingExperiment", 
+	function(object) object@elementMetadata)
 
-setReplaceMethod("pData", "ImagingExperiment",
+setReplaceMethod("phenoData", "ImagingExperiment",
 	function(object, value) {
-		pixelData(object) <- value
+		object@elementMetadata <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("sampleNames", "ImagingExperiment",
+	function(object) rownames(elementMetadata(object)))
+
+setReplaceMethod("sampleNames", "ImagingExperiment",
+	function(object, value) {
+		rownames(elementMetadata(object)) <- value
 		object
 	})
 
-setMethod("pixelNames", "ImagingExperiment",
-	function(object) rownames(pixelData(object)))
+# redefine in sub-classes if columns = pixels
+setMethod("pixelData", "ImagingExperiment", function(object) NULL)
+
+setReplaceMethod("pixelData", "ImagingExperiment",
+	function(object, value) object)
+
+# redefine in sub-classes if columns = pixels
+setMethod("pixelNames", "ImagingExperiment", function(object) NULL)
 
 setReplaceMethod("pixelNames", "ImagingExperiment",
-	function(object, value) {
-		rownames(pixelData(object)) <- value
-		object
-	})
+	function(object, value) object)
+
 
 ## show
 
@@ -111,10 +127,18 @@ setMethod("show", "ImagingExperiment",
 		if ( !is.null(featureNames(object)) )
 			.scat("featureNames(%d): %s\n", featureNames(object), prefix=t1)
 		.scat("featureData(%d): %s\n", names(featureData(object)), prefix=t1)
-		# pixelData()
-		if ( !is.null(pixelNames(object)) )
-			.scat("pixelNames(%d): %s\n", pixelNames(object), prefix=t1)
-		.scat("pixelData(%d): %s\n", names(pixelData(object)), prefix=t1)
+		# check if columns = pixels
+		if ( is.null(pixelData(object)) ) {
+			# phenoData()
+			if ( !is.null(sampleNames(object)) )
+				.scat("sampleNames(%d): %s\n", sampleNames(object), prefix=t1)
+			.scat("phenoData(%d): %s\n", names(phenoData(object)), prefix=t1)
+		} else {
+			# pixelData()
+			if ( !is.null(pixelNames(object)) )
+				.scat("pixelNames(%d): %s\n", pixelNames(object), prefix=t1)
+			.scat("pixelData(%d): %s\n", names(pixelData(object)), prefix=t1)
+		}
 		# metadata()
 	    if ( length(metadata(object)) > 0L )
 			.scat("metadata(%d): %s\n", names(metadata(object)), prefix=t1)
@@ -122,121 +146,47 @@ setMethod("show", "ImagingExperiment",
 )
 
 
-
-## Filter pixels/features
-
-setMethod("features", "ImagingExperiment",
-	function(object, ..., .env = parent.frame(2)) {
-		fdata <- featureData(object)
-		conditions <- eval(substitute(alist(...)))
-		e <- as.env(fdata, enclos=.env)
-		if ( length(conditions) > 0 ) {
-			features <- lapply(conditions, function(ci) {
-				ci <- eval(ci, envir=e)
-				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
-					.stop("arguments must be integer or logical vectors")
-				if ( is.logical(ci) ) {
-					rep_len(ci, nrow(fdata))
-				} else {
-					ci
-				}
-			})
-			if ( length(features) == 1 && is.logical(features[[1]]) ) {
-				features <- which(features[[1]])
-			} else {
-				conds <- sapply(features, is.logical)
-				if ( any(conds) ) {
-					ll <- do.call("cbind", features[conds])
-					i1 <- which(apply(ll, 1, all))
-				} else {
-					i1 <- seq_len(nrow(fdata))
-				}
-				if ( any(!conds) ) {
-					i2 <- unlist(features[!conds])
-				} else {
-					i2 <- seq_len(nrow(fdata))
-				}
-				features <- sort(intersect(i1, i2))
-			}
-		} else {
-			features <- seq_len(nrow(fdata))
-		}
-		names(features) <- featureNames(object)[features]
-		features
-	})
-
-setMethod("pixels", "ImagingExperiment",
-	function(object, ..., .env = parent.frame(2)) {
-		pdata <- pixelData(object)
-		conditions <- eval(substitute(alist(...)))
-		e <- as.env(pdata, enclos=.env)
-		if ( length(conditions) > 0 ) {
-			pixels <- lapply(conditions, function(ci) {
-				ci <- eval(ci, envir=e)
-				if ( !is.logical(ci) && !all(is.wholenumber(ci)) )
-					.stop("arguments must be integer or logical vectors")
-				if ( is.logical(ci) ) {
-					rep_len(ci, nrow(pdata))
-				} else {
-					ci
-				}
-			})
-			if ( length(pixels) == 1 && is.logical(pixels[[1]]) ) {
-				pixels <- which(pixels[[1]])
-			} else {
-				conds <- sapply(pixels, is.logical)
-				if ( any(conds) ) {
-					ll <- do.call("cbind", pixels[conds])
-					i1 <- which(apply(ll, 1, all))
-				} else {
-					i1 <- seq_len(nrow(pdata))
-				}
-				if ( any(!conds) ) {
-					i2 <- unlist(pixels[!conds])
-				} else {
-					i2 <- seq_len(nrow(pdata))
-				}
-				pixels <- sort(intersect(i1, i2))
-			}
-		} else {
-			pixels <- seq_len(nrow(pdata))
-		}
-		names(pixels) <- pixelNames(object)[pixels]
-		pixels
-	})
-
-
 ## Subsetting
 
 setMethod("[[", c("ImagingExperiment", "ANY", "ANY"),
-	function(x, i, j, ...) pixelData(x)[[i, ...]])
+	function(x, i, j, ...) elementMetadata(x)[[i, ...]])
 
 setReplaceMethod("[[", c("ImagingExperiment", "ANY", "ANY"),
 	function(x, i, j, ..., value) {
-		pixelData(x)[[i, ...]] <- value
+		elementMetadata(x)[[i, ...]] <- value
 		x
 	})
 
 .DollarNames.ImagingExperiment <- function(x, pattern = "")
-	grep(pattern, names(pixelData(x)), value=TRUE)
+	grep(pattern, names(elementMetadata(x)), value=TRUE)
 
 setMethod("$", "ImagingExperiment",
-	function(x, name) pixelData(x)[[name, exact=FALSE]])
+	function(x, name) elementMetadata(x)[[name, exact=FALSE]])
 
 setReplaceMethod("$", "ImagingExperiment",
 	function(x, name, value) {
-		pixelData(x)[[name]] <- value
+		elementMetadata(x)[[name]] <- value
 		x
 	})
 
 ## Additional methods
 
-setMethod("dim", "ImagingExperiment", function(x)
-	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
+setMethod("names", "ImagingExperiment",
+	function(x) rownames(x@elementMetadata))
 
-setMethod("dimnames", "ImagingExperiment", function(x)
-	list(featureNames(x), pixelNames(x)))
+setReplaceMethod("names", "ImagingExperiment",
+	function(x, value) {
+		rownames(x@elementMetadata) <- value
+		x
+	})
 
-setMethod("length", "ImagingExperiment", 
-	function(x) as.integer(ncol(x)))
+setMethod("dim", "ImagingExperiment",
+	function(x) c(nrow(fData(x)), nrow(pData(x))))
+
+setMethod("dimnames", "ImagingExperiment",
+	function(x) list(featureNames(x), names(x)))
+
+setMethod("length", "ImagingExperiment",
+	function(x) unname(ncol(x)))
+
 

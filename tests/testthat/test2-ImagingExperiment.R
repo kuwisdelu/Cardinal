@@ -35,13 +35,14 @@ test_that("ImagingExperiment accessors", {
 	expect_equal(imageData(x), idata)
 	expect_equal(iData(x), idata[[1]])
 	
-	expect_equal(pixelData(x), pdata)
+	expect_equal(phenoData(x), pdata)
 	expect_equal(pData(x), pdata)
+	expect_null(pixelData(x))
 	
 	expect_equal(featureData(x), fdata)
 	expect_equal(fData(x), fdata)
 
-	expect_equal(dim(x), c(Features=nrow(fdata), Pixels=nrow(pdata)))
+	expect_equal(dim(x), c(nrow(fdata), nrow(pdata)))
 
 	expect_equal(x[["a"]], pdata[["a"]])
 

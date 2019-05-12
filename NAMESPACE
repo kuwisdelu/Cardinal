@@ -343,6 +343,8 @@ exportMethods(
 	"peaks<-",
 	"peakData",
 	"peakData<-",
+	"phenoData",
+	"phenoData<-",
 	"pixels",
 	"pixelData",
 	"pixelData<-",

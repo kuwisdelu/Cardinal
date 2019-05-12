@@ -5,6 +5,11 @@
 \alias{SparseImagingExperiment}
 \alias{SparseImagingExperiment-class}
 
+\alias{pixels}
+\alias{pixels-methods}
+\alias{features}
+\alias{features-methods}
+
 \alias{show,SparseImagingExperiment-method}
 \alias{run,SparseImagingExperiment-method}
 \alias{run<-,SparseImagingExperiment-method}
@@ -22,11 +27,16 @@
 \alias{gridded<-,SparseImagingExperiment,ANY-method}
 \alias{resolution,SparseImagingExperiment-method}
 \alias{resolution<-,SparseImagingExperiment-method}
+\alias{pixelData,SparseImagingExperiment-method}
+\alias{pixelData<-,SparseImagingExperiment-method}
+\alias{pixelNames,SparseImagingExperiment-method}
+\alias{pixelNames<-,SparseImagingExperiment-method}
 \alias{processingData,SparseImagingExperiment-method}
 \alias{processingData<-,SparseImagingExperiment-method}
 \alias{preproc,SparseImagingExperiment-method}
 \alias{[,SparseImagingExperiment,ANY,ANY,ANY-method}
 \alias{[<-,SparseImagingExperiment,ANY,ANY,ANY-method}
+\alias{dim,SparseImagingExperiment-method}
 \alias{dims,SparseImagingExperiment-method}
 \alias{cbind,SparseImagingExperiment-method}
 \alias{rbind,SparseImagingExperiment-method}
@@ -34,7 +44,11 @@
 \alias{collect,SparseImagingExperiment-method}
 \alias{is3D,SparseImagingExperiment-method}
 
+\alias{pixels,SparseImagingExperiment-method}
+\alias{features,SparseImagingExperiment-method}
+
 \alias{is3D}
+
 
 \title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 
@@ -86,6 +100,10 @@ SparseImagingExperiment(
     All methods for \code{\linkS4class{ImagingExperiment}} also work on \code{SparseImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
+        \item{\code{pixels(object, ...)}:}{Returns the row indices of \code{pixelData} corresponding to conditions passed via \dots.}
+
+        \item{\code{features(object, ...)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
+
         \item{\code{run(object)}, \code{run(object) <- value}:}{Get or set the experimental run slot-column from \code{pixelData}.}
 
         \item{\code{runNames(object)}, \code{runNames(object) <- value}:}{Get or set the experimental run levels from \code{pixelData}.}
