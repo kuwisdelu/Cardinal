@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 2.3.5 [2019-5-11]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Moved some S4 method definitions from 'ImagingExperiment'
+        to 'SparseImagingExperiment' so that the former can be
+        more flexible for a wider variety of imaging modalities
+
+BUG FIXES
+
+    o Pass more ... args through to 'par()' in plotting functions
+
 CHANGES IN VERSION 2.3.4 [2019-5-10]
 -----------------------------------
 
