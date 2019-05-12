@@ -53,7 +53,9 @@
 \title{SparseImagingExperiment: Pixel-sparse imaging experiments}
 
 \description{
-   The \code{SparseImagingExperiment} class specializes the virtual \code{\linkS4class{ImagingExperiment}} class by assuming that each pixel may be a high-dimensional feature vector (e.g., a spectrum), but the pixels themselves may be sparse. Therefore, the data may be more efficiently stored as a matrix where rows are features and columns are pixels, rather than storing the full, dense datacube. Both 2D and 3D data are supported. Non-gridded pixel coordinates are allowed.
+   The \code{SparseImagingExperiment} class specializes the virtual \code{\linkS4class{ImagingExperiment}} class by assuming that each pixel may be a high-dimensional feature vector (e.g., a spectrum), but the pixels themselves may be sparse. Therefore, the data may be more efficiently stored as a matrix where rows are features and columns are pixels, rather than storing the full, dense datacube.
+
+   Both 2D and 3D data are supported. Non-gridded pixel coordinates are allowed.
 
    The \code{\linkS4class{MSImagingExperiment}} subclass adds design features for mass spectrometry imaging experiments.
 }
@@ -73,7 +75,7 @@ SparseImagingExperiment(
 \arguments{
     \item{imageData}{Either a matrix-like object with number of rows equal to the number of features and number of columns equal to the number of pixels, or an \code{\linkS4class{ImageArrayList}}.}
 
-    \item{featureData}{A \code{\linkS4class{XDataFrame}} with feature metadata, with a row for each feature.}
+    \item{featureData}{A \code{\linkS4class{DataFrame}} with feature metadata, with a row for each feature.}
 
     \item{pixelData}{A \code{\linkS4class{PositionDataFrame}} with pixel metadata, with a row for each pixel.}
 
@@ -86,7 +88,7 @@ SparseImagingExperiment(
     \describe{
         \item{\code{imageData}:}{An object inheriting from \code{\linkS4class{ImageArrayList}}, storing one or more array-like data elements with conformable dimensions.}
 
-        \item{\code{featureData}:}{Contains feature information in a \code{\linkS4class{XDataFrame}}. Each row includes the metadata for a single feature (e.g., a color channel, a molecular analyte, or a mass-to-charge ratio).}
+        \item{\code{featureData}:}{Contains feature information in a \code{\linkS4class{DataFrame}}. Each row includes the metadata for a single feature (e.g., a color channel, a molecular analyte, or a mass-to-charge ratio).}
 
         \item{\code{elementMetadata}:}{Contains pixel information in a \code{\linkS4class{PositionDataFrame}}. Each row includes the metadata for a single observation (e.g., a pixel), including specialized slot-columns for tracking pixel coordinates and experimental runs.}
 
