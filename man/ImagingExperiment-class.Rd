@@ -102,7 +102,7 @@
 
         \item{\code{sampleNames(object), sampleNames(object) <- value}:}{Get and set the row names of the \code{elementMetadata} slot.}
 
-        \item{\code{pData(object), pData(object) <- value}:}{A shortcut for \code{phenoata(object)} and \code{phenoData(object)<-}.}
+        \item{\code{pData(object), pData(object) <- value}:}{A shortcut for \code{phenoData(object)} and \code{phenoData(object)<-}.}
 
         \item{\code{pixelData(object), pixelData(object) <- value}:}{In subclasses where columns represent pixels, get and set the \code{elementMetadata} slot.}
 
