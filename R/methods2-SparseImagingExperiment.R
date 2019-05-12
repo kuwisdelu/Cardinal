@@ -3,7 +3,7 @@
 ## ------------------------------------------
 
 SparseImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
-	featureData = XDataFrame(), pixelData = PositionDataFrame(),
+	featureData = DataFrame(), pixelData = PositionDataFrame(),
 	metadata = list(), processing = SimpleList())
 {
 	if ( !is(imageData, "ImageArrayList") )
@@ -12,7 +12,7 @@ SparseImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 		iData <- imageData[[1]]
 		if ( missing(featureData) ) {
 			rownames <- rownames(iData)
-			featureData <- new("XDataFrame", nrows=nrow(iData),
+			featureData <- new("DataFrame", nrows=nrow(iData),
 				rownames=rownames)
 		}
 		if ( missing(pixelData) ) {
@@ -255,6 +255,9 @@ setMethod("pixels", "SparseImagingExperiment",
 
 setMethod("[", "SparseImagingExperiment",
 	function(x, i, j, ..., drop) {
+		lst <- (nargs() - !missing(drop)) < 3L
+		if ( lst )
+			return(x[,i,drop=drop])
 		if ( !missing(i) && (is.character(i) || is.factor(i)) )
 			i <- match(i, featureNames(x))
 		if ( !missing(j) && (is.character(j) || is.factor(j)) )

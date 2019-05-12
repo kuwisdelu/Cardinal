@@ -1,6 +1,6 @@
 
-#### Methods for MassDataFrame ####
-## ------------------------------------
+#### Methods for AnnotatedImage ####
+## -----------------------------------
 
 AnnotatedImage <- function(data = array(0, dim=c(1,1)),
 							dim, colormode, ...)

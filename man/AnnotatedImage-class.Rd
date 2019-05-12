@@ -39,7 +39,25 @@ AnnotatedImage(data = array(0, dim=c(1,1)), dim, colormode, \dots)
 	\item{\dots}{Additional arguments passed to the constructor. May be used to set the \code{offset} or \code{resolution} slots.}
 }
 
+\section{Slots}{
+    \describe{
+        \item{\code{.Data}:}{An array with the image data.}
+
+        \item{\code{offset}:}{The absolute offset of the x/y position of the top-left corner of the image when plotted.}
+
+        \item{\code{resolution}:}{The absolute offset of the x/y position of the top-left corner of the image when plotted.}
+
+        \item{\code{colormode}:}{The color mode of the image. Either 'Grayscale' or 'Color'.}
+
+        \item{\code{elementMetadata}:}{An optional \code{DataFrame} containing pixel-level annotations.}
+
+        \item{\code{metadata}:}{A \code{list} containing general metadata (such as filename, etc.).}
+    }
+}
+
 \section{Methods}{
+	All methods for \code{\linkS4class{Image}} also work on \code{AnnotatedImage} objects. Additional methods are documented below:
+
 	\describe{
 		\item{\code{mcols(x)}, \code{mcols(x) <- value}:}{Get or set the metadata columns.}
 

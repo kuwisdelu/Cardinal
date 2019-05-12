@@ -1,3 +1,4 @@
+
 #### Methods for ImageList ####
 ## -----------------------------
 
@@ -97,19 +98,32 @@ setMethod("dims", "ImageList",
 
 setMethod("show", "SimpleImageList",
 	function(object) {
-		callNextMethod(object)
-		# get class / dim information
+		cat(class(object), "of length", length(object))
+		# get names(), class(), dim() information
 		if ( length(object) == 0 )
-			return(matrix(nrow=0, ncol=0))
+			return()
+		nms <- names(object)
+		if ( is.null(nms) )
+			nms <- character(length(object))
 		data <- as(object, "SimpleList", strict=FALSE)
-		dims <- sapply(data, function(x) {
+		cls <- sapply(data, class)
+		dms <- sapply(data, function(x) {
 			d <- paste0(dim(x), collapse=" x ")
 			paste0("<", d, ">")
 		})
-		dims <- paste0(dims, collapse=" ")
-		classes <- paste0(sapply(data, class), collapse=" ")
-		cat(sprintf("classes(%d): %s\n", length(classes), classes))
-		cat(sprintf("dims(%d): %s\n", length(dims), dims))
+		mem <- sapply(data, function(x) format(matter::mem(x)))
+		nms <- c(sprintf("names(%d):",
+						length(names(object))), selectSome(nms))
+		cls <- c(sprintf("class(%d):",
+						length(cls)), selectSome(cls))
+		dms <- c(sprintf("dim(%d):",
+						length(dms)), selectSome(dms))
+		mem <- c(sprintf("mem(%d):",
+						length(mem)), selectSome(mem))
+		out <- rbind(nms, cls, dms, mem)
+		colnames(out) <- character(ncol(out))
+		rownames(out) <- character(nrow(out))
+		print(out, quote = FALSE, right = TRUE)
 	}
 )
 

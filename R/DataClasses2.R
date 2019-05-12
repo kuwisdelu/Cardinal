@@ -90,6 +90,7 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		elementMetadata = "DataFrame"),
 	prototype = prototype(
 		imageData = .SimpleImageList(),
+		featureData = DataFrame(),
 		elementMetadata = DataFrame()))
 
 #### Class for pixel-sparse imaging experiments ####
@@ -211,6 +212,23 @@ setClass("SummarySegmentationTest", contains="SummaryDataFrame")
 	prototype = prototype(
 		offset = c(0, 0),
 		resolution = 1))
+
+#### Class for a list of optical images ###
+## -------------------------------------------
+.AnnotatedImageList <- setRefClass(
+	Class = "AnnotatedImageList",
+    contains = "SimpleImageList")
+
+setAs("SimpleList", "AnnotatedImageList",
+    function(from) .AnnotatedImageList(data=from))
+
+#### Class for an experiment with annotated optical images ####
+## -----------------------------------------------------------
+.AnnotatedImagingExperiment <- setClass("AnnotatedImagingExperiment",
+	contains = "ImagingExperiment",
+	slots = c(imageData = "AnnotatedImageList"),
+	prototype = prototype(
+		imageData = .AnnotatedImageList()))
 
 
 

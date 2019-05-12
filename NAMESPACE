@@ -177,8 +177,10 @@ export(
 
 exportClasses(
 	"AnnotatedImage",
-	"SummaryDataFrame",
+	"AnnotatedImageList",
+	"AnnotatedImagingExperiment",
 	"XDataFrame",
+	"SummaryDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
 	"ImageList",
@@ -195,8 +197,10 @@ exportClasses(
 	"MSImagingInfo")
 
 export(
-	"SummaryDataFrame",
+	"AnnotatedImage",
+	"AnnotatedImageList",
 	"XDataFrame",
+	"SummaryDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
 	"ImageList",
