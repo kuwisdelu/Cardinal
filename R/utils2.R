@@ -401,7 +401,7 @@
 			axis(side=4, las=2, cex.axis=0.75 * cex.axis)
 			mfg <- par()$mfg
 			par(old.par)
-			if ( is.null(layout$layout) ) {
+			if ( !is.numeric(layout$layout) ) {
 				par(mfg=mfg, new=FALSE)
 			} else {
 				if ( isFALSE(layout$byrow) ) {
