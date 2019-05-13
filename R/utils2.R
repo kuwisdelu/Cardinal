@@ -418,8 +418,8 @@
 }
 
 .next.figure <- function(layout, byrow = TRUE, last = FALSE) {
-	if ( missing(layout) || is.null(layout$layout) ) {
-		if ( !missing(layout) && !is.null(layout$byrow) )
+	if ( missing(layout) || !is.numeric(layout$layout) ) {
+		if ( !missing(layout) && is.logical(layout$byrow) )
 			byrow <- layout$byrow
 		if ( byrow ) {
 			layout <- par()$mfrow
