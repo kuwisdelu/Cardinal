@@ -59,9 +59,13 @@ setMethod("coord", "AnnotatedImagingExperiment",
 
 
 setMethod("coordinates", "AnnotatedImagingExperiment",
-	function(obj, ...) {
+	function(obj, ..., simplify = TRUE) {
 		data <- as(imageData(obj), "SimpleList", strict=FALSE)
-		vapply(data, "coord", numeric(1))
+		if ( simplify ) {
+			vapply(data, "coord", numeric(1))
+		} else {
+			lapply(data, "coord")
+		}
 	})
 
 # width calculated from resolution and count of x pixels
@@ -78,7 +82,7 @@ setMethod("width", "AnnotatedImagingExperiment",
 setMethod("height", "AnnotatedImagingExperiment",
 	function(x) {
 		data <- as(imageData(x), "SimpleList", strict=FALSE)
-		vapply(data, "width", numeric(1))
+		vapply(data, "height", numeric(1))
 	})
 
 

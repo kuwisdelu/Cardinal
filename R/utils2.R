@@ -220,7 +220,7 @@
 
 # Auto plotting layout
 .auto.layout <- function(x, byrow = TRUE, ...) {
-	if ( length(x$flevels) > 1L && length(x$dpages) > 1L ) {
+	if ( !is.numeric(x) && length(x$flevels) > 1L && length(x$dpages) > 1L ) {
 		nf <- length(x$flevels)
 		nd <- length(x$dpages)
 		if ( byrow ) {
@@ -249,13 +249,26 @@
 }
 
 # Update a plotting object's par
-.update.par <- function(obj, ..., extra = "add") {
+.update.par <- function(obj, ...) {
 	dots <- list(...)
 	if ( length(dots) > 0L ) {
-		if ( length(extra) > 0L ) {
-			update <- extra %in% names(dots)
-			obj[extra[update]] <- dots[extra[update]]
-			dots[extra[update]] <- NULL
+		if ( !is.null(dots$add) ) {
+			obj$add <- dots$add
+			dots$add <- NULL
+		}
+		if ( !is.null(dots$layout) || !is.null(dots$byrow) ) {
+			layout <- obj$layout$layout
+			byrow <- obj$layout$byrow
+			layout <- list(layout=layout, byrow=byrow)
+			if ( !is.null(dots$layout) ) {
+				layout$layout <- dots$layout
+				dots$layout <- NULL
+			}
+			if ( !is.null(dots$byrow) ) {
+				layout$byrow <- dots$byrow
+				dots$byrow <- NULL
+			}
+			obj$layout <- layout
 		}
 		nms <- names(dots)
 		update <- nms %in% names(obj$par)
@@ -388,7 +401,7 @@
 			axis(side=4, las=2, cex.axis=0.75 * cex.axis)
 			mfg <- par()$mfg
 			par(old.par)
-			if ( is.null(layout) ) {
+			if ( is.null(layout$layout) ) {
 				par(mfg=mfg, new=FALSE)
 			} else {
 				if ( isFALSE(layout$byrow) ) {

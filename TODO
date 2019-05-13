@@ -1,7 +1,8 @@
 
 TODO for Cardinal package
 -------------------------
- 
+
+- Fix bug where 'add=TRUE' ignores old coordinate system
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)
 - A way to "compile" images for faster image loading?

@@ -17,8 +17,8 @@
 \alias{image,SpatialShrunkenCentroids2-method}
 \alias{image,SpatialDGMM-method}
 \alias{image,SegmentationTest-method}
-
 \alias{image,AnnotatedImage-method}
+\alias{image,AnnotatedImagingExperiment-method}
 
 \alias{image3D,SparseImagingExperiment-method}
 \alias{image3D,PCA2-method}
@@ -150,9 +150,19 @@
 \S4method{image}{SegmentationTest}(x, formula,
     values = "mapping", \dots)
 
-\S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x), height, width,
-    xlab, ylab, xlim = NULL, ylim = NULL, xaxs = "i", yaxs = 'i',
-    native = TRUE, interpolate = TRUE, add = FALSE, \dots)
+\S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x),
+        height, width,
+        layout = !add,
+        native = TRUE,
+        interpolate = TRUE,
+        add = FALSE, \dots)
+
+\S4method{image}{AnnotatedImagingExperiment}(x, i, frame = 1,
+        strip = TRUE,
+        layout = !add,
+        native = TRUE,
+        interpolate = TRUE,
+        add = FALSE, \dots)
 
 #### Methods for Cardinal 1.x classes ####
 
@@ -277,10 +287,6 @@
 
     \item{zlim}{A numeric vector of length 2 giving the lower and upper limits for the z-axis (i.e., the range of colors to be plotted).}
 
-    \item{xaxs}{The style of axis interval calculation to be used for the x-axis.}
-
-    \item{yaxs}{The style of axis interval calculation to be used for the y-axis.}
-
     \item{layout}{The layout of the plots, given by a length 2 numeric as \code{c(ncol, nrow)}. This is passed to \code{\link{levelplot}} if 'lattice = TRUE'. For base graphics, this defaults to one plot per page.}
 
     \item{asp}{The aspect ratio of the plot.}
@@ -299,6 +305,8 @@
     
     \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} functions.}
 
+    \item{i}{Which data element should be plotted.}
+
     \item{frame}{Which frame of an image should be plotted.}
 
     \item{offset}{Absolute offset in x/y coordinates of the top-left corner of the image (from the origin).}
@@ -306,6 +314,10 @@
     \item{height}{The height of the plotted image.}
 
     \item{width}{The width of the plotted image.}
+
+    \item{native}{Should a native raster (using integer color codes) be produced, or an rgb raster (using character color codes)?}
+
+    \item{interpolate}{Should any linear interpolation be done when plotting the image?}
 
     \item{fold}{What folds of the cross-validation should be plotted.}
 
@@ -319,16 +331,12 @@
 
     \item{lattice}{Should lattice graphics be used to create the plot?}
 
-    \item{native}{Should a native raster (using integer color codes) be produced, or an rgb raster (using character color codes)?}
-
-    \item{interpolate}{Should any linear interpolation be done when plotting the image?}
-
     \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 
 }
 
 \note{
-    For objects derived from class \linkS4class{SImageSet}, calling \code{image3D(x)} is equivalent to \code{image(x, ~ x * y * z)}.
+    In most cases, calling \code{image3D(obj)} is equivalent to \code{image(obj, ~ x * y * z)}.
 }
 
 \author{
