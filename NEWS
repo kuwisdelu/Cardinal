@@ -1,4 +1,24 @@
 
+CHANGES IN VERSION 2.3.6 [2019-5-13]
+-----------------------------------
+
+NEW FEATURES
+
+    o Add 'AnnotatedImageList' class for list of 'AnnotatedImage' objects
+    o Add 'AnnotatedImagingExperiment' class for containing data for
+        an optical imaging experiment (e.g., a microscopy experiments)
+    o Add 'image()' plotting for 'AnnotatedImagingExperiment'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Redefine '@featureData' slot of a 'SparseImagingExperiment'
+        to be a 'DataFrame' rather than requiring an 'XDataFrame'
+
+BUG FIXES
+
+    o Respect 'layout' and 'byrow' passed through ... args
+        to 'print()' method on facet plot objects
+
 CHANGES IN VERSION 2.3.5 [2019-5-11]
 -----------------------------------
 
