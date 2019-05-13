@@ -83,10 +83,6 @@ print.facet.raster <- function(x, ...) {
 	for ( facet in obj$facets ) {
 		if ( obj$add ) {
 			.next.figure(layout)
-			par <- obj$par
-			if ( "type" %in% names(par) )
-				par <- par[-which(names(par) == "type")]
-			do.call("plot.window", par)
 		} else {
 			do.call("plot", nil)
 		}

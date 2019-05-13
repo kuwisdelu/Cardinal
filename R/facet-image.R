@@ -332,7 +332,6 @@ print.facet.image <- function(x, ...) {
 						par$yaxs <- "i"
 					if ( obj$add ) {
 						.next.figure(layout)
-						do.call("plot.window", par)
 					} else {
 						nil <- c(list(x=NA, y=NA, type='n'), par)
 						do.call("plot", nil)
