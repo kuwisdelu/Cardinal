@@ -40,3 +40,31 @@ setValidity("AnnotatedImagingExperiment", .valid.AnnotatedImagingExperiment)
 setMethod("dims", "AnnotatedImagingExperiment",
 	function(x) dims(imageData(x)))
 
+
+## show
+
+setMethod("show", "AnnotatedImagingExperiment",
+	function(object) {
+		# print parent information
+		callNextMethod(object)
+		# dims()
+		t1 <- "    "
+		images <- as(imageData(object), "SimpleList")
+		dms <- sapply(images, function(x) {
+			d <- paste0(dim(x), collapse=" x ")
+			paste0("<", d, ">")
+		})
+		.scat("dims(%d): %s\n", dms, collapse=", ", prefix=t1)
+		# colorMode()
+		col <- sapply(images, function(x) {
+			if ( colorMode(x) == EBImage::Color ) {
+				"Color"
+			} else {
+				"Grayscale"
+			}
+		})
+		.scat("colorMode(%d): %s", col, collapse=" ", prefix=t1)
+	}
+)
+
+

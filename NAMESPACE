@@ -199,6 +199,7 @@ exportClasses(
 export(
 	"AnnotatedImage",
 	"AnnotatedImageList",
+	"AnnotatedImagingExperiment",
 	"XDataFrame",
 	"SummaryDataFrame",
 	"PositionDataFrame",

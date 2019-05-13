@@ -57,11 +57,11 @@ setReplaceMethod("featureData", "ImagingExperiment",
 	})
 
 setMethod("featureNames", "ImagingExperiment",
-	function(object) rownames(featureData(object)))
+	function(object) rownames(object@featureData))
 
 setReplaceMethod("featureNames", "ImagingExperiment",
 	function(object, value) {
-		rownames(featureData(object)) <- value
+		rownames(object@featureData) <- value
 		object
 	})
 
@@ -89,11 +89,11 @@ setReplaceMethod("phenoData", "ImagingExperiment",
 	})
 
 setMethod("sampleNames", "ImagingExperiment",
-	function(object) rownames(elementMetadata(object)))
+	function(object) rownames(object@elementMetadata))
 
 setReplaceMethod("sampleNames", "ImagingExperiment",
 	function(object, value) {
-		rownames(elementMetadata(object)) <- value
+		rownames(object@elementMetadata) <- value
 		object
 	})
 
@@ -114,10 +114,17 @@ setReplaceMethod("pixelNames", "ImagingExperiment",
 
 setMethod("show", "ImagingExperiment",
 	function(object) {
-		cat("An object of class '", class(object), "'\n", sep="")
-		cat("  <", nrow(object), " feature, ", ncol(object), " pixel> ",
-			"imaging dataset", "\n", sep="")
+		# dimensions
 		t1 <- "    "
+		pixelCols <- !is.null(pixelData(object))
+		cat("An object of class '", class(object), "'\n", sep="")
+		if ( pixelCols ) {
+			cat("  <", nrow(object), " feature, ", ncol(object), " pixel> ",
+				"imaging dataset", "\n", sep="")
+		} else {
+			cat("  <", nrow(object), " feature, ", ncol(object), " sample> ",
+				"imaging dataset", "\n", sep="")
+		}
 		# imageData()
 		imageDataNames <- names(imageData(object))
 		if ( is.null(imageDataNames) )
@@ -128,16 +135,16 @@ setMethod("show", "ImagingExperiment",
 			.scat("featureNames(%d): %s\n", featureNames(object), prefix=t1)
 		.scat("featureData(%d): %s\n", names(featureData(object)), prefix=t1)
 		# check if columns = pixels
-		if ( is.null(pixelData(object)) ) {
-			# phenoData()
-			if ( !is.null(sampleNames(object)) )
-				.scat("sampleNames(%d): %s\n", sampleNames(object), prefix=t1)
-			.scat("phenoData(%d): %s\n", names(phenoData(object)), prefix=t1)
-		} else {
+		if ( pixelCols ) {
 			# pixelData()
 			if ( !is.null(pixelNames(object)) )
 				.scat("pixelNames(%d): %s\n", pixelNames(object), prefix=t1)
 			.scat("pixelData(%d): %s\n", names(pixelData(object)), prefix=t1)
+		} else {
+			# phenoData()
+			if ( !is.null(sampleNames(object)) )
+				.scat("sampleNames(%d): %s\n", sampleNames(object), prefix=t1)
+			.scat("phenoData(%d): %s\n", names(phenoData(object)), prefix=t1)
 		}
 		# metadata()
 	    if ( length(metadata(object)) > 0L )
@@ -169,6 +176,72 @@ setReplaceMethod("$", "ImagingExperiment",
 		x
 	})
 
+
+setMethod("[", "ImagingExperiment",
+	function(x, i, j, ..., drop) {
+		lst <- (nargs() - !missing(drop)) < 3L
+		if ( lst )
+			return(x[,i,drop=drop])
+		if ( !missing(i) && (is.character(i) || is.factor(i)) )
+			i <- match(i, featureNames(x))
+		if ( !missing(j) && (is.character(j) || is.factor(j)) )
+			j <- match(j, names(x))
+		if ( !missing(i) && !missing(j) ) {
+			x@imageData <- x@imageData[i,j,drop=FALSE]
+			x@featureData <- x@featureData[i,,drop=FALSE]
+			x@elementMetadata <- x@elementMetadata[j,,drop=FALSE]	
+		} else if ( !missing(i) ) {
+			x@imageData <- x@imageData[i,,drop=FALSE]
+			x@featureData <- x@featureData[i,,drop=FALSE]
+		} else if ( !missing(j) ) {
+			x@imageData <- x@imageData[,j,drop=FALSE]
+			x@elementMetadata <- x@elementMetadata[j,,drop=FALSE]
+		}
+		x
+	})
+
+
+## combine
+
+setMethod("rbind", "ImagingExperiment",
+	function(..., deparse.level=1)
+	{
+		objects <- unname(list(...))
+		imageData <- do.call("rbind", lapply(objects, "imageData"))
+		featureData <- do.call("rbind", lapply(objects, "fData"))
+		pixelData <- do.call("cbind", lapply(objects, "pData"))
+		metadata <- do.call("c", lapply(objects, "metadata"))
+		metadata <- metadata[unique(names(metadata))]
+		new(class(objects[[1L]]),
+			imageData=imageData,
+			featureData=featureData,
+			elementMetadata=pixelData,
+			metadata=metadata)
+    }
+)
+
+setMethod("cbind", "ImagingExperiment",
+	function(..., deparse.level=1)
+	{
+		objects <- unname(list(...))
+		imageData <- do.call("cbind", lapply(objects, "imageData"))
+		featureData <- do.call("cbind", lapply(objects, "fData"))
+		pixelData <- do.call("rbind", lapply(objects, "pData"))
+		metadata <- do.call("c", lapply(objects, "metadata"))
+		metadata <- metadata[unique(names(metadata))]
+		new(class(objects[[1L]]),
+			imageData=imageData,
+			featureData=featureData,
+			elementMetadata=pixelData,
+			metadata=metadata)
+    }
+)
+
+setMethod("combine", "ImagingExperiment",
+	function(x, y, ...) cbind(x, y, ...))
+
+
+
 ## Additional methods
 
 setMethod("names", "ImagingExperiment",
@@ -188,5 +261,8 @@ setMethod("dimnames", "ImagingExperiment",
 
 setMethod("length", "ImagingExperiment",
 	function(x) unname(ncol(x)))
+
+
+
 
 
