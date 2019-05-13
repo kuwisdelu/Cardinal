@@ -37,3 +37,6 @@ AnnotatedImagingExperiment <- function(imageData = AnnotatedImageList(),
 setValidity("AnnotatedImagingExperiment", .valid.AnnotatedImagingExperiment)
 
 
+setMethod("dims", "AnnotatedImagingExperiment",
+	function(x) dims(imageData(x)))
+

@@ -1,13 +1,13 @@
 
 #### Classes to overwrite 'show' method for DataFrame ###
 ## -----------------------------------------------------
-setClass("SummaryDataFrame",
-	contains = "DataFrame",
-	slots=c(summary = "list"))
-
 setClass("XDataFrame",
 	contains = "DataFrame",
 	slots=c(groups = "list"))
+
+setClass("SummaryDataFrame",
+	contains = "DataFrame",
+	slots=c(summary = "list"))
 
 #### DataFrame with position information for imaging data ####
 ## -----------------------------------------------------------
@@ -86,8 +86,8 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 	contains = c("Vector", "VIRTUAL"),
 	slots = c(
 		imageData = "ImageList",
-		featureData = "DataFrame",
-		elementMetadata = "DataFrame"),
+		featureData = "DataTable_OR_NULL",
+		elementMetadata = "DataTable_OR_NULL"),
 	prototype = prototype(
 		imageData = .SimpleImageList(),
 		featureData = DataFrame(),

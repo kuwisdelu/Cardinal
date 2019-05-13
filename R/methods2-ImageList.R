@@ -98,8 +98,7 @@ setMethod("dims", "ImageList",
 
 setMethod("show", "SimpleImageList",
 	function(object) {
-		cat(class(object), "of length", length(object))
-		# get names(), class(), dim() information
+		cat(class(object), "of length", length(object), "\n")
 		if ( length(object) == 0 )
 			return()
 		nms <- names(object)
@@ -120,8 +119,8 @@ setMethod("show", "SimpleImageList",
 						length(dms)), selectSome(dms))
 		mem <- c(sprintf("mem(%d):",
 						length(mem)), selectSome(mem))
-		out <- rbind(nms, cls, dms, mem)
-		colnames(out) <- character(ncol(out))
+		out <- rbind(cls, dms, mem)
+		colnames(out) <- nms
 		rownames(out) <- character(nrow(out))
 		print(out, quote = FALSE, right = TRUE)
 	}

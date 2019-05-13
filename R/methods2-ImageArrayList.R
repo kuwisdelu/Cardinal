@@ -164,8 +164,8 @@ setReplaceMethod("[", "ImageArrayList",
 		if ( !ok )
 			stop("elements must have the same 'names'")
 		res <- lapply(vnames, function(index) {
-			objects <- lapply(objects, "[[", index)
-			.bindImageArrays(objects, along.cols=along.cols)
+			images <- lapply(objects, "[[", index)
+			.bindImageArrays(images, along.cols=along.cols)
 		})
 		names(res) <- vnames
 	}
