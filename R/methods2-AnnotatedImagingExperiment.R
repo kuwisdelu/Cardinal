@@ -40,6 +40,47 @@ setValidity("AnnotatedImagingExperiment", .valid.AnnotatedImagingExperiment)
 setMethod("dims", "AnnotatedImagingExperiment",
 	function(x) dims(imageData(x)))
 
+# resolution is count of pixels per unit x/y axis step
+
+
+setMethod("resolution", "AnnotatedImagingExperiment",
+	function(object) {
+		data <- as(imageData(object), "SimpleList", strict=FALSE)
+		vapply(data, "resolution", numeric(1))
+	})
+
+# coord is offset x/y offset of top left corner
+
+setMethod("coord", "AnnotatedImagingExperiment",
+	function(object) {
+		data <- as(imageData(object), "SimpleList", strict=FALSE)
+		vapply(data, "coord", numeric(2))
+	})
+
+
+setMethod("coordinates", "AnnotatedImagingExperiment",
+	function(obj, ...) {
+		data <- as(imageData(obj), "SimpleList", strict=FALSE)
+		vapply(data, "coord", numeric(1))
+	})
+
+# width calculated from resolution and count of x pixels
+
+setMethod("width", "AnnotatedImagingExperiment",
+	function(x) {
+		data <- as(imageData(x), "SimpleList", strict=FALSE)
+		vapply(data, "width", numeric(1))
+	})
+
+
+# height calculated from resolution and count of y pixels
+
+setMethod("height", "AnnotatedImagingExperiment",
+	function(x) {
+		data <- as(imageData(x), "SimpleList", strict=FALSE)
+		vapply(data, "width", numeric(1))
+	})
+
 
 ## show
 
@@ -49,7 +90,7 @@ setMethod("show", "AnnotatedImagingExperiment",
 		callNextMethod(object)
 		# dims()
 		t1 <- "    "
-		images <- as(imageData(object), "SimpleList")
+		images <- as(imageData(object), "SimpleList", strict=FALSE)
 		dms <- sapply(images, function(x) {
 			d <- paste0(dim(x), collapse=" x ")
 			paste0("<", d, ">")

@@ -64,7 +64,7 @@
 ## Instance creation
 SparseImagingExperiment(
     imageData = matrix(nrow=0, ncol=0),
-    featureData = XDataFrame(),
+    featureData = DataFrame(),
     pixelData = PositionDataFrame(),
     metadata = list(),
     processing = SimpleList())

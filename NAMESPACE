@@ -57,6 +57,8 @@ importFrom("EBImage",
 	"Image",
 	"imageData",
 	"imageData<-",
+	"colorMode",
+	"colorMode<-",
 	"getFrame",
 	"getFrames",
 	"numberOfFrames")

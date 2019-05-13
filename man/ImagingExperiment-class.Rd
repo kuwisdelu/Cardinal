@@ -43,6 +43,12 @@
 \alias{$<-,ImagingExperiment-method}
 \alias{[[,ImagingExperiment,ANY,ANY-method}
 \alias{[[<-,ImagingExperiment,ANY,ANY-method}
+\alias{[,ImagingExperiment,ANY,ANY,ANY-method}
+\alias{[<-,ImagingExperiment,ANY,ANY,ANY-method}
+\alias{cbind,ImagingExperiment-method}
+\alias{rbind,ImagingExperiment-method}
+\alias{combine,ImagingExperiment,ANY-method}
+
 \alias{dim,ImagingExperiment-method}
 \alias{dimnames,ImagingExperiment-method}
 \alias{imageData,ImagingExperiment-method}
@@ -119,6 +125,10 @@
         \item{\code{object$name, object$name <- value}:}{Get and set the \code{name} column in \code{pixelData}.}
 
         \item{\code{object[[i]], object[[i]] <- value}:}{Get and set the column \code{i} (a string or integer) in \code{pixelData}.}
+
+        \item{\code{object[i, j, ..., drop]}:}{Subset based on the rows (\code{fData}) and the columns (\code{pData}). The result is the same class as the original object.}
+
+        \item{\code{rbind(...)}, \code{cbind(...)}:}{Combine \code{ImagingExperiment} objects by row or column.}
     }
 }
 

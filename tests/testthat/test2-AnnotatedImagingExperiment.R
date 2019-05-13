@@ -34,5 +34,10 @@ test_that("AnnotatedImagingExperiment accessors", {
 	expect_equal(pData(y), pdata)
 	expect_equal(fData(y), fdata)
 
+	expect_equivalent(coord(y), matrix(0, nrow=2, ncol=3))
+	expect_equivalent(resolution(y), c(1, 1, 1))
+	expect_equivalent(height(y), c(30, 30, 30))
+	expect_equivalent(width(y), c(30, 30, 30))
+
 })
 
