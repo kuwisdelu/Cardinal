@@ -3,6 +3,12 @@
 ## ---------------------------------------------
 
 setMethod("image", c(x = "AnnotatedImagingExperiment"),
+	function(x, i, frame = 1, ...)
+{
+	image(imageData(x), i=i, frame=frame, ...)
+})
+
+setMethod("image", c(x = "AnnotatedImageList"),
 	function(x, i, frame = 1,
 		strip = TRUE,
 		layout = !add,
@@ -12,7 +18,7 @@ setMethod("image", c(x = "AnnotatedImagingExperiment"),
 {
 	if ( !missing(i) )
 		x <- x[i]
-	data <- as(imageData(x), "SimpleList", strict=FALSE)
+	data <- as(x, "SimpleList", strict=FALSE)
 	fun <- function(y) {
 		y <- getFrame(y, frame, type="render")
 		if ( native ) {
@@ -22,9 +28,9 @@ setMethod("image", c(x = "AnnotatedImagingExperiment"),
 		}
 	}
 	rasters <- lapply(data, fun)
-	offsets <- coordinates(x, simplify=FALSE)
-	heights <- height(x)
-	widths <- width(x)
+	offsets <- lapply(data, "coord")
+	heights <- vapply(data, "height", numeric(1))
+	widths <- vapply(data, "width", numeric(1))
 	facet.raster(rasters, offsets=offsets,
 		heights=heights, widths=widths, ...,
 		strip=strip, layout=layout,

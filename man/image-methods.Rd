@@ -18,6 +18,7 @@
 \alias{image,SpatialDGMM-method}
 \alias{image,SegmentationTest-method}
 \alias{image,AnnotatedImage-method}
+\alias{image,AnnotatedImageList-method}
 \alias{image,AnnotatedImagingExperiment-method}
 
 \alias{image3D,SparseImagingExperiment-method}
@@ -157,12 +158,14 @@
         interpolate = TRUE,
         add = FALSE, \dots)
 
-\S4method{image}{AnnotatedImagingExperiment}(x, i, frame = 1,
+\S4method{image}{AnnotatedImageList}(x, i, frame = 1,
         strip = TRUE,
         layout = !add,
         native = TRUE,
         interpolate = TRUE,
         add = FALSE, \dots)
+
+\S4method{image}{AnnotatedImagingExperiment}(x, i, frame = 1, \dots)
 
 #### Methods for Cardinal 1.x classes ####
 
