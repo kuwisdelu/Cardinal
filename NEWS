@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 2.3.7 [2019-5-13]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'image()' plotting for 'AnnotatedImageList'
+
+BUG FIXES
+
+    o Plotting with 'add=TRUE' now respects 'par('usr')' coordinates
+
 CHANGES IN VERSION 2.3.6 [2019-5-13]
 -----------------------------------
 
