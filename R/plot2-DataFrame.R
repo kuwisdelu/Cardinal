@@ -25,6 +25,8 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 		ylab, ylim,
 		layout = !add,
 		col = discrete.colors,
+		grid = FALSE,
+		jitter = FALSE,
 		subset = TRUE,
 		add = FALSE)
 {
@@ -138,7 +140,8 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			...,
 			xlab=xlab, xlim=xlim,
 			ylab=ylab, ylim=ylim,
-			layout=layout, col=col,
+			layout=layout,
+			col=col, grid=grid,
 			subset=subset, add=add)
 	} else if ( is.discrete(args$rhs[[1L]]) ) {
 		facet.boxplot(args, formula=formula, obj=x,
@@ -148,7 +151,8 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			...,
 			xlab=xlab, xlim=xlim,
 			ylab=ylab, ylim=ylim,
-			layout=layout, col=col,
+			layout=layout,
+			col=col, grid=grid,
 			subset=subset, add=add)
 	} else {
 		facet.plot(args, formula=formula, obj=x,
@@ -158,7 +162,8 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			...,
 			xlab=xlab, xlim=xlim,
 			ylab=ylab, ylim=ylim,
-			layout=layout, col=col,
+			layout=layout,
+			col=col, grid=grid, jitter=jitter,
 			subset=subset, add=add)
 	}	
 })

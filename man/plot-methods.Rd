@@ -57,6 +57,8 @@
         ylab, ylim,
         layout,
         col = discrete.colors,
+        grid = FALSE,
+        jitter = FALSE,
         subset = TRUE,
         add = FALSE)
 
@@ -74,6 +76,7 @@
         ylab, ylim,
         layout,
         col = discrete.colors,
+        grid = FALSE,
         subset = TRUE,
         add = FALSE)
 
@@ -236,6 +239,10 @@
     \item{col}{A specification for the default plotting color(s).}
 
     \item{type}{A character indicating the type of plotting.}
+
+    \item{grid}{Should a grid be added to the plot?}
+
+    \item{jitter}{Should a small amount of noise be added to numeric variables before plotting them?}
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 

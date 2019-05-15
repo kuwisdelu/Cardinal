@@ -20,6 +20,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		ylab, ylim,
 		layout = !add,
 		col = discrete.colors,
+		grid = FALSE,
 		subset = TRUE,
 		add = FALSE)
 {
@@ -177,7 +178,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		xlab=xlab, xlim=xlim,
 		ylab=ylab, ylim=ylim,
 		layout=layout, preplot=preplot,
-		col=col, subset=subset, add=add)
+		col=col, grid=grid, subset=subset, add=add)
 })
 
 .fastFeatureApply2 <- function(x, fun, groups) {

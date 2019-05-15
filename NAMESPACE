@@ -2,6 +2,7 @@
 importFrom("graphics",
 	"abline",
 	"axis",
+	"grid",
 	"image",
 	"legend",
 	"lines",

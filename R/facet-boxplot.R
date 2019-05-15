@@ -49,6 +49,7 @@ print.facet.boxplot <- function(x, ...) {
 					.next.figure(layout)
 				} else {
 					do.call("plot", nil)
+					if ( isTRUE(obj$grid) ) grid()
 					if ( !is.null(obj$preplot) ) {
 						call <- obj$preplot$call
 						e <- obj$preplot$envir
@@ -64,11 +65,12 @@ print.facet.boxplot <- function(x, ...) {
 			nx <- 2 * (n %/% 2)
 			i <- which(obj$groups %in% layer$group)
 			nl <- nlevels(layer$x)
+			grouping.factor <- 0.9
 			if ( n %% 2 == 0 ) {
-				d <- 1 / nx
+				d <- grouping.factor / nx
 				dx <- (d / 2) + d * (n %/% 2 - 1)
 			} else {
-				d <- 1 / (nx + 1)
+				d <- grouping.factor / (nx + 1)
 				dx <- d * (n %/% 2)
 			}
 			at <- (seq_len(nl) - dx) + (d * (i - 1))

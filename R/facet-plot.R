@@ -1,8 +1,8 @@
 
 facet.plot <- function(args, formula, obj,
 	facets, groups, superpose, strip, key, ...,
-	xlab, xlim, ylab, ylim, layout, byrow, dark, col,
-	subset, preplot, add)
+	xlab, xlim, ylab, ylim, layout, byrow, dark,
+	col, grid, jitter, subset, preplot, add)
 {
 	dots <- list(...)
 	e <- environment(formula)
@@ -159,6 +159,10 @@ facet.plot <- function(args, formula, obj,
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) || is.null(ylim) )
 		ylim <- yrange + ry * c(-0.5, 0.5)
+	if ( missing(grid) )
+		grid <- FALSE
+	if ( missing(jitter) )
+		jitter <- FALSE
 	par <- list(
 		xlab=xlab, ylab=ylab,
 		xlim=xlim, ylim=ylim)
@@ -168,6 +172,7 @@ facet.plot <- function(args, formula, obj,
 		groups=levels(groups),
 		subset=subset,
 		layout=layout,
+		grid=grid, jitter=jitter,
 		preplot=preplot,
 		add=!plotnew,
 		par=c(par, dots))
@@ -201,9 +206,16 @@ print.facet.plot <- function(x, ...) {
 		for ( layer in facet ) {
 			new <- !layer$add
 			if ( !all(is.na(layer$x)) ) {
-				args <- c(list(
-					x=layer$x, y=layer$y,
-					col=layer$col), obj$par)
+				if ( isTRUE(obj$jitter) ) {
+					args <- c(list(
+						x=jitter(layer$x),
+						y=jitter(layer$y),
+						col=layer$col), obj$par)
+				} else {
+					args <- c(list(
+						x=layer$x, y=layer$y,
+						col=layer$col), obj$par)
+				}
 			} else {
 				args <- nil
 			}
@@ -212,6 +224,7 @@ print.facet.plot <- function(x, ...) {
 					.next.figure(layout)
 				} else {
 					do.call("plot", nil)
+					if ( isTRUE(obj$grid) ) grid()
 					if ( !is.null(obj$preplot) ) {
 						call <- obj$preplot$call
 						e <- obj$preplot$envir
