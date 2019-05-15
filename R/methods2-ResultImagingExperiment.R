@@ -188,9 +188,8 @@ setMethod("show", "ResultImagingExperiment",
 setMethod("show", "SparseResultImagingExperiment",
 	function(object) {
 		.show_SparseIE <- selectMethod("show", "SparseImagingExperiment")
-		.show_ResultIE <- selectMethod("show", "ResultImagingExperiment")
 		.show_SparseIE(object)
-		.show_ResultIE(object)
+		.show.ResultImagingExperiment(object)
 	}
 )
 
