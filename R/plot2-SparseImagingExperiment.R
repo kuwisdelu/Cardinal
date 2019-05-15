@@ -90,9 +90,9 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 			condition <- data.frame(row.names=make.names(pixel, unique=TRUE))
 		}
 		if ( !is.null(pixel.groups) ) {
-			condition$`..pixel.groups..` <- pixel.groups
+			condition$`.pixel.groups` <- pixel.groups
 		} else {
-			condition$`..pixel.groups..` <- factor(1)
+			condition$`.pixel.groups` <- factor(1)
 		}
 		condition[] <- lapply(condition, function(ci) {
 			if ( !is.factor(ci) ) {
@@ -107,7 +107,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 			if ( is.null(pixel.groups) && !is.null(names(imageData(x))) ) {
 				names(args$lhs) <- rep_len(names(imageData(x))[1], length(args$lhs))
 			} else {
-				names(args$lhs) <- unique(condition)$`..pixel.groups..`
+				names(args$lhs) <- unique(condition)$`.pixel.groups`
 			}
 		} else {
 			val.groups <- factor(names(args$lhs))
@@ -129,7 +129,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 					}
 				})
 				condition <- do.call("rbind", condition)
-				condition$`..val.groups..` <- val.groups
+				condition$`.val.groups` <- val.groups
 			}
 			args$lhs <- unlist(args$lhs, recursive=FALSE)
 			names(args$lhs) <- val.groups
@@ -143,20 +143,20 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 				} else if ( length(args$g) > 1L ) {
 					.stop("can't superpose multiple conditioning variables")
 				} else {
-					condition$`..val.groups..` <- NULL
+					condition$`.val.groups` <- NULL
 				}
 			} else {
 				if ( nlevels(val.groups) > 1L ) {
-					names(args$lhs) <- as.character(condition$`..val.groups..`)
-					condition$`..val.groups..` <- NULL
+					names(args$lhs) <- as.character(condition$`.val.groups`)
+					condition$`.val.groups` <- NULL
 				} else {
-					names(args$lhs) <- as.character(condition$`..pixel.groups..`)
-					condition$`..pixel.groups..` <- NULL
+					names(args$lhs) <- as.character(condition$`.pixel.groups`)
+					condition$`.pixel.groups` <- NULL
 				}
 			}
 		}
 		if ( is.null(pixel.groups) )
-			condition$`..pixel.groups..` <- NULL
+			condition$`.pixel.groups` <- NULL
 		if ( length(condition) > 0L ) {
 			facets <- condition
 		} else {

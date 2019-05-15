@@ -80,7 +80,7 @@ setMethod("colocalized",
 		# create logical mask
 		if ( !is.logical(ref) )
 			ref <- ref > threshold(ref)
-		groups <- pixelData(object)$..group..
+		groups <- pixelData(object)$.group
 		models <- modelData(object)
 		ii <- seq_len(nrow(models))
 		.message("measuring segmentation colocalization...")

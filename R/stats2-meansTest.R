@@ -12,7 +12,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 			.stop("lhs of formula must be empty")
 		if ( !is.null(args$g) )
 			.stop("conditioning variables via | not allowed")
-		fixed <- paste0("..response.. ~", deparse(fixed[[2]]))
+		fixed <- paste0(".response ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
 		groups <- as.factor(groups)
@@ -46,7 +46,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 		errors <- sapply(results, function(res) inherits(res$model, "try-error"))
 		if ( any(errors) )
 			.warning("there were 1 or more errors while fitting models")
-		pixelData(out)$..group.. <- groups
+		pixelData(out)$.group <- groups
 		out
 	})
 
@@ -111,7 +111,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 	names(vars) <- names(pdata)
 	vars <- as.data.frame(vars)
 	apply(response, 2, function(resp) {
-		out <- data.frame(..response..=resp, ..group..=levels(groups))
+		out <- data.frame(.response=resp, .group=levels(groups))
 		out <- cbind(out, vars)
 		row.names(out) <- NULL
 		out

@@ -54,7 +54,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)
-		pixelData(out)$..group.. <- groups
+		pixelData(out)$.group <- groups
 		out
 	})
 

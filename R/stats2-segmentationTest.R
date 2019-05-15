@@ -36,7 +36,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 			.stop("lhs of formula must be empty")
 		if ( !is.null(args$g) )
 			.stop("conditioning variables via | not allowed")
-		fixed <- paste0("..response.. ~", deparse(fixed[[2]]))
+		fixed <- paste0(".response ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
 		fc <- vars[!sapply(pixelData(x)[vars], is.numeric)]
@@ -52,8 +52,8 @@ setMethod("segmentationTest", "SpatialDGMM",
 					"] does not match number of models [", nrow(modelData(x)), "]")
 			}
 			classControl <- lapply(classControl, function(ctrl) {
-				data.frame(..group..=names(ctrl),
-					..class..=as.character(ctrl))
+				data.frame(.group=names(ctrl),
+					.class=as.character(ctrl))
 			})
 		}
 		if ( missing(random) ) {
@@ -70,7 +70,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 			} else {
 				fit <- try(lm(formula=fixed, data=data, ...))
 			}
-			subset <- res$class %in% data$..class..
+			subset <- res$class %in% data$.class
 			mapping <- replace(res$class, !subset, NA_integer_)
 			list(model=fit, data=as(data, "DataFrame"),
 				mapping=droplevels(mapping))
@@ -94,7 +94,7 @@ setMethod("segmentationTest", "SpatialDGMM",
 	})
 
 .segmentationTest_testdata <- function(results, BPPARAM) {
-	i <- which(names(pData(results)) %in% "..group..")
+	i <- which(names(pData(results)) %in% ".group")
 	groups <- pData(results)[[i]]
 	pdata <- as.data.frame(pData(results)[,-i,drop=FALSE], slots=FALSE)
 	pdata <- cbind(data.frame(run=run(results)), pdata)
@@ -112,14 +112,14 @@ setMethod("segmentationTest", "SpatialDGMM",
 			newvar
 		})
 		out <- res$estimates[,c("mean", "group", "class")]
-		names(out) <- c("..response..", "..group..", "..class..")
+		names(out) <- c(".response", ".group", ".class")
 		out[names(pdata)] <- vars
 		out
 	}, BPPARAM=BPPARAM)
 }
 
 .segmentationTest_getclasses <- function(results, fc, control, BPPARAM) {
-	groups <- pixelData(results)$..group..
+	groups <- pixelData(results)$.group
 	bplapply(resultData(results), function(res) {
 		if ( control == "Mscore" ) {
 			out1 <- lapply(fc, function(nm) {
@@ -154,11 +154,11 @@ setMethod("segmentationTest", "SpatialDGMM",
 			out1 <- res$estimates[,"mean",drop=FALSE]
 		}
 		out2 <- res$estimates[,c("group", "class")]
-		names(out2) <- c("..group..", "..class..")
+		names(out2) <- c(".group", ".class")
 		out <- cbind(out2, out1)
 		score_sums <- rowSums(out[,-c(1,2),drop=FALSE])
-		matches <- tapply(score_sums, out[["..group.."]], is.max)
-		out[unlist(matches),c("..group..", "..class..")]
+		matches <- tapply(score_sums, out[[".group"]], is.max)
+		out[unlist(matches),c(".group", ".class")]
 	}, BPPARAM=BPPARAM)
 }
 

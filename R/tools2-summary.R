@@ -6,7 +6,7 @@ setMethod("summary", "CrossValidated2",
 	{
 		out <- modelData(object)
 		if ( metadata(object)$type == "classification" ) {
-			y <- pixelData(object)$..response..
+			y <- pixelData(object)$.response
 			y <- relevel(y, metadata(object)[["positive class"]])
 			out$Accuracy <- sapply(resultData(object),
 				function(res) mean(res$accuracy, na.rm=TRUE))
@@ -17,7 +17,7 @@ setMethod("summary", "CrossValidated2",
 			description <- paste0(" Classification on ", nlevels(y), " classes: ")
 			description <- paste0(description, paste0(levels(y), collapse=" "))
 		} else {
-			nm <- grepl("..response..", names(pixelData(object)))
+			nm <- grepl(".response", names(pixelData(object)))
 			y <- as.matrix(pixelData(object)[,nm,drop=FALSE])
 			out$RMSE <- sapply(resultData(object),
 				function(res) mean(res$rmse, na.rm=TRUE))
@@ -54,7 +54,7 @@ setMethod("summary", "PLS2",
 	function(object, ...)
 	{
 		if ( metadata(object)$type == "classification" ) {
-			y <- pixelData(object)$..response..
+			y <- pixelData(object)$.response
 			pos <- levels(as.factor(y))[1L]
 			acc <- sapply(resultData(object), function(res)
 				mean(res$class == y, na.rm=TRUE))
@@ -69,7 +69,7 @@ setMethod("summary", "PLS2",
 				Accuracy=acc, Sensitivity=sens, Specificity=spec)
 		} else {
 			# do something
-			nm <- grepl("..response..", names(pixelData(object)))
+			nm <- grepl(".response", names(pixelData(object)))
 			y <- as.matrix(pixelData(object)[,nm,drop=FALSE])
 			rmse <- sapply(resultData(object), function(res)
 				sqrt(mean((res$fitted - y)^2)), na.rm=TRUE)
@@ -128,7 +128,7 @@ setMethod("summary", "SpatialKMeans2",
 setMethod("summary", "SpatialShrunkenCentroids2",
 	function(object, ...)
 	{
-		y <- pixelData(object)$..response..
+		y <- pixelData(object)$.response
 		num_features <- sapply(resultData(object),
 			function(res) mean(colSums(res$statistic != 0)))
 		num_features <- round(num_features, digits=2)
@@ -172,7 +172,7 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 setMethod("summary", "SpatialDGMM",
 	function(object, ...)
 	{
-		groups <- pixelData(object)$..group..
+		groups <- pixelData(object)$.group
 		num_segments <- sapply(resultData(object), function(res)
 				nlevels(res$class) / nlevels(res$estimates$group))
 		num_segments <- round(num_segments, digits=2)
@@ -198,7 +198,7 @@ setMethod("summary", "SpatialDGMM",
 setMethod("summary", "MeansTest",
 	function(object, ..., BPPARAM = bpparam())
 	{
-		groups <- pixelData(object)$..group..
+		groups <- pixelData(object)$.group
 		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)
 		if ( nlevels(groups) > 1L ) {
 			description <- paste0("\n Summarized ",
@@ -227,7 +227,7 @@ setMethod("summary", "MeansTest",
 setMethod("summary", "SegmentationTest",
 	function(object, ..., BPPARAM = bpparam())
 	{
-		groups <- pixelData(object)$..group..
+		groups <- pixelData(object)$.group
 		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)
 		if ( nlevels(groups) > 1L ) {
 			description <- paste0("\n Summarized ",

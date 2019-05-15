@@ -6,7 +6,7 @@ setMethod("topFeatures", "SpatialShrunkenCentroids2",
 	{
 		r <- modelData(object)$r
 		if ( is.null(modelData(object)$k) ) {
-			k <- nlevels(pData(object)$..response..)
+			k <- nlevels(pData(object)$.response)
 		} else {
 			k <- modelData(object)$k
 		}

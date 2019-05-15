@@ -89,9 +89,9 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 			condition <- data.frame(row.names=make.names(feature, unique=TRUE))
 		}
 		if ( !is.null(feature.groups) ) {
-			condition$`..feature.groups..` <- feature.groups
+			condition$`.feature.groups` <- feature.groups
 		} else {
-			condition$`..feature.groups..` <- factor(1)
+			condition$`.feature.groups` <- factor(1)
 		}
 		condition[] <- lapply(condition, function(ci) {
 			if ( !is.factor(ci) ) {
@@ -106,7 +106,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 			if ( is.null(feature.groups) && !is.null(names(imageData(x))) ) {
 				names(args$lhs) <- rep_len(names(imageData(x))[1], length(args$lhs))
 			} else {
-				names(args$lhs) <- unique(condition)$`..feature.groups..`
+				names(args$lhs) <- unique(condition)$`.feature.groups`
 			}
 			val.groups <- NULL
 		} else {
@@ -129,7 +129,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 					}
 				})
 				condition <- do.call("rbind", condition)
-				condition$`..val.groups..` <- val.groups
+				condition$`.val.groups` <- val.groups
 			}
 			args$lhs <- unlist(args$lhs, recursive=FALSE)
 			names(args$lhs) <- val.groups
@@ -143,20 +143,20 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 				} else if ( length(args$g) > 1L ) {
 					.stop("can't superpose multiple conditioning variables")
 				} else {
-					condition$`..val.groups..` <- NULL
+					condition$`.val.groups` <- NULL
 				}
 			} else {
 				if ( nlevels(val.groups) > 1L ) {
-					names(args$lhs) <- as.character(condition$`..val.groups..`)
-					condition$`..val.groups..` <- NULL
+					names(args$lhs) <- as.character(condition$`.val.groups`)
+					condition$`.val.groups` <- NULL
 				} else {
-					names(args$lhs) <- as.character(condition$`..feature.groups..`)
-					condition$`..feature.groups..` <- NULL
+					names(args$lhs) <- as.character(condition$`.feature.groups`)
+					condition$`.feature.groups` <- NULL
 				}
 			}
 		}
 		if ( is.null(feature.groups) )
-			condition$`..feature.groups..` <- NULL
+			condition$`.feature.groups` <- NULL
 		if ( length(condition) > 0L ) {
 			facets <- condition
 		} else {

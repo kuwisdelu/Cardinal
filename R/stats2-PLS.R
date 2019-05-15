@@ -127,11 +127,11 @@ setMethod("predict", "PLS2",
 			out <- as(out, "OPLS2")
 		if ( !missing(newy) ) {
 			if ( is.factor(newy) || is.character(newy) ) {
-				pixelData(out)$..response.. <- as.factor(newy)
+				pixelData(out)$.response <- as.factor(newy)
 			} else {
 				newy <- as.matrix(newy)
 				i <- if (ncol(newy) > 1) seq_len(ncol(newy)) else ""
-				nms <- paste0("..response..", i)
+				nms <- paste0(".response", i)
 				pixelData(out)[nms] <- as.data.frame(newy)
 			}
 		}
@@ -164,7 +164,7 @@ setAs("PLS", "PLS2",
 			}
 			metadata(to)$method <- "pls"
 			if ( is.null(dim(y)) )
-				pixelData(to)$..response.. <- y
+				pixelData(to)$.response <- y
 		}
 		to
 	})
@@ -186,7 +186,7 @@ setAs("OPLS", "OPLS2",
 			}
 			metadata(to)$method <- "opls"
 			if ( is.null(dim(y)) )
-				pixelData(to)$..response.. <- y
+				pixelData(to)$.response <- y
 		}
 		to
 	})

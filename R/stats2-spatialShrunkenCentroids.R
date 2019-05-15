@@ -149,7 +149,7 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			resultData=as(results, "List"),
 			modelData=modelData(object))
 		if ( !missing(newy) )
-			pixelData(out)$..response.. <- newy
+			pixelData(out)$.response <- newy
 		out
 	})
 
@@ -190,7 +190,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		metadata(to)$method <- resultData(to, 1, "method")
 		metadata(to)$distance <- "chebyshev"
 		if ( !is.null(resultData(to, 1, "y")) )
-			pixelData(to)$..response.. <- resultData(to, 1, "y")
+			pixelData(to)$.response <- resultData(to, 1, "y")
 		to
 	})
 

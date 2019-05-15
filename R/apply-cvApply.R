@@ -98,11 +98,11 @@ setMethod("crossValidate", "SparseImagingExperiment",
 			resultData=as(cv$results, "List"),
 			modelData=cv$models)
 		if ( is.factor(.y) || is.character(.y) ) {
-			pixelData(out)$..response.. <- as.factor(.y)
+			pixelData(out)$.response <- as.factor(.y)
 		} else {
 			.y <- as.matrix(.y)
 			i <- if (ncol(.y) > 1) seq_len(ncol(.y)) else ""
-			nms <- paste0("..response..", i)
+			nms <- paste0(".response", i)
 			pixelData(out)[nms] <- as.data.frame(.y)
 		}
 		pixelData(out)$..fold.. <- .fold
@@ -233,7 +233,7 @@ setAs("CrossValidated", "CrossValidated2",
 
 .cv_simplify <- function(pred, data, .fitted) {
 	if ( missing(data) )
-		data <- pixelData(pred)$..response..
+		data <- pixelData(pred)$.response
 	models <- modelData(pred)
 	pred <- .fitted(pred)
 	attr(pred, "models") <- models
