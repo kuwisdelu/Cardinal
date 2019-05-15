@@ -8,8 +8,8 @@ setMethod("image", c(x = "formula"),
 	args <- .parseFormula2(x, lhs.e=data, rhs.e=data, g.e=data)
 	is3d <- length(args$rhs) == 3L
 	if ( length(args$lhs) > 1L )
-		.stop(paste("lhs must include exactly 1 variable;",
-			"did you mean to use I()?"))
+		.stop("lhs must include exactly 1 variable;",
+			" did you mean to use I()?")
 	if ( length(args$rhs) != 2L && length(args$rhs) != 3L )
 		.stop("rhs of formula must include exactly 2 or 3 variables")
 	if ( !is.null(args$g) )
