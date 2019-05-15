@@ -51,7 +51,7 @@ facet.plot <- function(args, formula, obj,
 	} else {
 		raw_ysrange <- c(NA, NA)
 	}
-	rx <- min(diff(sort(unique(x))), na.rm=TRUE)
+	rx <- min(diff(sort(unique(as.numeric(x)))), na.rm=TRUE)
 	ry <- min(diff(sort(unique(raw_ys))), na.rm=TRUE)
 	if ( missing(xlab) )
 		xlab <- names(args$rhs)[1]
@@ -62,7 +62,7 @@ facet.plot <- function(args, formula, obj,
 			ylab <- unique(names(args$lhs))
 		}
 	}
-	xrange <- range(x, na.rm=TRUE)
+	xrange <- range(as.numeric(x), na.rm=TRUE)
 	yrange <- raw_ysrange
 	plotnew <- !add
 	add <- FALSE

@@ -23,6 +23,11 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  {
 	}
 }
 
+# Check if a variable is discrete
+is.discrete <- function(x) {
+	is.factor(x) || is.character(x)
+}
+
 # Round to an arbitrary precision
 roundnear <- function(x, precision=0.1) {
 	round(x / precision) * precision

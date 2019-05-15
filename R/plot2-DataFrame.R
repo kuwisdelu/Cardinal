@@ -53,10 +53,16 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 		lhs.e=as.env(x, enclos=e),
 		rhs.e=as.env(x, enclos=e),
 		g.e=as.env(x, enclos=e))
-	if ( length(args$rhs) != 1L )
-		.stop("rhs of formula must include exactly 1 variable")
-	# if ( !is.null(args$g) )
-	# 	.stop("conditioning variables via | not allowed")
+	if ( length(args$rhs) != 1L ) {
+		if ( is.discrete(args$rhs[[1L]]) ) {
+			xnm <- names(args$rhs)
+			xi <- do.call("interaction", c(args$rhs, list(sep=":")))
+			args$rhs <- list(xi)
+			names(args$rhs) <- paste0(xnm, collapse=":")
+		} else {
+			.stop("rhs of formula must include exactly 1 variable")
+		}
+	}
 	if ( !is.null(args$g) ) {
 		args$g <- lapply(args$g, as.factor)
 		facets <- lapply(args$g, levels)
@@ -96,14 +102,26 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 		if ( is.logical(subset) )
 			subset <- rep_len(subset, nrow(x))
 	}
-	facet.plot(args, formula=formula, obj=x,
-		facets=facets, groups=groups,
-		superpose=superpose,
-		strip=strip, key=key,
-		...,
-		xlab=xlab, xlim=xlim,
-		ylab=ylab, ylim=ylim,
-		layout=layout, col=col,
-		subset=subset, add=add)
+	if ( is.discrete(args$rhs[[1L]]) ) {
+		facet.boxplot(args, formula=formula, obj=x,
+			facets=facets, groups=groups,
+			superpose=superpose,
+			strip=strip, key=key,
+			...,
+			xlab=xlab, xlim=xlim,
+			ylab=ylab, ylim=ylim,
+			layout=layout, col=col,
+			subset=subset, add=add)
+	} else {
+		facet.plot(args, formula=formula, obj=x,
+			facets=facets, groups=groups,
+			superpose=superpose,
+			strip=strip, key=key,
+			...,
+			xlab=xlab, xlim=xlim,
+			ylab=ylab, ylim=ylim,
+			layout=layout, col=col,
+			subset=subset, add=add)
+	}	
 })
 

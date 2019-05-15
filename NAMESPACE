@@ -249,6 +249,7 @@ S3method("print", "summary.SpatialKMeans")
 S3method("print", "summary.SpatialShrunkenCentroids")
 S3method("print", "summary.CrossValidated")
 
+S3method("print", "facet.boxplot")
 S3method("print", "facet.plot")
 S3method("print", "facet.image")
 S3method("print", "facet.raster")
