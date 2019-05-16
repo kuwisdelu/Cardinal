@@ -85,28 +85,22 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 				" in a 1-sided formula")
 		if ( is.null(args$lhs) ) {
 			xnm <- names(args$rhs)
+			g <- do.call("interaction", c(args$g, list(sep=":")))
 			args$rhs <- lapply(args$rhs, function(x) {
-				xg <- lapply(args$g, function(g) {
-					xi <- lapply(levels(g), function(gi) {
-						replace(x, g != gi, NA)
-					})
-					xi
+				xg <- lapply(levels(g), function(gi) {
+					replace(x, g != gi, NA)
 				})
-				xg <- do.call("c", xg)
 				xg
 			})
 			args$rhs <- do.call("c", args$rhs)
 			names(args$rhs) <- rep(xnm, length(args$rhs))
 		} else {
 			ynm <- names(args$lhs)
+			g <- do.call("interaction", c(args$g, list(sep=":")))
 			args$lhs <- lapply(args$lhs, function(y) {
-				yg <- lapply(args$g, function(g) {
-					yi <- lapply(levels(g), function(gi) {
-						replace(y, g != gi, NA)
-					})
-					yi
+				yg <- lapply(levels(g), function(gi) {
+					replace(y, g != gi, NA)
 				})
-				yg <- do.call("c", yg)
 				yg
 			})
 			args$lhs <- do.call("c", args$lhs)

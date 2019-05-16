@@ -268,7 +268,7 @@ facet.image <- function(args, formula, obj,
 	}
 	out <- list(
 		facets=facets.out,
-		flevels=facet_levels,
+		fids=do.call("rbind", facet_levels),
 		dpages=levels(dpages),
 		groups=levels(groups),
 		subset=subset,

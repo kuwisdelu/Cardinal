@@ -198,7 +198,7 @@ facet.count <- function(args, formula, obj,
 		xlim=xlim, ylim=ylim)
 	out <- list(
 		facets=facets.out,
-		flevels=facet_levels,
+		fids=do.call("rbind", facet_levels),
 		groups=levels(groups),
 		subset=subset,
 		probability=probability,

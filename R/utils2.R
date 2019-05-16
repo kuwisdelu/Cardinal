@@ -220,13 +220,23 @@
 
 # Auto plotting layout
 .auto.layout <- function(x, byrow = TRUE, ...) {
-	if ( !is.numeric(x) && length(x$flevels) > 1L && length(x$dpages) > 1L ) {
-		nf <- length(x$flevels)
-		nd <- length(x$dpages)
-		if ( byrow ) {
-			.setup.layout(c(nd, nf), byrow=byrow, ...)
+	if ( is.null(x$dpages) ) {
+		nd <- 0
+	} else {
+		nd <- length(x$dpages) - 1
+	}
+	if ( !is.numeric(x) && (length(x$fids) + nd) > 1L ) {
+		if ( length(x$dpages) > 0L ) {
+			n1 <- length(unique(x$fids[[1]]))
+			n2 <- length(x$dpages)
 		} else {
-			.setup.layout(c(nf, nd), byrow=byrow, ...)
+			n1 <- length(unique(x$fids[[1]]))
+			n2 <- length(unique(x$fids[[2]]))
+		}
+		if ( byrow ) {
+			.setup.layout(c(n2, n1), byrow=byrow, ...)
+		} else {
+			.setup.layout(c(n1, n2), byrow=byrow, ...)
 		}
 	} else {
 		if ( is.numeric(x) ) {
