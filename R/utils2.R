@@ -220,12 +220,12 @@
 
 # Auto plotting layout
 .auto.layout <- function(x, byrow = TRUE, ...) {
-	if ( is.null(x$dpages) ) {
+	if ( is.atomic(x) || is.null(x$dpages) ) {
 		nd <- 0
 	} else {
 		nd <- length(x$dpages) - 1
 	}
-	if ( !is.numeric(x) && (length(x$fids) + nd) > 1L ) {
+	if ( !is.atomic(x) && (length(x$fids) + nd) > 1L ) {
 		if ( length(x$dpages) > 0L ) {
 			n1 <- length(unique(x$fids[[1]]))
 			n2 <- length(x$dpages)
