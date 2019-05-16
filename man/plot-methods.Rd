@@ -18,6 +18,9 @@
 \alias{plot,SpatialFastmap2,missing-method}
 \alias{plot,SpatialKMeans2,missing-method}
 \alias{plot,SpatialShrunkenCentroids2,missing-method}
+\alias{plot,SpatialDGMM,missing-method}
+\alias{plot,MeansTest,missing-method}
+\alias{plot,SegmentationTest,missing-method}
 \alias{plot,AnnotatedImage,ANY-method}
 \alias{plot,AnnotatedImageList,ANY-method}
 \alias{plot,AnnotatedImagingExperiment,ANY-method}
@@ -116,6 +119,15 @@
 
 \S4method{plot}{SpatialShrunkenCentroids2,missing}(x, formula,
     values = c("centers", "statistic"), \dots)
+
+\S4method{plot}{SpatialDGMM,missing}(x, model = modelData(x),
+    values = "density", type = 'l', \dots)
+
+\S4method{plot}{MeansTest,missing}(x, model = modelData(x),
+    values = "fixed", \dots)
+
+\S4method{plot}{SegmentationTest,missing}(x, model = modelData(x),
+    values = "fixed", \dots)
 
 \S4method{plot}{AnnotatedImage,ANY}(x, breaks = "Sturges",
         key = TRUE, col,

@@ -17,9 +17,9 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
+register(SerialParam())
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
-register(SerialParam())
 RNGkind("Mersenne-Twister")
 ```
 
@@ -375,6 +375,7 @@ In order to fit the models, a representative spatial-DGMM segment must be select
 (A list of character vectors giving the explicit mapping between group and representative spatial-DGMM segment can also be given to `classControl`.)
 
 ```{r test-segment-test}
+
 stest <- segmentationTest(dgmm2, ~ condition, classControl="Ymax")
 
 summary(stest)

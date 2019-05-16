@@ -68,6 +68,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	fdata <- lapply(seq_along(cols), function(i) {
 		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
 		par[["model"]] <- .format.data.labels(par)
+		par[["model"]] <- factor(par$model, levels=unique(par$model))
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])
 		par1 <- DataFrame(model_id=i, column_id=seq_len(len))

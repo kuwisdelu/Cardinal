@@ -74,6 +74,7 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 	pdata <- lapply(seq_along(cols), function(i) {
 		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
 		par[["model"]] <- .format.data.labels(par)
+		par[["model"]] <- factor(par$model, levels=unique(par$model))
 		par[["column"]] <- cols[[i]]
 		len <- length(cols[[i]])
 		coord <- DataFrame(column_id=seq_len(len), model_id=i)
@@ -156,6 +157,79 @@ setMethod("plot",
 		callNextMethod(x, formula=formula, ...)
 	})
 
+## SpatialDGMM
+
+setMethod("plot",
+	signature = c(x = "SpatialDGMM", y = "missing"),
+	function(x, model = modelData(x), values = "density", type = 'l', ...)
+	{
+		values <- match.arg(values)
+		if ( is.null(names(model)) ) {
+			i <- model
+		} else {
+			i <- subset_rows(modelData(x), as.list(model))
+		}
+		data <- lapply(i, function(ii) {
+			e <- resultData(x, ii, "estimates")
+			p <- plot_density(mean=e$mean, var=e$var,
+				cnames=e$class, plot=FALSE)
+			m <- modelData(x)[ii,,drop=FALSE]
+			p$model <- .format.data.labels(m)
+			p
+		})
+		data <- do.call("rbind", data)
+		plot(data, density ~ x | model, groups=class, type=type, ...)
+	})
+
+## MeansTest
+
+setMethod("plot",
+	signature = c(x = "MeansTest", y = "missing"),
+	function(x, model = modelData(x), values = "fixed", ...)
+	{
+		values <- match.arg(values)
+		if ( is.null(names(model)) ) {
+			i <- model
+		} else {
+			i <- subset_rows(modelData(x), as.list(model))
+		}
+		data <- lapply(i, function(ii) {
+			d <- resultData(x, ii, "data")
+			m <- modelData(x)[ii,,drop=FALSE]
+			d$model <- .format.data.labels(m)
+			d
+		})
+		data <- do.call("rbind", data)
+		data$model <- factor(data$model, levels=unique(data$model))
+		fm <- deparse(metadata(x)[[values]])
+		fm <- paste0(c(fm, "model"), collapse="|")
+		plot(data, formula=as.formula(fm), ...)
+	})
+
+## SegmentationTest
+
+setMethod("plot",
+	signature = c(x = "SegmentationTest", y = "missing"),
+	function(x, model = modelData(x), values = "fixed", ...)
+	{
+		values <- match.arg(values)
+		if ( is.null(names(model)) ) {
+			i <- model
+		} else {
+			i <- subset_rows(modelData(x), as.list(model))
+		}
+		data <- lapply(i, function(ii) {
+			d <- resultData(x, ii, "data")
+			m <- modelData(x)[ii,,drop=FALSE]
+			d$model <- .format.data.labels(m)
+			d
+		})
+		data <- do.call("rbind", data)
+		data$model <- factor(data$model, levels=unique(data$model))
+		fm <- deparse(metadata(x)[[values]])
+		fm <- paste0(c(fm, "model"), collapse="|")
+		plot(data, formula=as.formula(fm), ...)
+	})
 
 
 
