@@ -48,6 +48,7 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 .findNeighbors <- function(coord, r, groups, dist, matrix = FALSE) {
 	if ( !is.matrix(coord) )
 		coord <- as.matrix(coord)
+	groups <- rep_len(groups, nrow(coord))
 	dist.types <- c("radial", "manhattan", "minkowski", "chebyshev")
 	dist <- factor(match.arg(dist, dist.types), levels=dist.types)
 	nb <- .Call("C_findNeighbors", coord, as.numeric(r),

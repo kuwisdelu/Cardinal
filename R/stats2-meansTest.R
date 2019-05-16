@@ -12,10 +12,10 @@ setMethod("meansTest", "SparseImagingExperiment",
 			.stop("lhs of formula must be empty")
 		if ( !is.null(args$g) )
 			.stop("conditioning variables via | not allowed")
+		groups <- as.factor(rep_len(groups, ncol(x)))
 		fixed <- paste0(".response ~", deparse(fixed[[2]]))
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
-		groups <- as.factor(groups)
 		if ( missing(random) ) {
 			random <- NULL
 			mixed <- FALSE

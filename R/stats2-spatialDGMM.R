@@ -9,7 +9,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		groups <- as.factor(groups)
+		groups <- as.factor(rep_len(groups, ncol(x)))
 		method <- match.arg(method)
 		init <- match.arg(init)
 		.message("calculating spatial weights...")
