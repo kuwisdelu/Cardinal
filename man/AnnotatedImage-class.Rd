@@ -18,6 +18,7 @@
 \alias{height<-,AnnotatedImage-method}
 \alias{width,AnnotatedImage-method}
 \alias{width<-,AnnotatedImage-method}
+\alias{range,AnnotatedImage-method}
 
 \title{AnnotatedImage: Optical images with annotations}
 

@@ -84,4 +84,13 @@ setReplaceMethod("height", "AnnotatedImage",
 			x
 	})
 
+# misc methods
+
+setMethod("range", "AnnotatedImage",
+	function(x, ..., na.rm = FALSE) {
+		range(imageData(x), na.rm=na.rm)
+	})
+
+
+
 
