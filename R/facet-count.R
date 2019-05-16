@@ -1,6 +1,7 @@
 
 facet.count <- function(args, formula, obj,
-	facets, groups, superpose, strip, key, probability, ...,
+	facets, groups, superpose, strip, key,
+	breaks, probability, include.lowest, right, ...,
 	xlab, xlim, ylab, ylim, layout, byrow, dark,
 	col, grid, subset, preplot, add)
 {
@@ -49,6 +50,13 @@ facet.count <- function(args, formula, obj,
 			xlab <- unique(names(args$rhs))
 		}
 	}
+	h <- formals(graphics::hist.default)
+	if ( missing(breaks) )
+		breaks <- h$breaks
+	if ( missing(include.lowest) )
+		include.lowest <- h$include.lowest
+	if ( missing(right) )
+		right <- h$right
 	if ( missing(probability) || is.null(probability) )
 		probability <- FALSE
 	if ( missing(ylab) ) {
@@ -62,7 +70,6 @@ facet.count <- function(args, formula, obj,
 			ylab <- "count"
 		}
 	}
-	hformals <- names(formals(graphics::hist.default))
 	xrange <- c(NA, NA)
 	yrange <- c(NA, NA)
 	plotnew <- !add
@@ -103,7 +110,11 @@ facet.count <- function(args, formula, obj,
 			layers <- list()
 			for ( g in levels(groups) ) {
 				gi <- groups
-				data <- x[gi == g]
+				if ( has_groups ) {
+					data <- x[gi == g]
+				} else {
+					data <- x
+				}
 				if ( has_cats ) {
 					if ( has_groups ) {
 						cat <- g
@@ -136,8 +147,8 @@ facet.count <- function(args, formula, obj,
 						class=class, count=count, prop=proportion,
 						col=coli, facet=f, group=g, add=add)
 				} else {
-					hargs <- dots[names(dots) %in% hformals]
-					stat <- do.call("hist", c(list(x=data, plot=FALSE), hargs))
+					stat <- hist(data, breaks=breaks, right=right,
+						include.lowest=include.lowest, plot=FALSE)
 					xrange <- range(c(xrange, stat$breaks), na.rm=TRUE)
 					if ( probability ) {
 						yrange <- range(c(yrange, stat$density), na.rm=TRUE)
@@ -173,9 +184,6 @@ facet.count <- function(args, formula, obj,
 		}
 		add <- FALSE
 	}
-	rm <- hformals
-	rm <- rm[rm %in% names(dots)]
-	dots[rm] <- NULL
 	if ( is_discrete ) {
 		rx <- 1
 	} else {
@@ -193,6 +201,8 @@ facet.count <- function(args, formula, obj,
 		xlim <- xrange + rx * c(-0.5, 0.5)
 	if ( missing(ylim) || is.null(ylim) )
 		ylim <- c(0, yrange[2] + ry * 0.5)
+	if ( missing(grid) )
+		grid <- FALSE
 	par <- list(
 		xlab=xlab, ylab=ylab,
 		xlim=xlim, ylim=ylim)

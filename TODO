@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
 
-- Add plot() methods for AnnotatedImage-based classes
 - Complete plot() and image() methods for class compare results
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)

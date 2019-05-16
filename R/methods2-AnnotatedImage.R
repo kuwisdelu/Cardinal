@@ -88,7 +88,10 @@ setReplaceMethod("height", "AnnotatedImage",
 
 setMethod("range", "AnnotatedImage",
 	function(x, ..., na.rm = FALSE) {
-		range(imageData(x), na.rm=na.rm)
+		y <- imageData(x)
+		ymin <- min(y, na.rm=na.rm)
+		ymax <- max(y, na.rm=na.rm)
+		c(ymin, ymax) # range() takes weirdly long
 	})
 
 

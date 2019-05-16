@@ -18,6 +18,9 @@
 \alias{plot,SpatialFastmap2,missing-method}
 \alias{plot,SpatialKMeans2,missing-method}
 \alias{plot,SpatialShrunkenCentroids2,missing-method}
+\alias{plot,AnnotatedImage,ANY-method}
+\alias{plot,AnnotatedImageList,ANY-method}
+\alias{plot,AnnotatedImagingExperiment,ANY-method}
 
 \alias{plot,SImageSet,missing-method}
 \alias{plot,SImageSet,formula-method}
@@ -113,6 +116,18 @@
 
 \S4method{plot}{SpatialShrunkenCentroids2,missing}(x, formula,
     values = c("centers", "statistic"), \dots)
+
+\S4method{plot}{AnnotatedImage,ANY}(x, breaks = "Sturges",
+        key = TRUE, col,
+        add = FALSE, \dots)
+
+\S4method{plot}{AnnotatedImageList,ANY}(x, i, breaks = "Sturges",
+        strip = TRUE,
+        key = TRUE, col,
+        layout = !add,
+        add = FALSE, \dots)
+
+\S4method{plot}{AnnotatedImagingExperiment,ANY}(x, i, \dots)
 
 #### Methods for Cardinal 1.x classes ####
 
@@ -244,9 +259,13 @@
 
     \item{jitter}{Should a small amount of noise be added to numeric variables before plotting them?}
 
+    \item{breaks}{The number of breaks when plotting a histogram.}
+
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{fData(x)}.}
 
     \item{\dots}{Additional arguments passed to the underlying \code{\link{plot}} or \code{\link{xyplot}} functions.}
+
+    \item{i}{Which data element should be plotted.}
 
     \item{fold}{What folds of the cross-validation should be plotted.}
 
