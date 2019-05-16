@@ -17,7 +17,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	if ( !is.null(args$g) )
 		.stop("conditioning variables via | not allowed")
 	is3d <- length(args$rhs) == 3L
-	newx <- .format_pixel_results(x, names(args$lhs))
+	newx <- .reshape_pixel_results(x, names(args$lhs))
 	formula2 <- paste0(c(deparse(formula), "model"), collapse="|")
 	formula2 <- as.formula(formula2)
 	if ( is.null(names(model)) ) {
@@ -26,10 +26,10 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		model <- model[names(model) %in% names(fData(newx))]
 		feature1 <- subset_rows(fData(newx), as.list(model))
 	}
-	cols <- sort(unique(fData(newx)[["column"]]))
-	nc <- length(cols)
+	ncols <- sort(unique(fData(newx)[["column"]]))
+	nc <- length(ncols)
 	if ( missing(column) )
-		column <- cols
+		column <- ncols
 	if ( is.numeric(column) ) {
 		feature2 <- subset_rows(fData(newx), list(column_id=column))
 	} else {
@@ -43,6 +43,56 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		alpha.power=alpha.power,
 		subset=subset, ...)
 })
+
+# format pixel data
+
+.reshape_pixel_results <- function(object, name) {
+	data <- lapply(resultData(object), function(res) {
+		res <- res[[name, exact=FALSE]]
+		if ( is.factor(res) || is.character(res) ) {
+			.factor_matrix(res)
+		} else if ( is.vector(res) ) {
+			as.matrix(res)
+		} else {
+			res
+		}
+	})
+	cols <- lapply(data, function(x) {
+		if ( is.null(colnames(x))) {
+			paste0(seq_len(ncol(x)))
+		} else {
+			colnames(x)
+		}
+	})
+	pnm <- names(modelData(object))
+	fdata <- lapply(seq_along(cols), function(i) {
+		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
+		par[["model"]] <- .format.data.labels(par)
+		par[["column"]] <- cols[[i]]
+		len <- length(cols[[i]])
+		par1 <- DataFrame(model_id=i, column_id=seq_len(len))
+		par2 <- DataFrame(par)		
+		cbind(par1, par2)
+	})
+	fdata <- do.call("rbind", fdata)
+	data <- SimpleList(t(do.call("cbind", data)))
+	names(data) <- name
+	SparseImagingExperiment(imageData=data,
+		featureData=fdata,
+		pixelData=pixelData(object))
+}
+
+# format formula
+
+.formula_pixel_results <- function(x, lhs, is3d = FALSE) {
+	if ( is3d ) {
+		fm <- paste0(lhs, "~", paste0(coordnames(x)[1:3], collapse="*"))
+	} else {
+		fm <- paste0(lhs, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
+	}
+	formula <- as.formula(fm, env=parent.frame(3))
+}
+
 
 ## PCA2
 
@@ -184,54 +234,6 @@ setMethod("image3D",
 		callNextMethod(x, formula=formula, ...)
 	})
 
-# format formula
-
-.formula_pixel_results <- function(x, lhs, is3d = FALSE) {
-	if ( is3d ) {
-		fm <- paste0(lhs, "~", paste0(coordnames(x)[1:3], collapse="*"))
-	} else {
-		fm <- paste0(lhs, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
-	}
-	formula <- as.formula(fm, env=parent.frame(3))
-}
-
-# format pixel data
-
-.format_pixel_results <- function(object, name) {
-	data <- lapply(resultData(object), function(res) {
-		res <- res[[name, exact=FALSE]]
-		if ( is.factor(res) || is.character(res) ) {
-			.factor_matrix(res)
-		} else if ( is.vector(res) ) {
-			as.matrix(res)
-		} else {
-			res
-		}
-	})
-	cols <- lapply(data, function(x) {
-		if ( is.null(colnames(x))) {
-			paste0(seq_len(ncol(x)))
-		} else {
-			colnames(x)
-		}
-	})
-	pnm <- names(modelData(object))
-	fdata <- lapply(seq_along(cols), function(i) {
-		par <- as.list(modelData(object)[i,pnm,drop=FALSE])
-		par[["model"]] <- .format.data.labels(par)
-		par[["column"]] <- cols[[i]]
-		len <- length(cols[[i]])
-		par1 <- DataFrame(model_id=i, column_id=seq_len(len))
-		par2 <- DataFrame(par)		
-		cbind(par1, par2)
-	})
-	fdata <- as(do.call("rbind", fdata), "XDataFrame")
-	data <- SimpleList(t(do.call("cbind", data)))
-	names(data) <- name
-	SparseImagingExperiment(imageData=data,
-		featureData=fdata,
-		pixelData=pixelData(object))
-}
 
 
 
