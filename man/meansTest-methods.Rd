@@ -74,7 +74,7 @@ groups <- replace(run(x), !(x$circleA | x$circleB), NA)
 
 fit <- meansTest(x, ~ condition, groups=groups)
 
-modelData(fit)
+summary(fit)
 }
 
 \keyword{htest}

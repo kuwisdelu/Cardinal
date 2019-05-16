@@ -223,9 +223,14 @@
 	if ( is.atomic(x) || is.null(x$dpages) ) {
 		nd <- 0
 	} else {
-		nd <- length(x$dpages) - 1
+		nd <- length(x$dpages) > 1L
 	}
-	if ( !is.atomic(x) && (length(x$fids) + nd) > 1L ) {
+	if ( is.atomic(x) || is.null(x$facets) ) {
+		nf <- 0
+	} else {
+		nf <- (nrow(x$fids) > 1L) + (length(x$fids) > 1L)
+	}
+	if ( !is.atomic(x) && (nd + nf) > 1L ) {
 		if ( length(x$dpages) > 0L ) {
 			n1 <- length(unique(x$fids[[1]]))
 			n2 <- length(x$dpages)
