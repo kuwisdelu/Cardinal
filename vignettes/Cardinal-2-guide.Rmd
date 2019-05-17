@@ -700,7 +700,7 @@ pData(mse)
 
 `iData()` can be used to access elements of the `imageData()` list by name or index.
 
-Using `iData()` with no arguments besides the dataset will get or set the first element of `imageData()`.
+Using `iData()` with no arguments besides the dataset will get or set the first element of `imageData()`. Providing a name or index will get or set that element.
 
 ```{r iData-set}
 iData(mse, "log2intensity") <- log2(iData(mse) + 1)
@@ -754,15 +754,15 @@ mse %>%
 	select(x == 10, y == 10)
 
 # calculate mean spectrum
-summarize(mse, mean(.), .by="feature")
+summarize(mse, .stat="mean", .by="feature")
 
 # calculate tic
-summarize(mse, tic=sum(.), .by="pixel")
+summarize(mse, .stat=c(tic="sum"), .by="pixel")
 
 # calculate mean spectrum of circle region
 mse %>%
 	select(region == "circle") %>%
-	summarize(mean(.))
+	summarize(.stat="mean")
 ```
 
 ## Collect data into memory
