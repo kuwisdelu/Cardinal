@@ -18,13 +18,6 @@ setMethod("show", "MSImageProcess",
 		cat("  Peak picking:", object@peakPicking, "\n")
 	})
 
-setMethod("files", "MSImageProcess", function(object) object@files)
-setReplaceMethod("files", "MSImageProcess",
-	function(object, value) {
-		object@files <- value
-		object
-	})
-
 setMethod("normalization", "MSImageProcess", function(object) object@normalization)
 setReplaceMethod("normalization", "MSImageProcess",
 	function(object, value) {
@@ -64,20 +57,6 @@ setMethod("centroided", "MSImageProcess", function(object) object@centroided)
 setReplaceMethod("centroided", "MSImageProcess",
 	function(object, value) {
 		object@centroided <- value
-		object
-	})
-
-setMethod("prochistory", "MSImageProcess", function(object) object@history)
-
-setReplaceMethod("prochistory", signature = c(object="MSImageProcess", value="list"),
-	function(object, value) {
-		object@history <- value
-		object
-	})
-
-setReplaceMethod("prochistory", signature = c(object="MSImageProcess", value="character"),
-	function(object, value) {
-		object@history <- append(object@history, value)
 		object
 	})
 

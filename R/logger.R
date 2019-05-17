@@ -2,6 +2,10 @@
 #### Save log and session history ####
 ## -----------------------------------
 
+Cardinal.version <- function() {
+	paste0(packageVersion("Cardinal"), collapse=".")
+}
+
 Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 	if ( !is.null(file) ) {
 		path <- normalizePath(file, mustWork=FALSE)

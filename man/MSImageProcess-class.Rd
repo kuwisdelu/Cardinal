@@ -8,40 +8,18 @@
 \alias{show,MSImageProcess-method}
 \alias{combine,MSImageProcess,MSImageProcess-method}
 \alias{initialize,MSImageProcess-method}
-\alias{files}
-\alias{files,MSImageProcess-method}
-\alias{files<-}
-\alias{files<-,MSImageProcess-method}
-\alias{normalization}
 \alias{normalization,MSImageProcess-method}
-\alias{normalization<-}
 \alias{normalization<-,MSImageProcess-method}
-\alias{smoothing}
 \alias{smoothing,MSImageProcess-method}
-\alias{smoothing<-}
 \alias{smoothing<-,MSImageProcess-method}
-\alias{baselineReduction}
 \alias{baselineReduction,MSImageProcess-method}
-\alias{baselineReduction<-}
 \alias{baselineReduction<-,MSImageProcess-method}
-\alias{spectrumRepresentation}
 \alias{spectrumRepresentation,MSImageProcess-method}
-\alias{spectrumRepresentation<-}
 \alias{spectrumRepresentation<-,MSImageProcess-method}
-\alias{peakPicking}
 \alias{peakPicking,MSImageProcess-method}
-\alias{peakPicking<-}
 \alias{peakPicking<-,MSImageProcess-method}
-\alias{centroided}
 \alias{centroided,MSImageProcess-method}
-\alias{centroided<-}
 \alias{centroided<-,MSImageProcess-method}
-\alias{prochistory}
-\alias{prochistory,MSImageProcess-method}
-\alias{prochistory<-}
-\alias{prochistory<-,MSImageProcess-method}
-\alias{prochistory<-,MSImageProcess,character-method}
-\alias{prochistory<-,MSImageProcess,list-method}
 
 \title{MSImageProcess: Class containing mass spectral preprocessing information}
 

@@ -352,100 +352,35 @@ setReplaceMethod("spectrumRepresentation", "Vector",
 setMethod("instrumentModel", "Vector",
 	function(object) object@metadata[["instrument model"]])
 
-setReplaceMethod("instrumentModel", "Vector",
-	function(object, value) {
-		object@metadata[["instrument model"]] <- value
-		object
-	})
-
 setMethod("instrumentVendor", "Vector",
 	function(object) object@metadata[["instrument vendor"]])
-
-setReplaceMethod("instrumentVendor", "Vector",
-	function(object, value) {
-		object@metadata[["instrument vendor"]] <- value
-		object
-	})
 
 setMethod("matrixApplication", "Vector",
 	function(object) object@metadata[["matrix application type"]])
 
-setReplaceMethod("matrixApplication", "Vector",
-	function(object, value) {
-		object@metadata[["matrix application type"]] <- value
-		object
-	})
-
 setMethod("massAnalyzerType", "Vector",
 	function(object) object@metadata[["mass analyzer type"]])
-
-setReplaceMethod("massAnalyzerType", "Vector",
-	function(object, value) {
-		object@metadata[["mass analyzer type"]] <- value
-		object
-	})
 
 setMethod("ionizationType", "Vector",
 	function(object) object@metadata[["ionization type"]])
 
-setReplaceMethod("ionizationType", "Vector",
-	function(object, value) {
-		object@metadata[["ionization type"]] <- value
-		object
-	})
-
 setMethod("scanPolarity", "Vector",
 	function(object) object@metadata[["scan polarity"]])
-
-setReplaceMethod("scanPolarity", "Vector",
-	function(object, value) {
-		object@metadata[["scan polarity"]] <- value
-		object
-	})
 
 setMethod("scanType", "Vector",
 	function(object) object@metadata[["scan type"]])
 
-setReplaceMethod("scanType", "Vector",
-	function(object, value) {
-		object@metadata[["scan type"]] <- value
-		object
-	})
-
 setMethod("scanPattern", "Vector",
 	function(object) object@metadata[["scan pattern"]])
-
-setReplaceMethod("scanPattern", "Vector",
-	function(object, value) {
-		object@metadata[["scan pattern"]] <- value
-		object
-	})
 
 setMethod("scanDirection", "Vector",
 	function(object) object@metadata[["linescan sequence"]])
 
-setReplaceMethod("scanDirection", "Vector",
-	function(object, value) {
-		object@metadata[["linescan sequence"]] <- value
-		object
-	})
-
 setMethod("lineScanDirection", "Vector",
 	function(object) object@metadata[["line scan direction"]])
-
-setReplaceMethod("lineScanDirection", "Vector",
-	function(object, value) {
-		object@metadata[["line scan direction"]] <- value
-		object
-	})
 
 setMethod("pixelSize", "Vector",
 	function(object) object@metadata[["pixel size"]])
 
-setReplaceMethod("pixelSize", "Vector",
-	function(object, value) {
-		object@metadata[["pixel size"]] <- value
-		object
-	})
 
 

@@ -3,6 +3,7 @@
 \docType{package}
 
 \alias{Cardinal}
+\alias{Cardinal.version}
 \alias{Cardinal.history}
 
 \title{Mass spectrometry imaging tools}

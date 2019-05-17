@@ -23,15 +23,17 @@
 globalVariables(".Index")
 
 .onLoad <- function(libname, pkgname) {
-	options(Cardinal.verbose=interactive()) # public
-	options(Cardinal.progress=interactive()) # public
-	options(Cardinal.numblocks=20) # public
-	options(Cardinal.delay=TRUE) # public
-	options(Cardinal.dark=FALSE) # public
+	options(Cardinal.verbose=interactive())
+	options(Cardinal.progress=interactive())
+	options(Cardinal.numblocks=20)
+	options(Cardinal.delay=TRUE)
+	options(Cardinal.dark=FALSE)
 	reg.finalizer(.Cardinal, .log.flush, onexit=TRUE)
-	.log("Cardinal loaded.", "\n", .session())
+	.log(.session())
+	.log("Cardinal ", Cardinal.version(), " loaded.", "\n")
 }
 
 .onAttach <- function(libname, pkgname) {
-	.log("Cardinal attached.")
+	.log("Cardinal ", Cardinal.version(), " attached.", "\n")
 }
+

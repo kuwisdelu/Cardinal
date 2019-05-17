@@ -18,7 +18,7 @@
 
 mz(object, \dots)
 
-mz(object) <- value
+mz(object, \dots) <- value
 }
 
 \arguments{

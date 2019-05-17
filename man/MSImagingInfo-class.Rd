@@ -18,38 +18,49 @@
 \alias{msiInfo,MSContinuousImagingExperiment-method}
 \alias{msiInfo,MSProcessedImagingExperiment-method}
 
+\alias{normalization}
+\alias{normalization<-}
 \alias{normalization,Vector-method}
 \alias{normalization<-,Vector-method}
+\alias{smoothing}
+\alias{smoothing<-}
 \alias{smoothing,Vector-method}
 \alias{smoothing<-,Vector-method}
+\alias{baselineReduction}
+\alias{baselineReduction<-}
 \alias{baselineReduction,Vector-method}
 \alias{baselineReduction<-,Vector-method}
+\alias{peakPicking}
+\alias{peakPicking<-}
 \alias{peakPicking,Vector-method}
 \alias{peakPicking<-,Vector-method}
+\alias{spectrumRepresentation}
+\alias{spectrumRepresentation<-}
 \alias{spectrumRepresentation,Vector-method}
 \alias{spectrumRepresentation<-,Vector-method}
+
+\alias{pixelSize}
 \alias{pixelSize,Vector-method}
-\alias{pixelSize<-,Vector-method}
+\alias{instrumentModel}
 \alias{instrumentModel,Vector-method}
-\alias{instrumentModel<-,Vector-method}
+\alias{instrumentVendor}
 \alias{instrumentVendor,Vector-method}
-\alias{instrumentVendor<-,Vector-method}
+\alias{matrixApplication}
 \alias{matrixApplication,Vector-method}
-\alias{matrixApplication<-,Vector-method}
+\alias{massAnalyzerType}
 \alias{massAnalyzerType,Vector-method}
-\alias{massAnalyzerType<-,Vector-method}
+\alias{ionizationType}
 \alias{ionizationType,Vector-method}
-\alias{ionizationType<-,Vector-method}
+\alias{scanPolarity}
 \alias{scanPolarity,Vector-method}
-\alias{scanPolarity<-,Vector-method}
+\alias{scanType}
 \alias{scanType,Vector-method}
-\alias{scanType<-,Vector-method}
+\alias{scanPattern}
 \alias{scanPattern,Vector-method}
-\alias{scanPattern<-,Vector-method}
+\alias{scanDirection}
 \alias{scanDirection,Vector-method}
-\alias{scanDirection<-,Vector-method}
+\alias{lineScanDirection}
 \alias{lineScanDirection,Vector-method}
-\alias{lineScanDirection<-,Vector-method}
 
 \title{MSImagingInfo: Mass spectrometry imaging metadata for imzML conversion}
 
@@ -77,29 +88,29 @@
 
         \item{\code{peakPicking(object), peakPicking(object) <- value}:}{Accessor and setter function for the \code{peakPicking}.}
 
-        \item{\code{spectrumRepresentation(object), spectrumRepresentation(object) <- value}:}{Accessor and setter function for the \code{peakPicking}.}
+        \item{\code{spectrumRepresentation(object), spectrumRepresentation(object) <- value}:}{Accessor and setter function for the \code{spectrumRepresentation}.}
 
-        \item{\code{matrixApplication(object), matrixApplication(object) <- value}:}{Accessor and setter function for \code{matrixApplication}.}
+        \item{\code{matrixApplication(object)}:}{Accessor function for \code{matrixApplication}.}
 
-        \item{\code{pixelSize(object), pixelSize(object) <- value}:}{Accessor and setter function for \code{pixelSize}.}
+        \item{\code{pixelSize(object)}:}{Accessor function for \code{pixelSize}.}
 
-        \item{\code{instrumentModel(object), instrumentModel(object) <- value}:}{Accessor and setter function for \code{instrumentModel}.}
+        \item{\code{instrumentModel(object)}:}{Accessor function for \code{instrumentModel}.}
         
-        \item{\code{instrumentVendor(object), instrumentVendor(object) <- value}:}{Accessor and setter function for \code{instrumentVendor}.}
+        \item{\code{instrumentVendor(object)}:}{Accessor function for \code{instrumentVendor}.}
 
-        \item{\code{massAnalyzerType(object), massAnalyzerType(object) <- value}:}{Accessor and setter function for \code{massAnalyzerType}.}
+        \item{\code{massAnalyzerType(object)}:}{Accessor function for \code{massAnalyzerType}.}
 
-        \item{\code{ionizationType(object), ionizationType(object) <- value}:}{Accessor and setter function for \code{ionizationType}.}
+        \item{\code{ionizationType(object)}:}{Accessor function for \code{ionizationType}.}
 
-        \item{\code{scanPolarity(object), scanPolarity(object) <- value}:}{Accessor and setter function for \code{scanPolarity}.}
+        \item{\code{scanPolarity(object)}:}{Accessor function for \code{scanPolarity}.}
                 
-        \item{\code{scanType(object), scanType(object) <- value}:}{Accessor and setter function for \code{scanType}.}
+        \item{\code{scanType(object)}:}{Accessor function for \code{scanType}.}
 
-        \item{\code{scanPattern(object), scanPattern(object) <- value}:}{Accessor and setter function for \code{scanPattern}.}
+        \item{\code{scanPattern(object)}:}{Accessor function for \code{scanPattern}.}
 
-        \item{\code{scanDirection(object), scanDirection(object) <- value}:}{Accessor and setter function for \code{scanDirection}.}
+        \item{\code{scanDirection(object)}:}{Accessor function for \code{scanDirection}.}
 
-        \item{\code{lineScanDirection(object), lineScanDirection(object) <- value}:}{Accessor and setter function for \code{lineScanDirection}.}
+        \item{\code{lineScanDirection(object)}:}{Accessor function for \code{lineScanDirection}.}
     }
 }
 

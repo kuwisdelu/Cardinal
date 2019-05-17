@@ -33,8 +33,6 @@ setGeneric("pixelData", function(object) standardGeneric("pixelData"))
 setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-"))
 setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
 setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
-setGeneric("processingData", function(object) standardGeneric("processingData")) # use MSnbase generic?
-setGeneric("processingData<-", function(object, value) standardGeneric("processingData<-")) # use MSnbase generic?
 setGeneric("resolution", function(object) standardGeneric("resolution"))
 setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
 setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
@@ -47,18 +45,6 @@ setGeneric("runNames", function(object) standardGeneric("runNames"))
 setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 setGeneric("showNames", function(object) standardGeneric("showNames"))
 
-#### Supplement ProtGenerics  ####
-## -------------------------------
-setGeneric("peaks<-", function(object, ..., value) standardGeneric("peaks<-"))
-setGeneric("spectra<-", function(object, ..., value) standardGeneric("spectra<-"))
-setGeneric("centroided", function(object) standardGeneric("centroided")) # move to ProtGenerics?
-setGeneric("centroided<-", function(object, value) standardGeneric("centroided<-")) # move to ProtGenerics?
-
-#### Supplement S4Vectors  ####
-## ----------------------------
-setGeneric("height", function(x) standardGeneric("height"))
-setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
-
 #### Legacy generics ####
 ## ----------------------
 setGeneric("positionArray", function(object) standardGeneric("positionArray"))
@@ -69,54 +55,28 @@ setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePo
 ## ----------------------
 setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
 setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
-setGeneric("specimenOrigin<-", function(object, value) standardGeneric("specimenOrigin<-"))
 setGeneric("specimenType", function(object) standardGeneric("specimenType"))
-setGeneric("specimenType<-", function(object, value) standardGeneric("specimenType<-"))
 setGeneric("stainingMethod", function(object) standardGeneric("stainingMethod"))
-setGeneric("stainingMethod<-", function(object, value) standardGeneric("stainingMethod<-"))
 setGeneric("tissueThickness", function(object) standardGeneric("tissueThickness"))
-setGeneric("tissueThickness<-", function(object, value) standardGeneric("tissueThickness<-"))
 setGeneric("tissueWash", function(object) standardGeneric("tissueWash"))
-setGeneric("tissueWash<-", function(object, value) standardGeneric("tissueWash<-"))
 setGeneric("embeddingMethod", function(object) standardGeneric("embeddingMethod"))
-setGeneric("embeddingMethod<-", function(object, value) standardGeneric("embeddingMethod<-"))
 setGeneric("inSituChemistry", function(object) standardGeneric("inSituChemistry"))
-setGeneric("inSituChemistry<-", function(object, value) standardGeneric("inSituChemistry<-"))
 setGeneric("matrixApplication", function(object) standardGeneric("matrixApplication"))
-setGeneric("matrixApplication<-", function(object, value) standardGeneric("matrixApplication<-"))
 setGeneric("pixelSize", function(object) standardGeneric("pixelSize"))
-setGeneric("pixelSize<-", function(object, value) standardGeneric("pixelSize<-"))
-setGeneric("instrumentModel", function(object) standardGeneric("instrumentModel")) # use MSnbase generic?
-setGeneric("instrumentModel<-", function(object, value) standardGeneric("instrumentModel<-"))
-setGeneric("instrumentVendor", function(object) standardGeneric("instrumentVendor"))
-setGeneric("instrumentVendor<-", function(object, value) standardGeneric("instrumentVendor<-"))
-setGeneric("massAnalyzerType", function(object) standardGeneric("massAnalyzerType"))
-setGeneric("massAnalyzerType<-", function(object, value) standardGeneric("massAnalyzerType<-"))
-setGeneric("ionizationType", function(object) standardGeneric("ionizationType"))
-setGeneric("ionizationType<-", function(object, value) standardGeneric("ionizationType<-"))
-setGeneric("scanPolarity", function(object) standardGeneric("scanPolarity"))
-setGeneric("scanPolarity<-", function(object, value) standardGeneric("scanPolarity<-"))
-setGeneric("softwareName", function(object) standardGeneric("softwareName")) # use MSnbase generic?
-setGeneric("softwareName<-", function(object, value) standardGeneric("softwareName<-"))
-setGeneric("softwareVersion", function(object) standardGeneric("softwareVersion")) # use MSnbase generic?
-setGeneric("softwareVersion<-", function(object, value) standardGeneric("softwareVersion<-"))
-setGeneric("scanType", function(object) standardGeneric("scanType"))
-setGeneric("scanType<-", function(object, value) standardGeneric("scanType<-"))
-setGeneric("scanPattern", function(object) standardGeneric("scanPattern"))
-setGeneric("scanPattern<-", function(object, value) standardGeneric("scanPattern<-"))
-setGeneric("scanDirection", function(object) standardGeneric("scanDirection"))
-setGeneric("scanDirection<-", function(object, value) standardGeneric("scanDirection<-"))
-setGeneric("lineScanDirection", function(object) standardGeneric("lineScanDirection"))
-setGeneric("lineScanDirection<-", function(object, value) standardGeneric("lineScanDirection<-"))
 setGeneric("imageShape", function(object) standardGeneric("imageShape"))
-setGeneric("imageShape<-", function(object, value) standardGeneric("imageShape<-"))
+setGeneric("instrumentVendor", function(object) standardGeneric("instrumentVendor"))
+setGeneric("massAnalyzerType", function(object) standardGeneric("massAnalyzerType"))
+setGeneric("ionizationType", function(object) standardGeneric("ionizationType"))
+setGeneric("scanPolarity", function(object) standardGeneric("scanPolarity"))
+setGeneric("softwareName", function(object) standardGeneric("softwareName")) # use MSnbase generic?
+setGeneric("softwareVersion", function(object) standardGeneric("softwareVersion")) # use MSnbase generic?
+setGeneric("scanType", function(object) standardGeneric("scanType"))
+setGeneric("scanPattern", function(object) standardGeneric("scanPattern"))
+setGeneric("scanDirection", function(object) standardGeneric("scanDirection"))
+setGeneric("lineScanDirection", function(object) standardGeneric("lineScanDirection"))
 
 #### Processing information ####
 ## -----------------------------
-setGeneric("prochistory", function(object) standardGeneric("prochistory"))
-setGeneric("prochistory<-", function(object, value) standardGeneric("prochistory<-"))
-setGeneric("files", function(object) standardGeneric("files"))
-setGeneric("files<-", function(object, value) standardGeneric("files<-"))
 setGeneric("normalization", function(object) standardGeneric("normalization"))
 setGeneric("normalization<-", function(object, value) standardGeneric("normalization<-"))
 setGeneric("smoothing", function(object) standardGeneric("smoothing"))
@@ -156,6 +116,11 @@ setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardize
 ## ----------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalized"))
+
+#### Image manipulation and metadata ####
+## --------------------------------------
+setGeneric("height", function(x) standardGeneric("height"))
+setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
 
 #### Data transformation ####
 ## --------------------------

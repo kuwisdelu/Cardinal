@@ -13,6 +13,9 @@
 \alias{peaks<-}
 \alias{peaks-methods}
 
+\alias{centroided}
+\alias{centroided<-}
+
 \alias{show,MSImagingExperiment-method}
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}

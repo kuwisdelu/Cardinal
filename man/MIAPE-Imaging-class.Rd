@@ -22,88 +22,38 @@
 \alias{msiInfo,MIAPE-Imaging-method}
 \alias{specimenOrigin}
 \alias{specimenOrigin,MIAPE-Imaging-method}
-\alias{specimenOrigin<-}
-\alias{specimenOrigin<-,MIAPE-Imaging-method}
 \alias{specimenType}
 \alias{specimenType,MIAPE-Imaging-method}
-\alias{specimenType<-}
-\alias{specimenType<-,MIAPE-Imaging-method}
 \alias{stainingMethod}
 \alias{stainingMethod,MIAPE-Imaging-method}
-\alias{stainingMethod<-}
-\alias{stainingMethod<-,MIAPE-Imaging-method}
 \alias{tissueThickness}
 \alias{tissueThickness,MIAPE-Imaging-method}
-\alias{tissueThickness<-}
-\alias{tissueThickness<-,MIAPE-Imaging-method}
 \alias{tissueWash}
 \alias{tissueWash,MIAPE-Imaging-method}
-\alias{tissueWash<-}
-\alias{tissueWash<-,MIAPE-Imaging-method}
 \alias{embeddingMethod}
 \alias{embeddingMethod,MIAPE-Imaging-method}
-\alias{embeddingMethod<-}
-\alias{embeddingMethod<-,MIAPE-Imaging-method}
 \alias{inSituChemistry}
 \alias{inSituChemistry,MIAPE-Imaging-method}
-\alias{inSituChemistry<-}
-\alias{inSituChemistry<-,MIAPE-Imaging-method}
-\alias{matrixApplication}
+
 \alias{matrixApplication,MIAPE-Imaging-method}
-\alias{matrixApplication<-}
-\alias{matrixApplication<-,MIAPE-Imaging-method}
-\alias{pixelSize}
 \alias{pixelSize,MIAPE-Imaging-method}
-\alias{pixelSize<-}
-\alias{pixelSize<-,MIAPE-Imaging-method}
-\alias{instrumentModel}
 \alias{instrumentModel,MIAPE-Imaging-method}
-\alias{instrumentModel<-}
-\alias{instrumentModel<-,MIAPE-Imaging-method}
-\alias{instrumentVendor}
 \alias{instrumentVendor,MIAPE-Imaging-method}
-\alias{instrumentVendor<-}
-\alias{instrumentVendor<-,MIAPE-Imaging-method}
-\alias{massAnalyzerType}
 \alias{massAnalyzerType,MIAPE-Imaging-method}
-\alias{massAnalyzerType<-}
-\alias{massAnalyzerType<-,MIAPE-Imaging-method}
-\alias{ionizationType}
 \alias{ionizationType,MIAPE-Imaging-method}
-\alias{ionizationType<-}
-\alias{ionizationType<-,MIAPE-Imaging-method}
-\alias{scanPolarity}
 \alias{scanPolarity,MIAPE-Imaging-method}
-\alias{scanPolarity<-}
-\alias{scanPolarity<-,MIAPE-Imaging-method}
 \alias{softwareName}
 \alias{softwareName,MIAPE-Imaging-method}
-\alias{softwareName<-}
-\alias{softwareName<-,MIAPE-Imaging-method}
 \alias{softwareVersion}
 \alias{softwareVersion,MIAPE-Imaging-method}
-\alias{softwareVersion<-}
-\alias{softwareVersion<-,MIAPE-Imaging-method}
-\alias{scanType}
+
 \alias{scanType,MIAPE-Imaging-method}
-\alias{scanType<-}
-\alias{scanType<-,MIAPE-Imaging-method}
-\alias{scanPattern}
 \alias{scanPattern,MIAPE-Imaging-method}
-\alias{scanPattern<-}
-\alias{scanPattern<-,MIAPE-Imaging-method}
-\alias{scanDirection}
 \alias{scanDirection,MIAPE-Imaging-method}
-\alias{scanDirection<-}
-\alias{scanDirection<-,MIAPE-Imaging-method}
-\alias{lineScanDirection}
 \alias{lineScanDirection,MIAPE-Imaging-method}
-\alias{lineScanDirection<-}
-\alias{lineScanDirection<-,MIAPE-Imaging-method}
+
 \alias{imageShape}
 \alias{imageShape,MIAPE-Imaging-method}
-\alias{imageShape<-}
-\alias{imageShape<-,MIAPE-Imaging-method}
 
 \title{MIAPE-Imaging: Class for storing mass spectrometry imaging experiment information}
 
@@ -205,47 +155,47 @@
 
         \item{\code{samples}:}{An accessor function for \code{samples}.}
 
-        \item{\code{specimenOrigin(object), specimenOrigin(object) <- value}:}{Accessor and setter function for \code{specimenOrigin}.}
+        \item{\code{specimenOrigin(object)}:}{Accessor function for \code{specimenOrigin}.}
 
-        \item{\code{specimenType(object), specimenType(object) <- value}:}{Accessor and setter function for \code{specimenType}.}
+        \item{\code{specimenType(object)}:}{Accessor function for \code{specimenType}.}
 
-        \item{\code{stainingMethod(object), stainingMethod(object) <- value}:}{Accessor and setter function for \code{stainingMethod}.}
+        \item{\code{stainingMethod(object)}:}{Accessor function for \code{stainingMethod}.}
 
-        \item{\code{tissueThickness(object), tissueThickness(object) <- value}:}{Accessor and setter function for \code{tissueThickness}.}
+        \item{\code{tissueThickness(object)}:}{Accessor function for \code{tissueThickness}.}
 
-        \item{\code{tissueWash(object), tissueWash(object) <- value}:}{Accessor and setter function for \code{tissueWash}.}
+        \item{\code{tissueWash(object)}:}{Accessor function for \code{tissueWash}.}
 
-        \item{\code{embeddingMethod(object), embeddingMethod(object) <- value}:}{Accessor and setter function for \code{embeddingMethod}.}
+        \item{\code{embeddingMethod(object)}:}{Accessor function for \code{embeddingMethod}.}
 
-        \item{\code{inSituChemistry(object), inSituChemistry(object) <- value}:}{Accessor and setter function for \code{inSituChemistry}.}
+        \item{\code{inSituChemistry(object)}:}{Accessor function for \code{inSituChemistry}.}
 
-        \item{\code{matrixApplication(object), matrixApplication(object) <- value}:}{Accessor and setter function for \code{matrixApplication}.}
+        \item{\code{matrixApplication(object)}:}{Accessor function for \code{matrixApplication}.}
 
-        \item{\code{pixelSize(object), pixelSize(object) <- value}:}{Accessor and setter function for \code{pixelSize}.}
+        \item{\code{pixelSize(object)}:}{Accessor function for \code{pixelSize}.}
 
-        \item{\code{instrumentModel(object), instrumentModel(object) <- value}:}{Accessor and setter function for \code{instrumentModel}.}
+        \item{\code{imageShape(object)}:}{Accessor function for \code{imageShape}.}
+
+        \item{\code{instrumentModel(object)}:}{Accessor function for \code{instrumentModel}.}
         
-        \item{\code{instrumentVendor(object), instrumentVendor(object) <- value}:}{Accessor and setter function for \code{instrumentVendor}.}
+        \item{\code{instrumentVendor(object)}:}{Accessor function for \code{instrumentVendor}.}
 
-        \item{\code{massAnalyzerType(object), massAnalyzerType(object) <- value}:}{Accessor and setter function for \code{massAnalyzerType}.}
+        \item{\code{massAnalyzerType(object)}:}{Accessor function for \code{massAnalyzerType}.}
 
-        \item{\code{ionizationType(object), ionizationType(object) <- value}:}{Accessor and setter function for \code{ionizationType}.}
+        \item{\code{ionizationType(object)}:}{Accessor function for \code{ionizationType}.}
 
-        \item{\code{scanPolarity(object), scanPolarity(object) <- value}:}{Accessor and setter function for \code{scanPolarity}.}
+        \item{\code{scanPolarity(object)}:}{Accessor function for \code{scanPolarity}.}
                 
-        \item{\code{softwareName(object), softwareName(object) <- value}:}{Accessor and setter function for \code{softwareName}.}
+        \item{\code{softwareName(object)}:}{Accessor function for \code{softwareName}.}
         
-        \item{\code{softwareVersion(object), softwareVersion(object) <- value}:}{Accessor and setter function for \code{softwareVersion}.}
+        \item{\code{softwareVersion(object)}:}{Accessor function for \code{softwareVersion}.}
 
-        \item{\code{scanType(object), scanType(object) <- value}:}{Accessor and setter function for \code{scanType}.}
+        \item{\code{scanType(object)}:}{Accessor function for \code{scanType}.}
 
-        \item{\code{scanPattern(object), scanPattern(object) <- value}:}{Accessor and setter function for \code{scanPattern}.}
+        \item{\code{scanPattern(object)}:}{Accessor function for \code{scanPattern}.}
 
-        \item{\code{scanDirection(object), scanDirection(object) <- value}:}{Accessor and setter function for \code{scanDirection}.}
+        \item{\code{scanDirection(object)}:}{Accessor function for \code{scanDirection}.}
 
-        \item{\code{lineScanDirection(object), lineScanDirection(object) <- value}:}{Accessor and setter function for \code{lineScanDirection}.}
-
-        \item{\code{imageShape(object), imageShape(object) <- value}:}{Accessor and setter function for \code{imageShape}.}
+        \item{\code{lineScanDirection(object)}:}{Accessor function for \code{lineScanDirection}.}
     }
 
     Standard generic methods:
