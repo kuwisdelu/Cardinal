@@ -15,7 +15,6 @@ setMethod("image",
 		col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
 		lattice = FALSE)
 	{
-		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
 			model <- model
 		} else {

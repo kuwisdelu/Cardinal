@@ -7,4 +7,5 @@ TODO for Cardinal package
 - Add tidy(), augment(), and glance() methods for results (?)
 - A way to "compile" images for faster image loading?
 - Clean up under-used generics, etc.
+- Clean up unused options(), etc.
 

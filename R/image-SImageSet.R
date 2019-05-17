@@ -110,19 +110,8 @@ setMethod("image",
 		smooth.image <- smooth.image.method(smooth.image)
 		normalize.image <- normalize.image.method(normalize.image)
 		if ( is3d ) {
-			# if ( isTRUE(getOption("Cardinal.3D.normalize.by.sample")) ) {
-			# 	names3d <- names(dim(values))
-			# 	dim3d <- dim(values)
-			# 	values <- apply(values, which(!names(dim(values)) %in% c("x","y")),
-			# 		function(x) normalize.image(contrast.enhance(x)))
-			# 	dim(values) <- dim3d[c("x","y",names3d[which(!names3d %in% c("x","y"))])]
-			# 	perm3d <- seq_along(dim(values))
-			# 	names(perm3d) <- names(dim(values))
-			# 	values <- aperm(values, perm=perm3d[names3d])
-			# } else {
 				values <- apply(values, seq(from=4, to=length(dim(values)), by=1),
 					function(x) normalize.image(contrast.enhance(x)))
-			# }
 		} else {
 			values <- apply(values, seq(from=3, to=length(dim(values)), by=1),
 				function(x) normalize.image(smooth.image(contrast.enhance(x))))
@@ -196,8 +185,6 @@ setMethod("image",
 			fm.cond <- c(fm.cond, setdiff(names(coord(x)), names(model$right)))
 		if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 		fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
-		# debugging
-		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			if ( is3d )

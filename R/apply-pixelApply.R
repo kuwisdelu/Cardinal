@@ -114,7 +114,6 @@ setMethod("pixelApply", "SImageSet",
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
 		.message(progress="start", max=length(.pixel))
-		if ( isTRUE(getOption("Cardinal.debug.pixelApply")) ) browser()
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .pixel[i], envir=env)

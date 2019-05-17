@@ -113,7 +113,6 @@ setMethod("featureApply", "SImageSet",
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
 		.message(progress="start", max=length(.feature))
-		if ( isTRUE(getOption("Cardinal.debug.featureApply")) ) browser()
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .feature[i], env)

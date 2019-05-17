@@ -136,8 +136,6 @@ setMethod("plot",
 			fm.cond <- c(fm.cond, ".value.groups")
 		if ( !is.null(fm.cond) ) fm.cond <- paste(fm.cond, collapse="*")
 		fm <- as.formula(paste(c(fm.side, fm.cond), collapse="|"))
-		# debugging
-		if ( isTRUE(getOption("Cardinal.debug.plotting")) ) browser()
 		# branch for base or lattice graphics
 		if ( lattice ) {
 			# set up key

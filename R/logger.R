@@ -29,7 +29,7 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 	msg <- paste0(c(date(), ": ", ...), collapse="")
 	.Cardinal$log <- append(.Cardinal$log, list(msg))
 	flushtime <- getOption("Cardinal.flush")
-	if ( !is.null(flushtime) ) {
+	if ( is.numeric(flushtime) && is.finite(flushtime) ) {
 		elapsed <- proc.time()[3] - .Cardinal$time$flush
 		if ( elapsed > flushtime )
 			.log.flush()
@@ -41,7 +41,7 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 }
 
 .log.flush <- function(e=.Cardinal) {
-	if ( isTRUE(getOption("Cardinal.log")) && length(e$log) != 0 ) {
+	if ( isTRUE(getOption("Cardinal.log")) ) {
 		res <- tryCatch({
 			e$time$flush <- proc.time()[3]
 			filepath <- file.path(tempdir(), "Cardinal.log")
@@ -109,8 +109,6 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 .time.stop <- function() {
 	.Cardinal$time$stop <- proc.time()
 	time <- .Cardinal$time$stop - .Cardinal$time$start
-	if ( isTRUE(getOption("Cardinal.time")) )
-		.console("Cardinal: Operation took ", round(time[[3]], digits=1), " seconds.")
 	.log("Cardinal: Operation took ", round(time[[3]], digits=2), " seconds.")
 }
 
