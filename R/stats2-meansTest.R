@@ -50,6 +50,20 @@ setMethod("meansTest", "SparseImagingExperiment",
 		out
 	})
 
+.meansTest_includeMeans <- function(x, jitter = TRUE) {
+	resultData(x) <- endoapply(resultData(x),
+		function(res) {
+			mean <- res$data$.response[pData(x)$.group]
+			if ( jitter ) {
+				res$mean <- jitter(mean)
+			} else {
+				res$mean <- mean
+			}
+			res
+		})
+	x
+}
+
 .meansTest_LRT <- function(object, BPPARAM) {
 	tests <- bplapply(resultData(object), function(res) {
 		data <- res$data

@@ -30,6 +30,8 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		if ( length(xnm) > 0L ) {
 			xnm <- xnm[1L]
 		} else {
+			if ( length(fData(x)) == 0L )
+				featureData(x)[["index"]] <- seq_len(nrow(x))
 			xnm <- names(featureData(x))[1L]
 		}
 		ynm <- names(imageData(x))[1L]

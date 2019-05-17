@@ -108,6 +108,18 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	estimates$class <- cnames
 	list(estimates=estimates, probability=probability, class=class)
 }
+
+.spatialDGMM_includeMeans <- function(x) {
+	resultData(x) <- endoapply(resultData(x),
+		function(res) {
+			prob <- res$probability
+			mean <- rep(res$estimates$mean, each=ncol(x))
+			mean <- matrix(mean, nrow=nrow(prob), ncol=ncol(prob))
+			res$mean <- rowSums(mean * prob)
+			res
+		})
+	x
+}
  
 .spatialDGMM_fit1 <- function(xi, k, neighbors, weights, annealing,
 								init, iter.max, tol, p0, trace, verbose)

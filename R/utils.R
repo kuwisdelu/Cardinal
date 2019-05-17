@@ -1,9 +1,4 @@
 
-## Setup the facet plotting par + layout by row and column
-setup.layout <- function(nr = 1, nc = 1, byrow = TRUE, ...) {
-	invisible(.setup.layout(c(nr, nc), byrow=byrow, ...))
-}
-
 # Check for no missing values
 nomissing <- function(x) {
 	all(!is.na(x))
@@ -26,6 +21,11 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  {
 # Check if a variable is discrete
 is.discrete <- function(x) {
 	is.factor(x) || is.character(x)
+}
+
+# Check if a variable is a continuous
+is.numeric_vector <- function(x)  {
+	is.numeric(x) && is.vector(x)
 }
 
 # Round to an arbitrary precision
@@ -57,7 +57,7 @@ pos <- function(x) pmax(x, 0)
 # Return negative part
 neg <- function(x) pmin(x, 0)
 
-# Combined (pooked) mean of multiple subsets
+# Combined (pooled) mean of multiple subsets
 combinedMean <- function(xbar, n) {
 	sum(xbar * n) / sum(n)
 }

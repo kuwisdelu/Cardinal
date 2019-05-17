@@ -5,12 +5,11 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "formula"),
 setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 	function(x, formula,
 		model = modelData(x),
-		superpose = TRUE,
+		superpose = is_matrix,
 	    ...,
 	    column,
 		xlab, ylab,
-		type = 'h',
-		subset = TRUE)
+		type = 'h')
 {
 	.checkForIncompleteProcessing(x)
 	args <- .parseFormula2(formula)
@@ -20,6 +19,7 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 		.stop("rhs of formula must include exactly 1 variables")
 	if ( !is.null(args$g) )
 		.stop("conditioning variables via | not allowed")
+	is_matrix <- !is.numeric_vector(resultData(x, 1, names(args$lhs)))
 	newx <- .reshape_feature_results(x, names(args$lhs))
 	formula2 <- paste0(c(deparse(formula), "model"), collapse="|")
 	formula2 <- as.formula(formula2)
@@ -39,15 +39,18 @@ setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
 		pixel2 <- subset_rows(pData(newx), list(column=column))
 	}
 	pixel <- intersect(pixel1, pixel2)
-	pixel.groups <- pixelData(newx)[["column"]][pixel]
+	if ( is_matrix ) {
+		pixel.groups <- pixelData(newx)[["column"]][pixel]
+	} else {
+		pixel.groups <- NULL
+	}
 	if ( missing(xlab) )
 		xlab <- names(args$rhs)
 	if ( missing(ylab) )
 		ylab <- names(args$lhs)
 	plot(newx, formula=formula2, pixel=pixel,
 		pixel.groups=pixel.groups, superpose=superpose,
-		xlab=xlab, ylab=ylab, type=type,
-		subset=subset, ...)
+		xlab=xlab, ylab=ylab, type=type, ...)
 })
 
 # format feature data
@@ -150,7 +153,7 @@ setMethod("plot",
 
 setMethod("plot",
 	signature = c(x = "SpatialShrunkenCentroids2", y = "missing"),
-	function(x, formula, values = c("centers", "statistic"), ...)
+	function(x, formula, values = c("centers", "statistic", "sd"), ...)
 	{
 		if ( missing(formula) )
 			formula <- .formula_feature_results(x, match.arg(values))

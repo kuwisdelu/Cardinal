@@ -2,13 +2,12 @@
 setMethod("image", c(x = "SparseResultImagingExperiment"),
 	function(x, formula,
 		model = modelData(x),
-		superpose = TRUE,
+		superpose = is_matrix,
 	    ...,
 	    column,
 		colorscale = cividis,
 		colorkey = !superpose,
-		alpha.power = 2,
-		subset = TRUE)
+		alpha.power = 2)
 {
 	.checkForIncompleteProcessing(x)
 	args <- .parseFormula2(formula)
@@ -17,6 +16,7 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 	if ( !is.null(args$g) )
 		.stop("conditioning variables via | not allowed")
 	is3d <- length(args$rhs) == 3L
+	is_matrix <- !is.numeric_vector(resultData(x, 1, names(args$lhs)))
 	newx <- .reshape_pixel_results(x, names(args$lhs))
 	formula2 <- paste0(c(deparse(formula), "model"), collapse="|")
 	formula2 <- as.formula(formula2)
@@ -36,12 +36,15 @@ setMethod("image", c(x = "SparseResultImagingExperiment"),
 		feature2 <- subset_rows(fData(newx), list(column=column))
 	}
 	feature <- intersect(feature1, feature2)
-	feature.groups <- featureData(newx)[["column"]][feature]
+	if ( is_matrix ) {
+		feature.groups <- featureData(newx)[["column"]][feature]
+	} else {
+		feature.groups <- NULL
+	}
 	image(newx, formula=formula2, feature=feature,
 		feature.groups=feature.groups, superpose=superpose,
 		colorscale=colorscale, colorkey=colorkey,
-		alpha.power=alpha.power,
-		subset=subset, ...)
+		alpha.power=alpha.power, ...)
 })
 
 # format pixel data
@@ -199,19 +202,55 @@ setMethod("image3D",
 
 setMethod("image",
 	signature = c(x = "SpatialDGMM"),
-	function(x, formula, values = c("probability", "class"), ...)
+	function(x, formula, values = c("probability", "class", "mean"), ...)
 	{
-		if ( missing(formula) )
-			formula <- .formula_pixel_results(x, match.arg(values))
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .spatialDGMM_includeMeans(x)
+			formula <- .formula_pixel_results(x, values)
+		}
 		callNextMethod(x, formula=formula, ...)
 	})
 
 setMethod("image3D",
 	signature = c(x = "SpatialDGMM"),
-	function(x, formula, values = c("probability", "class"), ...)
+	function(x, formula, values = c("probability", "class", "mean"), ...)
 	{
-		if ( missing(formula) )
-			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .spatialDGMM_includeMeans(x)
+			formula <- .formula_pixel_results(x, values, is3d=TRUE)
+		}
+		callNextMethod(x, formula=formula, ...)
+	})
+
+## MeansTest
+
+setMethod("image",
+	signature = c(x = "MeansTest"),
+	function(x, formula, values = "mean", jitter = TRUE, ...)
+	{
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .meansTest_includeMeans(x, jitter=jitter)
+			formula <- .formula_pixel_results(x, values)
+		}
+		callNextMethod(x, formula=formula, ...)
+	})
+
+setMethod("image3D",
+	signature = c(x = "MeansTest"),
+	function(x, formula, values = "mean", jitter = TRUE, ...)
+	{
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .meansTest_includeMeans(x, jitter=jitter)
+			formula <- .formula_pixel_results(x, values, is3d=TRUE)
+		}
 		callNextMethod(x, formula=formula, ...)
 	})
 
@@ -219,19 +258,27 @@ setMethod("image3D",
 
 setMethod("image",
 	signature = c(x = "SegmentationTest"),
-	function(x, formula, values = "mapping", ...)
+	function(x, formula, values = c("mean", "mapping"), jitter = TRUE, ...)
 	{
-		if ( missing(formula) )
-			formula <- .formula_pixel_results(x, match.arg(values))
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .segmentationTest_includeMeans(x, jitter=jitter)
+			formula <- .formula_pixel_results(x, values)
+		}
 		callNextMethod(x, formula=formula, ...)
 	})
 
 setMethod("image3D",
 	signature = c(x = "SegmentationTest"),
-	function(x, formula, values = "mapping", ...)
+	function(x, formula, values = c("mean", "mapping"), jitter = TRUE, ...)
 	{
-		if ( missing(formula) )
-			formula <- .formula_pixel_results(x, match.arg(values), is3d=TRUE)
+		if ( missing(formula) ) {
+			values <- match.arg(values)
+			if ( values == "mean" )
+				x <- .segmentationTest_includeMeans(x, jitter=jitter)
+			formula <- .formula_pixel_results(x, values, is3d=TRUE)
+		}
 		callNextMethod(x, formula=formula, ...)
 	})
 

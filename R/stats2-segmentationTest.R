@@ -93,6 +93,21 @@ setMethod("segmentationTest", "SpatialDGMM",
 		out
 	})
 
+.segmentationTest_includeMeans <- function(x, jitter = TRUE) {
+	resultData(x) <- endoapply(resultData(x),
+		function(res) {
+			mean <- res$data$.response[pData(x)$.group]
+			mean[is.na(res$mapping)] <- NA_real_
+			if ( jitter ) {
+				res$mean <- jitter(mean)
+			} else {
+				res$mean <- mean
+			}
+			res
+		})
+	x
+}
+
 .segmentationTest_testdata <- function(results, BPPARAM) {
 	i <- which(names(pData(results)) %in% ".group")
 	groups <- pData(results)[[i]]
