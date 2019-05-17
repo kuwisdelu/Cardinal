@@ -8,7 +8,10 @@ Cardinal.version <- function() {
 
 Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 	if ( !is.null(file) ) {
-		path <- normalizePath(file, mustWork=FALSE)
+		path <- normalizePath(file[1L], mustWork=FALSE)
+		if ( !file.create(path) )
+			return(FALSE)
+		path <- normalizePath(path)
 		.message("saving history to ", path)
 		con <- file(path, open="wt")
 		for ( m in .Cardinal$log )
@@ -41,10 +44,10 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 }
 
 .log.flush <- function(e=.Cardinal) {
-	logfile <- getOption("Cardinal.log")
-	if ( isTRUE(logfile) || is.character(logfile) ) {
-		if ( is.character(logfile) ) {
-			path <- normalizePath(logfile, mustWork=FALSE)
+	log <- getOption("Cardinal.log")
+	if ( isTRUE(log) || is.character(log) ) {
+		if ( is.character(log) ) {
+			path <- normalizePath(log, mustWork=FALSE)
 		} else {
 			path <- file.path(tempdir(), "Cardinal.log")
 		}
