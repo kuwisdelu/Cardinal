@@ -122,3 +122,4 @@ setMethod("collect", "MSProcessedImagingExperiment",
 			x
 	})
 
+

@@ -10,11 +10,11 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 	if ( !is.null(file) ) {
 		path <- normalizePath(file, mustWork=FALSE)
 		.message("saving history to ", path)
-		if ( isTRUE(history) )
-			.log(.history())
-		con <- file(path, open="at")
+		con <- file(path, open="wt")
 		for ( m in .Cardinal$log )
 			writeLines(c(m, "\n"), con=con)
+		if ( isTRUE(history) )
+			writeLines(.history(TRUE), con=con)
 		close(con)
 		invisible(.Cardinal$log)
 	} else {
@@ -41,11 +41,16 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 }
 
 .log.flush <- function(e=.Cardinal) {
-	if ( isTRUE(getOption("Cardinal.log")) ) {
+	logfile <- getOption("Cardinal.log")
+	if ( isTRUE(logfile) || is.character(logfile) ) {
+		if ( is.character(logfile) ) {
+			path <- normalizePath(logfile, mustWork=FALSE)
+		} else {
+			path <- file.path(tempdir(), "Cardinal.log")
+		}
 		res <- tryCatch({
 			e$time$flush <- proc.time()[3]
-			filepath <- file.path(tempdir(), "Cardinal.log")
-			con <- file(filepath, open="at")
+			con <- file(path, open="at")
 			for ( m in e$log )
 				writeLines(c(m, "\n"), con=con)
 			close(con)
@@ -139,12 +144,16 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 #### Generate R console history ####
 ## ---------------------------------
 
-.history <- function() {
+.history <- function(toString = FALSE) {
 	file <- tempfile(fileext=".Rhistory")
 	savehistory(file)
 	history <- readLines(file)
-	history <- paste0(history, collapse="\n")
-	c("Session history:\n", history)
+	if ( toString ) {
+		history <- paste0(history, collapse="\n")
+		history <- c("Session history:\n", history)
+		history <- paste0(history, collapse="")
+	}
+	history
 }
 
 #### Capture session info ####

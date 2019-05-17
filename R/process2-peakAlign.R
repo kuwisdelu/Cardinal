@@ -13,7 +13,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 		} else {
 			prefun <- NULL
 		}
-		postfun <- peakAlign_postfun(tol, units)
+		postfun <- peakAlign_postfun(tol)
 		object <- process(object, label="peakAlign",
 			kind="global", prefun=prefun, postfun=postfun,
 			delay=getOption("Cardinal.delay"))
@@ -45,7 +45,7 @@ peakAlign_prefun <- function(object, ..., BPPARAM) {
 	object
 }
 
-peakAlign_postfun <- function(tol, units, ...) {
+peakAlign_postfun <- function(tol, ...) {
 	fun <- function(object, ...) {
 		if ( !is(object, "MSProcessedImagingExperiment") )
 			object <- as(object, "MSProcessedImagingExperiment")
@@ -55,8 +55,8 @@ peakAlign_postfun <- function(tol, units, ...) {
 		mz(object) <- ref
 		tolerance(object) <- tol
 		combiner(object) <- "max"
-		.message("aligned to ", length(ref), " reference peaks",
-			" with tolerance = ", tol, " ", units)
+		.message("aligned to ", length(ref), " reference peaks ",
+			"(", names(tol), " tol = ", tol, ")")
 		if ( !is.null(spectrumRepresentation(object)) )
 			spectrumRepresentation(object) <- "centroid spectrum"
 		centroided(object) <- TRUE

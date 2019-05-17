@@ -1,4 +1,19 @@
 
+CHANGES IN VERSION 2.3.9 [2019-5-17]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'Cardinal.history()' and 'Cardinal.version()'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Removed under-used setter generic function definitions
+
+BUG FIXES
+
+    o Cleaned up generics to reflect ProtGenerics >= 1.17.2
+
 CHANGES IN VERSION 2.3.8 [2019-5-16]
 -----------------------------------
 

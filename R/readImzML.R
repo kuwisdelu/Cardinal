@@ -65,6 +65,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	intensity.ibdtype <- imageData(info)[["binary data type"]]
 	# read binary data
 	if ( ibdtype == "continuous" ) {
+		.message("detected 'continuous' imzML")
 		mz <- matter_vec(paths=file,
 			datamode=Ctypeof(mz.ibdtype[1]),
 			offset=mzData(info)[["external offset"]][1],
@@ -80,6 +81,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		}
 		mz <- mz[]
 	} else if ( ibdtype == "processed" ) {
+		.message("detected 'processed' imzML")
 		mz <- matter_list(paths=file,
 			datamode=Ctypeof(mz.ibdtype),
 			offset=mzData(info)[["external offset"]],

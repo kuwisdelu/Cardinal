@@ -25,24 +25,19 @@
 \alias{peakData,MSProcessedImagingExperiment-method}
 \alias{peakData<-,MSProcessedImagingExperiment-method}
 
-\alias{tolerance,MSProcessedImagingExperiment-method}
-\alias{tolerance<-,MSProcessedImagingExperiment-method}
-
-\alias{combiner,MSProcessedImagingExperiment-method}
-\alias{combiner<-,MSProcessedImagingExperiment-method}
-
 \alias{[,MSProcessedImagingSpectraList,ANY,ANY,ANY-method}
 \alias{[[<-,MSProcessedImagingSpectraList,ANY,ANY-method}
 
+\alias{tolerance,MSProcessedImagingExperiment-method}
+\alias{tolerance<-,MSProcessedImagingExperiment-method}
+\alias{combiner,MSProcessedImagingExperiment-method}
+\alias{combiner<-,MSProcessedImagingExperiment-method}
 \alias{keys,MSProcessedImagingSpectraList-method}
 \alias{keys<-,MSProcessedImagingSpectraList,ANY-method}
-
 \alias{tolerance,MSProcessedImagingSpectraList-method}
 \alias{tolerance<-,MSProcessedImagingSpectraList-method}
-
 \alias{combiner,MSProcessedImagingSpectraList-method}
 \alias{combiner<-,MSProcessedImagingSpectraList-method}
-
 \alias{collect,MSProcessedImagingExperiment-method}
 
 \title{MSProcessedImagingExperiment: Dense mass spectrometry imaging experiments}
