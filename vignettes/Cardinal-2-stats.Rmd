@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 2_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 28, 2019"
+date: "Revised: May 16, 2019"
 output:
   BiocStyle::html_document:
   toc: true
@@ -182,6 +182,12 @@ A different segmentation is fit for each mass feature.
 image(dgmm, model=list(feature=c(1,4,7)), layout=c(1,3))
 ```
 
+Each image is modeled as a mixture of Gaussian distributions.
+
+```{r dgmm-plot, fig.height=2, fig.width=7}
+plot(dgmm, model=list(feature=c(1,4,7)), layout=c(1,3))
+```
+
 Spatial-DGMM segmentations can be especially useful for finding mass features colocalized with a region-of-interest.
 
 When applied to a `SpatialDGMM` object, `colocalize()` is able to use match scores that can have a higher specificity than using Pearson correlation on the raw ion images.
@@ -341,7 +347,7 @@ featureData(mse3)
 
 ## Group means-based testing
 
-Use `meansTest()` to fit linear models with the most basic summarization. The `groups` indicating the observational units must be provided. Each group is summarized by its mean, and then a linear model is fit to the summaries.
+Use `meansTest()` to fit linear models with the most basic summarization. The `groups` indicating the observational units must be provided. Each group is summarized by its mean, and then a linear model is fit to the summaries. *The number of groups is the effective sample size.*
 
 Here, we specify `condition` as the sole fixed effect. Internally, the model will call either `lm()` or `lme()` depending on whether any random effects are provided.
 
@@ -353,6 +359,14 @@ summary(mtest)
 
 By default, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
 
+Box-and-whisker plots can be used to visualize the differences (if any) between the conditions.
+
+```{r test-mean-plot, fig.height=3, fig.width=7}
+plot(mtest, layout=c(2,5), ylab="intensity")
+```
+
+Use `topFeatures()` to extract the significant results.
+
 ```{r test-mean-top}
 topFeatures(mtest, p.adjust="fdr", AdjP < .05)
 ```
@@ -363,6 +377,8 @@ topFeatures(mtest, p.adjust="fdr", AdjP < .05)
 Testing of `SpatialDGMM` objects is implemented by `segmentationTest()`. The key idea here is that spatial-DGMM segmentation captures within-sample heterogeneity, so testing between spatial-DGMM segments is more sensitive that simply summarizing a whole sample by its mean.
 
 First, we must segment the data with `spatialDGMM()`, while making sure that each observational unit is segmented within a different group (as specified by `groups`).
+
+*The number of groups is the effective sample size.*
 
 ```{r test-segment-dgmm}
 dgmm2 <- spatialDGMM(mse3, r=1, k=5, groups=run(mse3))
@@ -383,20 +399,23 @@ summary(stest)
 
 As with `meansTest()`, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
 
+Box-and-whisker plots can be used to visually compare the conditions.
+
+```{r test-segment-plot, fig.height=3, fig.width=7}
+plot(stest, layout=c(2,5), ylab="intensity")
+```
+
 If an automated method for `classControl` was used, it can be helpful to plot the mapping to see what segments were used to represent each group.
 
 ```{r test-segment-mapping}
 image(stest, model=list(feature=3), values="mapping")
 ```
 
-Use `topFeatures()` to extract the significant results.
-
 In this case, `segmentationTest()` finds one more significant mass feature compared to `meansTest()`.
 
 ```{r test-segment-top}
 topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% select(-diff, -r, -k)
 ```
-
 
 
 # Session information

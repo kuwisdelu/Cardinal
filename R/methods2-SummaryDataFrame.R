@@ -2,7 +2,7 @@
 #### Methods for SummaryDataFrame ####
 ## ---------------------------------
 
-SummaryDataFrame <- function(..., .rownumbers = FALSE, .summary = list()) {
+SummaryDataFrame <- function(..., .rownumbers = TRUE, .summary = list()) {
 	ans <- as(DataFrame(..., check.names=FALSE), "SummaryDataFrame")
 	if ( .rownumbers )
 		rownames(ans) <- seq_len(nrow(ans))
