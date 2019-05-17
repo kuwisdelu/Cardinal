@@ -9,7 +9,6 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		plot = FALSE)
 	{
 		fun <- reduceDimension.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("reduceDimension: Using method = ", match.method(method))
 		.time.start()
 		mzout <- fun(numeric(nrow(object)), mz(object), ...)$t
@@ -39,7 +38,6 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric
 	function(object, ref, method = "peaks", ...) {
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("reduceDimension: 'ref' contains m/z values outside of mass range.")
-		prochistory(processingData(object)) <- .history()
 		reduceDimension(object, method=method, peaklist=ref, ...)
 	})
 
@@ -47,7 +45,6 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageS
 	function(object, ref, method = "peaks", ...) {
 		if ( !centroided(ref) )
 			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
-		prochistory(processingData(object)) <- .history()
 		object <- reduceDimension(object, method=method, ref=mz(ref), ...)
 		peakPicking(processingData(object)) <- peakPicking(processingData(ref))
 		object

@@ -6,7 +6,6 @@ setMethod("standardizeRuns", "MSImageSet",
 	function(object, method = "sum", ...)
 	{
 		fun <- standardizeRuns.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("standardizeRuns: Using method = ", match.method(method))
 		.time.start()
 		data <- featureApply(object, .fun=fun, .pixel.groups=sample, ...,

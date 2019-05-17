@@ -12,7 +12,6 @@ setMethod("peakFilter", "MSImageSet",
 		if ( !missing(plot) )
 			.warning("peakFilter: argument 'plot' is depricated.")
 		fun <- peakFilter.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("peakFilter: Using method = ", match.method(method))
 		.time.start()
 		feature <- featureApply(object, .fun=fun, ...,

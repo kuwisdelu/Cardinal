@@ -9,7 +9,6 @@ setMethod("normalize", "MSImageSet",
 		plot = FALSE)
 	{
 		fun <- normalize.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("normalize: Using method = ", match.method(method))
 		.time.start()
 		data <- pixelApply(object, function(s, ...) {

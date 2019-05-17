@@ -11,7 +11,6 @@ setMethod("peakPick", "MSImageSet",
 		if ( centroided(object) )
 			.stop("peakPick: Data already centroided. Peak picking will not be performed.")
 		fun <- peakPick.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("peakPeak: Using method = ", match.method(method))
 		.time.start()
 		peaks <- pixelApply(object, function(s, ...) {

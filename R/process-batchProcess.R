@@ -17,7 +17,6 @@ setMethod("batchProcess", "MSImageSet",
 	{
 		if ( centroided(object) )
 			.stop("batchProcess: Data already centroided. Processing will not be performed.")
-		prochistory(processingData(object)) <- .history()
 		normalize <- batch.args(normalize)
 		smoothSignal <- batch.args(smoothSignal)
 		reduceBaseline <- batch.args(reduceBaseline)

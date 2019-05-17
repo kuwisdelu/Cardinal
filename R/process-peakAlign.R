@@ -11,7 +11,6 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		fun <- peakAlign.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("peakAlign: Using method = ", match.method(method))
 		.time.start()
 		alignment <- pixelApply(object, function(s, ...) {
@@ -51,7 +50,6 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 	{
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
-		prochistory(processingData(object)) <- .history()
 		if ( is.null(fData(ref)[["mean"]]) ) {
 			.message("peakAlign: Generating reference from mean mass spectrum.")
 			spectrum <- featureApply(ref, mean)
@@ -65,7 +63,6 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 
 setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "missing"),
 	function(object, ...) {
-		prochistory(processingData(object)) <- .history()
 		peakAlign(object, ref=object, ...)
 	})
 

@@ -503,6 +503,8 @@ exportMethods("selectROI")
 
 export("makeFactor")
 
+export("Cardinal.history")
+
 exportMethods(
 	"colocalized",
 	"coregister")

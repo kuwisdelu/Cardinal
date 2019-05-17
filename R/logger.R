@@ -1,10 +1,29 @@
 
+#### Save log and session history ####
+## -----------------------------------
+
+Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
+	if ( !is.null(file) ) {
+		path <- normalizePath(file, mustWork=FALSE)
+		.message("saving history to ", path)
+		if ( isTRUE(history) )
+			.log(.history())
+		con <- file(path, open="at")
+		for ( m in .Cardinal$log )
+			writeLines(c(m, "\n"), con=con)
+		close(con)
+		invisible(.Cardinal$log)
+	} else {
+		.Cardinal$log
+	}
+}
+
 #### Logging and flushing log to output files ####
 ## -----------------------------------------------
 
 .log <- function(...) {
-	msg <- paste(date(), paste0(..., collapse="\n  "))
-	.Cardinal$log <- append(.Cardinal$log, msg)
+	msg <- paste0(c(date(), ": ", ...), collapse="")
+	.Cardinal$log <- append(.Cardinal$log, list(msg))
 	flushtime <- getOption("Cardinal.flush")
 	if ( !is.null(flushtime) ) {
 		elapsed <- proc.time()[3] - .Cardinal$time$flush
@@ -13,15 +32,19 @@
 	}
 }
 
+.log.collapse <- function(...) {
+	.log(paste0(c(...), collapse="\n"))
+}
+
 .log.flush <- function(e=.Cardinal) {
 	if ( isTRUE(getOption("Cardinal.log")) && length(e$log) != 0 ) {
 		res <- tryCatch({
 			e$time$flush <- proc.time()[3]
 			filepath <- file.path(tempdir(), "Cardinal.log")
-			sink(filepath, append=TRUE)
-			for ( m in e$log ) {
-				cat(m, "\n\n")
-			}
+			con <- file(filepath, open="at")
+			for ( m in e$log )
+				writeLines(c(m, "\n"), con=con)
+			close(con)
 			e$log <- list()
 			sink()
 			TRUE
@@ -111,48 +134,35 @@
 		.message(...)
 }
 
-#### Generate entry for history log ####
-## -------------------------------------
+#### Generate R console history ####
+## ---------------------------------
 
-.history <- function(which = -2L) {
-	error <- paste("Error: in", deparse(match.call()))
-	history <- tryCatch({
-		call <- sys.call(which)
-		def <- match.fun(as.character(call)[[1]])
-		call <- match.call(def, call=call)
-		history <- paste("Call:", deparse(call))
-		if ( length(call) != 1 ) {
-			args <- sapply(as.list(call)[-1], function(x) {
-				tryCatch({
-					class(eval(x, envir=sys.frame(which)))
-				}, error=function(e) "unknown")
-			})
-			history <- append(history, paste(names(args), args, sep=" = "))
-		}
-		paste(history, collapse="\n")
-	}, error=function(e) error)
-	.log(history)
-	history
+.history <- function() {
+	file <- tempfile(fileext=".Rhistory")
+	savehistory(file)
+	history <- readLines(file)
+	history <- paste0(history, collapse="\n")
+	c("Session history:\n", history)
 }
 
 #### Capture session info ####
 ## ---------------------------
 
 .session <- function() {
-	info <- sessionInfo()
-	paste(names(info[[1]]), info[[1]], sep=" : ", collapse="\n")
+	info <- capture.output(sessionInfo())
+	paste0(info, collapse="\n")
 }
 
 #### Errors and warnings ####
 ## --------------------------
 
 .stop <- function(...) {
-	.log(...)
+	.log("Error:", ...)
 	stop(..., call.=FALSE)
 }
 
 .warning <- function(...) {
-	.log(...)
+	.log("Warning:", ...)
 	warning(..., call.=FALSE)
 }
 

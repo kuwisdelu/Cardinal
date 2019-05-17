@@ -11,7 +11,6 @@ setMethod("reduceBaseline", "MSImageSet",
 		if ( centroided(object) )
 			.stop("reduceBaseline: Data already centroided. Baseline reduction will not be performed.")
 		fun <- reduceBaseline.method(method)
-		prochistory(processingData(object)) <- .history()
 		.message("reduceBaseline: Using method = ", match.method(method))
 		.time.start()
 		data <- pixelApply(object, function(s, ...) {

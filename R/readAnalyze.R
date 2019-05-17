@@ -64,6 +64,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 	} else {
 		stop("unrecognized outclass")
 	}
+	.log.collapse("loaded dataset:", capture.output(print(object)))
 	if ( validObject(object) ) {
 		.message("done.")
 		object

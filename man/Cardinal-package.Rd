@@ -1,7 +1,9 @@
 \name{Cardinal-package}
 \alias{Cardinal-package}
-\alias{Cardinal}
 \docType{package}
+
+\alias{Cardinal}
+\alias{Cardinal.history}
 
 \title{Mass spectrometry imaging tools}
 

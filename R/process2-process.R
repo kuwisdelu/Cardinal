@@ -257,6 +257,7 @@ setMethod("process", "SparseImagingExperiment",
 		mcols(processingData(object))$complete[queue$index] <- TRUE
 		queue <- .pendingQueue(processingData(object))
 	}
+	.log.collapse("processed dataset:", capture.output(print(object)))
 	.Cardinal$processing <- FALSE
 	.message("done.")
 	object
