@@ -84,7 +84,16 @@ print.facet.boxplot <- function(x, ...) {
 			args$xaxt <- 'n'
 			args$pars$boxwex <- scale / n
 			args$at <- at
-			do.call("boxplot", args)
+			if ( isTRUE(obj$jitter) ) {
+				args$outline <- FALSE
+				do.call("boxplot", args)
+				jargs <- c(list(
+					x=jitter(as.integer(layer$x)),
+					y=layer$y), obj$par)
+				do.call("points", jargs)
+			} else {
+				do.call("boxplot", args)
+			}
 		}
 		strip <- attr(facet, "strip")
 		if ( !is.null(strip) )

@@ -63,6 +63,7 @@
         ylab, ylim,
         layout,
         col = discrete.colors,
+        breaks = "Sturges",
         grid = FALSE,
         jitter = FALSE,
         subset = TRUE,
@@ -98,12 +99,11 @@
 
 \S4method{plot}{SparseResultImagingExperiment,missing}(x, formula,
         model = modelData(x),
-        superpose = TRUE,
+        superpose = is_matrix,
         \dots,
         column,
         xlab, ylab,
-        type = 'h',
-        subset = TRUE)
+        type = 'h')
 
 \S4method{plot}{PCA2,missing}(x, formula,
     values = "loadings", \dots)
@@ -118,7 +118,7 @@
     values = c("centers", "correlation"), \dots)
 
 \S4method{plot}{SpatialShrunkenCentroids2,missing}(x, formula,
-    values = c("centers", "statistic"), \dots)
+    values = c("centers", "statistic", "sd"), \dots)
 
 \S4method{plot}{SpatialDGMM,missing}(x, model = modelData(x),
     values = "density", type = 'l', \dots)

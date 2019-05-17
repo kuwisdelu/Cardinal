@@ -16,6 +16,7 @@
 \alias{image,SpatialKMeans2-method}
 \alias{image,SpatialShrunkenCentroids2-method}
 \alias{image,SpatialDGMM-method}
+\alias{image,MeansTest-method}
 \alias{image,SegmentationTest-method}
 \alias{image,AnnotatedImage-method}
 \alias{image,AnnotatedImageList-method}
@@ -28,6 +29,7 @@
 \alias{image3D,SpatialKMeans2-method}
 \alias{image3D,SpatialShrunkenCentroids2-method}
 \alias{image3D,SpatialDGMM-method}
+\alias{image3D,MeansTest-method}
 \alias{image3D,SegmentationTest-method}
 
 \alias{image,SImageSet-method}
@@ -122,13 +124,12 @@
 
 \S4method{image}{SparseResultImagingExperiment}(x, formula,
         model = modelData(x),
-        superpose = TRUE,
+        superpose = is_matrix,
         \dots,
         column,
         colorscale = cividis,
         colorkey = !superpose,
-        alpha.power = 2,
-        subset = TRUE)
+        alpha.power = 2)
 
 \S4method{image}{PCA2}(x, formula,
     values = "scores", \dots)
@@ -146,10 +147,13 @@
     values = c("probability", "class", "scores"), \dots)
 
 \S4method{image}{SpatialDGMM}(x, formula,
-    values = c("probability", "class"), \dots)
+    values = c("probability", "class", "mean"), \dots)
+
+\S4method{image}{MeansTest}(x, formula,
+    values = "mean", jitter = TRUE, \dots)
 
 \S4method{image}{SegmentationTest}(x, formula,
-    values = "mapping", \dots)
+    values = c("mean", "mapping"), jitter = TRUE, \dots)
 
 \S4method{image}{AnnotatedImage}(x, frame = 1, offset = coord(x),
         height, width,
@@ -303,6 +307,8 @@
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
     \item{alpha.power}{Opacity scaling factor (1 is linear).}
+
+    \item{jitter}{Should a small amount of noise be added to the image values before plotting them?}
 
     \item{subset}{An expression that evaluates to a logical or integer indexing vector to be evaluated in \code{pData(x)}.}
     
