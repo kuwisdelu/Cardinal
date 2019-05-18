@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 2.3.10 [2019-5-18]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Improved speed in 'spatialDGMM()', by moving spatial
+        filtering of probabilities to C code, up to 10x faster
+    o Linesearch in 'spatialDGMM()' now uses 'optimize()'
+        rather than 'optim()' -- results may differ slightly
+
 CHANGES IN VERSION 2.3.9 [2019-5-17]
 -----------------------------------
 
