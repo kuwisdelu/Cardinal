@@ -199,9 +199,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			structure(E$error, loglik=E$loglik)
 		}
 		# find log(eta) that optimizes in direction of gradient
-		leta <- suppressWarnings(optim(par=log(eta),
-			fn=linesearch, method="Brent", lower=-100, upper=0))
-		eta <- exp(leta$par)
+		leta <- suppressWarnings(optimize(linesearch, c(-100, 0)))
+		eta <- exp(leta$minimum)
 		M <- .spatialDGMM_Mstep(xi, mu=mu, sigma=sigma,
 			alpha=alpha, beta=beta, y=y, ybar=ybar, eta=eta)
 		# update parameters

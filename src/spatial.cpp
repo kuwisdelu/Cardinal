@@ -309,13 +309,13 @@ SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 	SEXP scores;
 	PROTECT(scores = Rf_allocVector(REALSXP, nrefs));
 	double * pScores = REAL(scores);
-	double a_i, dist, wsum = 0;
+	double a_i, dist, auc = 0;
 	for ( int i = 0; i < npixels; ++i )
-		wsum += alpha[i] * beta[i];
+		auc += alpha[i] * beta[i];
 	for ( int k = 0; k < nrefs; ++k ) {
 		pScores[k] = 0;
 		for ( int i = 0; i < npixels; ++i ) {
-			a_i = alpha[i] * beta[i] / wsum;
+			a_i = alpha[i] * beta[i] / auc;
 			double score_i = 0;
 			for ( int j = 0; j < nfeatures; ++j ) {
 				dist = pX[i * nfeatures + j] - pRef[k * nfeatures + j];
@@ -326,6 +326,38 @@ SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 	}
 	UNPROTECT(1);
 	return scores;
+}
+
+template<typename T>
+SEXP get_spatial_filter(SEXP x, SEXP neighbors, SEXP weights)
+{
+	int nr = Rf_nrows(x);
+	int nc = Rf_ncols(x);
+	T * pX = DataPtr<T>(x);
+	SEXP nb, wt, y;
+	PROTECT(y = Rf_allocMatrix(REALSXP, nr, nc));
+	double * pY = REAL(y);
+	double a_k, auc;
+	for ( int i = 0; i < nr; ++i ) {
+		wt = VECTOR_ELT(weights, i);
+		double * alpha = REAL(VECTOR_ELT(wt, 0));
+		double * beta = REAL(VECTOR_ELT(wt, 1));
+		nb = VECTOR_ELT(neighbors, i);
+		int K = LENGTH(nb);
+		int * ii = INTEGER(nb);
+		auc = 0;
+		for ( int k = 0; k < K; ++k )
+			auc += alpha[k] * beta[k];
+		for ( int j = 0; j < nc; ++j )
+			pY[j * nr + i] = 0;
+		for ( int k = 0; k < K; ++k ) {
+			a_k = alpha[k] * beta[k] / auc;
+			for ( int j = 0; j < nc; ++j )
+				pY[j * nr + i] += a_k * pX[j * nr + (ii[k] - 1)];
+		}
+	}
+	UNPROTECT(1);
+	return y;
 }
 
 extern "C" {
@@ -398,6 +430,15 @@ extern "C" {
 			return get_spatial_scores<double,int>(x, ref, weights, sd);
 		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == REALSXP )
 			return get_spatial_scores<double,double>(x, ref, weights, sd);
+		else
+			return R_NilValue;
+	}
+
+	SEXP spatialFilter(SEXP x, SEXP neighbors, SEXP weights) {
+		if ( TYPEOF(x) == INTSXP )
+			return get_spatial_filter<int>(x, neighbors, weights);
+		else if ( TYPEOF(x) == REALSXP )
+			return get_spatial_filter<double>(x, neighbors, weights);
 		else
 			return R_NilValue;
 	}

@@ -50,6 +50,8 @@ extern "C" {
 
     SEXP spatialScores(SEXP x, SEXP ref, SEXP weights, SEXP sd);
 
+    SEXP spatialFilter(SEXP x, SEXP neighbors, SEXP weights);
+
 }
 
 
