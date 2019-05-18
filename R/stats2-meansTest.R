@@ -50,7 +50,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 		out
 	})
 
-.meansTest_includeMeans <- function(x, jitter = TRUE) {
+.meansTest_withmeans <- function(x, jitter = TRUE) {
 	resultData(x) <- endoapply(resultData(x),
 		function(res) {
 			mean <- res$data$.response[pData(x)$.group]

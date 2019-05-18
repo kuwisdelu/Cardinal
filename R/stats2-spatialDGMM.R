@@ -66,8 +66,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	setRNGStream(seed)
 	results <- mapply(function(gi, w) {
 		xgi <- as.numeric(xi)[groups == gi]
-		res <- .spatialDGMM_fit1(xgi, k=k, neighbors=attr(w, "neighbors"),
-			weights=w, annealing=annealing, init=init, iter.max=iter.max,
+		res <- .spatialDGMM_fit1(xgi, k=k, weights=w,
+			annealing=annealing, init=init, iter.max=iter.max,
 			tol=tol, p0=p0, trace=FALSE, verbose=FALSE)
 		.message(".", appendLF=FALSE)
 		res
@@ -109,7 +109,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	list(estimates=estimates, probability=probability, class=class)
 }
 
-.spatialDGMM_includeMeans <- function(x) {
+.spatialDGMM_withmeans <- function(x) {
 	resultData(x) <- endoapply(resultData(x),
 		function(res) {
 			prob <- res$probability
@@ -121,14 +121,9 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	x
 }
  
-.spatialDGMM_fit1 <- function(xi, k, neighbors, weights, annealing,
-								init, iter.max, tol, p0, trace, verbose)
+.spatialDGMM_fit1 <- function(xi, k, weights, annealing, init,
+								iter.max, tol, p0, trace, verbose)
 {
-	# simplify up spatial weights
-	weights <- lapply(weights, function(wt) wt$alpha * wt$beta)
-	spatial <- list(neighbors=neighbors, weights=weights)
-	# initial step size
-	eta <- 1e-3
 	# initialize with ordinary Gaussian mixture model
 	gmm <- Mclust(xi, G=1:k, modelNames="V", verbose=FALSE)
 	K <- gmm$G
@@ -174,7 +169,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	for ( i in 1:iter.max ) {
 		## E-step
 		E <- .spatialDGMM_Estep(xi, mu=mu, sigma=sigma,
-			alpha=alpha, beta=beta, y=y, p0=p0, spatial=spatial)
+			alpha=alpha, beta=beta, y=y, p0=p0, weights=weights)
 		# update spatial posterior
 		ybar <- E$ybar
 		# update prior
@@ -195,7 +190,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			M <- .spatialDGMM_Mstep(xi, mu=mu, sigma=sigma,
 				alpha=alpha, beta=beta, y=y, ybar=ybar, eta=exp(eta))
 			E <- .spatialDGMM_Estep(xi, mu=M$mu, sigma=M$sigma,
-				alpha=M$alpha, beta=M$beta, y=y, p0=p0, spatial=spatial)
+				alpha=M$alpha, beta=M$beta, y=y, p0=p0, weights=weights)
 			structure(E$error, loglik=E$loglik)
 		}
 		# find log(eta) that optimizes in direction of gradient
@@ -215,7 +210,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 				mu_a <- mu
 				mu_a[j] <- rnorm(1, mean=mu[j], sd=sqrt(sigma[j] * tt))
 				E <- .spatialDGMM_Estep(xi, mu=mu_a, sigma=sigma,
-					alpha=alpha, beta=beta, y=y, p0=p0, spatial=spatial)
+					alpha=alpha, beta=beta, y=y, p0=p0, weights=weights)
 				if ( E$loglik > loglik_a ) {
 					if ( verbose )
 						message("simulated annealing: loglik = ", E$loglik)
@@ -244,17 +239,10 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	list(params=params, probability=y, class=z)
 }
 
-.spatialDGMM_Estep <- function(xi, mu, sigma, alpha, beta, y, p0, spatial)
+.spatialDGMM_Estep <- function(xi, mu, sigma, alpha, beta, y, p0, weights)
 {
 	# calculate spatial posterior probability p(z|neighbors)
-	ybar <- mapply(function(nb, wt) {
-		colSums(wt * y[nb,,drop=FALSE]) / sum(wt)
-	}, spatial$neighbors, spatial$weights)
-	if ( is.matrix(ybar) ) {
-		ybar <- t(ybar)
-	} else {
-		ybar <- as.matrix(ybar)
-	}
+	ybar <- .spatialFilter(y, weights, attr(weights, "neighbors"))
 	# calculate p(x|mu, sigma)
 	px <- matrix(0, nrow=length(xi), ncol=length(mu))
 	for ( j in 1:length(mu) )

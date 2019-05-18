@@ -263,3 +263,14 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 		xweights, yweights, tol.dist, PACKAGE="Cardinal")
 }
 
+# spatial filter the rows of a matrix
+.spatialFilter <- function(x, weights, neighbors)
+{
+	if ( missing(neighbors) )
+		neighbors <- attr(weights, "neighbors")
+	if ( nrow(x) != length(weights) || nrow(x) != length(neighbors) )
+		.stop("length of weights and neighbors must match number of rows")
+	.Call("C_spatialFilter", x, weights, neighbors, PACKAGE="Cardinal")
+}
+
+

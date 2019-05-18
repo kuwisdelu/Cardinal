@@ -329,7 +329,7 @@ SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 }
 
 template<typename T>
-SEXP get_spatial_filter(SEXP x, SEXP neighbors, SEXP weights)
+SEXP get_spatial_filter(SEXP x, SEXP weights, SEXP neighbors)
 {
 	int nr = Rf_nrows(x);
 	int nc = Rf_ncols(x);
@@ -434,11 +434,11 @@ extern "C" {
 			return R_NilValue;
 	}
 
-	SEXP spatialFilter(SEXP x, SEXP neighbors, SEXP weights) {
+	SEXP spatialFilter(SEXP x, SEXP weights, SEXP neighbors) {
 		if ( TYPEOF(x) == INTSXP )
-			return get_spatial_filter<int>(x, neighbors, weights);
+			return get_spatial_filter<int>(x, weights, neighbors);
 		else if ( TYPEOF(x) == REALSXP )
-			return get_spatial_filter<double>(x, neighbors, weights);
+			return get_spatial_filter<double>(x, weights, neighbors);
 		else
 			return R_NilValue;
 	}

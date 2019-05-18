@@ -207,7 +207,7 @@ setMethod("image",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .spatialDGMM_includeMeans(x)
+				x <- .spatialDGMM_withmeans(x)
 			formula <- .formula_pixel_results(x, values)
 		}
 		callNextMethod(x, formula=formula, ...)
@@ -220,7 +220,7 @@ setMethod("image3D",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .spatialDGMM_includeMeans(x)
+				x <- .spatialDGMM_withmeans(x)
 			formula <- .formula_pixel_results(x, values, is3d=TRUE)
 		}
 		callNextMethod(x, formula=formula, ...)
@@ -235,7 +235,7 @@ setMethod("image",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .meansTest_includeMeans(x, jitter=jitter)
+				x <- .meansTest_withmeans(x, jitter=jitter)
 			formula <- .formula_pixel_results(x, values)
 		}
 		callNextMethod(x, formula=formula, ...)
@@ -248,7 +248,7 @@ setMethod("image3D",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .meansTest_includeMeans(x, jitter=jitter)
+				x <- .meansTest_withmeans(x, jitter=jitter)
 			formula <- .formula_pixel_results(x, values, is3d=TRUE)
 		}
 		callNextMethod(x, formula=formula, ...)
@@ -263,7 +263,7 @@ setMethod("image",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .segmentationTest_includeMeans(x, jitter=jitter)
+				x <- .segmentationTest_withmeans(x, jitter=jitter)
 			formula <- .formula_pixel_results(x, values)
 		}
 		callNextMethod(x, formula=formula, ...)
@@ -276,7 +276,7 @@ setMethod("image3D",
 		if ( missing(formula) ) {
 			values <- match.arg(values)
 			if ( values == "mean" )
-				x <- .segmentationTest_includeMeans(x, jitter=jitter)
+				x <- .segmentationTest_withmeans(x, jitter=jitter)
 			formula <- .formula_pixel_results(x, values, is3d=TRUE)
 		}
 		callNextMethod(x, formula=formula, ...)

@@ -327,7 +327,7 @@ This example uses a simple experiment with two conditions "A" and "B", with thre
 
 ```{r test-data, fig.height=5, fig.width=7}
 set.seed(2020)
-mse3 <- simulateImage(preset=4, npeaks=10, dim=c(10,10), sdnoise=0.5,
+mse3 <- simulateImage(preset=4, npeaks=10, dim=c(10,10), sdnoise=0.3,
 					nruns=3, peakdiff=1, representation="centroid")
 
 trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
@@ -391,7 +391,6 @@ In order to fit the models, a representative spatial-DGMM segment must be select
 (A list of character vectors giving the explicit mapping between group and representative spatial-DGMM segment can also be given to `classControl`.)
 
 ```{r test-segment-test}
-
 stest <- segmentationTest(dgmm2, ~ condition, classControl="Ymax")
 
 summary(stest)
@@ -411,7 +410,7 @@ If an automated method for `classControl` was used, it can be helpful to plot th
 image(stest, model=list(feature=3), values="mapping")
 ```
 
-In this case, `segmentationTest()` finds one more significant mass feature compared to `meansTest()`.
+In this case, `segmentationTest()` finds two more significant mass features compared to `meansTest()`.
 
 ```{r test-segment-top}
 topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% select(-diff, -r, -k)
