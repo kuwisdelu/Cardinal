@@ -267,6 +267,9 @@
 .update.par <- function(obj, ...) {
 	dots <- list(...)
 	if ( length(dots) > 0L ) {
+		rm <- sapply(dots, is.null)
+		if ( any(rm) )
+			dots[rm] <- NULL
 		if ( !is.null(dots$add) ) {
 			obj$add <- dots$add
 			dots$add <- NULL
