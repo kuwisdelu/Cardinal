@@ -243,21 +243,38 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 
 # spatial distances for a spatial block
 .spatialDistance <- function(x, ref, offsets, ref.offsets,
-	weights, ref.weights, neighbors, tol.dist = 1e-9)
+	weights, ref.weights, neighbors, metric, tol.dist = 1e-9)
 {
 	if ( typeof(x) != typeof(ref) )
-		stop("arrays must have the same data type")
-	.Call("C_spatialDistance", x, ref, offsets, ref.offsets,
-		weights, ref.weights, neighbors, tol.dist, PACKAGE="Cardinal")
+		.stop("arrays must have the same data type")
+	if ( metric %in% c("average", "correlation") ) {
+		x2 <- .spatialFilter(x, weights=weights,
+			neighbors=neighbors)
+		ref2 <- .spatialFilter(ref, weights=list(ref.weights),
+			neighbors=list(seq_len(ncol(ref))))
+		if ( metric == "average" ) {
+			d <- sqrt(colSums((x2 - as.numeric(ref2))^2))
+		} else if ( metric == "correlation") {
+			d <- as.numeric(sqrt(2 * (1 - cor(x2, ref2))))
+		} else {
+			.stop("unrecognized dissimilarity metric")
+		}
+	} else if ( metric == "neighborhood" ) {
+		d <- .Call("C_spatialDistance", x, ref, offsets, ref.offsets,
+			weights, ref.weights, neighbors, tol.dist, PACKAGE="Cardinal")
+	} else {
+		.stop("unrecognized dissimilarity metric")
+	}
+	pmax(d, 0)
 }
 
-# spatial filter the rows of a matrix
+# spatial filter the column-vectors of a matrix
 .spatialFilter <- function(x, weights, neighbors)
 {
 	if ( missing(neighbors) )
 		neighbors <- attr(weights, "neighbors")
-	if ( nrow(x) != length(weights) || nrow(x) != length(neighbors) )
-		.stop("length of weights and neighbors must match number of rows")
+	if ( length(weights) != length(neighbors) )
+		.stop("length of weights and neighbors must match")
 	.Call("C_spatialFilter", x, weights, neighbors, PACKAGE="Cardinal")
 }
 

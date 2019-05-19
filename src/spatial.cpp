@@ -343,14 +343,14 @@ SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
 template<typename T>
 SEXP get_spatial_filter(SEXP x, SEXP weights, SEXP neighbors)
 {
+	int nc = LENGTH(neighbors);
 	int nr = Rf_nrows(x);
-	int nc = Rf_ncols(x);
 	T * pX = DataPtr<T>(x);
 	SEXP nb, wt, y;
 	PROTECT(y = Rf_allocMatrix(REALSXP, nr, nc));
 	double * pY = REAL(y);
 	double a_k, auc;
-	for ( int i = 0; i < nr; ++i ) {
+	for ( int i = 0; i < nc; ++i ) {
 		wt = VECTOR_ELT(weights, i);
 		double * alpha = REAL(VECTOR_ELT(wt, 0));
 		double * beta = REAL(VECTOR_ELT(wt, 1));
@@ -360,12 +360,12 @@ SEXP get_spatial_filter(SEXP x, SEXP weights, SEXP neighbors)
 		auc = 0;
 		for ( int k = 0; k < K; ++k )
 			auc += alpha[k] * beta[k];
-		for ( int j = 0; j < nc; ++j )
-			pY[j * nr + i] = 0;
+		for ( int j = 0; j < nr; ++j )
+			pY[i * nr + j] = 0;
 		for ( int k = 0; k < K; ++k ) {
 			a_k = alpha[k] * beta[k] / auc;
-			for ( int j = 0; j < nc; ++j )
-				pY[j * nr + i] += a_k * pX[j * nr + (ii[k] - 1)];
+			for ( int j = 0; j < nr; ++j )
+				pY[i * nr + j] += a_k * pX[(ii[k] - 1) * nr + j];
 		}
 	}
 	UNPROTECT(1);

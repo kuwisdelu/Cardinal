@@ -242,7 +242,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 .spatialDGMM_Estep <- function(xi, mu, sigma, alpha, beta, y, p0, weights)
 {
 	# calculate spatial posterior probability p(z|neighbors)
-	ybar <- .spatialFilter(y, weights, attr(weights, "neighbors"))
+	ybar <- t(.spatialFilter(t(y), weights, attr(weights, "neighbors")))
 	# calculate p(x|mu, sigma)
 	px <- matrix(0, nrow=length(xi), ncol=length(mu))
 	for ( j in 1:length(mu) )

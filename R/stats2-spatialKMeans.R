@@ -3,7 +3,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 	function(x, r = 1, k = 3,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", tol.dist = 1e-9,
-		iter.max = 10, nstart = 1,
+		iter.max = 10, nstart = 10,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
 		ncomp = 10, BPPARAM = bpparam(), ...)
 	{
@@ -16,11 +16,12 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 			.stop("can't fit more clusters than number of features")
 		ncomp <- min(ncomp, nrow(x))
 		.message("reducing dimension prior to k-means")
-		fastmap <- spatialFastmap(x, r=r, ncomp=ncomp, method=method,
-			dist=dist, tol.dist=tol.dist, iter.max=1, BPPARAM=BPPARAM)
+		fastmap <- spatialFastmap(x, r=r, ncomp=ncomp,
+			method=method, dist=dist, tol.dist=tol.dist,
+			iter.max=1, BPPARAM=BPPARAM, ...)
 		results <- list()
 		.message("clustering components...")
-		for ( i in r ) {
+		for ( i in seq_along(r) ) {
 			rngseeds <- generateRNGStreams(length(k))
 			results[[i]] <- bpmapply(function(ki, seed, BPPARAM) {
 				.message("r = ", r[i], ", k = ", ki)

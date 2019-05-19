@@ -457,10 +457,21 @@ setRNGStream <- function(seed = NULL) {
 ## Generates RNG seeds for parallel computation
 generateRNGStreams <- function(n = 1) {
 	seeds <- vector("list", n)
-	seeds[[1]] <- getRNGStream()
+	s <- getRNGStream()
+	if ( is.null(s) ) {
+		seeds[1] <- list(NULL)
+	} else {
+		seeds[[1]] <- s
+	}
 	if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
-		for ( i in seq_len(n)[-1] )
-			seeds[[i]] <- nextRNGStream(seeds[[i - 1]])
+		for ( i in seq_len(n)[-1] ) {
+			s <- nextRNGStream(seeds[[i - 1]])
+			if ( is.null(s) ) {
+				seeds[i] <- list(NULL)
+			} else {
+				seeds[[i]] <- s
+			}
+		}
 	}
 	seeds
 }

@@ -2,9 +2,11 @@
 setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 	function(x, r = 1, ncomp = 3,
 		method = c("gaussian", "adaptive"),
+		metric = c("average", "correlation", "neighborhood"),
 		iter.max = 1, ...)
 	{
 		method <- match.arg(method)
+		metric <- match.arg(metric)
 		iData(x) <- as.matrix(iData(x))
 		rs <- sort(r)
 		ncomps <- sort(ncomp)
@@ -15,7 +17,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 		result <- unlist(lapply(rs, function(r) {
 			.message("spatialFastmap: Fitting r = ", r)
 			fit <- .spatialFastmap(x, r=r, ncomp=max(ncomps),
-				method=method, iter.max=iter.max)
+				method=method, metric=metric, iter.max=iter.max)
 			lapply(ncomps, function(ncomp) {
 				scores <- fit$scores[,1:ncomp,drop=FALSE]
 				correlation <- fit$correlation[,1:ncomp,drop=FALSE]
@@ -46,8 +48,8 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 			modelData=model)
 	})
 
-.spatialFastmap <- function(x, r, ncomp, method, ...) {
-	distfun <- .spatialDistanceFun(x, r, method)
+.spatialFastmap <- function(x, r, ncomp, method, metric, ...) {
+	distfun <- .spatialDistanceFun(x, r, method, metric)
 	fmap <- fastmap(x, distfun=distfun, ncomp=ncomp, ...)
 	fmap$correlation <- t(apply(iData(x), 1, function(xi) {
 		vapply(1:ncomp, function(nc) {
@@ -68,7 +70,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 	fmap
 }
 
-.spatialDistanceFun <- function(x, r, method) {
+.spatialDistanceFun <- function(x, r, method, metric) {
 	spatial <- .spatialInfo(x, r=r, method=method)
 	X <- iData(x)
 	function(x, i, j) {
@@ -79,7 +81,8 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 			weights=list(spatial$weights[[i]]),
 			ref.offsets=spatial$offsets[[j]],
 			ref.weights=spatial$weights[[j]],
-			neighbors=list(seq_len(ncol(xi))))
+			neighbors=list(seq_len(ncol(xi))),
+			metric=metric)
 	}
 }
 

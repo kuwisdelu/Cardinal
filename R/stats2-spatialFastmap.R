@@ -2,27 +2,28 @@
 setMethod("spatialFastmap", "SparseImagingExperiment",
 	function(x, r = 1, ncomp = 3,
 		method = c("gaussian", "adaptive"),
+		metric = c("average", "correlation", "neighborhood"),
 		dist = "chebyshev", tol.dist = 1e-9,
 		iter.max = 1, BPPARAM = bpparam(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		method <- match.arg(method)
-		# compare <- match.arg(compare)
+		metric <- match.arg(metric)
 		if ( max(ncomp) > ncol(x) )
 			.stop("can't fit more components than number of pixels")
 		if ( max(ncomp) > nrow(x) )
 			.stop("can't fit more components than number of features")
 		if ( length(ncomp) > 1L )
 			ncomp <- max(ncomp)
-		.message("projecting ", ncomp, " FastMap components")
-		# .message("using spatial ", compare, " dissimilarity")
+		.message("projecting ", ncomp, " spatial FastMap components")
+		.message("using ", metric, " dissimilarity")
 		.message("using ", method, " weights")
 		results <- bplapply(r, function(ri, BPPARAM) {
 			.message("r = ", ri, " ", appendLF=FALSE)
 			.spatialFastmap2(x=x, r=ri, ncomp=ncomp, method=method,
-				dist=dist, tol.dist=tol.dist, iter.max=iter.max,
-				BPPARAM=BPPARAM)
+				metric=metric, dist=dist, tol.dist=tol.dist,
+				iter.max=iter.max, BPPARAM=BPPARAM)
 		}, BPPARAM=BPPARAM)
 		models <- DataFrame(r=r, ncomp=ncomp)
 		.SpatialFastmap2(
@@ -45,11 +46,12 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		to
 	})
 
-.spatialFastmap2 <- function(x, r, ncomp, method, dist,
+.spatialFastmap2 <- function(x, r, ncomp, method, metric, dist,
 							tol.dist, iter.max = 2, BPPARAM)
 {
 	init <- TRUE
-	wts <- spatialWeights(x, r=r, method=method, dist=dist, BPPARAM=BPPARAM)
+	wts <- spatialWeights(x, r=r, method=method,
+						dist=dist, BPPARAM=BPPARAM)
 	spatial <- list(r=r, weights=c(wts),
 		neighbors=attr(wts, "neighbors"),
 		offsets=attr(wts, "offsets"))
@@ -68,7 +70,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			ref.offsets=attr(xa, "offsets"),
 			ref.weights=attr(xa, "weights"),
 			neighbors=attr(xbl, "neighbors"),
-			i=i, j=attr(xa, "idx"),
+			metric=metric, i=i, j=attr(xa, "idx"),
 			proj=proj, tol.dist=tol.dist)
 		d_bi <- .spatialDistance2(xbl, xb,
 			offsets=attr(xbl, "offsets"),
@@ -76,14 +78,15 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			ref.offsets=attr(xb, "offsets"),
 			ref.weights=attr(xb, "weights"),
 			neighbors=attr(xbl, "neighbors"),
-			i=i, j=attr(xb, "idx"),
+			metric=metric, i=i, j=attr(xb, "idx"),
 			proj=proj, tol.dist=tol.dist)
 		(d_ai^2 + d_ab^2 - d_bi^2) / (2 * d_ab)
 	}
 	# iterate over FastMap components
 	for ( j in seq_len(ncomp) ) {
 		o_ab <- .findDistantObjects2(x, proj=proj, spatial=spatial,
-			tol.dist=tol.dist, init=init, iter.max=iter.max, BPPARAM=BPPARAM)
+			metric=metric, dist=dist, tol.dist=tol.dist,
+			init=init, iter.max=iter.max, BPPARAM=BPPARAM)
 		if ( any(is.na(o_ab)) )
 			break		
 		if ( !is.null(attr(o_ab, "init")) )
@@ -105,9 +108,10 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			ref.offsets=spatial$offsets[[ob]],
 			ref.weights=spatial$weights[[ob]],
 			neighbors=list(seq_len(ncol(xa))),
-			i=oa, j=ob, proj=proj, tol.dist=tol.dist)
+			metric=metric, i=oa, j=ob,
+			proj=proj, tol.dist=tol.dist)
 		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
-			.blocks=TRUE, .simplify=.unlist_and_reorder,
+			.blocks=TRUE, .simplify=.unlist_and_reorder, .dist=dist,
 			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		.message(".", appendLF=FALSE)
 		proj[,j] <- comp_j
@@ -134,7 +138,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	list(scores=proj, correlation=corr, pivots=pivots, sdev=sdev)
 }
 
-.findDistantObjects2 <- function(x, proj, spatial,
+.findDistantObjects2 <- function(x, proj, spatial, metric, dist,
 							tol.dist, init, iter.max, BPPARAM)
 {
 	iter <- 1
@@ -148,7 +152,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			ref.offsets=attr(xj, "offsets"),
 			ref.weights=attr(xj, "weights"),
 			neighbors=attr(xbl, "neighbors"),
-			i=i, j=attr(xj, "idx"),
+			metric=metric, i=i, j=attr(xj, "idx"),
 			proj=proj, tol.dist=tol.dist)
 	}
 	while ( iter <= iter.max ) {
@@ -157,7 +161,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xa, "offsets") <- spatial$offsets[[oa]]
 		attr(xa, "weights") <- spatial$weights[[oa]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xa,
-			.blocks=TRUE, .simplify=.unlist_and_reorder,
+			.blocks=TRUE, .simplify=.unlist_and_reorder, .dist=dist,
 			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		if ( !is.null(attr(dists, "init")) )
 			init <- attr(dists, "init")
@@ -185,10 +189,10 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 
 
 .spatialDistance2 <- function(x, ref, offsets, ref.offsets,
-	weights, ref.weights, neighbors, i, j, proj, tol.dist = 1e-9)
+	weights, ref.weights, neighbors, metric, i, j, proj, tol.dist)
 {
 	d <- .spatialDistance(x, ref, offsets, ref.offsets,
-		weights, ref.weights, neighbors, tol.dist)
+		weights, ref.weights, neighbors, metric, tol.dist)
 	proj_i <- proj[i,,drop=FALSE]
 	proj_j <- proj[rep_len(j, length(i)),,drop=FALSE]
 	d2 <- d^2 - rowSums((proj_i - proj_j)^2)
