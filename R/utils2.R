@@ -228,11 +228,11 @@
 	if ( is.atomic(x) || is.null(x$facets) ) {
 		nf <- 0
 	} else {
-		nf <- (nrow(x$fids) > 1L) + (length(x$fids) > 1L)
+		nf <- all(sapply(x$fids, nlevels) > 1L) + (length(x$fids) > 1L)
 	}
 	if ( !is.atomic(x) && (nd + nf) > 1L ) {
-		if ( length(x$dpages) > 0L ) {
-			n1 <- length(unique(x$fids[[1]]))
+		if ( length(x$dpages) > 1L ) {
+			n1 <- nlevels(interaction(x$fids))
 			n2 <- length(x$dpages)
 		} else {
 			n1 <- length(unique(x$fids[[1]]))

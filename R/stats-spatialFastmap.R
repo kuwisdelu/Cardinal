@@ -75,8 +75,11 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 		xi <- X[,spatial$neighbors[[i]],drop=FALSE]
 		xj <- X[,spatial$neighbors[[j]],drop=FALSE]
 		.spatialDistance(xi, xj,
-			spatial$offsets[[i]], spatial$offsets[[j]],
-			spatial$weights[[i]], spatial$weights[[j]])
+			offsets=list(spatial$offsets[[i]]),
+			weights=list(spatial$weights[[i]]),
+			ref.offsets=spatial$offsets[[j]],
+			ref.weights=spatial$weights[[j]],
+			neighbors=list(seq_len(ncol(xi))))
 	}
 }
 

@@ -16,7 +16,7 @@ extern "C" {
         {"C_whichSpatialBlocks", (DL_FUNC) &whichSpatialBlocks, 2},
         {"C_spatialOffsets", (DL_FUNC) &spatialOffsets, 3},
         {"C_spatialWeights", (DL_FUNC) &spatialWeights, 4},
-        {"C_spatialDistance", (DL_FUNC) &spatialDistance, 7},
+        {"C_spatialDistance", (DL_FUNC) &spatialDistance, 8},
         {"C_spatialScores", (DL_FUNC) &spatialScores, 4},
         {"C_spatialFilter", (DL_FUNC) &spatialFilter, 3},
         {NULL, NULL, 0}

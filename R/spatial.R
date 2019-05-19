@@ -20,7 +20,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 		coord <- as.matrix(coord(x))
 		nb <- .findNeighbors(coord, r=r, groups=groups, dist=dist, matrix=matrix)
 		if ( offsets )
-			attr(nb, "offsets") <- .getSpatialOffsets(coord, nb)
+			attr(nb, "offsets") <- .spatialOffsets(coord, nb)
 		nb
 	})
 
@@ -41,7 +41,7 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
 		nb <- .findNeighbors(coord, r=r, groups=groups, dist=dist, matrix=matrix)
 		if ( offsets )
-			attr(nb, "offsets") <- .getSpatialOffsets(coord, nb)
+			attr(nb, "offsets") <- .spatialOffsets(coord, nb)
 		nb
 	})
 
@@ -60,15 +60,6 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 	}
 	attr(nb, "r") <- r
 	nb
-}
-
-.getSpatialOffsets <- function(coord, neighbors) {
-	if ( !is.matrix(coord) )
-		coord <- as.matrix(coord)
-	if ( is.sparse(neighbors) )
-		neighbors <- atomdata(neighbors)$keys
-	lapply(1:nrow(coord), function(i)
-		.spatialOffsets(coord, neighbors, i))
 }
 
 ## Calculate spatial weights
@@ -114,7 +105,7 @@ setMethod("spatialWeights", "ImagingExperiment",
 setMethod("spatialWeights", "PositionDataFrame",
 	function(x, r = 1, matrix = FALSE, ...)
 	{
-		.getSpatialWeights(x, r=r, matrix=matrix, ...)
+		.gaussianWeights(x, r=r, matrix=matrix, ...)
 	})
 
 setMethod("spatialWeights", "iSet",
@@ -146,10 +137,10 @@ setMethod("spatialWeights", "iSet",
 setMethod("spatialWeights", "IAnnotatedDataFrame",
 	function(x, r = 1, matrix = FALSE, ...)
 	{
-		.getSpatialWeights(x, r=r, matrix=matrix, ...)
+		.gaussianWeights(x, r=r, matrix=matrix, ...)
 	})
 
-.getSpatialWeights <- function(x, r, matrix = FALSE, ...) {
+.gaussianWeights <- function(x, r, matrix = FALSE, ...) {
 	nb <- findNeighbors(x, r=r, offsets=TRUE, ...)
 	offsets <- attr(nb, "offsets")
 	sigma <- ((2 * r[1]) + 1) / 4
@@ -223,15 +214,18 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	.Call("C_whichSpatialBlocks", neighbors, blocks, PACKAGE="Cardinal")
 }
 
-# spatial offsets of a single neighborhood
-.spatialOffsets <- function(coord, neighbors, i) {
-	if ( !is.matrix(coord) )	
+# spatial offsets for a list of neighborhoods
+.spatialOffsets <- function(coord, neighbors) {
+	if ( !is.matrix(coord) )
 		coord <- as.matrix(coord)
-	if ( is.list(neighbors) )
-		neighbors <- neighbors[[i]]
-	offsets <- .Call("C_spatialOffsets", coord, neighbors - 1L, i - 1L, PACKAGE="Cardinal")
-	colnames(offsets) <- colnames(coord)
-	offsets
+	if ( is.sparse(neighbors) )
+		neighbors <- atomdata(neighbors)$keys
+	lapply(1:nrow(coord), function(i) {
+		offsets <- .Call("C_spatialOffsets", coord,
+			neighbors[[i]] - 1L, i - 1L, PACKAGE="Cardinal")
+		colnames(offsets) <- colnames(coord)
+		offsets
+	})
 }
 
 # spatial weights for a single neighborhood
@@ -247,20 +241,14 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	weights
 }
 
-# spatial distance for a single neighborhood
-.spatialDistance <- function(x, y, xoffsets, yoffsets,
-	xweights, yweights, sigma, tol.dist = 1e-9, bilateral = TRUE)
+# spatial distances for a spatial block
+.spatialDistance <- function(x, ref, offsets, ref.offsets,
+	weights, ref.weights, neighbors, tol.dist = 1e-9)
 {
-	if ( typeof(x) != typeof(y) || typeof(xoffsets) != typeof(yoffsets) )
+	if ( typeof(x) != typeof(ref) )
 		stop("arrays must have the same data type")
-	if ( missing(sigma) )
-		sigma <- ((2 * max(abs(xoffsets))) + 1) / 4
-	if ( missing(xweights) )
-		xweights <- .spatialWeights(x, xoffsets, sigma, bilateral)
-	if ( missing(yweights) )
-		yweights <- .spatialWeights(y, yoffsets, sigma, bilateral)
-	.Call("C_spatialDistance", x, y, xoffsets, yoffsets,
-		xweights, yweights, tol.dist, PACKAGE="Cardinal")
+	.Call("C_spatialDistance", x, ref, offsets, ref.offsets,
+		weights, ref.weights, neighbors, tol.dist, PACKAGE="Cardinal")
 }
 
 # spatial filter the rows of a matrix
