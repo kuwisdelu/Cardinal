@@ -7,12 +7,6 @@ setMethod("arrange", "DataFrame",
 		arrange(as(.data, "XDataFrame"), ...)
 	})
 
-setMethod("arrange", "SummaryDataFrame",
-	function(.data, ...)
-	{
-		arrange(as.data.frame(.data), ...)
-	})
-
 setMethod("arrange", "XDataFrame",
 	function(.data, ...)
 	{
@@ -20,5 +14,11 @@ setMethod("arrange", "XDataFrame",
 		x <- as(x, class(.data))
 		groups(x) <- groups(.data)
 		x
+	})
+
+setMethod("arrange", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		arrange(as.data.frame(.data), ...)
 	})
 

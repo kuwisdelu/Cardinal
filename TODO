@@ -2,6 +2,7 @@
 TODO for Cardinal package
 -------------------------
 
+- Update summary() to use new stream_stat classes/functions
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)
 - Add tidy(), augment(), and glance() methods for results (?)

@@ -7,12 +7,6 @@ setMethod("select", "DataFrame",
 		select(as(.data, "XDataFrame"), ...)
 	})
 
-setMethod("select", "SummaryDataFrame",
-	function(.data, ...)
-	{
-		select(as.data.frame(.data), ...)
-	})
-
 setMethod("select", "XDataFrame",
 	function(.data, ...)
 	{
@@ -20,6 +14,12 @@ setMethod("select", "XDataFrame",
 		x <- as(x, class(.data))
 		groups(x) <- groups(.data)
 		x
+	})
+
+setMethod("select", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		select(as.data.frame(.data), ...)
 	})
 
 ## Subset an imaging dataset by columns/pixels

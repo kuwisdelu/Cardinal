@@ -7,12 +7,6 @@ setMethod("mutate", "DataFrame",
 		mutate(as(.data, "XDataFrame"), ...)
 	})
 
-setMethod("mutate", "SummaryDataFrame",
-	function(.data, ...)
-	{
-		mutate(as.data.frame(.data), ...)
-	})
-
 setMethod("mutate", "XDataFrame",
 	function(.data, ...)
 	{
@@ -20,6 +14,12 @@ setMethod("mutate", "XDataFrame",
 		x <- as(x, class(.data))
 		groups(x) <- groups(.data)
 		x
+	})
+
+setMethod("mutate", "SummaryDataFrame",
+	function(.data, ...)
+	{
+		mutate(as.data.frame(.data), ...)
 	})
 
 ## Add metadata columns to an imaging experiment
