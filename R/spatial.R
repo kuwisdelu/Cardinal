@@ -278,4 +278,16 @@ setMethod("spatialWeights", "IAnnotatedDataFrame",
 	.Call("C_spatialFilter", x, weights, neighbors, PACKAGE="Cardinal")
 }
 
+# spatial discriminant scores for a spatial block
+.spatialScores <- function(x, centers, weights, neighbors, sd)
+{
+	if ( missing(neighbors) )
+		neighbors <- attr(weights, "neighbors")
+	if ( nrow(x) != nrow(centers) || nrow(x) != length(sd) )
+		.stop("number of features must match between arrays")
+	if ( length(weights) != length(neighbors) )
+		.stop("length of weights and neighbors must match")
+	.Call("C_spatialScores", x, centers, weights, neighbors, sd, PACKAGE="Cardinal")
+}
+
 

@@ -50,7 +50,7 @@ setMethod("spatialShrunkenCentroids",
 				.spatialShrunkenCentroids2_cluster(x=x,
 					r=par$r[i], k=par$k[i], s=si, mean=mean,
 					class=init.class, weights=weights,
-					drop.empty=TRUE, iter.max=iter.max,
+					dist=dist, iter.max=iter.max,
 					BPPARAM=BPPARAM, ...)
 			}, BPPARAM=BPPARAM)
 		}
@@ -137,7 +137,7 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
 			pred <- .spatialShrunkenCentroids2_predict(newx,
 				r=ri, class=NULL, weights=weights, centers=res$centers,
-				sd=res$sd, priors=priors, init=NULL, BPPARAM=BPPARAM)
+				sd=res$sd, priors=priors, dist=dist, init=NULL, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
 		}, resultData(object), r, s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
@@ -195,7 +195,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	})
 
 .spatialShrunkenCentroids2_cluster <- function(x, r, k, s, mean, class, weights,
-											drop.empty, iter.max, BPPARAM, ...)
+												dist, iter.max, BPPARAM)
 {
 	iter <- 1
 	init <- TRUE
@@ -208,15 +208,14 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	# cluster the data
 	while ( iter <= iter.max ) {
 		options(Cardinal.verbose=FALSE) # suppress messages
-		if ( drop.empty )
-			class <- factor(as.integer(droplevels(class)))
+		class <- factor(as.integer(droplevels(class)))
 		if ( nlevels(class) == 1L )
 			.stop("singular cluster configuration, try a different seed")
 		fit <- .spatialShrunkenCentroids2_fit(x,
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)
 		pred <- .spatialShrunkenCentroids2_predict(x,
 			r=r, class=class, weights=weights, centers=fit$centers,
-			sd=fit$sd, priors=NULL, init=init, BPPARAM=BPPARAM)
+			sd=fit$sd, priors=NULL, dist=dist, init=init, BPPARAM=BPPARAM)
 		if ( all(class==pred$class) )
 			break
 		class <- pred$class
@@ -231,7 +230,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		centers=fit$centers, statistic=fit$statistic, sd=fit$sd)
 }
 
-.spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM, ...)
+.spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM)
 {
 	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
@@ -274,7 +273,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 }
 
 .spatialShrunkenCentroids2_predict <- function(x, r, class, weights,
-							centers, sd, priors, init, BPPARAM, ...)
+							centers, sd, priors, dist, init, BPPARAM)
 {
 	# suppress progress in inner parallel loop
 	progress <- getOption("Cardinal.progress")
@@ -282,17 +281,12 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	on.exit(options(Cardinal.progress=progress))
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
-		idx <- attr(xbl, "idx")
-		f <- function(i, neighbors, weights) {
-			.Call("C_spatialScores", xbl[,neighbors,drop=FALSE],
-				centers, weights, sd + s0, PACKAGE="Cardinal")
-		}
-		mapply(f, attr(xbl, "centers"),
-			attr(xbl, "neighbors"), attr(xbl, "params"))
+		.spatialScores(xbl, centers=centers, weights=attr(xbl, "params"),
+			neighbors=attr(xbl, "neighbors"), sd=sd + s0)
 	}
 	s0 <- median(sd)
 	scores <- spatialApply(x, .r=r, .fun=fun, .blocks=TRUE,
-		.simplify=.cbind_and_reorder, .init=init,
+		.simplify=.rbind_and_reorder, .init=init, .dist=dist,
 		.params=weights, BPPARAM=BPPARAM)
 	if ( isTRUE(init) ) {
 		init <- attr(scores, "init")
@@ -300,13 +294,14 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	}
 	if ( is.null(priors) && !is.null(class) )
 		priors <- table(class) / sum(table(class))
-	scores <- t(scores) - 2 * log(rep(priors, each=ncol(x)))
+	scores <- scores - 2 * log(rep(priors, each=ncol(x)))
 	colnames(scores) <- colnames(centers)
 	# calculate posterior class probabilities
-	probability <- t(apply(scores, 1, function(sc) {
-		sc <- exp(-0.5 * sc) / sum(exp(-0.5 * sc))
-		pmax(sc, 0, na.rm=TRUE)
-	}))
+	pfun <- function(scores) {
+		s <- exp(-0.5 * scores)
+		pmax(s / rowSums(s), 0)
+	}
+	probability <- pfun(scores)
 	colnames(probability) <- colnames(centers)
 	# calculate and return new class assignments
 	class <- factor(apply(probability, 1, which.max),

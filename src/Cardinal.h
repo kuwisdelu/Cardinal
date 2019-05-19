@@ -46,9 +46,10 @@ extern "C" {
     SEXP spatialWeights(SEXP x, SEXP offsets, SEXP sigma, SEXP bilateral);
 
     SEXP spatialDistance(SEXP x, SEXP ref, SEXP offsets, SEXP ref_offsets,
-        SEXP weights, SEXP ref_weights, SEXP neighbors, SEXP tol_dist);
+           SEXP weights, SEXP ref_weights, SEXP neighbors, SEXP tol_dist);
 
-    SEXP spatialScores(SEXP x, SEXP ref, SEXP weights, SEXP sd);
+    SEXP spatialScores(SEXP x, SEXP centers, SEXP weights,
+                        SEXP neighbors, SEXP sd);
 
     SEXP spatialFilter(SEXP x, SEXP neighbors, SEXP weights);
 

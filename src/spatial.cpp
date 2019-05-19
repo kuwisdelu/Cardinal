@@ -259,7 +259,7 @@ SEXP get_spatial_weights(SEXP x, SEXP offsets, double sigma, bool bilateral)
 
 template<typename T1, typename T2>
 SEXP get_spatial_distance(SEXP x, SEXP ref, SEXP offsets, SEXP ref_offsets,
-	SEXP weights, SEXP ref_weights, SEXP neighbors, double tol_dist)
+			SEXP weights, SEXP ref_weights, SEXP neighbors, double tol_dist)
 {
 	int ndims = Rf_ncols(ref_offsets);
 	int nfeatures = Rf_nrows(x);
@@ -308,32 +308,41 @@ SEXP get_spatial_distance(SEXP x, SEXP ref, SEXP offsets, SEXP ref_offsets,
 }
 
 template<typename T1, typename T2>
-SEXP get_spatial_scores(SEXP x, SEXP ref, SEXP weights, SEXP sd)
+SEXP get_spatial_scores(SEXP x, SEXP centers, SEXP weights,
+						SEXP neighbors, SEXP sd)
 {
 	int nfeatures = Rf_nrows(x);
-	int npixels = Rf_ncols(x);
-	int nrefs = Rf_ncols(ref);
-	double * alpha = REAL(VECTOR_ELT(weights, 0));
-	double * beta = REAL(VECTOR_ELT(weights, 1));
+	int npixels = LENGTH(neighbors);
+	int ncenters = Rf_ncols(centers);
 	double * sdev = REAL(sd);
 	T1 * pX = DataPtr<T1>(x);
-	T2 * pRef = DataPtr<T2>(ref);
+	T2 * pCenters = DataPtr<T2>(centers);
 	SEXP scores;
-	PROTECT(scores = Rf_allocVector(REALSXP, nrefs));
+	PROTECT(scores = Rf_allocMatrix(REALSXP, npixels, ncenters));
 	double * pScores = REAL(scores);
-	double a_i, dist, auc = 0;
-	for ( int i = 0; i < npixels; ++i )
-		auc += alpha[i] * beta[i];
-	for ( int k = 0; k < nrefs; ++k ) {
-		pScores[k] = 0;
-		for ( int i = 0; i < npixels; ++i ) {
-			a_i = alpha[i] * beta[i] / auc;
-			double score_i = 0;
-			for ( int j = 0; j < nfeatures; ++j ) {
-				dist = pX[i * nfeatures + j] - pRef[k * nfeatures + j];
-				score_i += (dist * dist) / (sdev[j] * sdev[j]);
+	double a_l, dist, auc;
+	for ( int i = 0; i < npixels; ++i ) {
+		SEXP nb = VECTOR_ELT(neighbors, i);
+		int * pNb = INTEGER(nb);
+		SEXP wt = VECTOR_ELT(weights, i);
+		double * alpha = REAL(VECTOR_ELT(wt, 0));
+		double * beta = REAL(VECTOR_ELT(wt, 1));
+		int nneighbors = LENGTH(nb);
+		auc = 0;
+		for ( int l = 0; l < nneighbors; ++l )
+			auc += alpha[l] * beta[l];
+		for ( int k = 0; k < ncenters; ++k ) {
+			pScores[k * npixels + i] = 0;
+			for ( int l = 0; l < nneighbors; ++l ) {
+				int ii = pNb[l] - 1;
+				a_l = alpha[l] * beta[l] / auc;
+				double score_l = 0;
+				for ( int j = 0; j < nfeatures; ++j ) {
+					dist = pX[ii * nfeatures + j] - pCenters[k * nfeatures + j];
+					score_l += (dist * dist) / (sdev[j] * sdev[j]);
+				}
+				pScores[k * npixels + i] += a_l * score_l;
 			}
-			pScores[k] += a_i * score_i;
 		}
 	}
 	UNPROTECT(1);
@@ -419,7 +428,7 @@ extern "C" {
 	}
 
 	SEXP spatialDistance(SEXP x, SEXP ref, SEXP offsets, SEXP ref_offsets,
-		SEXP weights, SEXP ref_weights, SEXP neighbors, SEXP tol_dist)
+			SEXP weights, SEXP ref_weights, SEXP neighbors, SEXP tol_dist)
 	{
 		if ( TYPEOF(x) == INTSXP && TYPEOF(ref_offsets) == INTSXP )
 			return get_spatial_distance<int,int>(x, ref, offsets, ref_offsets, weights, ref_weights, neighbors, Rf_asReal(tol_dist));
@@ -433,15 +442,15 @@ extern "C" {
 			return R_NilValue;
 	}
 
-	SEXP spatialScores(SEXP x, SEXP ref, SEXP weights, SEXP sd) {
-		if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == INTSXP )
-			return get_spatial_scores<int,int>(x, ref, weights, sd);
-		else if ( TYPEOF(x) == INTSXP && TYPEOF(ref) == REALSXP )
-			return get_spatial_scores<int,double>(x, ref, weights, sd);
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == INTSXP )
-			return get_spatial_scores<double,int>(x, ref, weights, sd);
-		else if ( TYPEOF(x) == REALSXP && TYPEOF(ref) == REALSXP )
-			return get_spatial_scores<double,double>(x, ref, weights, sd);
+	SEXP spatialScores(SEXP x, SEXP centers, SEXP weights, SEXP neighbors, SEXP sd) {
+		if ( TYPEOF(x) == INTSXP && TYPEOF(centers) == INTSXP )
+			return get_spatial_scores<int,int>(x, centers, weights, neighbors, sd);
+		else if ( TYPEOF(x) == INTSXP && TYPEOF(centers) == REALSXP )
+			return get_spatial_scores<int,double>(x, centers, weights, neighbors, sd);
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(centers) == INTSXP )
+			return get_spatial_scores<double,int>(x, centers, weights, neighbors, sd);
+		else if ( TYPEOF(x) == REALSXP && TYPEOF(centers) == REALSXP )
+			return get_spatial_scores<double,double>(x, centers, weights, neighbors, sd);
 		else
 			return R_NilValue;
 	}

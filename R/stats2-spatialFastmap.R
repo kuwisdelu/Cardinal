@@ -177,7 +177,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		attr(xb, "offsets") <- spatial$offsets[[ob]]
 		attr(xb, "weights") <- spatial$weights[[ob]]
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xb,
-			.blocks=TRUE, .simplify=.unlist_and_reorder,
+			.blocks=TRUE, .simplify=.unlist_and_reorder, .dist=dist,
 			.init=init, .params=spatial$weights, BPPARAM=BPPARAM)
 		oa <- which.max(dists)
 		d <- dists[oa]

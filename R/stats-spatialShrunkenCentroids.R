@@ -276,12 +276,10 @@ setMethod("logLik", "SpatialShrunkenCentroids", function(object, ...) {
 .calculateSpatialDiscriminantScores <- function(x, centers,
 	priors, spatial, sd, s0=median(sd))
 {
-	scores <- mapply(function(ii, wt) {
-		.Call("C_spatialScores", iData(x)[,ii,drop=FALSE],
-			centers, wt, sd + s0, PACKAGE="Cardinal")
-	}, spatial$neighbors, spatial$weights)
+	scores <- .spatialScores(iData(x), centers=centers,
+		weights=spatial$weights, neighbors=spatial$neighbors, sd=sd + s0)
 	scores[is.na(scores)] <- Inf
-	t(scores) - 2 * log(rep(priors, each=ncol(x)))
+	scores - 2 * log(rep(priors, each=ncol(x)))
 }
 
 .calculateClassProbabilities <- function(scores) {
