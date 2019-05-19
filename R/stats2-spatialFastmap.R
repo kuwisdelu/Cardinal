@@ -16,7 +16,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 			.stop("can't fit more components than number of features")
 		if ( length(ncomp) > 1L )
 			ncomp <- max(ncomp)
-		.message("projecting ", ncomp, " spatial FastMap components")
+		.message("projecting ", ncomp, " FastMap components")
 		.message("using ", metric, " dissimilarity")
 		.message("using ", method, " weights")
 		results <- bplapply(r, function(ri, BPPARAM) {
@@ -34,7 +34,8 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 				mapping=list(
 					feature="correlation",
 					pixel="scores"),
-				method=method, dist=dist),
+				method=method, dist=dist,
+				metric=metric),
 			resultData=as(results, "List"),
 			modelData=models)
 	})

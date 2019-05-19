@@ -19,6 +19,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 		fastmap <- spatialFastmap(x, r=r, ncomp=ncomp,
 			method=method, dist=dist, tol.dist=tol.dist,
 			iter.max=1, BPPARAM=BPPARAM, ...)
+		metric <- metadata(fastmap)$metric
 		results <- list()
 		.message("clustering components...")
 		for ( i in seq_along(r) ) {
@@ -40,7 +41,8 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 				mapping=list(
 					feature=c("centers", "correlation"),
 					pixel="cluster"),
-				method=method, dist=dist),
+				method=method, dist=dist,
+				metric=metric),
 			resultData=as(results, "List"),
 			modelData=models)
 	})
@@ -70,10 +72,11 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
-	centers <- summarize(x, .stat="mean", .group_by=cluster,
-		BPPARAM=BPPARAM)$mean
-	do_rbind <- function(ans) do.call("rbind", ans)
+	centers <- summarize(x, .stat="mean", .group_by=cluster, BPPARAM=BPPARAM)
+	centers <- as.matrix(centers, slots=FALSE)
+	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters
+	do_rbind <- function(ans) do.call("rbind", ans)
 	corr <- featureApply(x, function(xbl) {
 		t(apply(xbl, 1, function(xi) {
 			vapply(levels(cluster), function(l) {
@@ -86,5 +89,6 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 			}, numeric(1))
 		}))
 	}, .blocks=TRUE, .simplify=do_rbind, BPPARAM=BPPARAM)
+	colnames(corr) <- levels(cluster)
 	list(cluster=cluster, centers=centers, correlation=corr)
 }
