@@ -21,7 +21,7 @@
 \S4method{spatialKMeans}{SparseImagingExperiment}(x, r = 1, k = 3,
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", tol.dist = 1e-9,
-    iter.max = 10, nstart = 1,
+    iter.max = 10, nstart = 10,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
     ncomp = 10, BPPARAM = bpparam(), \dots)
 
@@ -29,7 +29,7 @@
 
 \S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 3,
     method = c("gaussian", "adaptive"),
-    iter.max = 10, nstart = 1,
+    iter.max = 10, nstart = 10,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
         "MacQueen"),
     ncomp = 10, \dots)

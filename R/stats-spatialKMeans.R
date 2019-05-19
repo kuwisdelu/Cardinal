@@ -3,7 +3,7 @@ setMethod("spatialKMeans",
 	signature = c(x = "SImageSet"),
 	function(x, r = 1, k = 3,
 		method = c("gaussian", "adaptive"),
-		iter.max = 10, nstart = 1,
+		iter.max = 10, nstart = 10,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
 			"MacQueen"),
 		ncomp = 10, ...)
