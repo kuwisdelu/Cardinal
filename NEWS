@@ -1,4 +1,19 @@
 
+
+CHANGES IN VERSION 2.3.11 [2019-5-19]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Improved speed in 'spatialFastmap()'
+    o Improved speed in 'spatialShrunkenCentroids()'
+    o New dissimilarity metrics for 'spatialFastmap()'
+        including a new default metric='average'
+
+BUG FIXES
+
+    o Fix error in 'print()' for facet plots where lims=NULL
+
 CHANGES IN VERSION 2.3.10 [2019-5-18]
 -----------------------------------
 
