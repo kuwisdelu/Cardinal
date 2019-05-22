@@ -87,6 +87,7 @@ setMethod("process", "MSImagingExperiment",
 setMethod("process", "SparseImagingExperiment",
 	function(object, fun, ...,
 			kind = c("pixel", "feature", "global"),
+			moreargs = NULL,
 			prefun, preargs,
 			postfun, postargs,
 			plotfun,
@@ -131,7 +132,7 @@ setMethod("process", "SparseImagingExperiment",
 			}
 			# create processing list
 			proclist <- list(
-				fun=fun, args=list(...),
+				fun=fun, args=c(list(...), moreargs),
 				prefun=prefun, preargs=preargs,
 				postfun=postfun, postargs=postargs,
 				plotfun=plotfun)

@@ -14,7 +14,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 			prefun <- NULL
 		}
 		postfun <- peakAlign_postfun(tol)
-		object <- process(object, label="peakAlign",
+		object <- process(object, label="peakAlign", moreargs=list(...),
 			kind="global", prefun=prefun, postfun=postfun,
 			delay=getOption("Cardinal.delay"))
 		object

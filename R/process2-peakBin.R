@@ -17,6 +17,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 		metadata(featureData(object))[["reference peaks"]] <- ref
 		object <- process(object, fun=fun,
 			label="peakBin", kind="pixel",
+			moreargs=list(...),
 			postfun=peakBin_postfun,
 			plotfun=peakBin_plotfun,
 			delay=getOption("Cardinal.delay"))

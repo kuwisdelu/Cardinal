@@ -2,13 +2,20 @@
 #### Smooth spectra ####
 ## ---------------------
 
+setMethod("smooth", "SparseImagingExperiment",
+	function(x, ...)
+	{
+		smoothSignal(x, ...)
+	})
+
 setMethod("smoothSignal", "SparseImagingExperiment",
 	function(object, method = c("gaussian", "sgolay", "ma"), ...)
 	{
 		fun <- smoothSignal.method2(method)
-		object <- process(object, fun=fun, ...,
+		object <- process(object, fun=fun,
 			label="smoothSignal", kind="pixel",
 			plotfun=smoothSignal_plotfun,
+			moreargs=list(...),
 			delay=getOption("Cardinal.delay"))
 		object
 	})

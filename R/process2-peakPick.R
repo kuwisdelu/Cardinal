@@ -3,13 +3,14 @@
 ## ------------------------------
 
 setMethod("peakPick", "MSImagingExperiment",
-	function(object, method = c("simple", "adaptive", "mad"), ...)
+	function(object, method = c("mad", "simple", "adaptive"), ...)
 	{
 		fun <- peakPick_fun(peakPick.method2(method))
-		object <- process(object, fun=fun, ...,
+		object <- process(object, fun=fun,
 			label="peakPick", kind="pixel",
 			postfun=peakPick_postfun,
 			plotfun=peakPick_plotfun,
+			moreargs=list(...),
 			delay=getOption("Cardinal.delay"))
 		object
 	})
@@ -17,11 +18,11 @@ setMethod("peakPick", "MSImagingExperiment",
 peakPick.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
-			c("simple", "adaptive", "mad"))
+			c("mad", "simple", "adaptive"))
 		switch(method,
+			mad = peakPick.mad,
 			simple = peakPick.simple2,
 			adaptive = peakPick.adaptive2,
-			mad = peakPick.mad,
 			match.fun(method))
 	} else {
 		match.fun(method)
@@ -68,8 +69,8 @@ peakPick_plotfun <- function(s2, s1, ...,
 	lines(s2mz, s2i, col="red", type='h')
 }
 
-peakPick.mad <- function(x, SNR=6, window=5, blocks=100, ...) {
-	noise <- .estimateNoiseMAD(x, blocks=blocks)
+peakPick.mad <- function(x, SNR=6, window=5, blocks=1, fun=mean, tform=diff, ...) {
+	noise <- .estimateNoiseMAD(x, blocks=blocks, fun=fun, tform=tform)
 	is.max <- localMaximaLogical(x, window=window)
 	peaks <- is.max & (x / noise) >= SNR
 	peaks[is.na(peaks)] <- FALSE
@@ -94,14 +95,23 @@ peakPick.adaptive2 <- function(x, ...) {
 
 # Estimate noise in a signal
 
-.estimateNoiseMAD <- function(x, blocks=100) {
-	t <- seq_along(x)
-	xint <- split_blocks(x, blocks=blocks)
-	tint <- split_blocks(t, blocks=blocks)
-	noiseval <- sapply(xint, mad, na.rm=TRUE)
-	noiseidx <- sapply(tint, mean, na.rm=TRUE)
-	noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
-		extrap=median(noiseval, na.rm=TRUE))
-	noise <- supsmu(x=t, y=noise)$y
+.estimateNoiseMAD <- function(x, blocks=1, fun=mean, tform=diff) {
+	mad <- function(y, na.rm) {
+		center <- fun(tform(y), na.rm=na.rm)
+		fun(abs(y - center), na.rm=na.rm)
+	}
+	if ( blocks > 1 ) {
+		t <- seq_along(x)
+		xint <- split_blocks(x, blocks=blocks)
+		tint <- split_blocks(t, blocks=blocks)
+		noiseval <- sapply(xint, mad, na.rm=TRUE)
+		noiseidx <- sapply(tint, mean, na.rm=TRUE)
+		noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
+			extrap=fun(noiseval, na.rm=TRUE))
+		noise <- supsmu(x=t, y=noise)$y
+	} else {
+		noise <- mad(x, na.rm=TRUE)
+		noise <- rep(noise, length(x))
+	}
 	noise
 }

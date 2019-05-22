@@ -1,6 +1,10 @@
 \name{smoothSignal-methods}
 \docType{methods}
 
+\alias{smooth}
+\alias{smooth-methods}
+\alias{smooth,SparseImagingExperiment-method}
+
 \alias{smoothSignal}
 \alias{smoothSignal-methods}
 \alias{smoothSignal,MSImageSet-method}
@@ -15,6 +19,8 @@
 	Apply smoothing to the feature vectors of an imaging dataset.
 }
 \usage{
+\S4method{smooth}{SparseImagingExperiment}(x, \dots)
+
 \S4method{smoothSignal}{SparseImagingExperiment}(object, method = c("gaussian", "sgolay", "ma"), \dots)
 
 \S4method{smoothSignal}{MSImageSet}(object, method = c("gaussian", "sgolay", "ma"),
@@ -37,7 +43,7 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
     \item{pixel}{The pixels to smooth. If less than the extent of the dataset, this will result in a subset of the data being processed.}
     \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the smoothing method.}
-    \item{x}{The signal to be smoothed.}
+    \item{x}{The signal or dataset to be smoothed.}
     \item{sd}{The standard deviation for the Gaussian kernel.}
     \item{window}{The smoothing window.}
     \item{order}{The order of the smoothing filter.}

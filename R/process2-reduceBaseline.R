@@ -6,8 +6,9 @@ setMethod("reduceBaseline", "SparseImagingExperiment",
 	function(object, method = c("median", "locmin"), ...)
 	{
 		fun <- reduceBaseline.method2(method)
-		object <- process(object, fun=fun, ...,
+		object <- process(object, fun=fun,
 			label="reduceBaseline", kind="pixel",
+			moreargs=list(...),
 			plotfun=reduceBaseline_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object

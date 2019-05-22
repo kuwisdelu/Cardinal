@@ -17,6 +17,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 		metadata(featureData(object))[["reference spectrum"]] <- ref
 		object <- process(object, fun=fun,
 			label="mzAlign", kind="pixel",
+			moreargs=list(...),
 			plotfun=mzAlign_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object

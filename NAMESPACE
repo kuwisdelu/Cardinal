@@ -464,6 +464,7 @@ exportMethods(
 	"batchProcess",
 	"process",
 	"normalize",
+	"smooth",
 	"smoothSignal",
 	"reduceBaseline",
 	"mzAlign",

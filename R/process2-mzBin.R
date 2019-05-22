@@ -15,6 +15,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 		metadata(featureData(object))[["reference mz"]] <- ref
 		object <- process(object, fun=fun,
 			label="mzBin", kind="pixel",
+			moreargs=list(...),
 			postfun=mzBin_postfun,
 			plotfun=mzBin_plotfun,
 			delay=getOption("Cardinal.delay"))

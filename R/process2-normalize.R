@@ -11,8 +11,9 @@ setMethod("normalize", "SparseImagingExperiment",
 				.stop("feature must be specified for method = 'reference'")
 		}
 		fun <- normalize.method2(method)
-		object <- process(object, fun=fun, ...,
+		object <- process(object, fun=fun,
 			label="normalize", kind="pixel",
+			moreargs=list(...),
 			plotfun=normalize_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object

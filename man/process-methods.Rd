@@ -16,6 +16,7 @@
 
 \S4method{process}{SparseImagingExperiment}(object, fun, \dots,
     kind = c("pixel", "feature", "global"),
+    moreargs = NULL,
     prefun, preargs,
     postfun, postargs,
     plotfun,
@@ -34,6 +35,7 @@
     \item{outpath}{The path to a file where the results will be written by \code{pixelApply} or \code{featureApply}. If NULL, then the results are returned in-memory.}
     \item{imzML}{Should the output file be an imzML file? Note: some processing methods are not be supported with this option.}
     \item{kind}{What kind of processing to perform? Over pixels, over features, or global processing of the dataset as a single unit.}
+    \item{moreargs}{Additional arguments to be passed to \code{fun}. This is primarily useful if some of the arguments to \code{fun} conflict with arguments to \code{process}.}
     \item{prefun}{A pre-processing function to be applied to the entire dataset, taking the dataset as its first argument. This should return another object of the same class.}
     \item{preargs}{Additional arguments to \code{prefun}, as a list.}
     \item{postfun}{A post-processing function to be applied to the output, taking the result as its first argument, and the original dataset as its second argument. This should return another object of the same class as the original dataset.}
