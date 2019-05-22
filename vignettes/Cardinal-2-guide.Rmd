@@ -17,9 +17,9 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
+register(SerialParam())
 options(Cardinal.verbose=FALSE)
 options(Cardinal.progress=FALSE)
-register(SerialParam())
 RNGkind("Mersenne-Twister")
 ```
 
@@ -960,30 +960,30 @@ Use `peakPick()` to queue peak picking to an `MSImagingExperiment`.
 ```{r peakPick-plot, fig.height=7, fig.width=9, results='hide'}
 mse_pre %>% select(x==10, y==10, run=="run0") %>%
 	process() %>%
+	peakPick(method="mad") %>%
+	process(plot=TRUE, par=list(main="MAD noise", layout=c(3,1)))
+
+mse_pre %>% select(x==10, y==10, run=="run0") %>%
+	process() %>%
 	peakPick(method="simple") %>%
 	process(plot=TRUE,
-			par=list(main="Simple SD noise", layout=c(3,1)))
+			par=list(main="Simple SD noise"))
 
 mse_pre %>% select(x==10, y==10, run=="run0") %>%
 	process() %>%
 	peakPick(method="adaptive") %>%
 	process(plot=TRUE, par=list(main="Adaptive SD noise"))
-
-mse_pre %>% select(x==10, y==10, run=="run0") %>%
-	process() %>%
-	peakPick(method="mad") %>%
-	process(plot=TRUE, par=list(main="Adaptive MAD noise"))
 ```
 
 ```{r peakPick}
-mse_peaks <- peakPick(mse_pre, method="simple")
+mse_peaks <- peakPick(mse_pre, method="mad")
 ```
+
+- `method="mad"` calculates adaptive noise from interpolating local mean absolute deviations
 
 - `method="simple"` calculates a constant noise from standard deviations of low-kurtosis bins
 
 - `method="adaptive"` calculates adaptive noise from standard deviations of low-kurtosis bins
-
-- `method="mad"` calculates adaptive noise from interpolating local mean absolute deviations
 
 ### Peak alignment
 
@@ -1092,9 +1092,9 @@ mse_filt <- select(mse_filt, x %in% 9:11, y %in% 9:11) %>% process()
 plot(mse_filt, coord=list(x=10, y=10), type='h')
 ```
 
-`mzFilter()` is just an alias for `peakFilter()`, but with more appropriate defaults for spectra that have not necessarily been peak picked and aligned.
+`mzFilter()` and `peakFilter()` are actually the same function internally, but with different defaults for profile and centroided spectra, respectively.
 
-Note that `mzFilter()` this does *not* set `centroided()` to `TRUE`; it is up to the user to decide whether the result represent centroided spectra or not.
+Note that `mzFilter()` this does *not* set `centroided()` to `TRUE`; it is up to the user to decide whether the result represent centroided spectra or not, and set `centroided()` appropriately.
 
 ## Example processing workflow
 

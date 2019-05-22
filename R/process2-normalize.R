@@ -71,6 +71,7 @@ normalize.reference <- function(x, feature, scale=1, ...) {
 	if ( ref > 0 ) {
 		xnew <- scale * x / ref
 	} else {
+		.warning("reference = 0; values will be set to 0")
 		xnew <- rep(0, length(x))
 	}
 	replace(xnew, is.na(xnew), 0)

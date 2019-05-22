@@ -11,19 +11,26 @@ set.seed(2)
 data <- simulateImage(preset=1, dim=c(10,10), baseline=1)
 data_c <- data[,pData(data)$circle]
 
+set.seed(2)
+data_r <- simulateImage(preset=7, peakheight=5, dim=c(10,10), representation="centroid")
+
 test_that("Cardinal >=2 delayed processing", {
 
-	tmp <- process(data, function(s) log2(abs(s)))
+	tmp <- process(data, function(s) log2(s + 1))
 
 	expect_true(validObject(tmp))
 
-	tmp1 <- data %>% process(abs, delay=TRUE)
+	plus1 <- function(x) x + 1
+
+	tmp1 <- data %>% process(plus1, delay=TRUE)
 
 	tmp2 <- tmp1 %>% process(log2, delay=TRUE)
 
 	tmp3 <- process(tmp2)
 
 	expect_true(validObject(tmp3))
+
+	expect_equal(iData(tmp), iData(tmp3))
 
 })
 
@@ -41,7 +48,7 @@ test_that("pre-processing 2", {
 
 	expect_true(validObject(tmp3))
 
-	tmp4 <- peakPick(tmp3, method="simple") %>% process()
+	tmp4 <- peakPick(tmp3, method="mad") %>% process()
 
 	expect_true(validObject(tmp4))
 
@@ -57,9 +64,17 @@ test_that("pre-processing 2", {
 
 	expect_true(validObject(data_p))
 
-	data_b <- mzBin(tmp3, to=800, resolution=400, units="ppm") %>% process()
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=400, units="ppm") %>% process()
 
 	expect_true(validObject(data_b))
+
+	data_f <- mzFilter(tmp3, thresh.max=0.01) %>% process()
+
+	expect_true(validObject(data_f))
+
+	data_n <- normalize(data_r, method="reference", feature=nrow(data_r)) %>% process()
+
+	expect_true(validObject(data_n))
 
 })
 
