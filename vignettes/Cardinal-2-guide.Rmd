@@ -1002,7 +1002,7 @@ The *m/z*-values of known reference peaks can be provided. If no reference is pr
 Use `peakFilter()` to queue peak filtering to an `MSImagingExperiment`.
 
 ```{r peakFilter}
-mse_peaks <- peakAlign(mse_pre, freq.min=0.05)
+mse_peaks <- peakFilter(mse_pre, freq.min=0.05)
 ```
 
 The proportions of pixels where a peak was detected at each *m/z*-value are calculated. Only peaks with frequencies greater than `freq.min` are retained.
@@ -1011,7 +1011,7 @@ The proportions of pixels where a peak was detected at each *m/z*-value are calc
 
 Use `peakBin()` to queue binning of spectra to reference peaks.
 
-Typically, this is applied to processed profile spectra after peak detection, to extract a more accuracy representation of the peak intensities.
+Typically, this is applied to processed profile spectra after peak detection, to extract a more accurate representation of the peak intensities.
 
 ```{r peakBin, eval=FALSE}
 mse_peaks <- process(mse_peaks)
