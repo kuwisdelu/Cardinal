@@ -98,8 +98,8 @@ peakPick.adaptive2 <- function(x, ...) {
 	t <- seq_along(x)
 	xint <- split_blocks(x, blocks=blocks)
 	tint <- split_blocks(t, blocks=blocks)
-	noiseval <- sapply(xint, mad)
-	noiseidx <- sapply(tint, mean)
+	noiseval <- sapply(xint, mad, na.rm=TRUE)
+	noiseidx <- sapply(tint, mean, na.rm=TRUE)
 	noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
 		extrap=median(noiseval, na.rm=TRUE))
 	noise <- supsmu(x=t, y=noise)$y

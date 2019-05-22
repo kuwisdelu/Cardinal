@@ -125,8 +125,17 @@ peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	t <- seq_along(x)
 	xint <- split_blocks(x, blocks=blocks)
 	kurt <- sapply(xint, kurtosis) - 3
-	noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
-	noise <- rep(noise, length(x))
+	if ( all(kurt >= 1, na.rm=TRUE) ) {
+		noise <- min(sapply(xint, sd), na.rm=TRUE)
+		noise <- rep(noise, length(x))
+		if ( anyNA(kurt) )
+			.warning("kurtosis could not be estimated; ",
+				"try method = 'mad' instead")
+	} else {
+		kurt[is.na(kurt)] <- Inf
+		noise <- mean(sapply(xint, sd)[kurt < 1], na.rm=TRUE)
+		noise <- rep(noise, length(x))
+	}
 	noise
 }
 
@@ -135,10 +144,19 @@ peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	tint <- split_blocks(t, blocks=blocks)
 	xint <- split_blocks(x, blocks=blocks)
 	kurt <- sapply(xint, kurtosis) - 3
-	noiseval <- sapply(xint, sd)[kurt < 1]
-	noiseidx <- sapply(tint, mean)[kurt < 1]
-	noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
-		extrap=mean(noiseval, na.rm=TRUE))
-	noise <- smooth.spline(x=t, y=noise, spar=1)$y
+	if ( all(kurt >= 1, na.rm=TRUE) ) {
+		noise <- min(sapply(xint, sd), na.rm=TRUE)
+		noise <- rep(noise, length(x))
+		if ( anyNA(kurt) )
+			.warning("kurtosis could not be estimated; ",
+				"try method = 'mad' instead")
+	} else {
+		kurt[is.na(kurt)] <- Inf
+		noiseval <- sapply(xint, sd)[kurt < 1]
+		noiseidx <- sapply(tint, mean)[kurt < 1]
+		noise <- interp1(noiseidx, noiseval, xi=t, method="linear",
+			extrap=mean(noiseval, na.rm=TRUE))
+		noise <- smooth.spline(x=t, y=noise, spar=1)$y
+	}
 	noise
 }
