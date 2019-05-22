@@ -2,25 +2,25 @@
 #### Filter peaks based on frequency, etc. ####
 ## --------------------------------------------
 
-setMethod("peakFilter", "MSImagingExperiment",
-	function(object, ..., freq.min = 0.01, thresh.max = 0)
+setMethod("mzFilter", "MSImagingExperiment",
+	function(object, ..., freq.min = 0, thresh.max = 0.01)
 	{
 		expr <- eval(substitute(alist(...)))
-		postfun <- peakFilter_postfun(expr, freq.min, thresh.max)
-		object <- process(object, label="peakFilter",
+		postfun <- mzFilter_postfun(expr, freq.min, thresh.max)
+		object <- process(object, label="mzFilter",
 			kind="global", postfun=postfun,
 			moreargs=list(...),
 			delay=getOption("Cardinal.delay"))
 		object
 	})
 
-setMethod("mzFilter", "MSImagingExperiment",
-	function(object, ..., freq.min = 0, thresh.max = 0.01)
+setMethod("peakFilter", "MSImagingExperiment",
+	function(object, ..., freq.min = 0.01, thresh.max = 0)
 	{
-		peakFilter(object, freq.min=freq.min, thresh.max=thresh.max, ...)
+		mzFilter(object, freq.min=freq.min, thresh.max=thresh.max, ...)
 	})
 
-peakFilter_postfun <- function(expr, freq.min, thresh.max) {
+mzFilter_postfun <- function(expr, freq.min, thresh.max) {
 	fun <- function(object, ..., BPPARAM) {
 		if ( freq.min > 0 ) {
 			summary1 <- summarize(object, .stat=c(count="sum", freq="mean"),
@@ -31,8 +31,12 @@ peakFilter_postfun <- function(expr, freq.min, thresh.max) {
 			keep <- rep_len(TRUE, nrow(object))
 		}
 		if ( length(expr) > 0L || thresh.max > 0 ) {
-			summary2 <- summarize(object,
-				.stat=c("min", "max", "mean", "sum", "sd", "var"),
+			if ( length(expr) > 0L ) {
+				stats <- c("min", "max", "mean", "sum", "sd", "var")
+			} else {
+				stats <- "mean"
+			}
+			summary2 <- summarize(object, .stat=stats,
 				.by="feature", BPPARAM=BPPARAM)
 			if ( !all(keep) )
 				summary2 <- cbind(summary1, summary2)
@@ -52,8 +56,13 @@ peakFilter_postfun <- function(expr, freq.min, thresh.max) {
 				keep <- keep & rowSums(do.call(cbind, rules)) != 0
 			}
 		}
-		.message("removing ", sum(!keep), " peaks; ",
-			"keeping ", sum(keep), " peaks")
+		if ( centroided(object) ) {
+			.message("removing ", sum(!keep), " peaks; ",
+				"keeping ", sum(keep), " peaks")
+		} else {
+			.message("removing ", sum(!keep), " m/z features; ",
+				"keeping ", sum(keep), " m/z features")
+		}
 		object[keep,]
 	}
 	fun

@@ -1,20 +1,20 @@
-\name{peakFilter-methods}
+\name{mzFilter-methods}
 \docType{methods}
+
+\alias{mzFilter}
+\alias{mzFilter-methods}
+\alias{mzFilter,MSImagingExperiment-method}
 
 \alias{peakFilter}
 \alias{peakFilter-methods}
 \alias{peakFilter,MSImageSet-method}
 \alias{peakFilter,MSImagingExperiment-method}
 
-\alias{mzFilter}
-\alias{mzFilter-methods}
-\alias{mzFilter,MSImagingExperiment-method}
-
 \alias{peakFilter.freq}
 
-\title{Peak filter or mass filter an imaging dataset}
+\title{Filter the features of an imaging dataset}
 \description{
-	Apply peak filtering or mass filtering to a mass spectrometry imaging dataset.
+	Apply filtering to a mass spectrometry imaging dataset based on the intensities of each peak or mass feature.
 }
 \usage{
 \S4method{mzFilter}{MSImagingExperiment}(object, \dots, freq.min = 0, thresh.max = 0.01)
@@ -37,9 +37,9 @@ peakFilter.freq(x, freq.min=0.01, \dots)
     \item{x}{The vector of ion image intensities to filter.}
 }
 \details{
-    When applied to a \code{MSImagingExperiment} object, \code{peakFilter} uses the \code{summarize()} to generate useful statistics about the detected peaks. These include the `min', `max', `mean', `sum', `sd', and `var' of the detected peaks. These can be used in logical expressions to filter the peaks.
+    When applied to a \code{MSImagingExperiment} object, \code{mzFilter} and \code{peakFilter} uses the \code{summarize()} to generate useful summary statistics about the mass features or detected peaks. These include the `min', `max', `mean', `sum', `sd', and `var' of the intensities for each mass feature or peak. These can be used in logical expressions to filter the features of the dataset.
 
-    Note that \code{mzFilter} is an alias for \code{peakFilter}, with different default parameters that are more appropriate for data that has not been peak picked and aligned.
+    Note that \code{peakFilter} is an alias for \code{mzFilter}, with different default parameters that are more appropriate for peak-picked data rather than profile spectra.
 
     When applied to a \code{MSImageSet} object, unlike most other processing methods, \code{peakFilter} operates on the feature space (ion images) of the dataset.
 
@@ -76,6 +76,9 @@ register(SerialParam())
 set.seed(2)
 data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 data <- data[,pData(data)$circle]
+
+# filter m/z features
+process(mzFilter(data))
 
 # queue peak picking, alignment, and filtering
 data <- peakPick(data, method="simple", SNR=6)
