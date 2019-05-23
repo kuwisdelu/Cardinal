@@ -36,9 +36,11 @@ test_that("dplyr manip", {
 
 	expect_equal(tmp1, tmp2)
 
-	tmp3 <- filter(msdata, 1:10)
+	i1 <- 1:10
 
-	tmp4 <- msdata[1:10,]
+	tmp3 <- filter(msdata, i1)
+
+	tmp4 <- msdata[i1,]
 
 	expect_equal(tmp3, tmp4)
 
@@ -48,9 +50,11 @@ test_that("dplyr manip", {
 
 	expect_equal(tmp5, tmp6)
 
-	tmp7 <- select(msdata, 1:10)
+	i2 <- 1:10
 
-	tmp8 <- msdata[,1:10]
+	tmp7 <- select(msdata, i2)
+
+	tmp8 <- msdata[,i2]
 
 	expect_equal(tmp7, tmp8)
 
