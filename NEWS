@@ -1,4 +1,13 @@
 
+CHANGES IN VERSION 2.3.13 [2019-5-23]
+-----------------------------------
+
+BUG FIXES
+
+    o Try using 'parent.frame(1)' instead of 'parent.frame(2)'
+        to fix NSE methods when used in LHS of a maggritr pipe
+    o Fix weird 'iData()<-' missing argument 'i' bug
+
 CHANGES IN VERSION 2.3.12 [2019-5-22]
 -----------------------------------
 
