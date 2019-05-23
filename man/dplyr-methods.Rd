@@ -27,9 +27,9 @@
 \alias{group_by,XDataFrame-method}
 \alias{ungroup,XDataFrame-method}
 
-\alias{filter,ImagingExperiment-method}
-\alias{select,ImagingExperiment-method}
-\alias{mutate,ImagingExperiment-method}
+\alias{filter,SparseImagingExperiment-method}
+\alias{select,SparseImagingExperiment-method}
+\alias{mutate,SparseImagingExperiment-method}
 \alias{summarize,SparseImagingExperiment-method}
 
 \title{Data transformation and summarization}
@@ -39,11 +39,11 @@
     See the descriptions below for details.
 }
 \usage{
-\S4method{filter}{ImagingExperiment}(.data, \dots, .preserve=FALSE)
+\S4method{filter}{SparseImagingExperiment}(.data, \dots, .preserve=FALSE)
 
-\S4method{select}{ImagingExperiment}(.data, \dots)
+\S4method{select}{SparseImagingExperiment}(.data, \dots)
 
-\S4method{mutate}{ImagingExperiment}(.data, \dots)
+\S4method{mutate}{SparseImagingExperiment}(.data, \dots)
 
 \S4method{summarize}{SparseImagingExperiment}(.data, \dots,
     .by = c("feature", "pixel"), .group_by,

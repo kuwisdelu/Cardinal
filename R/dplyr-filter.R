@@ -24,7 +24,7 @@ setMethod("filter", "SummaryDataFrame",
 
 ## Subset an imaging dataset by rows/features
 
-setMethod("filter", "ImagingExperiment",
+setMethod("filter", "SparseImagingExperiment",
 	function(.data, ..., .preserve = FALSE)
 	{
 		.data[features(.data, ..., .env=parent.frame(2)),]

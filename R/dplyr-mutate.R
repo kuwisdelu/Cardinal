@@ -24,7 +24,7 @@ setMethod("mutate", "SummaryDataFrame",
 
 ## Add metadata columns to an imaging experiment
 
-setMethod("mutate", "ImagingExperiment",
+setMethod("mutate", "SparseImagingExperiment",
 	function(.data, ...)
 	{
 		mdata <- mcols(.data)

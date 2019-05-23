@@ -24,7 +24,7 @@ setMethod("select", "SummaryDataFrame",
 
 ## Subset an imaging dataset by columns/pixels
 
-setMethod("select", "ImagingExperiment",
+setMethod("select", "SparseImagingExperiment",
 	function(.data, ...)
 	{
 		.data[,pixels(.data, ..., .env=parent.frame(2))]
