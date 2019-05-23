@@ -51,12 +51,12 @@ setReplaceMethod("imageData", "MSProcessedImagingExperiment",
 	})
 
 setReplaceMethod("iData", "MSProcessedImagingExperiment",
-	function(x, ..., value) {
+	function(x, i, ..., value) {
 		if ( !inherits(value, "sparse_matc") ) {
 			x <- as(x, "MSImagingExperiment")
 			imageData(x) <- .SimpleImageArrayList(imageData(x))
 		}
-		callNextMethod(x, ..., value=value)
+		callNextMethod(x, i, ..., value=value)
 	})
 
 setMethod("mzData", "MSProcessedImagingExperiment",
