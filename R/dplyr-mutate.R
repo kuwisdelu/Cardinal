@@ -36,7 +36,7 @@ setMethod("mutate", "SparseImagingExperiment",
 		}
 		names(expr) <- nm
 		if ( length(expr) > 0 ) {
-			e <- as.env(mdata, enclos=parent.frame(2))
+			e <- as.env(mdata, enclos=parent.frame(1))
 			for ( i in seq_along(expr) ) {
 				col <- eval(expr[[i]], envir=e)
 				col <- rep_len(col, nrow(mdata))

@@ -9,7 +9,6 @@
 \alias{resolution<-,MSProcessedImagingExperiment-method}
 
 \alias{iData<-,MSProcessedImagingExperiment,ANY-method}
-\alias{iData<-,MSProcessedImagingExperiment,missing-method}
 \alias{imageData<-,MSProcessedImagingExperiment-method}
 
 \alias{mzData}

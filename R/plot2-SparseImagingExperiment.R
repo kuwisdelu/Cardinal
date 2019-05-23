@@ -36,7 +36,7 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		}
 		ynm <- names(imageData(x))[1L]
 		fm <- paste0(ynm, "~", xnm)
-		formula <- as.formula(fm, env=parent.frame(2))
+		formula <- as.formula(fm, env=parent.frame(1))
 	}
 	e <- environment(formula)
 	elhs <- as.env(featureData(x), enclos=e)

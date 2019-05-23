@@ -26,7 +26,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 {
 	if ( missing(formula) ) {
 		fm <- paste0("~", paste0(coordnames(x)[c(1,2)], collapse="*"))
-		formula <- as.formula(fm, env=parent.frame(2))
+		formula <- as.formula(fm, env=parent.frame(1))
 	}
 	e <- environment(formula)
 	args <- .parseFormula2(formula,

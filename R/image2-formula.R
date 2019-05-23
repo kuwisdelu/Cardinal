@@ -24,7 +24,7 @@ setMethod("image", c(x = "formula"),
 	}
 	vals <- args$lhs[[1]]
 	if ( !missing(subset) ) {
-		sub <- eval(substitute(subset, parent.frame(2)),
+		sub <- eval(substitute(subset, parent.frame(1)),
 			envir=data, enclos=e)
 		if ( is.logical(sub) )
 			sub <- rep_len(sub, length(vals))

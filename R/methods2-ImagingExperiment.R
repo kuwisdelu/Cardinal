@@ -14,22 +14,22 @@ setReplaceMethod("imageData", "ImagingExperiment",
 			y
 	})
 
-setMethod("iData", c("ImagingExperiment", "missing"), 
-	function(x, i, ...) x@imageData[[1]])
-
-setMethod("iData", c("ImagingExperiment", "ANY"), 
+setMethod("iData", c("ImagingExperiment", "ANY"),
 	function(x, i, ...) x@imageData[[i, exact=FALSE]])
 
-setReplaceMethod("iData", c("ImagingExperiment", "missing"),
-	function(x, i, ..., value) {
-		x@imageData[[1]] <- value
-		if ( validObject(x) )
-			x
-	})
+setMethod("iData", c("ImagingExperiment", "missing"), 
+	function(x, i, ...) x@imageData[[1L]])
 
 setReplaceMethod("iData", c("ImagingExperiment", "ANY"),
 	function(x, i, ..., value) {
 		x@imageData[[i]] <- value
+		if ( validObject(x) )
+			x
+	})
+
+setReplaceMethod("iData", c("ImagingExperiment", "missing"),
+	function(x, i, ..., value) {
+		x@imageData[[1L]] <- value
 		if ( validObject(x) )
 			x
 	})

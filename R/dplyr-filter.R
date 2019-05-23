@@ -27,6 +27,6 @@ setMethod("filter", "SummaryDataFrame",
 setMethod("filter", "SparseImagingExperiment",
 	function(.data, ..., .preserve = FALSE)
 	{
-		.data[features(.data, ..., .env=parent.frame(2)),]
+		.data[features(.data, ..., .env=parent.frame(1)),]
 	})
 

@@ -115,7 +115,7 @@ setReplaceMethod("resolution", "MSImagingExperiment",
 ## Filter pixels/features
 
 setMethod("features", "MSImagingExperiment",
-	function(object, ..., mz, .env = parent.frame(2)) {
+	function(object, ..., mz, .env = parent.frame(1)) {
 		if ( missing(mz) ) {
 			features <- callNextMethod(object, ..., .env=.env)
 		} else {
@@ -136,7 +136,7 @@ setMethod("features", "MSImagingExperiment",
 	})
 
 setMethod("pixels", "MSImagingExperiment",
-	function(object, ..., coord, run, .env = parent.frame(2)) {
+	function(object, ..., coord, run, .env = parent.frame(1)) {
 		if ( missing(coord) && missing(run) ) {
 			pixels <- callNextMethod(object, ..., .env=.env)
 		} else {

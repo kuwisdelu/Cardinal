@@ -31,7 +31,7 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 	if ( missing(formula) ) {
 		valnm <- names(imageData(x))[1L]
 		fm <- paste0(valnm, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
-		formula <- as.formula(fm, env=parent.frame(2))
+		formula <- as.formula(fm, env=parent.frame(1))
 	}
 	e <- environment(formula)
 	elhs <- as.env(pixelData(x), enclos=e)
@@ -188,7 +188,7 @@ setMethod("image3D", c(x = "SparseImagingExperiment"),
 			if ( length(coord(x)) < 3L )
 				.stop("found only ", length(coord(x)), " spatial dimensions")
 			fm <- paste0(valnm, "~", paste0(coordnames(x)[1:3], collapse="*"))
-			formula <- as.formula(fm, env=parent.frame(2))
+			formula <- as.formula(fm, env=parent.frame(1))
 		}
 		image(x, formula=formula, ..., alpha.power=2)
 	})

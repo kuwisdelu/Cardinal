@@ -171,7 +171,7 @@ setMethod("preproc", "SparseImagingExperiment",
 ## Filter pixels/features
 
 setMethod("features", "SparseImagingExperiment",
-	function(object, ..., .env = parent.frame(2)) {
+	function(object, ..., .env = parent.frame(1)) {
 		fdata <- featureData(object)
 		conditions <- eval(substitute(alist(...)))
 		e <- as.env(fdata, enclos=.env)
@@ -211,7 +211,7 @@ setMethod("features", "SparseImagingExperiment",
 	})
 
 setMethod("pixels", "SparseImagingExperiment",
-	function(object, ..., .env = parent.frame(2)) {
+	function(object, ..., .env = parent.frame(1)) {
 		pdata <- pixelData(object)
 		conditions <- eval(substitute(alist(...)))
 		e <- as.env(pdata, enclos=.env)

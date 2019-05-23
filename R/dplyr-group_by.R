@@ -10,7 +10,7 @@ setMethod("group_by", "DataFrame",
 setMethod("group_by", "XDataFrame",
 	function(.data, ..., add = FALSE, .drop = FALSE)
 	{
-		e <- as.env(.data, enclos=parent.frame(2))
+		e <- as.env(.data, enclos=parent.frame(1))
 		expr <- eval(substitute(alist(...)))
 		nm <- sapply(substitute(...()), deparse)
 		if ( !is.null(names(expr)) ) {

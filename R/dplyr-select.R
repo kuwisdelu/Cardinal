@@ -27,6 +27,6 @@ setMethod("select", "SummaryDataFrame",
 setMethod("select", "SparseImagingExperiment",
 	function(.data, ...)
 	{
-		.data[,pixels(.data, ..., .env=parent.frame(2))]
+		.data[,pixels(.data, ..., .env=parent.frame(1))]
 	})
 

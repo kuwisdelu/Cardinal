@@ -49,7 +49,7 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			}
 		}
 		fm <- paste0(ynm, "~", xnm)
-		formula <- as.formula(fm, env=parent.frame(2))
+		formula <- as.formula(fm, env=parent.frame(1))
 	}
 	e <- environment(formula)
 	args <- .parseFormula2(formula,

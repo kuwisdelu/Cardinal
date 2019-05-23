@@ -65,7 +65,7 @@ setMethod("as.matrix", "XDataFrame",
 	})
 
 setMethod("as.env", "list",
-	function(x, enclos = parent.frame(2), tform = identity) {
+	function(x, enclos = parent.frame(1), tform = identity) {
 		env <- new.env(parent = enclos)
 		lapply(names(x), function(name) {
 			fun <- function() {
@@ -81,7 +81,7 @@ setMethod("as.env", "list",
 	})
 
 setMethod("as.env", "XDataFrame",
-	function(x, enclos = parent.frame(2), ..., slots = TRUE) {
+	function(x, enclos = parent.frame(1), ..., slots = TRUE) {
 		enclos <- force(enclos)
 		if ( slots ) {
 			as.env(as.list(x), enclos=enclos, ...)

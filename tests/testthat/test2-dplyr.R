@@ -28,6 +28,43 @@ data <- ImageList(list(spectra1=s, spectra2=s))
 
 msdata <- MSImagingExperiment(data, fdata, pdata3)
 
+test_that("dplyr manip", {
+
+	tmp1 <- filter(msdata, mz > 101)
+
+	tmp2 <- msdata[mz(msdata) > 101,]
+
+	expect_equal(tmp1, tmp2)
+
+	tmp3 <- filter(msdata, 1:10)
+
+	tmp4 <- msdata[1:10,]
+
+	expect_equal(tmp3, tmp4)
+
+	tmp5 <- select(msdata, x > 5)
+
+	tmp6 <- msdata[,coord(msdata)$x > 5]
+
+	expect_equal(tmp5, tmp6)
+
+	tmp7 <- select(msdata, 1:10)
+
+	tmp8 <- msdata[,1:10]
+
+	expect_equal(tmp7, tmp8)
+
+	tmp9 <- mutate(msdata,
+		test1=c("a", "b"),
+		test2=paste0(test1, "1"))
+
+	msdata$test1 <- c("a", "b")
+	msdata$test2 <- paste0(msdata$test1, "1")
+
+	expect_equal(tmp9, msdata)
+
+})
+
 test_that("summarize expr", {
 
 	tmp1 <- summarize(msdata, mean(.))

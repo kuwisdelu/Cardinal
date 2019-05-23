@@ -8,21 +8,12 @@ setReplaceMethod("imageData", "MSContinuousImagingExperiment",
 		callNextMethod(y, value=value)
 	})
 
-setReplaceMethod("iData", c("MSContinuousImagingExperiment", "missing"),
-	function(x, i, ..., value) {
+setReplaceMethod("iData", "MSContinuousImagingExperiment",
+	function(x, ..., value) {
 		if ( !inherits(value, c("matrix", "matter_matc")) ) {
 			x <- as(x, "MSImagingExperiment")
 			imageData(x) <- .SimpleImageArrayList(imageData(x))
 		}
 		callNextMethod(x, ..., value=value)
-	})
-
-setReplaceMethod("iData", c("MSContinuousImagingExperiment", "ANY"),
-	function(x, i, ..., value) {
-		if ( !inherits(value, c("matrix", "matter_matc")) ) {
-			x <- as(x, "MSImagingExperiment")
-			imageData(x) <- .SimpleImageArrayList(imageData(x))
-		}
-		callNextMethod(x, i=i, ..., value=value)
 	})
 

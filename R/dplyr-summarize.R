@@ -57,7 +57,7 @@ setMethod("summarize", "SparseImagingExperiment",
 		groupnames <- levels(groups)
 		ngroups <- nlevels(groups)
 		expr <- eval(substitute(alist(...)))
-		attr(expr, "environment") <- new.env(parent=parent.frame(2))
+		attr(expr, "environment") <- new.env(parent=parent.frame(1))
 		if ( length(expr) > 0L ) {
 			ecolnames <- sapply(substitute(...()), deparse)
 			if ( !is.null(names(expr)) ) {
