@@ -1,4 +1,21 @@
 
+CHANGES IN VERSION 2.3.12 [2019-5-22]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Changed default 'peakPick()' method to 'mad'
+    o In 'peakPick()' method 'mad', change the default
+        number of blocks to 1 (no adaptive smoothing)
+    o In 'peakPick()' method 'mad', update w/ new arguments
+        w/ new defaults 'fun=median' and 'tform=diff'
+
+BUG FIXES
+
+    o In 'peakPick()' methods 'simple' and 'adaptive', warn
+        if kurtosis cannot be estimated and try to recover
+    o In 'normalize()' method 'reference', provide a warning
+        if the reference value is 0 for a pixel
 
 CHANGES IN VERSION 2.3.11 [2019-5-19]
 -----------------------------------
