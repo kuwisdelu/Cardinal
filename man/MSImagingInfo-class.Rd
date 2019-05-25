@@ -9,8 +9,7 @@
 \alias{as.list,MSImagingInfo-method}
 \alias{scans,MSImagingInfo-method}
 \alias{mzData,MSImagingInfo-method}
-\alias{peakData,MSImagingInfo-method}
-\alias{imageData,MSImagingInfo-method}
+\alias{intensityData,MSImagingInfo-method}
 
 \alias{msiInfo}
 \alias{msiInfo,MSImageSet-method}
@@ -76,9 +75,7 @@
 
         \item{\code{mzData(object)}:}{Access the m/z array list metadata for writing to imzML.}
 
-        \item{\code{peakData(object)}:}{Access the intensity array list metadata for writing to imzML (identical to \code{imageData(object)}).}
-
-        \item{\code{imageData(object)}:}{Access the intensity array list metadata for writing to imzML (identical to \code{peakData(object)}).}
+        \item{\code{intensityData(object)}:}{Access the intensity array list metadata for writing to imzML.}
 
         \item{\code{normalization(object), normalization(object) <- value}:}{Accessor and setter function for the \code{normalization}.}
 

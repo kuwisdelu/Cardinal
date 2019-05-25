@@ -344,6 +344,8 @@ exportMethods(
 	"iData<-",
 	"imageData",
 	"imageData<-",
+	"intensityData",
+	"intensityData<-",
 	"initialize",
 	"is3D",
 	"keys",

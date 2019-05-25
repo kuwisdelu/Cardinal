@@ -14,10 +14,10 @@ setReplaceMethod("resultData",
 	})
 
 setMethod("modelData", "ResultSet",
-	function(object) object@modelData)
+	function(object, ...) object@modelData)
 
 setReplaceMethod("modelData", "ResultSet",
-	function(object, value) {
+	function(object, ..., value) {
 		object@modelData <- value
 		if ( validObject(object) )
 			object			

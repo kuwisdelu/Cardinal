@@ -20,6 +20,10 @@
 \alias{pixels,MSImageSet-method}
 \alias{features,MSImageSet-method}
 
+\alias{peaks}
+\alias{peaks<-}
+\alias{peaks-methods}
+
 \alias{processingData}
 \alias{processingData<-}
 \alias{processingData-methods}

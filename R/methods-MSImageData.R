@@ -23,20 +23,20 @@ MSImageData <- function(
 }
 
 setMethod("peakData", "MSImageData",
-	function(object) object[["peakData"]])
+	function(object, ...) object[["peakData"]])
 
 setReplaceMethod("peakData", "MSImageData",
-	function(object, value) {
+	function(object, ..., value) {
 		object[["peakData"]] <- value
 		if ( validObject(object) )
 			object			
 	})
 
 setMethod("mzData", "MSImageData",
-	function(object) object[["mzData"]])
+	function(object, ...) object[["mzData"]])
 
 setReplaceMethod("mzData", "MSImageData",
-	function(object, value) {
+	function(object, ..., value) {
 		object[["mzData"]] <- value
 		if ( validObject(object) )
 			object			

@@ -60,20 +60,20 @@ setReplaceMethod("iData", "MSProcessedImagingExperiment",
 	})
 
 setMethod("mzData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["keys"]])
+	function(object, ...) atomdata(iData(object))[["keys"]])
 
 setReplaceMethod("mzData", "MSProcessedImagingExperiment",
-	function(object, value) {
+	function(object, ..., value) {
 		atomdata(iData(object))[["keys"]] <- value
 		if ( validObject(object) )
 			object
 	})
 
-setMethod("peakData", "MSProcessedImagingExperiment",
-	function(object) atomdata(iData(object))[["values"]])
+setMethod("intensityData", "MSProcessedImagingExperiment",
+	function(object, ...) atomdata(iData(object))[["values"]])
 
-setReplaceMethod("peakData", "MSProcessedImagingExperiment",
-	function(object, value) {
+setReplaceMethod("intensityData", "MSProcessedImagingExperiment",
+	function(object, ..., value) {
 		atomdata(iData(object))[["values"]] <- value
 		if ( validObject(object) )
 			object

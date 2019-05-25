@@ -62,7 +62,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	file <- normalizePath(file)
 	ibdtype <- metadata(info)[["ibd binary type"]]
 	mz.ibdtype <- mzData(info)[["binary data type"]]
-	intensity.ibdtype <- imageData(info)[["binary data type"]]
+	intensity.ibdtype <- intensityData(info)[["binary data type"]]
 	# read binary data
 	if ( ibdtype == "continuous" ) {
 		.message("detected 'continuous' imzML")
@@ -72,8 +72,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			extent=mzData(info)[["external array length"]][1])
 		intensity <- matter_mat(paths=file,
 			datamode=Ctypeof(intensity.ibdtype[1]),
-			offset=imageData(info)[["external offset"]],
-			extent=imageData(info)[["external array length"]])
+			offset=intensityData(info)[["external offset"]],
+			extent=intensityData(info)[["external array length"]])
 		if ( attach.only ) {
 			spectra <- intensity
 		} else {
@@ -88,8 +88,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			extent=mzData(info)[["external array length"]])
 		intensity <- matter_list(paths=file,
 			datamode=Ctypeof(intensity.ibdtype),
-			offset=imageData(info)[["external offset"]],
-			extent=imageData(info)[["external array length"]])
+			offset=intensityData(info)[["external offset"]],
+			extent=intensityData(info)[["external array length"]])
 		if ( is.null(mass.range) ) {
 			.message("determining mass range...")
 			if ( attach.only ) {

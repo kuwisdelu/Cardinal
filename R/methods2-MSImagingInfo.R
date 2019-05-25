@@ -192,10 +192,10 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		choices=c("32-bit float", "64-bit float",
 			"16-bit integer", "32-bit integer", "64-bit integer"))
 	scanList <- .make.scanList(x)
-	if ( any(lengths(mzData(x)) != lengths(peakData(x))) )
+	if ( any(lengths(mzData(x)) != lengths(intensityData(x))) )
 		.stop("lengths of intensity and m/z arrays differ")
 	mzLength <- Csizeof(mz.type) * lengths(mzData(x))
-	intensityLength <- Csizeof(intensity.type) * lengths(peakData(x))
+	intensityLength <- Csizeof(intensity.type) * lengths(intensityData(x))
 	mzOffset <- c(16, 16 + cumsum(as.numeric(mzLength + intensityLength)[-ncol(x)]))
 	intensityOffset <- c(16 + cumsum(as.numeric(c(mzLength[1L], mzLength[-1L] + intensityLength[-ncol(x)]))))
 	mzArrayList <- DataFrame(
@@ -206,7 +206,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		check.names=FALSE)
 	intensityArrayList <- DataFrame(
 		"external offset"=unname(intensityOffset),
-		"external array length"=unname(lengths(peakData(x))),
+		"external array length"=unname(lengths(intensityData(x))),
 		"external encoded length"=unname(intensityLength),
 		"binary data type"=rep(intensity.type, ncol(x)),
 		check.names=FALSE)
@@ -226,11 +226,11 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		.stop("intensity data are not a sparse_matc object")
 	if ( !is(mzData(x), "matter_list") )
 		.stop("m/z array is not a matter_list object")
-	if ( !is(peakData(x), "matter_list") )
+	if ( !is(intensityData(x), "matter_list") )
 		.stop("intensity array is not a matter_list object")
-	if ( paths(mzData(x)) > 1 || paths(peakData(x)) > 1 )
+	if ( paths(mzData(x)) > 1 || paths(intensityData(x)) > 1 )
 		.stop("m/z data or intensity data are from more than one file")
-	if ( paths(mzData(x)) != paths(peakData(x)) )
+	if ( paths(mzData(x)) != paths(intensityData(x)) )
 		.stop("m/z data and intensity data are from different files")
 	mz.ibd <- as.list(atomdata(mzData(x)))
 	mz.mode <- as.character(unique(mz.ibd$datamode))
@@ -244,7 +244,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		"external encoded length"=unname(Csizeof(mz.type) * mz.ibd$extent),
 		"binary data type"=rep(mz.type, ncol(x)),
 		check.names=FALSE)
-	intensity.ibd <- as.list(atomdata(peakData(x)))
+	intensity.ibd <- as.list(atomdata(intensityData(x)))
 	intensity.mode <- as.character(unique(intensity.ibd$datamode))
 	if ( length(intensity.mode) != 1 )
 		.stop("multiple binary types found for intensity array")
@@ -260,8 +260,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
-	id <- matter_vec(length=16, paths=paths(peakData(x)), datamode="raw")
-	hash <- checksum(peakData(x), algo="sha1")
+	id <- matter_vec(length=16, paths=paths(intensityData(x)), datamode="raw")
+	hash <- checksum(intensityData(x), algo="sha1")
 	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
 	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
 	.MSImagingInfo(
@@ -290,15 +290,12 @@ setMethod("scans", "MSImagingInfo",
 # m/z array list
 
 setMethod("mzData", "MSImagingInfo",
-	function(object) object@mzArrayList)
+	function(object, ...) object@mzArrayList)
 
 # intensity array list
 
-setMethod("peakData", "MSImagingInfo",
-	function(object) object@intensityArrayList)
-
-setMethod("imageData", "MSImagingInfo",
-	function(y) y@intensityArrayList)
+setMethod("intensityData", "MSImagingInfo",
+	function(object, ...) object@intensityArrayList)
 
 # processing metadata
 

@@ -61,8 +61,8 @@ writeImzML <- function(object, name, folder = getwd(),
 			datamode=Ctypeof(mz.type))
 		pmz[] <- mz(x)
 		pspectra <- matter_mat(nrow=nrow(x), ncol=ncol(x), paths=file, filemode="rw",
-			offset=imageData(info)[["external offset"]],
-			extent=imageData(info)[["external array length"]],
+			offset=intensityData(info)[["external offset"]],
+			extent=intensityData(info)[["external array length"]],
 			datamode=Ctypeof(intensity.type))
 		for ( i in seq_len(ncol(x)) )
 			pspectra[,i] <- iData(x)[,i]
@@ -73,12 +73,12 @@ writeImzML <- function(object, name, folder = getwd(),
 			extent=mzData(info)[["external array length"]],
 			datamode=Ctypeof(mz.type))
 		pspectra <- matter_list(paths=file, filemode="rw",
-			offset=imageData(info)[["external offset"]],
-			extent=imageData(info)[["external array length"]],
+			offset=intensityData(info)[["external offset"]],
+			extent=intensityData(info)[["external array length"]],
 			datamode=Ctypeof(intensity.type))
 		for ( i in seq_len(ncol(x)) ) {
 			pmz[[i]] <- mzData(x)[[i]]
-			pspectra[[i]] <- peakData(x)[[i]]
+			pspectra[[i]] <- intensityData(x)[[i]]
 		}
 	} else {
 		.stop("invalid 'ibd binary type' found")

@@ -76,30 +76,19 @@ setReplaceMethod("spectra", "MSImagingExperiment",
 		object
 	})
 
+setMethod("spectraData", "MSImagingExperiment", function(object, ...) imageData(object))
+
+setReplaceMethod("spectraData", "MSImagingExperiment",
+	function(object, ..., value) {
+		imageData(object) <- value
+		object
+	})
+
 setMethod("centroided", "MSImagingExperiment", function(object) object@centroided)
 
 setReplaceMethod("centroided", "MSImagingExperiment",
 	function(object, value) {
 		object@centroided <- value
-		object
-	})
-
-setMethod("peaks", "MSImagingExperiment",
-	function(object, ...) {
-		if ( centroided(object) ) {
-			iData(object, ...)
-		} else {
-			NULL
-		}
-	})
-
-setReplaceMethod("peaks", "MSImagingExperiment",
-	function(object, ..., value) {
-		if ( centroided(object) ) {
-			iData(object, ...) <- value
-		} else {
-			.stop("object must be 'centroided'")
-		}
 		object
 	})
 

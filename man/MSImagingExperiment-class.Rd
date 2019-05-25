@@ -5,26 +5,26 @@
 \alias{MSImagingExperiment}
 \alias{MSImagingExperiment-class}
 
+\alias{spectraData}
+\alias{spectraData<-}
+\alias{spectraData-methods}
+
 \alias{spectra}
 \alias{spectra<-}
 \alias{spectra-methods}
-
-\alias{peaks}
-\alias{peaks<-}
-\alias{peaks-methods}
 
 \alias{centroided}
 \alias{centroided<-}
 
 \alias{show,MSImagingExperiment-method}
+\alias{spectraData,MSImagingExperiment-method}
+\alias{spectraData<-,MSImagingExperiment-method}
+\alias{spectra,MSImagingExperiment-method}
+\alias{spectra<-,MSImagingExperiment-method}
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}
 \alias{resolution,MSImagingExperiment-method}
 \alias{resolution<-,MSImagingExperiment-method}
-\alias{spectra,MSImagingExperiment-method}
-\alias{spectra<-,MSImagingExperiment-method}
-\alias{peaks,MSImagingExperiment-method}
-\alias{peaks<-,MSImagingExperiment-method}
 \alias{centroided,MSImagingExperiment-method}
 \alias{centroided<-,MSImagingExperiment-method}
 \alias{pixels,MSImagingExperiment-method}
@@ -92,13 +92,13 @@ MSImagingExperiment(
     All methods for \code{\linkS4class{ImagingExperiment}} and \code{\linkS4class{SparseImagingExperiment}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
+        \item{\code{spectraData(object)}, \code{spectraData(object) <- value}:}{Get or set the spectra list (alias for \code{imageData(object)}).}
+        
+        \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the spectra (alias for \code{iData(object)}).}
+
         \item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the m/z values from \code{pixelData}.}
 
         \item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the m/z resolution of the dataset. Typically, this should not be set manually.}
-
-        \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the spectra (alias for \code{iData(object)}).}
-
-        \item{\code{peaks(object)}, \code{peaks(object) <- value}:}{Get or set the peaks of a centroided experiment (alias for \code{iData(object)} for centroided datasets only).}
 
         \item{\code{centroided(object)}, \code{centroided(object) <- value}:}{Get or set the spatial position slot-columns from \code{pixelData}.}
 
