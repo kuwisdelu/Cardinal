@@ -5,12 +5,13 @@
 setMethod("peakPick", "MSImagingExperiment",
 	function(object, method = c("mad", "simple", "adaptive"), ...)
 	{
-		fun <- peakPick_fun(peakPick.method2(method))
-		object <- process(object, fun=fun,
+		dotargs <- list(...)
+		fun <- peakPick.method2(method)
+		object <- process(object, fun=peakPick_fun(fun),
 			label="peakPick", kind="pixel",
 			postfun=peakPick_postfun,
 			plotfun=peakPick_plotfun,
-			moreargs=list(...),
+			moreargs=dotargs,
 			delay=getOption("Cardinal.delay"))
 		object
 	})
@@ -19,14 +20,16 @@ peakPick.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
 			c("mad", "simple", "adaptive"))
-		switch(method,
+		fun <- switch(method,
 			mad = peakPick.mad,
 			simple = peakPick.simple2,
 			adaptive = peakPick.adaptive2,
 			match.fun(method))
 	} else {
-		match.fun(method)
+		fun <- match.fun(method)
 	}
+	attr(fun, "method") <- deparse(method)
+	fun
 }
 
 peakPick_fun <- function(f) {
@@ -37,6 +40,7 @@ peakPick_fun <- function(f) {
 		attributes(y) <- attributes(i)
 		y
 	}
+	attr(fun, "method") <- attr(f, "method")
 	fun
 }
 

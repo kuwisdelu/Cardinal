@@ -11,11 +11,12 @@ setMethod("smooth", "SparseImagingExperiment",
 setMethod("smoothSignal", "SparseImagingExperiment",
 	function(object, method = c("gaussian", "sgolay", "ma"), ...)
 	{
+		dotargs <- list(...)
 		fun <- smoothSignal.method2(method)
 		object <- process(object, fun=fun,
 			label="smoothSignal", kind="pixel",
 			plotfun=smoothSignal_plotfun,
-			moreargs=list(...),
+			moreargs=dotargs,
 			delay=getOption("Cardinal.delay"))
 		object
 	})
@@ -23,14 +24,16 @@ setMethod("smoothSignal", "SparseImagingExperiment",
 smoothSignal.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method, c("gaussian", "sgolay", "ma"))
-		switch(method,
+		fun <- switch(method,
 			gaussian = smoothSignal.gaussian2,
 			sgolay = smoothSignal.sgolay2,
 			ma = smoothSignal.ma2,
 			match.fun(method))
 	} else {
-		match.fun(method)
+		fun <- match.fun(method)
 	}
+	attr(fun, "method") <- deparse(method)
+	fun
 }
 
 smoothSignal_plotfun <- function(s2, s1, ...,

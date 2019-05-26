@@ -5,15 +5,16 @@
 setMethod("normalize", "SparseImagingExperiment",
 	function(object, method = c("tic", "rms", "reference"), ...)
 	{
-		if ( is.character(method) && method[1] == "reference" ) {
+		if ( is.character(method) && isTRUE(pmatch(method, "reference") == 1) ) {
 			dots <- match.call(expand.dots=FALSE)$...
 			if ( !"feature" %in% names(dots) )
 				.stop("feature must be specified for method = 'reference'")
 		}
+		dotargs <- list(...)
 		fun <- normalize.method2(method)
 		object <- process(object, fun=fun,
 			label="normalize", kind="pixel",
-			moreargs=list(...),
+			moreargs=dotargs,
 			plotfun=normalize_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
@@ -23,14 +24,16 @@ normalize.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
 			c("tic", "rms", "reference"))
-		switch(method,
+		fun <- switch(method,
 			tic = normalize.tic2,
 			rms = normalize.rms,
 			reference = normalize.reference,
 			match.fun(method))
 	} else {
-		match.fun(method)
+		fun <- match.fun(method)
 	}
+	attr(fun, "method") <- deparse(method)
+	fun
 }
 
 normalize_plotfun <- function(s2, s1, ...,

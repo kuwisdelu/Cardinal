@@ -130,9 +130,11 @@ setMethod("process", "SparseImagingExperiment",
 			} else {
 				plotfun <- .matchFunOrNULL(plotfun)
 			}
+			# construct arglist
+			args <- c(list(...), moreargs)
 			# create processing list
 			proclist <- list(
-				fun=fun, args=c(list(...), moreargs),
+				fun=fun, args=args,
 				prefun=prefun, preargs=preargs,
 				postfun=postfun, postargs=postargs,
 				plotfun=plotfun)
@@ -155,6 +157,7 @@ setMethod("process", "SparseImagingExperiment",
 			} else {
 				mcols(processingData(object))[i,] <- procinfo
 			}
+			.logProcess(label, args, fun)
 		}
 		if ( !delay ) {
 			if ( plot && !is(BPPARAM, "SerialParam") ) {
@@ -261,6 +264,19 @@ setMethod("process", "SparseImagingExperiment",
 	.Cardinal$processing <- FALSE
 	.message("done.")
 	object
+}
+
+.logProcess <- function(label, args, fun) {
+	method <- attr(fun, "method")
+	if ( is.character(method) ) {
+		s1 <- paste0("queued [", label, "] method = ", method)
+	} else {
+		s1 <- paste0("queued [", label, "]")
+	}
+	s2 <- sapply(seq_along(args), function(i) {
+		paste0(names(args)[i], " : ", deparse(args[[i]]))
+	})
+	.log(paste0(c(s1, s2), collapse="\n"))
 }
 
 .pendingQueue <- function(y) {

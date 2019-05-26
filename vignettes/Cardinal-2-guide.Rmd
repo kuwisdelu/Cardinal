@@ -891,25 +891,25 @@ Normalization to a reference is the most reliable form of normalization, but is 
 
 ## Spectral smoothing
 
-Use `smooth()` or `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
+Use `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
 
 ```{r smoothSignal-plot, fig.height=7, fig.width=9, results='hide'}
-mse %>% smooth(method="gaussian") %>%
+mse %>% smoothSignal(method="gaussian") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE,
 			par=list(main="Gaussian smoothing", layout=c(3,1)))
 
-mse %>% smooth(method="ma") %>%
+mse %>% smoothSignal(method="ma") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Moving average smoothing"))
 
-mse %>% smooth(method="sgolay") %>%
+mse %>% smoothSignal(method="sgolay") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Savitzky-Golay smoothing"))
 ```
 
 ```{r smoothSignal}
-mse_pre <- smooth(mse_pre, method="gaussian")
+mse_pre <- smoothSignal(mse_pre, method="gaussian")
 ```
 
 - `method="gaussian"` performs smoothing with a Gaussian kernel
@@ -1102,7 +1102,7 @@ Delayed pre-processing makes it easy to chain together multiple pre-processing s
 ```{r process-workflow, fig.height=5, fig.width=9, results='hide'}
 mse_proc <- mse %>%
 	normalize() %>%
-	smooth() %>%
+	smoothSignal() %>%
 	reduceBaseline() %>%
 	peakPick()
 
@@ -1122,7 +1122,7 @@ mse_peakref <- mse_proc %>%
 # bin profile spectra to peaks
 mse_peaks <- mse %>%
 	normalize() %>%
-	smooth() %>%
+	smoothSignal() %>%
 	reduceBaseline() %>%
 	peakBin(mz(mse_peakref))
 ```

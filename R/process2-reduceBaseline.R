@@ -5,10 +5,11 @@
 setMethod("reduceBaseline", "SparseImagingExperiment",
 	function(object, method = c("locmin", "median"), ...)
 	{
+		dotargs <- list(...)
 		fun <- reduceBaseline.method2(method)
 		object <- process(object, fun=fun,
 			label="reduceBaseline", kind="pixel",
-			moreargs=list(...),
+			moreargs=dotargs,
 			plotfun=reduceBaseline_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
@@ -18,13 +19,15 @@ reduceBaseline.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
 			c("locmin", "median"))
-		switch(method,
+		fun <- switch(method,
 			locmin = reduceBaseline.locmin,
 			median = reduceBaseline.median2,
 			match.fun(method))
 	} else {
-		match.fun(method)
+		fun <- match.fun(method)
 	}
+	attr(fun, "method") <- deparse(method)
+	fun
 }
 
 reduceBaseline_plotfun <- function(s2, s1, ...,
