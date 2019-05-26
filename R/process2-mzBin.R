@@ -73,7 +73,7 @@ mzBin_postfun <- function(object, ans, ...) {
 		pixelData=pixelData(object),
 		metadata=metadata(object),
 		processing=processingData(object),
-		centroided=TRUE)
+		centroided=NA)
 	.message("binned to ", length(ref), " m/z bins per spectrum")
 	object
 }
