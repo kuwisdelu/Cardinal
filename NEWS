@@ -1,4 +1,26 @@
 
+CHANGES IN VERSION 2.3.14 [2019-5-26]
+-----------------------------------
+
+NEW FEATURES
+
+o Add spectraData() as an alias for 'imageData()'
+    for 'MSImagingExperiment' sub-classes
+o Formalize 'mzData()' and 'intensityData()' getters
+    and setters for 'MSProcessedImagingExperiment'
+o Add 'peaks()' and 'peakData()' methods for extracting
+    peak matrices and/or peak information
+o Add 'isCentroided()' method for guessing whether spectra
+    are centroided (without using the @centroided slot)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    
+    o Allow 'NA' for @centroided slot for 'MSImagingExperiment'
+    o 'mzBin()' method now sets centroided = NA
+    o Update 'mzFilter()' with parameter defaults so that
+        'thresh.max = NA' and new arg 'rm.zero = TRUE'
+    o Log more pre-processing information (e.g., method name)
+
 CHANGES IN VERSION 2.3.13 [2019-5-23]
 -----------------------------------
 
