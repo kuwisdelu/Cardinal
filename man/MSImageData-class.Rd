@@ -11,10 +11,6 @@
 \alias{mzData,MSImageData-method}
 \alias{mzData<-,MSImageData-method}
 
-\alias{peakData}
-\alias{peakData<-}
-\alias{peakData-methods}
-
 \title{MSImageData: Class containing mass spectrometry image data}
 
 \description{

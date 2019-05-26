@@ -13,6 +13,16 @@
 \alias{spectra<-}
 \alias{spectra-methods}
 
+\alias{peaks}
+\alias{peaks<-}
+\alias{peaks-methods}
+
+\alias{peakData}
+\alias{peakData<-}
+\alias{peakData-methods}
+
+\alias{isCentroided}
+
 \alias{centroided}
 \alias{centroided<-}
 
@@ -32,6 +42,12 @@
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
 \alias{collect,MSImagingExperiment-method}
+
+\alias{peaks,MSImagingExperiment-method}
+\alias{peaks<-,MSImagingExperiment-method}
+\alias{peakData,MSImagingExperiment-method}
+\alias{peakData<-,MSImagingExperiment-method}
+\alias{isCentroided,MSImagingExperiment-method}
 
 \title{MSImagingExperiment: Mass spectrometry imaging experiments}
 
@@ -107,6 +123,12 @@ MSImagingExperiment(
         \item{\code{features(object, ..., mz)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
 
         \item{\code{collect(x, ...)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
+
+        \item{\code{peaks(object)}, \code{peaks(object) <- value}:}{Attempt to get or set the matrix of peaks. Alias for \code{spectra()} if \code{centroided()} is TRUE; replacement version also sets \code{centroided} to TRUE.}
+
+        \item{\code{peakData(object)}, \code{peakData(object) <- value}:}{Attempt to get or set the underlying m/z and intensity arrays of the peak data in processed experiments. (Currently only implemented for \code{\linkS4class{MSProcessedImagingExperiment}}).}
+
+        \item{\code{isCentroided(object)}:}{Attempts to infer if the mass spectra are centroided or not (without referencing the \code{centroided} slot.}
 
         \item{\code{msiInfo(object, ...)}:}{Returns metadata for writing the object to imzML.}
 

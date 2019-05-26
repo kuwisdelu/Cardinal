@@ -182,13 +182,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			experimentData=experimentData)
 		sampleNames(object) <- metadata(info)[["name"]]
 	} else if ( outclass == "MSImagingExperiment" ) {
-		centroided <- isTRUE(spectrumRepresentation(info) == "centroid spectrum")
 		object <- MSImagingExperiment(spectra,
 			featureData=MassDataFrame(mz=mz),
 			pixelData=PositionDataFrame(coord=coord,
 				run=metadata(info)[["name"]]),
 			metadata=metadata(info),
-			centroided=centroided)
+			centroided=isCentroided(info))
 	} else {
 		.stop("unrecognized outclass")
 	}

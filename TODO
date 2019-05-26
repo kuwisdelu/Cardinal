@@ -2,7 +2,6 @@
 TODO for Cardinal package
 -------------------------
 
-- Implement peaks() and peakData() (but what should they do?)
 - Update summary() to use new stream_stat classes/functions
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)

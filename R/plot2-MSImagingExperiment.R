@@ -18,8 +18,9 @@ setMethod("plot",
 		plusminus,
 		...,
 		xlab, ylab,
-		type = if (centroided(x)) 'h' else 'l')
+		type = if ( is_centroided ) 'h' else 'l')
 	{
+		is_centroided <- isTRUE(centroided(x))
 		if ( !missing(formula) && missing(pixel) && missing(coord) && missing(run) )
 			return(callNextMethod(as(x, "SparseImagingExperiment"),
 				formula=formula, ..., xlab=xlab, ylab=ylab, type=type))

@@ -56,7 +56,7 @@ mzFilter_postfun <- function(expr, freq.min, thresh.max) {
 				keep <- keep & rowSums(do.call(cbind, rules)) != 0
 			}
 		}
-		if ( centroided(object) ) {
+		if ( isTRUE(centroided(object)) ) {
 			.message("removing ", sum(!keep), " peaks; ",
 				"keeping ", sum(keep), " peaks")
 		} else {

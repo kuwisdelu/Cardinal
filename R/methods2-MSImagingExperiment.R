@@ -101,6 +101,59 @@ setReplaceMethod("resolution", "MSImagingExperiment",
 		object
 	})
 
+## Peaks-related methods
+
+setMethod("peaks", "MSImagingExperiment",
+	function(object, ...) {
+		if ( isTRUE(centroided(object)) ) {
+			iData(object, ...)
+		} else {
+			NULL
+		}
+	})
+
+setReplaceMethod("peaks", "MSImagingExperiment",
+	function(object, ..., value) {
+		iData(object, ...) <- value
+		centroided(object) <- TRUE
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("peakData", "MSImagingExperiment",
+	function(object, i, ...) {
+		has_mzData <- hasMethod("mzData", class(object))
+		has_intensityData <- hasMethod("intensityData", class(object))
+		if ( !has_mzData || !has_intensityData )
+			return(NULL)
+		mzs <- mzData(object)
+		ints <- intensityData(object)
+		if ( missing(i) ) {
+			SimpleList(mz=mzs, intensity=ints)
+		} else {
+			if ( length(i) != 1L )
+				.stop("attempt to select more than one element")
+			MassDataFrame(mz=mzs[[i]], intensity=ints[[i]])
+		}
+	})
+
+setReplaceMethod("peakData", "MSImagingExperiment",
+	function(object, ..., value) {
+		if ( length(value) != 2L )
+			.stop("replacement value must be a length-2 list")
+		has_mzData <- hasMethod("mzData", class(object))
+		has_intensityData <- hasMethod("intensityData", class(object))
+		if ( !has_mzData || !has_intensityData )
+			.stop("don't know how to set peakData for this object")
+		mzData(object) <- value[[1L]]
+		intensityData(object) <- value[[2L]]
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("isCentroided", "MSImagingExperiment",
+	function(object, ...) .isCentroided(object))
+
 ## Filter pixels/features
 
 setMethod("features", "MSImagingExperiment",

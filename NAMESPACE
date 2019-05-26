@@ -347,6 +347,7 @@ exportMethods(
 	"intensityData",
 	"intensityData<-",
 	"initialize",
+	"isCentroided",
 	"is3D",
 	"keys",
 	"keys<-",

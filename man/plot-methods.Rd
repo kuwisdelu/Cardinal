@@ -95,7 +95,7 @@
         plusminus,
         \dots,
         xlab, ylab,
-        type = if (centroided(x)) 'h' else 'l')
+        type = if ( is_centroided ) 'h' else 'l')
 
 \S4method{plot}{SparseResultImagingExperiment,missing}(x, formula,
         model = modelData(x),

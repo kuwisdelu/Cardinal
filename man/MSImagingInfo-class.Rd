@@ -11,6 +11,8 @@
 \alias{mzData,MSImagingInfo-method}
 \alias{intensityData,MSImagingInfo-method}
 
+\alias{isCentroided,MSImagingInfo-method}
+
 \alias{msiInfo}
 \alias{msiInfo,MSImageSet-method}
 \alias{msiInfo,MSImagingExperiment-method}
@@ -76,6 +78,8 @@
         \item{\code{mzData(object)}:}{Access the m/z array list metadata for writing to imzML.}
 
         \item{\code{intensityData(object)}:}{Access the intensity array list metadata for writing to imzML.}
+
+        \item{\code{isCentroided(object)}:}{Check whether the mass spectra are centroided.}
 
         \item{\code{normalization(object), normalization(object) <- value}:}{Accessor and setter function for the \code{normalization}.}
 

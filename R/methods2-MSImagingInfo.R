@@ -297,6 +297,24 @@ setMethod("mzData", "MSImagingInfo",
 setMethod("intensityData", "MSImagingInfo",
 	function(object, ...) object@intensityArrayList)
 
+# centroided
+
+setMethod("isCentroided", "MSImagingInfo",
+	function(object, ...) .isCentroided(object))
+
+.isCentroided <- function(object) {
+	if ( !hasMethod("spectrumRepresentation", class(object)) )
+		return(NA)
+	desc <- spectrumRepresentation(object)
+	if ( is.null(desc) ) {
+		NA
+	} else if ( isTRUE(desc == "centroid spectrum") ) {
+		TRUE
+	} else {
+		FALSE
+	}
+}
+
 # processing metadata
 
 setMethod("normalization", "Vector",
