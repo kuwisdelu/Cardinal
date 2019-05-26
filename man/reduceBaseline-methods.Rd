@@ -14,18 +14,18 @@
 	Apply baseline reduction to the feature vectors of an imaging dataset.
 }
 \usage{
-\S4method{reduceBaseline}{SparseImagingExperiment}(object, method = c("median", "locmin"), \dots)
+\S4method{reduceBaseline}{SparseImagingExperiment}(object, method = c("locmin", "median"), \dots)
 
 \S4method{reduceBaseline}{MSImageSet}(object, method = "median",
     \dots,
     pixel = pixels(object),
     plot = FALSE)
 
-## Interpolated median baseline reduction
-reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
-
 ## Local minima baseline reduction
 reduceBaseline.locmin(x, window=5, \dots)
+
+## Interpolated median baseline reduction
+reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}

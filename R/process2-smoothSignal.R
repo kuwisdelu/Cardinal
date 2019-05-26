@@ -49,10 +49,10 @@ smoothSignal_plotfun <- function(s2, s1, ...,
 	lines(x, s2, lwd=0.5)
 }
 
-smoothSignal.ma2 <- smoothSignal.ma
-
 smoothSignal.gaussian2 <- smoothSignal.gaussian
 
-smoothSignal.kaiser2 <- smoothSignal.kaiser
-
 smoothSignal.sgolay2 <- smoothSignal.sgolay
+
+smoothSignal.ma2 <- smoothSignal.ma
+
+

@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: May 22, 2019"
+date: "Revised: May 25, 2019"
 output:
   BiocStyle::html_document:
   toc: true
@@ -891,25 +891,25 @@ Normalization to a reference is the most reliable form of normalization, but is 
 
 ## Spectral smoothing
 
-Use `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
+Use `smooth()` or `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
 
 ```{r smoothSignal-plot, fig.height=7, fig.width=9, results='hide'}
-mse %>% smoothSignal(method="gaussian") %>%
+mse %>% smooth(method="gaussian") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE,
 			par=list(main="Gaussian smoothing", layout=c(3,1)))
 
-mse %>% smoothSignal(method="ma") %>%
+mse %>% smooth(method="ma") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Moving average smoothing"))
 
-mse %>% smoothSignal(method="sgolay") %>%
+mse %>% smooth(method="sgolay") %>%
 	select(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Savitzky-Golay smoothing"))
 ```
 
 ```{r smoothSignal}
-mse_pre <- smoothSignal(mse_pre, method="gaussian")
+mse_pre <- smooth(mse_pre, method="gaussian")
 ```
 
 - `method="gaussian"` performs smoothing with a Gaussian kernel
@@ -923,23 +923,22 @@ mse_pre <- smoothSignal(mse_pre, method="gaussian")
 Use `reduceBaseline()` to queue baseline correction to an `MSImagingExperiment`.
 
 ```{r reduceBaseline-plot, fig.height=5, fig.width=9, results='hide'}
-mse %>% reduceBaseline(method="median") %>%
-	select(x==10, y==10, run=="run0") %>%
-	process(plot=TRUE,
-			par=list(main="Median interpolation", layout=c(2,1)))
-
 mse %>% reduceBaseline(method="locmin") %>%
 	select(x==10, y==10, run=="run0") %>%
-	process(plot=TRUE, par=list(main="Local minima"))
+	process(plot=TRUE, par=list(main="Local minima", layout=c(2,1)))
+
+mse %>% reduceBaseline(method="median") %>%
+	select(x==10, y==10, run=="run0") %>%
+	process(plot=TRUE, par=list(main="Median interpolation"))
 ```
 
 ```{r reduceBaseline}
-mse_pre <- reduceBaseline(mse_pre, method="median")
+mse_pre <- reduceBaseline(mse_pre, method="locmin")
 ```
 
-- `method="median"` splits a spectrum into blocks and interpolates from binned medians
-
 - `method="locmin"` interpolates a baseline from local minima
+
+- `method="median"` splits a spectrum into blocks and interpolates from binned medians
 
 ## Peak processing
 
@@ -1103,7 +1102,7 @@ Delayed pre-processing makes it easy to chain together multiple pre-processing s
 ```{r process-workflow, fig.height=5, fig.width=9, results='hide'}
 mse_proc <- mse %>%
 	normalize() %>%
-	smoothSignal() %>%
+	smooth() %>%
 	reduceBaseline() %>%
 	peakPick()
 
@@ -1123,7 +1122,7 @@ mse_peakref <- mse_proc %>%
 # bin profile spectra to peaks
 mse_peaks <- mse %>%
 	normalize() %>%
-	smoothSignal() %>%
+	smooth() %>%
 	reduceBaseline() %>%
 	peakBin(mz(mse_peakref))
 ```

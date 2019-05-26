@@ -3,7 +3,7 @@
 ## ---------------------------------------------
 
 setMethod("reduceBaseline", "SparseImagingExperiment",
-	function(object, method = c("median", "locmin"), ...)
+	function(object, method = c("locmin", "median"), ...)
 	{
 		fun <- reduceBaseline.method2(method)
 		object <- process(object, fun=fun,
@@ -17,10 +17,10 @@ setMethod("reduceBaseline", "SparseImagingExperiment",
 reduceBaseline.method2 <- function(method) {
 	if ( is.character(method) ) {
 		method <- match.method(method,
-			c("median", "locmin"))
+			c("locmin", "median"))
 		switch(method,
-			median = reduceBaseline.median2,
 			locmin = reduceBaseline.locmin,
+			median = reduceBaseline.median2,
 			match.fun(method))
 	} else {
 		match.fun(method)
