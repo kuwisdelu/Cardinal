@@ -83,6 +83,10 @@ setReplaceMethod("resolution", "MassDataFrame",
 			object
 	})
 
+setMethod("isCentroided", "MassDataFrame",
+	function(object, ...) is.unsorted(diff(mz(object))))
+
+
 # format names for printing includes 'mz' slot-column
 setMethod("showNames", "MassDataFrame",
 	function(object) c(":mz:", names(object)))

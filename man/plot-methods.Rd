@@ -7,6 +7,8 @@
 \alias{plot,DataFrame,ANY-method}
 \alias{plot,XDataFrame,missing-method}
 \alias{plot,XDataFrame,formula-method}
+\alias{plot,MassDataFrame,missing-method}
+\alias{plot,MassDataFrame,formula-method}
 \alias{plot,SparseImagingExperiment,missing-method}
 \alias{plot,SparseImagingExperiment,formula-method}
 \alias{plot,MSImagingExperiment,missing-method}
@@ -68,6 +70,8 @@
         jitter = FALSE,
         subset = TRUE,
         add = FALSE)
+
+\S4method{plot}{MassDataFrame,missing}(x, \dots, type = if (isCentroided(x)) "h" else "l")
 
 \S4method{plot}{SparseImagingExperiment,missing}(x, formula,
         pixel,

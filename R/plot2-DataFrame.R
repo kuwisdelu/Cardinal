@@ -163,3 +163,15 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 	}	
 })
 
+
+# methods for MassDataFrame
+
+setMethod("plot", c(x = "MassDataFrame", y = "formula"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
+setMethod("plot", c(x = "MassDataFrame", y = "missing"),
+	function(x, ..., type = if (isCentroided(x)) "h" else "l") {
+		callNextMethod(x, ..., type=type)
+	})
+
+

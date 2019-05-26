@@ -10,6 +10,7 @@
 \alias{mz<-,MassDataFrame-method}
 \alias{resolution,MassDataFrame-method}
 \alias{resolution<-,MassDataFrame-method}
+\alias{isCentroided,MassDataFrame-method}
 \alias{as.list,MassDataFrame-method}
 \alias{showNames,MassDataFrame-method}
 \alias{[,MassDataFrame,ANY,ANY,ANY-method}
@@ -41,6 +42,8 @@ MassDataFrame(mz, \dots, row.names = NULL, check.names = TRUE)
 		\item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the mass-to-charge ratio slot-column.}
 
 		\item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the estimated mass resolution of the mass-to-charge ratios. Typically, this should not be set manually.}
+
+		\item{\code{isCentroided(object)}:}{Guess whether the data are centroided or not, based on the m/z values.}
 
 		\item{\code{as.list(x, ..., slots = TRUE)}:}{Coerce the object to a \code{list}, where the slot-columns are included by default. Use \code{slots=FALSE} to exclude the slot-columns.}
 	}
