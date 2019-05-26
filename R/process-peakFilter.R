@@ -3,14 +3,10 @@
 ## ---------------------------
 
 setMethod("peakFilter", "MSImageSet",
-	function(object, method = "freq", ..., pixel, plot)
+	function(object, method = "freq", ...)
 	{
 		if ( !centroided(object) )
 			.stop("peakFilter: 'object' is not centroided. Run 'peakAlign' on it first.")
-		if ( !missing(pixel) )
-			.warning("peakFilter: argument 'pixel' is depricated.")
-		if ( !missing(plot) )
-			.warning("peakFilter: argument 'plot' is depricated.")
 		fun <- peakFilter.method(method)
 		.message("peakFilter: Using method = ", match.method(method))
 		.time.start()

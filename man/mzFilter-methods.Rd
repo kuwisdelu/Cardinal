@@ -12,28 +12,27 @@
 
 \alias{peakFilter.freq}
 
-\title{Filter the features of an imaging dataset}
+\title{Filter the features of an imaging dataset by intensity}
 \description{
 	Apply filtering to a mass spectrometry imaging dataset based on the intensities of each peak or mass feature.
 }
 \usage{
-\S4method{mzFilter}{MSImagingExperiment}(object, \dots, freq.min = 0, thresh.max = 0.01)
+\S4method{mzFilter}{MSImagingExperiment}(object, \dots, thresh.max = NA, freq.min = NA, rm.zero = TRUE)
 
-\S4method{peakFilter}{MSImagingExperiment}(object, \dots, freq.min = 0.01, thresh.max = 0)
+\S4method{peakFilter}{MSImagingExperiment}(object, \dots, thresh.max = NA, freq.min = 0.01, rm.zero = TRUE)
 
-\S4method{peakFilter}{MSImageSet}(object, method = "freq", \dots, pixel, plot)
+\S4method{peakFilter}{MSImageSet}(object, method = "freq", \dots)
 
 ## Filter based on the frequency of a peak
 peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
-    \item{freq.min}{Minimum frequency; peaks that occur in the dataset in lesser proportion than this will be dropped.}
     \item{thresh.max}{Minimum threshold relative to maximum mean intensity; features with mean intensity lesser than this, as a proportion of the maximum intensity in the mean spectrum, will be dropped.}
+    \item{freq.min}{Minimum frequency; peaks that occur in the dataset in lesser proportion than this will be dropped.}
+    \item{rm.zero}{Remove features with mean intensities of zero.}
     \item{\dots}{Additional arguments passed to the peak filtering method, or conditions evaluating to logical vectors where only those conditions that are TRUE are retained.}
     \item{method}{The peak filtering method to use.}
-    \item{pixel}{Deprecated.}
-    \item{plot}{Deprecated. (Never did anything anyway.)}
     \item{x}{The vector of ion image intensities to filter.}
 }
 \details{
