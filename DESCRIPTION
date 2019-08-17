@@ -1,7 +1,7 @@
 Package: Cardinal
 Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
-Version: 2.3.14
+Version: 2.3.15
 Date: 2015-1-12
 Author: Kylie A. Bemis <k.bemis@northeastern.edu>
 Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
@@ -10,7 +10,7 @@ Description: Implements statistical & computational tools for analyzing
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
 Depends: BiocGenerics, BiocParallel, EBImage, graphics,
-		methods, S4Vectors, stats, ProtGenerics
+		methods, S4Vectors (>= 0.23.18), stats, ProtGenerics
 Imports: Biobase, dplyr, irlba, lattice, Matrix,
 		matter, magrittr, mclust, nlme, parallel,
 		signal, sp, stats4, utils, viridisLite
