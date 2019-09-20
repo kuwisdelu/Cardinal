@@ -2,6 +2,7 @@
 TODO for Cardinal package
 -------------------------
 
+- Fix colorkey text cutoff for max values >= 1e4
 - Update summary() to use new stream_stat classes/functions
 - "MultiImagingExperiment" class for multimodal experiments
 - Multimodal image registration (w/ optical images, etc.)
