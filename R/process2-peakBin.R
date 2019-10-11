@@ -4,21 +4,27 @@
 
 setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 	function(object, ref, type=c("height", "area"),
-		tolerance = 200, units = c("ppm", "mz"), ...)
+		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		if ( is.na(tolerance) )
+			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
+			ppm = c("relative" = unname(tolerance) * 1e-6),
+			mz = c("absolute" = unname(tolerance)))
+		tol.ref <- switch(names(tol),
+			relative = "key",
+			absolute = "none")
 		mz <- mz(object)
-		peaks <- bsearch(ref, mz, tol=tol, tol.ref="key")
+		peaks <- bsearch(ref, mz, tol=tol, tol.ref=tol.ref)
 		peaks <- peaks[!is.na(peaks)]
 		type <- match.arg(type)
 		fun <- peakBin_fun(type, tol, mz, peaks)
+		postfun <- peakBin_postfun(tol)
 		metadata(featureData(object))[["reference peaks"]] <- ref
 		object <- process(object, fun=fun,
 			label="peakBin", kind="pixel",
 			moreargs=list(...),
-			postfun=peakBin_postfun,
+			postfun=postfun,
 			plotfun=peakBin_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
@@ -26,17 +32,20 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 
 setMethod("peakBin", c("MSImagingExperiment", "missing"),
 	function(object, type=c("height", "area"),
-		tolerance = 200, units = c("ppm", "mz"), ...)
+		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		if ( is.na(tolerance) )
+			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
+			ppm = c("relative" = unname(tolerance) * 1e-6),
+			mz = c("absolute" = unname(tolerance)))
 		type <- match.arg(type)
 		fun <- peakBin_fun(type, tol, NULL, NULL)
+		postfun <- peakBin_postfun(tol)
 		object <- process(object, fun=fun, ...,
 			label="peakBin", kind="pixel",
 			prefun=peakBin_prefun,
-			postfun=peakBin_postfun,
+			postfun=postfun,
 			plotfun=peakBin_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
@@ -72,27 +81,38 @@ peakBin_prefun <- function(object, ..., BPPARAM) {
 	object
 }
 
-peakBin_postfun <- function(object, ans, ...) {
-	if ( is.matter(ans) ) {
-		data <- as(ans, "matter_matc")
-	} else {
-		data <- as.matrix(simplify2array(ans))
+peakBin_postfun <- function(tol, ...) {
+	fun <- function(object, ans, ...) {
+		if ( is.matter(ans) ) {
+			data <- as(ans, "matter_matc")
+		} else {
+			data <- as.matrix(simplify2array(ans))
+		}
+		ref <- metadata(featureData(object))[["reference peaks"]]
+		if ( is.null(ref) )
+			.stop("couldn't find reference peaks")
+		mcols <- MassDataFrame(mz=ref)
+		res <- switch(names(tol),
+				relative = c(ppm = unname(tol) / 1e-6),
+				absolute = c(mz = 2 * unname(tol)))
+		metadata(mcols) <- metadata(featureData(object))
+		object <- MSImagingExperiment(data,
+			featureData=mcols,
+			pixelData=pixelData(object),
+			metadata=metadata(object),
+			processing=processingData(object),
+			centroided=TRUE)
+		res <- switch(names(tol),
+			relative = c(ppm = unname(tol) / 1e-6),
+			absolute = c(mz = 2 * unname(tol)))
+		resolution(featureData(object)) <- res
+		if ( !is.null(spectrumRepresentation(object)) )
+			spectrumRepresentation(object) <- "centroid spectrum"
+		.message("binned to ", length(ref), " reference peaks ",
+			"(", names(tol), " tol = ", tol, ")")
+		object
 	}
-	ref <- metadata(featureData(object))[["reference peaks"]]
-	if ( is.null(ref) )
-		.stop("couldn't find reference peaks")
-	mcols <- MassDataFrame(mz=ref)
-	metadata(mcols) <- metadata(featureData(object))
-	object <- MSImagingExperiment(data,
-		featureData=mcols,
-		pixelData=pixelData(object),
-		metadata=metadata(object),
-		processing=processingData(object),
-		centroided=TRUE)
-	if ( !is.null(spectrumRepresentation(object)) )
-		spectrumRepresentation(object) <- "centroid spectrum"
-	.message("binned to ", length(ref), " reference peaks")
-	object
+	fun
 }
 
 peakBin_plotfun <- function(s2, s1, ...,

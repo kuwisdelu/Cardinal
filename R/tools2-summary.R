@@ -29,7 +29,7 @@ setMethod("summary", "CrossValidated2",
 				description <- paste0(" Regression with ", ncol(y), " response variable")
 			}
 		}
-		folds <- pixelData(object)$..fold..
+		folds <- pixelData(object)$.fold
 		folds <- paste0(" Summarized ",
 			.spaste("%d folds: %s", levels(folds)), "\n")
 		out <- SummaryDataFrame(out,

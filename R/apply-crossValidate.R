@@ -47,13 +47,13 @@ setMethod("crossValidate", "MSImagingExperiment",
 				}
 			} else {
 				if ( is(.peaks, "MSImagingExperiment") ) {
-					iData(.x, "..peaks..") <- iData(.peaks)
+					iData(.x, ".peaks") <- iData(.peaks)
 				} else {
-					iData(.x, "..peaks..") <- .peaks
+					iData(.x, ".peaks") <- .peaks
 				}
 				FUN <- function(x, y, ..., BPPARAM) {
 					peaks <- x
-					imageData(peaks) <- ImageArrayList(iData(x, "..peaks.."))
+					imageData(peaks) <- ImageArrayList(iData(x, ".peaks"))
 					peaks <- do.call(peakAlign, c(list(peaks), alignArgs))
 					peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
 					peaks <- process(peaks, BPPARAM=BPPARAM)
@@ -180,7 +180,7 @@ setAs("CrossValidated", "CrossValidated2",
 				type=cv$type),
 			resultData=as(cv$results, "List"),
 			modelData=cv$models)
-		pixelData(out)$..fold.. <- pData(from)$sample
+		pixelData(out)$.fold <- pData(from)$sample
 		if ( cv$type == "classification" )
 			metadata(out)[["positive class"]] <- cv$pos
 		out

@@ -3,12 +3,14 @@
 ## -----------------------------------------
 
 setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
-	function(object, ref, tolerance = 1000, units = c("ppm", "mz"),
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"),
 		quantile = 0.2, span = 0.75, ...)
 	{
+		if ( is.na(tolerance) )
+			tolerance <- 5 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
+			ppm = c("relative" = unname(tolerance) * 1e-6),
+			mz = c("absolute" = unname(tolerance)))
 		fun <- mzAlign_fun(tol, span, quantile)
 		if ( length(ref) != nrow(object) ) {
 			.stop("length of reference [", length(ref),
@@ -24,12 +26,14 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 	})
 
 setMethod("mzAlign", c("MSImagingExperiment", "missing"),
-	function(object, tolerance = 1000, units = c("ppm", "mz"),
+	function(object, tolerance = NA, units = c("ppm", "mz"),
 		quantile = 0.2, span = 0.75, ...)
 	{
+		if ( is.na(tolerance) )
+			tolerance <- 5 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
+			ppm = c("relative" = unname(tolerance) * 1e-6),
+			mz = c("absolute" = unname(tolerance)))
 		fun <- mzAlign_fun(tol, span, quantile)
 		object <- process(object, fun=fun, ...,
 			label="mzAlign", kind="pixel",

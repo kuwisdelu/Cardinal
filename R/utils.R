@@ -174,15 +174,17 @@ Mscore <- function(a, b, type=3) {
 # Bin a signal
 bin_vector <- function(x, t, bins, fun=sum, ...) {
 	if ( is.list(bins) ) {
-		if ( missing(t) ) {
-			xout <- mapply(function(l, u) {
-				fun(x[l:u], ...)
-			}, bins[[1]], bins[[2]])
-		} else {
-			xout <- mapply(function(l, u) {
-				which <- findInterval(t, c(l, u))
-				fun(x[which == 1], ...)
-			}, bins[[1]], bins[[2]])
+		nbins <- length(bins[[1]])
+		xout <- numeric(nbins)
+		for ( i in seq_len(nbins) ) {
+			l <- bins[[1]][i]
+			u <- bins[[2]][i]
+			if ( missing(t) ) {
+				j <- l:u
+			} else {
+				j <- findInterval(t, c(l, u)) == 1L
+			}
+			xout[i] <- fun(x[j], ...)
 		}
 	} else {
 		which <- findInterval(t, bins)

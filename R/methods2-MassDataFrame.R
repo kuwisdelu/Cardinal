@@ -62,6 +62,13 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 	res
 }
 
+.findMaxMassDiff <- function(x, units) {
+	mzdiff <- switch(units,
+		ppm = c("ppm" = ceiling(1e6 * max(diff(mz(x)) / mz(x)[-1]))),
+		mz = c("mz" = ceiling(max(diff(mz(x))))))
+	mzdiff
+}
+
 setMethod("mz", "MassDataFrame",
 	function(object) object@mz)
 

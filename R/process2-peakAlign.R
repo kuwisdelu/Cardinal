@@ -3,11 +3,13 @@
 ## ----------------------------------------------
 
 setMethod("peakAlign", c("MSImagingExperiment", "missing"),
-	function(object, tolerance = 200, units = c("ppm", "mz"), ...)
+	function(object, tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		if ( is.na(tolerance) )
+			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
-			ppm = c("relative" = tolerance * 1e-6),
-			mz = c("absolute" = tolerance))
+			ppm = c("relative" = unname(tolerance) * 1e-6),
+			mz = c("absolute" = unname(tolerance)))
 		if ( is.null(metadata(featureData(object))[["reference peaks"]]) ) {
 			prefun <- peakAlign_prefun
 		} else {
@@ -55,6 +57,10 @@ peakAlign_postfun <- function(tol, ...) {
 		mz(object) <- ref
 		tolerance(object) <- tol
 		combiner(object) <- "max"
+		res <- switch(names(tol),
+			relative = c(ppm = unname(tol) / 1e-6),
+			absolute = c(mz = 2 * unname(tol)))
+		resolution(featureData(object)) <- res
 		.message("aligned to ", length(ref), " reference peaks ",
 			"(", names(tol), " tol = ", tol, ")")
 		if ( !is.null(spectrumRepresentation(object)) )

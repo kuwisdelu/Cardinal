@@ -3,7 +3,7 @@
 ## ----------------------
 
 readImzML <- function(name, folder = getwd(), attach.only = TRUE,
-	mass.range = NULL, resolution = 200, units = c("ppm", "mz"),
+	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	as = c("MSImagingExperiment", "MSImageSet"), parse.only=FALSE,
 	BPPARAM = bpparam(), ...)
 {
@@ -108,6 +108,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		if ( units == "ppm" ) {
 			if ( floor(mz.min) <= 0 )
 				.stop("m/z values must be positive for units='ppm'")
+			if ( is.na(resolution) ) {
+				.message("estimating mass resolution...")
+				resolution <- sapply(mz, function(m) median(1e6 * diff(m) / m[-1]), BPPARAM=BPPARAM)
+				resolution <- ceiling(max(resolution) / 2)
+				.message("estimated mass resolution: ", resolution, " ", units)
+			}
 			mzout <- seq.ppm(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
@@ -115,6 +121,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			error <- resolution * 1e-6 * mzout
 			tol <- c(relative = resolution * 1e-6)
 		} else {
+			if ( is.na(resolution) ) {
+				.message("estimating mass resolution...")
+				resolution <- sapply(mz, function(m) median(diff(m)), BPPARAM=BPPARAM)
+				resolution <- ceiling(max(resolution))
+				.message("estimated mass resolution: ", resolution, " ", units)
+			}
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),

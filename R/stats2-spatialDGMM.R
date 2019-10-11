@@ -131,11 +131,13 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	# initialize parameters (theta: mu, sigma, alpha, beta)
 	km <- try(kmeans(xi, centers=gmm$parameters$mean), silent=TRUE)
 	if ( inherits(km, "try-error") ) {
+		var_ok <- FALSE
 		ncl <- 0
 	} else {
+		var_ok <- all(tapply(xi, km$cluster, var) > 0)
 		ncl <- tabulate(km$cluster)
 	}
-	if ( init == "kmeans" && K > 1 && all(ncl > 1) ) {
+	if ( init == "kmeans" && K > 1 && all(ncl > 1) && var_ok ) {
 		mu <- as.numeric(km$centers)
 		sigma <- as.numeric(tapply(xi, km$cluster, var))
 	} else {

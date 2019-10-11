@@ -3,10 +3,19 @@
 ## -----------------------------------
 
 setMethod("mzBin", c("MSImagingExperiment", "numeric"),
-	function(object, ref, width = 400, units = c("ppm", "mz"), fun=sum, ...)
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"), fun=sum, ...)
 	{
+		dots <- list(...)
+		if ( "width" %in% names(dots) ) {
+			tolerance <- dots$width
+			.warning("'width' is deprecated\n",
+				"Use 'tolerance' instead.")
+		}
+		width <- 2 * tolerance
 		units <- match.arg(units)
 		FUN <- match.fun(fun)
+		if ( is.na(width) )
+			width <- 2 * .findMaxMassDiff(object, units)
 		fun <- mzBin_fun(ref, width, units, FUN)
 		if ( length(ref) >= nrow(object) ) {
 			.warning("new dimension [", length(ref), "] is greater ",
@@ -24,11 +33,13 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 
 setMethod("mzBin", c("MSImagingExperiment", "missing"),
 	function(object, from=min(mz(object)), to=max(mz(object)), by,
-		resolution = 200, units = c("ppm", "mz"), fun=sum, ...)
+		resolution = NA, units = c("ppm", "mz"), fun=sum, ...)
 	{
 		units <- match.arg(units)
 		if ( missing(by) )
 			by <- switch(units, ppm=resolution * 2, mz=resolution)
+		if ( is.na(by) )
+			by <- 2 * .findMaxMassDiff(object, units)
 		halfwidth <- by / 2
 		ref <- switch(units,
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
@@ -37,7 +48,7 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")
 		}
-		mzBin(object, ref=ref, width=2 * halfwidth,
+		mzBin(object, ref=ref, tolerance=2 * halfwidth,
 			units=units, fun=fun, ...)
 	})
 
