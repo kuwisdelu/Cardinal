@@ -4,9 +4,11 @@
 
 \alias{\%>\%}
 
+\alias{arrange}
 \alias{groups}
 \alias{group_by}
 \alias{ungroup}
+\alias{collect}
 
 \alias{viridis}
 \alias{cividis}
@@ -22,7 +24,7 @@
   \describe{
         \item{\code{maggritr}:}{\code{\%>\%}}
 
-		\item{\code{dplyr}:}{\code{group_by}, \code{ungroup}, \code{groups}}
+		\item{\code{dplyr}:}{\code{group_by}, \code{ungroup}, \code{groups}, \code{collect}}
 
         \item{\code{viridisLite}:}{\code{viridis}, \code{cividis}, \code{magma}, \code{inferno}, \code{plasma}}
     }

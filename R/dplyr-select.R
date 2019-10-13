@@ -1,32 +1,28 @@
 
 ## Subset a DataFrame by columns
 
-setMethod("select", "DataFrame",
-	function(.data, ...)
+select.DataFrame <- function(.data, ...)
 	{
 		select(as(.data, "XDataFrame"), ...)
-	})
+	}
 
-setMethod("select", "XDataFrame",
-	function(.data, ...)
+select.XDataFrame <- function(.data, ...)
 	{
 		x <- select(.XDataFrame_to_tbl(.data), ...)
 		x <- as(x, class(.data))
-		groups(x) <- groups(.data)
+		x@groups <- groups(.data)
 		x
-	})
+	}
 
-setMethod("select", "SummaryDataFrame",
-	function(.data, ...)
+select.SummaryDataFrame <- function(.data, ...)
 	{
 		select(as.data.frame(.data), ...)
-	})
+	}
 
 ## Subset an imaging dataset by columns/pixels
 
-setMethod("select", "SparseImagingExperiment",
-	function(.data, ...)
+select.SparseImagingExperiment <- function(.data, ...)
 	{
 		.data[,pixels(.data, ..., .env=parent.frame(1))]
-	})
+	}
 

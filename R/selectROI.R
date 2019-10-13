@@ -119,11 +119,3 @@ makeFactor <- function(..., ordered = FALSE) {
 	inds <- apply(inds, 1, function(i) which(i)[1L])
 	factor(labs[inds], levels=labs, ordered=ordered)
 }
-
-# defunct
-
-setMethod("select", "SImageSet",
-	function(.data, ...) {
-		.Defunct("selectROI")
-	})
-

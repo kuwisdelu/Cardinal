@@ -11,16 +11,16 @@
 	Apply spectral alignment to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{mzAlign}{MSImagingExperiment,numeric}(object, ref, tolerance = 1000, units = c("ppm", "mz"),
+\S4method{mzAlign}{MSImagingExperiment,numeric}(object, ref, tolerance = NA, units = c("ppm", "mz"),
         quantile = 0.2, span = 0.75, \dots)
 
-\S4method{mzAlign}{MSImagingExperiment,missing}(object, tolerance = 1000, units = c("ppm", "mz"),
+\S4method{mzAlign}{MSImagingExperiment,missing}(object, tolerance = NA, units = c("ppm", "mz"),
         quantile = 0.2, span = 0.75, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}
     \item{ref}{A reference spectrum to use for alignment.}
-    \item{tolerance}{The tolerance to be used when matching the peaks in the unaligned spectra to the reference spectrum.}
+    \item{tolerance}{The tolerance to be used when matching the peaks in the unaligned spectra to the reference spectrum. If this is NA, then automatically guess a tolerance from the data.}
     \item{units}{The units to use for the \code{tolerance}.}
     \item{quantile}{The top quantile of reference points (peaks detected via local maxima) to use from the reference spectrum.}
     \item{span}{The smoothing parameter for the local polynomial regression used to determine the warping function.}

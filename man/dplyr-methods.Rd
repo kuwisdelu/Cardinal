@@ -4,33 +4,13 @@
 \alias{filter}
 \alias{select}
 \alias{mutate}
+\alias{summarise}
 \alias{summarize}
 
-\alias{filter,DataFrame-method}
-\alias{select,DataFrame-method}
-\alias{mutate,DataFrame-method}
-\alias{arrange,DataFrame-method}
-\alias{summarize,DataFrame-method}
-\alias{group_by,DataFrame-method}
-
-\alias{filter,SummaryDataFrame-method}
-\alias{select,SummaryDataFrame-method}
-\alias{mutate,SummaryDataFrame-method}
-\alias{arrange,SummaryDataFrame-method}
-\alias{summarize,SummaryDataFrame-method}
-
-\alias{filter,XDataFrame-method}
-\alias{select,XDataFrame-method}
-\alias{mutate,XDataFrame-method}
-\alias{arrange,XDataFrame-method}
-\alias{summarize,XDataFrame-method}
-\alias{group_by,XDataFrame-method}
-\alias{ungroup,XDataFrame-method}
-
-\alias{filter,SparseImagingExperiment-method}
-\alias{select,SparseImagingExperiment-method}
-\alias{mutate,SparseImagingExperiment-method}
-\alias{summarize,SparseImagingExperiment-method}
+\alias{filter.SparseImagingExperiment}
+\alias{select.SparseImagingExperiment}
+\alias{mutate.SparseImagingExperiment}
+\alias{summarise.SparseImagingExperiment}
 
 \title{Data transformation and summarization}
 \description{
@@ -39,13 +19,13 @@
     See the descriptions below for details.
 }
 \usage{
-\S4method{filter}{SparseImagingExperiment}(.data, \dots, .preserve=FALSE)
+\method{filter}{SparseImagingExperiment}(.data, \dots, .preserve=FALSE)
 
-\S4method{select}{SparseImagingExperiment}(.data, \dots)
+\method{select}{SparseImagingExperiment}(.data, \dots)
 
-\S4method{mutate}{SparseImagingExperiment}(.data, \dots)
+\method{mutate}{SparseImagingExperiment}(.data, \dots)
 
-\S4method{summarize}{SparseImagingExperiment}(.data, \dots,
+\method{summarise}{SparseImagingExperiment}(.data, \dots,
     .by = c("feature", "pixel"), .group_by,
     .stat = c("min", "max", "mean", "sum", "sd", "var"),
     .tform = identity,

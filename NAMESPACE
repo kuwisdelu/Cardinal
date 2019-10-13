@@ -84,6 +84,7 @@ importFrom("dplyr",
 	"select",
 	"filter",
 	"summarize",
+	"summarise",
 	"arrange",
 	"group_by",
 	"group_by_drop_default",
@@ -509,11 +510,49 @@ exportMethods(
 	"topLabels",
 	"topFeatures")
 
-exportMethods(
+S3method("arrange", "DataFrame")
+S3method("arrange", "XDataFrame")
+S3method("arrange", "SummaryDataFrame")
+
+S3method("filter", "DataFrame")
+S3method("filter", "XDataFrame")
+S3method("filter", "SummaryDataFrame")
+S3method("filter", "SparseImagingExperiment")
+
+S3method("group_by", "DataFrame")
+S3method("group_by", "XDataFrame")
+
+S3method("ungroup", "XDataFrame")
+
+S3method("groups", "XDataFrame")
+
+S3method("mutate", "DataFrame")
+S3method("mutate", "XDataFrame")
+S3method("mutate", "SummaryDataFrame")
+S3method("mutate", "SparseImagingExperiment")
+
+S3method("select", "DataFrame")
+S3method("select", "XDataFrame")
+S3method("select", "SummaryDataFrame")
+S3method("select", "SparseImagingExperiment")
+
+S3method("slice", "SparseImagingExperiment")
+
+S3method("summarise", "DataFrame")
+S3method("summarise", "XDataFrame")
+S3method("summarise", "SummaryDataFrame")
+S3method("summarise", "SparseImagingExperiment")
+
+S3method("collect", "SparseImagingExperiment")
+S3method("collect", "MSImagingExperiment")
+S3method("collect", "MSProcessedImagingExperiment")
+
+export(
 	"mutate",
 	"filter",
 	"select",
 	"summarize",
+	"summarise",
 	"arrange",
 	"group_by",
 	"ungroup",

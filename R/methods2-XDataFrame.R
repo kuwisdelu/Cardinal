@@ -24,17 +24,6 @@ setMethod("length", "XDataFrame",
 		length(x@listData)
 	})
 
-setMethod("groups", "XDataFrame", 
-	function(x) {
-		x@groups
-	})
-
-setReplaceMethod("groups", "XDataFrame", 
-	function(x, value) {
-		x@groups <- value
-		x
-	})
-
 setMethod("lapply", "XDataFrame", 
 	function(X, FUN, ..., slots = FALSE) {
 		if ( slots ) {

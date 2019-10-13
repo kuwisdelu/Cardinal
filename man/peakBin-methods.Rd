@@ -12,16 +12,16 @@
 }
 \usage{
 \S4method{peakBin}{MSImagingExperiment,numeric}(object, ref, type=c("height", "area"),
-        tolerance = 200, units = c("ppm", "mz"), \dots)
+        tolerance = NA, units = c("ppm", "mz"), \dots)
 
 \S4method{peakBin}{MSImagingExperiment,missing}(object, type=c("height", "area"),
-        tolerance = 200, units = c("ppm", "mz"), \dots)
+        tolerance = NA, units = c("ppm", "mz"), \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}
     \item{ref}{A reference to which the peaks are binned.}
     \item{type}{Should the summarized intensity of the peak by the maximum height of the peak or the area under the curve?}
-    \item{tolerance}{The tolerance to be used when matching the m/z features in the dataset to the reference.}
+    \item{tolerance}{The tolerance to be used when matching the m/z features in the dataset to the reference. If this is NA, then automatically guess a resolution from the data.}
     \item{units}{The units to use for the \code{tolerance}.}
     \item{\dots}{Ignored.}
 }

@@ -1,31 +1,27 @@
 
 ## Add columns to a DataFrame
 
-setMethod("mutate", "DataFrame",
-	function(.data, ...)
+mutate.DataFrame <- function(.data, ...)
 	{
 		mutate(as(.data, "XDataFrame"), ...)
-	})
+	}
 
-setMethod("mutate", "XDataFrame",
-	function(.data, ...)
+mutate.XDataFrame <- function(.data, ...)
 	{
 		x <- mutate(.XDataFrame_to_tbl(.data), ...)
 		x <- as(x, class(.data))
-		groups(x) <- groups(.data)
+		x@groups <- groups(.data)
 		x
-	})
+	}
 
-setMethod("mutate", "SummaryDataFrame",
-	function(.data, ...)
+mutate.SummaryDataFrame <- function(.data, ...)
 	{
 		mutate(as.data.frame(.data), ...)
-	})
+	}
 
 ## Add metadata columns to an imaging experiment
 
-setMethod("mutate", "SparseImagingExperiment",
-	function(.data, ...)
+mutate.SparseImagingExperiment <- function(.data, ...)
 	{
 		mdata <- mcols(.data)
 		expr <- eval(substitute(alist(...)))
@@ -48,5 +44,5 @@ setMethod("mutate", "SparseImagingExperiment",
 			mcols(.data) <- mdata
 		}
 		.data
-	})
+	}
 

@@ -1,8 +1,7 @@
 
 ## Slice an imaging dataset (as a data cube)
 
-setMethod("slice", "SparseImagingExperiment",
-	function(.data, ..., .preserve = FALSE)
+slice.SparseImagingExperiment <- function(.data, ..., .preserve = FALSE)
 	{
 		i <- features(.data, ...)
 		values <- iData(.data)[i,,drop=FALSE]
@@ -44,5 +43,5 @@ setMethod("slice", "SparseImagingExperiment",
 		if ( !.preserve )
 			a <- drop(a)
 		a
-	})
+	}
 

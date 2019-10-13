@@ -97,8 +97,7 @@ setReplaceMethod("combiner", "MSProcessedImagingExperiment",
 		object
 	})
 
-setMethod("collect", "MSProcessedImagingExperiment",
-	function(x, ..., as.matrix = FALSE)
+collect.MSProcessedImagingExperiment <- function(x, ..., as.matrix = FALSE)
 	{
 		if ( as.matrix )
 			return(callNextMethod(x, ...))
@@ -111,6 +110,6 @@ setMethod("collect", "MSProcessedImagingExperiment",
 		imageData(x) <- as(endoapply(data, fun), "MSProcessedImagingSpectraList")
 		if ( validObject(x) )
 			x
-	})
+	}
 
 

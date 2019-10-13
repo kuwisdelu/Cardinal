@@ -18,7 +18,7 @@
 	Apply peak alignment to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakAlign}{MSImagingExperiment,missing}(object, tolerance = 200, units = c("ppm", "mz"), \dots)
+\S4method{peakAlign}{MSImagingExperiment,missing}(object, tolerance = NA, units = c("ppm", "mz"), \dots)
 
 \S4method{peakAlign}{MSImagingExperiment,character}(object, ref, \dots)
 
@@ -42,7 +42,7 @@ peakAlign.DP(x, y, gap=0, \dots)
 \arguments{
     \item{object}{An imaging dataset.}
     \item{ref}{A reference to which to align the peaks.}
-    \item{tolerance}{The tolerance to be used when aligning detected peaks to the reference.}
+    \item{tolerance}{The tolerance to be used when aligning detected peaks to the reference. If this is NA, then automatically guess a tolerance from the data.}
     \item{units}{The units to use for the \code{tolerance}. Either parts-per-million or the raw m/z values.}
     \item{method}{The peak alignment method to use.}
     \item{pixel}{The pixels to align. If less than the extent of the dataset, this will result in a subset of the data being processed.}

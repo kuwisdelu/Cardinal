@@ -1,30 +1,26 @@
 
 ## Summarize a DataFrame
 
-setMethod("summarize", "DataFrame",
-	function(.data, ...)
+summarise.DataFrame <- function(.data, ...)
 	{
 		summarize(as(.data, "XDataFrame"), ...)
-	})
+	}
 
-setMethod("summarize", "XDataFrame",
-	function(.data, ...)
+summarise.XDataFrame <- function(.data, ...)
 	{
 		x <- summarize(.XDataFrame_to_tbl(.data), ...)
 		x <- as(x, class(.data))
 		x
-	})
+	}
 
-setMethod("summarize", "SummaryDataFrame",
-	function(.data, ...)
+summarise.SummaryDataFrame <- function(.data, ...)
 	{
 		summarize(as.data.frame(.data), ...)
-	})
+	}
 
 ## Summarize the pixels or features of an imaging dataset
 
-setMethod("summarize", "SparseImagingExperiment",
-	function(.data, ...,
+summarise.SparseImagingExperiment <- function(.data, ...,
 			.by = c("feature", "pixel"), .group_by,
 			.stat = c("min", "max", "mean",
 				"sum", "sd", "var"),
@@ -90,7 +86,7 @@ setMethod("summarize", "SparseImagingExperiment",
 			ans[,scolnames] <- scols
 		}
 		ans
-	})
+	}
 
 .summarize_expr <- function(object, by, groups, expr, tform, BPPARAM) {
 	margin <- switch(by,
