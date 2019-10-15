@@ -45,7 +45,7 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{SpatialFastmap2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialFastmap}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialFastmap2}, which is a \code{ImagingResult}, or an object of class \code{SpatialFastmap}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{scores}:}{A matrix with the FastMap component scores.}

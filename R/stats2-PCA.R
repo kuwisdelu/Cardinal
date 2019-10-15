@@ -68,7 +68,7 @@ setMethod("predict", "PCA2",
 
 setAs("PCA", "PCA2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "PCA2")
+		to <- .coerce_ImagingResult(from, "PCA2")
 		metadata(to)$mapping <- list(feature="loadings", pixel="scores")
 		i <- which.max(modelData(to)$ncomp)
 		.PCA2(

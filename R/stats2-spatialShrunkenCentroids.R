@@ -27,7 +27,7 @@ setMethod("spatialShrunkenCentroids",
 				method=method, dist=dist, BPPARAM=BPPARAM, ...))
 		}
 		.message("calculating global centroid...")
-		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
+		mean <- rowStats(iData(x), "mean", BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -82,7 +82,7 @@ setMethod("spatialShrunkenCentroids",
 		method <- match.arg(method)
 		y <- as.factor(y)
 		.message("calculating global centroid...")
-		mean <- summarize(x, .stat="mean", BPPARAM=BPPARAM[[1]])$mean
+		mean <- rowStats(iData(x), "mean", BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -171,7 +171,7 @@ setMethod("logLik", "SpatialShrunkenCentroids2", function(object, ...) {
 
 setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "SpatialShrunkenCentroids2")
+		to <- .coerce_ImagingResult(from, "SpatialShrunkenCentroids2")
 		metadata(to)$mapping <- list(feature=c("centers", "tstatistics"),
 			pixel=c("probabilities", "classes", "scores"))
 		resultData(to) <- endoapply(resultData(to), function(res) {
@@ -243,18 +243,11 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		options(Cardinal.verbose=verbose)
 	})
 	# calculate class centers
-	centers <- summarize(x, .stat="mean", .group_by=class, BPPARAM=BPPARAM)
-	centers <- as.matrix(centers, slots=FALSE)
+	centers <- rowStats(iData(x), "mean", groups=class, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
-	iclass <- as.integer(class)
-	tform <- function(xbl) {
-		i <- attr(xbl, "idx")
-		switch(attr(xbl, "by"),
-			"feature" = (xbl - centers[i,iclass,drop=FALSE])^2,
-			"pixel" = (xbl - centers[,iclass[i],drop=FALSE])^2)
-	}
-	wcss <- summarize(x, .stat="sum", .group_by=class, .tform=tform, BPPARAM=BPPARAM)
+	wcss <- rowStats(iData(x), "sum", groups=class, row.center=centers,
+					tform=function(y) y^2, BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))

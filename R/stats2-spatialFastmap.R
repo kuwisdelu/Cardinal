@@ -42,7 +42,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 
 setAs("SpatialFastmap", "SpatialFastmap2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "SpatialFastmap2")
+		to <- .coerce_ImagingResult(from, "SpatialFastmap2")
 		metadata(to)$mapping <- list(feature="correlation", pixel="scores")
 		to
 	})

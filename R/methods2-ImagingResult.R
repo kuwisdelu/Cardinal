@@ -1,8 +1,8 @@
 
-#### Methods for ResultImagingExperiment ####
+#### Methods for ImagingResult ####
 ## ------------------------------------------
 
-.valid.ResultImagingExperiment <- function(object) {
+.valid.ImagingResult <- function(object) {
 	errors <- NULL
 	if ( length(object@resultData) != nrow(object@modelData) )
 		errors <- c(errors , paste("length of 'resultData'",
@@ -10,12 +10,12 @@
 	if ( is.null(errors) ) TRUE else errors
 }
 
-setValidity("ResultImagingExperiment", .valid.ResultImagingExperiment)
+setValidity("ImagingResult", .valid.ImagingResult)
 
-setMethod("resultData", c("ResultImagingExperiment", "missing"), 
+setMethod("resultData", c("ImagingResult", "missing"), 
 	function(object, ...) object@resultData)
 
-setMethod("resultData", c("ResultImagingExperiment", "ANY"), 
+setMethod("resultData", c("ImagingResult", "ANY"), 
 	function(object, i, j, ...) {
 		if ( is.list(i) )
 			i <- subset_rows(modelData(object), i)
@@ -26,14 +26,14 @@ setMethod("resultData", c("ResultImagingExperiment", "ANY"),
 		}
 	})
 
-setReplaceMethod("resultData", c("ResultImagingExperiment", "missing"), 
+setReplaceMethod("resultData", c("ImagingResult", "missing"), 
 	function(object, ..., value) {
 		object@resultData <- value
 		if ( validObject(object) )
 			object
 	})
 
-setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"), 
+setReplaceMethod("resultData", c("ImagingResult", "ANY"), 
 	function(object, i, j, ..., value) {
 		if ( is.list(i) )
 			i <- subset_rows(modelData(object), i)
@@ -46,7 +46,7 @@ setReplaceMethod("resultData", c("ResultImagingExperiment", "ANY"),
 			object
 	})
 
-setMethod("resultNames", "ResultImagingExperiment", 
+setMethod("resultNames", "ImagingResult", 
 	function(object, i, ...) {
 		if ( !missing(i) && is.list(i) )
 			i <- subset_rows(modelData(object), i)
@@ -57,17 +57,17 @@ setMethod("resultNames", "ResultImagingExperiment",
 		}
 	})
 
-setMethod("modelData", "ResultImagingExperiment",
+setMethod("modelData", "ImagingResult",
 	function(object, ...) object@modelData)
 
-setReplaceMethod("modelData", "ResultImagingExperiment",
+setReplaceMethod("modelData", "ImagingResult",
 	function(object, ..., value) {
 		object@modelData <- value
 		if ( validObject(object) )
 			object			
 	})
 
-setMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
+setMethod("[[", c("ImagingResult", "ANY", "ANY"),
 	function(x, i, j, ...) {
 		if ( !missing(j) ) {
 			x@resultData[[i]][[j]]
@@ -76,7 +76,7 @@ setMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
 		}
 	})
 
-setReplaceMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
+setReplaceMethod("[[", c("ImagingResult", "ANY", "ANY"),
 	function(x, i, j, ..., value) {
 		if ( !missing(j) ) {
 			x@resultData[[i]][[j]] <- value
@@ -85,7 +85,7 @@ setReplaceMethod("[[", c("ResultImagingExperiment", "ANY", "ANY"),
 		}
 	})
 
-setMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
+setMethod("[[", c("SparseImagingResult", "ANY", "ANY"),
 	function(x, i, j, ...) {
 		if ( !missing(j) ) {
 			x@resultData[[i]][[j]]
@@ -94,7 +94,7 @@ setMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
 		}
 	})
 
-setReplaceMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
+setReplaceMethod("[[", c("SparseImagingResult", "ANY", "ANY"),
 	function(x, i, j, ..., value) {
 		if ( !missing(j) ) {
 			x@resultData[[i]][[j]] <- value
@@ -103,17 +103,17 @@ setReplaceMethod("[[", c("SparseResultImagingExperiment", "ANY", "ANY"),
 		}
 	})
 
-.DollarNames.ResultImagingExperiment <- function(x, pattern = "")
+.DollarNames.ImagingResult <- function(x, pattern = "")
 	grep(pattern, names(resultData(x, 1L)), value=TRUE)
 
-setMethod("$", "ResultImagingExperiment",
+setMethod("$", "ImagingResult",
 	function(x, name) {
 		lapply(x@resultData, function(res) res[[name, exact=FALSE]])
 	})
 
 ## subsetting
 
-setMethod("[", "SparseResultImagingExperiment",
+setMethod("[", "SparseImagingResult",
 	function(x, i, j, ..., drop) {
 		lst <- (nargs() - !missing(drop)) < 3L
 		if ( lst ) {
@@ -147,7 +147,7 @@ setMethod("[", "SparseResultImagingExperiment",
 
 ## combine
 
-setMethod("combine", "SparseResultImagingExperiment",
+setMethod("combine", "SparseImagingResult",
 	function(x, y, ...) {
 		x@resultData <- c(x@resultData, y@resultData)
 		x@modelData <- rbind(x@modelData, y@modelData)
@@ -156,16 +156,16 @@ setMethod("combine", "SparseResultImagingExperiment",
 	}
 )
 
-setMethod("rbind", "SparseResultImagingExperiment",
+setMethod("rbind", "SparseImagingResult",
 	function(..., deparse.level=1) .stop("can't rbind results"))
 
-setMethod("cbind", "SparseResultImagingExperiment",
+setMethod("cbind", "SparseImagingResult",
 	function(..., deparse.level=1) .stop("can't cbind results"))
 
 
 # show
 
-.show.ResultImagingExperiment <- function(object) {
+.show.ImagingResult <- function(object) {
 	t1 <- "    "
 	# resultData()
 	if ( !is.null(resultNames(object, 1L)) )
@@ -178,24 +178,24 @@ setMethod("cbind", "SparseResultImagingExperiment",
 	.scat("modelData(%d): %s\n", names(modelData(object)), prefix=t1)
 }
 
-setMethod("show", "ResultImagingExperiment",
+setMethod("show", "ImagingResult",
 	function(object) {
 		callNextMethod(object)
-		.show.ResultImagingExperiment(object)
+		.show.ImagingResult(object)
 	}
 )
 
-setMethod("show", "SparseResultImagingExperiment",
+setMethod("show", "SparseImagingResult",
 	function(object) {
 		.show_SparseIE <- selectMethod("show", "SparseImagingExperiment")
 		.show_SparseIE(object)
-		.show.ResultImagingExperiment(object)
+		.show.ImagingResult(object)
 	}
 )
 
 # coerce from ResultSet
 
-.coerce_ResultImagingExperiment <- function(from, toclass) {
+.coerce_ImagingResult <- function(from, toclass) {
 	new(toclass,
 		imageData=.SimpleImageArrayList(),
 		featureData=XDataFrame(fData(from)),

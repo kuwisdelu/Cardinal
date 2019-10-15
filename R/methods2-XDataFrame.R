@@ -198,11 +198,12 @@ setMethod("show", "XDataFrame",
 		cols <- groupnames %in% colnames
 		if ( any(!cols) )
 			.data[groupnames] <- groups(.data)[groupnames]
-		.data <- as.data.frame(as.list(.data), optional=TRUE)
+		.data <- as_tibble(as.list(.data))
 		.data <- grouped_df(.data, groupnames)
-		.data <- .data[colnames]
+		if ( any(!cols) )
+			.data <- .data[colnames]
 	} else {
-		.data <- as.data.frame(as.list(.data), optional=TRUE)
+		.data <- as_tibble(as.list(.data))
 	}
-	as_tibble(.data)
+	.data
 }

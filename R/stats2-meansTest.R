@@ -107,7 +107,7 @@ setMethod("meansTest", "SparseImagingExperiment",
 }
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
-	response <- summarize(x, .stat="mean", .group_by=groups, BPPARAM=BPPARAM)
+	response <- rowStats(iData(x), "mean", groups=groups, BPPARAM=BPPARAM)
 	response <- t(as.matrix(response, slots=FALSE))
 	pdata <- as.data.frame(pData(x), slots=FALSE)
 	pdata <- cbind(data.frame(run=run(x)), pdata)

@@ -49,7 +49,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 
 setAs("SpatialKMeans", "SpatialKMeans2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "SpatialKMeans2")
+		to <- .coerce_ImagingResult(from, "SpatialKMeans2")
 		metadata(to)$mapping <- list(pixel="cluster",
 			feature=c("centers", "betweenss", "withinss"))
 		metadata(to)$method <- resultData(to, 1, "method")
@@ -72,8 +72,7 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
-	centers <- summarize(x, .stat="mean", .group_by=cluster, BPPARAM=BPPARAM)
-	centers <- as.matrix(centers, slots=FALSE)
+	centers <- rowStats(iData(x), "mean", groups=cluster, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters
 	do_rbind <- function(ans) do.call("rbind", ans)

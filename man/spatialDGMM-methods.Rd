@@ -39,7 +39,7 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{SpatialDGMM}, which is a \code{ResultImagingExperiment}, where each element of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialDGMM}, which is a \code{ImagingResult}, where each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{estimates}:}{A list giving the parameter estimates for the means and variances for each Gaussian component.}

@@ -149,7 +149,7 @@ setMethod("fitted", "PLS2",
 
 setAs("PLS", "PLS2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "PLS2")
+		to <- .coerce_ImagingResult(from, "PLS2")
 		metadata(to)$mapping <- list(
 					feature=c("coefficients", "loadings", "weights"),
 					pixel=c("fitted", "scores"))
@@ -171,7 +171,7 @@ setAs("PLS", "PLS2",
 
 setAs("OPLS", "OPLS2",
 	function(from) {
-		to <- .coerce_ResultImagingExperiment(from, "OPLS2")
+		to <- .coerce_ImagingResult(from, "OPLS2")
 		metadata(to)$mapping <- list(
 					feature=c("coefficients", "loadings", "weights"),
 					pixel=c("fitted", "scores"))

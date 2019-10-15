@@ -9,7 +9,8 @@ filter.DataFrame <- function(.data, ..., .preserve = FALSE)
 filter.XDataFrame <- function(.data, ..., .preserve = FALSE)
 	{
 		x <- filter(.XDataFrame_to_tbl(.data), ..., .preserve=.preserve)
-		x <- as(x, class(.data))
+		x <- tryCatch(as(x, class(.data)),
+			error=function(e) as(x, "XDataFrame"))
 		x@groups <- groups(.data)
 		x
 	}

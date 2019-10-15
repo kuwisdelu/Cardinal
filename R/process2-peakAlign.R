@@ -40,8 +40,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 	})
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
-	s <- summarize(object, .stat="mean",
-		.by="feature", BPPARAM=BPPARAM)$mean
+	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
 	ref <- mz(object)[localMaximaLogical(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object

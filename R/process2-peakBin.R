@@ -74,8 +74,7 @@ peakBin_fun <- function(type, tol, mz, peaks) {
 }
 
 peakBin_prefun <- function(object, ..., BPPARAM) {
-	s <- summarize(object, .stat="mean",
-		.by="feature", BPPARAM=BPPARAM)$mean
+	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
 	ref <- mz(object)[localMaxima(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object

@@ -107,9 +107,17 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		elementMetadata = .PositionDataFrame(),
 		processing = SimpleList()))
 
+#### Class for summarized imaging experiments ####
+## -----------------------------------------------
+.ImagingSummary <- setClass("ImagingSummary",
+	contains = c("ImagingExperiment", "VIRTUAL"))
+
+.SparseImagingSummary <- setClass("SparseImagingSummary",
+	contains = c("SparseImagingExperiment", "ImagingSummary"))
+
 #### Classes for imaging experiment analysis results ####
 ## -------------------------------------------------------
-.ResultImagingExperiment <- setClass("ResultImagingExperiment",
+.ImagingResult <- setClass("ImagingResult",
 	contains = c("ImagingExperiment", "VIRTUAL"),
 	slots = c(
 		resultData = "List",
@@ -118,28 +126,28 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		resultData = SimpleList(),
 		modelData = DataFrame()))
 
-.SparseResultImagingExperiment <- setClass("SparseResultImagingExperiment",
-	contains=c("SparseImagingExperiment", "ResultImagingExperiment"))
+.SparseImagingResult <- setClass("SparseImagingResult",
+	contains=c("SparseImagingExperiment", "ImagingResult"))
 
-.CrossValidated2 <- setClass("CrossValidated2", contains="SparseResultImagingExperiment")
+.CrossValidated2 <- setClass("CrossValidated2", contains="SparseImagingResult")
 
-.PCA2 <- setClass("PCA2", contains="SparseResultImagingExperiment")
+.PCA2 <- setClass("PCA2", contains="SparseImagingResult")
 
-.PLS2 <- setClass("PLS2", contains="SparseResultImagingExperiment")
+.PLS2 <- setClass("PLS2", contains="SparseImagingResult")
 
 .OPLS2 <- setClass("OPLS2", contains="PLS2")
 
-.SpatialFastmap2 <- setClass("SpatialFastmap2", contains="SparseResultImagingExperiment")
+.SpatialFastmap2 <- setClass("SpatialFastmap2", contains="SparseImagingResult")
 
-.SpatialKMeans2 <- setClass("SpatialKMeans2", contains="SparseResultImagingExperiment")
+.SpatialKMeans2 <- setClass("SpatialKMeans2", contains="SparseImagingResult")
 
-.SpatialShrunkenCentroids2 <- setClass("SpatialShrunkenCentroids2", contains="SparseResultImagingExperiment")
+.SpatialShrunkenCentroids2 <- setClass("SpatialShrunkenCentroids2", contains="SparseImagingResult")
 
-.SpatialDGMM <- setClass("SpatialDGMM", contains="SparseResultImagingExperiment")
+.SpatialDGMM <- setClass("SpatialDGMM", contains="SparseImagingResult")
 
-.MeansTest <- setClass("MeansTest", contains="SparseResultImagingExperiment")
+.MeansTest <- setClass("MeansTest", contains="SparseImagingResult")
 
-.SegmentationTest <- setClass("SegmentationTest", contains="SparseResultImagingExperiment")
+.SegmentationTest <- setClass("SegmentationTest", contains="SparseImagingResult")
 
 #### Classes for imaging experiment analysis summaries ####
 ## -------------------------------------------------------
@@ -188,6 +196,11 @@ setClass("SummarySegmentationTest", contains="SummaryDataFrame")
 	slots = c(imageData = "MSProcessedImagingSpectraList"),
 	prototype = prototype(
 		imageData = .MSProcessedImagingSpectraList()))
+
+#### Class for summarized mass spectrometry images ####
+## -----------------------------------------------------
+.MSImagingSummary <- setClass("MSImagingSummary",
+	contains = c("MSImagingExperiment", "SparseImagingSummary"))
 
 #### Class for mass spectrometry imaging information
 ## --------------------------------------------------

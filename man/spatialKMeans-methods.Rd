@@ -50,7 +50,7 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{SpatialKMeans2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialKMeans}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialKMeans2}, which is a \code{ImagingResult}, or an object of class \code{SpatialKMeans}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{cluster}:}{A vector of integers indicating the cluster for each pixel in the dataset.}

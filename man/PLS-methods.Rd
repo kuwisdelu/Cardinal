@@ -84,7 +84,7 @@
     \item{keep.Xnew}{Should the new data matrix be kept after filtering out the orthogonal variation?}
 }
 \value{
-    An object of class \code{PLS2}, which is a \code{ResultImagingExperiment}, or an object of class \code{PLS}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
+    An object of class \code{PLS2}, which is a \code{ImagingResult}, or an object of class \code{PLS}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{fitted}:}{The fitted response.}

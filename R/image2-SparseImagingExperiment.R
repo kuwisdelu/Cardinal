@@ -33,9 +33,11 @@ setMethod("image", c(x = "SparseImagingExperiment"),
 		fm <- paste0(valnm, "~", paste0(coordnames(x)[c(1,2)], collapse="*"))
 		formula <- as.formula(fm, env=parent.frame(1))
 	}
+	if ( missing(feature) )
+		feature <- features(x)
 	e <- environment(formula)
 	elhs <- as.env(pixelData(x), enclos=e)
-	if ( !missing(feature) && !is.null(names(imageData(x))) ) {
+	if ( !is.null(names(imageData(x))) ) {
 		xi <- as.list(imageData(x)[feature,,drop=FALSE])
 		multiassign(names(xi), xi, envir=elhs)
 	}

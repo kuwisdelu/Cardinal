@@ -1,8 +1,8 @@
 
-setMethod("plot", c(x = "SparseResultImagingExperiment", y = "formula"),
+setMethod("plot", c(x = "SparseImagingResult", y = "formula"),
 	function(x, y, ...) plot(x, formula = y, ...))
 
-setMethod("plot", c(x = "SparseResultImagingExperiment", y = "missing"),
+setMethod("plot", c(x = "SparseImagingResult", y = "missing"),
 	function(x, formula,
 		model = modelData(x),
 		superpose = is_matrix,

@@ -542,6 +542,7 @@ S3method("summarise", "DataFrame")
 S3method("summarise", "XDataFrame")
 S3method("summarise", "SummaryDataFrame")
 S3method("summarise", "SparseImagingExperiment")
+S3method("summarise", "MSImagingExperiment")
 
 S3method("collect", "SparseImagingExperiment")
 S3method("collect", "MSImagingExperiment")

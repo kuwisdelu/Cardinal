@@ -1,4 +1,21 @@
 
+CHANGES IN VERSION 2.3.16 [2019-10-14]
+-----------------------------------
+
+NEW FEATURES
+
+    o New class 'ImagingSummary' with sub-classes including
+        'SparseImagingSummary' and 'MSImagingSummary' with
+        appropriate 'plot()' and 'image()' methods
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The 'summarize()' method for 'SparseImagingExperiment'
+        now returns a 'SparseImagingSummary', to more closely
+        reflect "tidy" data principles by returning an object
+        of a similar class; the previous behavior can be
+        reproduced by specifying '.as="DataFrame"' 
+
 CHANGES IN VERSION 2.3.15 [2019-10-13]
 -----------------------------------
 
@@ -299,7 +316,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES
 
     o Fixed linear subsetting of models using '['' for
-        'SparseResultImagingExperiment' objects
+        'SparseImagingResult' objects
     o Check length of 'classControl' in 'segmentationTest'
 
 CHANGES IN VERSION 2.1.23 [2019-4-24]
@@ -540,7 +557,7 @@ CHANGES IN VERSION 2.1.3 [2018-12-12]
 
 NEW FEATURES
 
-    o Added 'ResultImagingExperiment' class for results
+    o Added 'ImagingResult' class for results
         of statistical analyses of imaging experiments
     o Added 'spatialFastmap' method for 'SparseImagingExperiment'
     o Updated 'summarize' to accept a '.group_by' argument

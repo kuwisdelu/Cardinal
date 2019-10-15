@@ -11,6 +11,8 @@ ImageArrayList <- function(data) {
 		}
 	}
 	object <- as(data, "SimpleImageArrayList", strict=FALSE)
+	if ( is.null(names(object)) )
+		names(object) <- paste0("data", (seq_along(object) - 1L))
 	if ( validObject(object) )
 		object
 }

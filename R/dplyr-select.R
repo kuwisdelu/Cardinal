@@ -9,7 +9,8 @@ select.DataFrame <- function(.data, ...)
 select.XDataFrame <- function(.data, ...)
 	{
 		x <- select(.XDataFrame_to_tbl(.data), ...)
-		x <- as(x, class(.data))
+		x <- tryCatch(as(x, class(.data)),
+			error=function(e) as(x, "XDataFrame"))
 		x@groups <- groups(.data)
 		x
 	}

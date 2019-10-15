@@ -38,9 +38,11 @@ setMethod("plot", c(x = "SparseImagingExperiment", y = "missing"),
 		fm <- paste0(ynm, "~", xnm)
 		formula <- as.formula(fm, env=parent.frame(1))
 	}
+	if ( missing(pixel) )
+		pixel <- pixels(x)
 	e <- environment(formula)
 	elhs <- as.env(featureData(x), enclos=e)
-	if ( !missing(pixel) && !is.null(names(imageData(x))) ) {
+	if ( !is.null(names(imageData(x))) ) {
 		xi <- as.list(imageData(x)[,pixel,drop=FALSE])
 		multiassign(names(xi), xi, envir=elhs)
 	}

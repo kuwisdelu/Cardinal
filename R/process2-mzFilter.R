@@ -26,7 +26,8 @@ mzFilter_postfun <- function(expr, thresh.max, freq.min, rm.zero) {
 		keep <- rep_len(TRUE, nrow(object))
 		if ( do_freq ) {
 			summary1 <- summarize(object, .stat=c(count="sum", freq="mean"),
-				.tform=function(x) x > 0, .by="feature", BPPARAM=BPPARAM)
+								.tform=function(x) x > 0, .by="feature",
+								.as="DataFrame", BPPARAM=BPPARAM)
 			if ( rm.zero ) {
 				.message("removing zero-intensity features")
 				keep <- keep & summary1$count > 0
@@ -42,8 +43,8 @@ mzFilter_postfun <- function(expr, thresh.max, freq.min, rm.zero) {
 			} else {
 				stats <- "mean"
 			}
-			summary2 <- summarize(object, .stat=stats,
-				.by="feature", BPPARAM=BPPARAM)
+			summary2 <- summarize(object, .stat=stats, .by="feature",
+								.as="DataFrame", BPPARAM=BPPARAM)
 			if ( do_freq ) {
 				.message("combining feature summaries")
 				summary2 <- cbind(summary1, summary2)

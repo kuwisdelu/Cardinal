@@ -9,7 +9,9 @@
 \alias{image,PositionDataFrame-method}
 \alias{image,SparseImagingExperiment-method}
 \alias{image,MSImagingExperiment-method}
-\alias{image,SparseResultImagingExperiment-method}
+\alias{image,SparseImagingSummary-method}
+\alias{image,MSImagingSummary-method}
+\alias{image,SparseImagingResult-method}
 \alias{image,PCA2-method}
 \alias{image,PLS2-method}
 \alias{image,SpatialFastmap2-method}
@@ -122,7 +124,7 @@
         plusminus,
         \dots)
 
-\S4method{image}{SparseResultImagingExperiment}(x, formula,
+\S4method{image}{SparseImagingResult}(x, formula,
         model = modelData(x),
         superpose = is_matrix,
         \dots,
@@ -334,7 +336,7 @@
 
     \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
 
-    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultImagingExperiment} object. Renamed from \code{mode} to avoid ambiguity.}
+    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ImagingResult} object. Renamed from \code{mode} to avoid ambiguity.}
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
@@ -370,7 +372,8 @@ image(x, mz=m[1], colorscale=col.map("grayscale"))
 image(x, mz=m[4:7], colorscale=col.map("cividis"))
 image(x, mz=m[c(1,8)], normalize.image="linear", superpose=TRUE)
 
-pixelData(x)$tic <- summarize(x, .by="pixel", .stat=c(tic="sum"))$tic
+sm <- summarize(x, .by="pixel", .stat=c(tic="sum"), .as="DataFrame")
+pData(x)$tic <- sm$tic
 
 image(x, tic ~ x * y, colorscale=magma)
 }

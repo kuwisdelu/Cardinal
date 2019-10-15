@@ -73,27 +73,27 @@ test_that("summarize expr", {
 
 	tmp1 <- summarize(msdata, mean(.))
 
-	expect_equal(ncol(tmp1), 1L)
+	expect_equal(iData(tmp1)[,1], rowMeans(iData(msdata)))
 
 	tmp2 <- summarize(msdata, mean(.), sum(.))
 
-	expect_equal(ncol(tmp2), 2L)
+	expect_equal(iData(tmp2)[,1], rowMeans(iData(msdata)))
 
-	tmp3 <- summarize(msdata, mean(.), sum(.), .group_by=msdata$cond)
+	expect_equal(iData(tmp2)[,2], rowSums(iData(msdata)))
 
-	expect_equal(ncol(tmp3), 4L)
+	tmp3 <- summarize(msdata, mean(.), sum(.), .groups=run(msdata))
 
-	tmp4 <- summarize(msdata, mean(.), sum(.), .group_by=run(msdata))
+	a1 <- t(apply(iData(msdata), 1, function(s) {
+		tapply(s, run(msdata), mean)
+	}))
 
-	expect_equal(ncol(tmp4), 4L)
+	a2 <- t(apply(iData(msdata), 1, function(s) {
+		tapply(s, run(msdata), sum)
+	}))
 
-	tmp5 <- summarize(msdata, mean, .group_by=run(msdata))
+	expect_equivalent(iData(tmp3)[,1:2], a1)
 
-	expect_equal(ncol(tmp5), 2L)
-
-	tmp6 <- summarize(msdata, mean, sum, .group_by=run(msdata))
-
-	expect_equal(ncol(tmp6), 4L)
+	expect_equivalent(iData(tmp3)[,3:4], a2)
 
 })
 
@@ -101,42 +101,52 @@ test_that("summarize stat", {
 
 	tmp1 <- summarize(msdata, .stat="mean")
 
-	expect_equal(ncol(tmp1), 1L)
+	expect_equal(iData(tmp1)[,1], rowMeans(iData(msdata)))
 
-	tmp2 <- summarize(msdata, .stat=c("mean", "sum"), .group_by=msdata$cond)
+	tmp2 <- summarize(msdata, .stat=c("mean", "sum"))
 
-	expect_equal(ncol(tmp2), 4L)
+	expect_equal(iData(tmp2)[,1], rowMeans(iData(msdata)))
 
-	tmp3 <- summarize(msdata, .stat=c("sd", "mean"), .group_by=run(msdata))
+	expect_equal(iData(tmp2)[,2], rowSums(iData(msdata)))
 
-	expect_equal(ncol(tmp3), 4L)
+	tmp3 <- summarize(msdata, .stat=c("mean", "sum"), .groups=run(msdata))
 
-	tmp4 <- summarize(msdata, .group_by=run(msdata))
+	a1 <- t(apply(iData(msdata), 1, function(s) {
+		tapply(s, run(msdata), mean)
+	}))
 
-	expect_equal(ncol(tmp4), 12L)
+	a2 <- t(apply(iData(msdata), 1, function(s) {
+		tapply(s, run(msdata), sum)
+	}))
+
+	expect_equivalent(iData(tmp3)[,1:2], a1)
+
+	expect_equivalent(iData(tmp3)[,3:4], a2)
 
 	msdata2 <- msdata
 
-	spectra(msdata2) <- matter::as.sparse(spectra(msdata2))
+	tmp4 <- summarize(msdata2, .stat="mean")
 
-	tmp5 <- summarize(msdata2, .stat="mean")
+	expect_equal(iData(tmp4)[,1], rowMeans(iData(msdata2)))
 
-	expect_equal(ncol(tmp5), 1L)
+	tmp5 <- summarize(msdata2, .stat=c("mean", "sum"))
 
-	tmp6 <- summarize(msdata2, .stat="mean", .group_by=run(msdata2))
+	expect_equal(iData(tmp5)[,1], rowMeans(iData(msdata2)))
 
-	expect_equal(ncol(tmp6), 2L)
+	expect_equal(iData(tmp5)[,2], rowSums(iData(msdata2)))
 
-	tmp7 <- summarize(msdata2, .stat=c("mean", "sd"), .group_by=msdata$cond)
+	tmp6 <- summarize(msdata2, .stat=c("mean", "sum"), .groups=run(msdata2))
 
-	expect_equal(ncol(tmp7), 4L)
+	a3 <- t(apply(iData(msdata2), 1, function(s) {
+		tapply(s, run(msdata2), mean)
+	}))
 
-	tmp8 <- summarize(msdata2, .stat=c("mean", "var", "min", "max"))
+	a4 <- t(apply(iData(msdata2), 1, function(s) {
+		tapply(s, run(msdata2), sum)
+	}))
 
-	expect_equal(ncol(tmp8), 4L)
+	expect_equivalent(iData(tmp6)[,1:2], a3)
 
-	tmp9 <- summarize(msdata2, .group_by=run(msdata2))
-
-	expect_equivalent(tmp4, tmp9)
+	expect_equivalent(iData(tmp6)[,3:4], a4)
 
 })

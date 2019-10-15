@@ -11,6 +11,7 @@
 \alias{select.SparseImagingExperiment}
 \alias{mutate.SparseImagingExperiment}
 \alias{summarise.SparseImagingExperiment}
+\alias{summarise.MSImagingExperiment}
 
 \title{Data transformation and summarization}
 \description{
@@ -26,9 +27,9 @@
 \method{mutate}{SparseImagingExperiment}(.data, \dots)
 
 \method{summarise}{SparseImagingExperiment}(.data, \dots,
-    .by = c("feature", "pixel"), .group_by,
-    .stat = c("min", "max", "mean", "sum", "sd", "var"),
-    .tform = identity,
+    .by = c("feature", "pixel"), .groups = NULL,
+    .stat = "mean", .tform = identity,
+    .as = "ImagingExperiment",
     BPPARAM = bpparam())
 }
 \arguments{
@@ -36,9 +37,10 @@
     \item{\dots}{Conditions describing rows or columns to be retained, name-value pairs to be added as metadata columns, or name-value pairs of summary functions. See Details.}
     \item{.preserve}{Ignored, provided for compatibility with dplyr.}
     \item{.by}{Should the summarization be performed over pixels or features?}
-    \item{.group_by}{A grouping variable for summarization. The summary functions will be applied within each group.}
-    \item{.stat}{Summary statistics to be computed in an efficient manner.}
+    \item{.groups}{A grouping variable for summarization. The summary functions will be applied within each group.}
+    \item{.stat}{Allowable values are "min", "max", "mean", "sum", "sd", and "var".}
     \item{.tform}{How should each feature-vector or image-vector be transformed before summarization?}
+    \item{.as}{What class of object should be returned (\code{ImagingExperiment} or \code{DataFrame})?}
     \item{BPPARAM}{An optional \code{BiocParallelParam} instance to be passed to \code{bplapply()}.}
 }
 \details{
@@ -69,15 +71,15 @@ filter(mse, 1000 < mz, mz < 1500)
 select(mse, x <= 3, y <= 3)
 
 # summarize mean spectrum
-sm1 <- summarize(mse, .stat="mean")
+sm1 <- summarize(mse, .stat="mean", .as="DataFrame")
 
 # summarize image by TIC
-sm2 <- summarize(mse, .stat=c(tic="sum"), .by="pixel")
+sm2 <- summarize(mse, .stat=c(tic="sum"), .by="pixel", .as="DataFrame")
 
 # add a TIC column
 mutate(mse, tic=sm2$tic)
 
 # summarize mean spectrum grouped by pixels in/out of circle
-sm3 <- summarize(mse, .stat="mean", .group_by=mse$circle)
+sm3 <- summarize(mse, .stat="mean", .groups=mse$circle)
 }
 \keyword{manip}

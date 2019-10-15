@@ -50,7 +50,7 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 }
 \value{
-    An object of class \code{MeansTest} or \code{SegmentationTest}, which is a \code{ResultImagingExperiment}, where each element of the \code{resultData} slot contains at least the following components:
+    An object of class \code{MeansTest} or \code{SegmentationTest}, which is a \code{ImagingResult}, where each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{model}:}{A linear model fitted using either \code{\link{lm}} or \code{\link{lme}}.}

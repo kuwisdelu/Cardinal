@@ -161,8 +161,8 @@ setAs("CrossValidated", "CrossValidated2",
 			} else if ( is(pred, "SpatialShrunkenCentroids") ) {
 				pred <- as(pred, "SpatialShrunkenCentroids2")
 			} else {
-				pred <- .coerce_ResultImagingExperiment(pred,
-					"SparseResultImagingExperiment")
+				pred <- .coerce_ImagingResult(pred,
+					"SparseImagingResult")
 			}
 			.cv_simplify(pred, .fitted=fitted)
 		})

@@ -85,9 +85,8 @@ mzAlign_fun <- function(tol, span, quantile) {
 }
 
 mzAlign_prefun <- function(object, ..., BPPARAM) {
-	s <- summarize(object, .stat="mean",
-		.by="feature", BPPARAM=BPPARAM)
-	metadata(featureData(object))[["reference spectrum"]] <- s$mean
+	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
+	metadata(featureData(object))[["reference spectrum"]] <- s
 	object
 }
 

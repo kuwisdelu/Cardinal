@@ -72,7 +72,7 @@
     \item{newy}{Optionally, a new response from which residuals should be calculated.}
 }
 \value{
-    An object of class \code{SpatialShrunkenCentroids2}, which is a \code{ResultImagingExperiment}, or an object of class \code{SpatialShrunkenCentroids}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
+    An object of class \code{SpatialShrunkenCentroids2}, which is a \code{ImagingResult}, or an object of class \code{SpatialShrunkenCentroids}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{class, classes}:}{A factor indicating the predicted class for each pixel in the dataset.}

@@ -1,5 +1,5 @@
 
-setMethod("image", c(x = "SparseResultImagingExperiment"),
+setMethod("image", c(x = "SparseImagingResult"),
 	function(x, formula,
 		model = modelData(x),
 		superpose = is_matrix,

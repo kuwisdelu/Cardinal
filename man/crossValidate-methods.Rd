@@ -64,7 +64,7 @@
 \details{
     This method is designed to be used with the provided classification methods, but can also be used with user-provided functions and methods as long as they fulfill certain expectations.
 
-    The function or method passed to '.fun' must take at least two arguments: the first argument must be a object derived from \code{\linkS4class{SparseImagingExperiment}} or \code{\linkS4class{SImageSet}}, and the second argument must be the response variable. The function should return an object of a class derived from \code{\linkS4class{ResultImagingExperiment}} or \code{\linkS4class{ResultSet}}, which should have a \code{predict} method that takes arguments 'newx' and 'newy' in addition to the fitted model.
+    The function or method passed to '.fun' must take at least two arguments: the first argument must be a object derived from \code{\linkS4class{SparseImagingExperiment}} or \code{\linkS4class{SImageSet}}, and the second argument must be the response variable. The function should return an object of a class derived from \code{\linkS4class{ImagingResult}} or \code{\linkS4class{ResultSet}}, which should have a \code{predict} method that takes arguments 'newx' and 'newy' in addition to the fitted model.
 
     For \code{\linkS4class{MSImagingExperiment}} objects, pre-processing can be performed. This is particularly useful if there is no reference to which to align peaks, except the mean spectrum (which is calculated from the whole dataset, and may invalidate cross-validation results).
 
@@ -75,7 +75,7 @@
     The \code{crossValidate} function calls \code{cvApply} internally and then post-processes the result to be more easily-interpretable and space-efficient. Accuracy metrics are reported for each set of modeling parameters.
 }
 \value{
-    An object of class 'CrossValidated', which is derived from \code{\linkS4class{ResultSet}}, or an object of class 'CrossValidated2', which is derived from \code{\linkS4class{ResultImagingExperiment}}.
+    An object of class 'CrossValidated', which is derived from \code{\linkS4class{ResultSet}}, or an object of class 'CrossValidated2', which is derived from \code{\linkS4class{ImagingResult}}.
 }
 \author{
 	Kylie A. Bemis

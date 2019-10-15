@@ -48,7 +48,7 @@
     \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
 }
 \value{
-    An object of class \code{PCA2}, which is a \code{ResultImagingExperiment}, or an object of class \code{PCA}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
+    An object of class \code{PCA2}, which is a \code{ImagingResult}, or an object of class \code{PCA}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
 
     \describe{
         \item{\code{loadings}:}{A matrix with the principal component loadings.}

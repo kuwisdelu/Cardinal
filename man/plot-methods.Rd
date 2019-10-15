@@ -13,8 +13,11 @@
 \alias{plot,SparseImagingExperiment,formula-method}
 \alias{plot,MSImagingExperiment,missing-method}
 \alias{plot,MSImagingExperiment,formula-method}
-\alias{plot,SparseResultImagingExperiment,missing-method}
-\alias{plot,SparseResultImagingExperiment,formula-method}
+\alias{plot,SparseImagingSummary,missing-method}
+\alias{plot,SparseImagingSummary,formula-method}
+\alias{plot,MSImagingSummary,missing-method}
+\alias{plot,SparseImagingResult,missing-method}
+\alias{plot,SparseImagingResult,formula-method}
 \alias{plot,PCA2,missing-method}
 \alias{plot,PLS2,missing-method}
 \alias{plot,SpatialFastmap2,missing-method}
@@ -101,7 +104,7 @@
         xlab, ylab,
         type = if ( is_centroided ) 'h' else 'l')
 
-\S4method{plot}{SparseResultImagingExperiment,missing}(x, formula,
+\S4method{plot}{SparseImagingResult,missing}(x, formula,
         model = modelData(x),
         superpose = is_matrix,
         \dots,
@@ -289,7 +292,7 @@
 
     \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
 
-    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultImagingExperiment} object. Renamed from \code{mode} to avoid ambiguity.}
+    \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ImagingResult} object. Renamed from \code{mode} to avoid ambiguity.}
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
 
@@ -318,7 +321,7 @@ plot(x, coord=c(x=3, y=3), plusminus=1)
 plot(x, coord=c(x=3, y=3), groups=mz > 1000)
 plot(x, coord=c(x=7, y=7), superpose=TRUE)
 
-sm <- summarize(x, .stat=c("mean", "sd"))
+sm <- summarize(x, .stat=c("mean", "sd"), .as="DataFrame")
 
 featureData(x)$mean <- sm$mean
 featureData(x)$sd <- sm$sd
