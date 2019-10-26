@@ -61,8 +61,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 			}
 			ans.e <- .summarize_expr(.data, .by, .groups, expr, .tform, BPPARAM)
 			xnm <- c(xnm, names(expr))
-			if ( .df )
-				df[,enm] <- ans.e
+			df[,enm] <- ans.e
 		} else {
 			ans.e <- NULL
 		}
@@ -83,8 +82,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 			}
 			ans.s <- .summarize_stat(.data, .by, .groups, .stat, .tform, BPPARAM)
 			xnm <- c(xnm, names(.stat))
-			if ( .df )
-				df[,snm] <- ans.s
+			df[,snm] <- ans.s
 		} else {
 			ans.s <- NULL
 		}
@@ -106,7 +104,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 				ans <- .SparseImagingSummary(
 					imageData=iData,
 					featureData=fData,
-					elementMetadata=pixelData(.data))
+					elementMetadata=df)
 			} else if ( .by == "feature" ) {
 				pData <- PositionDataFrame(
 					coord=expand.grid(x=1:nrow(mcols), y=1),
@@ -115,7 +113,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 				names(iData) <- names(imageData(.data))[1]
 				ans <- .SparseImagingSummary(
 					imageData=iData,
-					featureData=featureData(.data),
+					featureData=df,
 					elementMetadata=pData)
 			}
 		}
@@ -167,20 +165,19 @@ summarise.MSImagingExperiment <- function(.data, ...) {
 
 .summarize_stat <- function(object, by, groups, stat, tform, BPPARAM) {
 	labels <- paste0("[", names(stat), "]")
+	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
 	if ( by == "pixel" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by pixel ...")
 		ans <- colStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
 			chunks=getOption("Cardinal.numblocks"),
-			verbose=getOption("Cardinal.progress"),
-			BPPARAM=BPPARAM)
+			verbose=verbose, BPPARAM=BPPARAM)
 	} else if ( by == "feature" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by feature ...")
 		ans <- rowStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
 			chunks=getOption("Cardinal.numblocks"),
-			verbose=getOption("Cardinal.progress"),
-			BPPARAM=BPPARAM)
+			verbose=verbose, BPPARAM=BPPARAM)
 	}
 	ans
 }

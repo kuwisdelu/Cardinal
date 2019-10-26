@@ -754,15 +754,15 @@ mse %>%
 	select(x == 10, y == 10)
 
 # calculate mean spectrum
-summarize(mse, .stat="mean", .by="feature")
+summarize(mse, .stat="mean", .by="feature", .as="DataFrame")
 
 # calculate tic
-summarize(mse, .stat=c(tic="sum"), .by="pixel")
+summarize(mse, .stat=c(tic="sum"), .by="pixel", .as="DataFrame")
 
 # calculate mean spectrum of circle region
 mse %>%
 	select(region == "circle") %>%
-	summarize(.stat="mean")
+	summarize(.stat="mean", .as="DataFrame")
 ```
 
 ## Collect data into memory

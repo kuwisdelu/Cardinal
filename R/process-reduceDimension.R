@@ -79,7 +79,7 @@ reduceDimension.method <- function(method, name.only=FALSE) {
 	match.fun(method)
 }
 
-reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"), fun=sum, ...) {
+reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"), fun="sum", ...) {
 	units <- match.arg(units)
 	if ( units == "ppm" ) {
 		tout <- seq.ppm(from=offset + floor(min(t)), to=ceiling(max(t)), ppm=width / 2)
@@ -90,7 +90,9 @@ reduceDimension.bin <- function(x, t, width=200, offset=0, units=c("ppm", "mz"),
 	}
 	if ( length(tout) > length(t) )
 		.stop("reduceDimension.bin: 'width' is too small.")
-	xout <- bin_vector(x, t, bins=list(tout - width / 2, tout + width / 2), fun=fun)
+	lower <- 1L + findInterval(tout - width / 2, t, left.open=TRUE)
+	upper <- findInterval(tout + width / 2, t, left.open=FALSE)
+	xout <- binvec(x, lower, upper, method=fun)
 	list(x=xout, t=tout)
 }
 
@@ -107,19 +109,19 @@ reduceDimension.resample <- function(x, t, step=1, offset=0, ...) {
 	list(x=xout, t=tout)
 }
 
-reduceDimension.peaks <- function(x, t, peaklist, type=c("height", "area"), ...) {
+reduceDimension.peaks <- function(x, t, peaklist, type=c("area", "height"), ...) {
 	if ( missing(peaklist) )
 		.stop("reduceDimension.peaks: 'peaklist' required.")
 	type <- match.arg(type)
 	if ( type == "height" ) {
-		fun <- max
+		method <- "max"
 	} else if ( type == "area" ) {
-		fun <- sum
+		method <- "sum"
 	}
 	if ( length(peaklist) > length(t) )
 		.stop("reduceDimension.peaks: 'peaklist' is too long.")
-	bounds <- nearestLocalMaxima(-x, t, peaklist)
-	xout <- bin_vector(x, bins=bounds, fun=fun)
+	bounds <- nearest_locmax(-x, peaklist)
+	xout <- binvec(x, bounds[[1]], bounds[[2]], method=method)
 	list(x=xout, t=peaklist)
 }
 

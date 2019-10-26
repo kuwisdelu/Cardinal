@@ -15,9 +15,9 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 		} else {
 			prefun <- NULL
 		}
-		postfun <- peakAlign_postfun(tol)
-		object <- process(object, label="peakAlign", moreargs=list(...),
-			kind="global", prefun=prefun, postfun=postfun,
+		object <- process(object, label="peakAlign",
+			kind="global", prefun=prefun,
+			postfun=peakAlign_postfun, postargs=list(tol=tol),
 			delay=getOption("Cardinal.delay"))
 		object
 	})
@@ -33,40 +33,47 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 	function(object, ref, ...)
 	{
 		col <- match.arg(ref, names(fData(object)))
-		s <- fData(object)[,col,drop=FALSE]
-		ref <- mz(object)[localMaximaLogical(s)]
+		s <- fData(object)[[col]]
+		maxs <- locmax(s, findLimits=TRUE)
+		l1 <- attr(maxs, "lower")
+		l2 <- attr(maxs, "upper")
+		a <- binvec(s * mz(object), l1, l2, method="sum")
+		b <- binvec(s, l1, l2, method="sum")
+		ref <- a / b
 		metadata(featureData(object))[["reference peaks"]] <- ref
 		peakAlign(object, ...)
 	})
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
-	ref <- mz(object)[localMaximaLogical(s)]
+	maxs <- locmax(s, findLimits=TRUE)
+	l1 <- attr(maxs, "lower")
+	l2 <- attr(maxs, "upper")
+	a <- binvec(s * mz(object), l1, l2, method="sum")
+	b <- binvec(s, l1, l2, method="sum")
+	ref <- a / b
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object
 }
 
-peakAlign_postfun <- function(tol, ...) {
-	fun <- function(object, ...) {
-		if ( !is(object, "MSProcessedImagingExperiment") )
-			object <- as(object, "MSProcessedImagingExperiment")
-		ref <- metadata(featureData(object))[["reference peaks"]]
-		if ( is.null(ref) )
-			.stop("couldn't find reference peaks")
-		mz(object) <- ref
-		tolerance(object) <- tol
-		combiner(object) <- "max"
-		res <- switch(names(tol),
-			relative = c(ppm = unname(tol) / 1e-6),
-			absolute = c(mz = 2 * unname(tol)))
-		resolution(featureData(object)) <- res
-		.message("aligned to ", length(ref), " reference peaks ",
-			"(", names(tol), " tol = ", tol, ")")
-		if ( !is.null(spectrumRepresentation(object)) )
-			spectrumRepresentation(object) <- "centroid spectrum"
-		centroided(object) <- TRUE
-		object
-	}
-	fun
+peakAlign_postfun <- function(object, tol, ...) {
+	if ( !is(object, "MSProcessedImagingExperiment") )
+		object <- as(object, "MSProcessedImagingExperiment")
+	ref <- metadata(featureData(object))[["reference peaks"]]
+	if ( is.null(ref) )
+		.stop("couldn't find reference peaks")
+	mz(object) <- ref
+	tolerance(object) <- tol
+	combiner(object) <- "max"
+	res <- switch(names(tol),
+		relative = c(ppm = unname(tol) / 1e-6),
+		absolute = c(mz = 2 * unname(tol)))
+	resolution(featureData(object)) <- res
+	.message("aligned to ", length(ref), " reference peaks ",
+		"(tol = ", res, " ",  names(res), ")")
+	if ( !is.null(spectrumRepresentation(object)) )
+		spectrumRepresentation(object) <- "centroid spectrum"
+	centroided(object) <- TRUE
+	object
 }
 

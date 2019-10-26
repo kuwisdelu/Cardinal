@@ -74,24 +74,22 @@ peakPick_plotfun <- function(s2, s1, ...,
 
 peakPick.mad <- function(x, SNR=6, window=5, blocks=1, fun=mean, tform=diff, ...) {
 	noise <- .estimateNoiseMAD(x, blocks=blocks, fun=fun, tform=tform)
-	is.max <- localMaximaLogical(x, window=window)
-	peaks <- is.max & (x / noise) >= SNR
-	peaks[is.na(peaks)] <- FALSE
-	peaks <- which(peaks)
+	maxs <- locmax(x, halfWindow=window %/% 2)
+	peaks <- intersect(maxs, which(x / noise >= SNR))
 	attr(peaks, "noise") <- noise
 	peaks
 }
 
 peakPick.simple2 <- function(x, ...) {
 	result <- peakPick.simple(x, ...)
-	peaks <- which(result$peaks)
+	peaks <- result$peaks
 	attr(peaks, "noise") <- result$noise
 	peaks
 }
 
 peakPick.adaptive2 <- function(x, ...) {
 	result <- peakPick.adaptive(x, ...)
-	peaks <- which(result$peaks)
+	peaks <- result$peaks
 	attr(peaks, "noise") <- result$noise
 	peaks
 }

@@ -50,7 +50,7 @@ reduceBaseline_plotfun <- function(s2, s1, ...,
 reduceBaseline.median2 <- reduceBaseline.median
 
 reduceBaseline.locmin <- function(x, window = 5, ...) {
-	baseidx <- which(localMaximaLogical(-x))
+	baseidx <- locmax(-x, halfWindow=window %/% 2)
 	baseval <- x[baseidx]
 	if ( baseidx[1L] != 1L ) {
 		baseval <- c(baseval[1L], baseval)

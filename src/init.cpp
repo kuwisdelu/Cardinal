@@ -10,7 +10,6 @@ extern "C" {
         {"C_dynAlign", (DL_FUNC) &dynAlign, 4},
         {"C_readImzML", (DL_FUNC) &readImzML, 1},
         {"C_writeImzML", (DL_FUNC) &writeImzML, 3},
-        {"C_localMaxima", (DL_FUNC) &localMaxima, 2},
         {"C_findNeighbors", (DL_FUNC) &findNeighbors, 4},
         {"C_findSpatialBlocks", (DL_FUNC) &findSpatialBlocks, 4},
         {"C_whichSpatialBlocks", (DL_FUNC) &whichSpatialBlocks, 2},

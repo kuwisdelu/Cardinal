@@ -57,7 +57,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "MSImageSet"),
 			.message("peakAlign: Using 'mean' from featureData of ref.")
 			spectrum <- fData(ref)[["mean"]]
 		}
-		peaks <- mz(ref)[localMaximaLogical(spectrum)]	
+		peaks <- mz(ref)[locmax(spectrum)]
 		peakAlign(object, ref=peaks, ...)
 	})
 

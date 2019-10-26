@@ -11,10 +11,10 @@
 	Apply peak binning to a mass spectrometry imaging dataset.
 }
 \usage{
-\S4method{peakBin}{MSImagingExperiment,numeric}(object, ref, type=c("height", "area"),
+\S4method{peakBin}{MSImagingExperiment,numeric}(object, ref, type=c("area", "height"),
         tolerance = NA, units = c("ppm", "mz"), \dots)
 
-\S4method{peakBin}{MSImagingExperiment,missing}(object, type=c("height", "area"),
+\S4method{peakBin}{MSImagingExperiment,missing}(object, type=c("area", "height"),
         tolerance = NA, units = c("ppm", "mz"), \dots)
 }
 \arguments{

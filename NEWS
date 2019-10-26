@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 2.3.17 [2019-10-25]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Default for 'peakBin()' argument 'type' is now "area"
+    o In 'peakBin()', peak boundaries should be calculated
+        more accurately now, and general speed improvements
+    o In 'peakAlign()', peak centers are now calculated as
+        weighted average mass rather than the highest point
+
 CHANGES IN VERSION 2.3.16 [2019-10-14]
 -----------------------------------
 

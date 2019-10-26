@@ -8,7 +8,7 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 		if ( length(value) != length(mz(object)) ) {
 			if ( ncol(featureData(object)) > 0L ) {
 				drop <- names(featureData(object))
-				.warning("dropping feature metadata cols: ",
+				.message("dropping feature metadata cols: ",
 					paste0(drop, collapse=" "))
 			}
 			mcols <- MassDataFrame(mz=value)

@@ -26,9 +26,15 @@ setMethod("plot", c(x = "SparseImagingSummary", y = "missing"),
 })
 
 setMethod("plot", c(x = "MSImagingSummary", y = "missing"),
-	function(x, ..., type = if ( is_centroided ) 'h' else 'l')
+	function(x, formula, ..., xlab, ylab,
+		type = if ( is_centroided ) 'h' else 'l')
 {
 	is_centroided <- isTRUE(centroided(x))
-	plot(as(x, "SparseImagingSummary"), ..., type=type)
+	if ( missing(xlab) && missing(ylab) && missing(formula) ) {
+		xlab <- expression(italic(m/z))
+		ylab <- expression(italic(Intensity))
+	}
+	plot(as(x, "SparseImagingSummary"), formula=formula, ...,
+		xlab=xlab, ylab=ylab, type=type)
 })
 

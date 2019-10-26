@@ -70,17 +70,15 @@ peakPick.method <- function(method, name.only=FALSE) {
 
 peakPick.simple <- function(x, SNR=6, window=5, blocks=100, ...) {
 	noise <- .estimateNoiseSimple(x, blocks=blocks)
-	is.max <- localMaximaLogical(x, window=window)
-	peaks <- is.max & (x / noise) >= SNR
-	peaks[is.na(peaks)] <- FALSE
+	maxs <- locmax(x, halfWindow=window %/% 2)
+	peaks <- intersect(maxs, which(x / noise >= SNR))
 	list(peaks=peaks, noise=noise)
 }
 
 peakPick.adaptive <- function(x, SNR=6, window=5, blocks=100, spar=1, ...) {
 	noise <- .estimateNoiseAdaptive(x, blocks=blocks, spar=spar)
-	is.max <- localMaximaLogical(x, window=window)
-	peaks <- is.max & (x / noise) >= SNR
-	peaks[is.na(peaks)] <- FALSE
+	maxs <- locmax(x, halfWindow=window %/% 2)
+	peaks <- intersect(maxs, which(x / noise >= SNR))
 	list(peaks=peaks, noise=noise)
 }
 
@@ -100,13 +98,12 @@ peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 	noiseidx <- c(1, noiseidx, length(x))
 	noise <- interp1(x=t[noiseidx], y=noiseval, xi=t, method="linear")
 	# find local maxima
-	is.max <- localMaximaLogical(x, window=window)
-	peaks <- is.max & (x / noise) >= SNR
-	peaks[is.na(peaks)] <- FALSE
 	halfWindow <- floor(window / 2)
+	maxs <- locmax(x, halfWindow=window %/% 2)
+	peaks <- intersect(maxs, which(x / noise >= SNR))
 	# eliminate smooth peaks
 	cutoff <- ceiling(halfWindow / 2) * quantile(abs(diff(x)), thresh) / 2
-	too.flat <- sapply(which(peaks), function(i) {
+	too.flat <- sapply(peaks, function(i) {
 		if ( (i - halfWindow) < 0 || (i + halfWindow) > length(x) ) {
 			TRUE	
 		} else {
@@ -115,7 +112,7 @@ peakPick.limpic <- function(x, SNR=6, window=5, blocks=100, thresh=0.75, ...) {
 		}
 	})
 	# return peak list
-	peaks[which(peaks)[too.flat]] <- FALSE
+	peaks <- setdiff(peaks, too.flat)
 	list(peaks=peaks, noise=noise)
 }
 

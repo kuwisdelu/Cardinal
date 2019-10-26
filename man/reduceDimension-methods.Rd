@@ -32,7 +32,7 @@ reduceDimension.bin(x, t, width=200, offset=0, units=c("ppm","mz"), fun=sum, ...
 reduceDimension.resample(x, t, step=1, offset=0, ...)
 
 ## Reduce the signal to peaks
-reduceDimension.peaks(x, t, peaklist, type=c("height", "area"), ...)
+reduceDimension.peaks(x, t, peaklist, type=c("area", "height"), ...)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}

@@ -3,7 +3,7 @@
 ## -----------------------------------
 
 setMethod("mzBin", c("MSImagingExperiment", "numeric"),
-	function(object, ref, tolerance = NA, units = c("ppm", "mz"), fun=sum, ...)
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"), fun="sum", ...)
 	{
 		dots <- list(...)
 		if ( "width" %in% names(dots) ) {
@@ -13,19 +13,18 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 		}
 		width <- 2 * tolerance
 		units <- match.arg(units)
-		FUN <- match.fun(fun)
 		if ( is.na(width) )
 			width <- 2 * .findMaxMassDiff(object, units)
-		fun <- mzBin_fun(ref, width, units, FUN)
 		if ( length(ref) >= nrow(object) ) {
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")
 		}
 		metadata(featureData(object))[["reference mz"]] <- ref
-		object <- process(object, fun=fun,
+		object <- process(object, fun=mzBin_fun,
 			label="mzBin", kind="pixel",
-			moreargs=list(...),
+			moreargs=list(ref=ref, width=width, units=units, FUN=fun),
 			postfun=mzBin_postfun,
+			postargs=list(width=width, units=units),
 			plotfun=mzBin_plotfun,
 			delay=getOption("Cardinal.delay"))
 		object
@@ -52,23 +51,22 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 			units=units, fun=fun, ...)
 	})
 
-mzBin_fun <- function(ref, width, units, FUN) {
-	fun <- function(x, ...) {
-		mz <- mz(attr(x, "mcols"))
-		halfwidth <- width / 2
-		if ( units == "ppm" ) {
-			upper <- ref + 1e-6 * halfwidth * ref
-			lower <- ref - 1e-6 * halfwidth * ref
-		} else {
-			upper <- ref + halfwidth
-			lower <- ref - halfwidth
-		}
-		bin_vector(x, mz, list(lower, upper), fun=FUN)
+mzBin_fun <- function(x, ref, width, units, FUN) {
+	mz <- mz(attr(x, "mcols"))
+	halfwidth <- width / 2
+	if ( units == "ppm" ) {
+		lower <- ref - 1e-6 * halfwidth * ref
+		upper <- ref + 1e-6 * halfwidth * ref
+	} else {
+		lower <- ref - halfwidth
+		upper <- ref + halfwidth
 	}
-	fun
+	lower <- 1L + findInterval(upper, ref, left.open=TRUE)
+	upper <- findInterval(upper, ref, left.open=FALSE)
+	binvec(x, lower, upper, method=FUN)
 }
 
-mzBin_postfun <- function(object, ans, ...) {
+mzBin_postfun <- function(object, ans, width, units, ...) {
 	if ( is.matter(ans) ) {
 		data <- as(ans, "matter_matc")
 	} else {
@@ -85,7 +83,8 @@ mzBin_postfun <- function(object, ans, ...) {
 		metadata=metadata(object),
 		processing=processingData(object),
 		centroided=NA)
-	.message("binned to ", length(ref), " m/z bins per spectrum")
+	.message("binned to ", length(ref), " m/z bins per spectrum ",
+		"(binwidth = ", width, " ", units, ")")
 	object
 }
 

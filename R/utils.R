@@ -23,7 +23,7 @@ is.discrete <- function(x) {
 	is.factor(x) || is.character(x)
 }
 
-# Check if a variable is a continuous
+# Check if a variable is continuous
 is.numeric_vector <- function(x)  {
 	is.numeric(x) && is.vector(x)
 }
@@ -171,31 +171,6 @@ Mscore <- function(a, b, type=3) {
 		sum(a & b, na.rm=TRUE) / sum(a | b, na.rm=TRUE))
 }
 
-# Bin a signal
-bin_vector <- function(x, t, bins, fun=sum, ...) {
-	if ( is.list(bins) ) {
-		nbins <- length(bins[[1]])
-		xout <- numeric(nbins)
-		for ( i in seq_len(nbins) ) {
-			l <- bins[[1]][i]
-			u <- bins[[2]][i]
-			if ( missing(t) ) {
-				j <- l:u
-			} else {
-				j <- findInterval(t, c(l, u)) == 1L
-			}
-			xout[i] <- fun(x[j], ...)
-		}
-	} else {
-		which <- findInterval(t, bins)
-		exclude <- which == 0 | which == length(bins)
-		x <- x[!exclude]
-		which <- which[!exclude]
-		xout <- as.vector(tapply(x, which, fun))
-	}
-	xout
-}
-
 # Returns a list of approximately even subsets of a vector
 split_blocks <- function(x, blocks) {
 	blocksize <- max(1L, length(x) / blocks)
@@ -233,33 +208,14 @@ affine <- function(x, translate=c(0,0), rotate=0,
 	new.x
 }
 
-# Logical local maxima in a window
-localMaximaLogical <- function(x, window=5, ...) {
-	if ( length(x) < 3L )
-		return(logical(length(x)))
-	halfWindow <- floor(min(window, length(x)) / 2)
-	.Call("C_localMaxima", x, halfWindow, PACKAGE="Cardinal")
-}
-
-# Local maxima in a window
-localMaxima <- function(x, t, ...) {
-	if ( missing(t) ) {
-		which(localMaximaLogical(x, ...))
-	} else {
-		t[localMaximaLogical(x, ...)]
-	}
-}
-
 # Returns the two nearest local maxima to the given points
-nearestLocalMaxima <- function(x, t, tout, ...) {
-	if ( length(x) != length(t) )
-		t <- rep_len(t, length(x))
-	locmax1 <- localMaximaLogical(x, ...)
-	locmax2 <- rev(localMaximaLogical(rev(x), ...))
-	locmax <- unique(c(1L, which(locmax1 | locmax2), length(x)))
-	lower <- findInterval(tout, t[locmax], all.inside=TRUE)
+nearest_locmax <- function(x, m, ...) {
+	max1 <- locmax(x, ...)
+	max2 <- rev(locmax(rev(x), ...))
+	vals <- unique(c(1L, sort(union(max1, max2)), length(x)))
+	lower <- findInterval(m, vals, all.inside=TRUE)
 	upper <- lower + 1L
-	list(lower=locmax[lower], upper=locmax[upper])
+	list(lower=vals[lower], upper=vals[upper])
 }
 
 # Alignment of two vectors by absolute difference
