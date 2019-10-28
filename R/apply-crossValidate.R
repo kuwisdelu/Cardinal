@@ -10,18 +10,33 @@ setMethod("crossValidate", "MSImagingExperiment",
 	{
 		.fun <- match.fun(.fun)
 		.predict <- match.fun(.predict)
-		# get peakAlign and peakBin arguments
+		# get peakPick, peakAlign, and peakBin arguments
+		pickArgs <- list()
 		alignArgs <- list()
 		binArgs <- list()
+		if ( "method" %in% names(.processControl) ) {
+			pickArgs$method <- .processControl$method
+			.processControl$method <- NULL
+		}
+		if ( "SNR" %in% names(.processControl) ) {
+			pickArgs$SNR <- .processControl$SNR
+			.processControl$SNR <- NULL
+		}
+		if ( "window" %in% names(.processControl) ) {
+			pickArgs$window <- .processControl$window
+			.processControl$window <- NULL
+		}
 		if ( "tolerance" %in% names(.processControl) ) {
 			alignArgs$tolerance <- .processControl$tolerance
 			binArgs$tolerance <- .processControl$tolerance
 			.processControl$tolerance <- NULL
-		} else if ( "units" %in% names(.processControl) ) {
+		}
+		if ( "units" %in% names(.processControl) ) {
 			alignArgs$units <- .processControl$units
 			binArgs$units <- .processControl$units
 			.processControl$units <- NULL
-		} else if ( "type" %in% names(.processControl) ) {
+		}
+		if ( "type" %in% names(.processControl) ) {
 			binArgs$type <- .processControl$type
 			.processControl$tyle <- NULL
 		}
@@ -35,13 +50,26 @@ setMethod("crossValidate", "MSImagingExperiment",
 		if ( .process ) {
 			if ( is.null(.peaks) ) {
 				FUN <- function(x, y, ..., BPPARAM) {
-					peaks <- do.call(peakAlign, c(list(x), alignArgs))
-					peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
+					if ( isTRUE(preproc(x)["peakPick"]) ) {
+						peaks <- do.call(peakAlign, c(list(x), alignArgs))
+						peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
+					} else {
+						means <- summarize(x, .stat="mean", BPPARAM=BPPARAM)
+						ref <- do.call(peakPick, c(list(means), pickArgs))
+						ref <- do.call(peakAlign, c(list(ref, ref="mean"), alignArgs))
+						ref <- do.call(peakFilter, c(list(ref), filterArgs))
+						ref <- process(ref, BPPARAM=BPPARAM)
+						peaks <- do.call(peakBin, c(list(x, mz(ref)), binArgs))
+					}
 					peaks <- process(peaks, BPPARAM=BPPARAM)
 					.fun(peaks, y, ..., BPPARAM=BPPARAM)
 				}
 				PREDICT <- function(fit, newx, newy, ..., BPPARAM) {
-					peaks <- do.call(peakAlign, c(list(newx, mz(fData(fit))), alignArgs))
+					if ( isTRUE(preproc(newx)["peakPick"]) ) {
+						peaks <- do.call(peakAlign, c(list(newx, mz(fData(fit))), alignArgs))
+					} else {
+						peaks <- do.call(peakBin, c(list(newx, mz(fData(fit))), binArgs))
+					}
 					peaks <- process(peaks, BPPARAM=BPPARAM)
 					.predict(fit, peaks, newy, ..., BPPARAM=BPPARAM)
 				}
@@ -62,9 +90,9 @@ setMethod("crossValidate", "MSImagingExperiment",
 					.fun(x, y, ..., BPPARAM=BPPARAM)
 				}
 				PREDICT <- function(fit, newx, newy, ..., BPPARAM) {
-					newx <- do.call(peakBin, c(list(newx, mz(fData(fit))), binArgs))
-					newx <- process(newx, BPPARAM=BPPARAM)
-					.predict(fit, newx, newy, ..., BPPARAM=BPPARAM)
+					peaks <- do.call(peakBin, c(list(newx, mz(fData(fit))), binArgs))
+					peaks <- process(peaks, BPPARAM=BPPARAM)
+					.predict(fit, peaks, newy, ..., BPPARAM=BPPARAM)
 				}
 			}
 		} else {

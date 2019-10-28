@@ -100,7 +100,7 @@ setReplaceMethod("combiner", "MSProcessedImagingExperiment",
 collect.MSProcessedImagingExperiment <- function(x, ..., as.matrix = FALSE)
 	{
 		if ( as.matrix )
-			return(callNextMethod(x, ...))
+			return(NextMethod())
 		fun <- function(y) {
 			atomdata(y)[["keys"]] <- as.list(atomdata(y)[["keys"]])
 			atomdata(y)[["values"]] <- as.list(atomdata(y)[["values"]])

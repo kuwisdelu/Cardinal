@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 2.3.18 [2019-10-27]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Processing in 'crossValidate()' now allows processing
+        unprocessed data by performing peak-picking
+        on the mean spectra of the training sets
+
+BUG FIXES
+
+    o Fixed some errors in user messages during peak processing
+
 CHANGES IN VERSION 2.3.17 [2019-10-25]
 -----------------------------------
 

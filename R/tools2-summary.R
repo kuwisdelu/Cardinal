@@ -139,10 +139,10 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 			out <- SummaryDataFrame(
 				`Radius (r)`=modelData(object)$r,
 				`Init (k)`=modelData(object)$k,
-				`Sparsity (s)`=modelData(object)$s,
+				`Shrinkage (s)`=modelData(object)$s,
 				`Classes`=num_segments,
 				`Features/Class`=num_features,
-				`BIC`=BIC(object),
+				# `BIC`=BIC(object),
 				.summary=list("Spatially-aware nearest shrunken centroids:\n",
 					description, paste0(" Method = ", metadata(object)$method),
 					paste0(" Distance = ", metadata(object)$dist, "\n")))
@@ -158,7 +158,7 @@ setMethod("summary", "SpatialShrunkenCentroids2",
 				specificity(y, res$class, positive=pos))
 			out <- SummaryDataFrame(
 				`Radius (r)`=modelData(object)$r,
-				`Sparsity (s)`=modelData(object)$s,
+				`Shrinkage (s)`=modelData(object)$s,
 				`Features/Class`=num_features,
 				Accuracy=acc, Sensitivity=sens, Specificity=spec,
 				.summary=list("Spatially-aware nearest shrunken centroids:\n",

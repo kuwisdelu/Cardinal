@@ -81,7 +81,8 @@ mzAlign_fun <- function(x, tol, span, quantile, ...) {
 }
 
 mzAlign_prefun <- function(object, ..., BPPARAM) {
-	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
+	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
+	s <- rowStats(spectra(object), "mean", verbose=verbose, BPPARAM=BPPARAM)
 	metadata(featureData(object))[["reference spectrum"]] <- s
 	object
 }

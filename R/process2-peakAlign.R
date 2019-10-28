@@ -45,7 +45,8 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 	})
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
-	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
+	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
+	s <- rowStats(spectra(object), "mean", verbose=verbose, BPPARAM=BPPARAM)
 	maxs <- locmax(s, findLimits=TRUE)
 	l1 <- attr(maxs, "lower")
 	l2 <- attr(maxs, "upper")
@@ -65,12 +66,13 @@ peakAlign_postfun <- function(object, tol, ...) {
 	mz(object) <- ref
 	tolerance(object) <- tol
 	combiner(object) <- "max"
-	res <- switch(names(tol),
+	tol <- switch(names(tol),
 		relative = c(ppm = unname(tol) / 1e-6),
-		absolute = c(mz = 2 * unname(tol)))
+		absolute = c(mz = unname(tol)))
+	res <- switch(names(tol), ppm = tol, mz = 2 * tol)
 	resolution(featureData(object)) <- res
 	.message("aligned to ", length(ref), " reference peaks ",
-		"(tol = ", res, " ",  names(res), ")")
+		"(tol = ", tol, " ",  names(tol), ")")
 	if ( !is.null(spectrumRepresentation(object)) )
 		spectrumRepresentation(object) <- "centroid spectrum"
 	centroided(object) <- TRUE

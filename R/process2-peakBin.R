@@ -62,7 +62,8 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 }
 
 peakBin_prefun <- function(object, ..., BPPARAM) {
-	s <- rowStats(spectra(object), "mean", BPPARAM=BPPARAM)
+	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
+	s <- rowStats(spectra(object), "mean", verbose=verbose, BPPARAM=BPPARAM)
 	ref <- mz(object)[locmax(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object
@@ -88,14 +89,15 @@ peakBin_postfun <- function(object, ans, tol, ...) {
 		metadata=metadata(object),
 		processing=processingData(object),
 		centroided=TRUE)
-	res <- switch(names(tol),
+	tol <- switch(names(tol),
 		relative = c(ppm = unname(tol) / 1e-6),
-		absolute = c(mz = 2 * unname(tol)))
+		absolute = c(mz = unname(tol)))
+	res <- switch(names(tol), ppm = tol, mz = 2 * tol)
 	resolution(featureData(object)) <- res
 	if ( !is.null(spectrumRepresentation(object)) )
 		spectrumRepresentation(object) <- "centroid spectrum"
 	.message("binned to ", length(ref), " reference peaks ",
-		"(tol = ", res, " ",  names(res), ")")
+		"(tol = ", tol, " ",  names(tol), ")")
 	object
 }
 

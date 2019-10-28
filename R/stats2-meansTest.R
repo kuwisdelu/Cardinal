@@ -107,7 +107,9 @@ setMethod("meansTest", "SparseImagingExperiment",
 }
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
-	response <- rowStats(iData(x), "mean", groups=groups, BPPARAM=BPPARAM)
+	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
+	response <- rowStats(iData(x), "mean", groups=groups,
+		verbose=verbose, BPPARAM=BPPARAM)
 	response <- t(as.matrix(response, slots=FALSE))
 	pdata <- as.data.frame(pData(x), slots=FALSE)
 	pdata <- cbind(data.frame(run=run(x)), pdata)
