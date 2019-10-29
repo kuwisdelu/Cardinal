@@ -481,8 +481,6 @@ exportMethods(
 	"reduceDimension",
 	"standardizeRuns")
 
-export("standardizeSamples")
-
 exportMethods("selectROI")
 
 export("makeFactor")
@@ -507,8 +505,8 @@ exportMethods(
 	"segmentationTest")
 
 exportMethods(
-	"topLabels",
-	"topFeatures")
+	"topFeatures",
+	"topLabels")
 
 S3method("arrange", "DataFrame")
 S3method("arrange", "XDataFrame")

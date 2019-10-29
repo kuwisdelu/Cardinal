@@ -12,12 +12,5 @@ Binmat <- function(
 	dimnames = NULL,
 	...)
 {
-	.Deprecated("matter_mat")
-	datamode <- Ctypeof(datatype)
-	matter_mat(paths=files,
-		offset=offsets,
-		extent=extents,
-		nrow=nrow, ncol=ncol,
-		datamode=datamode,
-		dimnames=dimnames, ...)
+	.Defunct("matter_mat")
 }

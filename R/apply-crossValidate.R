@@ -133,7 +133,7 @@ setMethod("crossValidate", "SparseImagingExperiment",
 			nms <- paste0(".response", i)
 			pixelData(out)[nms] <- as.data.frame(.y)
 		}
-		pixelData(out)$..fold.. <- .fold
+		pixelData(out)$.fold <- .fold
 		if ( cv$type == "classification" )
 			metadata(out)[["positive class"]] <- cv$pos
 		out
@@ -156,7 +156,8 @@ setMethod("cvApply", "SparseImagingExperiment",
 		.fold <- as.factor(.fold)
 		# apply cross-validation
 		bplapply(levels(.fold), function(fi, BPPARAM) {
-			.message(">>>> fold: ", fi, " <<<<")
+			nf <- match(fi, levels(.fold))
+			.message(">>>> fold ", nf, "/", nlevels(.fold), ": ", fi, " <<<<")
 			if ( is.null(dim(.y)) ) {
 				# vector response
 				fit <- .fun(.x[,fi!=.fold,drop=FALSE], .y[fi!=.fold],

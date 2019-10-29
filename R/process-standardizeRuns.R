@@ -44,9 +44,3 @@ standardizeRuns.sum <- function(x, sum=length(x), ...) {
 	}
 }
 
-# defunct
-
-standardizeSamples <- function(object, ...) {
-	.Defunct("standardizeRuns")
-}
-

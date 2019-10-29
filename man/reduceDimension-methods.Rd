@@ -84,8 +84,4 @@ reduceDimension.peaks(x, t, peaklist, type=c("area", "height"), ...)
     \code{\link{peakAlign}},
     \code{\link{pixelApply}}
 }
-\examples{
-data <- generateImage(as="MSImageSet")
-reduceDimension(data, method="resample", step=100, plot=interactive())
-}
 \keyword{methods}

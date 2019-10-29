@@ -15,6 +15,7 @@ generateImage <- function(data = factor(1),
 	as = c("SImageSet", "MSImageSet"),
 	...)
 {
+	.Deprecated("simulateImage")
 	intensities <- rep(1, peaks)
 	sd <- 0.1
 	as <- match.arg(as)

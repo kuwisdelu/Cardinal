@@ -46,11 +46,4 @@ standardizeRuns.sum(x, sum=length(x), \dots)
     \code{\linkS4class{MSImageSet}},
     \code{\link{featureApply}}
 }
-\examples{
-data1 <- generateImage(as="MSImageSet")
-data2 <- generateImage(as="MSImageSet")
-sampleNames(data2) <- "2"
-data3 <- combine(data1, data2)
-standardizeRuns(data3, method="sum")
-}
 \keyword{methods}

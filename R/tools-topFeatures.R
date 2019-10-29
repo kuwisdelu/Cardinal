@@ -78,6 +78,5 @@ setMethod("topFeatures", "CrossValidated",
 setMethod("topLabels", "ANY",
 	function(object, ...)
 	{
-		.Deprecated("topFeatures")
-		topFeatures(object, ...)
+		.Defunct("topFeatures")
 	})

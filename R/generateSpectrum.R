@@ -25,6 +25,7 @@ generateSpectrum <- function(n, peaks = 100,
 	baseline = 2000,
 	auc = TRUE)
 {
+	.Deprecated("simulateSpectrum")
 	t <- seq(from=range[1], to=range[2], by=step)
 	if ( missing(peaks) ) {
 		if ( !missing(centers) ) {

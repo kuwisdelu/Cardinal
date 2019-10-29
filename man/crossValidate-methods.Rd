@@ -68,7 +68,7 @@
 
     For \code{\linkS4class{MSImagingExperiment}} objects, pre-processing can be performed. This is particularly useful if there is no reference to which to align peaks, except the mean spectrum (which is calculated from the whole dataset, and may invalidate cross-validation results).
 
-    If \code{.process=TRUE} and \code{.peaks=NULL}, then the data should be a peak-picked dataset \emph{before peak alignment}. The pre-processing will consist of peak alignment to the mean spectrum of the training sets, and peak filtering.
+    If \code{.process=TRUE} and \code{.peaks=NULL}, then either the data should be profile spectra with no peak picking, or it should be a peak-picked dataset \emph{before peak alignment}. If the data has no peak picking, then the pre-processing will consist of peak picking on the mean spectrum of the training sets, followed by peak alignment and peak filtering. If the data has been peak-picked but not aligned, then the pre-processing will consist of peak alignment to the mean spectrum of the training sets, and peak filtering.
 
     If \code{.process=TRUE} and \code{.peaks} is given, then the data should be a dataset consisting of profile spectra, and \code{.peaks} should be a peak-picked version of the same dataset \emph{before peak alignment}. The pre-processing will consist of peak alignment to the mean spectrum of the training sets, peak filtering, and peak binning the full data to the aligned peaks.
 

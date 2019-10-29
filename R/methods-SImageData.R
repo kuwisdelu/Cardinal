@@ -210,7 +210,7 @@ setMethod("[", c(x="SImageData", drop="NULL"), function(x, i, j, ..., drop) {
 	if ( missing(j) ) j <- seq_len(dim(x)[2])
 	names <- ls(x@data, all.names=TRUE)
 	for ( nm in names ) {
-		if ( inherits(x[[nm]], c("matter", "Binmat", "Hashmat")) ) {
+		if ( inherits(x[[nm]], c("matter", "Hashmat")) ) {
 			x[[nm]] <- x[[nm]][i,j,drop=NULL]
 		} else {
 			x[[nm]] <- x[[nm]][i,j,drop=FALSE]
