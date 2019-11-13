@@ -63,7 +63,9 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 
 peakBin_prefun <- function(object, ..., BPPARAM) {
 	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
-	s <- rowStats(spectra(object), "mean", verbose=verbose, BPPARAM=BPPARAM)
+	s <- rowStats(spectra(object), stat="mean",
+		chunks=getOption("Cardinal.numblocks"),
+		verbose=verbose, BPPARAM=BPPARAM)
 	ref <- mz(object)[locmax(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref
 	object

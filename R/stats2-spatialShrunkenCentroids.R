@@ -27,7 +27,9 @@ setMethod("spatialShrunkenCentroids",
 				method=method, dist=dist, BPPARAM=BPPARAM, ...))
 		}
 		.message("calculating global centroid...")
-		mean <- rowStats(iData(x), "mean", BPPARAM=BPPARAM[[1]])
+		mean <- rowStats(iData(x), stat="mean",
+			chunks=getOption("Cardinal.numblocks"),
+			BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -82,7 +84,9 @@ setMethod("spatialShrunkenCentroids",
 		method <- match.arg(method)
 		y <- as.factor(y)
 		.message("calculating global centroid...")
-		mean <- rowStats(iData(x), "mean", BPPARAM=BPPARAM[[1]])
+		mean <- rowStats(iData(x), stat="mean",
+			chunks=getOption("Cardinal.numblocks"),
+			BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -243,11 +247,14 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		options(Cardinal.verbose=verbose)
 	})
 	# calculate class centers
-	centers <- rowStats(iData(x), "mean", groups=class, BPPARAM=BPPARAM)
+	centers <- rowStats(iData(x), stat="mean", groups=class,
+		chunks=getOption("Cardinal.numblocks"), BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
-	wcss <- rowStats(iData(x), "sum", groups=class, row.center=centers,
-					tform=function(y) y^2, BPPARAM=BPPARAM)
+	wcss <- rowStats(iData(x), "sum", groups=class,
+					row.center=centers, tform=function(y) y^2,
+					chunks=getOption("Cardinal.numblocks"),
+					BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))

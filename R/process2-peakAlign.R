@@ -46,7 +46,9 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
 	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
-	s <- rowStats(spectra(object), "mean", verbose=verbose, BPPARAM=BPPARAM)
+	s <- rowStats(spectra(object), stat="mean",
+		chunks=getOption("Cardinal.numblocks"),
+		verbose=verbose, BPPARAM=BPPARAM)
 	maxs <- locmax(s, findLimits=TRUE)
 	l1 <- attr(maxs, "lower")
 	l2 <- attr(maxs, "upper")
