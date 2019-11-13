@@ -14,16 +14,21 @@ contrast.enhance.method <- function(method) {
 }
 
 contrast.enhance.suppression <- function(x, top.percent=0.01, ...) {
-	if ( all(is.na(x)) ) return(x)
+	if ( all(is.na(x)) )
+		return(x)
 	max.intensity <- max(x, na.rm=TRUE)
 	cutoff <- quantile(x, 1 - top.percent, na.rm=TRUE)
-	x[x > cutoff] <- cutoff
+	if ( cutoff > min(x) )
+		x[x > cutoff] <- cutoff
 	x
 }
 
 contrast.enhance.histogram <- function(x, blocks=100, ...) {
-	if ( all(is.na(x)) ) return(x)
+	if ( all(is.na(x)) )
+		return(x)
 	breaks <- unique(quantile(x, seq(from=0, to=1, length.out=blocks), na.rm=TRUE))
+	if ( length(breaks) < 3 )
+		return(x)
 	x.cut <- cut(x, breaks, include.lowest=TRUE)
 	x.new <- as.numeric(x.cut) / length(levels(x.cut))
 	top.x <- tail(breaks[-length(breaks)], 1)

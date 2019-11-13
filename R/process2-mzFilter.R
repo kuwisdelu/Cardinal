@@ -38,26 +38,26 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 	do_thresh <- isTRUE(thresh.max > 0)
 	if ( do_expr || do_thresh || (rm.zero && !do_freq) ) {
 		if ( do_expr ) {
-			stats <- c("min", "max", "mean", "sum", "sd", "var")
+			stats <- c("min", "max", "mean", "var")
 		} else {
-			stats <- "mean"
+			stats <- c("max", "mean")
 		}
 		summary2 <- summarize(object, .stat=stats, .by="feature",
 							.as="DataFrame", BPPARAM=BPPARAM)
 		if ( do_freq ) {
 			.message("combining feature summaries")
-			summary2 <- cbind(summary1, summary2)
+			summary1 <- cbind(summary1, summary2)
 		}
 		if ( rm.zero && !do_freq ) {
 			.message("removing zero-intensity features")
-			keep <- keep & summary2$mean > 0
+			keep <- keep & summary1$max > 0
 		}
 		if ( do_thresh ) {
 			.message("applying thresh.max = ", thresh.max)
-			keep <- keep & (summary2$mean > thresh.max * max(summary2$mean))
+			keep <- keep & (summary1$max > thresh.max * max(summary1$mean))
 		}
 		if ( length(expr) > 0L ) {
-			e <- as.env(summary2)
+			e <- as.env(summary1)
 			rules <- lapply(expr, function(a) {
 				.message("applying rule = ", deparse(a))
 				rule <- eval(a, envir=e)
@@ -77,5 +77,6 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 		.message("removing ", sum(!keep), " m/z features; ",
 			"keeping ", sum(keep), " m/z features")
 	}
+	fData(object)[names(summary1)] <- summary1
 	object[keep,]
 }
