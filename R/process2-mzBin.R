@@ -47,7 +47,7 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")
 		}
-		mzBin(object, ref=ref, tolerance=2 * halfwidth,
+		mzBin(object, ref=ref, tolerance=halfwidth,
 			units=units, fun=fun, ...)
 	})
 
@@ -61,8 +61,8 @@ mzBin_fun <- function(x, ref, width, units, FUN) {
 		lower <- ref - halfwidth
 		upper <- ref + halfwidth
 	}
-	lower <- 1L + findInterval(upper, ref, left.open=TRUE)
-	upper <- findInterval(upper, ref, left.open=FALSE)
+	lower <- 1L + findInterval(lower, mz, left.open=TRUE)
+	upper <- findInterval(upper, mz, left.open=FALSE)
 	binvec(x, lower, upper, method=FUN)
 }
 

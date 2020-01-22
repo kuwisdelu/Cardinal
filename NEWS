@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.1 [2020-1-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in 'mzBin()' binning spectra incorrectly
+    o Fixed bug in contrast enhancement with missing intensities
+
 CHANGES IN VERSION 2.3.18 [2019-10-27]
 -----------------------------------
 

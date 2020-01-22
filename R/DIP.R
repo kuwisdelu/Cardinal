@@ -18,7 +18,7 @@ contrast.enhance.suppression <- function(x, top.percent=0.01, ...) {
 		return(x)
 	max.intensity <- max(x, na.rm=TRUE)
 	cutoff <- quantile(x, 1 - top.percent, na.rm=TRUE)
-	if ( cutoff > min(x) )
+	if ( cutoff > min(x, na.rm=TRUE) )
 		x[x > cutoff] <- cutoff
 	x
 }
