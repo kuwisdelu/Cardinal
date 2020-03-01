@@ -2,98 +2,38 @@
 setMethod("spatialApply", "SparseImagingExperiment",
 	function(.object, .r, .fun, ...,
 			.dist = "chebyshev",
-			.blocks = FALSE,
+			.blocks = getOption("Cardinal.numblocks"),
 			.simplify = TRUE,
-			.use.names = TRUE,
 			.outpath = NULL,
-			.params = NULL,
-			.init = NULL,
+			.params = list(),
+			.verbose = getOption("Cardinal.verbose"),
 			BPREDO = list(),
 			BPPARAM = bpparam())
 	{
 		.checkForIncompleteProcessing(.object)
-		.fun <- match.fun(.fun)
-		output <- !is.null(.outpath)
-		if ( is.list(.init) ) {
-			spatial <- .init$spatial
-		} else {
-			nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)
-			spatial <- list(neighbors=nb, offsets=attr(nb, "offsets"))
-		}
-		if ( .blocks ) {
-			if ( !is.logical(.simplify) )
-				reduce_blocks <- match.fun(.simplify)
-			.simplify <- !is.logical(.simplify)
-			if ( !is.numeric(.blocks) )
-				.blocks <- getOption("Cardinal.numblocks")
-			if ( is.list(.init) ) {
-				idx <- .init$idx
-			} else {
-				idx <- .findSpatialBlocks(.object, groups=run(.object),
-					nblocks=.blocks, neighbors=spatial$neighbors)
-			}
-		} else {
-			if ( is.list(.init) ) {
-				idx <- .init$idx
-			} else {
-				idx <- spatial$neighbors
-				for ( i in seq_along(idx) )
-					attr(idx[[i]], "centers") <- i
-			}
-		}
-		pid <- ipcid()
-		if ( output ) {
-			.outpath <- .outpath[1L]
-			.message("using outpath = ", .outpath)
-			rwrite <- .remote_writer(pid, .outpath)
-		}
-		progress <- is(BPPARAM, "SerialParam") && !bpprogressbar(BPPARAM)
-		if ( progress )
-			.message(progress="start", max=length(idx))
-		ans <- bplapply(idx, function(i) {
-			suppressPackageStartupMessages(require(Cardinal))
-			x <- iData(.object)[,i,drop=FALSE]
-			if ( !is.null(dim(x)) )
-				x <- as.matrix(x)
-			ci <- attr(i, "centers")
-			ni <- lapply(spatial$neighbors[ci], match, i)
-			attr(x, "idx") <- i
-			attr(x, "mcols") <- fData(.object)
-			attr(x, "centers") <- match(ci, i)
-			attr(x, "neighbors") <- ni
-			attr(x, "offsets") <- spatial$offsets[ci]
-			attr(x, "params") <- .params[ci]
-			res <- .fun(x, ...)
-			if ( output )
-				res <- rwrite(res)
-			if ( progress )
-				.message(progress="increment")
-			res
-		}, BPREDO=BPREDO, BPPARAM=BPPARAM)
-		if ( progress )
-			.message(progress="stop")
-		if ( output )
-			ans <- .remote_collect(ans, .outpath, .simplify)
-		if ( .use.names && !.blocks ) {
-			if ( output && is(ans, "matter_mat") ) {
-				colnames(ans) <- pixelNames(.object)
-			} else {
-				names(ans) <- pixelNames(.object)
-			}
-		}
-		if ( .simplify ) {
-			if ( .blocks ) {
-				ci <- lapply(idx, attr, "centers")
-				attr(ans, "idx") <- ci
-				ans <- reduce_blocks(ans)
-			} else if ( !output ) {
-				ans <- drop(simplify2array(ans))
-			}
-		}
-		if ( isTRUE(.init) ) {
-			init <- list(spatial=spatial, idx=idx)
-			attr(ans, "init") <- init
-		}
-		ipcremove(pid)
+		nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)
+		idx <- seq_len(ncol(.object))
+		centers <- numeric(length(idx))
+		for ( i in idx )
+			centers[i] <- match(i, nb[[i]])
+		alist <- list(
+			idx=idx,
+			center=centers,
+			offsets=attr(nb, "offsets"))
+		alist <- c(alist, .params)
+		ans <- chunk_apply(iData(.object),
+			FUN=.fun,
+			MARGIN=2L,
+			...,
+			simplify=.simplify,
+			chunks=.blocks,
+			attr=list(mcols=fData(.object)),
+			alist=alist,
+			pattern=nb,
+			outfile=.outpath,
+			verbose=.verbose,
+			BPREDO=BPREDO,
+			BPPARAM=BPPARAM)
+		attr(ans, "neighbors") <- nb
 		ans
 	})

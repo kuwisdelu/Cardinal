@@ -1,70 +1,30 @@
 
 setMethod("pixelApply", "SparseImagingExperiment",
 	function(.object, .fun, ...,
-			.blocks = FALSE,
+			.blocks = getOption("Cardinal.numblocks"),
 			.simplify = TRUE,
-			.use.names = TRUE,
 			.outpath = NULL,
+			.params = list(),
+			.verbose = getOption("Cardinal.verbose"),
 			BPREDO = list(),
 			BPPARAM = bpparam())
 	{
 		.checkForIncompleteProcessing(.object)
-		.fun <- match.fun(.fun)
-		output <- !is.null(.outpath)
-		if ( .blocks ) {
-			if ( !is.logical(.simplify) )
-				reduce_blocks <- match.fun(.simplify)
-			.simplify <- !is.logical(.simplify)
-			if ( !is.numeric(.blocks) )
-				.blocks <- getOption("Cardinal.numblocks")
-			idx <- split_blocks(seq_len(ncol(.object)), .blocks)
-		} else {
-			idx <- seq_len(ncol(.object))
-		}
-		pid <- ipcid()
-		if ( output ) {
-			.outpath <- .outpath[1L]
-			.message("using outpath = ", .outpath)
-			rwrite <- .remote_writer(pid, .outpath)
-		}
-		progress <- is(BPPARAM, "SerialParam") && !bpprogressbar(BPPARAM)
-		if ( progress )
-			.message(progress="start", max=length(idx))
-		ans <- bplapply(idx, function(i) {
-			suppressPackageStartupMessages(require(Cardinal))
-			x <- iData(.object)[,i,drop=!.blocks]
-			if ( !is.null(dim(x)) )
-				x <- as.matrix(x)
-			attr(x, "idx") <- i
-			attr(x, "mcols") <- fData(.object)
-			attr(x, "by") <- "pixel"
-			res <- .fun(x, ...)
-			if ( output )
-				res <- rwrite(res)
-			if ( progress )
-				.message(progress="increment")
-			res
-		}, BPREDO=BPREDO, BPPARAM=BPPARAM)
-		if ( progress )
-			.message(progress="stop")
-		if ( output )
-			ans <- .remote_collect(ans, .outpath, .simplify)
-		if ( .use.names && !.blocks ) {
-			if ( output && is(ans, "matter_mat") ) {
-				colnames(ans) <- pixelNames(.object)
-			} else {
-				names(ans) <- pixelNames(.object)
-			}
-		}
-		if ( .simplify ) {
-			if ( .blocks ) {
-				ans <- reduce_blocks(ans)
-			} else if ( !output ) {
-				ans <- drop(simplify2array(ans))
-			}
-		}
-		ipcremove(pid)
-		ans
+		alist <- list(idx=seq_len(ncol(.object)))
+		alist <- c(alist, .params)
+		chunk_apply(iData(.object),
+			FUN=.fun,
+			MARGIN=2L,
+			...,
+			simplify=.simplify,
+			chunks=.blocks,
+			view="element",
+			attr=list(mcols=fData(.object)),
+			alist=alist,
+			outfile=.outpath,
+			verbose=.verbose,
+			BPREDO=BPREDO,
+			BPPARAM=BPPARAM)
 	})
 
 setMethod("pixelApply", "SImageSet",
@@ -72,10 +32,8 @@ setMethod("pixelApply", "SImageSet",
 			.pixel,
 			.feature,
 			.feature.groups,
-			.pixel.dependencies,
 			.simplify = TRUE,
-			.use.names = TRUE,
-			.verbose = FALSE)
+			.use.names = TRUE)
 	{
 		# set up subset variables if not provided
 		if ( !missing(.pixel) )

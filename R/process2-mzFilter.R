@@ -22,8 +22,10 @@ setMethod("peakFilter", "MSImagingExperiment",
 
 mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, BPPARAM) {
 	do_freq <- isTRUE(freq.min > 0)
+	do_expr <- length(expr) > 0L
+	do_thresh <- isTRUE(thresh.max > 0)
 	keep <- rep_len(TRUE, nrow(object))
-	if ( do_freq ) {
+	if ( do_freq || (rm.zero && !(do_expr || do_thresh)) ) {
 		summary1 <- summarize(object, .stat=c(count="sum", freq="mean"),
 							.tform=function(x) x > 0, .by="feature",
 							.as="DataFrame", BPPARAM=BPPARAM)
@@ -34,8 +36,6 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 		.message("applying freq.min = ", freq.min)
 		keep <- keep & summary1$freq > freq.min
 	}
-	do_expr <- length(expr) > 0L
-	do_thresh <- isTRUE(thresh.max > 0)
 	if ( do_expr || do_thresh || (rm.zero && !do_freq) ) {
 		if ( do_expr ) {
 			stats <- c("min", "max", "mean", "var")

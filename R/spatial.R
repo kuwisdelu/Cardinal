@@ -75,22 +75,14 @@ setMethod("spatialWeights", "ImagingExperiment",
 			r <- r[1]
 		}
 		sigma <- ((2 * r) + 1) / 4
-		fun <- function(xbl) {
-			neighbors <- attr(xbl, "neighbors")
-			offsets <- attr(xbl, "offsets")
-			mapply(function(ii, pos) {
-				.spatialWeights(xbl[,ii,drop=FALSE],
-					offsets=pos, sigma=sigma, bilateral=bilateral)
-			}, neighbors, offsets, SIMPLIFY=FALSE)
+		fun <- function(x) {
+			.spatialWeights(x, offsets=attr(x, "offsets"),
+					sigma=sigma, bilateral=bilateral)
 		}
-		progress <- getOption("Cardinal.progress")
-		options(Cardinal.progress=FALSE)
-		weights <- spatialApply(x, .r=r, .fun=fun, ..., .dist=dist,
-			.blocks=TRUE, .simplify=.unlist_and_reorder,
-			.init=TRUE, BPPARAM=BPPARAM)
-		options(Cardinal.progress=progress)
-		nb <- attr(weights, "init")$spatial$neighbors
-		attr(weights, "init") <- NULL
+		weights <- spatialApply(x, .r=r, .fun=fun, ...,
+			.dist=dist, .verbose=FALSE, BPPARAM=BPPARAM)
+		nb <- attr(weights, "neighbors")
+		attr(weights, "neighbors") <- NULL
 		if ( matrix ) {
 			w <- lapply(weights, function(w) w$alpha * w$beta)
 			weights <- sparse_mat(data=list(keys=c(nb), values=w),
