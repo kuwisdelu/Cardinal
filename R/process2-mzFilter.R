@@ -47,6 +47,8 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 		if ( do_freq ) {
 			.message("combining feature summaries")
 			summary1 <- cbind(summary1, summary2)
+		} else {
+			summary1 <- summary2
 		}
 		if ( rm.zero && !do_freq ) {
 			.message("removing zero-intensity features")

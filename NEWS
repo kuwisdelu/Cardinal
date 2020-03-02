@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.2 [2020-3-2]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The 'pixelApply()', 'featureApply()', and 'spatialApply()'
+        methods now internally use 'matter::chunk_apply()'
+
 CHANGES IN VERSION 2.5.1 [2020-1-22]
 -----------------------------------
 

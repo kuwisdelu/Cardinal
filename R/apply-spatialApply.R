@@ -13,16 +13,33 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		.checkForIncompleteProcessing(.object)
 		nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)
 		idx <- seq_len(ncol(.object))
-		centers <- numeric(length(idx))
-		for ( i in idx )
-			centers[i] <- match(i, nb[[i]])
 		alist <- list(
 			idx=idx,
-			center=centers,
+			neighbors=c(nb),
 			offsets=attr(nb, "offsets"))
 		alist <- c(alist, .params)
+		FUN <- function(x, ...) {
+			if ( is.null(attr(x, "chunk_id")) ) {
+				i <- attr(x, "idx")
+				nb <- attr(x, "neighbors")
+				attr(x, "centers") <- match(i, nb)
+				attr(x, "neighbors") <- seq_len(ncol(x))
+			} else {
+				i <- attr(x, "chunk_elt")
+				ci <- attr(x, "idx")
+				nb <- attr(x, "neighbors")
+				ni <- lapply(nb, match, i)
+				attr(x, "centers") <- match(ci, i)
+				attr(x, "neighbors") <- ni
+				attr(x, "pattern_id") <- NULL
+				attr(x, "pattern_elt") <- NULL
+				attr(x, "chunk_id") <- NULL
+				attr(x, "chunk_elt") <- NULL
+			}
+			.fun(x, ...)
+		}
 		ans <- chunk_apply(iData(.object),
-			FUN=.fun,
+			FUN=FUN,
 			MARGIN=2L,
 			...,
 			simplify=.simplify,

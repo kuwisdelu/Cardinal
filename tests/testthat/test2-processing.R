@@ -68,7 +68,7 @@ test_that("pre-processing 2", {
 
 	expect_true(validObject(data_b))
 
-	data_f <- mzFilter(tmp3, thresh.max=0.01) %>% process()
+	data_f <- mzFilter(tmp3, thresh.max=0.05) %>% process()
 
 	expect_true(validObject(data_f))
 

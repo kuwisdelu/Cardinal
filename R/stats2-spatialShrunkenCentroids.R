@@ -29,7 +29,7 @@ setMethod("spatialShrunkenCentroids",
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
 			chunks=getOption("Cardinal.numblocks"),
-			BPPARAM=BPPARAM[[1]])
+			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -86,7 +86,7 @@ setMethod("spatialShrunkenCentroids",
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
 			chunks=getOption("Cardinal.numblocks"),
-			BPPARAM=BPPARAM[[1]])
+			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
 			spatialWeights(x, r=ri, method=method,
@@ -141,7 +141,7 @@ setMethod("predict", "SpatialShrunkenCentroids2",
 			weights <- r.weights$w[[which(r.weights$r == ri)]]
 			pred <- .spatialShrunkenCentroids2_predict(newx,
 				r=ri, class=NULL, weights=weights, centers=res$centers,
-				sd=res$sd, priors=priors, dist=dist, init=NULL, BPPARAM=BPPARAM)
+				sd=res$sd, priors=priors, dist=dist, BPPARAM=BPPARAM)
 			list(class=pred$class, probability=pred$probability, scores=pred$scores,
 				centers=res$centers, statistic=res$statistic, sd=res$sd)
 		}, resultData(object), r, s, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
@@ -202,16 +202,8 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 												dist, iter.max, BPPARAM)
 {
 	iter <- 1
-	init <- TRUE
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
-	# suppress messages
-	verbose <- getOption("Cardinal.verbose")
 	# cluster the data
 	while ( iter <= iter.max ) {
-		options(Cardinal.verbose=FALSE) # suppress messages
 		class <- factor(as.integer(droplevels(class)))
 		if ( nlevels(class) == 1L )
 			.stop("singular cluster configuration, try a different seed")
@@ -219,16 +211,13 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)
 		pred <- .spatialShrunkenCentroids2_predict(x,
 			r=r, class=class, weights=weights, centers=fit$centers,
-			sd=fit$sd, priors=NULL, dist=dist, init=init, BPPARAM=BPPARAM)
+			sd=fit$sd, priors=NULL, dist=dist, BPPARAM=BPPARAM)
 		if ( all(class==pred$class) )
 			break
 		class <- pred$class
-		init <- pred$init
 		iter <- iter + 1
-		options(Cardinal.verbose=verbose) # print progress now
 		.message(".", appendLF=FALSE)
 	}
-	options(Cardinal.verbose=verbose) # restore
 	.message(" ")
 	list(class=pred$class, probability=pred$probability, scores=pred$scores,
 		centers=fit$centers, statistic=fit$statistic, sd=fit$sd)
@@ -236,25 +225,16 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 
 .spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM)
 {
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	# suppress messages in inner parallel loop
-	verbose <- getOption("Cardinal.verbose")
-	options(Cardinal.verbose=FALSE)
-	on.exit({
-		options(Cardinal.progress=progress)
-		options(Cardinal.verbose=verbose)
-	})
 	# calculate class centers
 	centers <- rowStats(iData(x), stat="mean", groups=class,
-		chunks=getOption("Cardinal.numblocks"), BPPARAM=BPPARAM)
+		chunks=getOption("Cardinal.numblocks"),
+		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
 	wcss <- rowStats(iData(x), "sum", groups=class,
 					row.center=centers, tform=function(y) y^2,
 					chunks=getOption("Cardinal.numblocks"),
-					BPPARAM=BPPARAM)
+					verbose=FALSE, BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
@@ -273,25 +253,19 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 }
 
 .spatialShrunkenCentroids2_predict <- function(x, r, class, weights,
-							centers, sd, priors, dist, init, BPPARAM)
+							centers, sd, priors, dist, BPPARAM)
 {
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
-		.spatialScores(xbl, centers=centers, weights=attr(xbl, "params"),
+		.spatialScores(xbl, centers=centers, weights=attr(xbl, "weights"),
 			neighbors=attr(xbl, "neighbors"), sd=sd + s0)
 	}
 	s0 <- median(sd)
-	scores <- spatialApply(x, .r=r, .fun=fun, .blocks=TRUE,
-		.simplify=.rbind_and_reorder, .init=init, .dist=dist,
-		.params=weights, BPPARAM=BPPARAM)
-	if ( isTRUE(init) ) {
-		init <- attr(scores, "init")
-		attr(scores, "init") <- NULL
-	}
+	do_rbind <- function(ans) do.call("rbind", ans)
+	scores <- spatialApply(x, .r=r, .fun=fun,
+		.simplify=do_rbind, .verbose=FALSE, .dist=dist,
+		.params=list(weights=weights),
+		view="chunk", BPPARAM=BPPARAM)
 	if ( is.null(priors) && !is.null(class) )
 		priors <- table(class) / sum(table(class))
 	scores <- scores - 2 * log(rep(priors, each=ncol(x)))
@@ -306,6 +280,6 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	# calculate and return new class assignments
 	class <- factor(apply(probability, 1, which.max),
 		levels=seq_len(ncol(centers)), labels=colnames(centers))
-	list(scores=scores, probability=probability, class=class, init=init)
+	list(scores=scores, probability=probability, class=class)
 }
 

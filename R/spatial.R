@@ -75,12 +75,12 @@ setMethod("spatialWeights", "ImagingExperiment",
 			r <- r[1]
 		}
 		sigma <- ((2 * r) + 1) / 4
-		fun <- function(x) {
-			.spatialWeights(x, offsets=attr(x, "offsets"),
-					sigma=sigma, bilateral=bilateral)
+		fun <- function(xi) {
+			.spatialWeights(xi, offsets=attr(xi, "offsets"),
+				sigma=sigma, bilateral=bilateral)
 		}
-		weights <- spatialApply(x, .r=r, .fun=fun, ...,
-			.dist=dist, .verbose=FALSE, BPPARAM=BPPARAM)
+		weights <- spatialApply(x, .r=r, .fun=fun, ..., .dist=dist,
+			.simplify=FALSE, .verbose=FALSE, view="element", BPPARAM=BPPARAM)
 		nb <- attr(weights, "neighbors")
 		attr(weights, "neighbors") <- NULL
 		if ( matrix ) {

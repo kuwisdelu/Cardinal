@@ -165,19 +165,20 @@ summarise.MSImagingExperiment <- function(.data, ...) {
 
 .summarize_stat <- function(object, by, groups, stat, tform, BPPARAM) {
 	labels <- paste0("[", names(stat), "]")
-	verbose <- getOption("Cardinal.progress") && !bpprogressbar(BPPARAM)
 	if ( by == "pixel" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by pixel ...")
 		ans <- colStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
 			chunks=getOption("Cardinal.numblocks"),
-			verbose=verbose, BPPARAM=BPPARAM)
+			verbose=getOption("Cardinal.verbose"),
+			BPPARAM=BPPARAM)
 	} else if ( by == "feature" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by feature ...")
 		ans <- rowStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
 			chunks=getOption("Cardinal.numblocks"),
-			verbose=verbose, BPPARAM=BPPARAM)
+			verbose=getOption("Cardinal.verbose"),
+			BPPARAM=BPPARAM)
 	}
 	ans
 }

@@ -63,17 +63,14 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	oseed <- getRNGStream()
 	on.exit(setRNGStream(oseed))
 	setRNGStream(seed)
-	# suppress progress in inner parallel loop
-	progress <- getOption("Cardinal.progress")
-	options(Cardinal.progress=FALSE)
-	on.exit(options(Cardinal.progress=progress))
 	# cluster FastMap components using k-means
 	proj <- resultData(fastmap, list(r=r), "scores")
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
-	centers <- rowStats(iData(object), stat="mean", groups=cluster,
-		chunks=getOption("Cardinal.numblocks"), BPPARAM=BPPARAM)
+	centers <- rowStats(iData(x), stat="mean", groups=cluster,
+		chunks=getOption("Cardinal.numblocks"),
+		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters
 	do_rbind <- function(ans) do.call("rbind", ans)
@@ -88,7 +85,7 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 				}
 			}, numeric(1))
 		}))
-	}, .blocks=TRUE, .simplify=do_rbind, BPPARAM=BPPARAM)
+	}, .simplify=do_rbind, .verbose=FALSE, view="chunk", BPPARAM=BPPARAM)
 	colnames(corr) <- levels(cluster)
 	list(cluster=cluster, centers=centers, correlation=corr)
 }

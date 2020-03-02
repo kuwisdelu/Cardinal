@@ -23,29 +23,30 @@
 #### Methods for Cardinal >= 2.x classes ####
 
 \S4method{pixelApply}{SparseImagingExperiment}(.object, .fun, \dots,
-    .blocks = FALSE,
+    .blocks = getOption("Cardinal.numblocks"),
     .simplify = TRUE,
-    .use.names = TRUE,
     .outpath = NULL,
+    .params = list(),
+    .verbose = getOption("Cardinal.verbose"),
     BPREDO = list(),
     BPPARAM = bpparam())
 
 \S4method{featureApply}{SparseImagingExperiment}(.object, .fun, \dots,
-    .blocks = FALSE,
+    .blocks = getOption("Cardinal.numblocks"),
     .simplify = TRUE,
-    .use.names = TRUE,
     .outpath = NULL,
+    .params = list(),
+    .verbose = getOption("Cardinal.verbose"),
     BPREDO = list(),
     BPPARAM = bpparam())
 
 \S4method{spatialApply}{SparseImagingExperiment}(.object, .r, .fun, \dots,
     .dist = "chebyshev",
-    .blocks = FALSE,
+    .blocks = getOption("Cardinal.numblocks"),
     .simplify = TRUE,
-    .use.names = TRUE,
     .outpath = NULL,
-    .params = NULL,
-    .init = NULL,
+    .params = list(),
+    .verbose = getOption("Cardinal.verbose"),
     BPREDO = list(),
     BPPARAM = bpparam())
 
@@ -55,19 +56,15 @@
     .pixel,
     .feature,
     .feature.groups,
-    .pixel.dependencies,
     .simplify = TRUE,
-    .use.names = TRUE,
-    .verbose = FALSE)
+    .use.names = TRUE)
 
 \S4method{featureApply}{SImageSet}(.object, .fun, \dots,
     .feature,
     .pixel,
     .pixel.groups,
-    .feature.dependencies,
     .simplify = TRUE,
-    .use.names = TRUE,
-    .verbose = FALSE)
+    .use.names = TRUE)
 }
 \arguments{
     \item{.object}{An imaging dataset.}
@@ -75,21 +72,18 @@
     \item{.r}{The maximum spatial radius or distance for which pixels are considered to be neighbors.}
     \item{\dots}{Additional arguments passed to \code{.fun}.}
     \item{.dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
-    \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a positive integer, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getOption("Cardinal.nblocks")} will be used.}
+    \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a positive integer, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getOption("Cardinal.numblocks")} will be used.}
     \item{.simplify}{If applying over blocks, then a function to be used to simplify the list of results. Otherwise, a logical value giving whether the results should be simplified into a matrix or array rather than a list.}
     \item{.use.names}{Should the names of elements of \code{.object} (either pixel names or feature names, as appropriate) be used for the names of the result?}
     \item{.outpath}{The path to a file where the output data will be written. Results will be kept in-memory if this is NULL. Results will be coerced to a numeric vector before being written to file.}
-    \item{.params}{A list of parameters with length equal to \code{length(.object)}. The appropriate elements will be made available to the spatial neighborhoods.}
-    \item{.init}{The initialization for the spatial neighbors and spatial blocks. If TRUE, then the result will have an attribute \code{attr(ans, "init")} that can be used as input to \code{.init} in future calls to avoid re-calculating spatial neighbors and spatial blocks.}
+    \item{.params}{A named list of parameters with length equal to \code{length(.object)}. The appropriate elements will be made available to the spatial neighborhoods.}
     \item{BPREDO}{See documentation for \code{\link{bplapply}}.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{.pixel}{A subset of pixels to use, given by an \code{integer} vector of numeric indices, a \code{character} vector of pixel names, or a \code{logical} vector indicating which pixels to use.}
     \item{.feature}{A subset of features to use, given in the same manner as pixels.}
     \item{.pixel.groups}{A grouping \code{factor} or a vector that can be coerced into a factor, that indicates groups of pixels over which the function should be applied. Groups pixels are treated as cells in a ragged array, by analogy to the \code{\link{tapply}} function.}
     \item{.feature.groups}{A grouping \code{factor} features, in the same manner as for pixels.}
-    \item{.pixel.dependencies}{Not currently used. This may be used in the future to allow caching when applying functions to data on disk.}
-    \item{.feature.dependencies}{Not currently used. May be used for caching in the future.}
-    \item{.verbose}{Used for debugging. Currently ignored.}
+    \item{.verbose}{Should progress messages be printed?}
 }
 \details{
 
@@ -110,7 +104,6 @@
     \itemize{
         \item{\code{idx}: The indices of the current pixel(s) or feature(s).}
         \item{\code{mcols}: Either \code{featureData(.object)} for \code{pixelApply} or \code{pixelData(.object)} for \code{featureApply}.}
-        \item{\code{by}: A string giving either "pixel" for \code{pixelApply} or "feature" for \code{featureApply}. This attribute is to facilitate determining whether this is a call to \code{pixelApply} or \code{featureApply} within methods that may select one or the other to use depending on the internal data structure.}
     }
 
     Additionally, the following attributes are made available during a call to \code{spatialyApply()}:
@@ -119,8 +112,9 @@
         \item{\code{centers}: A vector indicating which column(s) should be considered the center(s) of the neighborhood(s).}
         \item{\code{neighbors}: A list of vectors indicating which column(s) should be considered the neighborhoods. Only relevant if using \code{.blocks}.}
         \item{\code{offsets}: A matrix where the rows are the spatial offsets of the pixels in the neighborhood(s) from the center pixel(s).}
-        \item{\code{params}: The relevant list elements of the \code{.params} argument.}
     }
+
+    Additionally, any named components of \code{.params} will also be provided as attributes, subsetted to the current element.
 
     #### For \code{\linkS4class{SImageSet}}-derived classes ####
 

@@ -45,6 +45,11 @@
 	}
 }
 
+# Unlist (once)
+.unlist_once <- function(ans) {
+	unlist(ans, recursive=FALSE)
+}
+
 # Unlist (once) and re-order output of spatialApply
 .unlist_and_reorder <- function(ans) {
 	unlist(ans, recursive=FALSE)[order(unlist(attr(ans, "idx")))]

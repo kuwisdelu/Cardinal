@@ -26,8 +26,6 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 		for ( i in 1:nrow(par) ) {
 			rngseeds <- generateRNGStreams(nrow(x))
 			gweights <- r.gweights$w[[which(r.gweights$r == par$r[i])]]
-			progress <- getOption("Cardinal.progress")
-			options(Cardinal.progress=FALSE)
 			results[[i]] <- featureApply(x, function(xi) {
 				fid <- attr(xi, "idx")
 				.message("r = ", par$r[i], ", k = ", par$k[i],
@@ -38,8 +36,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 					seed=rngseeds[fid], ...)
 				res <- .spatialDGMM_collate(x, res, groups)
 				res
-			}, .simplify=FALSE, BPPARAM=BPPARAM[[1]])
-			options(Cardinal.progress=progress)
+			}, .simplify=FALSE, .verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		}
 		results <- do.call("c", results)
 		models <- DataFrame(rev(expand.grid(feature=1:nrow(x), k=k, r=r)))
