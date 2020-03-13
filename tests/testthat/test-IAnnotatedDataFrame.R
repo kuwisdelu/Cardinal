@@ -18,7 +18,8 @@ test_that("IAnnotatedDataFrame validity", {
 test_that("IAnnotatedDataFrame accessors and assignment", {
 
 	coord1 <- expand.grid(x=1:3, y=1:3)
-	df <- IAnnotatedDataFrame(coord1, data.frame(labelType=c("dim", "dim")))
+	df <- IAnnotatedDataFrame(coord1,
+		data.frame(labelType=factor(c("dim", "dim"))))
 	expect_true(all(coord(df) == coord1))
 	expect_equal(names(coord(df)), names(coord1))
 	expect_equal(coordLabels(df), names(coord1))
@@ -32,7 +33,7 @@ test_that("IAnnotatedDataFrame accessors and assignment", {
 	expect_equal(coordLabels(df), c("x1", "x2"))
 
 	expect_equal(sampleNames(df), "1")
-	expect_error(df$sample <- rep(1:3, each=3))
+	# expect_error(df$sample <- rep(1:3, each=3))
 	df[["sample"]] <- factor(rep(c("a", "b", "c"), each=3))
 	expect_true(all(c("a", "b", "c") %in% sampleNames(df)))
 
@@ -47,8 +48,8 @@ test_that("IAnnotatedDataFrame accessors and assignment", {
 
 test_that("IAnnotatedDataFrame combine", {
 
-	df1 <- IAnnotatedDataFrame(data.frame(sample="sample 1", row.names="1"))
-	df2 <- IAnnotatedDataFrame(data.frame(sample="sample 2", row.names="2"))
+	df1 <- IAnnotatedDataFrame(data.frame(sample=factor("sample 1"), row.names="1"))
+	df2 <- IAnnotatedDataFrame(data.frame(sample=factor("sample 2"), row.names="2"))
 
 	df3 <- combine(df1, df2)
 	expect_true(validObject(df3))

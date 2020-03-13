@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.4 [2020-3-13]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix bugs in legacy classes caused by a change in
+        default.stringsAsFactors() == FALSE in R 4.0
+
 CHANGES IN VERSION 2.5.3 [2020-3-13]
 -----------------------------------
 

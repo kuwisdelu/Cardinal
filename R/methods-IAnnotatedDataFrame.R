@@ -45,6 +45,10 @@ IAnnotatedDataFrame <- function(data, varMetadata,
 	if ( missing(varMetadata) )
 		varMetadata <- data.frame(labelType=factor(rep(NA, ncol(data)), levels=reqLabelTypes),
 			row.names=names(data))
+	if ( !is.null(data[["sample"]]) )
+		data[["sample"]] <- as.factor(data[["sample"]])
+	if ( !is.null(varMetadata[["labelType"]]) )
+		varMetadata[["labelType"]] <- as.factor(varMetadata[["labelType"]])
 	.IAnnotatedDataFrame(data=data,
 		varMetadata=varMetadata,
 		dimLabels=dimLabels,

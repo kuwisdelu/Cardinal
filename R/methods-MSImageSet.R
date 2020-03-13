@@ -32,7 +32,7 @@ MSImageSet <- function(
 	pixelData = IAnnotatedDataFrame(
 		data=coord,
 		varMetadata=data.frame(
-			labelType=rep("dim", ncol(coord)))),
+			labelType=factor(rep("dim", ncol(coord))))),
 	featureData = AnnotatedDataFrame(
 		data=data.frame(mz=mz)),
 	processingData = new("MSImageProcess"),

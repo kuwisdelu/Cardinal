@@ -41,7 +41,7 @@ MSImageSet(
     imageData = MSImageData(data=spectra, coord=coord),
     pixelData = IAnnotatedDataFrame(
         data=coord,
-        varMetadata=data.frame(labelType=rep("dim", ncol(coord)))),
+        varMetadata=data.frame(labelType=factor(rep("dim", ncol(coord))))),
     featureData = AnnotatedDataFrame(
         data=data.frame(mz=mz)),
     processingData = new("MSImageProcess"),
