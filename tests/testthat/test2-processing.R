@@ -64,7 +64,7 @@ test_that("pre-processing 2", {
 
 	expect_true(validObject(data_p))
 
-	data_b <- mzBin(tmp3, from=500, to=800, resolution=400, units="ppm") %>% process()
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=1000, units="ppm") %>% process()
 
 	expect_true(validObject(data_b))
 

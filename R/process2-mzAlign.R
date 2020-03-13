@@ -7,7 +7,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 		quantile = 0.2, span = 0.75, ...)
 	{
 		if ( is.na(tolerance) )
-			tolerance <- 5 * .findMaxMassDiff(object, match.arg(units))
+			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
@@ -29,7 +29,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "missing"),
 		quantile = 0.2, span = 0.75, ...)
 	{
 		if ( is.na(tolerance) )
-			tolerance <- 5 * .findMaxMassDiff(object, match.arg(units))
+			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))

@@ -92,11 +92,10 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			extent=intensityData(info)[["external array length"]])
 		if ( is.null(mass.range) ) {
 			.message("determining mass range...")
-			if ( attach.only ) {
-				mz.ranges <- sapply(mz, range, BPPARAM=BPPARAM)				
-			} else {
-				mz.ranges <- sapply(mz[], range)
-			}
+			mz.ranges <- chunk_apply(mz, range,
+				chunks=getOption("Cardinal.numblocks"),
+				verbose=getOption("Cardinal.verbose"),
+				simplify=TRUE, BPPARAM=BPPARAM)
 			mz.range <- range(mz.ranges[is.finite(mz.ranges)])
 			.message("detected mass range: ",
 				round(mz.range[1L], 4), " to ", round(mz.range[2L], 4))
@@ -110,28 +109,34 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 				.stop("m/z values must be positive for units='ppm'")
 			if ( is.na(resolution) ) {
 				.message("estimating mass resolution...")
-				resolution <- sapply(mz, function(m) median(1e6 * diff(m) / m[-1]), BPPARAM=BPPARAM)
-				resolution <- ceiling(max(resolution) / 2)
+				resolution <- chunk_apply(mz, function(m) median(1e6 * diff(m) / m[-1]),
+					chunks=getOption("Cardinal.numblocks"),
+					verbose=getOption("Cardinal.verbose"),
+					simplify=TRUE, BPPARAM=BPPARAM)
+				resolution <- roundnear(max(resolution), precision=0.5)
 				.message("estimated mass resolution: ", resolution, " ", units)
 			}
 			mzout <- seq.ppm(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
-				ppm=resolution) # ppm == half-bin-widths
-			error <- resolution * 1e-6 * mzout
-			tol <- c(relative = resolution * 1e-6)
+				ppm=resolution / 2) # seq.ppm == half-bin-widths
+			error <- (resolution / 2) * 1e-6 * mzout
+			tol <- c(relative = (resolution / 2) * 1e-6)
 		} else {
 			if ( is.na(resolution) ) {
 				.message("estimating mass resolution...")
-				resolution <- sapply(mz, function(m) median(diff(m)), BPPARAM=BPPARAM)
-				resolution <- ceiling(max(resolution))
+				resolution <- chunk_apply(mz, function(m) median(diff(m)),
+					chunks=getOption("Cardinal.numblocks"),
+					verbose=getOption("Cardinal.verbose"),
+					simplify=TRUE, BPPARAM=BPPARAM)
+				resolution <- round(max(resolution), digits=4)
 				.message("estimated mass resolution: ", resolution, " ", units)
 			}
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
-				by=resolution)  # by == full-bin-widths
-			error <- rep(resolution, length(mzout))
+				by=resolution)  # seq == full-bin-widths
+			error <- rep(resolution / 2, length(mzout))
 			tol <- c(absolute = resolution / 2)
 		}
 		mz.bins <- c(mzout[1] - error[1], mzout + error)

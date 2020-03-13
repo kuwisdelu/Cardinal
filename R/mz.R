@@ -2,11 +2,9 @@
 # Generate a sequence of m/z values
 
 setMethod("mz", "missing",
-	function(from, to, by, resolution = 200, units = c("ppm", "mz"), ...)
+	function(from, to, by = resolution, resolution = 200, units = c("ppm", "mz"), ...)
 	{
 		units <- match.arg(units)
-		if ( missing(by) )
-			by <- switch(units, ppm=resolution * 2, mz=resolution)
 		halfwidth <- unname(by / 2)
 		mz <- switch(units,
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
@@ -15,7 +13,7 @@ setMethod("mz", "missing",
 			ppm = c(relative = halfwidth * 1e-6),
 			mz = c(absolute = halfwidth))
 		res <- switch(units,
-			ppm = c(ppm = halfwidth),
+			ppm = c(ppm = 2 * halfwidth),
 			mz = c(mz = 2 * halfwidth))
 		attr(mz, "tolerance") <- tol
 		attr(mz, "resolution") <- res

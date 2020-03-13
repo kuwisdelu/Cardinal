@@ -25,7 +25,7 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 	do_expr <- length(expr) > 0L
 	do_thresh <- isTRUE(thresh.max > 0)
 	keep <- rep_len(TRUE, nrow(object))
-	if ( do_freq || (rm.zero && !(do_expr || do_thresh)) ) {
+	if ( do_freq ) {
 		summary1 <- summarize(object, .stat=c(count="sum", freq="mean"),
 							.tform=function(x) x > 0, .by="feature",
 							.as="DataFrame", BPPARAM=BPPARAM)

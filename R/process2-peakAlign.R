@@ -6,7 +6,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 	function(object, tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		if ( is.na(tolerance) )
-			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
+			tolerance <- .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
@@ -71,8 +71,7 @@ peakAlign_postfun <- function(object, tol, ...) {
 	tol <- switch(names(tol),
 		relative = c(ppm = unname(tol) / 1e-6),
 		absolute = c(mz = unname(tol)))
-	res <- switch(names(tol), ppm = tol, mz = 2 * tol)
-	resolution(featureData(object)) <- res
+	resolution(featureData(object)) <- 2 * tol
 	.message("aligned to ", length(ref), " reference peaks ",
 		"(tol = ", tol, " ",  names(tol), ")")
 	if ( !is.null(spectrumRepresentation(object)) )

@@ -20,11 +20,13 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		alist <- c(alist, .params)
 		FUN <- function(x, ...) {
 			if ( is.null(attr(x, "chunk_id")) ) {
+				# view = "element"
 				i <- attr(x, "idx")
 				nb <- attr(x, "neighbors")
 				attr(x, "centers") <- match(i, nb)
 				attr(x, "neighbors") <- seq_len(ncol(x))
 			} else {
+				# view = "chunk"
 				i <- attr(x, "chunk_elt")
 				ci <- attr(x, "idx")
 				nb <- attr(x, "neighbors")

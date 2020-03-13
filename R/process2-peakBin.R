@@ -7,7 +7,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		if ( is.na(tolerance) )
-			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
+			tolerance <- .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
@@ -30,7 +30,7 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		if ( is.na(tolerance) )
-			tolerance <- 2 * .findMaxMassDiff(object, match.arg(units))
+			tolerance <- .findMaxMassDiff(object, match.arg(units))
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
@@ -94,8 +94,7 @@ peakBin_postfun <- function(object, ans, tol, ...) {
 	tol <- switch(names(tol),
 		relative = c(ppm = unname(tol) / 1e-6),
 		absolute = c(mz = unname(tol)))
-	res <- switch(names(tol), ppm = tol, mz = 2 * tol)
-	resolution(featureData(object)) <- res
+	resolution(featureData(object)) <- 2 * tol
 	if ( !is.null(spectrumRepresentation(object)) )
 		spectrumRepresentation(object) <- "centroid spectrum"
 	.message("binned to ", length(ref), " reference peaks ",

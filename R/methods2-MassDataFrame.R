@@ -55,7 +55,7 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 	from <- mz[-length(mz)]
 	ppm <- 1e6 * ((to / from ) - 1) / ((to / from) + 1)
 	if ( diff(range(ppm)) <= tol * min(ppm) ) {
-		res <- c("ppm" = mean(ppm))
+		res <- c("ppm" = 2 * median(ppm))
 	} else {
 		res <- c("mz" = min(mzdiff))
 	}
@@ -64,8 +64,8 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 
 .findMaxMassDiff <- function(x, units) {
 	mzdiff <- switch(units,
-		ppm = c("ppm" = ceiling(1e6 * max(diff(mz(x)) / mz(x)[-1]))),
-		mz = c("mz" = ceiling(max(diff(mz(x))))))
+		ppm = c("ppm" = roundnear(1e6 * max(diff(mz(x)) / mz(x)[-1]), precision=0.5)),
+		mz = c("mz" = round(max(diff(mz(x)))), digits=4))
 	mzdiff
 }
 

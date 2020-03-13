@@ -31,12 +31,10 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 	})
 
 setMethod("mzBin", c("MSImagingExperiment", "missing"),
-	function(object, from=min(mz(object)), to=max(mz(object)), by,
-		resolution = NA, units = c("ppm", "mz"), fun=sum, ...)
+	function(object, from=min(mz(object)), to=max(mz(object)), by = resolution,
+			resolution = NA, units = c("ppm", "mz"), fun=sum, ...)
 	{
 		units <- match.arg(units)
-		if ( missing(by) )
-			by <- switch(units, ppm=resolution * 2, mz=resolution)
 		if ( is.na(by) )
 			by <- 2 * .findMaxMassDiff(object, units)
 		halfwidth <- by / 2
