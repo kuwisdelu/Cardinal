@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.5 [2020-3-14]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix bug in 'show' method for 'SimpleImageList'
+        caused by class(matrix) -> c("matrix", "array")
+
 CHANGES IN VERSION 2.5.4 [2020-3-13]
 -----------------------------------
 

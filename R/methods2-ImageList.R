@@ -107,7 +107,7 @@ setMethod("show", "SimpleImageList",
 		if ( is.null(nms) )
 			nms <- character(length(object))
 		data <- as(object, "SimpleList", strict=FALSE)
-		cls <- sapply(data, class)
+		cls <- sapply(data, function(x) class(x)[1L])
 		dms <- sapply(data, function(x) {
 			d <- paste0(dim(x), collapse=" x ")
 			paste0("<", d, ">")
