@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.6 [2020-3-24]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix bug when assigning a dense matrix via iData()<-
+        for an 'MSProcessedImagingExperiment' object
+
 CHANGES IN VERSION 2.5.5 [2020-3-14]
 -----------------------------------
 

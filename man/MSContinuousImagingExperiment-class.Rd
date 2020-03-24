@@ -6,6 +6,7 @@
 \alias{MSContinuousImagingExperiment-class}
 
 \alias{iData<-,MSContinuousImagingExperiment,ANY-method}
+\alias{iData<-,MSContinuousImagingExperiment,missing-method}
 \alias{imageData<-,MSContinuousImagingExperiment-method}
 
 \alias{[,MSContinuousImagingSpectraList,ANY,ANY,ANY-method}

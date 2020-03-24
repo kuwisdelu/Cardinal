@@ -45,18 +45,37 @@ setReplaceMethod("resolution", "MSProcessedImagingExperiment",
 
 setReplaceMethod("imageData", "MSProcessedImagingExperiment",
 	function(y, value) {
-		if ( !inherits(value, c("MSProcessedImagingSpectraList")) )
+		if ( !inherits(value, c("MSProcessedImagingSpectraList")) ) {
 			y <- as(y, "MSImagingExperiment")
-		callNextMethod(y, value=value)
+			imageData(y) <- value
+		} else {
+			y <- callNextMethod(y, value)
+		}
+		y
 	})
 
-setReplaceMethod("iData", "MSProcessedImagingExperiment",
+setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 	function(x, i, ..., value) {
 		if ( !inherits(value, "sparse_matc") ) {
 			x <- as(x, "MSImagingExperiment")
 			imageData(x) <- .SimpleImageArrayList(imageData(x))
+			iData(x, i, ...) <- value
+		} else {
+			x <- callNextMethod(x, i, ..., value=value)
 		}
-		callNextMethod(x, i, ..., value=value)
+		x
+	})
+
+setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
+	function(x, i, ..., value) {
+		if ( !inherits(value, "sparse_matc") ) {
+			x <- as(x, "MSImagingExperiment")
+			imageData(x) <- .SimpleImageArrayList(imageData(x))
+			iData(x, ...) <- value
+		} else {
+			x <- callNextMethod(x, ..., value=value)
+		}
+		x
 	})
 
 setMethod("mzData", "MSProcessedImagingExperiment",

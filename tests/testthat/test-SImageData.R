@@ -5,7 +5,6 @@ context("SImageData class")
 
 test_that("SImageData validity", {
 	
-	expect_true(validObject(new("SImageData")))
 	expect_true(validObject(SImageData()))
 
 	data0 <- array(1:27, dim=c(3,3,3))
