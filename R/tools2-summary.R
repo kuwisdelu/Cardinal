@@ -72,9 +72,9 @@ setMethod("summary", "PLS2",
 			nm <- grepl(".response", names(pixelData(object)))
 			y <- as.matrix(pixelData(object)[,nm,drop=FALSE])
 			rmse <- sapply(resultData(object), function(res)
-				sqrt(mean((res$fitted - y)^2)), na.rm=TRUE)
+				sqrt(mean((res$fitted - y)^2, na.rm=TRUE)))
 			mae <- sapply(resultData(object), function(res)
-				mean(abs(res$fitted - y)), na.rm=TRUE)
+				mean(abs(res$fitted - y), na.rm=TRUE))
 			if ( ncol(y) > 1L ) {
 				description <- paste0(" Regression with ", ncol(y), " response variables")
 			} else {
