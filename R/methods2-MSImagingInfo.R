@@ -310,8 +310,10 @@ setMethod("isCentroided", "MSImagingInfo",
 		NA
 	} else if ( isTRUE(desc == "centroid spectrum") ) {
 		TRUE
-	} else {
+	} else if ( isTRUE(desc == "profile spectrum") ) {
 		FALSE
+	} else {
+		NA
 	}
 }
 

@@ -5,6 +5,8 @@ TODO for Cardinal package
 - Fix auto-detection of mass resolution for processed centroided data
 - Declare whether a dataset is profile or centroided on import
 - Write a new batchProcess() method for new classes with good defaults
+- Reorganize codebase again so refactoring/debugging is easier
+- Deprecate legacy methods and classes
 - Test everything on PRIDE datasets
 
 - Fix colorkey text cutoff for max values >= 1e4
