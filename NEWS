@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.7 [2020-3-30]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix bug when using 'rbind()' or 'cbind()' on
+        'MassDataFrame' and 'PositionDataFrame'
+
 CHANGES IN VERSION 2.5.6 [2020-3-24]
 -----------------------------------
 
