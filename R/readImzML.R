@@ -19,6 +19,14 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	# read imzML file
 	.message("reading imzML file: '", xmlpath, "'")
 	info <- .readImzML(xmlpath)
+	# describe file
+	ibdbinarytype <- metadata(info)[["ibd binary type"]]
+	if ( !is.null(ibdbinarytype) )
+		.message("detected ibd binary type: ", sQuote(ibdbinarytype))
+	representation <- metadata(info)[["spectrum representation"]]
+	if ( !is.null(representation) )
+		.message("detected representation: ", sQuote(representation))
+	# return parse
 	if ( parse.only )
 		return(info)
 	# read ibd file
@@ -55,7 +63,6 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	intensity.ibdtype <- intensityData(info)[["binary data type"]]
 	# read binary data
 	if ( ibdtype == "continuous" ) {
-		.message("detected 'continuous' imzML")
 		mz <- matter_vec(paths=file,
 			datamode=Ctypeof(mz.ibdtype[1]),
 			offset=mzData(info)[["external offset"]][1],
@@ -71,7 +78,6 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		}
 		mz <- mz[]
 	} else if ( ibdtype == "processed" ) {
-		.message("detected 'processed' imzML")
 		mz <- matter_list(paths=file,
 			datamode=Ctypeof(mz.ibdtype),
 			offset=mzData(info)[["external offset"]],
@@ -80,32 +86,23 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			datamode=Ctypeof(intensity.ibdtype),
 			offset=intensityData(info)[["external offset"]],
 			extent=intensityData(info)[["external array length"]])
-		if ( is.null(mass.range) ) {
-			.message("determining mass range...")
-			mz.ranges <- chunk_apply(mz, range,
-				chunks=getOption("Cardinal.numblocks"),
-				verbose=getOption("Cardinal.verbose"),
-				simplify=TRUE, BPPARAM=BPPARAM)
-			mz.range <- range(mz.ranges[is.finite(mz.ranges)])
-			.message("detected mass range: ",
-				round(mz.range[1L], 4), " to ", round(mz.range[2L], 4))
-		} else {
-			mz.range <- mass.range
+		if ( is.null(mass.range) || is.na(resolution) ) {
+			.message("auto-determining mass range and resolution...")
+			mz.info <- .detectMassRangeAndResolution(mz, units=units, BPPARAM=BPPARAM)
+			.message("detected mass range: ", mz.info$range[1L], " to ", mz.info$range[2L])
+			.message("estimated mass resolution: ", mz.info$resolution, " ", units)
 		}
-		mz.min <- mz.range[1]
-		mz.max <- mz.range[2]
+		if ( is.null(mass.range) )
+			mass.range <- mz.info$range
+		if ( is.na(resolution) )
+			resolution <- mz.info$resolution
+		.message("using mass range: ", mass.range[1L], " to ", mass.range[2L])
+		.message("using mass resolution: ", resolution, " ", units)
+		mz.min <- mass.range[1]
+		mz.max <- mass.range[2]
 		if ( units == "ppm" ) {
 			if ( floor(mz.min) <= 0 )
 				.stop("m/z values must be positive for units='ppm'")
-			if ( is.na(resolution) ) {
-				.message("estimating mass resolution...")
-				resolution <- chunk_apply(mz, function(m) median(1e6 * diff(m) / m[-1]),
-					chunks=getOption("Cardinal.numblocks"),
-					verbose=getOption("Cardinal.verbose"),
-					simplify=TRUE, BPPARAM=BPPARAM)
-				resolution <- roundnear(max(resolution), precision=0.5)
-				.message("estimated mass resolution: ", resolution, " ", units)
-			}
 			mzout <- seq.ppm(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
@@ -113,15 +110,6 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			error <- (resolution / 2) * 1e-6 * mzout
 			tol <- c(relative = (resolution / 2) * 1e-6)
 		} else {
-			if ( is.na(resolution) ) {
-				.message("estimating mass resolution...")
-				resolution <- chunk_apply(mz, function(m) median(diff(m)),
-					chunks=getOption("Cardinal.numblocks"),
-					verbose=getOption("Cardinal.verbose"),
-					simplify=TRUE, BPPARAM=BPPARAM)
-				resolution <- round(max(resolution), digits=4)
-				.message("estimated mass resolution: ", resolution, " ", units)
-			}
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
@@ -201,5 +189,36 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	if ( !is.null(coordExact) )
 		pixelData(object)[names(coordExact)] <- as.list(coordExact)
 	object
+}
+
+.detectMassRangeAndResolution <- function(mz, units, BPPARAM) {
+	if ( units == "ppm" ) {
+		fun <- function(m) {
+			med <- median(1e6 * diff(m) / m[-1], na.rm=TRUE)
+			lim <- range(m, na.rm=TRUE)
+			c(med, lim)
+		}
+	} else {
+		fun <- function(m) {
+			med <- median(diff(m), na.rm=TRUE)
+			lim <- range(m, na.rm=TRUE)
+			c(med, lim)
+		}
+	}
+	massinfo <- chunk_apply(mz, fun,
+		chunks=getOption("Cardinal.numblocks"),
+		verbose=getOption("Cardinal.verbose"),
+		simplify=TRUE, BPPARAM=BPPARAM)
+	massinfo <- as.matrix(massinfo)
+	massinfo[!is.finite(massinfo)] <- NA
+	res <- median(massinfo[1,], na.rm=TRUE)
+	min <- round(min(massinfo[2,], na.rm=TRUE), digits=4)
+	max <- round(max(massinfo[3,], na.rm=TRUE), digits=4)
+	if ( units == "ppm" ) {
+		res <- roundnear(res, precision=1)
+	} else {
+		res <- round(res, digits=4)
+	}
+	list(resolution=res, range=c(min, max))
 }
 

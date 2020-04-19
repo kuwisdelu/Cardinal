@@ -4,6 +4,10 @@ CHANGES IN VERSION 2.5.8 [2020-4-18]
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o Automatic detection of mass resolution should now work
+        better for 'processed' imzML with centroid spectra
+    o Try to set default BPPARAM backend to 'SerialParam()'
+        if Cardinal is the first package to load BiocParallel
     o Expose '.view' argument of 'matter::chunk_apply()' in
         'pixelApply()', 'featureApply()', and 'spatialApply()'
     o Previously-deprecated functions 'generateSpectrum()'
