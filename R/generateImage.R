@@ -15,29 +15,5 @@ generateImage <- function(data = factor(1),
 	as = c("SImageSet", "MSImageSet"),
 	...)
 {
-	.Deprecated("simulateImage")
-	intensities <- rep(1, peaks)
-	sd <- 0.1
-	as <- match.arg(as)
-	if ( is.array(data) ) {
-		coord <- coord[is.finite(data),]
-		data <- as.factor(data[is.finite(data)])
-	}
-	xs <- lapply(levels(data), function(i) {
-		n <- sum(data == i)
-		intensities[which(i == levels(data))] <- intensities[1] + delta * sd
-		generateSpectrum(n, intensities=intensities, sd=sd, ...)
-	})
-	t <- xs[[1]]$t
-	x <- matrix(nrow=length(t), ncol=length(data))
-	for ( i in levels(data) ) {
-		x[,data == i] <- xs[[which(i == levels(data))]]$x
-	}
-	if ( as == "SImageSet" ) {
-		out <- SImageSet(data=x, coord=coord)
-		fData(out)$t <- t
-	} else if ( as == "MSImageSet") {
-		out <- MSImageSet(spectra=x, mz=t, coord=coord)
-	}
-	out
+	.Defunct("simulateImage")
 }

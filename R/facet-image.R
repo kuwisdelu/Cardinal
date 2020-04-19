@@ -290,7 +290,7 @@ print.facet.image <- function(x, ...) {
 	if ( all(no_ck) ) {
 		padding <- 0
 	} else {
-		padding <- 2
+		padding <- 2.5
 	}
 	if ( isTRUE(obj$layout$layout) ) {
 		layout <- .auto.layout(obj, right=padding,

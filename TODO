@@ -2,20 +2,22 @@
 TODO for Cardinal package
 -------------------------
 
-- Clean up and test spatialApply() with chunk_apply() implementation
 - Fix bugs in spatialFastmap() and spatialShrunkenCentroids()
 - Fix auto-detection of mass resolution for processed centroided data
 - Declare whether a dataset is profile or centroided on import
-- Write a new batchProcess() method for new classes with good defaults
-- Reorganize codebase again so refactoring/debugging is easier
 - Deprecate "method" in stats methods -> use "weights", etc., instead
 - Deprecate other legacy methods and classes
 - Deprecate dplyr methods -> use subset/aggregate
+- Set SerialParam() as the default BPPARAM backend
+- Clean up Cardinal options and utilities, e.g., CardinalLog()
+- Fix colorkey text cutoff for max values >= 1e4
 - Test everything on PRIDE datasets
 
+- Write a new batchProcess() method for new classes with good defaults
+- Reorganize codebase again so refactoring/debugging is easier
 - Refactor i/o and stats methods into "CardinalIO" and "CardinalStats"
 - Refactor plotting functionality to another package (?)
-- Fix colorkey text cutoff for max values >= 1e4
+- Preserve sparsity when pre-processing with smooth(), etc. (?)
 - "MultiImagingExperiment" class for multimodal experiments?
 - Multimodal image registration (w/ optical images, etc.)
 - Add tidy(), augment(), and glance() methods for results (?)

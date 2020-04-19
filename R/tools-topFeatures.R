@@ -75,8 +75,3 @@ setMethod("topFeatures", "CrossValidated",
 		lapply(resultData(object), topFeatures, ...)
 	})
 
-setMethod("topLabels", "ANY",
-	function(object, ...)
-	{
-		.Defunct("topFeatures")
-	})

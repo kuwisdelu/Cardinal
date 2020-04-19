@@ -25,39 +25,5 @@ generateSpectrum <- function(n, peaks = 100,
 	baseline = 2000,
 	auc = TRUE)
 {
-	.Deprecated("simulateSpectrum")
-	t <- seq(from=range[1], to=range[2], by=step)
-	if ( missing(peaks) ) {
-		if ( !missing(centers) ) {
-			peaks <- length(centers)
-		} else if ( !missing(intensities) ) {
-			peaks <- length(intensities)
-		}
-	}
-	if ( n > 1 ) {
-		x <- sapply(rep(1, n), function(ns) {
-			generateSpectrum(n=ns, peaks=peaks, range=range,
-				centers=force(centers), intensities=force(intensities),
-				step=step, resolution=resolution, noise=noise,
-				sd=sd, baseline=baseline, auc=auc)$x
-		} )
-	} else {
-		sigma <- (centers / resolution) / (2 * sqrt(2 * log(2)))
-		intensities <- intensities + rnorm(peaks, 0, sd)
-		x <- mapply(function(mus, ints, sigmas) {
-			xs <- dnorm(t, mean=mus, sigmas)
-			if ( !auc ) xs <- xs / max(xs, na.rm=TRUE)
-			xs <- ints * xs
-			xs
-		}, centers, intensities, sigma)
-		x <- length(t) * rowSums(x) / sum(x)
-		x <- x + rnorm(length(t), mean=0, sd=noise * sd(x))
-		x <- x - min(x)
-		x <- length(t) * x / sum(x)
-		baseline <- exp(-t/baseline)
-		if ( max(baseline) > 0 ) baseline <- baseline / max(baseline)
-		baseline <- (max(x) / 4) * baseline + rnorm(length(t), mean=0, sd=baseline)
-		x <- x + baseline
-	}
-	list(x=x, t=t)
+	.Defunct("simulateSpectrum")
 }

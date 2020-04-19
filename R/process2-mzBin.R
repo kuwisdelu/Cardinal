@@ -7,9 +7,8 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 	{
 		dots <- list(...)
 		if ( "width" %in% names(dots) ) {
-			tolerance <- dots$width
-			.warning("'width' is deprecated\n",
-				"Use 'tolerance' instead.")
+			.Defunct(msg=paste0("'width' is defunct\n",
+				"Use 'tolerance' instead."))
 		}
 		width <- 2 * tolerance
 		units <- match.arg(units)

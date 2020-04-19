@@ -158,7 +158,6 @@ setGeneric("segmentationTest", function(x, ...) standardGeneric("segmentationTes
 #### Results ####
 ## --------------
 setGeneric("topFeatures", function(object, ...) standardGeneric("topFeatures"))
-setGeneric("topLabels", function(object, ...) standardGeneric("topLabels"))
 
 #### Plotting ####
 ## ---------------

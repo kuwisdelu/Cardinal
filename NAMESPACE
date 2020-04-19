@@ -162,7 +162,6 @@ importFrom("utils",
 	"txtProgressBar")
 
 exportClasses(
-	"Binmat",
 	"Hashmat",
 	"IAnnotatedDataFrame",
 	"ImageData",
@@ -176,7 +175,6 @@ exportClasses(
 	"iSet")
 
 export(
-	"Binmat",
 	"ImageData",
 	"IAnnotatedDataFrame",
 	"Hashmat",
@@ -504,9 +502,7 @@ exportMethods(
 	"meansTest",
 	"segmentationTest")
 
-exportMethods(
-	"topFeatures",
-	"topLabels")
+exportMethods("topFeatures")
 
 S3method("arrange", "DataFrame")
 S3method("arrange", "XDataFrame")

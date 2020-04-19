@@ -1,12 +1,8 @@
 \name{defunct}
 \alias{Cardinal-defunct}
 
-\alias{class:Binmat}
-\alias{Binmat}
-\alias{Binmat-class}
-
-\alias{topLabels}
-\alias{topLabels,ANY-method}
+\alias{generateImage}
+\alias{generateSpectrum}
 
 \title{Defunct functions and methods in Cardinal}
 
@@ -14,7 +10,7 @@
   These functions are defunct and are no longer available.
 
   \describe{
-        \item{\code{Binmat}:}{\code{\link{matter_mat}}}
-        \item{\code{topLabels}:}{\code{\link{topFeatures}}}
+        \item{\code{generateSpectrum}:}{Use \code{\link{simulateSpectrum}} instead.}
+        \item{\code{generateImage}:}{Use \code{\link{simulateImage}} instead.}
     }
 }

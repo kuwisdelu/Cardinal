@@ -14,8 +14,6 @@ setMethod("spatialKMeans",
 		rs <- sort(r)
 		ks <- sort(k)
 		ncomp <- min(ncomp, nrow(x))
-		if ( "weights" %in% names(list(...)) )
-			.stop("'weights' is defunct.")
 		.time.start()
 		result <- unlist(lapply(rs, function(r){
 			.message("spatialKMeans: Initializing clusters for r = ", r, ".")

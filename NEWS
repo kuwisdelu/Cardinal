@@ -6,6 +6,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Expose '.view' argument of 'matter::chunk_apply()' in
         'pixelApply()', 'featureApply()', and 'spatialApply()'
+    o Previously-deprecated functions 'generateSpectrum()'
+        and 'generateImage()' are now defunct
+    o Removed defunct functions 'Binmat()' and 'topLabels()'
+
+BUG FIXES
+
+    o Fix large intensity text cutoffs in 'image()' colorkey
 
 CHANGES IN VERSION 2.5.7 [2020-3-30]
 -----------------------------------

@@ -7,16 +7,6 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	as = c("MSImagingExperiment", "MSImageSet"), parse.only=FALSE,
 	BPPARAM = bpparam(), ...)
 {
-	# check input
-	dots <- list(...)
-	if ( "mass.accuracy" %in% names(dots) ) {
-		.stop("'mass.accuracy' is defunct.\n",
-			"Use 'resolution' instead.")
-	}
-	if ( "units.accuracy" %in% names(dots) ) {
-		.stop("'units.accuracy' is defunct.\n",
-			"Use 'units' instead.")
-	}
 	# get output format
 	outclass <- match.arg(as)
 	# check for files
