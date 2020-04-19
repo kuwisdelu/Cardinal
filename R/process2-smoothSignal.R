@@ -17,7 +17,7 @@ setMethod("smoothSignal", "SparseImagingExperiment",
 			label="smoothSignal", kind="pixel",
 			plotfun=smoothSignal_plotfun,
 			moreargs=dotargs,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

@@ -21,7 +21,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 			moreargs=list(type=type, tol=tol, tol.ref=tol.ref),
 			postfun=peakBin_postfun, postargs=list(tol=tol),
 			plotfun=peakBin_plotfun,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 
@@ -40,7 +40,7 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 			moreargs=list(type=type, tol=tol, mz=NULL, peaks=NULL),
 			prefun=peakBin_prefun, plotfun=peakBin_plotfun,
 			postfun=peakBin_postfun, postargs=list(tol=tol),			
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 
@@ -63,8 +63,8 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 
 peakBin_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getOption("Cardinal.numblocks"),
-		verbose=getOption("Cardinal.verbose"),
+		chunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	ref <- mz(object)[locmax(s)]
 	metadata(featureData(object))[["reference peaks"]] <- ref

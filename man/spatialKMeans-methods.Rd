@@ -23,7 +23,7 @@
     dist = "chebyshev", tol.dist = 1e-9,
     iter.max = 10, nstart = 10,
     algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
-    ncomp = 10, BPPARAM = bpparam(), \dots)
+    ncomp = 10, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{SpatialKMeans2}(object, \dots)
 

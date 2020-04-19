@@ -24,19 +24,19 @@
 }
 \usage{
 \S4method{meansTest}{SparseImagingExperiment}(x, fixed, random, groups = run(x),
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{segmentationTest}{SparseImagingExperiment}(x, fixed, random, groups = run(x),
         classControl = c("Ymax", "Mscore"),
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{segmentationTest}{SpatialDGMM}(x, fixed, random, model = modelData(x),
         classControl = c("Ymax", "Mscore"),
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{summary}{MeansTest}(object, \dots, BPPARAM = bpparam())
+\S4method{summary}{MeansTest}(object, \dots, BPPARAM = getCardinalBPPARAM())
 
-\S4method{summary}{SegmentationTest}(object, \dots, BPPARAM = bpparam())
+\S4method{summary}{SegmentationTest}(object, \dots, BPPARAM = getCardinalBPPARAM())
 }
 \arguments{
     \item{x}{An imaging dataset or segmented/summarized imaging dataset.}

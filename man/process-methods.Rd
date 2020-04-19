@@ -25,7 +25,7 @@
     plot = FALSE,
     par = NULL,
     outpath = NULL,
-    BPPARAM = bpparam())
+    BPPARAM = getCardinalBPPARAM())
 }
 \arguments{
     \item{object}{An imaging dataset.}

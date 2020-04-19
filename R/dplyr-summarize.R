@@ -25,7 +25,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 			.by = c("feature", "pixel"), .groups = NULL,
 			.stat = "mean", .tform = identity,
 			.as = "ImagingExperiment",
-			BPPARAM = bpparam())
+			BPPARAM = getCardinalBPPARAM())
 	{
 		.checkForIncompleteProcessing(.data)
 		.by <- match.arg(.by)
@@ -169,15 +169,15 @@ summarise.MSImagingExperiment <- function(.data, ...) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by pixel ...")
 		ans <- colStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
-			chunks=getOption("Cardinal.numblocks"),
-			verbose=getOption("Cardinal.verbose"),
+			chunks=getCardinalNumBlocks(),
+			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	} else if ( by == "feature" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by feature ...")
 		ans <- rowStats(iData(object), stat=stat, groups=groups,
 			na.rm=TRUE, tform=tform, drop=FALSE,
-			chunks=getOption("Cardinal.numblocks"),
-			verbose=getOption("Cardinal.verbose"),
+			chunks=getCardinalNumBlocks(),
+			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	}
 	ans

@@ -2,7 +2,7 @@
 setMethod("segmentationTest", "SparseImagingExperiment",
 	function(x, fixed, random, groups = run(x),
 		classControl = c("Ymax", "Mscore"),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		args <- .parseFormula2(fixed)
 		vars <- names(args$rhs)[sapply(args$rhs, is.language)]
@@ -20,7 +20,7 @@ setMethod("segmentationTest", "SparseImagingExperiment",
 setMethod("segmentationTest", "SpatialDGMM",
 	function(x, fixed, random, model = modelData(x),
 		classControl = c("Ymax", "Mscore"),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		if ( !is.numeric(model) ) {
 			estimates <- names(modelData(x))

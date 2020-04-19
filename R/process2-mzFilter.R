@@ -10,7 +10,7 @@ setMethod("mzFilter", "MSImagingExperiment",
 			kind="global", postfun=mzFilter_postfun,
 			postargs=list(expr=expr, thresh.max=thresh.max,
 						freq.min=freq.min, rm.zero=rm.zero),
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

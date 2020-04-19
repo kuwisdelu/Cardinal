@@ -11,7 +11,7 @@ setMethod("reduceBaseline", "SparseImagingExperiment",
 			label="reduceBaseline", kind="pixel",
 			moreargs=dotargs,
 			plotfun=reduceBaseline_plotfun,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

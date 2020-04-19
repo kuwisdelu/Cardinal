@@ -1,7 +1,7 @@
 
 setMethod("meansTest", "SparseImagingExperiment",
 	function(x, fixed, random, groups = run(x),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		e <- environment(fixed)
 		args <- .parseFormula2(fixed)
@@ -108,8 +108,8 @@ setMethod("meansTest", "SparseImagingExperiment",
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
 	response <- rowStats(iData(x), stat="mean", groups=groups,
-		chunks=getOption("Cardinal.numblocks"),
-		verbose=getOption("Cardinal.verbose"),
+		chunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	response <- t(as.matrix(response, slots=FALSE))
 	pdata <- as.data.frame(pData(x), slots=FALSE)

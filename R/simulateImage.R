@@ -5,7 +5,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
 	as = c("MSImagingExperiment", "SparseImagingExperiment"),
-	BPPARAM = bpparam(), ...)
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !missing(preset) ) {
 		preset <- presetImageDef(preset, ...)

@@ -1,14 +1,14 @@
 
 setMethod("featureApply", "SparseImagingExperiment",
 	function(.object, .fun, ...,
-			.blocks = getOption("Cardinal.numblocks"),
 			.simplify = TRUE,
 			.outpath = NULL,
 			.params = list(),
-			.verbose = getOption("Cardinal.verbose"),
+			.blocks = getCardinalNumBlocks(),
+			.verbose = getCardinalVerbose(),
 			.view = "element",
 			BPREDO = list(),
-			BPPARAM = bpparam())
+			BPPARAM = getCardinalBPPARAM())
 	{
 		.checkForIncompleteProcessing(.object)
 		alist <- list(idx=seq_len(nrow(.object)))
@@ -71,7 +71,6 @@ setMethod("featureApply", "SImageSet",
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.feature))
-		.message(progress="start", max=length(.feature))
 		for ( i in seq_along(.feature) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .feature[i], env)
@@ -79,9 +78,7 @@ setMethod("featureApply", "SImageSet",
 			}, simplify=.simplify, USE.NAMES=.use.names)
 			if ( !.simplify && length(groups) == 1 )
 				ans[[i]] <- ans[[i]][[1]]
-			.message(progress="increment")
 		}
-		.message(progress="stop")
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.feature)
 		if ( .simplify ) ans <- simplify2array(ans)

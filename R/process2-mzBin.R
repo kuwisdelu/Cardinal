@@ -25,7 +25,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 			postfun=mzBin_postfun,
 			postargs=list(width=width, units=units),
 			plotfun=mzBin_plotfun,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

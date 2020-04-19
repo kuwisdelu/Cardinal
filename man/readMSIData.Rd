@@ -15,7 +15,7 @@ readMSIData(file, \dots)
 readImzML(name, folder = getwd(), attach.only = TRUE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	as = c("MSImagingExperiment", "MSImageSet"), parse.only = FALSE,
-	BPPARAM = bpparam(), \dots)
+	BPPARAM = getCardinalBPPARAM(), \dots)
 
 ## Read Analyze 7.5 files
 readAnalyze(name, folder = getwd(), attach.only = TRUE,

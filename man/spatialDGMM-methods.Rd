@@ -18,7 +18,7 @@
     dist = "chebyshev", annealing = TRUE,
     init = c("kmeans", "gmm"), p0 = 0.05,
     iter.max = 100, tol = 1e-9,
-    BPPARAM = bpparam(), \dots)
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{SpatialDGMM}(object, \dots)
 }

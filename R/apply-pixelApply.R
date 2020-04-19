@@ -1,14 +1,14 @@
 
 setMethod("pixelApply", "SparseImagingExperiment",
 	function(.object, .fun, ...,
-			.blocks = getOption("Cardinal.numblocks"),
 			.simplify = TRUE,
 			.outpath = NULL,
 			.params = list(),
-			.verbose = getOption("Cardinal.verbose"),
+			.blocks = getCardinalNumBlocks(),
+			.verbose = getCardinalVerbose(),
 			.view = "element",
 			BPREDO = list(),
-			BPPARAM = bpparam())
+			BPPARAM = getCardinalBPPARAM())
 	{
 		.checkForIncompleteProcessing(.object)
 		alist <- list(idx=seq_len(ncol(.object)))
@@ -72,7 +72,6 @@ setMethod("pixelApply", "SImageSet",
 		environment(.fun) <- env
 		# prepare and calculate result
 		ans <- vector("list", length(.pixel))
-		.message(progress="start", max=length(.pixel))
 		for ( i in seq_along(.pixel) ) {
 			ans[[i]] <- sapply(groups, function(j) {
 				assign(".Index", .pixel[i], envir=env)
@@ -80,9 +79,7 @@ setMethod("pixelApply", "SImageSet",
 			}, simplify=.simplify, USE.NAMES=.use.names)
 			if ( !.simplify && length(groups) == 1 )
 				ans[[i]] <- ans[[i]][[1]]
-			.message(progress="increment")
 		}
-		.message(progress="stop")
 		# simplify result
 		if ( .use.names ) names(ans) <- names(.pixel)
 		if ( .simplify ) ans <- simplify2array(ans)

@@ -17,9 +17,8 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
-register(SerialParam())
-options(Cardinal.verbose=FALSE)
-options(Cardinal.progress=FALSE)
+setCardinalBPPARAM(SerialParam())
+setCardinalVerbose(FALSE)
 RNGkind("Mersenne-Twister")
 ```
 
@@ -562,13 +561,11 @@ image(mse, mz=1200)
 darkmode()
 image(mse2, mz=1135, colorscale=magma)
 ```
-Any future plots on the current device will use the new mode. The default mode can be restored to the current device with `lightmode()`.
+Any future plots will use the new mode. The default mode can be restored with `lightmode()`.
 
 ```{r light-mode}
 lightmode()
 ```
-
-The default for new plots can be changed by `options(Cardinal.dark=TRUE)`.
 
 
 ## A note on plotting speed

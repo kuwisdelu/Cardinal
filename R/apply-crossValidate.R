@@ -6,7 +6,7 @@ setMethod("crossValidate", "MSImagingExperiment",
 		.process = FALSE,
 		.processControl = list(),
 		.peaks = NULL,
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.fun <- match.fun(.fun)
 		.predict <- match.fun(.predict)
@@ -106,7 +106,7 @@ setMethod("crossValidate", "MSImagingExperiment",
 
 setMethod("crossValidate", "SparseImagingExperiment",
 	function(.x, .y, .fun, .fold = run(.x),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		# get cross-validation folds
 		.fold <- as.factor(.fold)
@@ -146,7 +146,7 @@ setMethod("cvApply", "SparseImagingExperiment",
 		.fitted = fitted,
 		.simplify = FALSE,
 		BPREDO = list(),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		# get functions
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)

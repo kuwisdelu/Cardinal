@@ -12,7 +12,7 @@ setMethod("peakPick", "MSImagingExperiment",
 			postfun=peakPick_postfun,
 			plotfun=peakPick_plotfun,
 			moreargs=dotargs,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

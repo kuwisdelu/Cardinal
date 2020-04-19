@@ -16,7 +16,7 @@ setMethod("normalize", "SparseImagingExperiment",
 			label="normalize", kind="pixel",
 			moreargs=dotargs,
 			plotfun=normalize_plotfun,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 

@@ -2,17 +2,17 @@
 #### Save log and session history ####
 ## -----------------------------------
 
-Cardinal.version <- function() {
+CardinalVersion <- function() {
 	paste0(packageVersion("Cardinal"), collapse=".")
 }
 
-Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
+CardinalLog <- function(file = "Cardinal.log", history = TRUE) {
 	if ( !is.null(file) ) {
 		path <- normalizePath(file[1L], mustWork=FALSE)
 		if ( !file.create(path) )
 			return(FALSE)
 		path <- normalizePath(path)
-		.message("saving history to ", path)
+		.message("saving log file to ", path)
 		con <- file(path, open="wt")
 		for ( m in .Cardinal$log )
 			writeLines(c(m, "\n"), con=con)
@@ -70,41 +70,14 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 #### User messages ####
 ## --------------------
 
-.message <- function(..., progress=c("none", "start", "stop", "increment"), min=0, max=1) {
-	progress <- match.arg(progress)
-	if ( progress == "none" ) {
-		.log(...)
-		for ( f in .Cardinal$message ) {
-			f(...)
-		}
-	} else if ( progress == "start" ) {
-		if ( length(list(...)) > 1 )
-			.log(...)
-		.Cardinal$progress$i <- min
-		.Cardinal$progress$min <- min
-		.Cardinal$progress$max <- max
-		for ( f in .Cardinal$progress$start ) {
-			f(..., min=min, max=max)
-		}
-	} else if ( progress == "increment" ) {
-		.Cardinal$progress$i <- .Cardinal$progress$i + 1
-		for ( f in .Cardinal$progress$increment ) {
-			f()
-		}
-	} else if ( progress == "stop" ) {
-		if ( length(list(...)) > 1 )
-			.log(...)
-		for ( f in .Cardinal$progress$stop ) {
-			f(...)
-		}
-	}
+.message <- function(...) {
+	.log(...)
+	for ( f in .Cardinal$message )
+		f(...)
 }
 
-#### Console messages and progress bars ####
-## -----------------------------------------
-
 .console <- function(...) {
-	if ( getOption("Cardinal.verbose") ) {
+	if ( getCardinalVerbose() ) {
 		message(...)
 		flush.console()
 	}
@@ -117,31 +90,7 @@ Cardinal.history <- function(file = "Cardinal.log", history = TRUE) {
 .time.stop <- function() {
 	.Cardinal$time$stop <- proc.time()
 	time <- .Cardinal$time$stop - .Cardinal$time$start
-	.log("Cardinal: Operation took ", round(time[[3]], digits=2), " seconds.")
-}
-
-.progress.start <- function(..., min=0, max=1) {
-	if ( length(list(...)) > 1 )
-		.message(...)
-	.Cardinal$progress$bar <- NULL
-	if ( getOption("Cardinal.progress") && max - min > 1 ) {
-		.Cardinal$progress$bar <- txtProgressBar(min=min, max=max, style=3)
-	}
-}
-
-.progress.increment <- function() {
-	if ( getOption("Cardinal.progress") && !is.null(.Cardinal$progress$bar) ) {
-		setTxtProgressBar(.Cardinal$progress$bar, value=.Cardinal$progress$i)
-	}
-}
-
-.progress.stop <- function(...) {
-	if ( getOption("Cardinal.progress") && !is.null(.Cardinal$progress$bar) ) {
-		close(.Cardinal$progress$bar)
-	}
-	.Cardinal$progress$bar <- NULL
-	if ( length(list(...)) > 1 )
-		.message(...)
+	.log("took ", round(time[[3]], digits=2), " seconds.")
 }
 
 #### Generate R console history ####

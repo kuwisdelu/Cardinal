@@ -5,7 +5,7 @@
 readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	as = c("MSImagingExperiment", "MSImageSet"), parse.only=FALSE,
-	BPPARAM = bpparam(), ...)
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	# get output format
 	outclass <- match.arg(as)
@@ -206,8 +206,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		}
 	}
 	massinfo <- chunk_apply(mz, fun,
-		chunks=getOption("Cardinal.numblocks"),
-		verbose=getOption("Cardinal.verbose"),
+		chunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
 		simplify=TRUE, BPPARAM=BPPARAM)
 	massinfo <- as.matrix(massinfo)
 	massinfo[!is.finite(massinfo)] <- NA

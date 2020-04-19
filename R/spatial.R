@@ -66,7 +66,7 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 
 setMethod("spatialWeights", "ImagingExperiment",
 	function(x, r = 1, method = c("gaussian", "adaptive"),
-		dist = "chebyshev", matrix = FALSE, BPPARAM = bpparam(), ...)
+		dist = "chebyshev", matrix = FALSE, BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		method <- match.arg(method)
 		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)

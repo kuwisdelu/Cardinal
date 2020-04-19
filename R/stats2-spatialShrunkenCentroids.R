@@ -4,7 +4,7 @@ setMethod("spatialShrunkenCentroids",
 	function(x, r = 1, k = 3, s = 0,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", init = NULL,
-		iter.max = 10, BPPARAM = bpparam(), ...)
+		iter.max = 10, BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
@@ -28,7 +28,7 @@ setMethod("spatialShrunkenCentroids",
 		}
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
-			chunks=getOption("Cardinal.numblocks"),
+			chunks=getCardinalNumBlocks(),
 			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
@@ -77,7 +77,7 @@ setMethod("spatialShrunkenCentroids",
 	function(x, y, r = 1, s = 0,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", priors = table(y),
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
@@ -85,7 +85,7 @@ setMethod("spatialShrunkenCentroids",
 		y <- as.factor(y)
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
-			chunks=getOption("Cardinal.numblocks"),
+			chunks=getCardinalNumBlocks(),
 			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
@@ -117,7 +117,7 @@ setMethod("spatialShrunkenCentroids",
 	})
 
 setMethod("predict", "SpatialShrunkenCentroids2",
-	function(object, newx, newy, BPPARAM = bpparam(), ...)
+	function(object, newx, newy, BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		if ( !is(newx, "SparseImagingExperiment") )
 			.stop("'newx' must inherit from 'SparseImagingExperiment'")
@@ -227,13 +227,13 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 {
 	# calculate class centers
 	centers <- rowStats(iData(x), stat="mean", groups=class,
-		chunks=getOption("Cardinal.numblocks"),
+		chunks=getCardinalNumBlocks(),
 		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
 	wcss <- rowStats(iData(x), "sum", groups=class,
 					row.center=centers, tform=function(y) y^2,
-					chunks=getOption("Cardinal.numblocks"),
+					chunks=getCardinalNumBlocks(),
 					verbose=FALSE, BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)

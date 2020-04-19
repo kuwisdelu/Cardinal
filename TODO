@@ -6,8 +6,6 @@ TODO for Cardinal package
 - Deprecate "method" in stats methods -> use "weights", etc., instead
 - Deprecate other legacy methods and classes
 - Deprecate dplyr methods -> use subset/aggregate
-- Clean up Cardinal options and utilities, e.g., CardinalLog()
-- Fix hack that sets SerialParam() as the default BPPARAM backend
 - Test everything on PRIDE datasets
 
 - Write a new batchProcess() method for new classes with good defaults

@@ -28,10 +28,10 @@
         .process = FALSE,
         .processControl = list(),
         .peaks = NULL,
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{crossValidate}{SparseImagingExperiment}(.x, .y, .fun, .fold = run(.x),
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{cvApply}{SparseImagingExperiment}(.x, .y, .fun,
         .fold = run(.x),
@@ -39,7 +39,7 @@
         .fitted = fitted,
         .simplify = FALSE,
         BPREDO = list(),
-        BPPARAM = bpparam(), \dots)
+        BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{CrossValidated2}(object, \dots)
 

@@ -66,8 +66,11 @@ facet.raster <- function(rasters,
 
 print.facet.raster <- function(x, ...) {
 	obj <- .update.par(x, ...)
-	if ( getOption("Cardinal.dark") )
-		darkmode()
+	if ( isTRUE(obj$dark) || getOption("Cardinal.dark", default=FALSE) ) {
+		darkmode(default=FALSE)
+	} else if ( isFALSE(obj$dark) ) {
+		lightmode(default=FALSE)
+	}
 	if ( isTRUE(obj$layout$layout) ) {
 		layout <- .auto.layout(length(obj$facets),
 			byrow=obj$layout$byrow, par=obj$par)

@@ -29,14 +29,14 @@
 \S4method{spatialShrunkenCentroids}{SparseImagingExperiment,missing}(x, r = 1, k = 3, s = 0,
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", init = NULL,
-    iter.max = 10, BPPARAM = bpparam(), \dots)
+    iter.max = 10, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialShrunkenCentroids}{SparseImagingExperiment,ANY}(x, y, r = 1, s = 0,
     method = c("gaussian", "adaptive"),
     dist = "chebyshev", priors = table(y),
-    BPPARAM = bpparam(), \dots)
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{predict}{SpatialShrunkenCentroids2}(object, newx, newy, BPPARAM = bpparam(), \dots)
+\S4method{predict}{SpatialShrunkenCentroids2}(object, newx, newy, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{fitted}{SpatialShrunkenCentroids2}(object, \dots)
 

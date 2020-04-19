@@ -1,13 +1,17 @@
 
 # Set to dark mode
-darkmode <- function() {
+darkmode <- function(default = TRUE) {
+	if ( default )
+		options(Cardinal.dark=TRUE)
 	par(bg="black", fg="white", col="white",
 		col.lab="white", col.axis="white",
 		col.main="white", col.sub="white")
 }
 
 # Set to dark mode
-lightmode <- function() {
+lightmode <- function(default = TRUE) {
+	if ( default )
+		options(Cardinal.dark=FALSE)
 	par(bg="transparent", fg="black", col="black",
 		col.lab="black", col.axis="black",
 		col.main="black", col.sub="black")

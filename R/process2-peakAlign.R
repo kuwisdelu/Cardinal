@@ -18,7 +18,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 		object <- process(object, label="peakAlign",
 			kind="global", prefun=prefun,
 			postfun=peakAlign_postfun, postargs=list(tol=tol),
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 
@@ -46,8 +46,8 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getOption("Cardinal.numblocks"),
-		verbose=getOption("Cardinal.verbose"),
+		chunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	maxs <- locmax(s, findLimits=TRUE)
 	l1 <- attr(maxs, "lower")

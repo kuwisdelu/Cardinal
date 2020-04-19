@@ -484,8 +484,18 @@ exportMethods("selectROI")
 export("makeFactor")
 
 export(
-	"Cardinal.version",
-	"Cardinal.history")
+	"CardinalVersion",
+	"CardinalLog")
+
+export(
+	"getCardinalBPPARAM",
+	"setCardinalBPPARAM",
+	"getCardinalVerbose",
+	"setCardinalVerbose",
+	"getCardinalNumBlocks",
+	"setCardinalNumBlocks",
+	"getCardinalDelayProc",
+	"setCardinalDelayProc")
 
 exportMethods(
 	"colocalized",

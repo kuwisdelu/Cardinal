@@ -2,14 +2,14 @@
 setMethod("spatialApply", "SparseImagingExperiment",
 	function(.object, .r, .fun, ...,
 			.dist = "chebyshev",
-			.blocks = getOption("Cardinal.numblocks"),
 			.simplify = TRUE,
 			.outpath = NULL,
 			.params = list(),
-			.verbose = getOption("Cardinal.verbose"),
+			.blocks = getCardinalNumBlocks(),
+			.verbose = getCardinalVerbose(),
 			.view = "element",
 			BPREDO = list(),
-			BPPARAM = bpparam())
+			BPPARAM = getCardinalBPPARAM())
 	{
 		.checkForIncompleteProcessing(.object)
 		nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)

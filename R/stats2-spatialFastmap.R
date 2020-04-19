@@ -4,7 +4,7 @@ setMethod("spatialFastmap", "SparseImagingExperiment",
 		method = c("gaussian", "adaptive"),
 		metric = c("average", "correlation", "neighborhood"),
 		dist = "chebyshev", tol.dist = 1e-9,
-		iter.max = 1, BPPARAM = bpparam(), ...)
+		iter.max = 1, BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)

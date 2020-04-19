@@ -13,7 +13,7 @@ setMethod("colocalized",
 	function(object, ref, n = 10,
 		sort.by = c("correlation", "M1", "M2"),
 		threshold = median,
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(object)
 		threshold <- match.fun(threshold)
@@ -57,7 +57,7 @@ setMethod("colocalized",
 	function(object, ref, n = 10,
 		sort.by = c("Mscore", "M1", "M2"),
 		threshold = median,
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		threshold <- match.fun(threshold)
 		sort.by <- match.arg(sort.by)

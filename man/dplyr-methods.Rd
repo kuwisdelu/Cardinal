@@ -30,7 +30,7 @@
     .by = c("feature", "pixel"), .groups = NULL,
     .stat = "mean", .tform = identity,
     .as = "ImagingExperiment",
-    BPPARAM = bpparam())
+    BPPARAM = getCardinalBPPARAM())
 }
 \arguments{
     \item{.data}{An imaging dataset.}

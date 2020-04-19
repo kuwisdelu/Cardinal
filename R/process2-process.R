@@ -96,7 +96,7 @@ setMethod("process", "SparseImagingExperiment",
 			plot = FALSE,
 			par = NULL,
 			outpath = NULL,
-			BPPARAM = bpparam())
+			BPPARAM = getCardinalBPPARAM())
 	{
 		kind <- match.arg(kind)
 		if ( missing(label) )
@@ -188,7 +188,7 @@ setMethod("process", "SparseImagingExperiment",
 		proclist <- queue$queue
 		# perform preprocessing
 		if ( any(queue$info$has_pre) ) {
-			if ( getOption("Cardinal.verbose") )
+			if ( getCardinalVerbose() )
 				.message("preprocessing [", queue$info$label[1L], "] ...")
 			prefun <- proclist[[1L]]$prefun
 			preargs <- proclist[[1L]]$preargs
@@ -215,7 +215,7 @@ setMethod("process", "SparseImagingExperiment",
 		}
 		by_pixels <- "pixel" %in% queue$info$kind
 		by_features <- "feature" %in% queue$info$kind
-		if ( getOption("Cardinal.verbose") && (by_pixels || by_features) ) {
+		if ( getCardinalVerbose() && (by_pixels || by_features) ) {
 			labels <- paste0("[", queue$info$label, "]")
 			.message("processing ", paste0(labels, collapse=" "), " ...")
 		}
@@ -235,7 +235,7 @@ setMethod("process", "SparseImagingExperiment",
 		# perform postprocessing
 		if ( any(queue$info$has_post) ) {
 			last <- length(proclist)
-			if ( getOption("Cardinal.verbose") )
+			if ( getCardinalVerbose() )
 				.message("postprocessing [", queue$info$label[last], "] ...")
 			postfun <- proclist[[last]]$postfun
 			postargs <- proclist[[last]]$postargs

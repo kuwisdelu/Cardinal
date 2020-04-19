@@ -301,10 +301,10 @@ print.facet.image <- function(x, ...) {
 	} else {
 		layout <- obj$layout
 	}
-	if ( isTRUE(obj$dark) || getOption("Cardinal.dark") ) {
-		darkmode()
+	if ( isTRUE(obj$dark) || getOption("Cardinal.dark", default=FALSE) ) {
+		darkmode(default=FALSE)
 	} else if ( isFALSE(obj$dark) ) {
-		lightmode()
+		lightmode(default=FALSE)
 	}
 	if ( obj$add )
 		.next.figure(last=TRUE)

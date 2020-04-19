@@ -196,7 +196,7 @@ setMethod("summary", "SpatialDGMM",
 	})
 
 setMethod("summary", "MeansTest",
-	function(object, ..., BPPARAM = bpparam())
+	function(object, ..., BPPARAM = getCardinalBPPARAM())
 	{
 		groups <- pixelData(object)$.group
 		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)
@@ -225,7 +225,7 @@ setMethod("summary", "MeansTest",
 	})
 
 setMethod("summary", "SegmentationTest",
-	function(object, ..., BPPARAM = bpparam())
+	function(object, ..., BPPARAM = getCardinalBPPARAM())
 	{
 		groups <- pixelData(object)$.group
 		lrt <- .meansTest_LRT(object, BPPARAM=BPPARAM)

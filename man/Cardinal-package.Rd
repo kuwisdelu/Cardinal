@@ -3,8 +3,21 @@
 \docType{package}
 
 \alias{Cardinal}
-\alias{Cardinal.version}
-\alias{Cardinal.history}
+
+\alias{CardinalVersion}
+\alias{CardinalLog}
+
+\alias{getCardinalBPPARAM}
+\alias{setCardinalBPPARAM}
+
+\alias{getCardinalVerbose}
+\alias{setCardinalVerbose}
+
+\alias{getCardinalNumBlocks}
+\alias{setCardinalNumBlocks}
+
+\alias{getCardinalDelayProc}
+\alias{setCardinalDelayProc}
 
 \title{Mass spectrometry imaging tools}
 
@@ -26,16 +39,20 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	The following options can be set via \code{options()}.
 
 	\itemize{
-		\item{\code{options(Cardinal.verbose=interactive())}: Should detailed messages be printed?}
+		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=SerialParam())}: The default backend to use for parallel processing. By default, this is initially set to a serial backend (no parallelization).}
 
-		\item{\code{options(Cardinal.progress=interactive())}: Should a progress bar be shown?}
+		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should detailed messages be printed?}
 
-		\item{\code{options(Cardinal.numblocks=20)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
+		\item{\code{getCardinalNumBlocks(), setCardinalNumBlocks(n=20L)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
 
-		\item{\code{options(Cardinal.delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
-
-		\item{\code{options(Cardinal.dark=FALSE)}: Should the default theme for new plots use dark mode?}
+		\item{\code{getCardinalDelayProc(), setCardinalDelayProc(delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
 	}
+}
+
+\section{Logging}{
+
+	For support or debugging help, please provide the output of a call to \code{CardinalLog()}. By default, this saves a log to the file "Cardinal.log" in the current working directory.
+
 }
 
 \author{

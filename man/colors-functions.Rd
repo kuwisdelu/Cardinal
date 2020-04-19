@@ -48,9 +48,9 @@ alpha.colors(col, n = 100,
     alpha = (seq_len(n)/n)^alpha.power,
     alpha.power = 2)
 
-darkmode()
+darkmode(default = TRUE)
 
-lightmode()
+lightmode(default = TRUE)
 }
 
 \arguments{
@@ -65,6 +65,7 @@ lightmode()
     \item{luminance}{the luminance of the color}
     \item{col}{the color(s) to expand with transparency}
     \item{alpha.power}{how the alpha should ramp as it increases}
+    \item{default}{Should this be set as the default plotting mode?}
 }
 \details{
     Most of these functions return a vector of colors.

@@ -30,7 +30,7 @@ simulateImage(pixelData, featureData, preset,
     sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
     representation = c("profile", "centroid"), units=c("ppm", "mz"),
     as = c("MSImagingExperiment", "SparseImagingExperiment"),
-    BPPARAM = bpparam(), \dots)
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
 addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
 

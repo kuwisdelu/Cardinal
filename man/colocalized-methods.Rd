@@ -19,12 +19,12 @@
 \S4method{colocalized}{SparseImagingExperiment,ANY}(object, ref, n = 10,
 		sort.by = c("correlation", "M1", "M2"),
 		threshold = median,
-		BPPARAM = bpparam(), \dots)
+		BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{colocalized}{SpatialDGMM,ANY}(object, ref, n = 10,
 		sort.by = c("Mscore", "M1", "M2"),
 		threshold = median,
-		BPPARAM = bpparam(), \dots)
+		BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{

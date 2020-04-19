@@ -5,7 +5,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 		dist = "chebyshev", annealing = TRUE,
 		init = c("kmeans", "gmm"), p0 = 0.05,
 		iter.max = 100, tol = 1e-9,
-		BPPARAM = bpparam(), ...)
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)

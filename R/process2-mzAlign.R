@@ -20,7 +20,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 			label="mzAlign", kind="pixel",
 			moreargs=list(tol=tol, span=span, quantile=quantile),
 			plotfun=mzAlign_plotfun,
-			delay=getOption("Cardinal.delay"))
+			delay=getCardinalDelayProc())
 		object
 	})
 
@@ -82,8 +82,8 @@ mzAlign_fun <- function(x, tol, span, quantile, ...) {
 
 mzAlign_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getOption("Cardinal.numblocks"),
-		verbose=getOption("Cardinal.verbose"),
+		chunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	metadata(featureData(object))[["reference spectrum"]] <- s
 	object

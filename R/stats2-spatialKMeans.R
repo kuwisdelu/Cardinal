@@ -5,7 +5,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 		dist = "chebyshev", tol.dist = 1e-9,
 		iter.max = 10, nstart = 10,
 		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
-		ncomp = 10, BPPARAM = bpparam(), ...)
+		ncomp = 10, BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.checkForIncompleteProcessing(x)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
@@ -69,7 +69,7 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
 	centers <- rowStats(iData(x), stat="mean", groups=cluster,
-		chunks=getOption("Cardinal.numblocks"),
+		chunks=getCardinalNumBlocks(),
 		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters

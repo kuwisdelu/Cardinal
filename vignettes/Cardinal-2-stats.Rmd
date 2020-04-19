@@ -17,9 +17,8 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
-register(SerialParam())
-options(Cardinal.verbose=FALSE)
-options(Cardinal.progress=FALSE)
+setCardinalBPPARAM(SerialParam())
+setCardinalVerbose(FALSE)
 RNGkind("Mersenne-Twister")
 ```
 

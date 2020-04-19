@@ -124,7 +124,6 @@ Hashmat(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 
 \seealso{
     \code{\link{matrix}},
-    \code{\linkS4class{Binmat}},
     \code{\linkS4class{SImageSet}}
 }
 

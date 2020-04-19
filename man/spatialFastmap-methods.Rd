@@ -22,7 +22,7 @@
     method = c("gaussian", "adaptive"),
     metric = c("average", "correlation", "neighborhood"),
     dist = "chebyshev", tol.dist = 1e-9,
-    iter.max = 1, BPPARAM = bpparam(), \dots)
+    iter.max = 1, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{SpatialFastmap2}(object, \dots)
 
