@@ -28,6 +28,7 @@
     .outpath = NULL,
     .params = list(),
     .verbose = getOption("Cardinal.verbose"),
+    .view = "element",
     BPREDO = list(),
     BPPARAM = bpparam())
 
@@ -37,6 +38,7 @@
     .outpath = NULL,
     .params = list(),
     .verbose = getOption("Cardinal.verbose"),
+    .view = "element",
     BPREDO = list(),
     BPPARAM = bpparam())
 
@@ -47,6 +49,7 @@
     .outpath = NULL,
     .params = list(),
     .verbose = getOption("Cardinal.verbose"),
+    .view = "element",
     BPREDO = list(),
     BPPARAM = bpparam())
 
@@ -77,13 +80,14 @@
     \item{.use.names}{Should the names of elements of \code{.object} (either pixel names or feature names, as appropriate) be used for the names of the result?}
     \item{.outpath}{The path to a file where the output data will be written. Results will be kept in-memory if this is NULL. Results will be coerced to a numeric vector before being written to file.}
     \item{.params}{A named list of parameters with length equal to \code{length(.object)}. The appropriate elements will be made available to the spatial neighborhoods.}
+    \item{.verbose}{Should progress messages be printed?}
+    \item{.view}{FOR EXPERT USE ONLY: Should the object passed to \code{.fun} be a single element (e.g., one row/column/neighborhood of \code{.object}), or the entire block? Set to "chunk" to operate on the whole block.}
     \item{BPREDO}{See documentation for \code{\link{bplapply}}.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
     \item{.pixel}{A subset of pixels to use, given by an \code{integer} vector of numeric indices, a \code{character} vector of pixel names, or a \code{logical} vector indicating which pixels to use.}
     \item{.feature}{A subset of features to use, given in the same manner as pixels.}
     \item{.pixel.groups}{A grouping \code{factor} or a vector that can be coerced into a factor, that indicates groups of pixels over which the function should be applied. Groups pixels are treated as cells in a ragged array, by analogy to the \code{\link{tapply}} function.}
     \item{.feature.groups}{A grouping \code{factor} features, in the same manner as for pixels.}
-    \item{.verbose}{Should progress messages be printed?}
 }
 \details{
 

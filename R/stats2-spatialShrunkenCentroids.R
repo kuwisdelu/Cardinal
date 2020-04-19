@@ -265,7 +265,7 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	scores <- spatialApply(x, .r=r, .fun=fun,
 		.simplify=do_rbind, .verbose=FALSE, .dist=dist,
 		.params=list(weights=weights),
-		view="chunk", BPPARAM=BPPARAM)
+		.view="chunk", BPPARAM=BPPARAM)
 	if ( is.null(priors) && !is.null(class) )
 		priors <- table(class) / sum(table(class))
 	scores <- scores - 2 * log(rep(priors, each=ncol(x)))

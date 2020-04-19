@@ -112,7 +112,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
 			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
 			.params=list(weights=spatial$weights),
-			view="chunk", BPPARAM=BPPARAM)
+			.view="chunk", BPPARAM=BPPARAM)
 		.message(".", appendLF=FALSE)
 		proj[,j] <- comp_j
 	}
@@ -129,7 +129,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 				}
 			}, numeric(1))
 		}))
-	}, .simplify=do_rbind, .verbose=FALSE, view="chunk", BPPARAM=BPPARAM)
+	}, .simplify=do_rbind, .verbose=FALSE, .view="chunk", BPPARAM=BPPARAM)
 	colnames(proj) <- paste("FC", 1:ncomp, sep="")
 	colnames(corr) <- paste("FC", 1:ncomp, sep="")
 	pivots <- as.data.frame(pivots)
@@ -165,7 +165,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xa,
 			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
 			.params=list(weights=spatial$weights),
-			view="chunk", BPPARAM=BPPARAM)
+			.view="chunk", BPPARAM=BPPARAM)
 		cand <- which.max(dists)
 		if ( dists[cand] == 0 )
 			return(c(NA, NA))
@@ -179,7 +179,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xb,
 			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
 			.params=list(weights=spatial$weights),
-			view="chunk", BPPARAM=BPPARAM)
+			.view="chunk", BPPARAM=BPPARAM)
 		oa <- which.max(dists)
 		d <- dists[oa]
 		if ( dists[oa] == 0 )

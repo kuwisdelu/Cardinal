@@ -80,7 +80,7 @@ setMethod("spatialWeights", "ImagingExperiment",
 				sigma=sigma, bilateral=bilateral)
 		}
 		weights <- spatialApply(x, .r=r, .fun=fun, ..., .dist=dist,
-			.simplify=FALSE, .verbose=FALSE, view="element", BPPARAM=BPPARAM)
+			.simplify=FALSE, .verbose=FALSE, .view="element", BPPARAM=BPPARAM)
 		nb <- attr(weights, "neighbors")
 		attr(weights, "neighbors") <- NULL
 		if ( matrix ) {

@@ -85,7 +85,7 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 				}
 			}, numeric(1))
 		}))
-	}, .simplify=do_rbind, .verbose=FALSE, view="chunk", BPPARAM=BPPARAM)
+	}, .simplify=do_rbind, .verbose=FALSE, .view="chunk", BPPARAM=BPPARAM)
 	colnames(corr) <- levels(cluster)
 	list(cluster=cluster, centers=centers, correlation=corr)
 }
