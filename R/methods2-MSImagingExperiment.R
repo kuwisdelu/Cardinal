@@ -257,7 +257,7 @@ setMethod("cbind", "MSImagingExperiment",
 
 ## Pull data into memory
 
-collect.MSImagingExperiment <- function(x, ...)
+setMethod("pull", "MSImagingExperiment", function(x, ...)
 	{
 		x <- as(x, "MSImagingExperiment")
 		data <- as(imageData(x), "SimpleList", strict=FALSE)
@@ -265,6 +265,12 @@ collect.MSImagingExperiment <- function(x, ...)
 		class(x) <- "MSContinuousImagingExperiment"
 		if ( validObject(x) )
 			x
+	})
+
+collect.MSImagingExperiment <- function(x, ...)
+	{
+		.Deprecated("pull")
+		pull(x, ...)
 	}
 
 ## coerce to/from MSImagingExperiment subclasses

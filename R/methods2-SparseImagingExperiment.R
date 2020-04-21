@@ -327,12 +327,18 @@ setMethod("combine", "SparseImagingExperiment",
 
 ## pull data into memory
 
-collect.SparseImagingExperiment <- function(x, ...)
+setMethod("pull", "SparseImagingExperiment", function(x, ...)
 	{
 		data <- as(imageData(x), "SimpleList", strict=FALSE)
 		imageData(x) <- as(endoapply(data, as.matrix), class(imageData(x)))
 		if ( validObject(x) )
 			x
+	})
+
+collect.SparseImagingExperiment <- function(x, ...)
+	{
+		.Deprecated("pull")
+		pull(x, ...)
 	}
 
 ## show

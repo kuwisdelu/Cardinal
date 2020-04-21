@@ -13,7 +13,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 		width <- 2 * tolerance
 		units <- match.arg(units)
 		if ( is.na(width) )
-			width <- 2 * .findMaxMassDiff(object, units)
+			width <- 2 * .estimateMassTolerance(object, units)
 		if ( length(ref) >= nrow(object) ) {
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")

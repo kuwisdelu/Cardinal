@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.5.9 [2020-4-20]
+-----------------------------------
+
+NEW FEATURES
+
+    o Added 'aggregate()' method for imaging experiments
+    o Added 'subset()' method for imaging experiments
+
 CHANGES IN VERSION 2.5.8 [2020-4-18]
 -----------------------------------
 

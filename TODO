@@ -5,8 +5,8 @@ TODO for Cardinal package
 - Fix bugs in spatialFastmap() and spatialShrunkenCentroids()
 - Deprecate other legacy methods and classes
 - Deprecate dplyr methods -> use subset/aggregate
-- Test everything on PRIDE datasets
 
+- Test everything on PRIDE datasets and create workflow vignettes
 - Write a new batchProcess() method for new classes with good defaults
 - Reorganize codebase again so refactoring/debugging is easier
 - Deprecate "method" arg in stats methods -> use "weights" instead

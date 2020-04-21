@@ -565,6 +565,11 @@ export(
 	"groups",
 	"collect")
 
+exportMethods(
+	"aggregate",
+	"subset",
+	"pull")
+
 export(
 	"viridis",
 	"cividis",

@@ -116,10 +116,10 @@ setReplaceMethod("combiner", "MSProcessedImagingExperiment",
 		object
 	})
 
-collect.MSProcessedImagingExperiment <- function(x, ..., as.matrix = FALSE)
-	{
+setMethod("pull", "MSProcessedImagingExperiment",
+	function(x, ..., as.matrix = FALSE) {
 		if ( as.matrix )
-			return(NextMethod())
+			return(callNextMethod())
 		fun <- function(y) {
 			atomdata(y)[["keys"]] <- as.list(atomdata(y)[["keys"]])
 			atomdata(y)[["values"]] <- as.list(atomdata(y)[["values"]])
@@ -129,6 +129,12 @@ collect.MSProcessedImagingExperiment <- function(x, ..., as.matrix = FALSE)
 		imageData(x) <- as(endoapply(data, fun), "MSProcessedImagingSpectraList")
 		if ( validObject(x) )
 			x
+	})
+
+collect.MSProcessedImagingExperiment <- function(x, ..., as.matrix = FALSE)
+	{
+		.Deprecated("pull")
+		pull(x, ..., as.matrix=as.matrix)
 	}
 
 

@@ -62,17 +62,10 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 	res
 }
 
-.findMedianMassDiff <- function(x, units) {
+.estimateMassTolerance <- function(x, units) {
 	mzdiff <- switch(units,
 		ppm = c("ppm" = roundnear(1e6 * median(diff(mz(x)) / mz(x)[-1]), precision=0.5)),
 		mz = c("mz" = round(median(diff(mz(x)))), digits=4))
-	mzdiff
-}
-
-.findMaxMassDiff <- function(x, units) {
-	mzdiff <- switch(units,
-		ppm = c("ppm" = roundnear(1e6 * max(diff(mz(x)) / mz(x)[-1]), precision=0.5)),
-		mz = c("mz" = round(max(diff(mz(x)))), digits=4))
 	mzdiff
 }
 
