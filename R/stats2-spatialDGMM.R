@@ -96,8 +96,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	probability <- do.call("cbind", probability)
 	colnames(probability) <- cnames
 	estimates <- do.call("rbind", mapply(function(res, gi) {
-		data.frame(group=gi,
-			class=NA_character_,
+		data.frame(group=as.factor(gi),
+			class=as.factor(NA_character_),
 			mean=res$params$mu,
 			var=res$params$sigma)
 	}, results, levels(groups), SIMPLIFY=FALSE))

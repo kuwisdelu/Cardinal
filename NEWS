@@ -15,6 +15,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
         this is to remove the (rather large) dependency on
         the tidyverse for a relatively small functionality
 
+BUG FIXES
+
+    o Fix bug in 'spatialDGMM()' printing caused by a change in
+        default.stringsAsFactors() == FALSE in R 4.0
+
 CHANGES IN VERSION 2.5.8 [2020-4-18]
 -----------------------------------
 
