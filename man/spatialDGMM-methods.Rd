@@ -54,7 +54,7 @@
     Guo, D., Bemis, K., Rawlins, C., Agar, J., and Vitek, O. (2019.) Unsupervised segmentation of mass spectrometric ion images characterizes morphology of tissues. Proceedings of ISMB/ECCB, Basel, Switzerland, 2019.
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 x <- simulateImage(preset=3, dim=c(10,10), npeaks=6,

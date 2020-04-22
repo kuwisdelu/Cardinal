@@ -5,7 +5,7 @@
 setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 	function(object, ref, tolerance = NA, units = c("ppm", "mz"), fun="sum", ...)
 	{
-		dots <- list(...)
+		dots <- match.call(expand.dots=FALSE)$...
 		if ( "width" %in% names(dots) ) {
 			.Defunct(msg=paste0("'width' is defunct\n",
 				"Use 'tolerance' instead."))

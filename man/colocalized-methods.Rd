@@ -56,7 +56,7 @@
 }
 
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 data <- simulateImage(preset=2, npeaks=10, representation="centroid")

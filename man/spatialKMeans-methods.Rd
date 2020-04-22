@@ -70,7 +70,7 @@
     \code{\link{spatialShrunkenCentroids}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=3, dim=c(10,10), npeaks=10,

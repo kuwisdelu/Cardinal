@@ -173,7 +173,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 }
 
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 set.seed(1)
 
 # generate a spectrum

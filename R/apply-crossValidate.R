@@ -54,7 +54,7 @@ setMethod("crossValidate", "MSImagingExperiment",
 						peaks <- do.call(peakAlign, c(list(x), alignArgs))
 						peaks <- do.call(peakFilter, c(list(peaks), filterArgs))
 					} else {
-						means <- summarize(x, .stat="mean", BPPARAM=BPPARAM)
+						means <- summarizeFeatures(x, FUN="mean", BPPARAM=BPPARAM)
 						ref <- do.call(peakPick, c(list(means), pickArgs))
 						ref <- do.call(peakAlign, c(list(ref, ref="mean"), alignArgs))
 						ref <- do.call(peakFilter, c(list(ref), filterArgs))

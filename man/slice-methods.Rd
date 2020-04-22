@@ -30,7 +30,7 @@
 	Kylie A. Bemis
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=1, npeaks=10, dim=c(10,10), representation="centroid")

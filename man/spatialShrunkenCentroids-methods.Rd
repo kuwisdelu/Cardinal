@@ -97,7 +97,7 @@
     \code{\link{spatialKMeans}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=2, dim=c(10,10), npeaks=10,

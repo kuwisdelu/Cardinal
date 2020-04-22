@@ -72,7 +72,7 @@
     \code{\link{peakBin}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 data <- simulateImage(preset=1, dim=c(10,10), baseline=1)

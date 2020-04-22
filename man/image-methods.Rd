@@ -360,7 +360,7 @@
 }
 
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=2, npeaks=10, dim=c(10,10))
@@ -372,7 +372,7 @@ image(x, mz=m[1], colorscale=col.map("grayscale"))
 image(x, mz=m[4:7], colorscale=col.map("cividis"))
 image(x, mz=m[c(1,8)], normalize.image="linear", superpose=TRUE)
 
-sm <- summarize(x, .by="pixel", .stat=c(tic="sum"), .as="DataFrame")
+sm <- summarizePixels(x, FUN=c(tic="sum"), as="DataFrame")
 pData(x)$tic <- sm$tic
 
 image(x, tic ~ x * y, colorscale=magma)

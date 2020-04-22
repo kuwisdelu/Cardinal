@@ -17,9 +17,9 @@
 	Apply filtering to a mass spectrometry imaging dataset based on the intensities of each peak or mass feature.
 }
 \usage{
-\S4method{mzFilter}{MSImagingExperiment}(object, \dots, thresh.max = NA, freq.min = NA, rm.zero = TRUE)
+\S4method{mzFilter}{MSImagingExperiment}(object, \dots, freq.min = NA, rm.zero = TRUE)
 
-\S4method{peakFilter}{MSImagingExperiment}(object, \dots, thresh.max = NA, freq.min = 0.01, rm.zero = TRUE)
+\S4method{peakFilter}{MSImagingExperiment}(object, \dots, freq.min = 0.01, rm.zero = TRUE)
 
 \S4method{peakFilter}{MSImageSet}(object, method = "freq", \dots)
 
@@ -28,7 +28,6 @@ peakFilter.freq(x, freq.min=0.01, \dots)
 }
 \arguments{
     \item{object}{An object of class \code{\linkS4class{MSImageSet}}.}
-    \item{thresh.max}{Minimum threshold relative to maximum mean intensity; features with mean intensity lesser than this, as a proportion of the maximum intensity in the mean spectrum, will be dropped.}
     \item{freq.min}{Minimum frequency; peaks that occur in the dataset in lesser proportion than this will be dropped.}
     \item{rm.zero}{Remove features with mean intensities of zero.}
     \item{\dots}{Additional arguments passed to the peak filtering method, or conditions evaluating to logical vectors where only those conditions that are TRUE are retained.}
@@ -70,7 +69,7 @@ peakFilter.freq(x, freq.min=0.01, \dots)
     \code{\link{process}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))

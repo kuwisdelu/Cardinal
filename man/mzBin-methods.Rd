@@ -47,7 +47,7 @@
     \code{\link{process}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))

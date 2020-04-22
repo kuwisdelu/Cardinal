@@ -3,72 +3,56 @@
 ## --------------------------------------------
 
 setMethod("mzFilter", "MSImagingExperiment",
-	function(object, ..., thresh.max = NA, freq.min = NA, rm.zero = TRUE)
+	function(object, ..., freq.min = NA, rm.zero = TRUE)
 	{
+		dots <- match.call(expand.dots=FALSE)$...
+		if ( "thresh.max" %in% names(dots) ) {
+			.Deprecated(msg=paste0("'thresh.max' is deprecated\n",
+				"Pass conditions via '...' instead."))
+		}
 		expr <- eval(substitute(alist(...)))
 		object <- process(object, label="mzFilter",
 			kind="global", postfun=mzFilter_postfun,
-			postargs=list(expr=expr, thresh.max=thresh.max,
-						freq.min=freq.min, rm.zero=rm.zero),
+			postargs=list(expr=expr, freq.min=freq.min, rm.zero=rm.zero),
 			delay=getCardinalDelayProc())
 		object
 	})
 
 setMethod("peakFilter", "MSImagingExperiment",
-	function(object, ..., thresh.max = NA, freq.min = 0.01, rm.zero = TRUE)
+	function(object, ..., freq.min = 0.01, rm.zero = TRUE)
 	{
-		mzFilter(object, thresh.max=thresh.max, freq.min=freq.min, rm.zero=rm.zero, ...)
+		mzFilter(object, freq.min=freq.min, rm.zero=rm.zero, ...)
 	})
 
-mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, BPPARAM) {
-	do_freq <- isTRUE(freq.min > 0)
-	do_expr <- length(expr) > 0L
-	do_thresh <- isTRUE(thresh.max > 0)
+mzFilter_postfun <- function(object, ..., expr, freq.min, rm.zero, BPPARAM) {
 	keep <- rep_len(TRUE, nrow(object))
-	if ( do_freq ) {
-		summary1 <- summarize(object, .stat=c(count="sum", freq="mean"),
-							.tform=function(x) x > 0, .by="feature",
-							.as="DataFrame", BPPARAM=BPPARAM)
-		if ( rm.zero ) {
-			.message("removing zero-intensity features")
-			keep <- keep & summary1$count > 0
-		}
-		.message("applying freq.min = ", freq.min)
-		keep <- keep & summary1$freq > freq.min
+	if ( length(expr) > 0L ) {
+		stats <- c("min", "max", "mean", "var", "nnzero")
+	} else {
+		stats <- c("nnzero")
 	}
-	if ( do_expr || do_thresh || (rm.zero && !do_freq) ) {
-		if ( do_expr ) {
-			stats <- c("min", "max", "mean", "var")
-		} else {
-			stats <- c("max", "mean")
-		}
-		summary2 <- summarize(object, .stat=stats, .by="feature",
-							.as="DataFrame", BPPARAM=BPPARAM)
-		if ( do_freq ) {
-			.message("combining feature summaries")
-			summary1 <- cbind(summary1, summary2)
-		} else {
-			summary1 <- summary2
-		}
-		if ( rm.zero && !do_freq ) {
-			.message("removing zero-intensity features")
-			keep <- keep & summary1$max > 0
-		}
-		if ( do_thresh ) {
-			.message("applying thresh.max = ", thresh.max)
-			keep <- keep & (summary1$max > thresh.max * max(summary1$mean))
-		}
-		if ( length(expr) > 0L ) {
-			e <- as.env(summary1)
-			rules <- lapply(expr, function(a) {
-				.message("applying rule = ", deparse(a))
-				rule <- eval(a, envir=e)
-				if ( !is.logical(rule) )
-					.stop("filter rules must be logical vectors")
-				rule
-			})
-			keep <- keep & rowSums(do.call(cbind, rules)) != 0
-		}
+	summary <- rowStats(spectra(object), stat=stats, drop=FALSE, BPPARAM=BPPARAM)
+	summary[["count"]] <- summary[["nnzero"]]
+	summary[["freq"]] <- summary[["count"]] / ncol(object)
+	summary[["nnzero"]] <- NULL
+	if ( isTRUE(rm.zero) ) {
+		.message("dropping zero-intensity features")
+		keep <- keep & summary$freq > 0
+	}
+	if ( !is.na(freq.min) ) {
+		.message("applying freq.min = ", freq.min)
+		keep <- keep & summary$freq >= freq.min
+	}
+	if ( length(expr) > 0L ) {
+		envir <- as.env(summary)
+		rules <- lapply(expr, function(e) {
+			.message("applying rule: ", deparse(e))
+			rule <- eval(e, envir=envir)
+			if ( !is.logical(rule) )
+				.stop("filter rules must be logical vectors")
+			rule
+		})
+		keep <- keep & apply(do.call(cbind, rules), 1, all)
 	}
 	if ( anyNA(keep) )
 		keep[is.na(keep)] <- FALSE
@@ -79,6 +63,8 @@ mzFilter_postfun <- function(object, ..., expr, thresh.max, freq.min, rm.zero, B
 		.message("removing ", sum(!keep), " m/z features; ",
 			"keeping ", sum(keep), " m/z features")
 	}
-	fData(object)[names(summary1)] <- summary1
+	fData(object)[names(summary)] <- summary
 	object[keep,]
 }
+
+

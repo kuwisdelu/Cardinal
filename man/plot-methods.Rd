@@ -310,7 +310,7 @@
 }
 
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 x <- simulateImage(preset=2, npeaks=10, dim=c(10,10))
@@ -321,7 +321,7 @@ plot(x, coord=c(x=3, y=3), plusminus=1)
 plot(x, coord=c(x=3, y=3), groups=mz > 1000)
 plot(x, coord=c(x=7, y=7), superpose=TRUE)
 
-sm <- summarize(x, .stat=c("mean", "sd"), .as="DataFrame")
+sm <- summarizeFeatures(x, FUN=c("mean", "sd"), as="DataFrame")
 
 featureData(x)$mean <- sm$mean
 featureData(x)$sd <- sm$sd

@@ -89,7 +89,7 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
     \code{\link{process}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))

@@ -66,7 +66,7 @@
     \code{\link{svd}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(1)
 data <- simulateImage(preset=2, npeaks=20, dim=c(6,6),

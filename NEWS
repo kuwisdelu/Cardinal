@@ -1,11 +1,19 @@
 
-CHANGES IN VERSION 2.5.9 [2020-4-20]
+CHANGES IN VERSION 2.5.9 [2020-4-22]
 -----------------------------------
 
 NEW FEATURES
 
     o Added 'aggregate()' method for imaging experiments
+        including 'summarizePixels()' and 'summarizeFeatures()'
     o Added 'subset()' method for imaging experiments
+        including 'subsetPixels()' and 'subsetFeatures()'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Deprecated 'dplyr' verbs in favor of the above functions;
+        this is to remove the (rather large) dependency on
+        the tidyverse for a relatively small functionality
 
 CHANGES IN VERSION 2.5.8 [2020-4-18]
 -----------------------------------

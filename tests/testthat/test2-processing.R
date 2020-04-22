@@ -64,7 +64,7 @@ test_that("pre-processing 2 continuous", {
 
 	expect_true(validObject(data_b))
 
-	data_f <- mzFilter(tmp3, thresh.max=0.05) %>% process()
+	data_f <- mzFilter(tmp3, rm.zero=TRUE) %>% process()
 
 	expect_true(validObject(data_f))
 
@@ -110,7 +110,7 @@ test_that("pre-processing 2 processed", {
 
 	expect_true(validObject(data_b))
 
-	data_f <- mzFilter(tmp3, thresh.max=0.05) %>% process()
+	data_f <- mzFilter(tmp3, rm.zero=TRUE) %>% process()
 
 	expect_true(validObject(data_f))
 

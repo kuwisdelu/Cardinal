@@ -74,7 +74,7 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
     \code{\link{process}}
 }
 \examples{
-register(SerialParam())
+setCardinalBPPARAM(SerialParam())
 
 set.seed(2)
 data <- simulateImage(preset=1, npeaks=10, dim=c(3,3), baseline=1)
