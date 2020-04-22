@@ -35,7 +35,7 @@
 \alias{tolerance<-,MSProcessedImagingSpectraList-method}
 \alias{combiner,MSProcessedImagingSpectraList-method}
 \alias{combiner<-,MSProcessedImagingSpectraList-method}
-\alias{collect,MSProcessedImagingExperiment-method}
+\alias{pull,MSProcessedImagingExperiment-method}
 
 \alias{[,MSProcessedImagingSpectraList,ANY,ANY,ANY-method}
 \alias{[[<-,MSProcessedImagingSpectraList,ANY,ANY-method}
@@ -62,7 +62,7 @@
 
         \item{\code{combiner(object)}, \code{combiner(object) <- value}:}{Get or set the binning function for sparse spectra or peaks.}
 
-        \item{\code{collect(x, ..., as.matrix=FALSE)}:}{Pull all data elements of \code{imageData} into memory as sparse matrices.}
+        \item{\code{pull(x, ..., as.matrix=FALSE)}:}{Pull all data elements of \code{imageData} into memory as sparse matrices.}
     }
 }
 

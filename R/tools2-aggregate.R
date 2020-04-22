@@ -2,7 +2,7 @@
 ## Summarize the pixels or features of an imaging dataset
 
 setMethod("aggregate", "SparseImagingExperiment",
-	function(x, by = c("feature", "pixel"), FUN = "mean",
+	function(x, by = c("feature", "pixel"), FUN,
 		groups = NULL, tform = identity, as = "ImagingExperiment",
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{
@@ -35,26 +35,19 @@ setMethod("aggregate", "SparseImagingExperiment",
 			if ( is.null(fnames) ) {
 				fnames <- FUN
 			} else {
-				zch <- !nzchar(fnames)
-				fnames[zch] <- FUN[zch]
+				ind <- which(!nzchar(fnames))
+				fnames[ind] <- FUN[ind]
 			}
 		} else if ( is.function(FUN) ) {
 			fnames <- deparse(substitute(FUN))
 			FUN <- list(FUN)
 		} else {
 			fnames <- names(FUN)
-			fexpr <- sapply(FUN, function(f) {
-				if ( is.function(f) ) {
-					deparse(substitute(f))
-				} else {
-					f
-				}
-			})
 			if ( is.null(fnames) ) {
-				fnames <- fexpr
+				fnames <- paste0("FUN.", seq_along(FUN))
 			} else {
-				zch <- !nzchar(fnames)
-				fnames[zch] <- fexpr[zch]
+				ind <- which(!nzchar(fnames))
+				fnames[ind] <- paste0("FUN.", ind)
 			}
 			FUN <- lapply(FUN, match.fun)
 		}
@@ -117,6 +110,14 @@ setMethod("aggregate", "MSImagingExperiment", function(x, ...) {
 	}
 	ans
 })
+
+summarizePixels <- function(x, FUN = "mean", ...) {
+	aggregate(x, by="pixel", FUN=FUN, ...)
+}
+
+summarizeFeatures <- function(x, FUN = "mean", ...) {
+	aggregate(x, by="feature", FUN=FUN, ...)
+}
 
 .aggregate_funs <- function(object, by, FUNLIST, groups, tform, BPPARAM, ...) {
 	fun <- function(x, ...) {

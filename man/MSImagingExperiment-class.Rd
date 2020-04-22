@@ -41,7 +41,7 @@
 \alias{features,MSImagingExperiment-method}
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
-\alias{collect,MSImagingExperiment-method}
+\alias{pull,MSImagingExperiment-method}
 
 \alias{peaks,MSImagingExperiment-method}
 \alias{peaks<-,MSImagingExperiment-method}
@@ -122,7 +122,7 @@ MSImagingExperiment(
 
         \item{\code{features(object, ..., mz)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
 
-        \item{\code{collect(x, ...)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
+        \item{\code{pull(x, ...)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
 
         \item{\code{peaks(object)}, \code{peaks(object) <- value}:}{Attempt to get or set the matrix of peaks. Alias for \code{spectra()} if \code{centroided()} is TRUE; replacement version also sets \code{centroided} to TRUE.}
 

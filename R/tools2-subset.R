@@ -27,3 +27,10 @@ setMethod("subset", "SparseImagingExperiment",
 		}
 	})
 
+subsetPixels <- function(x, ...) {
+	x[,pixels(x, ..., .env=parent.frame(1))]
+}
+
+subsetFeatures <- function(x, ...) {
+	x[features(x, ..., .env=parent.frame(1)),]
+}

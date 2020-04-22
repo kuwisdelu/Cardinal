@@ -35,7 +35,7 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 	{
 		units <- match.arg(units)
 		if ( is.na(by) )
-			by <- 2 * .findMaxMassDiff(object, units)
+			by <- 2 * .estimateMassTolerance(object, units)
 		halfwidth <- by / 2
 		ref <- switch(units,
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),

@@ -10,7 +10,7 @@
 
 \alias{names,XDataFrame-method}
 \alias{length,XDataFrame-method}
-\alias{groups,XDataFrame-method}
+\alias{sort,XDataFrame-method}
 \alias{lapply,XDataFrame-method}
 \alias{as.data.frame,XDataFrame-method}
 \alias{as.matrix,XDataFrame-method}
@@ -44,8 +44,6 @@ XDataFrame(\dots)
 		\item{\code{names(object)}:}{Return the column names, not including any slot-columns.}
 
 		\item{\code{length(object)}:}{Return the number of columns, not including any slot-columns.}
-
-		\item{\code{groups(object)}:}{Return the grouping columns if the data frame is grouped.}
 
 		\item{\code{lapply(X, FUN, ..., slots = FALSE)}:}{Returns a list of the same length as \code{X}, where each element is the result of applying \code{FUN} to the corresponding element of \code{X}. This version includes an additional argument for whether the slot-columns should be included or not. This method should be overwritten by subclasses to ensure correct behavior.}
 

@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: May 25, 2019"
+date: "Revised: April 21, 2020"
 output:
   BiocStyle::html_document:
   toc: true
@@ -41,17 +41,13 @@ The first version of *Cardinal* was written with certain assumptions about MS im
 
 - Support for writing imzML in addition to reading it; more options and support for importing out-of-memory imzML for both *"continuous"* and *"processed"* formats
 
-- Data manipulation and summarization verbs borrowed from *dplyr* such as `select()`, `filter()`, and `summarize()` for easier subsetting and summarization of imaging datasets
+- Data manipulation and summarization verbs such as `subset()`, `aggregate()`, and `summarizeFeatures()`, etc. for easier subsetting and summarization of imaging datasets
 
 - Delayed pre-processing via a new `process()` method that allows queueing of delayed pre-processing methods such as `normalize()` and `peakPick()` for later execution
 
 - Parallel processing support via the *BiocParallel* package for all pre-processing methods and any statistical analysis methods with a `BPPARAM` option
 
-Classes and methods from older versions of Cardinal will continue to be supported; however, new code should use the new classes and methods implemented by *Cardinal 2*.
-
-> Note that *Cardinal 2* uses parallel execution using the registered *BiocParallel* backend by default. This may not be appropriate for all situations. If you run into problems, try using `register(SerialParam())` to run code serially instead.
-
-
+Classes from older versions of Cardinal should be coerced to their *Cardinal 2* equivalents. For example, to return an updated `MSImageSet` object called `x`, use `as(x, "MSImagingExperiment")`.
 
 
 
@@ -96,8 +92,6 @@ Unlike many software packages designed for analysis of MS imaging experiments, *
 We will use `simulateImage()` to prepare an example dataset.
 
 ```{r example-data}
-register(SerialParam())
-
 set.seed(2020)
 mse <- simulateImage(preset=1, npeaks=10, nruns=2, baseline=1)
 mse
@@ -649,7 +643,7 @@ By default, array dimensions with only one level are dropped; use `.preserve=TRU
 
 ```{r slice-mz}
 # slice image for m/z 1200
-a2 <- slice(mse, mz=1200, .preserve=TRUE)
+a2 <- slice(mse, mz=1200, drop=FALSE)
 dim(a2)
 ```
 
@@ -722,47 +716,52 @@ This can also be used to set whether the spectra should be treated as centroided
 centroided(mse) <- FALSE
 ```
 
-## Using *dplyr* verbs
+## Summarization (e.g., mean spectra)
 
-The *dplyr* package introduced popular verbs for manipulating data, and promoted widespread adoption of the expressive `%>%` piping operator used for chaining verbs together.
+*Cardinal 2* implements several convenient data manipulation verbs for subsetting and summarizing `MSImagingExperiment` objects.
 
-*Cardinal 2* implements the *dplyr* verbs `filter()`, `select()`, `mutate()`, and `summarize()` for `MSImagingExperiment` objects.
+- `subset()` subsets an `MSImagingExperiment`
 
-- `filter()` subsets an `MSImagingExperiment` by row, i.e., mass features
+- `subsetFeatures()` subsets an `MSImagingExperiment` by row, i.e., mass features
 
-- `select()` subsets an `MSImagingExperiment` by column, i.e., pixels
+- `subsetPixels()` subsets an `MSImagingExperiment` by column, i.e., pixels
 
-- `mutate()` adds a pixel metadata column to an `MSImagingExperiment`
+- `aggregate()` summarizes an `MSImagingExperiment` by either feature or pixel
 
-- `summarize()` summarizes an `MSImagingExperiment` by either feature or pixel
+- `summarizeFeatures()` summarizes an `MSImagingExperiment` by feature (e.g., mean spectrum)
+
+- `summarizePixels()` summarizes an `MSImagingExperiment` by pixel (e.g., TIC)
 
 The `%>%` operator can be used to chain these operations together. For file-based data, the subsetting should be quick, as only metadata is modified.
 
-```{r dplyr, eval=FALSE}
-# filter mass range
-filter(mse, mz > 700, mz < 900)
+```{r manip}
+# subset by mass range
+subsetFeatures(mse, mz > 700, mz < 900)
 
-# select pixels
-select(mse, x <= 3, y <= 3, run == "run0")
+# subset by pixel coordinates
+subsetPixels(mse, x <= 3, y <= 3, run == "run0")
+
+# subset by mass range + pixel coordinates
+subset(mse, mz > 700 & mz < 900, x <=3 & y <= 3 & run == "run0")
 
 # chain verbs together
 mse %>%
-	filter(mz < 1000) %>%
-	select(x == 10, y == 10)
+	subsetFeatures(mz > 700, mz < 900) %>%
+	subsetPixels(x <= 3, y <= 3, run == "run0")
 
 # calculate mean spectrum
-summarize(mse, .stat="mean", .by="feature", .as="DataFrame")
+summarizeFeatures(mse, "mean", as="DataFrame")
 
 # calculate tic
-summarize(mse, .stat=c(tic="sum"), .by="pixel", .as="DataFrame")
+summarizePixels(mse, c(tic="sum"), as="DataFrame")
 
 # calculate mean spectrum of circle region
 mse %>%
-	select(region == "circle") %>%
-	summarize(.stat="mean", .as="DataFrame")
+	subsetPixels(region == "circle") %>%
+	summarizeFeatures("mean", as="DataFrame")
 ```
 
-## Collect data into memory
+## Pull data into memory
 
 By default, *Cardinal 2* does not load the spectra from imzML and Analyze files into memory, but retrieves them from files when necessary.
 
@@ -778,19 +777,19 @@ spectra(mse)
 imageData(mse)
 ```
 
-Use `collect()` to pull all `imageData()` elements in an `MSImagingExperiment` into memory.
+Use `pull()` to pull all `imageData()` elements in an `MSImagingExperiment` into memory.
 
 ```{r}
-mse <- collect(mse)
+mse <- pull(mse)
 imageData(mse)
 ```
 
-By default, the spectra from `MSProcessedImagingExperiment` objects will still be represented as sparse matrices after using `collect()`.
+By default, the spectra from `MSProcessedImagingExperiment` objects will still be represented as sparse matrices after using `pull()`.
 
 To coerce sparse spectra to an R matrix as well, use `as.matrix=TRUE`.
 
 ```{r eval=FALSE}
-mse3 <- collect(mse3, as.matrix=TRUE)
+mse3 <- pull(mse3, as.matrix=TRUE)
 ```
 
 ## Coercion to/from other classes
@@ -859,8 +858,8 @@ Note that subsetting retains any queued pre-processing steps.
 
 ```{r process-5}
 mse_pre %>%
-	select(x <= 3, y <= 3) %>%
-	filter(mz <= 1000) %>%
+	subsetPixels(x <= 3, y <= 3) %>%
+	subsetFeatures(mz <= 1000) %>%
 	process()
 ```
 
@@ -892,16 +891,16 @@ Use `smoothSignal()` to queue spectral smoothing to an `MSImagingExperiment`.
 
 ```{r smoothSignal-plot, fig.height=7, fig.width=9, results='hide'}
 mse %>% smoothSignal(method="gaussian") %>%
-	select(x==10, y==10, run=="run0") %>%
+	subsetPixels(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE,
 			par=list(main="Gaussian smoothing", layout=c(3,1)))
 
 mse %>% smoothSignal(method="ma") %>%
-	select(x==10, y==10, run=="run0") %>%
+	subsetPixels(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Moving average smoothing"))
 
 mse %>% smoothSignal(method="sgolay") %>%
-	select(x==10, y==10, run=="run0") %>%
+	subsetPixels(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Savitzky-Golay smoothing"))
 ```
 
@@ -921,11 +920,11 @@ Use `reduceBaseline()` to queue baseline correction to an `MSImagingExperiment`.
 
 ```{r reduceBaseline-plot, fig.height=5, fig.width=9, results='hide'}
 mse %>% reduceBaseline(method="locmin") %>%
-	select(x==10, y==10, run=="run0") %>%
+	subsetPixels(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Local minima", layout=c(2,1)))
 
 mse %>% reduceBaseline(method="median") %>%
-	select(x==10, y==10, run=="run0") %>%
+	subsetPixels(x==10, y==10, run=="run0") %>%
 	process(plot=TRUE, par=list(main="Median interpolation"))
 ```
 
@@ -954,18 +953,18 @@ mse_pre <- process(mse_pre)
 Use `peakPick()` to queue peak picking to an `MSImagingExperiment`.
 
 ```{r peakPick-plot, fig.height=7, fig.width=9, results='hide'}
-mse_pre %>% select(x==10, y==10, run=="run0") %>%
+mse_pre %>% subsetPixels(x==10, y==10, run=="run0") %>%
 	process() %>%
 	peakPick(method="mad") %>%
 	process(plot=TRUE, par=list(main="MAD noise", layout=c(3,1)))
 
-mse_pre %>% select(x==10, y==10, run=="run0") %>%
+mse_pre %>% subsetPixels(x==10, y==10, run=="run0") %>%
 	process() %>%
 	peakPick(method="simple") %>%
 	process(plot=TRUE,
 			par=list(main="Simple SD noise"))
 
-mse_pre %>% select(x==10, y==10, run=="run0") %>%
+mse_pre %>% subsetPixels(x==10, y==10, run=="run0") %>%
 	process() %>%
 	peakPick(method="adaptive") %>%
 	process(plot=TRUE, par=list(main="Adaptive SD noise"))
@@ -1024,7 +1023,7 @@ Rather than use the *m/z*-values of the detected peaks, we can also use known re
 ```{r peakBin-2, fig.height=3, fig.width=9}
 mzref <- mz(metadata(mse)$design$featureData)
 mse_peaks <- peakBin(mse_pre, ref=mzref, type="height")
-mse_peaks <- mse_peaks %>% select(x %in% 9:11, y %in% 9:11) %>% process()
+mse_peaks <- mse_peaks %>% subsetPixels(x %in% 9:11, y %in% 9:11) %>% process()
 plot(mse_peaks, coord=list(x=10, y=10))
 ```
 
@@ -1070,7 +1069,7 @@ Use `mzBin()` to queue binning of spectra to new *m/z*-values.
 
 ```{r mzBin, fig.height=3, fig.width=9}
 mse_bin <- mzBin(mse_pre, from=1000, to=1600, resolution=1000, units="ppm")
-mse_bin <- select(mse_bin, x %in% 9:11, y %in% 9:11) %>% process()
+mse_bin <- subsetPixels(mse_bin, x %in% 9:11, y %in% 9:11) %>% process()
 plot(mse_bin, coord=list(x=10, y=10))
 ```
 
@@ -1084,7 +1083,7 @@ Use `mzFilter()` to queue filtering of mass features.
 
 ```{r mzFilter, fig.height=3, fig.width=9}
 mse_filt <- mzFilter(mse_pre, thresh.max=0.05)
-mse_filt <- select(mse_filt, x %in% 9:11, y %in% 9:11) %>% process()
+mse_filt <- subsetPixels(mse_filt, x %in% 9:11, y %in% 9:11) %>% process()
 plot(mse_filt, coord=list(x=10, y=10), type='h')
 ```
 
@@ -1105,7 +1104,7 @@ mse_proc <- mse %>%
 
 # preview processing
 mse_proc %>%
-	select(x == 10, y == 10, run == "run0") %>%
+	subsetPixels(x == 10, y == 10, run == "run0") %>%
 	process(plot=TRUE, par=list(layout=c(2,2)))
 ```
 
@@ -1188,33 +1187,51 @@ See `?spatialApply` for more details on attributes that are made available to th
 
 All pre-processing methods and most statistical analysis methods in *Cardinal 2* can be executed in parallel using *BiocParallel*.
 
-__If your R session hangs inexplicably, try using `register(SerialParam())` to run the code serially instead.__
+By default, a serial backend is used (no parallelization). This is for maximum stability and compatibility.
 
 ## Using `BPPARAM`
 
 Any method that supports parallelization includes `BPPARAM` as an argument (see method documentation). The `BPPARAM` argument can be used to specify a parallel backend for the operation, such as `SerialParam()`, `MulticoreParam()`, `SnowParam()`, etc.
 
 ```{r eval=FALSE}
-# run serially, rather than in parallel
-tic <- pixelApply(mse, sum, BPPARAM=SerialParam())
+# run in parallel, rather than serially
+tic <- pixelApply(mse, sum, BPPARAM=MulticoreParam())
 ```
 
-## Registering a parallel backend
+## Backend types
 
-Registered backends can be viewed with `registered()`.
+Several parallelization backends are available, depending on OS:
+
+- `SerialParam()` creates a serial (non-parallel) backend. Use this to avoid potential issues caused by parallelization.
+
+- `MulticoreParam()` creates a multicore backend by forking the current R session. This is typically the fastest parallelization option, but is only available on macOS and Linux.
+
+- `SnowParam()` creates a SNOW backend by creating new R sessions via socket connections. This is typically slower than multicore, but is available on all platforms including Windows.
+
+Use of `MulticoreParam()` will frequently improve speed on macOS and Linux dramatically. However, due to the extra overhead of `SnowParam()`, Windows users may prefer the default `SerialParam()`, depending on the size of the dataset.
+
+## Getting available backends
+
+Available backends can be viewed with `BiocParallel::registered()`.
 
 ```{r registered}
-registered()
+BiocParallel::registered()
 ```
 
-A backend can be registered with `register()` to be used as the default backend from then on.
+The current backend used by Cardinal can be viewed with `getCardinalBPPARAM()`:
 
-```{r register, eval=FALSE}
+```{r getCardinalBPPARAM}
+getCardinalBPPARAM()
+```
+
+## Setting a parallel backend
+
+A new default backend can be set for use with Cardinal by calling `setCardinalBPPARAM()`.
+
+```{r setCardinalBPPARAM, eval=FALSE}
 # register a SNOW backend
-register(SnowParam())
+setCardinalBPPARAM(SnowParam())
 ```
-
-Note that not all backends are available on all systems. (For example, `MulticoreParam()` is only available on macOS and Linux.)
 
 See the *BiocParallel* package documentation for more details on available parallel backends.
 

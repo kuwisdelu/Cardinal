@@ -3,10 +3,6 @@ require(Cardinal)
 
 context("processing-2")
 
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-register(SerialParam())
-
 set.seed(2)
 data <- simulateImage(preset=1, dim=c(10,10), baseline=1)
 data_c <- data[,pData(data)$circle]

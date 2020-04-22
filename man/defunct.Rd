@@ -1,5 +1,5 @@
 \name{defunct}
-\alias{Cardinal-defunct}
+\alias{Defunct}
 
 \alias{generateImage}
 \alias{generateSpectrum}

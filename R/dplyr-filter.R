@@ -3,20 +3,19 @@
 
 filter.DataFrame <- function(.data, ..., .preserve = FALSE)
 	{
-		filter(as(.data, "XDataFrame"), ..., .preserve=.preserve)
+		.Deprecated("subset")
+		filter(as_tibble(as.list(.data)), ..., .preserve=.preserve)
 	}
 
 filter.XDataFrame <- function(.data, ..., .preserve = FALSE)
 	{
-		x <- filter(.XDataFrame_to_tbl(.data), ..., .preserve=.preserve)
-		x <- tryCatch(as(x, class(.data)),
-			error=function(e) as(x, "XDataFrame"))
-		x@groups <- groups(.data)
-		x
+		.Deprecated("subset")
+		filter(as_tibble(as.list(.data)), ..., .preserve=.preserve)
 	}
 
 filter.SummaryDataFrame <- function(.data, ..., .preserve = FALSE)
 	{
+		.Deprecated("subset")
 		filter(as.data.frame(.data), ..., .preserve=.preserve)
 	}
 
@@ -24,6 +23,7 @@ filter.SummaryDataFrame <- function(.data, ..., .preserve = FALSE)
 
 filter.SparseImagingExperiment <- function(.data, ..., .preserve = FALSE)
 	{
+		.Deprecated("subsetFeatures")
 		.data[features(.data, ..., .env=parent.frame(1)),]
 	}
 

@@ -126,17 +126,7 @@ setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
 
 #### Data transformation ####
 ## --------------------------
-# setGeneric("mutate", signature=".data") # from 'dplyr'
-# setGeneric("select", signature=".data") # from 'dplyr'
-# setGeneric("filter", signature=".data") # from 'dplyr'
-# setGeneric("summarize", signature=".data")	# from 'dplyr'
-# setGeneric("arrange", signature=".data") # from 'dplyr'
-# setGeneric("group_by", signature=".data") # from 'dplyr'
-# setGeneric("ungroup", signature="x") # from 'dplyr'
-# setGeneric("slice", signature=".data") # from 'dplyr'
-# setGeneric("groups", signature="x") # from 'dplyr'
-# setGeneric("groups<-", function(x, value) standardGeneric("groups<-"))
-# setGeneric("collect")
+setGeneric("slice", function(x, ...) standardGeneric("slice"))
 
 #### Spatial utilities ####
 ## ---------------------

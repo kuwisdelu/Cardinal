@@ -3,20 +3,19 @@
 
 mutate.DataFrame <- function(.data, ...)
 	{
-		mutate(as(.data, "XDataFrame"), ...)
+		.Deprecated("transform")
+		mutate(as_tibble(as.list(.data)), ...)
 	}
 
 mutate.XDataFrame <- function(.data, ...)
 	{
-		x <- mutate(.XDataFrame_to_tbl(.data), ...)
-		x <- tryCatch(as(x, class(.data)),
-			error=function(e) as(x, "XDataFrame"))
-		x@groups <- groups(.data)
-		x
+		.Deprecated("transform")
+		mutate(as_tibble(as.list(.data)), ...)
 	}
 
 mutate.SummaryDataFrame <- function(.data, ...)
 	{
+		.Deprecated("transform")
 		mutate(as.data.frame(.data), ...)
 	}
 
@@ -24,6 +23,7 @@ mutate.SummaryDataFrame <- function(.data, ...)
 
 mutate.SparseImagingExperiment <- function(.data, ...)
 	{
+		.Deprecated()
 		mdata <- mcols(.data)
 		expr <- eval(substitute(alist(...)))
 		nm <- sapply(substitute(...()), deparse)

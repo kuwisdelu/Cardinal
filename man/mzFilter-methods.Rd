@@ -82,7 +82,7 @@ process(mzFilter(data))
 # queue peak picking, alignment, and filtering
 data <- peakPick(data, method="simple", SNR=6)
 data <- peakAlign(data, tolerance=200, units="ppm")
-data <- peakFilter(data, freq.min=0.2)
+data <- peakFilter(data, freq.min=0.5)
 
 # apply peak picking, alignment, and filtering
 data_peaks <- process(data, plot=interactive())

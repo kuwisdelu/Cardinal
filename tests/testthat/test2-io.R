@@ -1,11 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("I/O")
-
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-register(SerialParam())
+context("io")
 
 set.seed(1)
 data <- simulateImage(preset=1, dim=c(3,3), representation="centroid")

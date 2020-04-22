@@ -3,6 +3,7 @@
 
 slice.SparseImagingExperiment <- function(.data, ..., .preserve = FALSE)
 	{
+		.Deprecated("slice")
 		i <- features(.data, ...)
 		values <- iData(.data)[i,,drop=FALSE]
 		x <- coord(.data)[,1]

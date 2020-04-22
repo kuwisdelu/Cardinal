@@ -9,12 +9,12 @@
 	Slice an imaging dataset as a "data cube".
 }
 \usage{
-\S4method{slice}{SparseImagingExperiment}(.data, \dots, .preserve=FALSE)
+\S4method{slice}{SparseImagingExperiment}(x, \dots, drop=TRUE)
 }
 \arguments{
-    \item{.data}{An imaging dataset.}
+    \item{x}{An imaging dataset.}
     \item{\dots}{Conditions describing features to slice, passed to \code{features()}.}
-    \item{.preserve}{Should all array dimensions be retained? If FALSE, dimensions with only one level are dropped using \code{drop}.}
+    \item{drop}{Should redundant array dimensions be dropped? If TRUE, dimensions with only one level are dropped using \code{drop}.}
 }
 \details{
     Because \code{\linkS4class{SparseImagingExperiment}} objects may be pixel-sparse, their data is always internally represented as a matrix rather than an array, where each column is a feature-vector. Only columns for non-missing pixels are retained. This is simpler and more space-efficient if the image is non-rectangular, non-gridded, or has many missing values.

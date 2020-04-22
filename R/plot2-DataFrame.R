@@ -119,8 +119,6 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 		}
 		if ( length(groups) != nrow(x) )
 			groups <- rep_len(groups, nrow(x))
-	} else if ( length(groups(x)) ) {
-		groups <- groups(x)[[1L]]
 	}
 	if ( !missing(subset) ) {
 		subset <- .try_eval(substitute(subset), envir=as.env(x, enclos=e))

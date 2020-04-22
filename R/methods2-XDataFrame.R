@@ -89,6 +89,11 @@ setMethod("rbind", "XDataFrame",
 		as(callNextMethod(...), class(..1))
 	})
 
+setMethod("sort", "XDataFrame",
+	function(x, decreasing = FALSE, ...) {
+		sort(as(as.list(x), "XDataFrame"), decreasing=decreasing, ...)
+	})
+
 # Need to overwrite '[[<-' and '$<-' now due
 # to changes in S4Vectors in BioC 3.8
 
@@ -161,12 +166,6 @@ setMethod("show", "XDataFrame",
 		colnames(out) <- showNames(object)
 		print(out, quote = FALSE, right = TRUE)
 	}
-	if ( length(groups(object)) > 0 ) {
-		ngroups <- sapply(groups(object), nlevels)
-		groupnames <- names(groups(object))
-		cat("Groups: ", paste0(groupnames, collapse=", "),
-			" [", prod(ngroups), "]\n", sep="")
-	}
 })
 
 # copied from S4Vectors::show,DataTable
@@ -190,20 +189,4 @@ setMethod("show", "XDataFrame",
 	c(s1, "...", s2)
 }
 
-# coerce to tibble
-.XDataFrame_to_tbl <- function(.data) {
-	if ( length(groups(.data)) > 0L ) {
-		colnames <- names(.data)
-		groupnames <- names(groups(.data))
-		cols <- groupnames %in% colnames
-		if ( any(!cols) )
-			.data[groupnames] <- groups(.data)[groupnames]
-		.data <- as_tibble(as.list(.data))
-		.data <- grouped_df(.data, groupnames)
-		if ( any(!cols) )
-			.data <- .data[colnames]
-	} else {
-		.data <- as_tibble(as.list(.data))
-	}
-	.data
-}
+

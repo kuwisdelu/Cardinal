@@ -2,8 +2,7 @@
 #### Classes to overwrite 'show' method for DataFrame ###
 ## -----------------------------------------------------
 setClass("XDataFrame",
-	contains = "DFrame",
-	slots=c(groups = "list"))
+	contains = "DFrame")
 
 setClass("SummaryDataFrame",
 	contains = "DFrame",

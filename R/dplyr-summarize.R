@@ -3,19 +3,19 @@
 
 summarise.DataFrame <- function(.data, ...)
 	{
-		summarize(as(.data, "XDataFrame"), ...)
+		.Deprecated("aggregate")
+		summarize(as_tibble(as.list(.data)), ...)
 	}
 
 summarise.XDataFrame <- function(.data, ...)
 	{
-		x <- summarize(.XDataFrame_to_tbl(.data), ...)
-		x <- tryCatch(as(x, class(.data)),
-			error=function(e) as(x, "XDataFrame"))
-		x
+		.Deprecated("aggregate")
+		summarize(as_tibble(as.list(.data)), ...)
 	}
 
 summarise.SummaryDataFrame <- function(.data, ...)
 	{
+		.Deprecated("aggregate")
 		summarize(as.data.frame(.data), ...)
 	}
 
@@ -27,6 +27,7 @@ summarise.SparseImagingExperiment <- function(.data, ...,
 			.as = "ImagingExperiment",
 			BPPARAM = getCardinalBPPARAM())
 	{
+		.Deprecated(c("aggregate", "summarizeFeatures", "summarizePixels"))
 		.checkForIncompleteProcessing(.data)
 		.by <- match.arg(.by)
 		if ( .by == "feature" ) {

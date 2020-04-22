@@ -193,7 +193,7 @@ When applied to a `SpatialDGMM` object, `colocalize()` is able to use match scor
 
 ```{r dgmm-colocalized}
 coloc2 <- colocalized(dgmm, mse$square)
-select(coloc2, -r, -k, -group)
+subset(coloc2, select=c(-r, -k, -group))
 ```
 
 
@@ -305,7 +305,7 @@ plot(ssc2, values="statistic", lwd=2)
 ```
 
 ```{r ssc-top-2}
-topFeatures(ssc2, class=="B") %>% select(-diff, -r, -k, -s)
+topFeatures(ssc2, class=="B") %>% subset(select=c(-diff, -r, -k, -s))
 ```
 
 
@@ -412,7 +412,7 @@ image(stest, model=list(feature=3), values="mapping")
 In this case, `segmentationTest()` finds two more significant mass features compared to `meansTest()`.
 
 ```{r test-segment-top}
-topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% select(-diff, -r, -k)
+topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% subset(select=c(-diff, -r, -k))
 ```
 
 

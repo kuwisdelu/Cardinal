@@ -3,10 +3,6 @@ require(Cardinal)
 
 context("stats-2")
 
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
-
-register(SerialParam())
-
 set.seed(1)
 x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
 	peakheight=c(2,4), representation="centroid")

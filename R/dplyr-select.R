@@ -3,20 +3,19 @@
 
 select.DataFrame <- function(.data, ...)
 	{
-		select(as(.data, "XDataFrame"), ...)
+		.Deprecated("subset")
+		select(as_tibble(as.list(.data)), ...)
 	}
 
 select.XDataFrame <- function(.data, ...)
 	{
-		x <- select(.XDataFrame_to_tbl(.data), ...)
-		x <- tryCatch(as(x, class(.data)),
-			error=function(e) as(x, "XDataFrame"))
-		x@groups <- groups(.data)
-		x
+		.Deprecated("subset")
+		select(as_tibble(as.list(.data)), ...)
 	}
 
 select.SummaryDataFrame <- function(.data, ...)
 	{
+		.Deprecated("subset")
 		select(as.data.frame(.data), ...)
 	}
 
@@ -24,6 +23,7 @@ select.SummaryDataFrame <- function(.data, ...)
 
 select.SparseImagingExperiment <- function(.data, ...)
 	{
+		.Deprecated("subsetPixels")
 		.data[,pixels(.data, ..., .env=parent.frame(1))]
 	}
 

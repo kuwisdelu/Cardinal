@@ -89,7 +89,6 @@ importFrom("dplyr",
 	"group_by",
 	"group_by_drop_default",
 	"ungroup",
-	"slice",
 	"groups",
 	"grouped_df",
 	"collect")
@@ -540,8 +539,6 @@ S3method("select", "XDataFrame")
 S3method("select", "SummaryDataFrame")
 S3method("select", "SparseImagingExperiment")
 
-S3method("slice", "SparseImagingExperiment")
-
 S3method("summarise", "DataFrame")
 S3method("summarise", "XDataFrame")
 S3method("summarise", "SummaryDataFrame")
@@ -561,14 +558,21 @@ export(
 	"arrange",
 	"group_by",
 	"ungroup",
-	"slice",
 	"groups",
 	"collect")
 
 exportMethods(
 	"aggregate",
+	"slice",
+	"sort",
 	"subset",
 	"pull")
+
+export(
+	"subsetFeatures",
+	"subsetPixels",
+	"summarizeFeatures",
+	"summarizePixels")
 
 export(
 	"viridis",
