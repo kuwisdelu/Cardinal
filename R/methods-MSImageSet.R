@@ -1,4 +1,6 @@
 
+setMethod("show", "MSImageSet", function(object) .Deprecated_Cardinal1())
+
 setMethod("initialize", "MSImageSet",
 	function(.Object,
 			imageData = MSImageData(),
@@ -41,6 +43,7 @@ MSImageSet <- function(
 	experimentData = new("MIAPE-Imaging"),
 	...)
 {
+	.Deprecated_Cardinal1()
 	if ( length(dim(spectra)) > 2 ) {
 		coord <- mapply(seq_len, dim(spectra)[-1], SIMPLIFY=FALSE, USE.NAMES=TRUE)
 		if ( is.null(names(coord)) || any(nchar(names(coord)) == 0) ) {

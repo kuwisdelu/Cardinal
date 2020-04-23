@@ -5,6 +5,7 @@
 setMethod("peakFilter", "MSImageSet",
 	function(object, method = "freq", ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( !centroided(object) )
 			.stop("peakFilter: 'object' is not centroided. Run 'peakAlign' on it first.")
 		fun <- peakFilter.method(method)

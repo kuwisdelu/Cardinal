@@ -8,6 +8,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 		scale = FALSE,
 		iter.max = 100, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		ncomps <- sort(ncomp)
 		if ( max(ncomps) > nrow(x) )
@@ -68,6 +69,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "matrix"),
 setMethod("PLS", signature = c(x = "SImageSet", y = "ANY"), 
 	function(x, y,  ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( is.numeric(y) ) {
 			PLS(x, as.matrix(y), ...)
 		} else {
@@ -82,6 +84,7 @@ setMethod("PLS", signature = c(x = "SImageSet", y = "ANY"),
 setMethod("predict", "PLS",
 	function(object, newx, newy, ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()
@@ -145,6 +148,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 		keep.Xnew = TRUE,
 		iter.max = 100, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		ncomps <- sort(ncomp)
 		if ( max(ncomps) > nrow(x) )
@@ -205,6 +209,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "matrix"),
 setMethod("OPLS", signature = c(x = "SImageSet", y = "ANY"), 
 	function(x, y,  ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( is.numeric(y) ) {
 			OPLS(x, as.matrix(y), ...)
 		} else {
@@ -219,6 +224,7 @@ setMethod("OPLS", signature = c(x = "SImageSet", y = "ANY"),
 setMethod("predict", "OPLS",
 	function(object, newx, newy, keep.Xnew = TRUE, ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		.time.start()

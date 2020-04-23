@@ -8,6 +8,7 @@ setMethod("reduceBaseline", "MSImageSet",
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( centroided(object) )
 			.stop("reduceBaseline: Data already centroided. Baseline reduction will not be performed.")
 		fun <- reduceBaseline.method(method)

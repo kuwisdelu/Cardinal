@@ -3,7 +3,9 @@
 ## ---------------------------------------------------
 
 setMethod("resultData", "ResultSet",
-	function(object, ...) object@resultData)
+	function(object, ...) {
+		object@resultData
+	})
 
 setReplaceMethod("resultData",
 	signature = c("ResultSet", "missing", "ANY"),
@@ -14,7 +16,9 @@ setReplaceMethod("resultData",
 	})
 
 setMethod("modelData", "ResultSet",
-	function(object, ...) object@modelData)
+	function(object, ...) {
+		object@modelData
+	})
 
 setReplaceMethod("modelData", "ResultSet",
 	function(object, ..., value) {
@@ -69,6 +73,7 @@ setMethod("[", "ResultSet", function(x, i, j, ..., drop=TRUE) {
 })
 
 setMethod("show", "ResultSet", function(object) {
+	.Deprecated_Cardinal1("ResultSet")
 	cat("An object of class '", class(object), "'\n\n", sep="")
 	tryCatch(print(summary(object)),
 		error=function(e) cat("No summary available\n"))

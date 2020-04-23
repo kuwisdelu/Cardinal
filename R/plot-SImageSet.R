@@ -22,6 +22,7 @@ setMethod("plot",
 		subset = TRUE,
 		lattice = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		# add Feature to features for default plotting
 		if ( !"Feature" %in% featureNames(x) ) fData(x)[["Feature"]] <- 1:dim(x)[1]
 		# parse formula and set up model for plotting

@@ -8,6 +8,7 @@ setMethod("smoothSignal", "MSImageSet",
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( centroided(object) )
 			.stop("smoothSignal: Data already centroided. Smoothing will not be performed.")
 		fun <- smoothSignal.method(method)

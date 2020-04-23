@@ -1,5 +1,6 @@
 
 setMethod("summary", "iSet", function(object, ...) {
+	.Deprecated_Cardinal1("iSet")
 	outlist <- 	list()
 	outlist[["Class"]] <- class(object)
 	outlist[["Features"]] <- paste0(paste(selectSome(featureNames(object), maxToShow=2), collapse=" "),
@@ -25,6 +26,7 @@ print.summary.iSet <- function(x, ...) {
 
 setMethod("summary", "PCA",
 	function(object, ...) {
+		.Deprecated_Cardinal1("PCA", "PCA2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			ncomp <- x$ncomp
 			data.frame(ncomp=ncomp,
@@ -55,6 +57,7 @@ plot.summary.PCA <- function(x, y, ...) {
 
 setMethod("summary", "PLS",
 	function(object, ...) {
+		.Deprecated_Cardinal1("PLS", "PLS2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
@@ -108,6 +111,7 @@ plot.summary.PLS <- function(x, y, ...) {
 
 setMethod("summary", "OPLS",
 	function(object, ...) {
+		.Deprecated_Cardinal1("OPLS", "OPLS2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			p <- nrow(object)
 			nclasses <- ncol(x$fitted)
@@ -162,6 +166,7 @@ plot.summary.OPLS <- function(x, y, ...) {
 
 setMethod("summary", "SpatialFastmap",
 	function(object, ...) {
+		.Deprecated_Cardinal1("SpatialFastmap", "SpatialFastmap2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			r <- x$r
 			ncomp <- x$ncomp
@@ -208,6 +213,7 @@ plot.summary.SpatialFastmap <- function(x, y, ...) {
 
 setMethod("summary", "SpatialKMeans",
 	function(object, ...) {
+		.Deprecated_Cardinal1("SpatialKMeans", "SpatialKMeans2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- tabulate(x$cluster)
@@ -251,6 +257,7 @@ plot.summary.SpatialKMeans <- function(x, y, ...) {
 
 setMethod("summary", "SpatialShrunkenCentroids",
 	function(object, ...) {
+		.Deprecated_Cardinal1("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2")
 		topFeatures <- do.call("rbind", lapply(resultData(object), function(x) {
 			k <- x$k
 			n <- table(x$classes)
@@ -313,6 +320,7 @@ plot.summary.SpatialShrunkenCentroids <- function(x, y, ...) {
 
 setMethod("summary", "CrossValidated",
 	function(object, ...) {
+		.Deprecated_Cardinal1("CrossValidated", "CrossValidated2")
 		acc <- lapply(resultData(object),
 			function(ob) summary(ob)$accuracy)
 		accuracy <- do.call("Map", c(function(...) {

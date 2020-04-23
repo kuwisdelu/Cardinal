@@ -5,6 +5,7 @@ setMethod("spatialShrunkenCentroids",
 		method = c("gaussian", "adaptive"),
 		iter.max=10, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		iData(x) <- as.matrix(iData(x))
 		rs <- sort(r)
@@ -55,6 +56,7 @@ setMethod("spatialShrunkenCentroids",
 		method = c("gaussian", "adaptive"),
 		priors = table(y), ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		iData(x) <- as.matrix(iData(x))
 		priors <- priors / sum(priors)
@@ -104,6 +106,7 @@ setMethod("spatialShrunkenCentroids",
 	signature = c(x = "SImageSet", y = "character"),
 	function(x, y, ...)
 	{
+		.Deprecated_Cardinal1()
 		spatialShrunkenCentroids(x, factor(y), ...)
 	})
 
@@ -111,6 +114,7 @@ setMethod("predict",
 	signature = c(object = "SpatialShrunkenCentroids"),
 	function(object, newx, newy, ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( !is(newx, "iSet") )
 			.stop("'newx' must inherit from 'iSet'")
 		iData(newx) <- as.matrix(iData(newx))

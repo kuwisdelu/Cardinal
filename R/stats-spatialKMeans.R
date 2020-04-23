@@ -8,6 +8,7 @@ setMethod("spatialKMeans",
 			"MacQueen"),
 		ncomp = 10, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		iData(x) <- as.matrix(iData(x))
 		oseed <- getRNGStream()

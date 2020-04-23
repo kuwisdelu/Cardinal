@@ -10,6 +10,7 @@ setMethod("image",
 		plusminus,
 		...)
 	{
+		.Deprecated_Cardinal1()
 		if ( !missing(mz) && missing(feature.groups) ) {
 			feature.groups <- featureNames(x)[feature]
 			if ( !missing(plusminus) && plusminus != 0 ) {

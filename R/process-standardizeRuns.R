@@ -5,6 +5,7 @@
 setMethod("standardizeRuns", "MSImageSet",
 	function(object, method = "sum", ...)
 	{
+		.Deprecated_Cardinal1()
 		fun <- standardizeRuns.method(method)
 		.message("standardizeRuns: Using method = ", match.method(method))
 		.time.start()

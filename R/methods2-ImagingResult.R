@@ -196,14 +196,20 @@ setMethod("show", "SparseImagingResult",
 # coerce from ResultSet
 
 .coerce_ImagingResult <- function(from, toclass) {
+	fData <- from@featureData
+	pData <- from@pixelData
+	coordLabelTypes <- "dim"
+	sampleLabelTypes <- "sample"
+	isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
+	isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
+	coordLabels <- names(pData@data)[isCoord]
 	new(toclass,
 		imageData=.SimpleImageArrayList(),
-		featureData=XDataFrame(fData(from)),
+		featureData=XDataFrame(fData@data),
 		elementMetadata=PositionDataFrame(
-			coord=DataFrame(coord(from)[,coordLabels(from)],
-				row.names=NULL),
-			run=pixelData(from)$sample),
-		resultData=as(resultData(from), "List"),
-		modelData=DataFrame(pData(modelData(from))))
+			coord=DataFrame(pData@data[coordLabels], row.names=NULL),
+			run=pData@data$sample),
+		resultData=as(from@resultData, "List"),
+		modelData=DataFrame(from@modelData@data))
 }
 

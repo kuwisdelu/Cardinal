@@ -27,6 +27,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 setMethod("findNeighbors", "iSet",
 	function(x, r = 1, groups = x$sample, ...)
 	{
+		.Deprecated_Cardinal1()
 		findNeighbors(pixelData(x), r=r, groups=groups, ...)
 	})
 
@@ -34,6 +35,7 @@ setMethod("findNeighbors", "IAnnotatedDataFrame",
 	function(x, r = 1, groups = x$sample, dist = "chebyshev",
 		offsets = FALSE, matrix = FALSE, ...)
 	{
+		.Deprecated_Cardinal1()
 		if ( length(r) > 1L ) {
 			.warning("r has length > 1; using r = ", r[1])
 			r <- r[1]
@@ -103,6 +105,7 @@ setMethod("spatialWeights", "PositionDataFrame",
 setMethod("spatialWeights", "iSet",
 	function(x, r = 1, method = c("gaussian", "adaptive"), matrix = FALSE, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
 		if ( length(r) > 1L ) {
@@ -129,6 +132,7 @@ setMethod("spatialWeights", "iSet",
 setMethod("spatialWeights", "IAnnotatedDataFrame",
 	function(x, r = 1, matrix = FALSE, ...)
 	{
+		.Deprecated_Cardinal1()
 		.gaussianWeights(x, r=r, matrix=matrix, ...)
 	})
 

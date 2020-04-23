@@ -2,6 +2,7 @@
 setMethod("coregister",
 	signature = c("SpatialShrunkenCentroids", "missing"),
 	function(object, ...) {
+		.Deprecated_Cardinal1()
 		ks <- unlist(object$k)
 		nclasses <- sapply(object$classes, function(cs) length(unique(cs)))
 		regorder <- order(ks, nclasses)
@@ -28,6 +29,7 @@ setMethod("coregister",
 setMethod("coregister",
 	signature = c("SpatialKMeans", "missing"),
 	function(object, ...) {
+		.Deprecated_Cardinal1()
 		ks <- unlist(object$k)
 		regorder <- order(ks)
 		result <- resultData(object)

@@ -26,6 +26,7 @@ setMethod("selectROI",
 		subset = TRUE,
 		lattice = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		mode <- match.arg(mode)
 		if ( missing(main) )
 			main <- paste("Select", mode)

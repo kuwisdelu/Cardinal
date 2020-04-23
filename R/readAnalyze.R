@@ -3,7 +3,7 @@
 ## ----------------------------
 
 readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
-	as = c("MSImagingExperiment", "MSImageSet"), ...)
+						as = "MSImagingExperiment", ...)
 {
 	# get output format
 	outclass <- match.arg(as)

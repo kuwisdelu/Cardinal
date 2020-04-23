@@ -295,21 +295,30 @@ setAs("MSImagingExperiment", "MSProcessedImagingExperiment",
 
 setAs("MSImageSet", "MSImagingExperiment",
 	function(from) {
-		fDataNames <- setdiff(names(fData(from)), "mz")
-		pDataNames <- setdiff(names(pData(from)), c(coordLabels(from), "sample"))
-		MSImagingExperiment(imageData=spectra(from),
+		fData <- from@featureData
+		pData <- from@pixelData
+		fDataNames <- setdiff(names(fData), "mz")
+		coordLabelTypes <- "dim"
+		sampleLabelTypes <- "sample"
+		isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
+		isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
+		coordLabels <- names(pData@data)[isCoord]
+		pDataNames <- setdiff(names(pixelData), c(coordLabels, "sample"))
+		iData <- from@imageData@data[["iData"]]
+		MSImagingExperiment(imageData=iData,
 			featureData=MassDataFrame(
-				mz=mz(from),
-				fData(from)[,fDataNames,drop=FALSE]),
+				mz=fData@data[["mz"]],
+				fData@data[,fDataNames,drop=FALSE]),
 			pixelData=PositionDataFrame(
-				coord=DataFrame(coord(from)[,coordLabels(from)], row.names=NULL),
-				run=pixelData(from)$sample,
-				pData(from)[,pDataNames,drop=FALSE]),
-			centroided=centroided(from))
+				coord=DataFrame(pData@data[isCoord], row.names=NULL),
+				run=pData@data$sample,
+				pData@data[,pDataNames,drop=FALSE]),
+			centroided=from@processingData@centroided)
 	})
 
 setAs("MSImagingExperiment", "MSImageSet",
 	function(from) {
+		.Deprecated_Cardinal1()
 		out <- MSImageSet(spectra=spectra(from),
 			mz=mz(from), coord=as.data.frame(coord(from)))
 		pixelData(out)$sample <- run(from)

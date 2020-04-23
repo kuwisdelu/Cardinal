@@ -6,6 +6,7 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		intensity.type = "16-bit integer", ...)
 	{
 		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
+			.Deprecated_Cardinal1()
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
 				tmp <- object[,pData(object)$sample == nm]

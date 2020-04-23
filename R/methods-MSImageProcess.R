@@ -8,6 +8,7 @@ setMethod("initialize", "MSImageProcess",
 
 setMethod("show", "MSImageProcess",
 	function(object) {
+		.Deprecated_Cardinal1("MSImageProcess")
 		cat("Processing data\n")
 		cat("  Cardinal version:", object@CardinalVersion, "\n")
 		cat("  Files:", paste(object@files, collapse="\n         "), "\n")

@@ -8,6 +8,7 @@ setMethod("peakPick", "MSImageSet",
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( centroided(object) )
 			.stop("peakPick: Data already centroided. Peak picking will not be performed.")
 		fun <- peakPick.method(method)

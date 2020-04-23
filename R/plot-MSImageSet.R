@@ -11,6 +11,7 @@ setMethod("plot",
 		...,
 		type = if (centroided(x)) 'h' else 'l')
 	{
+		.Deprecated_Cardinal1()
 		if ( !missing(coord) && missing(pixel.groups) ) {
 			 pixel.groups <- pixelNames(x)[pixel]
 			 if ( !missing(plusminus) && plusminus != 0 ) {

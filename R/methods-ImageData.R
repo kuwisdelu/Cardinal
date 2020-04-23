@@ -29,6 +29,7 @@ ImageData <- function(...,
 		"lockedEnvironment",
 		"environment"))
 {
+	.Deprecated_Cardinal1("ImageData")
 	storageMode <- match.arg(storageMode)
 	dots <- match.call(expand.dots=FALSE)$...
 	names <- names(dots)
@@ -196,6 +197,7 @@ setMethod("combine",
 
 
 setMethod("show", "ImageData", function(object) {
+	.Deprecated_Cardinal1("ImageData")
 	cat("An object of class '", class(object), "'\n", sep="")
 	for ( nm in ls(object@data) ) {
 		ob <- object@data[[nm]]

@@ -36,9 +36,16 @@ setMethod("initialize", "IAnnotatedDataFrame",
 			.Object
 	})
 
+setMethod("show", "IAnnotatedDataFrame",
+	function(object) {
+		.Deprecated_Cardinal1("IAnnotatedDataFrame")
+		callNextMethod()
+	})
+
 IAnnotatedDataFrame <- function(data, varMetadata,
 	dimLabels=c("pixelNames", "pixelColumns"), ...)
 {
+	.Deprecated_Cardinal1("IAnnotatedDataFrame")
 	reqLabelTypes <- c("dim", "sample", "pheno")
 	if ( missing(data) )
 		data <- data.frame(sample=factor())
@@ -142,6 +149,7 @@ setMethod("[", "IAnnotatedDataFrame",
 setMethod("combine",
 	signature = c(x = "IAnnotatedDataFrame", y = "IAnnotatedDataFrame"),
 	function(x, y, ...) {
+		.Deprecated_Cardinal1("IAnnotatedDataFrame")
 		if ( any(duplicated(rbind(coord(x), coord(y)))) )
 			.stop("IAnnotatedDataFrame contain pixels with duplicate coordinates")
 		if ( !identical(varLabels(x), varLabels(y)) )

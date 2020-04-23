@@ -2,6 +2,7 @@
 ## adapted from MIAME from Biobase
 
 setMethod("show", "MIAPE-Imaging", function(object) {
+	.Deprecated_Cardinal1("MIAPE-Imaging")
 	if ( length(object@instrumentModel) > 0 || length(object@instrumentVendor) > 0 ) {
 		cat("Instrument : \n")
 		cat("  Model:", object@instrumentModel,"\n")
@@ -43,6 +44,7 @@ setMethod("show", "MIAPE-Imaging", function(object) {
 ## MIAPE-Imaging specific
 
 setMethod("msiInfo", "MIAPE-Imaging", function(object) {
+	.Deprecated_Cardinal1("MIAPE-Imaging")
 	cat("MIAPE-Imaging information:\n")
 	cat("  Histomorphological information:\n")
 	cat("    Specimen origin:", specimenOrigin(object),"\n")
@@ -113,7 +115,7 @@ setReplaceMethod("notes", signature = c(object="MIAPE-Imaging", value="character
 		object
 	})
 
-## specific to MIAPE-Imaging
+# ## specific to MIAPE-Imaging
 
 setMethod("specimenOrigin", "MIAPE-Imaging", function(object) object@specimenOrigin)
 

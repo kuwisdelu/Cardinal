@@ -15,6 +15,7 @@ setMethod("batchProcess", "MSImageSet",
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( centroided(object) )
 			.stop("batchProcess: Data already centroided. Processing will not be performed.")
 		normalize <- batch.args(normalize)

@@ -3,41 +3,58 @@ require(Cardinal)
 
 context("apply")
 
-options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+set.seed(1)
+x <- simulateImage(preset=7, nruns=3, npeaks=10, dim=c(10,10),
+	peakheight=2, peakdiff=2, representation="centroid")
 
-test_that("pixelApply", {
-
-	data <- matrix(1:256, nrow=4)
-	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
-	sset <- SImageSet(data=data, coord=coord)
-
-	fData(sset)$fflag <- rep(c(TRUE, FALSE), 2)
-	pData(sset)$pflag <- rep(c(TRUE, FALSE), 32)
-
-	tmp <- pixelApply(sset, max, .feature.groups=fflag)
-	expect_equivalent(pixelApply(sset, max, .feature=fflag), tmp["TRUE",])
-	expect_equivalent(pixelApply(sset, function(x) max(x[fflag])), tmp["TRUE",])
-
-	tmp2 <- pixelApply(sset, function(x) .Index)
-	expect_equivalent(tmp2, pixels(sset))
-
-	# tmp3 <- pixelApply(sset, function(x) coord(.Object)[.Index,])
-	# expect_equivalent(t(tmp3), as.matrix(coord(sset)))
-
-})
+y <- makeFactor(A=pData(x)$circleA, B=pData(x)$circleB)
 
 test_that("featureApply", {
 
-	data <- matrix(1:256, nrow=4)
-	coord <- expand.grid(x=1:4, y=1:4, z=1:4)
-	sset <- SImageSet(data=data, coord=coord)
+	out1 <- featureApply(x, mean)
+	out2 <- apply(iData(x), 1, mean)
 
-	fData(sset)$fflag <- rep(c(TRUE, FALSE), 2)
-	pData(sset)$pflag <- rep(c(TRUE, FALSE), 32)
+	expect_equal(out1, out2)
 
-	tmp <- featureApply(sset, max, .pixel.groups=pflag)
-	expect_equivalent(featureApply(sset, max, .pixel=pflag), tmp["TRUE",])
-	expect_equivalent(featureApply(sset, function(x) max(x[pflag])), tmp["TRUE",])
+	out3 <- featureApply(x, mean, .outpath=tempfile())
+
+	expect_equal(out1, out3[])
 
 })
 
+test_that("pixelApply", {
+
+	out1 <- pixelApply(x, sum)
+	out2 <- apply(iData(x), 2, sum)
+
+	expect_equal(out1, out2)
+
+	out3 <- pixelApply(x, sum, .outpath=tempfile())
+
+	expect_equal(out1, out3[])
+
+})
+
+test_that("cvApply", {
+
+	out1 <- cvApply(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
+
+	acc1 <- rowMeans(sapply(out1, function(o) summary(o)$Accuracy))
+
+	out2 <- crossValidate(x, y, s=c(0,3,6), .fun=spatialShrunkenCentroids)
+
+	acc2 <- summary(out2)$Accuracy
+
+	expect_true(validObject(out2))
+
+	expect_equal(acc1, acc2)
+
+	out3 <- crossValidate(x, y, ncomp=1:5, .fun=PLS)
+
+	expect_true(validObject(out3))
+
+	out4 <- crossValidate(x, y, ncomp=1:5, .fun=OPLS)
+
+	expect_true(validObject(out4))
+
+})

@@ -1,4 +1,20 @@
 
+#### Legacy Cardinal 1.0 classes ####
+## These classes and methods operating on them are
+## now deprecated; the class definitions will remain
+## for backward-compatibility with CardinalWorkflows
+## and to support coercion/updating to newer classes
+.Deprecated_Cardinal1 <- function(class1 = "MSImageSet",
+								class2 = "MSImagingExperiment") {
+	msg <- paste0("The ", sQuote(class1), " class is deprecated.")
+	if ( (missing(class1) && missing(class1)) || !missing(class2) ) {
+		msg <- paste0(msg, "\nUse as(object, ", sQuote(class2), ") to\n",
+			"return an updated version of this object and \n",
+			"avoid seeing this message again.")
+	}
+	.Deprecated(msg=msg)
+}
+
 #### Pixel based AnnotatedDataFrame for imaging ####
 ## based on Biobase's AnnotatedDataFrame, but with 
 ## additions that reflect that each row belongs to a pixel

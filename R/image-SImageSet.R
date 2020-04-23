@@ -29,6 +29,7 @@ setMethod("image",
 		subset = TRUE,
 		lattice = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		# parse formula and set up model for plotting
 		model <- .parseImageFormula(formula, object=x, enclos=environment(formula))
 		if ( missing(feature) && is.null(model$left) )

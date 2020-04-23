@@ -7,6 +7,13 @@ NEW FEATURES
     o Added 'topFeatures()' method for spatialKMeans
     o Added coercion to DataFrame for MSImagingExperiment
 
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Deprecated legacy classes (MSImageSet, etc.):
+        class definitions will remain for supporting
+        datasets from CardinalWorkflows, but methods
+        operating on them will be defunct in BioC 3.12
+
 CHANGES IN VERSION 2.5.9 [2020-4-22]
 -----------------------------------
 

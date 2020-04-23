@@ -27,6 +27,7 @@ setMethod("initialize", "Hashmat",
 Hashmat <- function(data = NA, nrow = 1, ncol = 1, byrow=FALSE,
 	dimnames = NULL, ...)
 {
+	.Deprecated_Cardinal1("Hashmat")
 	if ( ncol == 0 ) {
 		data <- list(numeric())
 	} else if ( is.vector(data) && !is.list(data) ) {
@@ -110,7 +111,9 @@ setReplaceMethod("rownames", "Hashmat", function(x, value) {
 	x
 })
 
-setMethod("colnames", "Hashmat", function(x) x@dimnames[[2]])
+setMethod("colnames", "Hashmat", function(x) {
+	x@dimnames[[2]]
+})
 
 setReplaceMethod("colnames", "Hashmat", function(x, value) {
 	x@dimnames[[2]] <- value
@@ -122,7 +125,9 @@ setReplaceMethod("colnames", "Hashmat", function(x, value) {
 
 # setMethod("ncol", "Hashmat", function(x) x@dim[2])
 
-setMethod("pData", "Hashmat", function(object) object@data)
+setMethod("pData", "Hashmat", function(object) {
+	object@data
+})
 
 setReplaceMethod("pData", "Hashmat",
 	function(object, value) {
@@ -131,7 +136,9 @@ setReplaceMethod("pData", "Hashmat",
 			object
 	})
 
-setMethod("keys", "Hashmat", function(object) object@keys)
+setMethod("keys", "Hashmat", function(object) {
+	object@keys
+})
 
 setReplaceMethod("keys", c("Hashmat", "character"), function(object, value) {
 	object@dimnames <- list(names(value), object@dimnames[[2]])
@@ -225,7 +232,8 @@ setReplaceMethod("[", "Hashmat", function(x, i, j, ..., value) {
 ## Adapted from combine(matrix, matrix) from BiocGenerics
 setMethod("combine",
 	signature = c(x = "Hashmat", y = "Hashmat"),
-	function(x, y, ...) {
+	function(x, y, ...)
+	{
 		if ( prod(dim(y)) == 0 )
 			return(x)
 		if ( prod(dim(x)) == 0 )
@@ -250,7 +258,8 @@ setMethod("combine",
 		m
 	})
 
-setMethod("cbind", "Hashmat", function(..., deparse.level=1) {
+setMethod("cbind", "Hashmat", function(..., deparse.level=1)
+{
 	obs <- list(...)
 	ncol <- sapply(obs, ncol)
 	nrow <- sapply(obs, nrow)
@@ -272,6 +281,7 @@ setMethod("rbind", "Hashmat", function(..., deparse.level=1) {
 })
 
 setMethod("show", "Hashmat", function(object) {
+	.Deprecated_Cardinal1("Hashmat")
 	cat("An object of class '", class(object), "'\n", sep="")
 	cat("  ", object@dim[[1]], " x ", object@dim[[2]],
 		" sparse matrix", "\n", sep="")

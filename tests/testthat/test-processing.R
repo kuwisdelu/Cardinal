@@ -3,91 +3,116 @@ require(Cardinal)
 
 context("processing")
 
-# options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+set.seed(2)
+data <- simulateImage(preset=1, dim=c(10,10), baseline=1)
+data_c <- data[,pData(data)$circle]
 
-# set.seed(1)
-# data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
-# 	NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
-# 	1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
-# 	1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
-# 	1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+set.seed(2)
+data_r <- simulateImage(preset=7, peakheight=5, dim=c(10,10), representation="centroid")
 
-# msset <- generateImage(data, range=c(2000, 3000), step=0.5, resolution=100, as="MSImageSet")
+test_that("Cardinal >=2 delayed processing", {
 
-# plot <- FALSE
+	tmp <- process(data, function(s) log2(s + 1))
 
-test_that("Cardinal <= 1 pre-processing", {
+	expect_true(validObject(tmp))
 
-	# normalization
+	plus1 <- function(x) x + 1
 
-	# msset2 <- normalize(msset, method="tic", plot=plot)
-	
-	# expect_true(validObject(msset2))
+	tmp1 <- data %>% process(plus1, delay=TRUE)
 
-	# # smoothing
+	tmp2 <- tmp1 %>% process(log2, delay=TRUE)
 
-	# msset3 <- smoothSignal(msset2, method="gaussian", window=20, plot=plot)
+	tmp3 <- process(tmp2)
 
-	# expect_true(validObject(msset3))
+	expect_true(validObject(tmp3))
 
-	# # baseline reduction
-
-	# msset4 <- reduceBaseline(msset3, method="median", plot=plot)
-
-	# expect_true(validObject(msset4))
-
-	# # peak picking
-
-	# msset5 <- peakPick(msset4, method="simple", SNR=6, plot=plot)
-
-	# expect_true(validObject(msset5))
-
-	# # peak alignment
-
-	# msset6 <- peakAlign(msset5, method="diff", diff.max=500, plot=plot)
-
-	# PeakFreq <- apply(spectra(msset6), 1, function(s) sum(s!=0))
-
-	# expect_equal(sum(PeakFreq != 0), 2)
-
-	# msset7 <- msset6[PeakFreq != 0,]
-
-	# expect_true(validObject(msset7))
-
-	# # reduce dimension
-
-	# msset8 <- reduceDimension(msset2, msset7, method="peaks", plot=plot)
-	
-	# expect_true(validObject(msset8))	
+	expect_equal(iData(tmp), iData(tmp3))
 
 })
 
-test_that("Cardinal 1.x batch pre-processing", {
-	
-	# tmp <- batchProcess(msset,
-	# 	normalize=TRUE,
-	# 	smoothSignal=TRUE,
-	# 	reduceBaseline=TRUE,
-	# 	peakPick=TRUE,
-	# 	layout=c(2,2), plot=plot)
+test_that("pre-processing 2 continuous", {
 
-	# expect_true(validObject(tmp))
+	tmp <- normalize(data_c, method="rms") %>% process()
 
-	# tmp <- batchProcess(msset,
-	# 	normalize=TRUE,
-	# 	reduceBaseline=list(blocks=200),
-	# 	reduceDimension=list(method="bin", width=10, units="mz"),
-	# 	layout=c(1,3), plot=plot)
+	expect_true(validObject(tmp))
 
-	# expect_true(validObject(tmp))
+	tmp2 <- smoothSignal(tmp, method="gaussian") %>% process()
 
-	# tmp <- batchProcess(msset,
-	# 	normalize=TRUE,
-	# 	reduceBaseline=list(blocks=200),
-	# 	peakPick=list(SNR=12),
-	# 	peakAlign=TRUE,
-	# 	layout=c(1,3), plot=plot)
+	expect_true(validObject(tmp2))
 
-	# expect_true(validObject(tmp))
+	tmp3 <- reduceBaseline(tmp2, method="locmin") %>% process()
+
+	expect_true(validObject(tmp3))
+
+	tmp4 <- peakPick(tmp3, method="mad") %>% process()
+
+	expect_true(validObject(tmp4))
+
+	tmp5 <- peakAlign(tmp4, tolerance=400, units="ppm") %>% process()
+
+	expect_true(validObject(tmp5))
+
+	tmp6 <- peakFilter(tmp5, freq.min=0.1) %>% process()
+
+	expect_true(validObject(tmp6))
+
+	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=1, units="mz") %>% process()
+
+	expect_true(validObject(data_p))
+
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=1000, units="ppm") %>% process()
+
+	expect_true(validObject(data_b))
+
+	data_f <- mzFilter(tmp3, rm.zero=TRUE) %>% process()
+
+	expect_true(validObject(data_f))
+
+	data_n <- normalize(data_r, method="reference", feature=nrow(data_r)) %>% process()
+
+	expect_true(validObject(data_n))
 
 })
+
+test_that("pre-processing 2 processed", {
+
+	data_c <- as(data_c, "MSProcessedImagingExperiment")
+
+	tmp <- normalize(data_c, method="rms") %>% process()
+
+	expect_true(validObject(tmp))
+
+	tmp2 <- smoothSignal(tmp, method="gaussian") %>% process()
+
+	expect_true(validObject(tmp2))
+
+	tmp3 <- reduceBaseline(tmp2, method="locmin") %>% process()
+
+	expect_true(validObject(tmp3))
+
+	tmp4 <- peakPick(tmp3, method="mad") %>% process()
+
+	expect_true(validObject(tmp4))
+
+	tmp5 <- peakAlign(tmp4, tolerance=400, units="ppm") %>% process()
+
+	expect_true(validObject(tmp5))
+
+	tmp6 <- peakFilter(tmp5, freq.min=0.1) %>% process()
+
+	expect_true(validObject(tmp6))
+
+	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=1, units="mz") %>% process()
+
+	expect_true(validObject(data_p))
+
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=1000, units="ppm") %>% process()
+
+	expect_true(validObject(data_b))
+
+	data_f <- mzFilter(tmp3, rm.zero=TRUE) %>% process()
+
+	expect_true(validObject(data_f))
+
+})
+

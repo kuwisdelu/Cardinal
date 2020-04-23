@@ -7,6 +7,7 @@ setMethod("topFeatures", "ResultSet",
 		filter = list(),
 		...)
 	{
+		.Deprecated_Cardinal1("ResultSet")
 		type <- match.arg(type)
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(object))) ) {
 			model <- model

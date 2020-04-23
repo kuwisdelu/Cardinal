@@ -8,6 +8,7 @@ setMethod("normalize", "MSImageSet",
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		fun <- normalize.method(method)
 		.message("normalize: Using method = ", match.method(method))
 		.time.start()

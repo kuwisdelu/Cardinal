@@ -39,6 +39,8 @@ setValidity("iSet", function(object) {
 	if (is.null(msg)) TRUE else msg
 })
 
+setMethod("show", "iSet", function(object) .Deprecated_Cardinal1())
+
 #### imageData methods ####
 ## ------------------------
 
@@ -250,12 +252,15 @@ setMethod("combine", signature = c(x = "iSet", y = "iSet"),
 
 setMethod("length", "iSet", function(x) nrow(pData(x)))
 
-setMethod("dim", "iSet", function(x)
-	c(Features=nrow(fData(x)), Pixels=nrow(pData(x))))
+setMethod("dim", "iSet", function(x) {
+	c(Features=nrow(fData(x)), Pixels=nrow(pData(x)))
+})
 
 setMethod("dims", "iSet", function(x) dims(imageData(x)))
 
-setMethod("storageMode", "iSet", function(object) storageMode(imageData(object)))
+setMethod("storageMode", "iSet", function(object) {
+	storageMode(imageData(object))
+})
 
 setReplaceMethod("storageMode", "iSet",
 	function(object, value) {

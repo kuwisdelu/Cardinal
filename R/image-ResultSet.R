@@ -15,6 +15,7 @@ setMethod("image",
 		col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
 		lattice = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
 			model <- model
 		} else {

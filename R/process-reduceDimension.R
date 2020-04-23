@@ -8,6 +8,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		fun <- reduceDimension.method(method)
 		.message("reduceDimension: Using method = ", match.method(method))
 		.time.start()
@@ -36,6 +37,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "missing
 
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric"),
 	function(object, ref, method = "peaks", ...) {
+		.Deprecated_Cardinal1()
 		if ( min(ref) < min(mz(object)) || max(ref) > max(mz(object)) )
 			.stop("reduceDimension: 'ref' contains m/z values outside of mass range.")
 		reduceDimension(object, method=method, peaklist=ref, ...)
@@ -43,6 +45,7 @@ setMethod("reduceDimension", signature = c(object = "MSImageSet", ref = "numeric
 
 setMethod("reduceDimension", signature = c(object = "MSImageSet", ref= "MSImageSet"),
 	function(object, ref, method = "peaks", ...) {
+		.Deprecated_Cardinal1()
 		if ( !centroided(ref) )
 			.stop("reduceDimension: 'ref' is not centroided. Run 'peakAlign' on it first.")
 		object <- reduceDimension(object, method=method, ref=mz(ref), ...)

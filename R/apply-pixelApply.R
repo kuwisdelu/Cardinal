@@ -36,6 +36,7 @@ setMethod("pixelApply", "SImageSet",
 			.simplify = TRUE,
 			.use.names = TRUE)
 	{
+		.Deprecated_Cardinal1()
 		# set up subset variables if not provided
 		if ( !missing(.pixel) )
 			.pixel <- tryCatch(eval(substitute(.pixel), envir=pData(.object),

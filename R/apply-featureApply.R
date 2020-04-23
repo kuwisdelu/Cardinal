@@ -34,7 +34,9 @@ setMethod("featureApply", "SImageSet",
 			.pixel,
 			.pixel.groups,
 			.simplify = TRUE,
-			.use.names = TRUE) {
+			.use.names = TRUE)
+	{
+		.Deprecated_Cardinal1()
 		# set up subset variables if not provided
 		if ( !missing(.feature) )
 			.feature <- tryCatch(eval(substitute(.feature), envir=fData(.object),

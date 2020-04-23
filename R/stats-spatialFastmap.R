@@ -5,6 +5,7 @@ setMethod("spatialFastmap", signature = c(x = "SImageSet"),
 		metric = c("average", "correlation", "neighborhood"),
 		iter.max = 1, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		metric <- match.arg(metric)
 		iData(x) <- as.matrix(iData(x))

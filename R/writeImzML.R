@@ -6,6 +6,7 @@ writeImzML <- function(object, name, folder = getwd(),
 		mz.type = "32-bit float", intensity.type = "32-bit float", ...)
 	{
 		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
+			.Deprecated_Cardinal1()
 			samples <- sampleNames(object)
 			result <- sapply(samples, function(nm) {
 				tmp <- object[,pData(object)$sample == nm]

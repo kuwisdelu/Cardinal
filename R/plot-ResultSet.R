@@ -17,6 +17,7 @@ setMethod("plot",
 		col = if (superpose) rainbow(nlevels(pixel.groups)) else "black",
 		lattice = FALSE)
 	{
+		.Deprecated_Cardinal1("ResultSet")
 		if ( is.list(model) || any(names(model) %in% varLabels(modelData(x))) ) {
 			model <- model
 		} else {

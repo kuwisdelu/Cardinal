@@ -182,7 +182,14 @@ setMethod("cvApply", "SparseImagingExperiment",
 
 setAs("CrossValidated", "CrossValidated2",
 	function(from) {
-		cv <- lapply(resultData(from), function(pred) {
+		fData <- from@featureData
+		pData <- from@pixelData
+		coordLabelTypes <- "dim"
+		sampleLabelTypes <- "sample"
+		isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
+		isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
+		coordLabels <- names(pData@data)[isCoord]
+		cv <- lapply(from@resultData, function(pred) {
 			if ( is(pred, "PLS") ) {
 				pred <- as(pred, "PLS2")
 			} else if ( is(pred, "OPLS") ) {
@@ -196,20 +203,19 @@ setAs("CrossValidated", "CrossValidated2",
 			.cv_simplify(pred, .fitted=fitted)
 		})
 		y <- attr(cv[[1]], "y")
-		cv <- .cv_collate(cv, y, .fold=pData(from)$sample)
+		cv <- .cv_collate(cv, y, .fold=pData@data$sample)
 		out <- .CrossValidated2(
 			imageData=.SimpleImageArrayList(),
-			featureData=XDataFrame(fData(from)),
+			featureData=XDataFrame(fData@data),
 			elementMetadata=PositionDataFrame(
-				coord=DataFrame(coord(from)[,coordLabels(from)],
-					row.names=NULL),
-				run=pixelData(from)$sample),
+				coord=DataFrame(pData@data[coordLabels], row.names=NULL),
+				run=pData@data$sample),
 			metadata=list(
 				parameters=names(cv$models),
 				type=cv$type),
 			resultData=as(cv$results, "List"),
 			modelData=cv$models)
-		pixelData(out)$.fold <- pData(from)$sample
+		pixelData(out)$.fold <- pData@data$sample
 		if ( cv$type == "classification" )
 			metadata(out)[["positive class"]] <- cv$pos
 		out
@@ -273,6 +279,7 @@ setAs("CrossValidated", "CrossValidated2",
 setMethod("cvApply", "SImageSet",
 	function(.x, .y, .fun, .fold = sample, ...)
 	{
+		.Deprecated_Cardinal1()
 		# setup
 		x <- .x
 		y <- .y

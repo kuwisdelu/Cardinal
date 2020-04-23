@@ -53,6 +53,7 @@ SImageData <- function(
 	dimnames = NULL,
 	...)
 {
+	.Deprecated_Cardinal1("SImageData")
 	.SImageData(iData=data,
 		coord=coord,
 		storageMode=storageMode,
@@ -97,7 +98,9 @@ setValidity("SImageData", function(object) {
 })
 
 setMethod("iData", "SImageData",
-	function(x, i, ...) x[["iData"]])
+	function(x, i, ...) {
+		x[["iData"]]
+	})
 
 setReplaceMethod("iData", "SImageData",
 	function(x, i, ..., value) {
@@ -113,7 +116,9 @@ setMethod("regeneratePositions", "SImageData",
 	})
 
 setMethod("coord", "SImageData",
-	function(object) object@coord)
+	function(object) {
+		object@coord
+	})
 
 setReplaceMethod("coord", "SImageData",
 	function(object, value) {
@@ -122,7 +127,9 @@ setReplaceMethod("coord", "SImageData",
 	})
 
 setMethod("positionArray", "SImageData",
-	function(object) object@positionArray)
+	function(object) {
+		object@positionArray
+	})
 
 setReplaceMethod("positionArray", "SImageData",
 	function(object, value) {
@@ -132,7 +139,9 @@ setReplaceMethod("positionArray", "SImageData",
 	})
 
 setMethod("featureNames", "SImageData",
-	function(object) object@dimnames[[1]])
+	function(object) {
+		object@dimnames[[1]]
+	})
 
 setReplaceMethod("featureNames", "SImageData",
 	function(object, value) {
@@ -141,7 +150,9 @@ setReplaceMethod("featureNames", "SImageData",
 	})
 
 setMethod("pixelNames", "SImageData",
-	function(object) object@dimnames[[2]])
+	function(object) {
+		object@dimnames[[2]]
+	})
 
 setReplaceMethod("pixelNames", "SImageData",
 	function(object, value) {
@@ -151,7 +162,9 @@ setReplaceMethod("pixelNames", "SImageData",
 	})
 
 setMethod("dim", "SImageData",
-	function(x) c(Features=x@dim[1], dim(x@positionArray)))
+	function(x) {
+		c(Features=x@dim[1], dim(x@positionArray))
+	})
 
 setMethod("dims", "SImageData",
 	function(x) {

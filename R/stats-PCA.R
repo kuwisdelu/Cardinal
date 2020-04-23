@@ -8,6 +8,7 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 		scale = FALSE,
 		iter.max = 100, ...)
 	{
+		.Deprecated_Cardinal1()
 		method <- match.arg(method)
 		ncomps <- sort(ncomp)
 		if ( max(ncomps) > nrow(x) )
@@ -45,6 +46,7 @@ setMethod("PCA", signature = c(x = "SImageSet"),
 setMethod("predict", "PCA",
 	function(object, newx, ...)
 	{
+		.Deprecated_Cardinal1()
 		.time.start()
 		.message("PCA: Predicting principal components scores.")
 		result <- lapply(object@resultData, function(res) {

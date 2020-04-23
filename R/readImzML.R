@@ -4,7 +4,7 @@
 
 readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
-	as = c("MSImagingExperiment", "MSImageSet"), parse.only=FALSE,
+	as = "MSImagingExperiment", parse.only=FALSE,
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	# get output format

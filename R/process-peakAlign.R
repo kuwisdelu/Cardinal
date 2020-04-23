@@ -8,6 +8,7 @@ setMethod("peakAlign", signature = c(object = "MSImageSet", ref = "numeric"),
 		pixel = pixels(object),
 		plot = FALSE)
 	{
+		.Deprecated_Cardinal1()
 		if ( is.null(mzData(imageData(object))) )
 			.stop("peakAlign: No peak picking has been applied. Nothing to align.")
 		fun <- peakAlign.method(method)

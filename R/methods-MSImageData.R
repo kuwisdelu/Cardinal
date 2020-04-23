@@ -14,6 +14,7 @@ MSImageData <- function(
 	dimnames = NULL,
 	...)
 {
+	.Deprecated_Cardinal1("MSImageData")
 	.MSImageData(iData=data,
 		coord=coord,
 		storageMode=storageMode,
@@ -23,7 +24,9 @@ MSImageData <- function(
 }
 
 setMethod("peakData", "MSImageData",
-	function(object, ...) object[["peakData"]])
+	function(object, ...) {
+		object[["peakData"]]
+	})
 
 setReplaceMethod("peakData", "MSImageData",
 	function(object, ..., value) {
@@ -33,7 +36,9 @@ setReplaceMethod("peakData", "MSImageData",
 	})
 
 setMethod("mzData", "MSImageData",
-	function(object, ...) object[["mzData"]])
+	function(object, ...) {
+		object[["mzData"]]
+	})
 
 setReplaceMethod("mzData", "MSImageData",
 	function(object, ..., value) {

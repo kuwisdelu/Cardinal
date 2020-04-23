@@ -3,92 +3,143 @@ require(Cardinal)
 
 context("stats")
 
-# options(Cardinal.progress=FALSE, Cardinal.verbose=FALSE)
+set.seed(1)
+x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
+	peakheight=c(2,4), representation="centroid")
 
-# set.seed(1)
-# data <- matrix(c(NA, NA, 1, 1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, 
-# 	NA, NA, NA, NA, NA, 0, 1, 1, NA, NA, NA, NA, NA, 1, 0, 0, 1, 
-# 	1, NA, NA, NA, NA, NA, 0, 1, 1, 1, 1, NA, NA, NA, NA, 0, 1, 1, 
-# 	1, 1, 1, NA, NA, NA, NA, 1, 1, 1, 1, 1, 1, 1, NA, NA, NA, 1, 
-# 	1, NA, NA, NA, NA, NA, NA, 1, 1, NA, NA, NA, NA, NA), nrow=9, ncol=9)
+y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
 
-# sset <- generateImage(data, range=c(200, 300), step=1)
-# y <- factor(data[!is.na(data)], labels=c("black", "red"))
+set.seed(1)
+testdata <- simulateImage(preset=4, npeaks=10, nruns=3,
+	dim=c(10,10), sdnoise=0.5, peakheight=2,
+	peakdiff=2, representation="centroid")
 
 test_that("PCA", {
 
-	# pca <- suppressWarnings(PCA(sset, ncomp=c(10,20))) # irlba suggests svd
-	# prcomp <- prcomp(t(iData(sset)))$rotation[,1:10]
-	# dimnames(prcomp) <- dimnames(pca$loadings[[1]])
+	res1 <- PCA(x, ncomp=1:3)
 
-	# expect_equal(abs(pca$loadings[[1]]), abs(prcomp), tolerance=0.1)
-	# expect_error(PCA(sset, ncomp=1000))
+	expect_true(validObject(res1))
+
+	expect_is(summary(res1), "SummaryPCA")
 
 })
 
 test_that("PLS", {
 
-	# pls <- PLS(sset, y, ncomp=c(10,20))
+	res1 <- PLS(x, y, ncomp=1:3)
 
-	# expect_equal(apply(pls$fitted[[1]], 1, which.max), as.integer(y))
-	# expect_error(PLS(sset, y, ncomp=1000))
+	expect_true(validObject(res1))
+
+	expect_is(summary(res1), "SummaryPLS")
 
 })
 
 test_that("OPLS", {
 
-	# opls <- OPLS(sset, y, ncomp=c(10,20))
+	res1 <- OPLS(x, y, ncomp=1:3)
 
-	# expect_equal(apply(opls$fitted[[1]], 1, which.max), as.integer(y))
-	# expect_error(OPLS(sset, y, ncomp=1000))
+	expect_true(validObject(res1))
+
+	expect_is(summary(res1), "SummaryPLS")
 
 })
 
 test_that("spatialFastmap", {
 
-	# gfmap <- spatialFastmap(sset, r=c(1,2), ncomp=10, method="gaussian")
+	res1 <- spatialFastmap(x, r=c(1,2), ncomp=2, method="gaussian")
 
-	# expect_true(validObject(gfmap))
+	expect_true(validObject(res1))
 
-	# afmap <- spatialFastmap(sset, r=c(1,2), ncomp=10, method="adaptive")
+	expect_is(summary(res1), "SummarySpatialFastmap")
 
-	# expect_true(validObject(afmap))
+	res2 <- spatialFastmap(x, r=c(1,2), ncomp=2, method="adaptive")
+
+	expect_true(validObject(res2))
+
+	expect_is(summary(res2), "SummarySpatialFastmap")
 
 })
 
 test_that("spatialKMeans", {
 
-	# set.seed(1)
-	# gkmeans <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="gaussian")
+	set.seed(1)
+	res1 <- spatialKMeans(x, r=c(1,2), k=c(2,3), method="gaussian")
 
-	# expect_true(validObject(gkmeans))
+	expect_true(validObject(res1))
 
-	# set.seed(1)
-	# akmeans <- spatialKMeans(sset, r=c(1,2), k=c(2,3), method="adaptive")
+	expect_is(summary(res1), "SummarySpatialKMeans")
 
-	# expect_true(validObject(akmeans))
+	set.seed(1)
+	res2 <- spatialKMeans(x, r=c(1,2), k=c(2,3), method="adaptive")
+
+	expect_true(validObject(res2))
+
+	expect_is(summary(res2), "SummarySpatialKMeans")
 
 })
 
 test_that("spatialShrunkenCentroids", {
 
-	# set.seed(1)
-	# gcentroids <- spatialShrunkenCentroids(sset, r=c(1,2), k=c(2,3), s=c(0,1), method="gaussian")
+	set.seed(1)
+	res1 <- spatialShrunkenCentroids(x, r=c(1,2), k=3, s=c(0,3,6), method="gaussian")
 
-	# expect_true(validObject(gcentroids))
+	expect_true(validObject(res1))
 
-	# set.seed(1)
-	# acentroids <- spatialShrunkenCentroids(sset, r=c(1,2), k=c(2,3), s=c(0,1), method="adaptive")
+	expect_is(summary(res1), "SummarySpatialShrunkenCentroids")
 
-	# expect_true(validObject(acentroids))
+	set.seed(1)
+	res2 <- spatialShrunkenCentroids(x, r=c(1,2), k=3, s=c(0,3,6), method="adaptive")
 
-	# gfit <- spatialShrunkenCentroids(sset, y, r=c(1,2), s=c(0,1), method="gaussian")
+	expect_true(validObject(res2))
 
-	# expect_true(validObject(gfit))
+	expect_is(summary(res2), "SummarySpatialShrunkenCentroids")
 
-	# afit <- spatialShrunkenCentroids(sset, y, r=c(1,2), s=c(0,1), method="adaptive")
+	res3 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,3,6), method="gaussian")
 
-	# expect_true(validObject(afit))
+	expect_true(validObject(res3))
+
+	expect_is(summary(res3), "SummarySpatialShrunkenCentroids")
+
+	res4 <- spatialShrunkenCentroids(x, y, r=c(1,2), s=c(0,3,6), method="adaptive")
+
+	expect_true(validObject(res4))
+
+	expect_is(summary(res4), "SummarySpatialShrunkenCentroids")
+
+})
+
+test_that("spatialDGMM", {
+
+	set.seed(1)
+	res1 <- spatialDGMM(x, r=1, k=3, method="gaussian")
+
+	expect_true(validObject(res1))
+
+	expect_is(summary(res1), "SummarySpatialDGMM")
+
+	set.seed(1)
+	res2 <- spatialDGMM(x, r=1, k=3, method="adaptive")
+
+	expect_true(validObject(res2))
+
+	expect_is(summary(res2), "SummarySpatialDGMM")
+
+})
+
+test_that("meansTest + segmentationTest", {
+
+	res1 <- meansTest(testdata, ~ condition)
+
+	expect_true(validObject(res1))
+
+	expect_is(summary(res1), "SummaryMeansTest")
+
+	set.seed(1)
+	res2 <- segmentationTest(testdata, ~ condition, classControl="Ymax")
+
+	expect_true(validObject(res2))
+
+	expect_is(summary(res2), "SummarySegmentationTest")
 
 })
 

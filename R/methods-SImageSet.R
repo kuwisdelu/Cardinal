@@ -38,6 +38,7 @@ SImageSet <- function(
 	experimentData = new("MIAPE-Imaging"),
 	...)
 {
+	.Deprecated_Cardinal1("SImageSet")
 	if ( length(dim(data)) > 2 ) {
 		coord <- mapply(seq_len, dim(data)[-1], SIMPLIFY=FALSE, USE.NAMES=TRUE)
 		if ( is.null(names(coord)) || any(nchar(names(coord)) == 0) ) {
