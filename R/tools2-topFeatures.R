@@ -1,6 +1,37 @@
 
 # Extract top-ranked features
 
+setMethod("topFeatures", "SpatialKMeans2",
+	function(object, ..., n = 10, model = modelData(object))
+	{
+		r <- modelData(object)$r
+		k <- modelData(object)$k
+		out <- mapply(function(ri, ki, res) {
+			cluster <- res$cluster
+			cluster <- rep(levels(cluster), each=nrow(object))
+			out1 <- DataFrame(as.list(fData(object)), r=ri, k=ki)
+			out2 <- DataFrame(cluster=cluster,
+				centers=as.numeric(res$centers),
+				correlation=as.numeric(res$correlation))
+			cbind(out1, out2)
+		}, r, k, resultData(object), SIMPLIFY=FALSE)
+		if ( !is.null(names(model)) ) {
+			model <- model[names(model) %in% names(modelData(object))]
+			model <- subset_rows(modelData(object), as.list(model))
+		}
+		if ( length(model) > 1 )
+			.warning("more than 1 model selected")
+		out <- do.call("rbind", out[model])
+		if ( !is.null(match.call(expand.dots=FALSE)$...) )
+			out <- Cardinal::subset(out, ...)
+		order <- order(out$correlation, decreasing=TRUE)
+		if ( is.finite(n) )
+			order <- head(order, n=n)
+		out <- out[order,,drop=FALSE]
+		SummaryDataFrame(as.list(out), .rownumbers=TRUE,
+			.summary="Top-ranked features:")
+	})
+
 setMethod("topFeatures", "SpatialShrunkenCentroids2",
 	function(object, ..., n = 10, model = modelData(object))
 	{

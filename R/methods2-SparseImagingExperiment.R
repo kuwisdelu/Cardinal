@@ -341,6 +341,20 @@ collect.SparseImagingExperiment <- function(x, ...)
 		pull(x, ...)
 	}
 
+## coerce to DataFrame
+
+setAs("SparseImagingExperiment", "DataFrame",
+	function(from) {
+		nm <- names(imageData(from))[[1L]]
+		if ( ncol(from) > 1L )
+			nm <- paste0(nm, ".", seq_len(ncol(from)))
+		data <- lapply(seq_len(ncol(from)),
+			function(i) as.numeric(iData(from)[,i]))
+		fData <- featureData(from)
+		fData[nm] <- data
+		fData
+	})
+
 ## show
 
 setMethod("show", "SparseImagingExperiment",

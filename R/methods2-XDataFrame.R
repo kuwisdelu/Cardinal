@@ -89,6 +89,8 @@ setMethod("rbind", "XDataFrame",
 		as(callNextMethod(...), class(..1))
 	})
 
+setMethod("t", "XDataFrame", function(x) t(as(as.list(x), "DataFrame")))
+
 setMethod("sort", "XDataFrame",
 	function(x, decreasing = FALSE, ...) {
 		sort(as(as.list(x), "XDataFrame"), decreasing=decreasing, ...)

@@ -5,6 +5,8 @@
 
 \alias{topFeatures,MeansTest-method}
 \alias{topFeatures,SegmentationTest-method}
+
+\alias{topFeatures,SpatialKMeans2-method}
 \alias{topFeatures,SpatialShrunkenCentroids2-method}
 
 \alias{topFeatures,ResultSet-method}
@@ -17,13 +19,15 @@
 
 \title{Top-ranked features from imaging analysis results}
 \description{
-    Extract the top-ranked features from the results of imaging analysis, based on test statistics, p-values, or adjusted p-values. The result is sorted data frame that can be further manipulated for downstream postprocessing.
+    Extract the top-ranked features from the results of imaging analysis, based on post-hoc correlation, test statistics, p-values, or adjusted p-values. The result is sorted data frame that can be further manipulated for downstream postprocessing.
 }
 \usage{
 
 #### Methods for Cardinal >= 2.x classes ####
 
 \S4method{topFeatures}{SpatialShrunkenCentroids2}(object, \dots, n = 10, model = modelData(object))
+
+\S4method{topFeatures}{SpatialKMeans2}(object, \dots, n = 10, model = modelData(object))
 
 \S4method{topFeatures}{MeansTest}(object, \dots, n = 10, p.adjust = "BH")
 
