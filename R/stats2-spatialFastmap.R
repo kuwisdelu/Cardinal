@@ -93,11 +93,11 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		pivots[j,] <- o_ab
 		oa <- pivots[j,1]
 		ob <- pivots[j,2]
-		xa <- iData(x)[,spatial$neighbors[[oa]]]
+		xa <- as.matrix(iData(x)[,spatial$neighbors[[oa]],drop=FALSE])
 		attr(xa, "idx") <- oa
 		attr(xa, "offsets") <- spatial$offsets[[oa]]
 		attr(xa, "weights") <- spatial$weights[[oa]]
-		xb <- iData(x)[,spatial$neighbors[[ob]]]
+		xb <- as.matrix(iData(x)[,spatial$neighbors[[ob]],drop=FALSE])
 		attr(xb, "idx") <- ob
 		attr(xb, "offsets") <- spatial$offsets[[ob]]
 		attr(xb, "weights") <- spatial$weights[[ob]]
@@ -158,7 +158,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			tol.dist=tol.dist)
 	}
 	while ( iter <= iter.max ) {
-		xa <- iData(x)[,spatial$neighbors[[oa]]]
+		xa <- as.matrix(iData(x)[,spatial$neighbors[[oa]],drop=FALSE])
 		attr(xa, "idx") <- oa
 		attr(xa, "offsets") <- spatial$offsets[[oa]]
 		attr(xa, "weights") <- spatial$weights[[oa]]
@@ -172,7 +172,7 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		if ( isTRUE(ob == cand) )
 			return(c(oa, ob))
 		ob <- cand
-		xb <- iData(x)[,spatial$neighbors[[ob]]]
+		xb <- as.matrix(iData(x)[,spatial$neighbors[[ob]],drop=FALSE])
 		attr(xb, "idx") <- ob
 		attr(xb, "offsets") <- spatial$offsets[[ob]]
 		attr(xb, "weights") <- spatial$weights[[ob]]

@@ -1082,7 +1082,7 @@ Sometimes it is necessary to filter the mass features of a dataset that has not 
 Use `mzFilter()` to queue filtering of mass features.
 
 ```{r mzFilter, fig.height=3, fig.width=9}
-mse_filt <- mzFilter(mse_pre, thresh.max=0.05)
+mse_filt <- mzFilter(mse_pre, freq.min=0.05)
 mse_filt <- subsetPixels(mse_filt, x %in% 9:11, y %in% 9:11) %>% process()
 plot(mse_filt, coord=list(x=10, y=10), type='h')
 ```

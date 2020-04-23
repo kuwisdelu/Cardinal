@@ -163,7 +163,7 @@ setMethod("fitted", "SpatialShrunkenCentroids2",
 setMethod("logLik", "SpatialShrunkenCentroids2", function(object, ...) {
 	logp <- sapply(object$probability, function(prob) {
 		phat <- apply(prob, 1, max)
-		sum(log(phat))
+		sum(log(phat), na.rm=TRUE)
 	})
 	class(logp) <- "logLik"
 	attr(logp, "df") <- sapply(object$statistic, function(t) {
@@ -205,14 +205,19 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	# cluster the data
 	while ( iter <= iter.max ) {
 		class <- factor(as.integer(droplevels(class)))
-		if ( nlevels(class) == 1L )
-			.stop("singular cluster configuration, try a different seed")
 		fit <- .spatialShrunkenCentroids2_fit(x,
 			s=s, mean=mean, class=class, BPPARAM=BPPARAM)
 		pred <- .spatialShrunkenCentroids2_predict(x,
 			r=r, class=class, weights=weights, centers=fit$centers,
 			sd=fit$sd, priors=NULL, dist=dist, BPPARAM=BPPARAM)
-		if ( all(class==pred$class) )
+		converged <- all(class==pred$class)
+		singular <- nlevels(droplevels(pred$class)) == 1L
+		failed <- anyNA(pred$class)
+		if ( failed )
+			.warning("failed to converge: some predictions will be missing")
+		if ( singular )
+			.warning("failed to converge: singular cluster configuration")
+		if ( failed || singular || converged )
 			break
 		class <- pred$class
 		iter <- iter + 1
@@ -278,8 +283,17 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	probability <- pfun(scores)
 	colnames(probability) <- colnames(centers)
 	# calculate and return new class assignments
-	class <- factor(apply(probability, 1, which.max),
-		levels=seq_len(ncol(centers)), labels=colnames(centers))
+	pred <- function(s) {
+		i <- which.min(s)
+		if ( length(i) == 0L ) {
+			NA_integer_
+		} else {
+			i
+		}
+	}
+	class <- factor(apply(scores, 1, pred),
+		levels=seq_len(ncol(centers)),
+		labels=colnames(centers))
 	list(scores=scores, probability=probability, class=class)
 }
 

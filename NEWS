@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 2.5.11 [2020-4-23]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in 'spatialShrunkenCentroids()' that produced
+        in NaNs when discriminant scores were very large
+    o Fixed bug in 'spatialFastmap()' where subsetting produced
+        vectors instead of matrices due to omitting 'drop=FALSE'
+
 CHANGES IN VERSION 2.5.10 [2020-4-22]
 -----------------------------------
 

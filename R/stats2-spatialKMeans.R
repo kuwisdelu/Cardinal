@@ -14,7 +14,7 @@ setMethod("spatialKMeans", "SparseImagingExperiment",
 			.stop("can't fit more clusters than number of pixels")
 		if ( max(k) > nrow(x) )
 			.stop("can't fit more clusters than number of features")
-		ncomp <- min(ncomp, nrow(x))
+		ncomp <- min(ncomp, nrow(x), ncol(x))
 		.message("reducing dimension prior to k-means")
 		fastmap <- spatialFastmap(x, r=r, ncomp=ncomp,
 			method=method, dist=dist, tol.dist=tol.dist,
