@@ -48,7 +48,7 @@ test_that("pre-processing 2 continuous", {
 
 	expect_true(validObject(tmp4))
 
-	tmp5 <- peakAlign(tmp4, tolerance=400, units="ppm") %>% process()
+	tmp5 <- peakAlign(tmp4, tolerance=NA, units="ppm") %>% process()
 
 	expect_true(validObject(tmp5))
 
@@ -56,11 +56,11 @@ test_that("pre-processing 2 continuous", {
 
 	expect_true(validObject(tmp6))
 
-	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=1, units="mz") %>% process()
+	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=NA, units="ppm") %>% process()
 
 	expect_true(validObject(data_p))
 
-	data_b <- mzBin(tmp3, from=500, to=800, resolution=1000, units="ppm") %>% process()
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=NA, units="mz") %>% process()
 
 	expect_true(validObject(data_b))
 
@@ -94,7 +94,7 @@ test_that("pre-processing 2 processed", {
 
 	expect_true(validObject(tmp4))
 
-	tmp5 <- peakAlign(tmp4, tolerance=400, units="ppm") %>% process()
+	tmp5 <- peakAlign(tmp4, tolerance=NA, units="ppm") %>% process()
 
 	expect_true(validObject(tmp5))
 
@@ -102,11 +102,11 @@ test_that("pre-processing 2 processed", {
 
 	expect_true(validObject(tmp6))
 
-	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=1, units="mz") %>% process()
+	data_p <- peakBin(tmp3, ref=mz(tmp6), tolerance=NA, units="ppm") %>% process()
 
 	expect_true(validObject(data_p))
 
-	data_b <- mzBin(tmp3, from=500, to=800, resolution=1000, units="ppm") %>% process()
+	data_b <- mzBin(tmp3, from=500, to=800, resolution=NA, units="mz") %>% process()
 
 	expect_true(validObject(data_b))
 

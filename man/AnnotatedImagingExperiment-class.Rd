@@ -99,11 +99,13 @@ AnnotatedImagingExperiment(
 }
 
 \examples{
+\dontrun{
 x <- readImage(system.file('images', 'nuclei.tif', package='EBImage'))
 
 y <- AnnotatedImagingExperiment(x)
 
 print(y)
+}
 }
 
 \keyword{classes}

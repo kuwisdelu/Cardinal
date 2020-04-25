@@ -1,4 +1,16 @@
 
+CHANGES IN VERSION 2.5.12 [2020-4-24]
+-----------------------------------
+
+BUG FIXES
+
+    o Drawing a region-of-interest using 'selectROI()' should
+        now update the plot properly in RStudio devices
+    o Fixed issues with automatically guessing a reasonable
+        mass tolerance for certain pre-processing methods
+    o In 'mzBin()', the previous value of 'centrodied()'
+        from the original dataset is now preserved after binning
+
 CHANGES IN VERSION 2.5.11 [2020-4-23]
 -----------------------------------
 
@@ -14,8 +26,8 @@ CHANGES IN VERSION 2.5.10 [2020-4-22]
 
 NEW FEATURES
 
-    o Added 'topFeatures()' method for spatialKMeans
-    o Added coercion to DataFrame for MSImagingExperiment
+    o Added 'topFeatures()' method for 'spatialKMeans()'
+    o Added coercion to 'DataFrame' from 'MSImagingExperiment'
 
 SIGNIFICANT USER-VISIBLE CHANGES
 

@@ -89,13 +89,17 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		if ( is.null(mass.range) || is.na(resolution) ) {
 			.message("auto-determining mass range and resolution...")
 			mz.info <- .detectMassRangeAndResolution(mz, units=units, BPPARAM=BPPARAM)
-			.message("detected mass range: ", mz.info$range[1L], " to ", mz.info$range[2L])
-			.message("estimated mass resolution: ", mz.info$resolution, " ", units)
+			if ( is.null(mass.range) ) {
+				mass.range <- mz.info$mass.range
+				.message("detected mass range: ",
+					mass.range[1], " to ", mass.range[2])
+			}
+			if ( is.na(resolution) ) {
+				resolution <- mz.info$resolution
+				.message("estimated mass resolution: ",
+					resolution, " ", units)
+			}
 		}
-		if ( is.null(mass.range) )
-			mass.range <- mz.info$range
-		if ( is.na(resolution) )
-			resolution <- mz.info$resolution
 		.message("using mass range: ", mass.range[1L], " to ", mass.range[2L])
 		.message("using mass resolution: ", resolution, " ", units)
 		mz.min <- mass.range[1]
@@ -191,7 +195,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	object
 }
 
-.detectMassRangeAndResolution <- function(mz, units, BPPARAM) {
+.detectMassRangeAndResolution <- function(mz, units, BPPARAM)
+{
 	if ( units == "ppm" ) {
 		fun <- function(m) {
 			med <- median(1e6 * diff(m) / m[-1], na.rm=TRUE)
@@ -205,20 +210,20 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			c(med, lim)
 		}
 	}
-	massinfo <- chunk_apply(mz, fun,
+	mzinfo <- chunk_apply(mz, fun,
 		chunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		simplify=TRUE, BPPARAM=BPPARAM)
-	massinfo <- as.matrix(massinfo)
-	massinfo[!is.finite(massinfo)] <- NA
-	res <- median(massinfo[1,], na.rm=TRUE)
-	min <- round(min(massinfo[2,], na.rm=TRUE), digits=4)
-	max <- round(max(massinfo[3,], na.rm=TRUE), digits=4)
+	mzinfo <- as.matrix(mzinfo)
+	mzinfo[!is.finite(mzinfo)] <- NA
+	res <- median(mzinfo[1,], na.rm=TRUE)
+	min <- round(min(mzinfo[2,], na.rm=TRUE), digits=4)
+	max <- round(max(mzinfo[3,], na.rm=TRUE), digits=4)
 	if ( units == "ppm" ) {
 		res <- roundnear(res, precision=1)
 	} else {
 		res <- round(res, digits=4)
 	}
-	list(resolution=res, range=c(min, max))
+	list(mass.range=c(min, max), resolution=res)
 }
 

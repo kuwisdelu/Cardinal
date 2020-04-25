@@ -46,10 +46,11 @@ test_that("MassDataFrame accessors", {
 	expect_equal(resolution(fdata), c(mz = 1.5))
 
 	mz2 <- seq(from=100, to=145, length.out=length(mz))
+	res2 <- round(diff(mz2)[1], digits=4)
 	mz(fdata) <- mz2
 	
 	expect_equal(mz(fdata), mz2)
-	expect_equal(resolution(fdata), c(mz=diff(mz2)[1]))
+	expect_equal(resolution(fdata), c(mz=res2))
 
 	expect_equal(length(fdata), 1)
 	expect_equal(dim(fdata), c(length(mz), 1))

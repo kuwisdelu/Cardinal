@@ -47,26 +47,28 @@ setValidity("MassDataFrame", .valid.MassDataFrame)
 	x
 }
 
-.estimateMassResolution <- function(mz, tol=1e-6) {
-	if ( length(mz) <= 1L || is.unsorted(mz) )
-		return(NA_real_)
-	mzdiff <- diff(mz)
-	to <- mz[-1]
-	from <- mz[-length(mz)]
-	ppm <- 1e6 * ((to / from ) - 1) / ((to / from) + 1)
-	if ( diff(range(ppm)) <= tol * min(ppm) ) {
-		res <- c("ppm" = 2 * median(ppm))
+.estimateMassResolution <- function(mz, units, tol = 1e-6) {
+	mz <- unname(mz)
+	if ( missing(units) ) {
+		if ( length(mz) <= 1L || is.unsorted(mz) )
+			return(NA_real_)
+		mzdiff <- diff(mz)
+		to <- mz[-1]
+		from <- mz[-length(mz)]
+		ppm <- 1e6 * ((to / from ) - 1) / ((to / from) + 1)
+		if ( diff(range(ppm)) <= tol * min(mz) ) {
+			res <- c(ppm = roundnear(2 * median(ppm), precision=0.5))
+		} else {
+			res <- c(mz = round(min(mzdiff), digits=4))
+		}
 	} else {
-		res <- c("mz" = min(mzdiff))
+		mzdiff <- median(diff(mz))
+		res <- 1e6 * median(diff(mz) / mz[-1])
+		res <- switch(units,
+			ppm = c("ppm" = roundnear(res, precision=0.5)),
+			mz = c("mz" = round(mzdiff, digits=4)))
 	}
 	res
-}
-
-.estimateMassTolerance <- function(x, units) {
-	mzdiff <- switch(units,
-		ppm = c("ppm" = roundnear(1e6 * median(diff(mz(x)) / mz(x)[-1]), precision=0.5)),
-		mz = c("mz" = round(median(diff(mz(x)))), digits=4))
-	mzdiff
 }
 
 setMethod("mz", "MassDataFrame",

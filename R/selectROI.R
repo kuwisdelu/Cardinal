@@ -72,12 +72,11 @@ setMethod("selectROI",
 	if ( nruns > 1 )
 		.warning("multiple runs plotted; results may be unexpected")
 	.message("select pixels; press ESC or 2nd mouse button to stop")
+	loc <- .locator(mode == "region")
 	if ( mode == "region" ) {
-		loc <- locator(type="o", pch=20, col="white", lwd=1.5)
 		.selectRegion(loc, pixelData(object),
 			subset=plot$subset, axs=plot$coordnames)
 	} else {
-		loc <- locator(type="p", pch=4, col="white")
 		.selectPixels(loc, pixelData(object),
 			subset=plot$subset, axs=plot$coordnames)
 	}
@@ -104,6 +103,32 @@ setMethod("selectROI",
 	p[idx] <- TRUE
 	pixels[subset] <- p
 	pixels
+}
+
+# hack to force plot to update on RStudio device
+
+.locator <- function(area = TRUE, fill = TRUE) {
+	xs <- numeric()
+	ys <- numeric()
+	while ( TRUE ) {
+		loc <- locator(1)
+		if ( !is.null(loc) ) {
+			if ( area ) {
+				xi <- c(xs[length(xs)], loc$x)
+				yi <- c(ys[length(ys)], loc$y)
+				lines(xi, yi, type='b', pch=20, col="white")
+			} else {
+				points(loc$x, loc$y, pch=4, col="white")
+			}
+			xs <- c(xs, loc$x)
+			ys <- c(ys, loc$y)
+		} else {
+			break
+		}
+	}
+	if ( area && fill )
+		polygon(xs, ys, col=rgb(1,1,1,0.5))
+	list(x=xs, y=ys)
 }
 
 # make a factor from logicals

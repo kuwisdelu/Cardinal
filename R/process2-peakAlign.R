@@ -5,8 +5,9 @@
 setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 	function(object, tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		units <- match.arg(units)
 		if ( is.na(tolerance) )
-			tolerance <- .estimateMassTolerance(object, match.arg(units))
+			tolerance <- .estimateMassResolution(mz(object), units)
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))

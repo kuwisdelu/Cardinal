@@ -13,7 +13,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 		width <- 2 * tolerance
 		units <- match.arg(units)
 		if ( is.na(width) )
-			width <- 2 * .estimateMassTolerance(object, units)
+			width <- 2 * .estimateMassResolution(mz(object), units)
 		if ( length(ref) >= nrow(object) ) {
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")
@@ -35,7 +35,7 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 	{
 		units <- match.arg(units)
 		if ( is.na(by) )
-			by <- 2 * .estimateMassTolerance(object, units)
+			by <- 2 * .estimateMassResolution(mz(object), units)
 		halfwidth <- by / 2
 		ref <- switch(units,
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
@@ -79,7 +79,7 @@ mzBin_postfun <- function(object, ans, width, units, ...) {
 		pixelData=pixelData(object),
 		metadata=metadata(object),
 		processing=processingData(object),
-		centroided=NA)
+		centroided=centroided(object))
 	.message("binned to ", length(ref), " m/z bins per spectrum ",
 		"(binwidth = ", width, " ", units, ")")
 	object

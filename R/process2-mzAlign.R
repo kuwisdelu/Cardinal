@@ -6,9 +6,10 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 	function(object, ref, tolerance = NA, units = c("ppm", "mz"),
 		quantile = 0.2, span = 0.75, ...)
 	{
+		units <- match.arg(units)
 		if ( is.na(tolerance) )
-			tolerance <- 2 * .estimateMassTolerance(object, match.arg(units))
-		tol <- switch(match.arg(units),
+			tolerance <- 2 * .estimateMassResolution(mz(object), units)
+		tol <- switch(units,
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
 		if ( length(ref) != nrow(object) ) {
@@ -28,9 +29,10 @@ setMethod("mzAlign", c("MSImagingExperiment", "missing"),
 	function(object, tolerance = NA, units = c("ppm", "mz"),
 		quantile = 0.2, span = 0.75, ...)
 	{
+		units <- match.arg(units)
 		if ( is.na(tolerance) )
-			tolerance <- 2 * .estimateMassTolerance(object, match.arg(units))
-		tol <- switch(match.arg(units),
+			tolerance <- 2 * .estimateMassResolution(mz(object), units)
+		tol <- switch(units,
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
 		object <- process(object, fun=mzAlign_fun,

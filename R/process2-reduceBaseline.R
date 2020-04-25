@@ -51,17 +51,20 @@ reduceBaseline.median2 <- reduceBaseline.median
 
 reduceBaseline.locmin <- function(x, window = 5, ...) {
 	baseidx <- locmax(-x, halfWindow=window %/% 2)
-	baseval <- x[baseidx]
-	if ( baseidx[1L] != 1L ) {
-		baseval <- c(baseval[1L], baseval)
-		baseidx <- c(1L, baseidx)
+	if ( length(baseidx) != 0L ) {
+		baseval <- x[baseidx]
+		if ( baseidx[1L] != 1L ) {
+			baseval <- c(baseval[1L], baseval)
+			baseidx <- c(1L, baseidx)
+		}
+		if ( baseidx[length(baseidx)] != length(x) ) {
+			baseval <- c(baseval, baseval[length(baseval)])
+			baseidx <- c(baseidx, length(x))
+		}
+		baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
+		x <- pmax(x - baseline, 0)	
 	}
-	if ( baseidx[length(baseidx)] != length(x) ) {
-		baseval <- c(baseval, baseval[length(baseval)])
-		baseidx <- c(baseidx, length(x))
-	}
-	baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
-	pmax(x - baseline, 0)
+	x
 }
 
 

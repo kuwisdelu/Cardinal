@@ -82,7 +82,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 		hkey_un0=c("char"=1),
 		filename=file, filemode=mode, offset=0)
 	image_dimension <- struct(
-		dim=c("short"=8),
+		dim=c("ushort"=8),
 		unused8=c("short"=1),
 		unused9=c("short"=1),
 		unused10=c("short"=1),

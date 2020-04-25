@@ -6,9 +6,10 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 	function(object, ref, type=c("area", "height"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		units <- match.arg(units)
 		if ( is.na(tolerance) )
-			tolerance <- .estimateMassTolerance(object, match.arg(units))
-		tol <- switch(match.arg(units),
+			tolerance <- .estimateMassResolution(mz(object), units)
+		tol <- switch(units,
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
 		tol.ref <- switch(names(tol),
@@ -29,9 +30,10 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 	function(object, type=c("area", "height"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
+		units <- match.arg(units)
 		if ( is.na(tolerance) )
-			tolerance <- .estimateMassTolerance(object, match.arg(units))
-		tol <- switch(match.arg(units),
+			tolerance <- .estimateMassResolution(mz(object), units)
+		tol <- switch(units,
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
 		type <- match.arg(type)
