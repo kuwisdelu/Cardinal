@@ -8,7 +8,7 @@ BUG FIXES
         now update the plot properly in RStudio devices
     o Fixed issues with automatically guessing a reasonable
         mass tolerance for certain pre-processing methods
-    o In 'mzBin()', the previous value of 'centrodied()'
+    o In 'mzBin()', the previous value of 'centroided()'
         from the original dataset is now preserved after binning
 
 CHANGES IN VERSION 2.5.11 [2020-4-23]
