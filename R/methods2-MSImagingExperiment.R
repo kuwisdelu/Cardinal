@@ -303,7 +303,7 @@ setAs("MSImageSet", "MSImagingExperiment",
 		isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
 		isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
 		coordLabels <- names(pData@data)[isCoord]
-		pDataNames <- setdiff(names(pixelData), c(coordLabels, "sample"))
+		pDataNames <- setdiff(names(pData@data), c(coordLabels, "sample"))
 		iData <- from@imageData@data[["iData"]]
 		MSImagingExperiment(imageData=iData,
 			featureData=MassDataFrame(
