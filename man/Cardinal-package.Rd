@@ -39,7 +39,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	The following options can be set via \code{options()}.
 
 	\itemize{
-		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=SerialParam())}: The default backend to use for parallel processing. By default, this is initially set to a serial backend (no parallelization).}
+		\item{\code{getCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=SerialParam())}: The default backend to use for parallel processing. By default, this is initially set to a serial backend (no parallelization).}
 
 		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should detailed messages be printed?}
 
