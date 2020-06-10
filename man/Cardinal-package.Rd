@@ -45,7 +45,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 
 		\item{\code{getCardinalNumBlocks(), setCardinalNumBlocks(n=20L)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
 
-		\item{\code{getCardinalDelayProc(), setCardinalDelayProc(delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
+		\item{\code{getCardinalDelayProc(), setCardinalDelayProc(delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPick()} be delayed (until \code{process()} is called)?}
 	}
 }
 
