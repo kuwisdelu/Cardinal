@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 2.7.1 [2020-6-30]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed issue where 'spatialDGMM()' would sometimes
+        fail for features with singular segmentations
+    o Suppressed warnings on 'Mclust()' initialization
+        to 'spatialDGMM()' caused by R 4.0 changes
+
 CHANGES IN VERSION 2.5.12 [2020-4-24]
 -----------------------------------
 

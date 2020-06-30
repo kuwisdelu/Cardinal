@@ -122,7 +122,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 								iter.max, tol, p0, trace, verbose)
 {
 	# initialize with ordinary Gaussian mixture model
-	gmm <- Mclust(xi, G=1:k, modelNames="V", verbose=FALSE)
+	gmm <- suppressWarnings(Mclust(xi, G=1:k, modelNames="V", verbose=FALSE))
 	K <- gmm$G
 	N <- length(xi)
 	# initialize parameters (theta: mu, sigma, alpha, beta)
@@ -150,7 +150,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	# initialize prior probability
 	prior <- matrix(1 / K, nrow=N, ncol=K)
 	# initialize posterior probability p(z)
-	y <- regpr(px * prior / rowSums(px * prior), lambda=p0)
+	y <- regpr(px * prior, lambda=p0)
 	# trace
 	trace_out <- list(
 		mu=matrix(ncol=K, nrow=iter.max),
@@ -182,7 +182,8 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 		if ( verbose )
 			message("iter = ", i, "; error = ", error[i], "; loglik = ", loglik[i])
 		# check for convergence
-		if ( error_old - error_new < tol )
+		error_diff <- error_old - error_new
+		if ( is.nan(error_diff) || error_diff < tol )
 			break
 		## M-step
 		linesearch <- function(eta) {
@@ -250,7 +251,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 	prior <- t(alpha^2 * t(ybar)^beta)
 	prior <- prior / rowSums(prior)
 	# calculate new posterior probability p(z)
-	y <- regpr(px * prior / rowSums(px * prior), lambda=p0)
+	y <- regpr(px * prior, lambda=p0)
 	# log-likelihood and error function
 	loglik <- sum(log(rowSums(prior * px)))
 	error <- -sum(log(rowSums((prior * px)^y)))
