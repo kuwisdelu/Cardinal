@@ -9,8 +9,7 @@
 	msg <- paste0("The ", sQuote(class1), " class is deprecated.")
 	if ( (missing(class1) && missing(class1)) || !missing(class2) ) {
 		msg <- paste0(msg, "\nUse as(object, ", sQuote(class2), ") to\n",
-			"return an updated version of this object and \n",
-			"avoid seeing this message again.")
+			"return an updated version of this object.")
 	}
 	.Deprecated(msg=msg)
 }
