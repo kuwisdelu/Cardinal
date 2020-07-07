@@ -47,7 +47,7 @@ setMethod("spatialDGMM", "SparseImagingExperiment",
 			metadata=list(
 				mapping=list(
 					feature=NULL,
-					pixel=c("class", "pixel")),
+					pixel=c("probability", "class")),
 				method=method, dist=dist),
 			resultData=as(results, "List"),
 			modelData=models)

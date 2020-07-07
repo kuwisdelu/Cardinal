@@ -8,6 +8,7 @@ BUG FIXES
         fail for features with singular segmentations
     o Suppressed warnings on 'Mclust()' initialization
         to 'spatialDGMM()' caused by R 4.0 changes
+    o Fixed pixel/feature mapping in 'spatialDGMM()' metadata
 
 CHANGES IN VERSION 2.5.12 [2020-4-24]
 -----------------------------------
