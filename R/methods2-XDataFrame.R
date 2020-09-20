@@ -170,7 +170,7 @@ setMethod("show", "XDataFrame",
 	}
 })
 
-# copied from S4Vectors::show,DataTable
+# copied from S4Vectors::show,DataFrame
 .make.rownames <- function(nms, nrow, nhead, ntail)
 {
 	p1 <- ifelse (nhead == 0, 0L, 1L)

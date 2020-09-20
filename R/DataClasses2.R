@@ -85,8 +85,8 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 	contains = c("Vector", "VIRTUAL"),
 	slots = c(
 		imageData = "ImageList",
-		featureData = "DataTable_OR_NULL",
-		elementMetadata = "DataTable_OR_NULL"),
+		featureData = "DataFrame_OR_NULL",
+		elementMetadata = "DataFrame_OR_NULL"),
 	prototype = prototype(
 		imageData = .SimpleImageList(),
 		featureData = DataFrame(),
@@ -206,9 +206,9 @@ setClass("SummarySegmentationTest", contains="SummaryDataFrame")
 .MSImagingInfo <- setClass("MSImagingInfo",
 	contains = "Vector",
 	slots = c(
-		scanList = "DataTable",
-		mzArrayList = "DataTable",
-		intensityArrayList = "DataTable"),
+		scanList = "DataFrame",
+		mzArrayList = "DataFrame",
+		intensityArrayList = "DataFrame"),
 	prototype = prototype(
 		scanList = DataFrame(),
 		mzArrayList = DataFrame(),
