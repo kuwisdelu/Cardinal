@@ -1049,17 +1049,29 @@ mse4 <- simulateImage(preset=1, npeaks=10, from=500, to=600,
 plot(mse4, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
 ```
 
-If no reference spectrum is provided, the mean spectrum is calculated and used as the reference.
+To align the spectra, we need to provide a vector of reference m/z values of expected peaks. Here, we will simply use the peaks of the mean spectrum.
 
-```{r mzAlign, fig.height=3, fig.width=9}
-mse4_align <- mzAlign(mse4, tolerance=2000, units="ppm")
-mse4_align <- process(mse4_align)
-plot(mse4_align, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
+```{r mzAlign1, fig.height=3, fig.width=9}
+mse4_mean <- summarizeFeatures(mse4)
+mse4_peaks <- peakPick(mse4_mean, SNR=2)
+mse4_peaks <- peakAlign(mse4_peaks, tolerance=1000, units="ppm")
+mse4_peaks <- process(mse4_peaks)
+fData(mse4_peaks)
+
+mse4_align1 <- mzAlign(mse4, ref=mz(mse4_peaks), tolerance=2000, units="ppm")
+mse4_align1 <- process(mse4_align1)
+plot(mse4_align1, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
+```
+
+If no reference spectrum is provided, the mean spectrum is calculated automatically and used as the reference.
+
+```{r mzAlign2, fig.height=3, fig.width=9}
+mse4_align2 <- mzAlign(mse4, tolerance=2000, units="ppm")
+mse4_align2 <- process(mse4_align2)
+plot(mse4_align2, pixel=185:195, xlim=c(535, 570), key=FALSE, superpose=TRUE)
 ```
 
 The algorithm will try to match the most intense peaks in the reference to local maxima in each spectrum, within `tolerance`. If `tolerance` is too small, the matching local maxima may not be found. If `tolerance` is too large, then peaks may be matched to the wrong local maxima.
-
-This method is still experimental and under development.
 
 ## Mass binning
 

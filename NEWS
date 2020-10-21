@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.7.2 [2020-10-21]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o For 'mzAlign()', the 'ref' parameter now expects a vector
+        of reference m/z-values rather than a complete spectrum
+
 CHANGES IN VERSION 2.7.1 [2020-6-30]
 -----------------------------------
 
