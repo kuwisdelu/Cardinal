@@ -4,11 +4,7 @@
 
 #define R_NO_REMAP
 
-extern "C"
-{
-  #include <Rinternals.h>
-}
-
+#include <Rinternals.h>
 #include "utils.h"
 
 extern "C" {
