@@ -21,10 +21,7 @@ setClass("SummaryDataFrame",
 		run = factor(),
 		coord = DataFrame(x=numeric(), y=numeric()),
 		gridded = NA,
-		resolution = c(NA_real_, NA_real_),
-		rownames = NULL,
-		nrows = 0L,
-		listData = structure(list(), names = character())))
+		resolution = c(NA_real_, NA_real_)))
 
 #### DataFrame with mass information for mass spectral data ####
 ## -------------------------------------------------------------
@@ -35,10 +32,7 @@ setClass("SummaryDataFrame",
 		resolution = "numeric"),
 	prototype = prototype(
 		mz = numeric(),
-		resolution = NA_real_,
-		rownames = NULL,
-		nrows = 0L,
-		listData = structure(list(), names = character())))
+		resolution = NA_real_))
 
 #### Virtual classes for a list of imaging data ###
 ## ------------------------------------------------
