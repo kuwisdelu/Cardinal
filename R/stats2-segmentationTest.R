@@ -40,10 +40,10 @@ setMethod("segmentationTest", "SpatialDGMM",
 		fixed <- as.formula(fixed)
 		environment(fixed) <- e
 		fc <- vars[!sapply(pixelData(x)[vars], is.numeric)]
-		if ( classControl == "Mscore" && length(fc) == 0L )
-			.stop("at least one variable must be non-numeric")
 		if ( is.character(classControl) ) {
 			classControl <- match.arg(classControl)
+			if ( classControl == "Mscore" && length(fc) == 0L )
+				.stop("at least one variable must be non-numeric")
 			classControl <- .segmentationTest_getclasses(x, fc, classControl, BPPARAM=BPPARAM)
 			classControl <- classControl[model]
 		} else {
