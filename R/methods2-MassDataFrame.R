@@ -160,7 +160,7 @@ setMethod("cbind", "MassDataFrame",
 			logical(1))
 		if ( !all(ok) )
 			stop("'mz' must match")
-		x <- do.call("cbind", lapply(args, as, "DataFrame"))
+		x <- do.call("cbind", lapply(args, as, "DFrame"))
 		new(class(args[[1L]]),
 			mz=mz,
 			rownames=rownames(x),
@@ -174,7 +174,7 @@ setMethod("rbind", "MassDataFrame",
 		args <- list(...)
 		mz <- do.call("c",
 			lapply(args, mz))
-		x <- do.call("rbind", lapply(args, as, "DataFrame"))
+		x <- do.call("rbind", lapply(args, as, "DFrame"))
 		new(class(args[[1L]]),
 			mz=mz,
 			rownames=rownames(x),

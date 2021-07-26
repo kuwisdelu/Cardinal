@@ -289,7 +289,7 @@ setMethod("cbind", "PositionDataFrame",
 			logical(1))
 		if ( !all(ok) )
 			stop("'coord' must match")
-		x <- do.call("cbind", lapply(args, as, "DataFrame"))
+		x <- do.call("cbind", lapply(args, as, "DFrame"))
 		new(class(args[[1L]]),
 			run=run,
 			coord=coord,
@@ -308,7 +308,7 @@ setMethod("rbind", "PositionDataFrame",
 		run <- factor(run, levels=levs)
 		coord <- lapply(args, "coord")
 		coord <- do.call("rbind", coord)
-		x <- do.call("rbind", lapply(args, as, "DataFrame"))
+		x <- do.call("rbind", lapply(args, as, "DFrame"))
 		new(class(args[[1L]]),
 			run=run,
 			coord=coord,
