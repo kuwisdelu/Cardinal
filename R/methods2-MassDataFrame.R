@@ -131,7 +131,7 @@ setMethod("[", "MassDataFrame",
 			j <- setNames(j2, colnames(x))[j]
 			mcols <- mcols(x)[j]
 		}
-		x <- callNextMethod(as(x, "DataFrame"),
+		x <- callNextMethod(as(x, "DFrame"),
 			i=i, j=j, ..., drop=FALSE)
 		if ( drop ) {
 			if (ncol(x) == 1L) 

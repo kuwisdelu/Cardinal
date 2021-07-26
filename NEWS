@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.11.1 [2021-7-26]
+-----------------------------------
+
+BUG FIXES
+
+    o Use as(x, 'DFrame') instead of as(x, 'DataFrame')
+    o Fix logical length > 1 error in 'segmentationTest()'
+
 CHANGES IN VERSION 2.7.2 [2020-10-21]
 -----------------------------------
 
