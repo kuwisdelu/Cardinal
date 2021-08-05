@@ -16,7 +16,7 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 			relative = "key",
 			absolute = "none")
 		type <- match.arg(type)
-		metadata(featureData(object))[["reference peaks"]] <- ref
+		metadata(featureData(object))[["peakBin_ref"]] <- ref
 		object <- process(object, fun=peakBin_fun,
 			label="peakBin", kind="pixel",
 			moreargs=list(type=type, tol=tol, tol.ref=tol.ref),
@@ -48,7 +48,7 @@ setMethod("peakBin", c("MSImagingExperiment", "missing"),
 
 peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 	mz <- mz(attr(x, "mcols"))
-	ref <- metadata(attr(x, "mcols"))[["reference peaks"]]
+	ref <- metadata(attr(x, "mcols"))[["peakBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
 	maxs <- locmax(x, findLimits=TRUE)
@@ -69,7 +69,7 @@ peakBin_prefun <- function(object, ..., BPPARAM) {
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	ref <- mz(object)[locmax(s)]
-	metadata(featureData(object))[["reference peaks"]] <- ref
+	metadata(featureData(object))[["peakBin_ref"]] <- ref
 	object
 }
 
@@ -79,7 +79,7 @@ peakBin_postfun <- function(object, ans, tol, ...) {
 	} else {
 		data <- as.matrix(simplify2array(ans))
 	}
-	ref <- metadata(featureData(object))[["reference peaks"]]
+	ref <- metadata(featureData(object))[["peakBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
 	mcols <- MassDataFrame(mz=ref)
@@ -108,7 +108,7 @@ peakBin_plotfun <- function(s2, s1, ...,
 	main="Peak binning", xlab="m/z", ylab="")
 {
 	mz <- mz(attr(s1, "mcols"))
-	ref <- metadata(attr(s1, "mcols"))[["reference peaks"]]
+	ref <- metadata(attr(s1, "mcols"))[["peakBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
 	plot(range(mz), range(s2), main=main,

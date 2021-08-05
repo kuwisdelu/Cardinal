@@ -18,7 +18,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 			.warning("new dimension [", length(ref), "] is greater ",
 				"than current dimension [", nrow(object), "]")
 		}
-		metadata(featureData(object))[["reference mz"]] <- ref
+		metadata(featureData(object))[["mzBin_ref"]] <- ref
 		object <- process(object, fun=mzBin_fun,
 			label="mzBin", kind="pixel",
 			moreargs=list(ref=ref, width=width, units=units, FUN=fun),
@@ -69,7 +69,7 @@ mzBin_postfun <- function(object, ans, width, units, ...) {
 	} else {
 		data <- as.matrix(simplify2array(ans))
 	}
-	ref <- metadata(featureData(object))[["reference mz"]]
+	ref <- metadata(featureData(object))[["mzBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference mz")
 	mcols <- MassDataFrame(mz=ref)
@@ -89,7 +89,7 @@ mzBin_plotfun <- function(s2, s1, ...,
 	main="Spectral binning", xlab="m/z", ylab="")
 {
 	mz <- mz(attr(s1, "mcols"))
-	ref <- metadata(attr(s1, "mcols"))[["reference mz"]]
+	ref <- metadata(attr(s1, "mcols"))[["mzBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference mz")
 	plot(range(mz), range(s2), main=main,

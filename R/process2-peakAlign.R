@@ -11,7 +11,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 		tol <- switch(match.arg(units),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
-		if ( is.null(metadata(featureData(object))[["reference peaks"]]) ) {
+		if ( is.null(metadata(featureData(object))[["peakAlign_ref"]]) ) {
 			prefun <- peakAlign_prefun
 		} else {
 			prefun <- NULL
@@ -26,7 +26,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "missing"),
 setMethod("peakAlign", c("MSImagingExperiment", "numeric"),
 	function(object, ref, ...)
 	{
-		metadata(featureData(object))[["reference peaks"]] <- ref
+		metadata(featureData(object))[["peakAlign_ref"]] <- ref
 		peakAlign(object, ...)
 	})
 
@@ -41,7 +41,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 		a <- binvec(s * mz(object), l1, l2, method="sum")
 		b <- binvec(s, l1, l2, method="sum")
 		ref <- a / b
-		metadata(featureData(object))[["reference peaks"]] <- ref
+		metadata(featureData(object))[["peakAlign_ref"]] <- ref
 		peakAlign(object, ...)
 	})
 
@@ -56,14 +56,14 @@ peakAlign_prefun <- function(object, ..., BPPARAM) {
 	a <- binvec(s * mz(object), l1, l2, method="sum")
 	b <- binvec(s, l1, l2, method="sum")
 	ref <- a / b
-	metadata(featureData(object))[["reference peaks"]] <- ref
+	metadata(featureData(object))[["peakAlign_ref"]] <- ref
 	object
 }
 
 peakAlign_postfun <- function(object, tol, ...) {
 	if ( !is(object, "MSProcessedImagingExperiment") )
 		object <- as(object, "MSProcessedImagingExperiment")
-	ref <- metadata(featureData(object))[["reference peaks"]]
+	ref <- metadata(featureData(object))[["peakAlign_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
 	mz(object) <- ref

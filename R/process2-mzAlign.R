@@ -12,7 +12,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
 		tol <- switch(units,
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
-		metadata(featureData(object))[["reference peaks"]] <- ref
+		metadata(featureData(object))[["mzAlign_ref"]] <- ref
 		object <- process(object, fun=mzAlign_fun,
 			label="mzAlign", kind="pixel",
 			moreargs=list(tol=tol, span=span, control=control),
@@ -43,7 +43,7 @@ setMethod("mzAlign", c("MSImagingExperiment", "missing"),
 
 mzAlign_fun <- function(x, tol, span, control, ...) {
 	mz <- mz(attr(x, "mcols"))
-	mz.ref <- metadata(attr(x, "mcols"))[["reference peaks"]]
+	mz.ref <- metadata(attr(x, "mcols"))[["mzAlign_ref"]]
 	if ( is.null(mz.ref) )
 		.stop("couldn't find reference peaks")
 	tol.ref <- switch(names(tol),
@@ -78,7 +78,7 @@ mzAlign_prefun <- function(object, quantile, ..., BPPARAM) {
 	cutoff <- quantile(s[maxs], 1 - quantile)
 	maxs <- maxs[s[maxs] >= cutoff]
 	mz.ref <- mz(object)[maxs]
-	metadata(featureData(object))[["reference peaks"]] <- mz.ref
+	metadata(featureData(object))[["mzAlign_ref"]] <- mz.ref
 	object
 }
 
@@ -86,7 +86,7 @@ mzAlign_plotfun <- function(s2, s1, ...,
 	main="Spectral alignment", xlab="m/z", ylab="")
 {
 	mz <- mz(attr(s1, "mcols"))
-	ref <- metadata(attr(s1, "mcols"))[["reference peaks"]]
+	ref <- metadata(attr(s1, "mcols"))[["mzAlign_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
 	plot(mz, s1, main=main, xlab=xlab, ylab=ylab,

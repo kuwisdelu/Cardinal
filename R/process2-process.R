@@ -48,11 +48,11 @@ setMethod("process", "MSImagingExperiment",
 				.message("assuming 'continuous' imzML output")
 				fmeta <- metadata(featureData(object))
 				if ( "mzBin" %in% queue$info$label ) {
-					.message("detected [reference mz]")
-					mzref <- fmeta[["reference mz"]]
+					.message("detected [mzBin_ref]")
+					mzref <- fmeta[["mzBin_ref"]]
 				} else if ( "peakBin" %in% queue$info$label ) {
-					.message("detected [reference peaks]")
-					mzref <- fmeta[["reference peaks"]]
+					.message("detected [peakBin_ref]")
+					mzref <- fmeta[["peakBin_ref"]]
 				} else {
 					mzref <- mz(object)
 				}
