@@ -419,7 +419,8 @@ generateRNGStreams <- function(n = 1) {
 	if ( is.null(s) ) {
 		seeds[1] <- list(NULL)
 	} else {
-		seeds[[1]] <- s
+		# seeds[[1]] <- s # fails in >=4.1.1
+		seeds <- rep(list(s), n)
 	}
 	if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
 		for ( i in seq_len(n)[-1] ) {

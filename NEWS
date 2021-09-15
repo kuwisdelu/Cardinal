@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 2.11.3 [2021-9-15]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix strange behavior from random number generation in R >= 4.1.1
+
 CHANGES IN VERSION 2.11.2 [2021-8-5]
 -----------------------------------
 
