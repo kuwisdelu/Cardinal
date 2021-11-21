@@ -19,7 +19,7 @@ setMethod("plot", c(x = "AnnotatedImageList"),
 		x <- x[i]
 	if ( length(unique(sapply(x, colorMode))) != 1L )
 		.stop("all images must have the same colorMode")
-	obj <- new("DataFrame", nrows=length(x[[1L]]))
+	obj <- new("DFrame", nrows=length(x[[1L]]))
 	data <- as(x, "SimpleList", strict=FALSE)
 	if ( colorMode(x[[1L]]) == EBImage::Color ) {
 		colors <- c("red", "green", "blue")

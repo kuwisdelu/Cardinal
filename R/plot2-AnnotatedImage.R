@@ -7,7 +7,7 @@ setMethod("plot", c(x = "AnnotatedImage"),
 		key = TRUE, col,
 		add = FALSE, ...)
 {
-	obj <- new("DataFrame", nrows=length(x))
+	obj <- new("DFrame", nrows=length(x))
 	colors <- c("red", "green", "blue")
 	if ( colorMode(x) == EBImage::Color ) {
 		if ( length(dim(x)) > 2L ) {

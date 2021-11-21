@@ -1,8 +1,8 @@
 Package: Cardinal
 Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
-Version: 2.13.0
-Date: 2021-04-05
+Version: 2.13.1
+Date: 2021-11-21
 Author: Kylie A. Bemis <k.bemis@northeastern.edu>
 Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
 Description: Implements statistical & computational tools for analyzing

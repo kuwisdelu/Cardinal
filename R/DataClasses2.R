@@ -97,6 +97,7 @@ setAs("SimpleList", "MSProcessedImagingSpectraList",
 		processing = "List"),
 	prototype = prototype(
 		imageData = .SimpleImageArrayList(),
+                featureData = new("DFrame"),
 		elementMetadata = .PositionDataFrame(),
 		processing = SimpleList()))
 

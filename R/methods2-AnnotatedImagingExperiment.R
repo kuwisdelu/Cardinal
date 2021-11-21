@@ -9,9 +9,9 @@ AnnotatedImagingExperiment <- function(imageData = AnnotatedImageList(),
 		imageData <- AnnotatedImageList(imageData)
 	if ( length(imageData) != 0L ) {
 		if ( missing(featureData) )
-			featureData <- new("DataFrame", nrows=nrow(imageData))
+			featureData <- new("DFrame", nrows=nrow(imageData))
 		if ( missing(phenoData) )
-			phenoData <- new("DataFrame", nrows=ncol(imageData),
+			phenoData <- new("DFrame", nrows=ncol(imageData),
 				rownames=names(imageData))
 	}
 	.AnnotatedImagingExperiment(
