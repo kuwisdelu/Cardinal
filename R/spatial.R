@@ -24,29 +24,6 @@ setMethod("findNeighbors", "PositionDataFrame",
 		nb
 	})
 
-setMethod("findNeighbors", "iSet",
-	function(x, r = 1, groups = x$sample, ...)
-	{
-		.Deprecated_Cardinal1()
-		findNeighbors(pixelData(x), r=r, groups=groups, ...)
-	})
-
-setMethod("findNeighbors", "IAnnotatedDataFrame",
-	function(x, r = 1, groups = x$sample, dist = "chebyshev",
-		offsets = FALSE, matrix = FALSE, ...)
-	{
-		.Deprecated_Cardinal1()
-		if ( length(r) > 1L ) {
-			.warning("r has length > 1; using r = ", r[1])
-			r <- r[1]
-		}
-		coord <- as.matrix(coord(x)[,coordLabels(x),drop=FALSE])
-		nb <- .findNeighbors(coord, r=r, groups=groups, dist=dist, matrix=matrix)
-		if ( offsets )
-			attr(nb, "offsets") <- .spatialOffsets(coord, nb)
-		nb
-	})
-
 .findNeighbors <- function(coord, r, groups, dist, matrix = FALSE) {
 	if ( !is.matrix(coord) )
 		coord <- as.matrix(coord)
@@ -99,40 +76,6 @@ setMethod("spatialWeights", "ImagingExperiment",
 setMethod("spatialWeights", "PositionDataFrame",
 	function(x, r = 1, matrix = FALSE, ...)
 	{
-		.gaussianWeights(x, r=r, matrix=matrix, ...)
-	})
-
-setMethod("spatialWeights", "iSet",
-	function(x, r = 1, method = c("gaussian", "adaptive"), matrix = FALSE, ...)
-	{
-		.Deprecated_Cardinal1()
-		method <- match.arg(method)
-		bilateral <- switch(method, gaussian=FALSE, adaptive=TRUE)
-		if ( length(r) > 1L ) {
-			.warning("r has length > 1; using r = ", r[1])
-			r <- r[1]
-		}
-		sigma <- ((2 * r) + 1) / 4
-		nb <- findNeighbors(x, r=r, offsets=TRUE, ...)
-		offsets <- attr(nb, "offsets")
-		weights <- mapply(function(ii, pos) {
-			.spatialWeights(iData(x)[,ii], pos, sigma, bilateral)
-		}, nb, offsets, SIMPLIFY=FALSE)
-		if ( matrix ) {
-			w <- lapply(weights, function(w) w$alpha * w$beta)
-			weights <- sparse_mat(data=list(keys=c(nb), values=w),
-				nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
-		} else {
-			attr(weights, "offsets") <- offsets
-			attr(weights, "neighbors") <- c(nb) # remove attr
-		}
-		weights
-	})
-
-setMethod("spatialWeights", "IAnnotatedDataFrame",
-	function(x, r = 1, matrix = FALSE, ...)
-	{
-		.Deprecated_Cardinal1()
 		.gaussianWeights(x, r=r, matrix=matrix, ...)
 	})
 

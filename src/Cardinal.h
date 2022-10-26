@@ -4,10 +4,8 @@
 
 #define R_NO_REMAP
 
-extern "C"
-{
-  #include <Rinternals.h>
-}
+#include <R.h>
+#include <Rinternals.h>
 
 #include "utils.h"
 
@@ -19,19 +17,11 @@ extern "C" {
 
     SEXP bilateralFilter(SEXP x, SEXP r, SEXP sd);
 
-    // dynAlign
-
-    SEXP dynAlign(SEXP similarity, SEXP score, SEXP tracking, SEXP gap);
-
     // imzML
 
     SEXP readImzML(SEXP filepath);
 
     SEXP writeImzML(SEXP metadata, SEXP tmpl, SEXP filepath);
-
-    // localMaxima
-
-    SEXP localMaxima(SEXP x, SEXP r);
 
     // spatial
 
@@ -54,6 +44,5 @@ extern "C" {
     SEXP spatialFilter(SEXP x, SEXP neighbors, SEXP weights);
 
 }
-
 
 #endif

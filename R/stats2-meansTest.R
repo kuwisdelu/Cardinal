@@ -107,8 +107,8 @@ setMethod("meansTest", "SparseImagingExperiment",
 }
 
 .meansTest_testdata <- function(x, groups, BPPARAM) {
-	response <- rowStats(iData(x), stat="mean", groups=groups,
-		chunks=getCardinalNumBlocks(),
+	response <- rowStats(iData(x), stat="mean", group=groups,
+		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
 	response <- t(as.matrix(response, slots=FALSE))

@@ -154,16 +154,16 @@ summarizeFeatures <- function(x, FUN = "mean", ...) {
 	labels <- paste0("[", names(STATS), "]")
 	if ( by == "pixel" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by pixel ...")
-		ans <- colStats(iData(object), stat=STATS, groups=groups,
-			na.rm=TRUE, tform=tform, drop=FALSE,
-			chunks=getCardinalNumBlocks(),
+		ans <- colStats(iData(object), stat=STATS,
+			group=groups, na.rm=TRUE, drop=FALSE,
+			nchunks=getCardinalNumBlocks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	} else if ( by == "feature" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by feature ...")
-		ans <- rowStats(iData(object), stat=STATS, groups=groups,
-			na.rm=TRUE, tform=tform, drop=FALSE,
-			chunks=getCardinalNumBlocks(),
+		ans <- rowStats(iData(object), stat=STATS,
+			group=groups, na.rm=TRUE, drop=FALSE,
+			nchunks=getCardinalNumBlocks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	}

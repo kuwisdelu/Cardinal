@@ -50,23 +50,6 @@
 	unlist(ans, recursive=FALSE)
 }
 
-# Unlist (once) and re-order output of spatialApply
-.unlist_and_reorder <- function(ans) {
-	unlist(ans, recursive=FALSE)[order(unlist(attr(ans, "idx")))]
-}
-
-# Combine by column and re-order output of spatialApply
-.cbind_and_reorder <- function(ans) {
-	ans2 <- do.call("cbind", ans)
-	ans2[,order(unlist(attr(ans, "idx"))),drop=FALSE]
-}
-
-# Combine by row and re-order output of spatialApply
-.rbind_and_reorder <- function(ans) {
-	ans2 <- do.call("rbind", ans)
-	ans2[order(unlist(attr(ans, "idx"))),,drop=FALSE]
-}
-
 # Try eval in specified envir, otherwise try in current envir
 .try_eval <- function(expr, envir) {
 	p <- parent.frame()
@@ -362,10 +345,9 @@
 		col <- as.numeric(col2rgb(par()$bg) / 255)
 		args$bg <- rgb(col[1], col[2], col[3], 0.75)
 	}
-	if ( isTRUE(key) && length(args$legend) != 0 ) {
+	if ( isTRUE(key) && length(args$legend) != 0 )
 		do.call("legend", args)
-		par(xpd=par)
-	}
+	par(xpd=par)
 }
 
 # Draw colorkeys

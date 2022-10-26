@@ -6,10 +6,6 @@ setMethod("mzFilter", "MSImagingExperiment",
 	function(object, ..., freq.min = NA, rm.zero = TRUE)
 	{
 		dots <- match.call(expand.dots=FALSE)$...
-		if ( "thresh.max" %in% names(dots) ) {
-			.Deprecated(msg=paste0("'thresh.max' is deprecated\n",
-				"Pass conditions via '...' instead."))
-		}
 		expr <- eval(substitute(alist(...)))
 		object <- process(object, label="mzFilter",
 			kind="global", postfun=mzFilter_postfun,
@@ -31,7 +27,10 @@ mzFilter_postfun <- function(object, ..., expr, freq.min, rm.zero, BPPARAM) {
 	} else {
 		stats <- c("nnzero")
 	}
-	summary <- rowStats(spectra(object), stat=stats, drop=FALSE, BPPARAM=BPPARAM)
+	summary <- rowStats(spectra(object), stat=stats, drop=FALSE,
+		nchunks=getCardinalNumBlocks(),
+		verbose=getCardinalVerbose(),
+		BPPARAM=BPPARAM)
 	summary[["count"]] <- summary[["nnzero"]]
 	summary[["freq"]] <- summary[["count"]] / ncol(object)
 	summary[["nnzero"]] <- NULL

@@ -80,21 +80,6 @@ importFrom("Matrix",
 	"solve",
 	"chol")
 
-importFrom("dplyr",
-	"as_tibble",
-	"mutate",
-	"select",
-	"filter",
-	"summarize",
-	"summarise",
-	"arrange",
-	"group_by",
-	"group_by_drop_default",
-	"ungroup",
-	"groups",
-	"grouped_df",
-	"collect")
-
 importFrom("magrittr",
 	"%>%")
 
@@ -175,15 +160,6 @@ exportClasses(
 	"SImageSet",
 	"iSet")
 
-export(
-	"ImageData",
-	"IAnnotatedDataFrame",
-	"Hashmat",
-	"MSImageData",
-	"MSImageSet",
-	"SImageData",
-	"SImageSet")
-
 exportClasses(
 	"AnnotatedImage",
 	"AnnotatedImageList",
@@ -229,8 +205,6 @@ export(
 	"darkmode",
 	"discrete.colors",
 	"divergent.colors",
-	"generateImage",
-	"generateSpectrum",
 	"gradient.colors",
 	"intensity.colors",
 	"jet.colors",
@@ -247,29 +221,12 @@ export(
 	"writeImzML",
 	"writeMSIData")
 
-S3method("print", "summary.iSet")
-S3method("print", "summary.PCA")
-S3method("print", "summary.PLS")
-S3method("print", "summary.OPLS")
-S3method("print", "summary.SpatialFastmap")
-S3method("print", "summary.SpatialKMeans")
-S3method("print", "summary.SpatialShrunkenCentroids")
-S3method("print", "summary.CrossValidated")
-
 S3method("print", "facet.boxplot")
 S3method("print", "facet.bar")
 S3method("print", "facet.hist")
 S3method("print", "facet.plot")
 S3method("print", "facet.image")
 S3method("print", "facet.raster")
-
-S3method("plot", "summary.PCA")
-S3method("plot", "summary.PLS")
-S3method("plot", "summary.OPLS")
-S3method("plot", "summary.SpatialFastmap")
-S3method("plot", "summary.SpatialKMeans")
-S3method("plot", "summary.SpatialShrunkenCentroids")
-S3method("plot", "summary.CrossValidated")
 
 exportMethods(
 	"as.array",
@@ -515,60 +472,11 @@ exportMethods(
 
 exportMethods("topFeatures")
 
-S3method("arrange", "DataFrame")
-S3method("arrange", "XDataFrame")
-S3method("arrange", "SummaryDataFrame")
-
-S3method("filter", "DataFrame")
-S3method("filter", "XDataFrame")
-S3method("filter", "SummaryDataFrame")
-S3method("filter", "SparseImagingExperiment")
-
-S3method("group_by", "DataFrame")
-S3method("group_by", "XDataFrame")
-
-S3method("ungroup", "XDataFrame")
-
-S3method("groups", "XDataFrame")
-
-S3method("mutate", "DataFrame")
-S3method("mutate", "XDataFrame")
-S3method("mutate", "SummaryDataFrame")
-S3method("mutate", "SparseImagingExperiment")
-
-S3method("select", "DataFrame")
-S3method("select", "XDataFrame")
-S3method("select", "SummaryDataFrame")
-S3method("select", "SparseImagingExperiment")
-
-S3method("summarise", "DataFrame")
-S3method("summarise", "XDataFrame")
-S3method("summarise", "SummaryDataFrame")
-S3method("summarise", "SparseImagingExperiment")
-S3method("summarise", "MSImagingExperiment")
-
-S3method("collect", "SparseImagingExperiment")
-S3method("collect", "MSImagingExperiment")
-S3method("collect", "MSProcessedImagingExperiment")
-
-export(
-	"mutate",
-	"filter",
-	"select",
-	"summarize",
-	"summarise",
-	"arrange",
-	"group_by",
-	"ungroup",
-	"groups",
-	"collect")
-
 exportMethods(
 	"aggregate",
 	"slice",
 	"sort",
-	"subset",
-	"pull")
+	"subset")
 
 export(
 	"subsetFeatures",

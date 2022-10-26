@@ -51,9 +51,9 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 	ref <- metadata(attr(x, "mcols"))[["peakBin_ref"]]
 	if ( is.null(ref) )
 		.stop("couldn't find reference peaks")
-	maxs <- locmax(x, findLimits=TRUE)
-	l1 <- attr(maxs, "lower")
-	l2 <- attr(maxs, "upper")
+	maxs <- findpeaks(x)
+	l1 <- attr(maxs, "left_bounds")
+	l2 <- attr(maxs, "right_bounds")
 	f <- switch(type, height="max", area="sum")
 	matches <- bsearch(ref, mz[maxs], tol=tol, tol.ref=tol.ref)
 	peaks <- binvec(x, l1, l2, method=f)
@@ -65,10 +65,10 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 
 peakBin_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getCardinalNumBlocks(),
+		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
-	ref <- mz(object)[locmax(s)]
+	ref <- mz(object)[findpeaks(s)]
 	metadata(featureData(object))[["peakBin_ref"]] <- ref
 	object
 }

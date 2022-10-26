@@ -53,6 +53,16 @@ normalize_plotfun <- function(s2, s1, ...,
 	lines(x, s2, col="black", type='l')
 }
 
+normalize.tic <- function(x, tic=length(x), ...) {
+	auc <- sum(abs(x), na.rm=TRUE)
+	if ( auc > 0 ) {
+		xnew <- tic * x / auc
+	} else {
+		xnew <- rep(0, length(x))
+	}
+	replace(xnew, is.na(xnew), 0)
+}
+
 normalize.tic2 <- normalize.tic
 
 normalize.rms <- function(x, rms=1, ...) {

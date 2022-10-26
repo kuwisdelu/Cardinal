@@ -257,21 +257,15 @@ setMethod("cbind", "MSImagingExperiment",
 
 ## Pull data into memory
 
-setMethod("pull", "MSImagingExperiment", function(x, ...)
-	{
-		x <- as(x, "MSImagingExperiment")
-		data <- as(imageData(x), "SimpleList", strict=FALSE)
-		imageData(x) <- as(endoapply(data, as.matrix), "MSContinuousImagingSpectraList")
-		class(x) <- "MSContinuousImagingExperiment"
-		if ( validObject(x) )
-			x
-	})
-
-collect.MSImagingExperiment <- function(x, ...)
-	{
-		.Deprecated("pull")
-		pull(x, ...)
-	}
+# setMethod("pull", "MSImagingExperiment", function(x, ...)
+# 	{
+# 		x <- as(x, "MSImagingExperiment")
+# 		data <- as(imageData(x), "SimpleList", strict=FALSE)
+# 		imageData(x) <- as(endoapply(data, as.matrix), "MSContinuousImagingSpectraList")
+# 		class(x) <- "MSContinuousImagingExperiment"
+# 		if ( validObject(x) )
+# 			x
+# 	})
 
 ## coerce to/from MSImagingExperiment subclasses
 
@@ -314,20 +308,6 @@ setAs("MSImageSet", "MSImagingExperiment",
 				run=pData@data$sample,
 				pData@data[,pDataNames,drop=FALSE]),
 			centroided=from@processingData@centroided)
-	})
-
-setAs("MSImagingExperiment", "MSImageSet",
-	function(from) {
-		.Deprecated_Cardinal1()
-		out <- MSImageSet(spectra=spectra(from),
-			mz=mz(from), coord=as.data.frame(coord(from)))
-		pixelData(out)$sample <- run(from)
-		fData <- as.data.frame(as(fData(from), "DataFrame"))
-		pData <- as.data.frame(as(pData(from), "DataFrame"))
-		fData(out) <- cbind(fData(out), fData)
-		pData(out) <- cbind(pData(out), pData)
-		centroided(out) <- centroided(out)
-		out
 	})
 
 ## show

@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 2.99.0 [2022-10-26]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated out-of-memory backend to Matter 2.0
+    o Removed support for legacy classes and methods
+
 CHANGES IN VERSION 2.11.3 [2021-9-15]
 -----------------------------------
 

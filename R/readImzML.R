@@ -210,8 +210,8 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			c(med, lim)
 		}
 	}
-	mzinfo <- chunk_apply(mz, fun,
-		chunks=getCardinalNumBlocks(),
+	mzinfo <- chunkLapply(mz, fun,
+		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		simplify=TRUE, BPPARAM=BPPARAM)
 	mzinfo <- as.matrix(mzinfo)

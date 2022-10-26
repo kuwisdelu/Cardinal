@@ -28,7 +28,7 @@ setMethod("spatialShrunkenCentroids",
 		}
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
-			chunks=getCardinalNumBlocks(),
+			nchunks=getCardinalNumBlocks(),
 			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
@@ -85,7 +85,7 @@ setMethod("spatialShrunkenCentroids",
 		y <- as.factor(y)
 		.message("calculating global centroid...")
 		mean <- rowStats(iData(x), stat="mean",
-			chunks=getCardinalNumBlocks(),
+			nchunks=getCardinalNumBlocks(),
 			verbose=FALSE, BPPARAM=BPPARAM[[1]])
 		.message("calculating spatial weights...")
 		r.weights <- list(r=r, w=lapply(r, function(ri) {
@@ -231,14 +231,14 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 .spatialShrunkenCentroids2_fit <- function(x, s, mean, class, BPPARAM)
 {
 	# calculate class centers
-	centers <- rowStats(iData(x), stat="mean", groups=class,
-		chunks=getCardinalNumBlocks(),
+	centers <- rowStats(iData(x), stat="mean", group=class,
+		nchunks=getCardinalNumBlocks(),
 		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
-	wcss <- rowStats(iData(x), "sum", groups=class,
-					row.center=centers, tform=function(y) y^2,
-					chunks=getCardinalNumBlocks(),
+	centered <- rowsweep(iData(x)^2, STATS=centers, group=class)
+	wcss <- rowStats(centered, stat="sum", group=class,
+					nchunks=getCardinalNumBlocks(),
 					verbose=FALSE, BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)

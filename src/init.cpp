@@ -7,7 +7,6 @@ extern "C" {
     static const R_CallMethodDef callMethods[] = {
         {"C_gaussianFilter", (DL_FUNC) &gaussianFilter, 3},
         {"C_bilateralFilter", (DL_FUNC) &bilateralFilter, 3},
-        {"C_dynAlign", (DL_FUNC) &dynAlign, 4},
         {"C_readImzML", (DL_FUNC) &readImzML, 1},
         {"C_writeImzML", (DL_FUNC) &writeImzML, 3},
         {"C_findNeighbors", (DL_FUNC) &findNeighbors, 4},

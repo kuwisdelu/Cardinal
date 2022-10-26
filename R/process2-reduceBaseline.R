@@ -47,10 +47,29 @@ reduceBaseline_plotfun <- function(s2, s1, ...,
 	lines(x, s2, lwd=0.5)
 }
 
+reduceBaseline.median <- function(x, blocks=500, fun=median, spar=1, ...) {
+	xint <- split_blocks(x, blocks=blocks)
+	baseval <- sapply(xint, fun)
+	baseidx <- sapply(xint, function(xi) which.min(abs(fun(xi) - xi)))
+	baseidx <- baseidx + c(0, cumsum(sapply(xint, length))[-length(xint)])
+	if ( diff(range(baseval))==0 )
+		return(rep(0, length(x)))
+	if ( !is.na(spar) ) {
+		cutoff <- smooth.spline(x=baseidx, y=baseval, spar=spar)$y
+		keep <- which(baseval <= cutoff)
+		baseidx <- baseidx[keep]
+		baseval <- baseval[keep]
+	}
+	baseval[c(1,length(baseval))] <- c(fun(xint[[1]]), fun(xint[[length(xint)]]))
+	baseidx[c(1,length(baseidx))] <- c(1, length(x))
+	baseline <- interp1(x=baseidx, y=baseval, xi=seq_along(x), method="linear")
+	pmax(x - baseline, 0)
+}
+
 reduceBaseline.median2 <- reduceBaseline.median
 
 reduceBaseline.locmin <- function(x, window = 5, ...) {
-	baseidx <- locmax(-x, halfWindow=window %/% 2)
+	baseidx <- which(locmax(-x, width=window))
 	if ( length(baseidx) != 0L ) {
 		baseval <- x[baseidx]
 		if ( baseidx[1L] != 1L ) {

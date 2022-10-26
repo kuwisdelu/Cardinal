@@ -68,8 +68,8 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
 		nstart=nstart, algorithm=algorithm)$cluster
 	cluster <- factor(cluster)
-	centers <- rowStats(iData(x), stat="mean", groups=cluster,
-		chunks=getCardinalNumBlocks(),
+	centers <- rowStats(iData(x), stat="mean", group=cluster,
+		nchunks=getCardinalNumBlocks(),
 		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters

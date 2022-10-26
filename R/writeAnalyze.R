@@ -5,17 +5,6 @@
 writeAnalyze <- function(object, name, folder = getwd(),
 		intensity.type = "16-bit integer", ...)
 	{
-		if ( is(object, "MSImageSet") && length(sampleNames(object)) > 1 ) {
-			.Deprecated_Cardinal1()
-			samples <- sampleNames(object)
-			result <- sapply(samples, function(nm) {
-				tmp <- object[,pData(object)$sample == nm]
-				name2 <- paste0(name, "-", nm)
-				writeAnalyze(tmp, name2, folder,
-					intensity.type=intensity.type, ...)
-			})
-			return(invisible(result))
-		}
 		if ( is(object, "MSImagingExperiment") && length(runNames(object)) > 1 ) {
 			runs <- runNames(object)
 			result <- sapply(runs, function(id) {

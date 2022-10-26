@@ -52,6 +52,30 @@ smoothSignal_plotfun <- function(s2, s1, ...,
 	lines(x, s2, lwd=0.5)
 }
 
+smoothSignal.ma <- function(x, coef=rep(1, window + 1 - window %% 2), window=5, ...) {
+	coef <- coef / sum(coef)
+	window <- length(coef)
+	halfWindow <- floor(window / 2)
+	xpad <- c(rep(x[1], halfWindow), x, rep(x[length(x)], halfWindow))
+	convolve(xpad, coef, type="filter")
+}
+
+smoothSignal.gaussian <- function(x, sd=window/4, window=5, ...) {
+	halfWindow <- floor(window / 2)
+	coef <- dnorm((-halfWindow):halfWindow, sd=sd)
+	smoothSignal.ma(x, coef=coef, ...)
+}
+
+smoothSignal.kaiser <- function(x, beta=1, window=5, ...) {
+	coef <- kaiser(n=window + 1 - window %% 2, beta=beta)
+	smoothSignal.ma(x, coef=coef, ...)
+}
+
+smoothSignal.sgolay <- function(x, order=3, window=order + 3 - order %% 2, ...) {
+	window <- window + 1 - window %% 2
+	sgolayfilt(x, p=order, n=window)
+}
+
 smoothSignal.gaussian2 <- smoothSignal.gaussian
 
 smoothSignal.sgolay2 <- smoothSignal.sgolay

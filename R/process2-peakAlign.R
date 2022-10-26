@@ -35,9 +35,9 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 	{
 		col <- match.arg(ref, names(fData(object)))
 		s <- fData(object)[[col]]
-		maxs <- locmax(s, findLimits=TRUE)
-		l1 <- attr(maxs, "lower")
-		l2 <- attr(maxs, "upper")
+		maxs <- findpeaks(s)
+		l1 <- attr(maxs, "left_bounds")
+		l2 <- attr(maxs, "right_bounds")
 		a <- binvec(s * mz(object), l1, l2, method="sum")
 		b <- binvec(s, l1, l2, method="sum")
 		ref <- a / b
@@ -47,12 +47,12 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 
 peakAlign_prefun <- function(object, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getCardinalNumBlocks(),
+		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
-	maxs <- locmax(s, findLimits=TRUE)
-	l1 <- attr(maxs, "lower")
-	l2 <- attr(maxs, "upper")
+	maxs <- findpeaks(s)
+	l1 <- attr(maxs, "left_bounds")
+	l2 <- attr(maxs, "right_bounds")
 	a <- binvec(s * mz(object), l1, l2, method="sum")
 	b <- binvec(s, l1, l2, method="sum")
 	ref <- a / b

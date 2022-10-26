@@ -49,7 +49,7 @@ mzAlign_fun <- function(x, tol, span, control, ...) {
 	tol.ref <- switch(names(tol),
 		relative = "key",
 		absolute = "none")
-	max.test <- locmax(x)
+	max.test <- which(locmax(x))
 	mz.test <- mz[max.test]
 	i <- bsearch(mz.ref, mz.test, tol=tol, tol.ref=tol.ref)
 	found <- !is.na(i)
@@ -71,10 +71,10 @@ mzAlign_fun <- function(x, tol, span, control, ...) {
 
 mzAlign_prefun <- function(object, quantile, ..., BPPARAM) {
 	s <- rowStats(spectra(object), stat="mean",
-		chunks=getCardinalNumBlocks(),
+		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)
-	maxs <- locmax(s)
+	maxs <- which(locmax(s))
 	cutoff <- quantile(s[maxs], 1 - quantile)
 	maxs <- maxs[s[maxs] >= cutoff]
 	mz.ref <- mz(object)[maxs]

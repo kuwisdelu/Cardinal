@@ -1,7 +1,7 @@
 Package: Cardinal
 Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
-Version: 2.15.0
+Version: 2.99.0
 Date: 2021-11-21
 Author: Kylie A. Bemis <k.bemis@northeastern.edu>
 Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
@@ -9,14 +9,14 @@ Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
-Depends: BiocGenerics, BiocParallel, EBImage, graphics,
-		methods, S4Vectors (>= 0.27.3), stats, ProtGenerics
-Imports: Biobase, dplyr, irlba, lattice, Matrix,
-		matter, magrittr, mclust, nlme, parallel,
-		signal, sp, stats4, utils, viridisLite
+Depends: ProtGenerics, BiocGenerics, BiocParallel, EBImage,
+	graphics, methods, S4Vectors (>= 0.27.3), stats
+Imports: Biobase, irlba, Matrix, matter,
+	magrittr, mclust, nlme, parallel,
+	signal, sp, stats4, utils, viridisLite
 Suggests: BiocStyle, testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
-		MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,
-		Normalization, Clustering, Classification, Regression
+	MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,
+	Normalization, Clustering, Classification, Regression
 URL: http://www.cardinalmsi.org

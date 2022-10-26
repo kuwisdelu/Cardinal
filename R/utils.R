@@ -208,16 +208,6 @@ affine <- function(x, translate=c(0,0), rotate=0,
 	new.x
 }
 
-# Returns the two nearest local maxima to the given points
-nearest_locmax <- function(x, m, ...) {
-	max1 <- locmax(x, ...)
-	max2 <- rev(locmax(rev(x), ...))
-	vals <- unique(c(1L, sort(union(max1, max2)), length(x)))
-	lower <- findInterval(m, vals, all.inside=TRUE)
-	upper <- lower + 1L
-	list(lower=vals[lower], upper=vals[upper])
-}
-
 # Alignment of two vectors by absolute difference
 diffAlign <- function(x, y, diff.max, ...) {
 	if ( length(diff.max) < length(y) )
@@ -236,27 +226,6 @@ diffAlign <- function(x, y, diff.max, ...) {
 		match
 	}, y, diff.max)
 	aligned <- aligned[!is.na(aligned$x),]
-	aligned
-}
-
-# Alignment of two vectors using dynamic programming
-dynamicAlign <- function(x, y, gap=0, score=function(x, y) ifelse(x==y, 1, -1), ... ) {
-	gap <- as.numeric(gap)
-	x.mat <- matrix(x, byrow=TRUE, ncol=length(x), nrow=length(y))
-	y.mat <- matrix(y, byrow=FALSE, ncol=length(x), nrow=length(y))
-	similarity.mat <- score(x.mat, y.mat)
-	score.mat <- matrix(0, ncol=length(x) + 1, nrow=length(y) + 1)
-	score.mat[1,] <- c(0, cumsum(rep(gap, length(x))))
-	score.mat[,1] <- c(0, cumsum(rep(gap, length(y))))
-	tracking.mat <- matrix(0L, ncol=length(x) + 1, nrow=length(y) + 1)
-	tracking.mat[,1] <- 0L
-	tracking.mat[1,] <- 1L
-	tracking.mat[1,1] <- 2L
-	aligned <- .Call("C_dynAlign", similarity.mat,
-		score.mat, tracking.mat, gap, PACKAGE="Cardinal")
-	names(aligned) <- c("x", "y")
-	aligned$x <- aligned$x[aligned$x > 0]
-	aligned$y <- aligned$y[aligned$y > 0]
 	aligned
 }
 
