@@ -3,6 +3,7 @@
 ## -----------------------------------
 
 AnnotatedImageList <- function(...) {
+	.Deprecated()
 	data <- SimpleList(...)
 	fun <- function(x) {
 		if ( is(x, "AnnotatedImage") ) {

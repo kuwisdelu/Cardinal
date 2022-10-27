@@ -5,6 +5,7 @@
 AnnotatedImagingExperiment <- function(imageData = AnnotatedImageList(),
 	featureData = DataFrame(), phenoData = DataFrame(), metadata = list())
 {
+	.Deprecated()
 	if ( !is(imageData, "AnnotatedImageList") )
 		imageData <- AnnotatedImageList(imageData)
 	if ( length(imageData) != 0L ) {

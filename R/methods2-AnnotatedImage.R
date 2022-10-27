@@ -5,6 +5,7 @@
 AnnotatedImage <- function(data = array(0, dim=c(1,1)),
 							dim, colormode, ...)
 {
+	.Deprecated()
 	.AnnotatedImage(Image(data, dim, colormode), ...)
 }
 

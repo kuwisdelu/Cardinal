@@ -54,20 +54,30 @@ setMethod("spatialWeights", "ImagingExperiment",
 			r <- r[1]
 		}
 		sigma <- ((2 * r) + 1) / 4
+		nb <- findNeighbors(x, r=r, dist=dist, offsets=TRUE)
+		offsets <- attr(nb, "offsets")
 		fun <- function(xi) {
-			.spatialWeights(xi, offsets=attr(xi, "offsets"),
-				sigma=sigma, bilateral=bilateral)
+			wts <- vector("list", attr(xi, "chunksize"))
+			for ( i in seq_len(ncol(xi)) ) {
+				if ( is.null(i) )
+					next
+				dp <- attr(xi, "depends")[[i]]
+				di <- attr(xi, "index")[i]
+				wts[[i]] <- .spatialWeights(xi[,dp,drop=FALSE],
+					offsets=offsets[[di]], sigma=sigma,
+					bilateral=bilateral)
+			}
+			wts
 		}
-		weights <- spatialApply(x, .r=r, .fun=fun, ..., .dist=dist,
-			.simplify=FALSE, .verbose=FALSE, .view="element", BPPARAM=BPPARAM)
-		nb <- attr(weights, "neighbors")
-		attr(weights, "neighbors") <- NULL
+		weights <- chunk_colapply(iData(x), FUN=fun, depends=nb,
+			nchunks=getCardinalNumBlocks(),
+			verbose=FALSE, BPPARAM=BPPARAM)
 		if ( matrix ) {
 			w <- lapply(weights, function(w) w$alpha * w$beta)
-			weights <- sparse_mat(data=list(keys=c(nb), values=w),
+			weights <- sparse_mat(data=w, index=c(nb),
 				nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
 		} else {
-			attr(weights, "offsets") <- attr(nb, "offsets")
+			attr(weights, "offsets") <- offsets
 			attr(weights, "neighbors") <- c(nb) # remove attr
 		}
 		weights
@@ -90,67 +100,13 @@ setMethod("spatialWeights", "PositionDataFrame",
 	if ( matrix ) {
 		attr(nb, "offsets") <- NULL
 		w <- lapply(weights, function(w) w$alpha * w$beta)
-		weights <- sparse_mat(data=list(keys=nb, values=w),
+		weights <- sparse_mat(data=w, index=c(nb),
 			nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
 	} else {
-		attr(weights, "neighbors") <- nb
+		attr(weights, "offsets") <- offsets
+		attr(weights, "neighbors") <- c(nb) # remove attr
 	}
 	weights
-}
-
-# split data into spatially-aware blocks for processing
-.findSpatialBlocks <- function(x, r, groups, nblocks, neighbors = NULL) {
-	groups <- as.factor(groups)
-	if ( missing(r) && !is.null(neighbors) )
-		r <- attr(neighbors, "r")
-	if ( length(r) != length(coord(x)) ) {
-		r <- rep_len(unname(r), length(coord(x)))
-	} else if ( !is.null(names(r)) ) {
-		r <- r[names(coord(x))]
-	}
-	# assume all groups are equal size
-	nblocks_per_group <- nblocks / nlevels(groups)
-	# calculate blocks for each group
-	block_info <- lapply(levels(groups), function(gi) {
-		gcoord <- coord(x)[groups == gi,,drop=FALSE]
-		dim_len <- sapply(gcoord, function(pos) diff(range(pos)))
-		block_per_dim <- round(nblocks_per_group^(dim_len/sum(dim_len)))
-		block_len <- dim_len / block_per_dim
-		limits <- mapply(function(pos, len, ri) {
-			lim <- seq(from=min(pos), to=max(pos), by=max(len, 2 * ri))
-			lim <- as.numeric(lim)
-			if ( lim[length(lim)] >  max(pos) - ri )
-				lim[length(lim)] <- max(pos)
-			lim
-		}, gcoord, block_len, r, SIMPLIFY=FALSE)
-		grid <- lapply(limits, function(lim) seq_len(length(lim) - 1L))
-		grid <- as.matrix(expand.grid(grid))
-		list(limits=limits, grid=grid)
-	})
-	blocks <- .Call("C_findSpatialBlocks", as.matrix(coord(x)),
-		as.numeric(r), as.integer(groups), block_info, PACKAGE="Cardinal")
-	if ( length(blocks) > 1L ) {
-		blocks <- do.call("c", blocks)
-	} else {
-		blocks <- blocks[[1L]]
-	}
-	blocks <- blocks[lengths(blocks) != 0L]
-	if ( !is.null(neighbors) ) {
-		wh <- .whichSpatialBlocks(neighbors, blocks)
-		if ( anyNA(wh) )
-			stop("invalid blocks")
-		centers <- lapply(seq_along(blocks), function(i) which(wh == i))
-		blocks <- blocks[lengths(centers) != 0L]
-		centers <- centers[lengths(centers) != 0L]
-		for ( i in seq_along(blocks) )
-			attr(blocks[[i]], "centers") <- centers[[i]]
-	}
-	blocks
-}
-
-# assign pixels to a processing block
-.whichSpatialBlocks <- function(neighbors, blocks) {
-	.Call("C_whichSpatialBlocks", neighbors, blocks, PACKAGE="Cardinal")
 }
 
 # spatial offsets for a list of neighborhoods

@@ -10,8 +10,6 @@ extern "C" {
         {"C_readImzML", (DL_FUNC) &readImzML, 1},
         {"C_writeImzML", (DL_FUNC) &writeImzML, 3},
         {"C_findNeighbors", (DL_FUNC) &findNeighbors, 4},
-        {"C_findSpatialBlocks", (DL_FUNC) &findSpatialBlocks, 4},
-        {"C_whichSpatialBlocks", (DL_FUNC) &whichSpatialBlocks, 2},
         {"C_spatialOffsets", (DL_FUNC) &spatialOffsets, 3},
         {"C_spatialWeights", (DL_FUNC) &spatialWeights, 4},
         {"C_spatialDistance", (DL_FUNC) &spatialDistance, 8},

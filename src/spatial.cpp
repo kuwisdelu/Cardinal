@@ -80,105 +80,6 @@ SEXP find_neighbors(SEXP coord, SEXP r, SEXP groups, SEXP dist)
 }
 
 template<typename T>
-SEXP find_spatial_blocks(SEXP coord, SEXP r, SEXP groups, SEXP block_info)
-{
-	int ngroups = LENGTH(block_info);
-	int nrow = Rf_nrows(coord);
-	int ncol = Rf_ncols(coord);
-	T * pCoord = DataPtr<T>(coord);
-	double * pR = REAL(r);
-	int * pGroups = INTEGER(groups);
-	bool within_block[nrow];
-	SEXP ret;
-	PROTECT(ret = Rf_allocVector(VECSXP, ngroups));
-	for ( int k = 0; k < ngroups; ++k ) {
-		SEXP info = VECTOR_ELT(block_info, k);
-		SEXP limits = VECTOR_ELT(info, 0);
-		int * pGrid = INTEGER(VECTOR_ELT(info, 1));
-		int nblocks = Rf_nrows(VECTOR_ELT(info, 1));
-		SEXP blocks;
-		PROTECT(blocks = Rf_allocVector(VECSXP, nblocks));
-		for ( int l = 0; l < nblocks; ++l ) {
-			int blocksize = 0;
-			for ( int i = 0; i < nrow; ++i ) {
-				within_block[i] = true;
-				if ( pGroups[i] != k + 1 ) {
-					within_block[i] = false;
-					continue;
-				}
-				for  ( int j = 0; j < ncol; ++j ) {
-					double * pLimits = REAL(VECTOR_ELT(limits, j));
-					int g = pGrid[j * nblocks + l];
-					double lower = pLimits[g - 1];
-					double upper = pLimits[g];
-					if ( pCoord[j * nrow + i] <= lower - pR[j] )
-						within_block[i] = false;
-					if ( pCoord[j * nrow + i] > upper + pR[j] )
-						within_block[i] = false;
-				}
-				if ( within_block[i] )
-					blocksize++;
-			}
-			SEXP members;
-			PROTECT(members = Rf_allocVector(INTSXP, blocksize));
-			int * pMembers = INTEGER(members);
-			int ix = 0;
-			for ( int ii = 0; ii < nrow && ix < blocksize; ++ii ) {
-				if ( within_block[ii] ) {
-					pMembers[ix] = ii + 1;
-					ix++;
-				}
-			}
-			SET_VECTOR_ELT(blocks, l, members);
-			UNPROTECT(1);
-		}
-		SET_VECTOR_ELT(ret, k, blocks);
-		UNPROTECT(1);
-	}
-	UNPROTECT(1);
-	return ret;
-}
-
-SEXP which_spatial_blocks(SEXP neighbors, SEXP blocks)
-{
-	int npixels = LENGTH(neighbors);
-	int nblocks = LENGTH(blocks);
-	SEXP which;
-	PROTECT(which = Rf_allocVector(INTSXP, npixels));
-	int * pWhich = INTEGER(which);
-	int * pNeighbors, * pBlock;
-	for ( int i = 0; i < npixels; ++i ) {
-		pWhich[i] = NA_INTEGER;
-		for ( int j = 0; j < nblocks; ++j ) {
-			int num_neighbors = LENGTH(VECTOR_ELT(neighbors, i));
-			int blocksize = LENGTH(VECTOR_ELT(blocks, j));
-			pNeighbors = INTEGER(VECTOR_ELT(neighbors, i));
-			pBlock = INTEGER(VECTOR_ELT(blocks, j));
-			bool neighborhood_ok = true;
-			for ( int k = 0; k < num_neighbors; ++k ) {
-				bool id_ok = false;
-				for ( int l = 0; l < blocksize; ++l ) {
-					if ( pNeighbors[k] == pBlock[l] ) {
-						id_ok = true;
-						break;
-					}
-				}
-				if ( !id_ok ) {
-					neighborhood_ok = false;
-					break;
-				}
-			}
-			if ( neighborhood_ok ) {
-				pWhich[i] = j + 1;
-				break;
-			}
-		}
-	}
-	UNPROTECT(1);
-	return which;
-}
-
-template<typename T>
 SEXP get_spatial_offsets(SEXP coord, SEXP neighbors, int k)
 {
 	int nrow = LENGTH(neighbors);
@@ -390,19 +291,6 @@ extern "C" {
 			return find_neighbors<double>(coord, r, group, dist);
 		else
 			return R_NilValue;
-	}
-
-	SEXP findSpatialBlocks(SEXP coord, SEXP r, SEXP group, SEXP block_info) {
-		if ( TYPEOF(coord) == INTSXP )
-			return find_spatial_blocks<int>(coord, r, group, block_info);
-		else if ( TYPEOF(coord) == REALSXP )
-			return find_spatial_blocks<double>(coord, r, group, block_info);
-		else
-			return R_NilValue;
-	}
-
-	SEXP whichSpatialBlocks(SEXP neighbors, SEXP blocks) {
-		return which_spatial_blocks(neighbors, blocks);
 	}
 
 	SEXP spatialOffsets(SEXP coord, SEXP neighbors, SEXP k) {

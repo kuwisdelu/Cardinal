@@ -27,10 +27,6 @@ extern "C" {
 
     SEXP findNeighbors(SEXP coord, SEXP r, SEXP group, SEXP dist);
 
-    SEXP findSpatialBlocks(SEXP coord, SEXP r, SEXP group, SEXP block_info);
-
-    SEXP whichSpatialBlocks(SEXP neighbors, SEXP blocks);
-
     SEXP spatialOffsets(SEXP coord, SEXP neighbors, SEXP k);
 
     SEXP spatialWeights(SEXP x, SEXP offsets, SEXP sigma, SEXP bilateral);
