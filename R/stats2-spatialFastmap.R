@@ -59,26 +59,28 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	pivots <- matrix(NA_integer_, nrow=ncomp, ncol=2)
 	# spatially-aware distance functions
 	fun <- function(xbl, xa, xb) {
+		ii <- which(!vapply(attr(xbl, "depends"), is.null, logical(1)))
+		di <- attr(xbl, "index")[ii]
 		d_ai <- .spatialDistance2(xbl, xa,
-			offsets=attr(xbl, "offsets"),
-			weights=attr(xbl, "weights"),
+			offsets=spatial$offsets[di],
+			weights=spatial$weights[di],
 			ref.offsets=attr(xa, "offsets"),
 			ref.weights=attr(xa, "weights"),
-			neighbors=attr(xbl, "neighbors"),
+			neighbors=attr(xbl, "depends")[ii],
 			metric=metric,
-			i=attr(xbl, "idx"),
-			j=attr(xa, "idx"),
+			i=di,
+			j=attr(xa, "index"),
 			proj=proj,
 			tol.dist=tol.dist)
 		d_bi <- .spatialDistance2(xbl, xb,
-			offsets=attr(xbl, "offsets"),
-			weights=attr(xbl, "weights"),
+			offsets=spatial$offsets[di],
+			weights=spatial$weights[di],
 			ref.offsets=attr(xb, "offsets"),
 			ref.weights=attr(xb, "weights"),
-			neighbors=attr(xbl, "neighbors"),
+			neighbors=attr(xbl, "depends")[ii],
 			metric=metric,
-			i=attr(xbl, "idx"),
-			j=attr(xb, "idx"),
+			i=di,
+			j=attr(xb, "index"),
 			proj=proj,
 			tol.dist=tol.dist)
 		(d_ai^2 + d_ab^2 - d_bi^2) / (2 * d_ab)
@@ -94,11 +96,11 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 		oa <- pivots[j,1]
 		ob <- pivots[j,2]
 		xa <- as.matrix(iData(x)[,spatial$neighbors[[oa]],drop=FALSE])
-		attr(xa, "idx") <- oa
+		attr(xa, "index") <- oa
 		attr(xa, "offsets") <- spatial$offsets[[oa]]
 		attr(xa, "weights") <- spatial$weights[[oa]]
 		xb <- as.matrix(iData(x)[,spatial$neighbors[[ob]],drop=FALSE])
-		attr(xb, "idx") <- ob
+		attr(xb, "index") <- ob
 		attr(xb, "offsets") <- spatial$offsets[[ob]]
 		attr(xb, "weights") <- spatial$weights[[ob]]
 		d_ab <- .spatialDistance2(xa, xb,
@@ -109,27 +111,31 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			neighbors=list(seq_len(ncol(xa))),
 			metric=metric, i=oa, j=ob,
 			proj=proj, tol.dist=tol.dist)
-		comp_j <- spatialApply(x, .r=spatial$r, .fun=fun, xa=xa, xb=xb,
-			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
-			.params=list(weights=spatial$weights),
-			.view="chunk", BPPARAM=BPPARAM)
+		comp_j <- chunk_colapply(iData(x), FUN=fun, xa=xa, xb=xb,
+			depends=spatial$neighbors, verbose=FALSE,
+			nchunks=getCardinalNumBlocks(),
+			BPPARAM=BPPARAM)
 		.message(".", appendLF=FALSE)
 		proj[,j] <- comp_j
 	}
 	.message(" ")
 	do_rbind <- function(ans) do.call("rbind", ans)
-	corr <- featureApply(x, function(xbl) {
-		t(apply(xbl, 1, function(xi) {
-			vapply(1:ncomp, function(j) {
-				comp_j <- proj[,j]
-				if ( all(comp_j == 0) ) {
-					0
-				} else {
-					cor(xi, comp_j)
-				}
-			}, numeric(1))
-		}))
-	}, .simplify=do_rbind, .verbose=FALSE, .view="chunk", BPPARAM=BPPARAM)
+	corr <- chunk_rowapply(iData(x),
+		function(xbl) {
+			t(apply(xbl, 1, function(xi) {
+				vapply(1:ncomp, function(j) {
+					comp_j <- proj[,j]
+					if ( all(comp_j == 0) ) {
+						0
+					} else {
+						cor(xi, comp_j)
+					}
+				}, numeric(1))
+			}))
+		},
+		simplify=rbind, verbose=FALSE,
+		nchunks=getCardinalNumBlocks(),
+		BPPARAM=BPPARAM)
 	colnames(proj) <- paste("FC", 1:ncomp, sep="")
 	colnames(corr) <- paste("FC", 1:ncomp, sep="")
 	pivots <- as.data.frame(pivots)
@@ -145,27 +151,29 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 	oa <- 1
 	ob <- NULL
 	fun <- function(xbl, xj) {
+		ii <- which(!vapply(attr(xbl, "depends"), is.null, logical(1)))
+		di <- attr(xbl, "index")[ii]
 		.spatialDistance2(xbl, xj,
-			offsets=attr(xbl, "offsets"),
-			weights=attr(xbl, "weights"),
+			offsets=spatial$offsets[di],
+			weights=spatial$weights[di],
 			ref.offsets=attr(xj, "offsets"),
 			ref.weights=attr(xj, "weights"),
-			neighbors=attr(xbl, "neighbors"),
+			neighbors=attr(xbl, "depends")[ii],
 			metric=metric,
-			i=attr(xbl, "idx"),
-			j=attr(xj, "idx"),
+			i=di,
+			j=attr(xj, "index"),
 			proj=proj,
 			tol.dist=tol.dist)
 	}
 	while ( iter <= iter.max ) {
 		xa <- as.matrix(iData(x)[,spatial$neighbors[[oa]],drop=FALSE])
-		attr(xa, "idx") <- oa
+		attr(xa, "index") <- oa
 		attr(xa, "offsets") <- spatial$offsets[[oa]]
 		attr(xa, "weights") <- spatial$weights[[oa]]
-		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xa,
-			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
-			.params=list(weights=spatial$weights),
-			.view="chunk", BPPARAM=BPPARAM)
+		dists <- chunk_colapply(iData(x), FUN=fun, xj=xa,
+			depends=spatial$neighbors, verbose=FALSE,
+			nchunks=getCardinalNumBlocks(),
+			BPPARAM=BPPARAM)
 		cand <- which.max(dists)
 		if ( dists[cand] == 0 )
 			return(c(NA, NA))
@@ -173,13 +181,13 @@ setAs("SpatialFastmap", "SpatialFastmap2",
 			return(c(oa, ob))
 		ob <- cand
 		xb <- as.matrix(iData(x)[,spatial$neighbors[[ob]],drop=FALSE])
-		attr(xb, "idx") <- ob
+		attr(xb, "index") <- ob
 		attr(xb, "offsets") <- spatial$offsets[[ob]]
 		attr(xb, "weights") <- spatial$weights[[ob]]
-		dists <- spatialApply(x, .r=spatial$r, .fun=fun, xj=xb,
-			.simplify=.unlist_once, .verbose=FALSE, .dist=dist,
-			.params=list(weights=spatial$weights),
-			.view="chunk", BPPARAM=BPPARAM)
+		dists <- chunk_colapply(iData(x), FUN=fun, xj=xb,
+			depends=spatial$neighbors, verbose=FALSE,
+			nchunks=getCardinalNumBlocks(),
+			BPPARAM=BPPARAM)
 		oa <- which.max(dists)
 		d <- dists[oa]
 		if ( dists[oa] == 0 )

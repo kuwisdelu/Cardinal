@@ -58,7 +58,7 @@ setMethod("spatialWeights", "ImagingExperiment",
 		offsets <- attr(nb, "offsets")
 		fun <- function(xi) {
 			wts <- vector("list", attr(xi, "chunksize"))
-			for ( i in seq_len(ncol(xi)) ) {
+			for ( i in seq_along(attr(xi, "depends")) ) {
 				if ( is.null(i) )
 					next
 				dp <- attr(xi, "depends")[[i]]

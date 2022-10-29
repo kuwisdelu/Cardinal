@@ -262,15 +262,17 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 {
 	# calculate spatial discriminant scores
 	fun <- function(xbl) {
-		.spatialScores(xbl, centers=centers, weights=attr(xbl, "weights"),
-			neighbors=attr(xbl, "neighbors"), sd=sd + s0)
+		ii <- which(!vapply(attr(xbl, "depends"), is.null, logical(1)))
+		di <- attr(xbl, "index")[ii]
+		.spatialScores(xbl, centers=centers, weights=weights[di],
+			neighbors=attr(xbl, "depends")[ii], sd=sd + s0)
 	}
 	s0 <- median(sd)
-	do_rbind <- function(ans) do.call("rbind", ans)
-	scores <- spatialApply(x, .r=r, .fun=fun,
-		.simplify=do_rbind, .verbose=FALSE, .dist=dist,
-		.params=list(weights=weights),
-		.view="chunk", BPPARAM=BPPARAM)
+	neighbors <- findNeighbors(x, r=r, dist=dist)
+	scores <- chunk_colapply(iData(x), FUN=fun,
+		depends=neighbors, verbose=FALSE,
+		nchunks=getCardinalNumBlocks(),
+		BPPARAM=BPPARAM)
 	if ( is.null(priors) && !is.null(class) )
 		priors <- table(class) / sum(table(class))
 	scores <- scores - 2 * log(rep(priors, each=ncol(x)))

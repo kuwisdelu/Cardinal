@@ -6,7 +6,7 @@ setMethod("spatialApply", "SparseImagingExperiment",
 		.verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM())
 	{
-		.Deprecated("chunkApply")
+		.Deprecated(msg="'spatialApply' is deprecated.\nSee help('Deprecated')")
 		.checkForIncompleteProcessing(.object)
 		nb <- findNeighbors(.object, r=.r, dist=.dist, offsets=TRUE)
 		ans <- chunkApply(iData(.object), FUN=.fun, MARGIN=2L, ...,
