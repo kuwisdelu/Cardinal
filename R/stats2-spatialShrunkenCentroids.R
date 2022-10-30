@@ -236,10 +236,10 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 		verbose=FALSE, BPPARAM=BPPARAM)
 	colnames(centers) <- levels(class)
 	# calculate within-class pooled SE
-	centered <- rowsweep(iData(x)^2, STATS=centers, group=class)
-	wcss <- rowStats(centered, stat="sum", group=class,
-					nchunks=getCardinalNumBlocks(),
-					verbose=FALSE, BPPARAM=BPPARAM)
+	centered <- rowsweep(iData(x), STATS=centers, group=class)
+	wcss <- rowStats(centered^2, stat="sum", group=class,
+		nchunks=getCardinalNumBlocks(),
+		verbose=FALSE, BPPARAM=BPPARAM)
 	# calculate standard errors
 	wcss <- as.matrix(wcss, slots=FALSE)
 	sd <- sqrt(rowSums(wcss, na.rm=TRUE) / (length(class) - nlevels(class)))
