@@ -173,14 +173,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	} else {
 		coordExact <- NULL
 	}
-	if ( outclass == "MSImageSet" ) {
-		experimentData <- new("MIAPE-Imaging")
-		processingData <- new("MSImageProcess", files=metadata(info)[["files"]])
-		object <- MSImageSet(spectra=spectra, mz=mz, coord=coord,
-			processingData=processingData,
-			experimentData=experimentData)
-		sampleNames(object) <- metadata(info)[["name"]]
-	} else if ( outclass == "MSImagingExperiment" ) {
+	if ( outclass == "MSImagingExperiment" ) {
 		object <- MSImagingExperiment(spectra,
 			featureData=MassDataFrame(mz=mz),
 			pixelData=PositionDataFrame(coord=coord,

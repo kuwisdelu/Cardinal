@@ -3,7 +3,6 @@
 
 \alias{normalize}
 \alias{normalize-methods}
-\alias{normalize,MSImageSet-method}
 \alias{normalize,SparseImagingExperiment-method}
 
 \alias{normalize.tic}
@@ -17,11 +16,6 @@
 \usage{
 \S4method{normalize}{SparseImagingExperiment}(object, method = c("tic", "rms", "reference"), \dots)
 
-\S4method{normalize}{MSImageSet}(object, method = "tic",
-	\dots,
-	pixel = pixels(object),
-	plot = FALSE)
-
 ## Totial-ion-current normalization
 normalize.tic(x, tic=length(x), \dots)
 
@@ -34,8 +28,6 @@ normalize.reference(x, feature, scale=1, \dots)
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The normalization method to use.}
-    \item{pixel}{The pixels to normalize. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the normalization method.}
     \item{x}{The signal to be normalized.}
     \item{tic}{The value to which to normalize the total ion current.}
@@ -63,7 +55,6 @@ normalize.reference(x, feature, scale=1, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImagingExperiment}},
-    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

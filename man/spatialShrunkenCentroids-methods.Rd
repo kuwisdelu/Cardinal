@@ -12,15 +12,6 @@
 \alias{summary,SpatialShrunkenCentroids2-method}
 \alias{logLik,SpatialShrunkenCentroids2-method}
 
-\alias{spatialShrunkenCentroids,SImageSet,missing-method}
-\alias{spatialShrunkenCentroids,SImageSet,factor-method}
-\alias{spatialShrunkenCentroids,SImageSet,character-method}
-\alias{predict,SpatialShrunkenCentroids-method}
-\alias{logLik,SpatialShrunkenCentroids-method}
-\alias{summary,SpatialShrunkenCentroids-method}
-\alias{print.summary.SpatialShrunkenCentroids}
-\alias{plot.summary.SpatialShrunkenCentroids}
-
 \title{Spatially-aware shrunken centroid clustering and classification}
 \description{
     Performs spatially-aware nearest shrunken centroid clustering or classification on an imaging dataset. These methods use statistical regularization to shrink the t-statistics of the features toward 0 so that unimportant features are removed from the analysis. A Gaussian spatial kernel or an adaptive kernel based on bilateral filtering are used for spatial smoothing.
@@ -41,18 +32,6 @@
 \S4method{fitted}{SpatialShrunkenCentroids2}(object, \dots)
 
 \S4method{summary}{SpatialShrunkenCentroids2}(object, \dots)
-
-\S4method{spatialShrunkenCentroids}{SImageSet,missing}(x, r = 1, k = 3, s = 0,
-    method = c("gaussian", "adaptive"),
-    iter.max=10, \dots)
-
-\S4method{spatialShrunkenCentroids}{SImageSet,factor}(x, y, r = 1, s = 0,
-    method = c("gaussian", "adaptive"),
-    priors = table(y), \dots)
-
-\S4method{spatialShrunkenCentroids}{SImageSet,character}(x, y, \dots)
-
-\S4method{predict}{SpatialShrunkenCentroids}(object, newx, newy, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset to segment or classify.}

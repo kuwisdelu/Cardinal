@@ -3,7 +3,6 @@
 
 \alias{peakPick}
 \alias{peakPick-methods}
-\alias{peakPick,MSImageSet-method}
 \alias{peakPick,MSImagingExperiment-method}
 
 \alias{peakPick.mad}
@@ -17,11 +16,6 @@
 }
 \usage{
 \S4method{peakPick}{MSImagingExperiment}(object, method = c("mad", "simple", "adaptive"), \dots)
-
-\S4method{peakPick}{MSImageSet}(object, method = c("simple", "adaptive", "limpic"),
-    \dots,
-    pixel = pixels(object),
-    plot = FALSE)
 
 ## Local maxima and SNR with noise based on local MAD
 peakPick.mad(x, SNR=6, window=5, blocks=1, fun=mean, tform=diff, \dots)
@@ -38,8 +32,6 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The peak picking method to use.}
-    \item{pixel}{The pixels to peak pick. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the peak picking method.}
     \item{x}{The mass spectrum to be peak picked.}
     \item{SNR}{The minimum signal-to-noise ratio to be considered a peak.}
@@ -60,13 +52,6 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 
     When applied to an \code{MSImagingExperiment} object, a user-created function should return a \code{integer} vector giving the indices of the detected peaks.
 
-    When applied to an \code{MSImageSet} object, a user-created function should return a \code{list} with two vectors of the same length as \code{x}:
-
-    \itemize{
-        \item{\code{peaks}: A \code{logical} vector indicating peaks.}
-        \item{\code{noise}: A \code{numeric} vector with the estimated noise.}
-    }
-
     Internally, \code{\link{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
 }
 \value{
@@ -80,11 +65,9 @@ peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImagingExperiment}},
-    \code{\linkS4class{MSImageSet}},
     \code{\link{peakAlign}},
     \code{\link{peakFilter}},
     \code{\link{peakBin}},
-    \code{\link{reduceDimension}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

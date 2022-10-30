@@ -14,7 +14,6 @@
 \alias{isCentroided,MSImagingInfo-method}
 
 \alias{msiInfo}
-\alias{msiInfo,MSImageSet-method}
 \alias{msiInfo,MSImagingExperiment-method}
 \alias{msiInfo,MSContinuousImagingExperiment-method}
 \alias{msiInfo,MSProcessedImagingExperiment-method}

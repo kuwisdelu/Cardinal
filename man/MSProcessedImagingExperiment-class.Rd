@@ -30,6 +30,7 @@
 \alias{combiner,MSProcessedImagingExperiment-method}
 \alias{combiner<-,MSProcessedImagingExperiment-method}
 \alias{keys,MSProcessedImagingSpectraList-method}
+\alias{keys<-,MSProcessedImagingSpectraList-method}
 \alias{keys<-,MSProcessedImagingSpectraList,ANY-method}
 \alias{tolerance,MSProcessedImagingSpectraList-method}
 \alias{tolerance<-,MSProcessedImagingSpectraList-method}

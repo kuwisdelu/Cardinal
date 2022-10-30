@@ -10,13 +10,6 @@
 \alias{predict,PCA2-method}
 \alias{summary,PCA2-method}
 
-\alias{PCA,SImageSet-method}
-\alias{predict,PCA-method}
-\alias{predict,PCA-method}
-\alias{summary,PCA-method}
-\alias{print.summary.PCA}
-\alias{plot.summary.PCA}
-
 \title{Principal components analysis}
 \description{
 	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
@@ -27,22 +20,12 @@
 \S4method{predict}{PCA2}(object, newx, ncomp, \dots)
 
 \S4method{summary}{PCA2}(object, \dots)
-
-\S4method{PCA}{SImageSet}(x, ncomp = 3,
-    method = c("irlba", "nipals", "svd"),
-    center = TRUE,
-    scale = FALSE,
-    iter.max = 100, \dots)
-
-\S4method{predict}{PCA}(object, newx, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset for which to calculate the principal components.}
     \item{ncomp}{The number of principal components to calculate.}
-    \item{method}{The function used to calculate the singular value decomposition.}
     \item{center}{Should the data be centered first? This is passed to \code{scale}.}
     \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
-    \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
     \item{\dots}{Ignored.}
     \item{object}{The result of a previous call to \code{\link{PCA}}.}
     \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}

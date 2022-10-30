@@ -3,7 +3,6 @@
 
 \alias{reduceBaseline}
 \alias{reduceBaseline-methods}
-\alias{reduceBaseline,MSImageSet-method}
 \alias{reduceBaseline,SparseImagingExperiment-method}
 
 \alias{reduceBaseline.median}
@@ -16,11 +15,6 @@
 \usage{
 \S4method{reduceBaseline}{SparseImagingExperiment}(object, method = c("locmin", "median"), \dots)
 
-\S4method{reduceBaseline}{MSImageSet}(object, method = "median",
-    \dots,
-    pixel = pixels(object),
-    plot = FALSE)
-
 ## Local minima baseline reduction
 reduceBaseline.locmin(x, window=5, \dots)
 
@@ -30,8 +24,6 @@ reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The baseline reduction method to use.}
-    \item{pixel}{The pixels to baseline subtract. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the baseline reduction method.}
     \item{x}{The signal to be baseline-corrected.}
     \item{blocks}{The number of intervals to break the mass spectrum into in order to choose minima or medians from which to interpolate the baseline.}
@@ -59,7 +51,6 @@ reduceBaseline.median(x, blocks=500, fun=median, spar=1, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImagingExperiment}},
-    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

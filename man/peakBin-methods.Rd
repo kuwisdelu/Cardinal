@@ -41,7 +41,6 @@
     \code{\link{peakPick}},
     \code{\link{peakAlign}},
     \code{\link{peakFilter}},
-    \code{\link{reduceDimension}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

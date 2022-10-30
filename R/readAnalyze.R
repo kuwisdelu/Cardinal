@@ -49,14 +49,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 		spectra <- spectra[]
 	}
 	mz <- mz[]
-	if ( outclass == "MSImageSet" ) {
-		experimentData <- new("MIAPE-Imaging")
-		processingData <- new("MSImageProcess", files=files)
-		object <- MSImageSet(spectra=spectra, mz=mz, coord=coord,
-			processingData=processingData,
-			experimentData=experimentData)
-		sampleNames(object) <- name
-	} else if ( outclass == "MSImagingExperiment" ) {
+	if ( outclass == "MSImagingExperiment" ) {
 		object <- MSImagingExperiment(spectra,
 			featureData=MassDataFrame(mz=mz),
 			pixelData=PositionDataFrame(coord=coord, run=name),

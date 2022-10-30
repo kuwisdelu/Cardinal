@@ -66,54 +66,6 @@
 	ret
 }
 
-# Create a virtual copy of the object with no data
-.virtual.image <- function(x) {
-	imageData(x) <- new(class(imageData(x)))
-	if ( validObject(x) )
-		x
-}
-
-# Generate a function for (parallel) writing output to a file
-.remote_writer <- function(pid, path) {
-	fun <- function(x) {
-		ipclock(pid)
-		eof <- file.size(path)
-		eof <- ifelse(is.na(eof), 0, eof)
-		if ( !is.numeric(x) )
-			stop("non-numeric output not allowed for remote writing")
-		res <- matter_vec(x, datamode=typeof(x),
-			filemode="rw", offset=eof, paths=path)
-		ipcunlock(pid)
-		c(mode=datamode(res), offset=eof, length=length(res))
-	}
-	fun
-}
-
-# Collect the metadata from (parallel) file output
-.remote_collect <- function(ans, path, simplify) {
-	ans <- do.call(rbind, ans)
-	mode <- make_datamode(ans[,1], type="R")
-	mode <- as.character(mode)
-	offset <- ans[,2]
-	extent <- ans[,3]
-	if ( simplify && all(extent == 1L) ) {
-		if ( !is.unsorted(offset) ) {
-			offset <- 0
-			extent <- nrow(ans)
-			mode <- mode[1L]
-		}
-		x <- matter_vec(datamode=mode, filemode="rw",
-				offset=offset, extent=extent, paths=path)
-	} else if ( simplify && length(unique(extent)) == 1L ) {
-		x <- matter_mat(datamode=mode, filemode="rw",
-			offset=offset, extent=extent, paths=path)
-	} else {
-		x <- matter_list(datamode=mode, filemode="rw",
-			offset=offset, extent=extent, paths=path)
-	}
-	x
-}
-
 # If processing flattens key-value pairs, expand and collect them
 .collect_keyval_pairs <- function(ans) {
 	if ( is(ans, "matter_list") ) {

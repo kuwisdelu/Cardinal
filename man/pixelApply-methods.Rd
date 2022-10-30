@@ -3,91 +3,36 @@
 
 \alias{pixelApply}
 \alias{pixelApply-methods}
-\alias{pixelApply,SImageSet-method}
 \alias{pixelApply,SparseImagingExperiment-method}
 
 \alias{featureApply}
 \alias{featureApply-methods}
-\alias{featureApply,SImageSet-method}
 \alias{featureApply,SparseImagingExperiment-method}
-
-\alias{spatialApply}
-\alias{spatialApply-methods}
-\alias{spatialApply,SparseImagingExperiment-method}
 
 \title{Apply functions over imaging datasets}
 \description{
 	Apply an existing or a user-specified function over either all of the features or all of the pixels of a \code{\linkS4class{SparseImagingExperiment}} or \code{\linkS4class{SImageSet}}. These are provided by analogy to the 'apply' family of functions, but allowing greater efficiency and convenience when applying functions over an imaging dataset.
 }
 \usage{
-#### Methods for Cardinal >= 2.x classes ####
-
 \S4method{pixelApply}{SparseImagingExperiment}(.object, .fun, \dots,
-    .simplify = TRUE,
-    .outpath = NULL,
-    .params = list(),
-    .blocks = getCardinalNumBlocks(),
-    .verbose = getCardinalVerbose(),
-    .view = "element",
-    BPREDO = list(),
+    .simplify = TRUE, .outpath = NULL,
+    .blocks = getCardinalNumBlocks(), .verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM())
 
 \S4method{featureApply}{SparseImagingExperiment}(.object, .fun, \dots,
-    .simplify = TRUE,
-    .outpath = NULL,
-    .params = list(),
-    .blocks = getCardinalNumBlocks(),
-    .verbose = getCardinalVerbose(),
-    .view = "element",
-    BPREDO = list(),
+    .simplify = TRUE, .outpath = NULL,
+    .blocks = getCardinalNumBlocks(), .verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM())
-
-\S4method{spatialApply}{SparseImagingExperiment}(.object, .r, .fun, \dots,
-    .dist = "chebyshev",
-    .simplify = TRUE,
-    .outpath = NULL,
-    .params = list(),
-    .blocks = getCardinalNumBlocks(),
-    .verbose = getCardinalVerbose(),
-    .view = "element",
-    BPREDO = list(),
-    BPPARAM = getCardinalBPPARAM())
-
-#### Methods for Cardinal 1.x classes ####
-
-\S4method{pixelApply}{SImageSet}(.object, .fun, \dots,
-    .pixel,
-    .feature,
-    .feature.groups,
-    .simplify = TRUE,
-    .use.names = TRUE)
-
-\S4method{featureApply}{SImageSet}(.object, .fun, \dots,
-    .feature,
-    .pixel,
-    .pixel.groups,
-    .simplify = TRUE,
-    .use.names = TRUE)
 }
 \arguments{
     \item{.object}{An imaging dataset.}
     \item{.fun}{The function to be applied.}
-    \item{.r}{The maximum spatial radius or distance for which pixels are considered to be neighbors.}
     \item{\dots}{Additional arguments passed to \code{.fun}.}
-    \item{.dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
     \item{.blocks}{If FALSE (the default), each feature-vector or image-vector will be loaded and processed individually. If TRUE, or a positive integer, the data will be split into that many blocks, and the function (specified by \code{.fun}) will be applied to each block. The number of blocks can be specified as a number, or \code{getCardinalNumBlocks()} will be used.}
     \item{.simplify}{If applying over blocks, then a function to be used to simplify the list of results. Otherwise, a logical value giving whether the results should be simplified into a matrix or array rather than a list.}
-    \item{.use.names}{Should the names of elements of \code{.object} (either pixel names or feature names, as appropriate) be used for the names of the result?}
     \item{.outpath}{The path to a file where the output data will be written. Results will be kept in-memory if this is NULL. Results will be coerced to a numeric vector before being written to file.}
-    \item{.params}{A named list of parameters with length equal to \code{length(.object)}. The appropriate elements will be made available to the spatial neighborhoods.}
     \item{.verbose}{Should progress messages be printed?}
-    \item{.view}{FOR EXPERT USE ONLY: Should the object passed to \code{.fun} be a single element (e.g., one row/column/neighborhood of \code{.object}), or the entire block? Set to "chunk" to operate on the whole block.}
-    \item{BPREDO}{See documentation for \code{\link{bplapply}}.}
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
-    \item{.pixel}{A subset of pixels to use, given by an \code{integer} vector of numeric indices, a \code{character} vector of pixel names, or a \code{logical} vector indicating which pixels to use.}
-    \item{.feature}{A subset of features to use, given in the same manner as pixels.}
-    \item{.pixel.groups}{A grouping \code{factor} or a vector that can be coerced into a factor, that indicates groups of pixels over which the function should be applied. Groups pixels are treated as cells in a ragged array, by analogy to the \code{\link{tapply}} function.}
-    \item{.feature.groups}{A grouping \code{factor} features, in the same manner as for pixels.}
 }
 \details{
 

@@ -3,9 +3,6 @@
 
 \alias{peakAlign}
 \alias{peakAlign-methods}
-\alias{peakAlign,MSImageSet,numeric-method}
-\alias{peakAlign,MSImageSet,MSImageSet-method}
-\alias{peakAlign,MSImageSet,missing-method}
 \alias{peakAlign,MSImagingExperiment,numeric-method}
 \alias{peakAlign,MSImagingExperiment,character-method}
 \alias{peakAlign,MSImagingExperiment,missing-method}
@@ -23,40 +20,16 @@
 \S4method{peakAlign}{MSImagingExperiment,character}(object, ref, \dots)
 
 \S4method{peakAlign}{MSImagingExperiment,numeric}(object, ref, \dots)
-
-\S4method{peakAlign}{MSImageSet,numeric}(object, ref, method = c("diff", "DP"),
-    \dots,
-    pixel = pixels(object),
-    plot = FALSE)
-
-\S4method{peakAlign}{MSImageSet,MSImageSet}(object, ref, \dots)
-
-\S4method{peakAlign}{MSImageSet,missing}(object, ref, \dots)
-
-## Absolute difference alignment
-peakAlign.diff(x, y, diff.max=200, units=c("ppm", "mz"), \dots)
-
-## Dynamic programming alignment
-peakAlign.DP(x, y, gap=0, \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}
     \item{ref}{A reference to which to align the peaks.}
     \item{tolerance}{The tolerance to be used when aligning detected peaks to the reference. If this is NA, then automatically guess a tolerance from the data.}
     \item{units}{The units to use for the \code{tolerance}. Either parts-per-million or the raw m/z values.}
-    \item{method}{The peak alignment method to use.}
-    \item{pixel}{The pixels to align. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot the mass spectrum for each pixel while it is being processed?}
-    \item{\dots}{Additional arguments passed to the peak alignment method.}
-    \item{x}{The vector of m/z values to be aligned.}
-    \item{y}{The vector of reference m/z values.}
-    \item{diff.max}{Peaks that differ less than this value will be aligned together.}
-    \item{gap}{The gap penalty for the dynamic programming sequence alignment.}
+    \item{\dots}{Ignored.}
 }
 \details{
     When applied to a \code{MSImagingExperiment} object with no other reference, \code{peakAlign} uses \code{summarize()} to calculate the mean spectrum, and then uses the local maxima  of the mean spectrum as the reference. Alternatively, a vector of m/z values or a column name in the featureData that should be used as the reference may be provided. Finally, if the featureData has an numeric vector element named ``reference peaks'' among its \code{metadata()}, this vector is used as the reference.
-
-    When applied to a \code{MSImageSet} object, if a \code{MSImageSet} object is used as the reference then the local maxima in its mean spectrum will be calculated and used as the reference m/z values. The method looks for a ``mean'' column in the object's \code{featureData}, and if it does not exist, then the mean spectrum will be calculated using \code{featureApply(ref, mean)}. If the reference is missing, the method will use the object itself as the reference.
 
     Peak alignment is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:
 
@@ -71,18 +44,16 @@ peakAlign.DP(x, y, gap=0, \dots)
     Internally, \code{\link{pixelApply}} is used to apply the peak alignment. See its documentation page for more details on additional objects available to the environment installed to the peak alignment function.
 }
 \value{
-    An object of class \code{\linkS4class{MSImageSet}} with the peak aligned spectra.
+    An object of class \code{\linkS4class{MSImagingExperiment}} with the peak aligned spectra.
 }
 \author{
 	Kylie A. Bemis
 }
 \seealso{
     \code{\linkS4class{MSImagingExperiment}},
-    \code{\linkS4class{MSImageSet}},
     \code{\link{peakPick}},
     \code{\link{peakFilter}},
     \code{\link{peakBin}},
-    \code{\link{reduceDimension}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

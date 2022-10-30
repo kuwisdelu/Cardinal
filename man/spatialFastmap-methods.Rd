@@ -8,11 +8,6 @@
 \alias{spatialFastmap,SparseImagingExperiment-method}
 \alias{summary,SpatialFastmap2-method}
 
-\alias{spatialFastmap,SImageSet-method}
-\alias{summary,SpatialFastmap-method}
-\alias{print.summary.SpatialFastmap}
-\alias{plot.summary.SpatialFastmap}
-
 \title{Spatially-aware FastMap projection}
 \description{
 	Performs spatially-aware FastMap projection.
@@ -25,11 +20,6 @@
     iter.max = 1, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{SpatialFastmap2}(object, \dots)
-
-\S4method{spatialFastmap}{SImageSet}(x, r = 1, ncomp = 3,
-    method = c("gaussian", "adaptive"),
-    metric = c("average", "correlation", "neighborhood"),
-    iter.max = 1, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset for which to calculate the FastMap components.}

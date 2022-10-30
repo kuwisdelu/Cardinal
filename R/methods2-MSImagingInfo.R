@@ -17,16 +17,6 @@ setValidity("MSImagingInfo", .valid.MSImagingInfo)
 
 # create MSImagingInfo
 
-setMethod("msiInfo", "MSImageSet",
-	function(object, mz.type = "32-bit float",
-					intensity.type = "32-bit float", ...)
-	{
-		info <- .new.MSContinuousImagingInfo(object, mz.type, intensity.type)
-		info@metadata[["ibd binary type"]] <- "continuous"
-		if ( validObject(info) )
-			info
-	})
-
 setMethod("msiInfo", "MSImagingExperiment",
 	function(object, mz.type = "32-bit float",
 					intensity.type = "32-bit float", ...)

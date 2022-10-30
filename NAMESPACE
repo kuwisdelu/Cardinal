@@ -109,14 +109,6 @@ importFrom("viridisLite",
 importFrom("irlba",
 	"irlba")
 
-importFrom("lattice",
-	"xyplot",
-	"levelplot",
-	"panel.abline",
-	"panel.xyplot",
-	"panel.levelplot",
-	"simpleKey")
-
 importFrom("mclust",
 	"Mclust",
 	"mclustBIC")
@@ -327,13 +319,8 @@ exportMethods(
 	"pixelData<-",
 	"pixelNames",
 	"pixelNames<-",
-	"positionArray",
-	"positionArray<-",
-	"processingData",
-	"processingData<-",
 	"protocolData",
 	"protocolData<-",
-	"regeneratePositions",
 	"resultData",
 	"resultData<-",
 	"resultNames",
@@ -372,11 +359,8 @@ exportMethods(
 	"expinfo",
 	"notes",
 	"notes<-",
-	"embeddingMethod",
-	"imageShape",
 	"instrumentModel",
 	"instrumentVendor",
-	"inSituChemistry",
 	"ionizationType",
 	"lineScanDirection",
 	"massAnalyzerType",
@@ -386,14 +370,7 @@ exportMethods(
 	"scanDirection",
 	"scanPattern",
 	"scanPolarity",
-	"scanType",
-	"softwareName",
-	"softwareVersion",
-	"specimenOrigin",
-	"specimenType",
-	"stainingMethod",
-	"tissueThickness",
-	"tissueWash")
+	"scanType")
 
 exportMethods(
 	"baselineReduction",
@@ -421,7 +398,6 @@ exportMethods(
 	"spatialWeights")
 
 exportMethods(
-	"batchProcess",
 	"process",
 	"normalize",
 	"smooth",
@@ -433,9 +409,7 @@ exportMethods(
 	"peakPick",
 	"peakAlign",
 	"peakBin",
-	"peakFilter",
-	"reduceDimension",
-	"standardizeRuns")
+	"peakFilter")
 
 exportMethods("selectROI")
 

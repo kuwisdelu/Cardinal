@@ -46,7 +46,7 @@ readAnalyze(name, folder = getwd(), attach.only = TRUE,
 	If problems are encountered while trying to import imzML files, the files should be verified and fixed with the Java-based imzMLValidator application: https://gitlab.com/imzML/imzMLValidator/.
 }
 \value{
-	A \code{\linkS4class{MSImageSet}} object.
+	A \code{\linkS4class{MSImagingExperiment}} object.
 }
 \author{
 	Kylie A. Bemis

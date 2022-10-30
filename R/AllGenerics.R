@@ -47,31 +47,15 @@ setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
 setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
 setGeneric("showNames", function(object) standardGeneric("showNames"))
 
-#### Legacy generics ####
-## ----------------------
-setGeneric("positionArray", function(object) standardGeneric("positionArray"))
-setGeneric("positionArray<-", function(object, value) standardGeneric("positionArray<-"))
-setGeneric("regeneratePositions", function(object) standardGeneric("regeneratePositions"))
-
-#### MIAPE - Imaging ####
+#### imzML Metadata ####
 ## ----------------------
 setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
-setGeneric("specimenOrigin", function(object) standardGeneric("specimenOrigin"))
-setGeneric("specimenType", function(object) standardGeneric("specimenType"))
-setGeneric("stainingMethod", function(object) standardGeneric("stainingMethod"))
-setGeneric("tissueThickness", function(object) standardGeneric("tissueThickness"))
-setGeneric("tissueWash", function(object) standardGeneric("tissueWash"))
-setGeneric("embeddingMethod", function(object) standardGeneric("embeddingMethod"))
-setGeneric("inSituChemistry", function(object) standardGeneric("inSituChemistry"))
 setGeneric("matrixApplication", function(object) standardGeneric("matrixApplication"))
 setGeneric("pixelSize", function(object) standardGeneric("pixelSize"))
-setGeneric("imageShape", function(object) standardGeneric("imageShape"))
 setGeneric("instrumentVendor", function(object) standardGeneric("instrumentVendor"))
 setGeneric("massAnalyzerType", function(object) standardGeneric("massAnalyzerType"))
 setGeneric("ionizationType", function(object) standardGeneric("ionizationType"))
 setGeneric("scanPolarity", function(object) standardGeneric("scanPolarity"))
-setGeneric("softwareName", function(object) standardGeneric("softwareName")) # use MSnbase generic?
-setGeneric("softwareVersion", function(object) standardGeneric("softwareVersion")) # use MSnbase generic?
 setGeneric("scanType", function(object) standardGeneric("scanType"))
 setGeneric("scanPattern", function(object) standardGeneric("scanPattern"))
 setGeneric("scanDirection", function(object) standardGeneric("scanDirection"))
@@ -101,7 +85,6 @@ setGeneric("spatialApply", function(.object, .r, .fun, ...) standardGeneric("spa
 #### Pre-processing ####
 ## ---------------------
 setGeneric("process", function(object, ...) standardGeneric("process"))
-setGeneric("batchProcess", function(object, ...) standardGeneric("batchProcess"))
 setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("mzAlign", function(object, ref, ...) standardGeneric("mzAlign"))
@@ -111,8 +94,6 @@ setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
 setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
-setGeneric("reduceDimension", function(object, ref, ...) standardGeneric("reduceDimension"))
-setGeneric("standardizeRuns", function(object, ...) standardGeneric("standardizeRuns"))
 
 #### Data alignment and matching ####
 ## ----------------------------------

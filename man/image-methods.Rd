@@ -20,9 +20,12 @@
 \alias{image,SpatialDGMM-method}
 \alias{image,MeansTest-method}
 \alias{image,SegmentationTest-method}
+
 \alias{image,AnnotatedImage-method}
 \alias{image,AnnotatedImageList-method}
 \alias{image,AnnotatedImagingExperiment-method}
+
+\alias{image3D}
 
 \alias{image3D,SparseImagingExperiment-method}
 \alias{image3D,PCA2-method}
@@ -34,30 +37,6 @@
 \alias{image3D,MeansTest-method}
 \alias{image3D,SegmentationTest-method}
 
-\alias{image,SImageSet-method}
-\alias{image,MSImageSet-method}
-\alias{image,ResultSet-method}
-\alias{image,CrossValidated-method}
-\alias{image,PCA-method}
-\alias{image,PLS-method}
-\alias{image,OPLS-method}
-\alias{image,SpatialFastmap-method}
-\alias{image,SpatialKMeans-method}
-\alias{image,SpatialShrunkenCentroids-method}
-
-\alias{image3D}
-\alias{image3D-methods}
-\alias{image3D,SImageSet-method}
-\alias{image3D,MSImageSet-method}
-\alias{image3D,ResultSet-method}
-\alias{image3D,CrossValidated-method}
-\alias{image3D,PCA-method}
-\alias{image3D,PLS-method}
-\alias{image3D,OPLS-method}
-\alias{image3D,SpatialFastmap-method}
-\alias{image3D,SpatialKMeans-method}
-\alias{image3D,SpatialShrunkenCentroids-method}
-
 \title{Plot an image of the pixel data of an imaging dataset}
 
 \description{
@@ -67,8 +46,6 @@
 \usage{
 \S4method{image}{formula}(x, data = environment(x), \dots,
     xlab, ylab, zlab, subset)
-
-#### Methods for Cardinal >= 2.x classes ####
 
 \S4method{image}{PositionDataFrame}(x, formula,
         groups = NULL,
@@ -172,78 +149,6 @@
         add = FALSE, \dots)
 
 \S4method{image}{AnnotatedImagingExperiment}(x, i, frame = 1, \dots)
-
-#### Methods for Cardinal 1.x classes ####
-
-\S4method{image}{SImageSet}(x, formula = ~ x * y,
-    feature,
-    feature.groups,
-    groups = NULL,
-    superpose = FALSE,
-    strip = TRUE,
-    key = superpose,
-    fun = mean,
-    normalize.image = c("none", "linear"),
-    contrast.enhance = c("none", "suppression", "histogram"),
-    smooth.image = c("none", "gaussian", "adaptive"),
-    \dots,
-    xlab, xlim,
-    ylab, ylim,
-    zlab, zlim,
-    layout,
-    asp = 1,
-    col = rainbow(nlevels(groups)),
-    col.regions = intensity.colors(100),
-    colorkey = !is3d,
-    subset = TRUE,
-    lattice = FALSE)
-
-\S4method{image3D}{SImageSet}(x, formula = ~ x * y * z, \dots)
-
-\S4method{image}{MSImageSet}(x, formula = ~ x * y,
-    feature = features(x, mz=mz),
-    feature.groups,
-    mz,
-    plusminus,
-    \dots)
-
-\S4method{image}{ResultSet}(x, formula,
-    model = pData(modelData(x)),
-    feature,
-    feature.groups,
-    superpose = TRUE,
-    strip = TRUE,
-    key = superpose,
-    \dots,
-    column,
-    col = if (superpose) rainbow(nlevels(feature.groups)) else "black",
-    lattice = FALSE)
-
-\S4method{image}{CrossValidated}(x, fold = 1:length(x), layout, \dots)
-
-\S4method{image}{PCA}(x, formula = substitute(mode ~ x * y),
-    mode = "scores",
-    \dots)
-
-\S4method{image}{PLS}(x, formula = substitute(mode ~ x * y),
-    mode = c("fitted", "scores", "y"),
-    \dots)
-
-\S4method{image}{OPLS}(x, formula = substitute(mode ~ x * y),
-    mode = c("fitted", "scores", "Oscores", "y"),
-    \dots)
-
-\S4method{image}{SpatialFastmap}(x, formula = substitute(mode ~ x * y),
-    mode = "scores",
-    \dots)
-
-\S4method{image}{SpatialShrunkenCentroids}(x, formula = substitute(mode ~ x * y),
-    mode = c("probabilities", "classes", "scores"),
-    \dots)
-
-\S4method{image}{SpatialKMeans}(x, formula = substitute(mode ~ x * y),
-    mode = "cluster",
-    \dots)
 }
 
 \arguments{
@@ -304,8 +209,6 @@
 
     \item{colorscale}{The color scale to use for the z-axis of image intensities. This may be either a vector of colors or a function which takes a single numeric argument \code{n} and generates a vector of colors of length \code{n}.}
 
-    \item{col.regions}{The default plotting color(s) for the z-axis of image intensities. Thus must be a vector of colors.}
-
     \item{colorkey}{Should a coloykey describing the z-axis be drawn with the plot?}
 
     \item{alpha.power}{Opacity scaling factor (1 is linear).}
@@ -330,17 +233,11 @@
 
     \item{interpolate}{Should any linear interpolation be done when plotting the image?}
 
-    \item{fold}{What folds of the cross-validation should be plotted.}
-
     \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
-
-    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
 
     \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ImagingResult} object. Renamed from \code{mode} to avoid ambiguity.}
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
-
-    \item{lattice}{Should lattice graphics be used to create the plot?}
 
     \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 

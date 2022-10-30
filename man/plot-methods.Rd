@@ -30,20 +30,6 @@
 \alias{plot,AnnotatedImageList,ANY-method}
 \alias{plot,AnnotatedImagingExperiment,ANY-method}
 
-\alias{plot,SImageSet,missing-method}
-\alias{plot,SImageSet,formula-method}
-\alias{plot,MSImageSet,missing-method}
-\alias{plot,MSImageSet,formula-method}
-\alias{plot,ResultSet,missing-method}
-\alias{plot,ResultSet,formula-method}
-\alias{plot,CrossValidated,missing-method}
-\alias{plot,PCA,missing-method}
-\alias{plot,PLS,missing-method}
-\alias{plot,OPLS,missing-method}
-\alias{plot,SpatialFastmap,missing-method}
-\alias{plot,SpatialKMeans,missing-method}
-\alias{plot,SpatialShrunkenCentroids,missing-method}
-
 \alias{setup.layout}
 
 \title{Plot a signal from the feature data of an imaging dataset}
@@ -53,9 +39,6 @@
 }
 
 \usage{
-
-#### Methods for Cardinal >= 2.x classes ####
-
 \S4method{plot}{DataFrame,ANY}(x, y, \dots)
 
 \S4method{plot}{XDataFrame,missing}(x, formula,
@@ -147,83 +130,6 @@
         add = FALSE, \dots)
 
 \S4method{plot}{AnnotatedImagingExperiment,ANY}(x, i, \dots)
-
-#### Methods for Cardinal 1.x classes ####
-
-\S4method{plot}{SImageSet,missing}(x, formula = ~ Feature,
-    pixel,
-    pixel.groups,
-    groups = NULL,
-    superpose = FALSE,
-    strip = TRUE,
-    key = FALSE,
-    fun = mean,
-    \dots,
-    xlab,
-    xlim,
-    ylab,
-    ylim,
-    layout,
-    type = 'l',
-    col = "black",
-    subset = TRUE,
-    lattice = FALSE)
-
-\S4method{plot}{MSImageSet,missing}(x, formula = ~ mz,
-    pixel = pixels(x, coord=coord),
-    pixel.groups,
-    coord,
-    plusminus,
-    \dots,
-    type = if (centroided(x)) 'h' else 'l')
-
-\S4method{plot}{ResultSet,missing}(x, formula,
-    model = pData(modelData(x)),
-    pixel,
-    pixel.groups,
-    superpose = TRUE,
-    strip = TRUE,
-    key = superpose,
-    \dots,
-    xlab,
-    ylab,
-    column,
-    col = if (superpose) rainbow(nlevels(pixel.groups)) else "black",
-    lattice = FALSE)
-
-\S4method{plot}{CrossValidated,missing}(x, fold = 1:length(x), layout, \dots)
-
-\S4method{plot}{PCA,missing}(x, formula = substitute(mode ~ mz),
-    mode = "loadings",
-    type = 'h',
-    \dots)
-
-\S4method{plot}{PLS,missing}(x, formula = substitute(mode ~ mz),
-    mode = c("coefficients", "loadings",
-        "weights", "projection"),
-    type = 'h',
-    \dots)
-
-\S4method{plot}{OPLS,missing}(x, formula = substitute(mode ~ mz),
-    mode = c("coefficients", "loadings", "Oloadings",
-        "weights", "Oweights", "projection"),
-    type = 'h',
-    \dots)
-
-\S4method{plot}{SpatialFastmap,missing}(x, formula = substitute(mode ~ mz),
-    mode = "correlation",
-    type = 'h',
-    \dots)
-
-\S4method{plot}{SpatialShrunkenCentroids,missing}(x, formula = substitute(mode ~ mz),
-    mode = c("centers", "tstatistics"),
-    type = 'h',
-    \dots)
-
-\S4method{plot}{SpatialKMeans,missing}(x, formula = substitute(mode ~ mz),
-    mode = c("centers", "betweenss", "withinss"),
-    type = 'h',
-    \dots)
 }
 
 \arguments{
@@ -286,17 +192,11 @@
 
     \item{i}{Which data element should be plotted.}
 
-    \item{fold}{What folds of the cross-validation should be plotted.}
-
     \item{model}{A vector or \code{list} specifying which fitted model to plot. If this is a vector, it should give a subset of the rows of \code{modelData(x)} to use for plotting. Otherwise, it should be a list giving the values of parameters in \code{modelData(x)}.}
-
-    \item{mode}{What kind of results should be plotted. This is the name of the object to plot in the \code{ResultSet} object.}
 
     \item{values}{What kind of results should be plotted. This is the name of the object to plot in the \code{ImagingResult} object. Renamed from \code{mode} to avoid ambiguity.}
 
     \item{column}{What columns of the results should be plotted. If the results are a matrix, this corresponds to the columns to be plotted, which can be indicated either by numeric index or by name.}
-
-    \item{lattice}{Should lattice graphics be used to create the plot?}
 
     \item{add}{Should the method call \code{plot.new()} or be added to the current plot?}
 }

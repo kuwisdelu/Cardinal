@@ -8,11 +8,6 @@
 \alias{spatialKMeans,SparseImagingExperiment-method}
 \alias{summary,SpatialKMeans2-method}
 
-\alias{spatialKMeans,SImageSet-method}
-\alias{summary,SpatialKMeans-method}
-\alias{print.summary.SpatialKMeans}
-\alias{plot.summary.SpatialKMeans}
-
 \title{Spatially-aware k-means clustering}
 \description{
     Performs spatially-aware (SA) or spatially-aware structurally-adaptive (SASA) clustering of imaging data. The data are first projected into an embedded feature space where spatial structure is maintained using the Fastmap algorithm, and then ordinary k-means clustering is performed on the projected dataset.
@@ -26,13 +21,6 @@
     ncomp = 10, BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{SpatialKMeans2}(object, \dots)
-
-\S4method{spatialKMeans}{SImageSet}(x, r = 1, k = 3,
-    method = c("gaussian", "adaptive"),
-    iter.max = 10, nstart = 10,
-    algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
-        "MacQueen"),
-    ncomp = 10, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset to cluster.}

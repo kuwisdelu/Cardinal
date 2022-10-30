@@ -7,7 +7,6 @@
 
 \alias{smoothSignal}
 \alias{smoothSignal-methods}
-\alias{smoothSignal,MSImageSet-method}
 \alias{smoothSignal,SparseImagingExperiment-method}
 
 \alias{smoothSignal.gaussian}
@@ -23,11 +22,6 @@
 
 \S4method{smoothSignal}{SparseImagingExperiment}(object, method = c("gaussian", "sgolay", "ma"), \dots)
 
-\S4method{smoothSignal}{MSImageSet}(object, method = c("gaussian", "sgolay", "ma"),
-    \dots,
-    pixel = pixels(object),
-    plot = FALSE)
-
 ## Gaussian smoothing
 smoothSignal.gaussian(x, sd=window/4, window=5, \dots)
 
@@ -40,8 +34,6 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 \arguments{
     \item{object}{An imaging dataset.}
     \item{method}{The smoothing method to use.}
-    \item{pixel}{The pixels to smooth. If less than the extent of the dataset, this will result in a subset of the data being processed.}
-    \item{plot}{Plot each pixel while it is being processed?}
     \item{\dots}{Additional arguments passed to the smoothing method.}
     \item{x}{The signal or dataset to be smoothed.}
     \item{sd}{The standard deviation for the Gaussian kernel.}
@@ -69,7 +61,6 @@ smoothSignal.ma(x, coef=rep(1, window + 1 - window \%\% 2), window=5, \dots)
 }
 \seealso{
     \code{\linkS4class{MSImagingExperiment}},
-    \code{\linkS4class{MSImageSet}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

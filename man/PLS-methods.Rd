@@ -11,25 +11,13 @@
 \alias{OPLS-class}
 \alias{OPLS-methods}
 
+\alias{PLS,SparseImagingExperiment-method}
+\alias{OPLS,SparseImagingExperiment-method}
 \alias{PLS,SparseImagingExperiment,ANY-method}
 \alias{OPLS,SparseImagingExperiment,ANY-method}
 \alias{predict,PLS2-method}
 \alias{fitted,PLS2-method}
 \alias{summary,PLS2-method}
-
-\alias{PLS,SImageSet,matrix-method}
-\alias{PLS,SImageSet,ANY-method}
-\alias{predict,PLS-method}
-\alias{summary,PLS-method}
-\alias{print.summary.PLS}
-\alias{plot.summary.PLS}
-
-\alias{OPLS,SImageSet,matrix-method}
-\alias{OPLS,SImageSet,ANY-method}
-\alias{predict,OPLS-method}
-\alias{summary,OPLS-method}
-\alias{print.summary.OPLS}
-\alias{plot.summary.OPLS}
 
 \title{Partial least squares}
 \description{
@@ -47,27 +35,6 @@
 \S4method{fitted}{PLS2}(object, \dots)
 
 \S4method{summary}{PLS2}(object, \dots)
-
-\S4method{PLS}{SImageSet,matrix}(x, y, ncomp = 3,
-    method = "nipals",
-    center = TRUE,
-    scale = FALSE,
-    iter.max = 100, \dots)
-
-\S4method{PLS}{SImageSet,ANY}(x, y, \dots)
-
-\S4method{OPLS}{SImageSet,matrix}(x, y, ncomp = 3,
-    method = "nipals",
-    center = TRUE,
-    scale = FALSE,
-    keep.Xnew = TRUE,
-    iter.max = 100, \dots)
-
-\S4method{OPLS}{SImageSet,ANY}(x, y, \dots)
-
-\S4method{predict}{PLS}(object, newx, newy, \dots)
-
-\S4method{predict}{OPLS}(object, newx, newy, keep.Xnew = TRUE, \dots)
 }
 \arguments{
     \item{x}{The imaging dataset on which to perform partial least squares.}
@@ -81,7 +48,6 @@
     \item{object}{The result of a previous call to \code{\link{PLS}}.}
     \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link{PLS}} object.}
     \item{newy}{Optionally, a new response from which residuals should be calcualted.}
-    \item{keep.Xnew}{Should the new data matrix be kept after filtering out the orthogonal variation?}
 }
 \value{
     An object of class \code{PLS2}, which is a \code{ImagingResult}, or an object of class \code{PLS}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:

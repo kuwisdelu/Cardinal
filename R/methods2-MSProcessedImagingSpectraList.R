@@ -48,7 +48,7 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 	fun <- function(x) {
 		if ( !inherits(x, "sparse_matc") ) {
 			tol <- c(absolute=min(abs(diff(mz))) / 2)
-			keys <- rep_vt(list(mz), length.out=ncol(x))
+			keys <- mz
 			if ( inherits(x, "matter_matc") ) {
 				values <- as(x, "matter_list")
 			} else {

@@ -155,18 +155,18 @@ summarizeFeatures <- function(x, FUN = "mean", ...) {
 	if ( by == "pixel" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by pixel ...")
 		ans <- colStats(iData(object), stat=STATS,
-			group=groups, na.rm=TRUE, drop=FALSE,
+			group=groups, na.rm=TRUE, simplify=FALSE,
 			nchunks=getCardinalNumBlocks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	} else if ( by == "feature" ) {
 		.message("summarizing ", paste0(labels, collapse=" "), " by feature ...")
 		ans <- rowStats(iData(object), stat=STATS,
-			group=groups, na.rm=TRUE, drop=FALSE,
+			group=groups, na.rm=TRUE, simplify=FALSE,
 			nchunks=getCardinalNumBlocks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM)
 	}
-	ans
+	lapply(ans, unclass)
 }
 

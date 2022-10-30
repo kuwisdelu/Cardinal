@@ -42,7 +42,6 @@
     \code{\linkS4class{MSImagingExperiment}},
     \code{\link{mzAlign}},
     \code{\link{peakBin}},
-    \code{\link{reduceDimension}},
     \code{\link{pixelApply}},
     \code{\link{process}}
 }

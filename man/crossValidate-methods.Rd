@@ -7,15 +7,10 @@
 \alias{crossValidate}
 \alias{crossValidate-methods}
 
-\alias{cvApply,SImageSet-method}
 \alias{cvApply,SparseImagingExperiment-method}
 \alias{crossValidate,SparseImagingExperiment-method}
 \alias{crossValidate,MSImagingExperiment-method}
 \alias{summary,CrossValidated2-method}
-
-\alias{summary,CrossValidated-method}
-\alias{print.summary.CrossValidated}
-\alias{plot.summary.CrossValidated}
 
 \title{Apply cross-validation to imaging analyses}
 \description{
@@ -42,8 +37,6 @@
         BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{summary}{CrossValidated2}(object, \dots)
-
-\S4method{cvApply}{SImageSet}(.x, .y, .fun, .fold = sample, \dots)
 }
 \arguments{
     \item{.x}{An imaging dataset.}
