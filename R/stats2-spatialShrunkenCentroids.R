@@ -269,8 +269,8 @@ setAs("SpatialShrunkenCentroids", "SpatialShrunkenCentroids2",
 	}
 	s0 <- median(sd)
 	neighbors <- findNeighbors(x, r=r, dist=dist)
-	scores <- chunk_colapply(iData(x), FUN=fun,
-		depends=neighbors, verbose=FALSE,
+	scores <- chunk_colapply(iData(x), FUN=fun, depends=neighbors,
+		simplify=rbind, verbose=FALSE,
 		nchunks=getCardinalNumBlocks(),
 		BPPARAM=BPPARAM)
 	if ( is.null(priors) && !is.null(class) )

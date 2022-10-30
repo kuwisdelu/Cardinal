@@ -74,18 +74,22 @@ setAs("SpatialKMeans", "SpatialKMeans2",
 	colnames(centers) <- levels(cluster)
 	# calculate correlation with clusters
 	do_rbind <- function(ans) do.call("rbind", ans)
-	corr <- featureApply(x, function(xbl) {
-		t(apply(xbl, 1, function(xi) {
-			vapply(levels(cluster), function(l) {
-				mask <- cluster == l
-				if ( all(!mask) ) {
-					0
-				} else {
-					cor(xi, mask)
-				}
-			}, numeric(1))
-		}))
-	}, .simplify=do_rbind, .verbose=FALSE, .view="chunk", BPPARAM=BPPARAM)
+	corr <- chunk_rowapply(iData(x),
+		function(xbl) {
+			t(apply(xbl, 1, function(xi) {
+				vapply(levels(cluster), function(l) {
+					mask <- cluster == l
+					if ( all(!mask) ) {
+						0
+					} else {
+						cor(xi, mask)
+					}
+				}, numeric(1))
+			}))
+		},
+		simplify=rbind, verbose=FALSE,
+		nchunks=getCardinalNumBlocks(),
+		BPPARAM=BPPARAM)
 	colnames(corr) <- levels(cluster)
 	list(cluster=cluster, centers=centers, correlation=corr)
 }
