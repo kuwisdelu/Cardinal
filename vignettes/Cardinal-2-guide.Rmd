@@ -761,7 +761,7 @@ mse %>%
 	summarizeFeatures("mean", as="DataFrame")
 ```
 
-## Pull data into memory
+## Bring data into memory
 
 By default, *Cardinal 2* does not load the spectra from imzML and Analyze files into memory, but retrieves them from files when necessary.
 
@@ -777,19 +777,11 @@ spectra(mse)
 imageData(mse)
 ```
 
-Use `pull()` to pull all `imageData()` elements in an `MSImagingExperiment` into memory.
+Use `as.matrix()` on the `spectra()` to pull the spectra into memory as a dense matrix.
 
 ```{r}
-mse <- pull(mse)
+spectra(mse) <- as.matrix(spectra(mse))
 imageData(mse)
-```
-
-By default, the spectra from `MSProcessedImagingExperiment` objects will still be represented as sparse matrices after using `pull()`.
-
-To coerce sparse spectra to an R matrix as well, use `as.matrix=TRUE`.
-
-```{r eval=FALSE}
-mse3 <- pull(mse3, as.matrix=TRUE)
 ```
 
 ## Coercion to/from other classes
@@ -1171,23 +1163,6 @@ plot(mse, smean ~ mz)
 ```
 
 Note that `featureApply()` will typically be slower than `pixelApply()` for out-of-memory data for `MSProcessedImagingExperiment` objects, due to the way the data is stored.
-
-
-## Using `spatialApply()`
-
-`spatialApply()` is used to iterate over spatial neighborhoods of an imaging experiment.
-
-Rather than vectors, it operates on matrices, where each column is a mass spectrum from a different pixel in the neighborhood.
-
-```{r spatialApply, fig.height=4, fig.width=9}
-# calculate a spatially-smoothed TIC
-sptic <- spatialApply(mse, .r=1, .fun=mean)
-
-image(mse, sptic ~ x * y)
-```
-
-See `?spatialApply` for more details on attributes that are made available to the calling function (e.g., information about the neighborhood offsets, center pixel, etc.).
-
 
 
 

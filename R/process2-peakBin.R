@@ -13,8 +13,8 @@ setMethod("peakBin", c("MSImagingExperiment", "numeric"),
 			ppm = c("relative" = unname(tolerance) * 1e-6),
 			mz = c("absolute" = unname(tolerance)))
 		tol.ref <- switch(names(tol),
-			relative = "key",
-			absolute = "none")
+			relative = "x",
+			absolute = "abs")
 		type <- match.arg(type)
 		metadata(featureData(object))[["peakBin_ref"]] <- ref
 		object <- process(object, fun=peakBin_fun,

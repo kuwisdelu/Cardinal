@@ -53,7 +53,7 @@ data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 data <- data[,pData(data)$circle]
 
 # queue m/z binning
-data <- mzBin(data, resolution=10, units="mz", fun=max)
+data <- mzBin(data, resolution=10, units="mz", fun="max")
 
 # apply m/z binning
 data_binned <- process(data, plot=interactive())

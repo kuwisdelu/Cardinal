@@ -184,20 +184,21 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	scanList <- .make.scanList(x)
 	if ( any(lengths(mzData(x)) != lengths(intensityData(x))) )
 		.stop("lengths of intensity and m/z arrays differ")
-	mzLength <- Csizeof(mz.type) * lengths(mzData(x))
-	intensityLength <- Csizeof(intensity.type) * lengths(intensityData(x))
-	mzOffset <- c(16, 16 + cumsum(as.numeric(mzLength + intensityLength)[-ncol(x)]))
-	intensityOffset <- c(16 + cumsum(as.numeric(c(mzLength[1L], mzLength[-1L] + intensityLength[-ncol(x)]))))
+	mzLengths <- intensityLengths <- lengths(iData(x))
+	mzExtent <- Csizeof(mz.type) * mzLengths
+	intensityExtent <- Csizeof(intensity.type) * intensityLengths
+	mzOffset <- c(16, 16 + cumsum(as.numeric(mzExtent + intensityLengths)[-ncol(x)]))
+	intensityOffset <- c(16 + cumsum(as.numeric(c(mzExtent[1L], mzExtent[-1L] + intensityLengths[-ncol(x)]))))
 	mzArrayList <- DataFrame(
 		"external offset"=unname(mzOffset),
-		"external array length"=unname(lengths(mzData(x))),
-		"external encoded length"=unname(mzLength),
+		"external array length"=unname(mzLengths),
+		"external encoded length"=unname(mzExtent),
 		"binary data type"=rep(mz.type, ncol(x)),
 		check.names=FALSE)
 	intensityArrayList <- DataFrame(
 		"external offset"=unname(intensityOffset),
-		"external array length"=unname(lengths(intensityData(x))),
-		"external encoded length"=unname(intensityLength),
+		"external array length"=unname(intensityLengths),
+		"external encoded length"=unname(intensityExtent),
 		"binary data type"=rep(intensity.type, ncol(x)),
 		check.names=FALSE)
 	spectrumRepresentation <- ifelse(centroided(x),

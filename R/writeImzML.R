@@ -67,8 +67,8 @@ writeImzML <- function(object, name, folder = getwd(),
 			extent=intensityData(info)[["external array length"]],
 			type=Ctypeof(intensity.type))
 		for ( i in seq_len(ncol(x)) ) {
-			pmz[[i]] <- mzData(x)[[i]]
-			pspectra[[i]] <- intensityData(x)[[i]]
+			pmz[[i]] <- mzData(x, i)
+			pspectra[[i]] <- intensityData(x, i)
 		}
 	} else {
 		.stop("invalid 'ibd binary type' found")

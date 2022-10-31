@@ -47,8 +47,8 @@ mzAlign_fun <- function(x, tol, span, control, ...) {
 	if ( is.null(mz.ref) )
 		.stop("couldn't find reference peaks")
 	tol.ref <- switch(names(tol),
-		relative = "key",
-		absolute = "none")
+		relative = "x",
+		absolute = "abs")
 	max.test <- which(locmax(x))
 	mz.test <- mz[max.test]
 	i <- bsearch(mz.ref, mz.test, tol=tol, tol.ref=tol.ref)
