@@ -27,7 +27,7 @@ mzFilter_postfun <- function(object, ..., expr, freq.min, rm.zero, BPPARAM) {
 	} else {
 		stats <- c("nnzero")
 	}
-	summary <- rowStats(spectra(object), stat=stats, drop=FALSE,
+	summary <- rowStats(spectra(object), stat=stats, simplify=FALSE,
 		nchunks=getCardinalNumBlocks(),
 		verbose=getCardinalVerbose(),
 		BPPARAM=BPPARAM)

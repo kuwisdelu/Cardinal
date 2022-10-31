@@ -6,9 +6,9 @@ MSImagingExperiment <- function(imageData = matrix(nrow=0, ncol=0),
 	featureData = MassDataFrame(), pixelData = PositionDataFrame(),
 	metadata = list(), processing = SimpleList(), centroided=FALSE)
 {
-	if ( is.matrix(imageData) || is(imageData, "matter_matc") ) {
+	if ( is.matrix(imageData) || is(imageData, "matter_mat") ) {
 		imageData <- MSContinuousImagingSpectraList(imageData)
-	} else if ( is(imageData, "sparse_matc") ) {
+	} else if ( is(imageData, "sparse_mat") ) {
 		imageData <- MSProcessedImagingSpectraList(imageData)
 	} else if ( !is(imageData, "ImageArrayList") ) {
 		imageData <- ImageArrayList(imageData)

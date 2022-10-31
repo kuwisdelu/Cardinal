@@ -71,13 +71,13 @@
 	if ( is(ans, "matter_list") ) {
 		len <- floor(lengths(ans) / 2)
 		adata <- as.list(atomdata(ans))
-		mode <- as.character(adata$datamode)
-		keyData <- matter_list(datamode=mode,
+		mode <- as.character(adata$type)
+		keyData <- matter_list(type=mode,
 			offset=adata$offset, extent=len,
-			paths=paths(ans))
-		valueData <- matter_list(datamode=mode,
+			path=paths(ans))
+		valueData <- matter_list(type=mode,
 			offset=adata$offset + sizeof(mode) * len,
-			extent=len, paths=paths(ans))
+			extent=len, path=paths(ans))
 	} else {
 		keyData <- lapply(ans, function(x)
 			x[1:floor(length(x) / 2)])

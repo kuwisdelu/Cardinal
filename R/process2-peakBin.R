@@ -75,7 +75,7 @@ peakBin_prefun <- function(object, ..., BPPARAM) {
 
 peakBin_postfun <- function(object, ans, tol, ...) {
 	if ( is.matter(ans) ) {
-		data <- as(ans, "matter_matc")
+		data <- as(ans, "matter_mat")
 	} else {
 		data <- as.matrix(simplify2array(ans))
 	}

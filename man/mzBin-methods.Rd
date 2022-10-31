@@ -14,7 +14,7 @@
 \S4method{mzBin}{MSImagingExperiment,numeric}(object, ref, tolerance = NA, units = c("ppm", "mz"), fun=sum, \dots)
 
 \S4method{mzBin}{MSImagingExperiment,missing}(object, from=min(mz(object)), to=max(mz(object)), by,
-        resolution = NA, units = c("ppm", "mz"), fun=sum, \dots)
+        resolution = NA, units = c("ppm", "mz"), fun="sum", \dots)
 }
 \arguments{
     \item{object}{An imaging dataset.}

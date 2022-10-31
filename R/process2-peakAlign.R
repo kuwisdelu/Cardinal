@@ -68,7 +68,7 @@ peakAlign_postfun <- function(object, tol, ...) {
 		.stop("couldn't find reference peaks")
 	mz(object) <- ref
 	tolerance(object) <- tol
-	combiner(object) <- "max"
+	sampler(object) <- "max"
 	tol <- switch(names(tol),
 		relative = c(ppm = unname(tol) / 1e-6),
 		absolute = c(mz = unname(tol)))

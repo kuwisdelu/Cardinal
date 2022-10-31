@@ -50,9 +50,9 @@ peakPick_postfun <- function(object, ans, ...) {
 		"(min = ", min(numPeaks), ", max = ", max(numPeaks), ")")
 	tol <- c(absolute=min(abs(diff(mz(object)))) / 2)
 	data <- .collect_keyval_pairs(ans)
-	data <- sparse_mat(data, keys=mz(object),
-		nrow=nrow(object), ncol=ncol(object),
-		tolerance=tol, combiner="sum")
+	data <- sparse_mat(index=data$keys, data=data$values,
+		domain=mz(object), nrow=nrow(object), ncol=ncol(object),
+		tolerance=tol, sampler="sum")
 	imageData(object) <- MSProcessedImagingSpectraList(data)
 	object <- as(object, "MSProcessedImagingExperiment")
 	object

@@ -197,6 +197,7 @@ setMethod("process", "SparseImagingExperiment",
 		}
 		# apply processing to all pixels/features
 		procfun <- function(.x, .list, .plot, .par, ...) {
+			attr(.x, "mcols") <- featureData(object)
 			for ( i in seq_along(.list) ) {
 				has_plotfun <- !is.null(.list[[i]]$plotfun)
 				fun <- .list[[i]]$fun
@@ -245,7 +246,7 @@ setMethod("process", "SparseImagingExperiment",
 		} else {
 			if ( by_pixels ) {
 				if ( is(ans, "matter_list") ) {
-					iData(object) <- as(ans, "matter_matc")
+					iData(object) <- as(ans, "matter_mat")
 				} else {
 					iData(object) <- as.matrix(simplify2array(ans))	
 				}

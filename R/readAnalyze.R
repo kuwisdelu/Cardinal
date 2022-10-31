@@ -73,7 +73,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 		session_error=c("short"=1),
 		regular=c("char"=1),
 		hkey_un0=c("char"=1),
-		filename=file, filemode=mode, offset=0)
+		filename=file, offset=0)
 	image_dimension <- struct(
 		dim=c("ushort"=8),
 		unused8=c("short"=1),
@@ -97,7 +97,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 		verified=c("float"=1),
 		glmax=c("int"=1),
 		glmin=c("int"=1),
-		filename=file, filemode=mode, offset=40)
+		filename=file, offset=40)
 	data_history <- struct(
 		descript=c("char"=80),
 		aux_file=c("char"=24),
@@ -117,7 +117,7 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 		omin=c("int"=1),
 		smax=c("int"=1),
 		smin=c("int"=1),
-		filename=file, filemode=mode, offset=148)
+		filename=file, offset=148)
 	list(hk=header_key, dime=image_dimension, hist=data_history)
 }
 
@@ -129,12 +129,12 @@ readAnalyze <- function(name, folder = getwd(), attach.only = TRUE,
 
 .readAnalyzeT2M <- function(file, n) {
 	file <- normalizePath(file)
-	t2m <- matter_vec(datamode="float", paths=file, length=n)
+	t2m <- matter_vec(type="float", path=file, length=n)
 	t2m
 }
 
 .readAnalyzeIMG <- function(file, dim, type) {
 	file <- normalizePath(file)
-	img <- matter_mat(datamode=type, paths=file, nrow=dim[1], ncol=dim[2])
+	img <- matter_mat(type=type, path=file, nrow=dim[1], ncol=dim[2])
 	img
 }

@@ -63,12 +63,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 	intensity.ibdtype <- intensityData(info)[["binary data type"]]
 	# read binary data
 	if ( ibdtype == "continuous" ) {
-		mz <- matter_vec(paths=file,
-			datamode=Ctypeof(mz.ibdtype[1]),
+		mz <- matter_vec(path=file,
+			type=Ctypeof(mz.ibdtype[1]),
 			offset=mzData(info)[["external offset"]][1],
 			extent=mzData(info)[["external array length"]][1])
-		intensity <- matter_mat(paths=file,
-			datamode=Ctypeof(intensity.ibdtype[1]),
+		intensity <- matter_mat(path=file,
+			type=Ctypeof(intensity.ibdtype[1]),
 			offset=intensityData(info)[["external offset"]],
 			extent=intensityData(info)[["external array length"]])
 		if ( attach.only ) {
@@ -78,12 +78,12 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		}
 		mz <- mz[]
 	} else if ( ibdtype == "processed" ) {
-		mz <- matter_list(paths=file,
-			datamode=Ctypeof(mz.ibdtype),
+		mz <- matter_list(path=file,
+			type=Ctypeof(mz.ibdtype),
 			offset=mzData(info)[["external offset"]],
 			extent=mzData(info)[["external array length"]])
-		intensity <- matter_list(paths=file,
-			datamode=Ctypeof(intensity.ibdtype),
+		intensity <- matter_list(path=file,
+			type=Ctypeof(intensity.ibdtype),
 			offset=intensityData(info)[["external offset"]],
 			extent=intensityData(info)[["external array length"]])
 		if ( is.null(mass.range) || is.na(resolution) ) {
@@ -125,26 +125,17 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		if ( attach.only ) {
 			data <- list(keys=mz, values=intensity)
 			mz <- mzout
-			spectra <- sparse_mat(data, keys=mz,
-				nrow=length(mz), ncol=length(intensity),
-				tolerance=tol, combiner="sum")
+			spectra <- sparse_mat(index=data$keys, data=data$values,
+				domain=mz, nrow=length(mz), ncol=length(intensity),
+				tolerance=tol, sampler="sum")
 		} else {
-			if ( outclass == "MSImageSet" ) {
-				data <- list(keys=list(), values=list())
-				for ( i in seq_along(mz) ) {
-					mzi <- mz[[i]]
-					wh <- findInterval(mzi, mz.bins)
-					s <- as.vector(tapply(intensity[[i]], wh, sum))
-					data$keys[[i]] <- mzout[unique(wh)]
-					data$values[[i]] <- s
-				}
-			} else if ( outclass == "MSImagingExperiment") {
+			if ( outclass == "MSImagingExperiment") {
 				data <- list(keys=mz[], values=intensity[])
 			}
 			mz <- mzout
-			spectra <- sparse_mat(data, keys=mz,
-				nrow=length(mz), ncol=length(intensity),
-				tolerance=tol, combiner="sum")
+			spectra <- sparse_mat(index=data$keys, data=data$values,
+				domain=mz, nrow=length(mz), ncol=length(intensity),
+				tolerance=tol, sampler="sum")
 		}
 	}
 	# set up coordinates

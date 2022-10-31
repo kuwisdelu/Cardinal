@@ -12,6 +12,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 		}
 		width <- 2 * tolerance
 		units <- match.arg(units)
+		fun <- match.arg(fun, c("sum", "mean", "max", "min"))
 		if ( is.na(width) )
 			width <- 2 * .estimateMassResolution(mz(object), units)
 		if ( length(ref) >= nrow(object) ) {
@@ -31,7 +32,7 @@ setMethod("mzBin", c("MSImagingExperiment", "numeric"),
 
 setMethod("mzBin", c("MSImagingExperiment", "missing"),
 	function(object, from=min(mz(object)), to=max(mz(object)), by = resolution,
-			resolution = NA, units = c("ppm", "mz"), fun=sum, ...)
+			resolution = NA, units = c("ppm", "mz"), fun="sum", ...)
 	{
 		units <- match.arg(units)
 		if ( is.na(by) )
@@ -65,7 +66,7 @@ mzBin_fun <- function(x, ref, width, units, FUN) {
 
 mzBin_postfun <- function(object, ans, width, units, ...) {
 	if ( is.matter(ans) ) {
-		data <- as(ans, "matter_matc")
+		data <- as(ans, "matter_mat")
 	} else {
 		data <- as.matrix(simplify2array(ans))
 	}

@@ -121,8 +121,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 
 .get.MSContinuousImagingInfo <- function(x)
 {
-	if ( !is(iData(x), "matter_matc") )
-		.stop("intensity data are not a matter_matc object")
+	if ( !is(iData(x), "matter_mat") )
+		.stop("intensity data are not a matter_mat object")
 	if ( length(file) > 1 )
 		.stop("intensity data are from more than one file")
 	ibd <- as.list(atomdata(iData(x)))
@@ -212,8 +212,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 
 .get.MSProcessedImagingInfo <- function(x)
 {
-	if ( !is(iData(x), "sparse_matc") )
-		.stop("intensity data are not a sparse_matc object")
+	if ( !is(iData(x), "sparse_mat") )
+		.stop("intensity data are not a sparse_mat object")
 	if ( !is(mzData(x), "matter_list") )
 		.stop("m/z array is not a matter_list object")
 	if ( !is(intensityData(x), "matter_list") )

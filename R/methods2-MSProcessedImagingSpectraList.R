@@ -21,9 +21,9 @@ MSProcessedImagingSpectraList <- function(data) {
 .valid.MSProcessedImagingSpectraList <- function(object) {
 	errors <- NULL
 	data <- as(object, "SimpleList", strict=FALSE)
-	classes_ok <- sapply(data, function(x) inherits(x, "sparse_matc"))
+	classes_ok <- sapply(data, function(x) inherits(x, "sparse_mat"))
 	if ( length(data) > 0 && !all(classes_ok) )
-		errors <- c(errors , "elements must be of class 'sparse_matc'")
+		errors <- c(errors , "elements must be of class 'sparse_mat'")
 	if ( is.null(errors) ) TRUE else errors
 }
 
@@ -39,24 +39,18 @@ setMethod("[", "MSProcessedImagingSpectraList",
 
 setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 	function(x, i, j, ..., value) {
-		if ( !inherits(value, "sparse_matc") )
+		if ( !inherits(value, "sparse_mat") )
 			x <- .SimpleImageArrayList(x)
 		callNextMethod(x, i=i, ..., value=value)
 	})
 
 .to_MSProcessedImagingSpectraList <- function(from, mz) {
 	fun <- function(x) {
-		if ( !inherits(x, "sparse_matc") ) {
+		if ( !inherits(x, "sparse_mat") ) {
 			tol <- c(absolute=min(abs(diff(mz))) / 2)
-			keys <- mz
-			if ( inherits(x, "matter_matc") ) {
-				values <- as(x, "matter_list")
-			} else {
-				values <- lapply(seq_len(ncol(x)), function(i) x[,i])
-			}
-			x <- sparse_mat(list(keys=keys, values=values),
-				nrow=nrow(x), ncol=ncol(x), keys=mz,
-				tolerance=tol, combiner="sum")
+			x <- sparse_mat(data=x, index=mz,
+				nrow=nrow(x), ncol=ncol(x), domain=mz,
+				tolerance=tol, sampler="sum")
 		}
 		x
 	}
@@ -66,17 +60,17 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 
 # manipulate underlying sparse spectra data
 
-setMethod("keys", "MSProcessedImagingSpectraList",
-	function(object) keys(object[[1L]]))
+setMethod("domain", "MSProcessedImagingSpectraList",
+	function(x) domain(x[[1L]]))
 
-setReplaceMethod("keys", "MSProcessedImagingSpectraList",
-	function(object, value) {
-		fun <- function(x) {
-			keys(x) <- value
-			x
+setReplaceMethod("domain", "MSProcessedImagingSpectraList",
+	function(x, value) {
+		fun <- function(y) {
+			domain(y) <- value
+			y
 		}
-		data <- as(object, "SimpleList", strict=FALSE)
-		as(endoapply(data, fun), class(object))
+		data <- as(x, "SimpleList", strict=FALSE)
+		as(endoapply(data, fun), class(x))
 	})
 
 setMethod("tolerance", "MSProcessedImagingSpectraList",
@@ -92,13 +86,13 @@ setReplaceMethod("tolerance", "MSProcessedImagingSpectraList",
 		as(endoapply(data, fun), class(object))
 	})
 
-setMethod("combiner", "MSProcessedImagingSpectraList",
-	function(object) combiner(object[[1L]]))
+setMethod("sampler", "MSProcessedImagingSpectraList",
+	function(object) sampler(object[[1L]]))
 
-setReplaceMethod("combiner", "MSProcessedImagingSpectraList",
+setReplaceMethod("sampler", "MSProcessedImagingSpectraList",
 	function(object, value) {
 		fun <- function(x) {
-			combiner(x) <- value
+			sampler(x) <- value
 			x
 		}
 		data <- as(object, "SimpleList", strict=FALSE)

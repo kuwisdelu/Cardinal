@@ -112,7 +112,7 @@ setMethod("show", "SimpleImageList",
 			d <- paste0(dim(x), collapse=" x ")
 			paste0("<", d, ">")
 		})
-		mem <- sapply(data, function(x) format(matter::mem(x)))
+		mem <- sapply(data, function(x) format(matter::mem(x)[1L]))
 		nms <- c(sprintf("names(%d):",
 						length(names(object))), selectSome(nms))
 		cls <- c(sprintf("class(%d):",

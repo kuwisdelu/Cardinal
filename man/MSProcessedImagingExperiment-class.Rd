@@ -27,16 +27,15 @@
 
 \alias{tolerance,MSProcessedImagingExperiment-method}
 \alias{tolerance<-,MSProcessedImagingExperiment-method}
-\alias{combiner,MSProcessedImagingExperiment-method}
-\alias{combiner<-,MSProcessedImagingExperiment-method}
-\alias{keys,MSProcessedImagingSpectraList-method}
-\alias{keys<-,MSProcessedImagingSpectraList-method}
-\alias{keys<-,MSProcessedImagingSpectraList,ANY-method}
+\alias{sampler,MSProcessedImagingExperiment-method}
+\alias{sampler<-,MSProcessedImagingExperiment-method}
+\alias{domain,MSProcessedImagingSpectraList-method}
+\alias{domain<-,MSProcessedImagingSpectraList-method}
+\alias{domain<-,MSProcessedImagingSpectraList,ANY-method}
 \alias{tolerance,MSProcessedImagingSpectraList-method}
 \alias{tolerance<-,MSProcessedImagingSpectraList-method}
-\alias{combiner,MSProcessedImagingSpectraList-method}
-\alias{combiner<-,MSProcessedImagingSpectraList-method}
-\alias{pull,MSProcessedImagingExperiment-method}
+\alias{sampler,MSProcessedImagingSpectraList-method}
+\alias{sampler<-,MSProcessedImagingSpectraList-method}
 
 \alias{[,MSProcessedImagingSpectraList,ANY,ANY,ANY-method}
 \alias{[[<-,MSProcessedImagingSpectraList,ANY,ANY-method}

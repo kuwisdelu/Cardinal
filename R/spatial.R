@@ -34,7 +34,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 		as.integer(groups), as.integer(dist), PACKAGE="Cardinal")
 	if ( matrix ) {
 		ones <- lapply(nb, function(i) rep_len(1L, length(i)))
-		nb <- sparse_mat(data=list(keys=nb, values=ones),
+		nb <- sparse_mat(index=nb, data=ones,
 			nrow=length(nb), ncol=length(nb), rowMaj=TRUE)
 	}
 	attr(nb, "r") <- r

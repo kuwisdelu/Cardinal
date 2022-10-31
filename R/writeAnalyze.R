@@ -88,8 +88,8 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		.stop(paste0("couldn't create file '", file, "'"))
 	warn <- getOption("matter.cast.warning")
 	options(matter.cast.warning=FALSE)
-	t2m <- matter_vec(datamode="float", paths=file,
-		length=length(mz(x)), filemode="rw")
+	t2m <- matter_vec(type="float", path=file,
+		length=length(mz(x)), readonly=FALSE)
 	t2m[] <- mz(x)
 	options(matter.cast.warning=warn)
 	t2m
@@ -103,8 +103,8 @@ writeAnalyze <- function(object, name, folder = getwd(),
 	options(matter.cast.warning=FALSE)
 	if ( is3D(x) ) {
 		dim <- sapply(coord(x)[,1:3], max)
-		img <- matter_mat(datamode=type, paths=file,
-			nrow=nrow(x), ncol=prod(dim), filemode="rw")
+		img <- matter_mat(type=type, path=file,
+			nrow=nrow(x), ncol=prod(dim), readonly=FALSE)
 		img[] <- 0
 		for ( i in seq_len(ncol(x)) ) {
 			row <- coord(x)[i,1]
@@ -115,8 +115,8 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		}
 	} else {
 		dim <- sapply(coord(x)[,c(1,2)], max)
-		img <- matter_mat(datamode=type, paths=file,
-			nrow=nrow(x), ncol=prod(dim), filemode="rw")
+		img <- matter_mat(type=type, path=file,
+			nrow=nrow(x), ncol=prod(dim), readonly=FALSE)
 		img[] <- 0
 		for ( i in seq_len(ncol(x)) ) {
 			row <- coord(x)[i,1]

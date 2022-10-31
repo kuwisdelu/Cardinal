@@ -3,7 +3,7 @@
 
 setReplaceMethod("mz", "MSProcessedImagingExperiment",
 	function(object, value) {
-		if ( !all(mz(object@featureData) == keys(object@imageData)) )
+		if ( !all(mz(object@featureData) == domain(object@imageData)) )
 			return(callNextMethod(object, value))
 		if ( length(value) != length(mz(object)) ) {
 			if ( ncol(featureData(object)) > 0L ) {
@@ -17,7 +17,7 @@ setReplaceMethod("mz", "MSProcessedImagingExperiment",
 		} else {
 			mz(object@featureData) <- value
 		}
-		keys(object@imageData) <- value
+		domain(object@imageData) <- value
 		res <- attr(value, "resolution")
 		tol <- attr(value, "tolerance")
 		if ( !is.null(res) && is.null(tol) )
@@ -56,7 +56,7 @@ setReplaceMethod("imageData", "MSProcessedImagingExperiment",
 
 setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") ) {
+		if ( !inherits(value, "sparse_mat") ) {
 			x <- as(x, "MSImagingExperiment")
 			imageData(x) <- .SimpleImageArrayList(imageData(x))
 			iData(x, i, ...) <- value
@@ -68,7 +68,7 @@ setReplaceMethod("iData", c("MSProcessedImagingExperiment", "ANY"),
 
 setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
 	function(x, i, ..., value) {
-		if ( !inherits(value, "sparse_matc") ) {
+		if ( !inherits(value, "sparse_mat") ) {
 			x <- as(x, "MSImagingExperiment")
 			imageData(x) <- .SimpleImageArrayList(imageData(x))
 			iData(x, ...) <- value
@@ -79,11 +79,11 @@ setReplaceMethod("iData", c("MSProcessedImagingExperiment", "missing"),
 	})
 
 setMethod("mzData", "MSProcessedImagingExperiment",
-	function(object, ...) atomdata(iData(object))[["keys"]])
+	function(object, ...) atomindex(iData(object)))
 
 setReplaceMethod("mzData", "MSProcessedImagingExperiment",
 	function(object, ..., value) {
-		atomdata(iData(object))[["keys"]] <- value
+		atomindex(iData(object)) <- value
 		if ( validObject(object) )
 			object
 	})
@@ -107,27 +107,12 @@ setReplaceMethod("tolerance", "MSProcessedImagingExperiment",
 		object
 	})
 
-setMethod("combiner", "MSProcessedImagingExperiment",
-	function(object) combiner(imageData(object)))
+setMethod("sampler", "MSProcessedImagingExperiment",
+	function(object) sampler(imageData(object)))
 
-setReplaceMethod("combiner", "MSProcessedImagingExperiment",
+setReplaceMethod("sampler", "MSProcessedImagingExperiment",
 	function(object, value) {
-		combiner(imageData(object)) <- value
+		sampler(imageData(object)) <- value
 		object
 	})
-
-# setMethod("pull", "MSProcessedImagingExperiment",
-# 	function(x, ..., as.matrix = FALSE) {
-# 		if ( as.matrix )
-# 			return(callNextMethod())
-# 		fun <- function(y) {
-# 			atomdata(y)[["keys"]] <- as.list(atomdata(y)[["keys"]])
-# 			atomdata(y)[["values"]] <- as.list(atomdata(y)[["values"]])
-# 			y
-# 		}
-# 		data <- as(imageData(x), "SimpleList", strict=FALSE)
-# 		imageData(x) <- as(endoapply(data, fun), "MSProcessedImagingSpectraList")
-# 		if ( validObject(x) )
-# 			x
-# 	})
 
