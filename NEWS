@@ -1,4 +1,13 @@
 
+CHANGES IN VERSION 2.99.1 [2022-10-31]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Updated vignettes for Cardinal 3
+    o Widened default m/z 'tolerance' for sparse spectra
+    o Switched to linear interpolation for sparse spectra
+
 CHANGES IN VERSION 2.99.0 [2022-10-26]
 -----------------------------------
 
