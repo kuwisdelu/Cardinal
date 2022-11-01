@@ -112,14 +112,14 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 				to=ceiling(mz.max),
 				ppm=resolution / 2) # seq.ppm == half-bin-widths
 			error <- (resolution / 2) * 1e-6 * mzout
-			tol <- c(relative = (resolution / 2) * 1e-6)
+			tol <- c(relative = resolution * 1e-6)
 		} else {
 			mzout <- seq(
 				from=floor(mz.min),
 				to=ceiling(mz.max),
 				by=resolution)  # seq == full-bin-widths
 			error <- rep(resolution / 2, length(mzout))
-			tol <- c(absolute = resolution / 2)
+			tol <- c(absolute = resolution)
 		}
 		mz.bins <- c(mzout[1] - error[1], mzout + error)
 		if ( attach.only ) {
@@ -127,7 +127,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			mz <- mzout
 			spectra <- sparse_mat(index=data$keys, data=data$values,
 				domain=mz, nrow=length(mz), ncol=length(intensity),
-				tolerance=tol, sampler="sum")
+				tolerance=tol, sampler="linear")
 		} else {
 			if ( outclass == "MSImagingExperiment") {
 				data <- list(keys=mz[], values=intensity[])
@@ -135,7 +135,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			mz <- mzout
 			spectra <- sparse_mat(index=data$keys, data=data$values,
 				domain=mz, nrow=length(mz), ncol=length(intensity),
-				tolerance=tol, sampler="sum")
+				tolerance=tol, sampler="linear")
 		}
 	}
 	# set up coordinates

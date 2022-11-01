@@ -10,8 +10,8 @@ setMethod("mz", "missing",
 			ppm = seq.ppm(from=from, to=to, ppm=halfwidth),
 			mz = seq(from=from, to=to, by=2 * halfwidth))
 		tol <- switch(units,
-			ppm = c(relative = halfwidth * 1e-6),
-			mz = c(absolute = halfwidth))
+			ppm = c(relative = 2 * halfwidth * 1e-6),
+			mz = c(absolute = 2 * halfwidth))
 		res <- switch(units,
 			ppm = c(ppm = 2 * halfwidth),
 			mz = c(mz = 2 * halfwidth))

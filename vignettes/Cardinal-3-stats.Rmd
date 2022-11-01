@@ -1,12 +1,12 @@
 ---
-title: "_Cardinal 2_: Statistical methods for mass spectrometry imaging"
+title: "_Cardinal 3_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
 date: "Revised: May 16, 2019"
 output:
   BiocStyle::html_document:
   toc: true
 vignette: >
-  %\VignetteIndexEntry{2. Cardinal 2: Statistical methods for mass spectrometry imaging}
+  %\VignetteIndexEntry{2. Cardinal 3: Statistical methods for mass spectrometry imaging}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,7 +24,7 @@ RNGkind("Mersenne-Twister")
 
 # Introduction 
 
-*Cardinal 2* provides statistical methods for both supervised and unsupervised analysis of mass spectrometry (MS) imaging experiments. Class comparison can also be performed, provided an appropriate experimental design and sample size.
+*Cardinal 3* provides statistical methods for both supervised and unsupervised analysis of mass spectrometry (MS) imaging experiments. Class comparison can also be performed, provided an appropriate experimental design and sample size.
 
 Before statistical analysis, it is important to identify the statistical goal of the experiment:
 

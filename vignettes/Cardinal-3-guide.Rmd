@@ -1,7 +1,7 @@
 ---
-title: "_Cardinal 2_: User guide for mass spectrometry imaging analysis"
+title: "_Cardinal 3_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 21, 2020"
+date: "Revised: October 31, 2022"
 output:
   BiocStyle::html_document:
   toc: true
@@ -24,8 +24,19 @@ RNGkind("Mersenne-Twister")
 
 # Introduction 
 
+## Cardinal 3
 
-*Cardinal 2* provides new classes and methods for the manipulation, transformation, visualization, and analysis of imaging experiments--specifically mass spectrometry (MS) imaging experiments.
+*Cardinal 3* lays the groundwork for future improvements to the existing toolbox of pre-processing, visualization, and statistical methods for mass spectrometry (MS) imaging experiments. *Cardinal* has been updated to support *matter 2*, and legacy support has been dropped.
+
+Despite minimal user-visible changes in *Cardinal* (at first), the entire *matter* package that provides the backend for *Cardinal*'s computing on larger-than-memory MS imaging datasets has been rewritten. This should provide more robust support for larger-than-memory computations, as well as greater flexibility in handling many data files in the future.
+
+Further changes will be coming soon to *Cardinal 3* in future point updates that are aimed to greatly improve the user experience and simplify the code that users need to write to process and analyze MS imaging data.
+
+Major improvements from earlier versions are further described below.
+
+## Cardinal 2
+
+*Cardinal 2* provides new classes and methods for the manipulation, transformation, visualization, and analysis of imaging experiments--specifically MS imaging experiments.
 
 MS imaging is a rapidly advancing field with consistent improvements in instrumentation for both MALDI and DESI imaging experiments. Both mass resolution and spatial resolution are steadily increasing, and MS imaging experiments grow increasingly complex.
 
@@ -191,7 +202,7 @@ resolution(mse3)
 The resolution can be set to change how the binning is performed.
 
 ```{r resolution-update-1}
-resolution(mse3) <- c(ppm=400)
+resolution(mse3) <- c(ppm=200)
 ```
 
 Changing the binned mass resolution will typically change the effective dimensions of the experiment.

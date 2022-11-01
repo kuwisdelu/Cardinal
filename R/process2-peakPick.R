@@ -52,7 +52,7 @@ peakPick_postfun <- function(object, ans, ...) {
 	data <- .collect_keyval_pairs(ans)
 	data <- sparse_mat(index=data$keys, data=data$values,
 		domain=mz(object), nrow=nrow(object), ncol=ncol(object),
-		tolerance=tol, sampler="sum")
+		tolerance=tol, sampler="max")
 	imageData(object) <- MSProcessedImagingSpectraList(data)
 	object <- as(object, "MSProcessedImagingExperiment")
 	object

@@ -47,10 +47,10 @@ setReplaceMethod("[[", "MSProcessedImagingSpectraList",
 .to_MSProcessedImagingSpectraList <- function(from, mz) {
 	fun <- function(x) {
 		if ( !inherits(x, "sparse_mat") ) {
-			tol <- c(absolute=min(abs(diff(mz))) / 2)
+			tol <- c(absolute=min(abs(diff(mz))))
 			x <- sparse_mat(data=x, index=mz,
 				nrow=nrow(x), ncol=ncol(x), domain=mz,
-				tolerance=tol, sampler="sum")
+				tolerance=tol, sampler="none")
 		}
 		x
 	}
