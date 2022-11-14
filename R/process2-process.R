@@ -30,12 +30,12 @@ setMethod("process", "MSImagingExperiment",
 			xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 				mustWork=FALSE)
 			if ( file.exists(xmlpath) )
-				.stop("file ", xmlpath, " already exists")
+				.warning("file ", xmlpath, " already exists and will be overwritten")
 			# make ibd filename
 			ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
 				mustWork=FALSE)
 			if ( file.exists(ibdpath) )
-				.stop("file ", ibdpath, " already exists")
+				.warning("file ", ibdpath, " already exists and will be overwritten")
 			# make uuid
 			id <- uuid(uppercase=FALSE)
 			pid <- matter_vec(length=16, paths=ibdpath, filemode="rw", datamode="raw")

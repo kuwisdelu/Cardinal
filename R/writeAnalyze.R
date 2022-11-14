@@ -21,13 +21,16 @@ writeAnalyze <- function(object, name, folder = getwd(),
 		# check for files
 		hdrpath <- normalizePath(file.path(folder, paste(name, ".hdr", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(hdrpath) ) .stop("file ", hdrpath, " already exists")
+		if ( file.exists(hdrpath) )
+			.warning("file ", hdrpath, " already exists and will be overwritten")
 		t2mpath <- normalizePath(file.path(folder, paste(name, ".t2m", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(t2mpath) ) .stop("file ", t2mpath, " already exists")
+		if ( file.exists(t2mpath) )
+			.warning("file ", t2mpath, " already exists and will be overwritten")
 		imgpath <- normalizePath(file.path(folder, paste(name, ".img", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(imgpath) ) .stop("file ", imgpath, " already exists")
+		if ( file.exists(imgpath) )
+			.warning("file ", imgpath, " already exists and will be overwritten")
 		# pixel datatype
 		datatype <- Ctypeof(intensity.type)
 		# write image file
