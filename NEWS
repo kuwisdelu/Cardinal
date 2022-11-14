@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 3.0.1 [2022-11-14]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Overwriting existing MSI files is now a warning instead of an error
+
+BUG FIXES
+
+    o Fixed issue in 'peakAlign()' reference m/z's being sort and unique
+
 CHANGES IN VERSION 2.99.1 [2022-10-31]
 -----------------------------------
 

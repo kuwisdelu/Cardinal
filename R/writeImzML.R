@@ -18,10 +18,12 @@ writeImzML <- function(object, name, folder = getwd(),
 		# check for files
 		xmlpath <- normalizePath(file.path(folder, paste(name, ".imzML", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(xmlpath) ) .stop("file ", xmlpath, " already exists")
+		if ( file.exists(xmlpath) )
+			.warning("file ", xmlpath, " already exists and will be overwritten")
 		ibdpath <- normalizePath(file.path(folder, paste(name, ".ibd", sep="")),
 			mustWork=FALSE)
-		if ( file.exists(ibdpath) ) .stop("file ", ibdpath, " already exists")
+		if ( file.exists(ibdpath) )
+			.warning("file ", ibdpath, " already exists and will be overwritten")
 		# read ibd file
 		.message("writing ibd file '", ibdpath, "'")
 		info <- .writeIbd(object, ibdpath, mz.type, intensity.type)
