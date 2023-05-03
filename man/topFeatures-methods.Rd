@@ -70,7 +70,7 @@
     \item{object}{The results of an imaging experiment analysis.}
     \item{n}{The number of top-ranked records to return.}
     \item{model}{If more than one model was fitted, results from which should be shown? Defaults to all models in the object This can name the models explicitly or specify a list of parameter values.}
-    \item{p.adjust}{The \code{p.adjust} method used adjust p-values to account for multiple testing. Defaults to Benjamini \& Hochberg ("BH") to control the false discovery rate (FDR).}
+    \item{p.adjust}{The \code{p.adjust} method used adjust p-values to account for multiple testing. Defaults to Benjamini and Hochberg ("BH") to control the false discovery rate (FDR).}
     \item{\dots}{For newer classes, additional arguments to be passed to \code{filter}, to further filter the results.}
     \item{type}{How should the records be ranked? '+' shows greatest values first (decreasing order), '-' shows least values first (increasing order), and 'b' uses decreasing order based on absolute values.}
     \item{sort.by}{What variable should be used for sorting?}
