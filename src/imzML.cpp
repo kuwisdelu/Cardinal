@@ -979,10 +979,10 @@ void write_spectra(pugi::xml_node run, int n)
 		else
 			spectrum = spectrumList.append_copy(spectrumList.first_child());
 		// write spectrum id
-		sprintf(buffer, "Spectrum=%d", i+1);
+		snprintf(buffer, 100, "Spectrum=%d", i+1);
 		spectrum.attribute("id").set_value(buffer);
 		// write spectrum index
-		sprintf(buffer, "%d", i+1);
+		snprintf(buffer, 100, "%d", i+1);
 		spectrum.attribute("index").set_value(buffer);
 	}
 }
@@ -1006,30 +1006,30 @@ void write_scan_metadata(pugi::xml_node run, SEXP scanMetadata)
 	while ( i < n && spectrum )
 	{
 		// write position x
-		sprintf(buffer, "%d", INTEGER(x)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(x)[i]);
 		set_position_x(spectrum, buffer);
 		
 		// write position y
-		sprintf(buffer, "%d", INTEGER(y)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(y)[i]);
 		set_position_y(spectrum, buffer);
 
 		if ( !Rf_isNull(z) ) {
-			sprintf(buffer, "%d", INTEGER(z)[i]);
+			snprintf(buffer, 100, "%d", INTEGER(z)[i]);
 			set_position_z(spectrum, buffer);
 		}
 
 		if ( !Rf_isNull(x3d) ) {
-			sprintf(buffer, "%f", REAL(x3d)[i]);
+			snprintf(buffer, 100, "%f", REAL(x3d)[i]);
 			set_3D_position_x(spectrum, buffer);
 		}
 
 		if ( !Rf_isNull(y3d) ) {
-			sprintf(buffer, "%f", REAL(y3d)[i]);
+			snprintf(buffer, 100, "%f", REAL(y3d)[i]);
 			set_3D_position_y(spectrum, buffer);
 		}
 
 		if ( !Rf_isNull(z3d) ) {
-			sprintf(buffer, "%f", REAL(z3d)[i]);
+			snprintf(buffer, 100, "%f", REAL(z3d)[i]);
 			set_3D_position_z(spectrum, buffer);
 		}
 
@@ -1060,15 +1060,15 @@ void write_mz_metadata(pugi::xml_node run, SEXP mzArrayList)
 		binaryDataArray = get_mzArray(spectrum);
 
 		// write offset
-		sprintf(buffer, "%ld", static_cast<long>(REAL(offset)[i]));
+		snprintf(buffer, 100, "%ld", static_cast<long>(REAL(offset)[i]));
 		set_external_offset(binaryDataArray, buffer);
 		
 		// write array length
-		sprintf(buffer, "%d", INTEGER(arrayLength)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(arrayLength)[i]);
 		set_external_array_length(binaryDataArray, buffer);
 
 		// write array length
-		sprintf(buffer, "%d", INTEGER(encodedLength)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(encodedLength)[i]);
 		set_external_encoded_length(binaryDataArray, buffer);
 
 		spectrum = spectrum.next_sibling();
@@ -1098,15 +1098,15 @@ void write_intensity_metadata(pugi::xml_node run, SEXP intensityArrayList)
 		binaryDataArray = get_intensityArray(spectrum);
 
 		// write offset
-		sprintf(buffer, "%ld", static_cast<long>(REAL(offset)[i]));
+		snprintf(buffer, 100, "%ld", static_cast<long>(REAL(offset)[i]));
 		set_external_offset(binaryDataArray, buffer);
 		
 		// write array length
-		sprintf(buffer, "%d", INTEGER(arrayLength)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(arrayLength)[i]);
 		set_external_array_length(binaryDataArray, buffer);
 
 		// write array length
-		sprintf(buffer, "%d", INTEGER(encodedLength)[i]);
+		snprintf(buffer, 100, "%d", INTEGER(encodedLength)[i]);
 		set_external_encoded_length(binaryDataArray, buffer);
 
 		spectrum = spectrum.next_sibling();

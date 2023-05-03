@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 3.2.1 [2023-5-2]
+-----------------------------------
+
+BUG FIXES
+
+    o Cleaned up escaped LaTeX specials in documentation
+    o Fixed 'sprintf()' => 'snprintf()' warning in C code
+
 CHANGES IN VERSION 3.0.1 [2022-11-14]
 -----------------------------------
 
