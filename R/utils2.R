@@ -74,10 +74,10 @@
 		mode <- as.character(adata$type)
 		keyData <- matter_list(type=mode,
 			offset=adata$offset, extent=len,
-			path=paths(ans))
+			path=path(ans))
 		valueData <- matter_list(type=mode,
 			offset=adata$offset + sizeof(mode) * len,
-			extent=len, path=paths(ans))
+			extent=len, path=path(ans))
 	} else {
 		keyData <- lapply(ans, function(x)
 			x[1:floor(length(x) / 2)])

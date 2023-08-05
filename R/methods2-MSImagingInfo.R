@@ -135,7 +135,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		.stop("undefined m/z array byte width: ", mz.width)
 	}
 	pmz <- matter_vec(offset=16, extent=nrow(x),
-		datamode=Ctypeof(mz.type), paths=paths(iData(x)))
+		type=Ctypeof(mz.type), path=path(iData(x)))
 	mzcheck <- all.equal(pmz[], mz(x), tolerance=1e-3,
 						check.attributes=FALSE)
 	if ( isTRUE(mzcheck) ) {
@@ -163,7 +163,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
-	id <- matter_vec(length=16, paths=paths(iData(x)), datamode="raw")
+	id <- matter_vec(length=16, path=path(iData(x)), type="raw")
 	hash <- checksum(iData(x), algo="sha1")
 	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
 	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))
@@ -219,9 +219,9 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 		.stop("m/z array is not a matter_list object")
 	if ( !is(intensityData(x), "matter_list") )
 		.stop("intensity array is not a matter_list object")
-	if ( paths(mzData(x)) > 1 || paths(intensityData(x)) > 1 )
+	if ( path(mzData(x)) > 1 || path(intensityData(x)) > 1 )
 		.stop("m/z data or intensity data are from more than one file")
-	if ( paths(mzData(x)) != paths(intensityData(x)) )
+	if ( path(mzData(x)) != path(intensityData(x)) )
 		.stop("m/z data and intensity data are from different files")
 	mz.ibd <- as.list(atomdata(mzData(x)))
 	mz.mode <- as.character(unique(mz.ibd$datamode))
@@ -251,7 +251,7 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	spectrumRepresentation <- ifelse(centroided(x),
 		"centroid spectrum", "profile spectrum")
 	experimentMetadata <- list("spectrum representation"=spectrumRepresentation)
-	id <- matter_vec(length=16, paths=paths(intensityData(x)), datamode="raw")
+	id <- matter_vec(length=16, path=path(intensityData(x)), type="raw")
 	hash <- checksum(intensityData(x), algo="sha1")
 	experimentMetadata[["universally unique identifier"]] <- make.uuid(id[])
 	experimentMetadata[["ibd SHA-1"]] <- tolower(as.character(hash))

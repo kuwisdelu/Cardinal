@@ -38,7 +38,7 @@ setMethod("process", "MSImagingExperiment",
 				.warning("file ", ibdpath, " already exists and will be overwritten")
 			# make uuid
 			id <- uuid(uppercase=FALSE)
-			pid <- matter_vec(length=16, paths=ibdpath, filemode="rw", datamode="raw")
+			pid <- matter_vec(length=16, path=ibdpath, readonly=FALSE, type="raw")
 			pid[] <- id$bytes
 			# check output type
 			if ( "peakPick" %in% queue$info$label ) {
@@ -64,7 +64,7 @@ setMethod("process", "MSImagingExperiment",
 				warn <- getOption("matter.cast.warning")
 				options(matter.cast.warning=FALSE)
 				pmz <- matter_vec(offset=16, extent=length(mzref),
-					paths=ibdpath, filemode="rw", datamode="float")
+					path=ibdpath, readonly=FALSE, type="float")
 				pmz[] <- mzref
 				options(matter.cast.warning=warn)
 			}

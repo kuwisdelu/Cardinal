@@ -39,8 +39,8 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 		maxs <- findpeaks(s)
 		l1 <- attr(maxs, "left_bounds")
 		l2 <- attr(maxs, "right_bounds")
-		a <- binvec(s * mz(object), l1, l2, method="sum")
-		b <- binvec(s, l1, l2, method="sum")
+		a <- binvec(s * mz(object), l1, l2, stat="sum")
+		b <- binvec(s, l1, l2, stat="sum")
 		ref <- sort(unique(a / b))
 		metadata(featureData(object))[["peakAlign_ref"]] <- ref
 		peakAlign(object, ...)
@@ -54,8 +54,8 @@ peakAlign_prefun <- function(object, ..., BPPARAM) {
 	maxs <- findpeaks(s)
 	l1 <- attr(maxs, "left_bounds")
 	l2 <- attr(maxs, "right_bounds")
-	a <- binvec(s * mz(object), l1, l2, method="sum")
-	b <- binvec(s, l1, l2, method="sum")
+	a <- binvec(s * mz(object), l1, l2, stat="sum")
+	b <- binvec(s, l1, l2, stat="sum")
 	ref <- sort(unique(a / b))
 	metadata(featureData(object))[["peakAlign_ref"]] <- ref
 	object

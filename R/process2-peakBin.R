@@ -56,7 +56,7 @@ peakBin_fun <- function(x, type, tol, tol.ref, ...) {
 	l2 <- attr(maxs, "right_bounds")
 	f <- switch(type, height="max", area="sum")
 	matches <- bsearch(ref, mz[maxs], tol=tol, tol.ref=tol.ref)
-	peaks <- binvec(x, l1, l2, method=f)
+	peaks <- binvec(x, l1, l2, stat=f)
 	peaks <- peaks[matches]
 	peaks[is.na(peaks)] <- 0
 	attr(peaks, "bins") <- list(lower=l1[matches], upper=l2[matches])

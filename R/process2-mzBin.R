@@ -61,7 +61,7 @@ mzBin_fun <- function(x, ref, width, units, FUN) {
 	}
 	lower <- 1L + findInterval(lower, mz, left.open=TRUE)
 	upper <- findInterval(upper, mz, left.open=FALSE)
-	binvec(x, lower, upper, method=FUN)
+	binvec(x, lower, upper, stat=FUN)
 }
 
 mzBin_postfun <- function(object, ans, width, units, ...) {

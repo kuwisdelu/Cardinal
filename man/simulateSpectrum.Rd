@@ -64,7 +64,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     \item{resolution}{The mass resolution as defined by \code{m / dm}, where \code{m} is the observed mass and \code{dm} is the width of the peak at a proportion of its maximum height defined by \code{fmax} (defaults to full-width-at-half-maximum -- FWHM -- definition). Note that this is NOT the same as the definition of \code{resolution} in the \code{\link{readImzML}} function.}
 
-    \item{fmax}{The proportion of the maximum peak height to use when defining the mass resolution.}
+    \item{fmax}{The fraction of the maximum peak height to use when defining the mass resolution.}
 
     \item{baseline}{The maximum intensity of the baseline. Note that \code{baseline=0} means there is no baseline.}
 
