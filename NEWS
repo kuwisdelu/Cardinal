@@ -1,11 +1,18 @@
 
-CHANGES IN VERSION 3.3.2 [2023-5-5]
+CHANGES IN VERSION 3.3.3 [2023-8-8]
 -----------------------------------
 
 BUG FIXES
 
-    o Fixed I/O bugs introduced by matter v2.3.11
-    o Other I/O bugs fixed by matter v2.3.13
+    o Fixed I/O bugs introduced by matter v2.3.13 changes
+
+CHANGES IN VERSION 3.3.2 [2023-8-5]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed I/O bugs introduced by matter v2.3.11 changes
+    o Other I/O bugs fixed by matter v2.3.13 changes
 
 CHANGES IN VERSION 3.3.1 [2023-5-2]
 -----------------------------------

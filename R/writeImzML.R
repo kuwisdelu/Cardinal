@@ -84,6 +84,10 @@ writeImzML <- function(object, name, folder = getwd(),
 
 .writeImzML <- function(info, file) {
 	metadata <- as.list(info)
+	metadata$mzArrayList[["external array length"]] <- as.integer(metadata$mzArrayList[["external array length"]])
+	metadata$mzArrayList[["external encoded length"]] <- as.integer(metadata$mzArrayList[["external encoded length"]])
+	metadata$intensityArrayList[["external array length"]] <- as.integer(metadata$intensityArrayList[["external array length"]])
+	metadata$intensityArrayList[["external encoded length"]] <- as.integer(metadata$intensityArrayList[["external encoded length"]])
 	template <- .templateImzML(info)
 	result <- .Call("C_writeImzML", metadata, template,
 		normalizePath(file, mustWork=FALSE), PACKAGE="Cardinal")
