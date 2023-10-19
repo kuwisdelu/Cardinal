@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.3.5 [2023-10-19]
+-----------------------------------
+
+BUG FIXES
+
+    o Allow 'guess.max=Inf' in 'readImzML()'
+
 CHANGES IN VERSION 3.3.4 [2023-10-19]
 -----------------------------------
 

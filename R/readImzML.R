@@ -101,7 +101,11 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 		if ( representation == "centroid spectrum" )
 		{
 			.message("binning centroided peaks...")
-			index <- floor(seq(from=1L, to=length(pmz), length.out=guess.max))
+			if ( is.finite(guess.max) ) {
+				index <- floor(seq(from=1L, to=length(pmz), length.out=guess.max))
+			} else {
+				index <- seq_along(pmz)
+			}
 			peaks <- matter::binpeaks(pmz[index], domain=mzout)
 			.message("number of binned peaks: ", length(peaks))
 			mzout <- as.numeric(peaks)
@@ -145,7 +149,11 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			c(med, lim)
 		}
 	}
-	index <- floor(seq(from=1L, to=length(pmz), length.out=guess.max))
+	if ( is.finite(guess.max) ) {
+		index <- floor(seq(from=1L, to=length(pmz), length.out=guess.max))
+	} else {
+		index <- seq_along(pmz)
+	}
 	mzmeta <- vapply(pmz[index], fun, numeric(3L))
 	mzmeta <- as.matrix(mzmeta)
 	mzmeta[!is.finite(mzmeta)] <- NA
