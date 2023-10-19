@@ -17,6 +17,8 @@
 \alias{coordnames}
 \alias{coordnames<-}
 \alias{coordnames-methods}
+\alias{gridded}
+\alias{gridded<-}
 
 \alias{initialize,PositionDataFrame-method}
 \alias{run}
@@ -34,9 +36,9 @@
 \alias{coordLabels,PositionDataFrame-method}
 \alias{coordLabels<-,PositionDataFrame-method}
 \alias{coordnames,PositionDataFrame-method}
-\alias{coordnames<-,PositionDataFrame,ANY-method}
+\alias{coordnames<-,PositionDataFrame-method}
 \alias{gridded,PositionDataFrame-method}
-\alias{gridded<-,PositionDataFrame,ANY-method}
+\alias{gridded<-,PositionDataFrame-method}
 \alias{resolution}
 \alias{resolution<-}
 \alias{resolution,PositionDataFrame-method}

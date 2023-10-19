@@ -22,6 +22,7 @@
 
 \alias{[,XDataFrame,ANY,ANY,ANY-method}
 
+\alias{[[<-,XDataFrame-method}
 \alias{[[<-,XDataFrame,ANY,ANY-method}
 \alias{$<-,XDataFrame-method}
 

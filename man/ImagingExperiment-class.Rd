@@ -41,6 +41,8 @@
 \alias{length,ImagingExperiment-method}
 \alias{$,ImagingExperiment-method}
 \alias{$<-,ImagingExperiment-method}
+\alias{[[,ImagingExperiment-method}
+\alias{[[<-,ImagingExperiment-method}
 \alias{[[,ImagingExperiment,ANY,ANY-method}
 \alias{[[<-,ImagingExperiment,ANY,ANY-method}
 \alias{[,ImagingExperiment,ANY,ANY,ANY-method}

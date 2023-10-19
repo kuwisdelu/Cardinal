@@ -15,6 +15,8 @@
 \alias{class:SimpleImageArrayList}
 \alias{SimpleImageArrayList-class}
 
+\alias{[[,ImageList-method}
+\alias{[[<-,ImageList-method}
 \alias{[[,ImageList,ANY,ANY-method}
 \alias{[[<-,ImageList,ANY,ANY-method}
 \alias{dim,ImageList-method}
@@ -37,10 +39,12 @@
 \alias{class:MSContinuousImagingSpectraList}
 \alias{MSContinuousImagingSpectraList}
 \alias{MSContinuousImagingSpectraList-class}
+\alias{[[<-,MSContinuousImagingSpectraList-method}
 
 \alias{class:MSProcessedImagingSpectraList}
 \alias{MSProcessedImagingSpectraList}
 \alias{MSProcessedImagingSpectraList-class}
+\alias{[[<-,MSProcessedImagingSpectraList-method}
 
 \title{ImageList: Abstract image data list}
 

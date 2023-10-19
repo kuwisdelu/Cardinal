@@ -18,8 +18,12 @@
 
 \alias{show,ImagingResult-method}
 \alias{$,ImagingResult-method}
+\alias{[[,ImagingResult-method}
+\alias{[[<-,ImagingResult-method}
 \alias{[[,ImagingResult,ANY,ANY-method}
 \alias{[[<-,ImagingResult,ANY,ANY-method}
+\alias{[[,SparseImagingResult-method}
+\alias{[[<-,SparseImagingResult-method}
 \alias{[[,SparseImagingResult,ANY,ANY-method}
 \alias{[[<-,SparseImagingResult,ANY,ANY-method}
 \alias{modelData,ImagingResult-method}

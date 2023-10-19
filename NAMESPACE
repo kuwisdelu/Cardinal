@@ -69,6 +69,10 @@ importFrom("EBImage",
 	"getFrames",
 	"numberOfFrames")
 
+importFrom(
+	"CardinalIO",
+	"parseImzML")
+
 import("matter")
 
 import("methods")

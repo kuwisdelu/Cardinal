@@ -22,9 +22,9 @@
 \alias{coordLabels,SparseImagingExperiment-method}
 \alias{coordLabels<-,SparseImagingExperiment-method}
 \alias{coordnames,SparseImagingExperiment-method}
-\alias{coordnames<-,SparseImagingExperiment,ANY-method}
+\alias{coordnames<-,SparseImagingExperiment-method}
 \alias{gridded,SparseImagingExperiment-method}
-\alias{gridded<-,SparseImagingExperiment,ANY-method}
+\alias{gridded<-,SparseImagingExperiment-method}
 \alias{resolution,SparseImagingExperiment-method}
 \alias{resolution<-,SparseImagingExperiment-method}
 \alias{pixelData,SparseImagingExperiment-method}
