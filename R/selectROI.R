@@ -40,7 +40,7 @@ setMethod("selectROI", "SparseImagingExperiment",
 .selectRegion <- function(loc, pdata, subset, axs = c("x", "y")) {
 	roi <- rep(FALSE, nrow(pdata))
 	coord <- coord(pdata)[subset,axs,drop=FALSE]
-	selected <- point.in.polygon(coord[,1], coord[,2], loc$x, loc$y) > 0
+	selected <- matter::inpoly(coord[,c(1,2)], cbind(loc$x, loc$y))
 	roi[subset] <- selected
 	roi
 }

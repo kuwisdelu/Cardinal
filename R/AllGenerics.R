@@ -47,6 +47,15 @@ setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
 setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
 setGeneric("showNames", function(object) standardGeneric("showNames"))
 
+#### Redefine generics from 'sp' package ####
+## ------------------------------------------
+setGeneric("gridded", function(obj) standardGeneric("gridded"))
+setGeneric("gridded<-", function(obj, value) standardGeneric("gridded<-"))
+setGeneric("coordinates", function(obj, ...) standardGeneric("coordinates"))
+setGeneric("coordinates<-", function(object, value) standardGeneric("coordinates<-"))
+setGeneric("coordnames", function(x) standardGeneric("coordnames"))
+setGeneric("coordnames<-", function(x, value) standardGeneric("coordnames<-"))
+
 #### imzML Metadata ####
 ## ----------------------
 setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))

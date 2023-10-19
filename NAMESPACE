@@ -119,15 +119,6 @@ importFrom("signal",
 	"pchip",
 	"sgolayfilt")
 
-importFrom("sp",
-	"coordinates",
-	"coordinates<-",
-	"coordnames",
-	"coordnames<-",
-	"gridded",
-	"gridded<-",
-	"point.in.polygon")
-
 importFrom("utils",
 	"capture.output",
 	"flush.console",
