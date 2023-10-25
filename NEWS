@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.4.1 [2023-10-25]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed bug in 'writeImzML()' causing malformed cvParam tag
+
 CHANGES IN VERSION 3.3.5 [2023-10-19]
 -----------------------------------
 
