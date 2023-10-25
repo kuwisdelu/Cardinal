@@ -79,6 +79,11 @@ writeImzML <- function(object, name, folder = getwd(),
 	hash <- checksum(pspectra, algo="sha1")
 	metadata(info)[["universally unique identifier"]] <- id$string
 	metadata(info)[["ibd SHA-1"]] <- tolower(as.character(hash))
+	if ( isTRUE(centroided(x)) ) {
+		metadata(info)[["spectrum representation"]] <- "centroid spectrum"
+	} else {
+		metadata(info)[["spectrum representation"]] <- "profile spectrum"
+	}
 	info
 }
 

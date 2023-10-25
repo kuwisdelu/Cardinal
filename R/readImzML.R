@@ -127,11 +127,16 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 			x=as.numeric(pcoord[["position x"]]),
 			y=as.numeric(pcoord[["position y"]]))
 	}
+	if ( length(representation) > 0L ) {
+		centroided <- representation == "centroid spectrum"
+	} else {
+		centroided <- NA
+	}
 	MSImagingExperiment(spectra,
 		featureData=MassDataFrame(mz=mzout),
 		pixelData=PositionDataFrame(coord=coord, run=name),
 		metadata=list(parse=parse),
-		centroided=representation == "centroid spectrum")
+		centroided=centroided)
 }
 
 .detectMassRangeAndResolution <- function(pmz, units, guess.max)
