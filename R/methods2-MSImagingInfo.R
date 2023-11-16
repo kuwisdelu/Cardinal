@@ -187,8 +187,8 @@ setMethod("msiInfo", "MSProcessedImagingExperiment",
 	mzLengths <- intensityLengths <- lengths(iData(x))
 	mzExtent <- Csizeof(mz.type) * mzLengths
 	intensityExtent <- Csizeof(intensity.type) * intensityLengths
-	mzOffset <- c(16, 16 + cumsum(as.numeric(mzExtent + intensityLengths)[-ncol(x)]))
-	intensityOffset <- c(16 + cumsum(as.numeric(c(mzExtent[1L], mzExtent[-1L] + intensityLengths[-ncol(x)]))))
+	mzOffset <- 16 + cumsum(c(0, mzExtent[-ncol(x)] + intensityExtent[-ncol(x)]))
+	intensityOffset <- 16 + cumsum(mzExtent + c(0, intensityExtent[-ncol(x)]))
 	mzArrayList <- DataFrame(
 		"external offset"=unname(mzOffset),
 		"external array length"=unname(mzLengths),
