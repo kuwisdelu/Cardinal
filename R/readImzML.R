@@ -98,7 +98,7 @@ readImzML <- function(name, folder = getwd(), attach.only = TRUE,
 				by=resolution)  # seq == full-bin-widths
 			tol <- c(absolute = resolution)
 		}
-		if ( representation == "centroid spectrum" )
+		if ( "centroid spectrum" %in% representation)
 		{
 			.message("binning centroided peaks...")
 			if ( is.finite(guess.max) ) {
