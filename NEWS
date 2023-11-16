@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 3.4.2 [2023-11-16]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed error in 'readImzML()' if spectrum representation is missing
+    o Fixed bug in 'writeImzML()' causing overlapping offsets
+
 CHANGES IN VERSION 3.4.1 [2023-10-25]
 -----------------------------------
 
