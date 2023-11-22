@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.4.3 [2023-11-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixed default calculation of reference peaks in 'peakAlign()'
+
 CHANGES IN VERSION 3.4.2 [2023-11-16]
 -----------------------------------
 
