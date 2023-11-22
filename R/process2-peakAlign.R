@@ -36,7 +36,7 @@ setMethod("peakAlign", c("MSImagingExperiment", "character"),
 	{
 		col <- match.arg(ref, names(fData(object)))
 		s <- fData(object)[[col]]
-		maxs <- findpeaks(s)
+		maxs <- findpeaks(s, relheight=0)
 		l1 <- attr(maxs, "left_bounds")
 		l2 <- attr(maxs, "right_bounds")
 		a <- binvec(s * mz(object), l1, l2, stat="sum")
