@@ -9,110 +9,34 @@ setGeneric("fitted")
 setGeneric("imageData")
 setGeneric("imageData<-")
 
-#### New accessor, setter, and manipulation ####
-## -----------------------------------------------
-setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
-setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
-
-#### Basic accessor, setter, and manipulation ####
-## -----------------------------------------------
+#### Basic getters and setters ####
+## --------------------------------
 setGeneric("is3D", function(object) standardGeneric("is3D"))
 setGeneric("coord", function(object) standardGeneric("coord"))
 setGeneric("coord<-", function(object, value) standardGeneric("coord<-"))
-setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
-setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("run", function(object) standardGeneric("run"))
 setGeneric("run<-", function(object, value) standardGeneric("run<-"))
 setGeneric("runNames", function(object) standardGeneric("runNames"))
 setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
-setGeneric("peakData", function(object, ...) standardGeneric("peakData"))
-setGeneric("peakData<-", function(object, ..., value) standardGeneric("peakData<-"))
-setGeneric("mzData", function(object, ...) standardGeneric("mzData"))
-setGeneric("mzData<-", function(object, ..., value) standardGeneric("mzData<-"))
-setGeneric("intensityData", function(object, ...) standardGeneric("intensityData"))
-setGeneric("intensityData<-", function(object, ..., value) standardGeneric("intensityData<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
 setGeneric("pixelData", function(object) standardGeneric("pixelData"))
 setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-"))
 setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
 setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
-setGeneric("resolution", function(object) standardGeneric("resolution"))
-setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
-setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
-setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
-setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
-setGeneric("resultData<-", function(object, i, ..., value) standardGeneric("resultData<-"))
-setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
-setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
-setGeneric("showNames", function(object) standardGeneric("showNames"))
-
-#### Redefine generics from 'sp' package ####
-## ------------------------------------------
-setGeneric("gridded", function(obj) standardGeneric("gridded"))
-setGeneric("gridded<-", function(obj, value) standardGeneric("gridded<-"))
-setGeneric("coordinates", function(obj, ...) standardGeneric("coordinates"))
-setGeneric("coordinates<-", function(object, value) standardGeneric("coordinates<-"))
-setGeneric("coordnames", function(x) standardGeneric("coordnames"))
-setGeneric("coordnames<-", function(x, value) standardGeneric("coordnames<-"))
-
-#### imzML Metadata ####
-## ----------------------
-setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
-setGeneric("matrixApplication", function(object) standardGeneric("matrixApplication"))
-setGeneric("pixelSize", function(object) standardGeneric("pixelSize"))
-setGeneric("instrumentVendor", function(object) standardGeneric("instrumentVendor"))
-setGeneric("massAnalyzerType", function(object) standardGeneric("massAnalyzerType"))
-setGeneric("ionizationType", function(object) standardGeneric("ionizationType"))
-setGeneric("scanPolarity", function(object) standardGeneric("scanPolarity"))
-setGeneric("scanType", function(object) standardGeneric("scanType"))
-setGeneric("scanPattern", function(object) standardGeneric("scanPattern"))
-setGeneric("scanDirection", function(object) standardGeneric("scanDirection"))
-setGeneric("lineScanDirection", function(object) standardGeneric("lineScanDirection"))
-
-#### Processing information ####
-## -----------------------------
-setGeneric("normalization", function(object) standardGeneric("normalization"))
-setGeneric("normalization<-", function(object, value) standardGeneric("normalization<-"))
-setGeneric("smoothing", function(object) standardGeneric("smoothing"))
-setGeneric("smoothing<-", function(object, value) standardGeneric("smoothing<-"))
-setGeneric("baselineReduction", function(object) standardGeneric("baselineReduction"))
-setGeneric("baselineReduction<-", function(object, value) standardGeneric("baselineReduction<-"))
-setGeneric("spectrumRepresentation", function(object) standardGeneric("spectrumRepresentation"))
-setGeneric("spectrumRepresentation<-", function(object, value) standardGeneric("spectrumRepresentation<-"))
-setGeneric("peakPicking", function(object) standardGeneric("peakPicking"))
-setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking<-"))
-
-#### Apply-like methods ####
-## ------------------------
-setGeneric("crossValidate", function(.x, .y, .fun, ...) standardGeneric("crossValidate"))
-setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))
-setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
-setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
-setGeneric("spatialApply", function(.object, .r, .fun, ...) standardGeneric("spatialApply"))
 
 #### Pre-processing ####
 ## ---------------------
 setGeneric("process", function(object, ...) standardGeneric("process"))
-setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
-setGeneric("mzAlign", function(object, ref, ...) standardGeneric("mzAlign"))
-setGeneric("mzBin", function(object, ref, ...) standardGeneric("mzBin"))
-setGeneric("mzFilter", function(object, ...) standardGeneric("mzFilter"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
-setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 
 #### Data alignment and matching ####
 ## ----------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalized"))
-
-#### Image manipulation and metadata ####
-## --------------------------------------
-setGeneric("height", function(x) standardGeneric("height"))
-setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
 
 #### Data transformation ####
 ## --------------------------
@@ -125,6 +49,7 @@ setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
+setGeneric("crossValidate", function(.x, .y, .fun, ...) standardGeneric("crossValidate"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
@@ -146,9 +71,7 @@ setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 
 #### Data export ####
 ## --------------
-setGeneric("writeAnalyze", function(object, ...) standardGeneric("writeAnalyze"))
 setGeneric("writeImzML", function(object, ...) standardGeneric("writeImzML"))
-setGeneric("writeMSIData", function(object, file, ...) standardGeneric("writeMSIData"))
 
 ####-----------------------------------------------------------####
 
