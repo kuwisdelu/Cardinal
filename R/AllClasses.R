@@ -1,32 +1,4 @@
 
-#### Basic accessor, setter, and manipulation ####
-## -----------------------------------------------
-
-setGeneric("keys", function(object, ...) standardGeneric("keys"))
-setGeneric("keys<-", function(object, ..., value) standardGeneric("keys<-"))
-setGeneric("features", function(object, ...) standardGeneric("features"))
-setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
-setGeneric("pixelData", function(object) standardGeneric("pixelData"))
-setGeneric("pixelData<-", function(object, value) standardGeneric("pixelData<-"))
-setGeneric("pixelNames", function(object) standardGeneric("pixelNames"))
-setGeneric("pixelNames<-", function(object, value) standardGeneric("pixelNames<-"))
-setGeneric("coord", function(object, ...) standardGeneric("coord"))
-setGeneric("coord<-", function(object, ..., value) standardGeneric("coord<-"))
-setGeneric("coordNames", function(object) standardGeneric("coordNames"))
-setGeneric("coordNames<-", function(object, value) standardGeneric("coordNames<-"))
-setGeneric("run", function(object, ...) standardGeneric("run"))
-setGeneric("run<-", function(object, ..., value) standardGeneric("run<-"))
-setGeneric("runNames", function(object) standardGeneric("runNames"))
-setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
-
-#### Pre-processing ####
-## ---------------------
-setGeneric("process", function(object, ...) standardGeneric("process"))
-setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
-setGeneric("peakPick", function(object, ref, ...) standardGeneric("peakPick"))
-setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
-setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
-
 #### VIRTUAL class for a DataFrame with key columns ####
 ## -----------------------------------------------------
 setClass("XDataFrame",
@@ -95,4 +67,6 @@ setClassUnion("MSImagingExperiment_OR_Arrays",
 ## ---------------------------------
 
 # setClass("ResultsList", contains = "SimpleList")
+
+####-----------------------------------------------------------####
 

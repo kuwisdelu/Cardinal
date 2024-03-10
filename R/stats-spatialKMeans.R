@@ -1,5 +1,5 @@
 
-setMethod("spatialKMeans", "SparseImagingExperiment",
+setMethod("spatialKMeans", "SpectralImagingExperiment",
 	function(x, r = 1, k = 3,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", tol.dist = 1e-9,

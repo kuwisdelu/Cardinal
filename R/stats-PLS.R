@@ -1,6 +1,6 @@
 
 setMethod("PLS",
-	signature = c(x = "SparseImagingExperiment", y = "ANY"),
+	signature = c(x = "SpectralImagingExperiment", y = "ANY"),
 	function(x, y, ncomp = 3, method = c("pls", "opls"),
 		center = TRUE, scale = FALSE,
 		iter.max = 100, ...)
@@ -63,7 +63,7 @@ setMethod("PLS",
 	})
 
 setMethod("OPLS",
-	signature = c(x = "SparseImagingExperiment", y = "ANY"),
+	signature = c(x = "SpectralImagingExperiment", y = "ANY"),
 	function(x, y, ncomp = 3, ...)
 	{
 		PLS(x, y, ncomp=ncomp, method="opls", ...)
@@ -72,8 +72,8 @@ setMethod("OPLS",
 setMethod("predict", "PLS2",
 	function(object, newx, newy, ncomp, ...)
 	{
-		if ( !is(newx, "SparseImagingExperiment") )
-			.stop("'newx' must inherit from 'SparseImagingExperiment'")
+		if ( !is(newx, "SpectralImagingExperiment") )
+			.stop("'newx' must inherit from 'SpectralImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		if ( missing(ncomp) )
 			ncomp <- modelData(object)$ncomp

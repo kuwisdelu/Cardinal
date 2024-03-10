@@ -103,7 +103,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 #### Write Analyze 7.5 file(s) ####
 ## --------------------------------
 
-readAnalyze <- function(object, file, ...) {
+writeAnalyze <- function(object, file, ...) {
 	.Deprecated("readImzML")
 	invisible(writeImzML(object, file, ...))
 }

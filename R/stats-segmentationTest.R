@@ -1,5 +1,5 @@
 
-setMethod("segmentationTest", "SparseImagingExperiment",
+setMethod("segmentationTest", "SpectralImagingExperiment",
 	function(x, fixed, random, groups = run(x),
 		classControl = c("Ymax", "Mscore"),
 		BPPARAM = getCardinalBPPARAM(), ...)

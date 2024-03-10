@@ -1,6 +1,6 @@
 
 setMethod("spatialShrunkenCentroids",
-	signature = c("SparseImagingExperiment", "missing"),
+	signature = c("SpectralImagingExperiment", "missing"),
 	function(x, r = 1, k = 3, s = 0,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", init = NULL,
@@ -73,7 +73,7 @@ setMethod("spatialShrunkenCentroids",
 
 
 setMethod("spatialShrunkenCentroids",
-	signature = c("SparseImagingExperiment", "ANY"),
+	signature = c("SpectralImagingExperiment", "ANY"),
 	function(x, y, r = 1, s = 0,
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", priors = table(y),
@@ -119,8 +119,8 @@ setMethod("spatialShrunkenCentroids",
 setMethod("predict", "SpatialShrunkenCentroids2",
 	function(object, newx, newy, BPPARAM = getCardinalBPPARAM(), ...)
 	{
-		if ( !is(newx, "SparseImagingExperiment") )
-			.stop("'newx' must inherit from 'SparseImagingExperiment'")
+		if ( !is(newx, "SpectralImagingExperiment") )
+			.stop("'newx' must inherit from 'SpectralImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
 		if ( !missing(newy) )

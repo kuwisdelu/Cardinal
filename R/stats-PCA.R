@@ -1,5 +1,5 @@
 
-setMethod("PCA", "SparseImagingExperiment", 
+setMethod("PCA", "SpectralImagingExperiment", 
 	function(x, ncomp = 3, center = TRUE, scale = FALSE, ...)
 	{
 		.checkForIncompleteProcessing(x)
@@ -37,8 +37,8 @@ setMethod("PCA", "SparseImagingExperiment",
 setMethod("predict", "PCA2",
 	function(object, newx, ncomp, ...)
 	{
-		if ( !is(newx, "SparseImagingExperiment") )
-			.stop("'newx' must inherit from 'SparseImagingExperiment'")
+		if ( !is(newx, "SpectralImagingExperiment") )
+			.stop("'newx' must inherit from 'SpectralImagingExperiment'")
 		.checkForIncompleteProcessing(newx)
 		if ( missing(ncomp) )
 			ncomp <- max(modelData(object)$ncomp)

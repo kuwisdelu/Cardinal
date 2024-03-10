@@ -9,7 +9,7 @@ readMSIData <- function(file, ...) {
 	} else if ( tolower(ext) %in% c("img", "hdr", "t2m") ) {
 		readAnalyze(file, ...)
 	} else {
-		stop("can't recognize file extension: " ext)
+		stop("can't recognize file extension: ", ext)
 	}
 }
 

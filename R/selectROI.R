@@ -1,7 +1,7 @@
 
 #### Select a Region-of-Interest ####
 
-setMethod("selectROI", "SparseImagingExperiment",
+setMethod("selectROI", "SpectralImagingExperiment",
 	function(object, ..., mode = c("region", "pixels"))
 	{
 		mode <- match.arg(mode)

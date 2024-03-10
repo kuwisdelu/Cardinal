@@ -104,7 +104,7 @@ setMethod("crossValidate", "MSImagingExperiment",
 			.predict=PREDICT, BPPARAM=BPPARAM, ...)
 	})
 
-setMethod("crossValidate", "SparseImagingExperiment",
+setMethod("crossValidate", "SpectralImagingExperiment",
 	function(.x, .y, .fun, .fold = run(.x),
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{
@@ -139,7 +139,7 @@ setMethod("crossValidate", "SparseImagingExperiment",
 		out
 	})
 
-setMethod("cvApply", "SparseImagingExperiment",
+setMethod("cvApply", "SpectralImagingExperiment",
 	function(.x, .y, .fun,
 		.fold = run(.x),
 		.predict = predict,

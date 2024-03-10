@@ -1,24 +1,4 @@
 
-importFrom("graphics",
-	"abline",
-	"axis",
-	"boxplot",
-	"grid",
-	"hist",
-	"image",
-	"legend",
-	"lines",
-	"locator",
-	"par",
-	"persp",
-	"plot",
-	"points",
-	"polygon",
-	"rasterImage",
-	"rect",
-	"text",
-	"title")
-
 importFrom("stats",
 	"anova",
 	"approx",
@@ -69,9 +49,7 @@ importFrom("EBImage",
 	"getFrames",
 	"numberOfFrames")
 
-importFrom(
-	"CardinalIO",
-	"parseImzML")
+import("CardinalIO")
 
 import("matter")
 
@@ -84,24 +62,9 @@ importFrom("Matrix",
 	"solve",
 	"chol")
 
-importFrom("magrittr",
-	"%>%")
-
 import("S4Vectors")
 
 import("ProtGenerics")
-
-importFrom("grDevices",
-	"as.raster",
-	"col2rgb",
-	"colorRamp",
-	"dev.list",
-	"hcl",
-	"heat.colors",
-	"rainbow",
-	"rgb",
-	"topo.colors",
-	"trans3d")
 
 importFrom("viridisLite",
 	"viridis",
@@ -123,17 +86,6 @@ importFrom("signal",
 	"pchip",
 	"sgolayfilt")
 
-importFrom("utils",
-	"capture.output",
-	"flush.console",
-	"object.size",
-	"packageDescription",
-	"packageVersion",
-	"savehistory",
-	"sessionInfo",
-	"setTxtProgressBar",
-	"txtProgressBar")
-
 exportClasses(
 	"Hashmat",
 	"IAnnotatedDataFrame",
@@ -148,39 +100,25 @@ exportClasses(
 	"iSet")
 
 exportClasses(
-	"AnnotatedImage",
-	"AnnotatedImageList",
-	"AnnotatedImagingExperiment",
 	"XDataFrame",
-	"SummaryDataFrame",
+	"XDFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
-	"ImageList",
-	"ImageArrayList",
-	"SimpleImageList",
-	"SimpleImageArrayList",
-	"MSContinuousImagingSpectraList",
-	"MSProcessedImagingSpectraList",
-	"ImagingExperiment",
-	"SparseImagingExperiment",
-	"MSImagingExperiment",
-	"MSContinuousImagingExperiment",
-	"MSProcessedImagingExperiment",
-	"MSImagingInfo")
+	"SpectraArrays",
+	"SpectralImagingData",
+	"SpectralImagingArrays",
+	"SpectralImagingExperiment",
+	"MSImagingArrays",
+	"MSImagingExperiment")
 
 export(
-	"AnnotatedImage",
-	"AnnotatedImageList",
-	"AnnotatedImagingExperiment",
 	"XDataFrame",
-	"SummaryDataFrame",
 	"PositionDataFrame",
 	"MassDataFrame",
-	"ImageList",
-	"ImageArrayList",
-	"MSContinuousImagingSpectraList",
-	"MSProcessedImagingSpectraList",
-	"SparseImagingExperiment",
+	"SpectraArrays",
+	"SpectralImagingArrays",
+	"SpectralImagingExperiment",
+	"MSImagingArrays",
 	"MSImagingExperiment")
 
 export(
@@ -201,19 +139,12 @@ export(
 	"readImzML",
 	"readMSIData",
 	"presetImageDef",
-	"setup.layout",
 	"simulateImage",
+	"simulateSpectra",
 	"simulateSpectrum",
 	"writeAnalyze",
 	"writeImzML",
 	"writeMSIData")
-
-S3method("print", "facet.boxplot")
-S3method("print", "facet.bar")
-S3method("print", "facet.hist")
-S3method("print", "facet.plot")
-S3method("print", "facet.image")
-S3method("print", "facet.raster")
 
 exportMethods(
 	"as.array",
@@ -329,7 +260,6 @@ exportMethods(
 	"sampleNames",
 	"sampleNames<-",
 	"show",
-	"showNames",
 	"spectra",
 	"spectra<-",
 	"storageMode",
@@ -410,19 +340,17 @@ exportMethods("selectROI")
 
 export("makeFactor")
 
-export(
-	"CardinalVersion",
-	"CardinalLog")
+export("CardinalVersion")
 
 export(
 	"getCardinalBPPARAM",
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",
 	"setCardinalVerbose",
+	"getCardinalNChunks",
+	"setCardinalNChunks",
 	"getCardinalNumBlocks",
-	"setCardinalNumBlocks",
-	"getCardinalDelayProc",
-	"setCardinalDelayProc")
+	"setCardinalNumBlocks")
 
 exportMethods(
 	"colocalized",
@@ -461,6 +389,3 @@ export(
 	"plasma",
 	"cividis")
 
-export("%>%")
-
-useDynLib("Cardinal", .registration=TRUE)

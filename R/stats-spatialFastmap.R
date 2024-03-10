@@ -1,5 +1,5 @@
 
-setMethod("spatialFastmap", "SparseImagingExperiment",
+setMethod("spatialFastmap", "SpectralImagingExperiment",
 	function(x, r = 1, ncomp = 3,
 		method = c("gaussian", "adaptive"),
 		metric = c("average", "correlation", "neighborhood"),

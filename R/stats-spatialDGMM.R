@@ -1,5 +1,5 @@
 
-setMethod("spatialDGMM", "SparseImagingExperiment",
+setMethod("spatialDGMM", "SpectralImagingExperiment",
 	function(x, r = 1, k = 3, groups = run(x),
 		method = c("gaussian", "adaptive"),
 		dist = "chebyshev", annealing = TRUE,

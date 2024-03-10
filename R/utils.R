@@ -1,6 +1,9 @@
 
-
 ## Options
+
+CardinalVersion <- function() {
+	paste0(utils::packageVersion("Cardinal"), collapse=".")
+}
 
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {

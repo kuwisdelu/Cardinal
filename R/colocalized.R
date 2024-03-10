@@ -9,7 +9,7 @@ setMethod("colocalized",
 	})
 
 setMethod("colocalized",
-	signature = c("SparseImagingExperiment", "ANY"),
+	signature = c("SpectralImagingExperiment", "ANY"),
 	function(object, ref, n = 10,
 		sort.by = c("correlation", "M1", "M2"),
 		threshold = median,

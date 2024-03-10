@@ -1,6 +1,6 @@
 
 # Simulate a mass spectrum
-simulateSpectrum <- function(n = 1L, peaks = 50L,
+simulateSpectra <- function(n = 1L, peaks = 50L,
 	mz = rlnorm(peaks, 7, 0.3), intensity = rlnorm(peaks, 1, 0.9),
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
@@ -44,21 +44,9 @@ simulateSpectrum <- function(n = 1L, peaks = 50L,
 	list(mz=m, intensity=x)
 }
 
-.simulateSpectrum <- function(mz, intensity,
-	peakwidth, sdpeaks, sdnoise, mzrange, mzout)
+simulateSpectrum <- function(...)
 {
-	x <- numeric(length(mzout))
-	for ( i in seq_along(mz) ) {
-		if ( intensity[i] <= 0 || mz[i] < mzrange[1] || mz[i] > mzrange[2] )
-			next
-		nearmz <- which(mz[i] - 6 * peakwidth[i] < mzout & mzout < mz[i] + 6 * peakwidth[i])
-		xi <- dnorm(mzout[nearmz], mean=mz[i], sd=peakwidth[i])
-		intensityerr <- rlnorm(1, sdlog=sdpeaks[i])
-		intensityerr <- intensityerr - exp(sdpeaks[i]^2 / 2)
-		yi <- intensity[i] + intensityerr
-		x[nearmz] <- x[nearmz] + yi * (xi / max(xi))
-	}
-	noise <- rlnorm(length(x), sdlog=sdnoise)
-	noise <- noise - exp(sdnoise^2 / 2)
-	x + noise
+	.Deprecated("simulateSpectra")
+	simulateSpectra(...)
 }
+

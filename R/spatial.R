@@ -3,7 +3,7 @@
 
 ## Find neighborhood members
 
-setMethod("findNeighbors", "ImagingExperiment",
+setMethod("findNeighbors", "SpectralImagingExperiment",
 	function(x, r = 1, groups = run(x), ...)
 	{
 		findNeighbors(pixelData(x), r=r, groups=groups, ...)
@@ -43,7 +43,7 @@ setMethod("findNeighbors", "PositionDataFrame",
 
 ## Calculate spatial weights
 
-setMethod("spatialWeights", "ImagingExperiment",
+setMethod("spatialWeights", "SpectralImagingExperiment",
 	function(x, r = 1, method = c("gaussian", "adaptive"),
 		dist = "chebyshev", matrix = FALSE, BPPARAM = getCardinalBPPARAM(), ...)
 	{

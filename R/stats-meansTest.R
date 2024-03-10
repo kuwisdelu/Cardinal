@@ -1,5 +1,5 @@
 
-setMethod("meansTest", "SparseImagingExperiment",
+setMethod("meansTest", "SpectralImagingExperiment",
 	function(x, fixed, random, groups = run(x),
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{

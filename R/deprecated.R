@@ -1,94 +1,17 @@
 
-#### Generics ####
+# utilizies
 
-# spectra
-setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
-setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
-setMethod("iData", "ANY", function(x, i, ...) {
-		.Deprecated("spectra")
-		spectra(x, i, ...)
-	})
-setReplaceMethod("iData", "ANY", function(x, i, ..., value) {
-		.Deprecated("spectra")
-		spectra(x, i, ...) <- values
-		x
-	})
+getCardinalNumBlocks <- function() {
+	.Deprecated("getCardinalNChunks")
+	getCardinalNChunks()
+}
 
-# other
-setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
-setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
-setGeneric("peakData", function(object, ...) standardGeneric("peakData"))
-setGeneric("peakData<-", function(object, ..., value) standardGeneric("peakData<-"))
-setGeneric("mzData", function(object, ...) standardGeneric("mzData"))
-setGeneric("mzData<-", function(object, ..., value) standardGeneric("mzData<-"))
-setGeneric("intensityData", function(object, ...) standardGeneric("intensityData"))
-setGeneric("intensityData<-", function(object, ..., value) standardGeneric("intensityData<-"))
+setCardinalNumBlocks <- function(n = 20L) {
+	.Deprecated("setCardinalNChunks")
+	setCardinalNChunks(n)
+}
 
-# models and results
-setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
-setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
-setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
-setGeneric("resultData<-", function(object, i, ..., value) standardGeneric("resultData<-"))
-setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
-setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
-
-# resolution
-setGeneric("resolution", function(object) standardGeneric("resolution"))
-setGeneric("resolution<-", function(object, value) standardGeneric("resolution<-"))
-
-# 'sp' package
-setGeneric("gridded", function(obj) standardGeneric("gridded"))
-setGeneric("gridded<-", function(obj, value) standardGeneric("gridded<-"))
-setGeneric("coordinates", function(obj, ...) standardGeneric("coordinates"))
-setGeneric("coordinates<-", function(object, value) standardGeneric("coordinates<-"))
-setGeneric("coordnames", function(x) standardGeneric("coordnames"))
-setGeneric("coordnames<-", function(x, value) standardGeneric("coordnames<-"))
-
-# imzML metadata
-setGeneric("msiInfo", function(object, ...) standardGeneric("msiInfo"))
-setGeneric("matrixApplication", function(object) standardGeneric("matrixApplication"))
-setGeneric("pixelSize", function(object) standardGeneric("pixelSize"))
-setGeneric("instrumentVendor", function(object) standardGeneric("instrumentVendor"))
-setGeneric("massAnalyzerType", function(object) standardGeneric("massAnalyzerType"))
-setGeneric("ionizationType", function(object) standardGeneric("ionizationType"))
-setGeneric("scanPolarity", function(object) standardGeneric("scanPolarity"))
-setGeneric("scanType", function(object) standardGeneric("scanType"))
-setGeneric("scanPattern", function(object) standardGeneric("scanPattern"))
-setGeneric("scanDirection", function(object) standardGeneric("scanDirection"))
-setGeneric("lineScanDirection", function(object) standardGeneric("lineScanDirection"))
-
-# preprocessing
-setGeneric("normalization", function(object) standardGeneric("normalization"))
-setGeneric("normalization<-", function(object, value) standardGeneric("normalization<-"))
-setGeneric("smoothing", function(object) standardGeneric("smoothing"))
-setGeneric("smoothing<-", function(object, value) standardGeneric("smoothing<-"))
-setGeneric("baselineReduction", function(object) standardGeneric("baselineReduction"))
-setGeneric("baselineReduction<-", function(object, value) standardGeneric("baselineReduction<-"))
-setGeneric("spectrumRepresentation", function(object) standardGeneric("spectrumRepresentation"))
-setGeneric("spectrumRepresentation<-", function(object, value) standardGeneric("spectrumRepresentation<-"))
-setGeneric("peakPicking", function(object) standardGeneric("peakPicking"))
-setGeneric("peakPicking<-", function(object, value) standardGeneric("peakPicking<-"))
-
-setGeneric("smoothSignal", function(object, ...) standardGeneric("smoothSignal"))
-setGeneric("mzAlign", function(object, ref, ...) standardGeneric("mzAlign"))
-setGeneric("mzBin", function(object, ref, ...) standardGeneric("mzBin"))
-setGeneric("mzFilter", function(object, ...) standardGeneric("mzFilter"))
-setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
-
-# apply
-setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))
-setGeneric("featureApply", function(.object, .fun, ...) standardGeneric("featureApply"))
-setGeneric("pixelApply", function(.object, .fun, ...) standardGeneric("pixelApply"))
-setGeneric("spatialApply", function(.object, .r, .fun, ...) standardGeneric("spatialApply"))
-
-# images
-setGeneric("height", function(x) standardGeneric("height"))
-setGeneric("height<-", function(x, ..., value) standardGeneric("height<-"))
-
-# IO
-setGeneric("writeAnalyze", function(object, ...) standardGeneric("writeAnalyze"))
-
-#### Create a 3D image ####
+## image
 
 image3d <- function(
 	x = seq(0, 1, length.out=dim(values)[1]),
