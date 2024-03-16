@@ -1,6 +1,6 @@
 
 setMethod("crossValidate", "MSImagingExperiment",
-	function(.x, .y, .fun,
+	function(x, y, .fun,
 		.fold = run(.x),
 		.predict = predict,
 		.process = FALSE,
@@ -8,6 +8,8 @@ setMethod("crossValidate", "MSImagingExperiment",
 		.peaks = NULL,
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{
+		.x <- x
+		.y <- y
 		.fun <- match.fun(.fun)
 		.predict <- match.fun(.predict)
 		# get peakPick, peakAlign, and peakBin arguments
@@ -105,7 +107,7 @@ setMethod("crossValidate", "MSImagingExperiment",
 	})
 
 setMethod("crossValidate", "SpectralImagingExperiment",
-	function(.x, .y, .fun, .fold = run(.x),
+	function(x, y, .fun, .fold = run(.x),
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		# get cross-validation folds

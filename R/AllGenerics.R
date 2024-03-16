@@ -34,13 +34,14 @@ setGeneric("imageData<-")
 #### Pre-processing ####
 ## ---------------------
 setGeneric("process", function(object, ...) standardGeneric("process"))
+setGeneric("recalibrate", function(object, ...) standardGeneric("recalibrate"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
-setGeneric("peakPick", function(object, ref, ...) standardGeneric("peakPick"))
-setGeneric("peakAlign", function(object, ref, ...) standardGeneric("peakAlign"))
+setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
+setGeneric("peakAlign", function(object, ...) standardGeneric("peakAlign"))
 setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 
-#### Data alignment and matching ####
-## ----------------------------------
+#### Co-registration and co-localization ####
+## ------------------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
 setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalized"))
 
@@ -55,7 +56,7 @@ setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
-setGeneric("crossValidate", function(.x, .y, .fun, ...) standardGeneric("crossValidate"))
+setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
@@ -77,15 +78,12 @@ setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
 
 #### Data export ####
-## --------------
+## ------------------
 setGeneric("writeImzML", function(object, ...) standardGeneric("writeImzML"))
 
-####-----------------------------------------------------------####
-
-
 #### Deprecated ####
+## ------------------
 
-# spectra
 setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
 setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 setMethod("iData", "ANY", function(x, i, ...) {
@@ -98,7 +96,6 @@ setReplaceMethod("iData", "ANY", function(x, i, ..., value) {
 		x
 	})
 
-# other
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("peakData", function(object, ...) standardGeneric("peakData"))

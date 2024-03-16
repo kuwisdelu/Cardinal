@@ -252,7 +252,7 @@ setValidity("PositionDataFrame", .valid_PositionDataFrame)
 
 PositionDataFrame <- function(coord, run, ..., row.names = FALSE)
 {
-	if ( missing(coord) )
+	if ( missing(coord) || is.null(coord) )
 	{
 		if ( ...length() > 0L ) {
 			n <- NROW(..1)
@@ -264,7 +264,7 @@ PositionDataFrame <- function(coord, run, ..., row.names = FALSE)
 		coord <- expand.grid(x=seq_len(n), y=rep.int(1L, n))
 	}
 	coord <- DataFrame(coord)
-	if ( missing(run) ) {
+	if ( missing(run) || is.null(run) ) {
 		run <- rep.int(factor("run0"), nrow(coord))
 		if ( anyDuplicated(coord) )
 			warning("'coord' does not uniquely identify rows")
@@ -356,6 +356,17 @@ setMethod("[", "PositionDataFrame",
 			ans
 	})
 
+setAs("DFrame", "PositionDataFrame",
+	function(from) {
+		cnames <- intersect(c("x", "y", "z"), names(from))
+		dnames <- setdiff(names(from), c(cnames, "run"))
+		if ( length(dnames) > 0L ) {
+			PositionDataFrame(coord=from[cnames], run=from[["run"]], from[dnames])
+		} else {
+			PositionDataFrame(coord=from[cnames], run=from[["run"]])
+		}
+	})
+
 setMethod("updateObject", "PositionDataFrame",
 	function(object, ..., verbose = FALSE)
 	{
@@ -430,6 +441,16 @@ setReplaceMethod("mz", "MassDataFrame",
 
 setMethod("mass", "MassDataFrame",
 	function(object) keys(object, "mass", drop=TRUE))
+
+setAs("DFrame", "MassDataFrame",
+	function(from) {
+		dnames <- setdiff(names(from), "mz")
+		if ( length(dnames) > 0L ) {
+			MassDataFrame(mz=from[["mz"]], from[dnames])
+		} else {
+			MassDataFrame(mz=from[["mz"]])
+		}
+	})
 
 setMethod("updateObject", "MassDataFrame",
 	function(object, ..., verbose = FALSE)

@@ -5,6 +5,13 @@ CardinalVersion <- function() {
 	paste0(utils::packageVersion("Cardinal"), collapse=".")
 }
 
+# set up data viz variables
+.lastplot <- list2env(list(
+	image = NULL,
+	spectrum = NULL,
+	subset = TRUE
+))
+
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {
 	setCardinalVerbose()
@@ -43,16 +50,35 @@ seq_mz <- function(from, to, by, units = c("ppm", "mz"))
 	units <- match.arg(units)
 	by <- unname(by)
 	mz <- switch(units,
-		ppm=matter::seq_rel(from=from, to=to, by=1e-6 * by),
-		mz=seq(from=from, to=to, by=by))
+		ppm=seq_rel(from=from, to=to, by=1e-6 * by),
+		mz=seq.default(from=from, to=to, by=by))
 	switch(units,
-		ppm=structure(mz,
-			tolerance=c(relative=2e-6 * by),
-			resolution=c(ppm=by)),
-		mz=structure(mz,
-			tolerance=c(absolute=2 * by),
-			resolution=c(mz=by)))
+		ppm=structure(mz, resolution=c(ppm=by)),
+		mz=structure(mz, resolution=c(mz=by)))
 }
+
+seq_mzr <- function(range, by, units = c("ppm", "mz"))
+{
+	seq_mz(min(range), max(range), by=by, units=units)
+}
+
+
+# Miscellanious utilities
+
+makeFactor <- function(..., ordered = FALSE)
+{
+	inds <- list(...)
+	labs <- vapply(substitute(...()), deparse, character(1L))
+	if ( !is.null(names(inds)) ) {
+		nz <- nzchar(names(inds))
+		labs[nz] <- names(inds)[nz]
+	}
+	names(labs) <- NULL
+	inds <- do.call("cbind", inds)
+	inds <- apply(inds, 1, function(i) which(i)[1L])
+	factor(labs[inds], levels=labs, ordered=ordered)
+}
+
 
 
 ## Math utilities

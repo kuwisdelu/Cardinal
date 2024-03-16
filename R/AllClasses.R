@@ -68,5 +68,4 @@ setClassUnion("MSImagingExperiment_OR_Arrays",
 
 # setClass("ResultsList", contains = "SimpleList")
 
-####-----------------------------------------------------------####
 

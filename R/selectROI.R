@@ -1,68 +1,44 @@
 
-#### Select a Region-of-Interest ####
+#### Select ROIs ####
+## -------------------
 
 setMethod("selectROI", "SpectralImagingExperiment",
 	function(object, ..., mode = c("region", "pixels"))
-	{
-		mode <- match.arg(mode)
-		dots <- match.call(expand.dots=FALSE)$...
-		if ( length(dots) > 0L ) {
-			p <- image(object, ...)
-			print(p)
-		} else {
-			p <- .Cardinal$lastplot
-			if ( is.null(dev.list()) )
-				print(p)
-		}
-		.selectROI(object, p, mode)
-	})
-
-# selector functions
-
-.selectROI <- function(object, plot, mode) {
-	if ( is.null(dev.list()) )
-		.stop("no open plot to use")
-	title(sub="select pixels", col.sub="red")
-	nruns <- nlevels(droplevels(run(object)[plot$subset]))
-	if ( nruns > 1 )
-		.warning("multiple runs plotted; results may be unexpected")
-	.message("select pixels; press ESC or 2nd mouse button to stop")
-	loc <- .locator(mode == "region")
-	if ( mode == "region" ) {
-		.selectRegion(loc, pixelData(object),
-			subset=plot$subset, axs=plot$coordnames)
+{
+	mode <- match.arg(mode)
+	if ( ...length() > 0L ) {
+		plot(image(object, ...))
 	} else {
-		.selectPixels(loc, pixelData(object),
-			subset=plot$subset, axs=plot$coordnames)
+		plot(.lastplot$image)
 	}
-}
+	.select_ROI(object, mode)
+})
 
-.selectRegion <- function(loc, pdata, subset, axs = c("x", "y")) {
-	roi <- rep(FALSE, nrow(pdata))
-	coord <- coord(pdata)[subset,axs,drop=FALSE]
-	selected <- matter::inpoly(coord[,c(1,2)], cbind(loc$x, loc$y))
-	roi[subset] <- selected
+.select_ROI <- function(object, mode)
+{
+	if ( length(dev.list()) == 0L )
+		stop("no plot available to use")
+	if ( nrun(object) > 1L )
+		warning("multiple runs plotted; results may be unexpected")
+	box(bty="o", col="red", lty="solid", lwd=2)
+	message("select pixels; press ESC or 2nd mouse button to stop")
+	loc <- .select_locator(mode == "region")
+	roi <- logical(ncol(object))
+	sub <- rep_len(.lastplot$subset, ncol(object))
+	pos <- coord(object)[sub,,drop=FALSE]
+	if ( mode == "region" ) {
+		selected <- inpoly(pos, cbind(loc$x, loc$y))
+	} else {
+		selected <- logical(nrow(pos))
+		ind <- kdsearch(pos, cbind(loc$x, loc$y), tol=0.5)
+		selected[unlist(ind)] <- TRUE
+	}
+	roi[sub] <- selected
 	roi
 }
 
-.selectPixels <- function(loc, pdata, subset, axs = c("x", "y")) {
-	pixels <- rep(FALSE, nrow(pdata))
-	coord <- coord(pdata)[subset,axs,drop=FALSE]
-	if ( !gridded(pdata) )
-		.warning("pixel coordinates are not gridded")
-	selected <- data.frame(round(loc$x), round(loc$y))
-	names(selected) <- names(coord)
-	coord$..i.. <- seq_len(nrow(coord))
-	idx <- merge(coord, selected, by=axs)$..i..
-	p <- rep(FALSE, nrow(coord))
-	p[idx] <- TRUE
-	pixels[subset] <- p
-	pixels
-}
-
-# hack to force plot to update on RStudio device
-
-.locator <- function(area = TRUE, fill = TRUE) {
+.select_locator <- function(area = TRUE, fill = TRUE)
+{
 	xs <- numeric()
 	ys <- numeric()
 	while ( TRUE ) {
@@ -86,17 +62,3 @@ setMethod("selectROI", "SpectralImagingExperiment",
 	list(x=xs, y=ys)
 }
 
-# make a factor from logicals
-
-makeFactor <- function(..., ordered = FALSE) {
-	inds <- list(...)
-	labs <- sapply(substitute(...()), deparse)
-	if ( !is.null(names(inds)) ) {
-		nz <- nzchar(names(inds))
-		labs[nz] <- names(inds)[nz]
-	}
-	names(labs) <- NULL
-	inds <- do.call("cbind", inds)
-	inds <- apply(inds, 1, function(i) which(i)[1L])
-	factor(labs[inds], levels=labs, ordered=ordered)
-}

@@ -4,8 +4,8 @@
 
 ## Peak picking
 
-setMethod("peakPick", c("SpectralImagingData", "missing"),
-	function(object,
+setMethod("peakPick", "SpectralImagingData",
+	function(object, ref,
 		method = c("diff", "quantile", "filter", "cwt", "sd", "mad"),
 		SNR = 2, type = c("height", "area"), ...)
 {
@@ -18,10 +18,14 @@ setMethod("peakPick", c("SpectralImagingData", "missing"),
 	}
 	method <- match.arg(method)
 	type <- match.arg(type)
-	if ( method == "cwt" ) {
-		FUN <- .peakPick_cwt
+	if ( missing(ref) || is.null(ref) ) {
+		if ( method == "cwt" ) {
+			FUN <- .peakPick_cwt
+		} else {
+			FUN <- .peakPick
+		}
 	} else {
-		FUN <- .peakPick
+		stop("TODO")
 	}
 	addProcessing(object, FUN, label=paste0(type, " peak picking"),
 		method=method, SNR=SNR, type=type, ...)

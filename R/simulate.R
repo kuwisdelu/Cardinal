@@ -1,4 +1,50 @@
 
+# Simulate a mass spectrum
+simulateSpectra <- function(n = 1L, npeaks = 50L,
+	mz = rlnorm(npeaks, 7, 0.3), intensity = rlnorm(npeaks, 1, 0.9),
+	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
+	sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
+	sdnoise = 0.1, sdmz = 10, resolution = 1000, fmax = 0.5,
+	baseline = 0, decay = 10, units=c("ppm", "mz"),
+	representation = c("profile", "centroid"), ...)
+{
+	if ( "peaks" %in% ...names() ) {
+		.Deprecated("npeaks")
+		npeaks <- list(...)$peaks
+	}
+	if ( length(mz) != length(intensity) )
+		stop("length of mz and intensity must match")
+	units <- match.arg(units)
+	representation <- match.arg(representation)
+	if ( missing(mz) && (!missing(from) || !missing(to)) ) {
+		mz <- (mz - min(mz)) / max(mz - min(mz))
+		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
+	}
+	x <- as.vector(mz(from=from, to=to, by=by, units=units))
+	y <- simspec(n=n, x=mz, y=intensity,
+		domain=x, sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
+		sdy=sdnoise, sdymult=sdpeaks, resolution=resolution,
+		fmax=fmax, baseline=baseline, decay=decay,
+		units=switch(units, ppm="relative", mz="absolute"))
+	if ( representation == "centroid" ) {
+		FUN <- function(yi) approx(domain, yi, mz)$y
+		y <- apply(y, 2L, FUN)
+		ans <- list(mz=mz, intensity=y)
+	} else {
+		peaks <- attr(y, "peaks")
+		attr(y, "peaks") <- NULL
+		attr(y, "domain") <- NULL
+		ans <- list(mz=x, intensity=y, peaks=peaks)
+	}
+	ans
+}
+
+simulateSpectrum <- function(...)
+{
+	.Deprecated("simulateSpectra")
+	simulateSpectra(...)
+}
+
 # Simulate a mass spectrometry imaging experiment
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,

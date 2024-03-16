@@ -25,13 +25,17 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		ylab <- expression(italic(y))
 	if ( is.null(names(i)) )
 		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE])
+	if ( "plusminus" %in% ...names() ) {
+		.Deprecated(old="plusminus", new="tolerance")
+		tolerance <- plusminus
+	}
 	if ( is.finite(tolerance) ) {
 		if ( is.null(mz) )
 			mz <- mz(x)[i]
 		units <- match.arg(units)
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 		ref <- switch(units, ppm="x", mz="abs")
-		i <- matter::kdsearch(mz, mz(x), tol=tol, tol.ref=ref)
+		i <- kdsearch(mz, mz(x), tol=tol, tol.ref=ref)
 		nms <- paste0("m/z = ", round(mz, digits=4L))
 		nms <- paste0(nms, " \u00b1 ", tolerance, switch(units, ppm=" ppm", mz=""))
 		i <- Map(function(j, nm) setNames(j, rep.int(nm, length(j))), i, nms)
@@ -103,9 +107,12 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	} else {
 		by <- names(vals)
 	}
-	.plot_image_formula(X, Y, vals, formula,
+	plot <- .plot_image_formula(X, Y, vals, formula,
 		by=by, groups=groups, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
+	.lastplot$subset <- subset
+	.lastplot$image <- plot
+	plot
 })
 
 .plot_image_formula <- function(x, y, vals,
@@ -148,7 +155,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 			by <- paste0(runs, "\n", by)
 		}
 	}
-	matter::plot_image(X, Y, vals, by=by, group=groups,
+	plot_image(X, Y, vals, by=by, group=groups,
 		xlab=xlab, ylab=ylab, ...)
 }
 

@@ -2,8 +2,16 @@
 #### Write MSI data file(s) ####
 ## -----------------------------
 
-writeMSIData <- function(object, file, ...) {
-	invisible(writeImzML(object, file, ...))
+writeMSIData <- function(object, file, ...)
+{
+	ext <- tools::file_ext(file)
+	if ( tolower(ext) %in% c("ibd", "imzml") ) {
+		writeImzML(object, file, ...)
+	} else if ( tolower(ext) %in% c("img", "hdr", "t2m") ) {
+		writeAnalyze(object, file, ...)
+	} else {
+		stop("can't recognize file extension: ", ext)
+	}
 }
 
 
@@ -43,15 +51,22 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		ok <- .write_MSImagingExperiment_OR_Arrays(object, path=path, ...)
 		if ( getCardinalVerbose() ) {
 			if ( bundle )
-				message("output bundle directory: ", dirname(path))
+				message("output bundle directory: ", sQuote(dirname(path)))
 			message("done.")
 		}
 		invisible(ok)
 	})
 
-.write_MSImagingExperiment_OR_Arrays <- function(object, path, ...)
-{	
-	if ( is(object, "MSImagingExperiment") ) {
+.write_MSImagingExperiment_OR_Arrays <- function(object, path,
+	positions = NULL, mz = NULL, intensity = NULL, ...)
+{
+	if ( is.null(positions) )
+		positions <- coord(object)
+	if ( is.null(mz) )
+		mz <- mz(object)
+	if ( is.null(intensity) )
+		intensity <- intensity(object)
+	if ( is.numeric(mz) || is(mz, "matter_vec") ) {
 		format <- "continuous"
 	} else {
 		format <- "processed"
@@ -59,7 +74,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	if ( getCardinalVerbose() )
 		message("writing ", sQuote(format), " imzML file: ", sQuote(path))
 	ok <- CardinalIO::writeImzML(experimentData(object), file=path,
-		positions=coord(object), mz=mz(object), intensity=intensity(object), ...)
+		positions=positions, mz=mz, intensity=intensity, ...)
 	if ( ok ) {
 		if ( getCardinalVerbose() ) {
 			outpath <- attr(ok, "outpath")
@@ -103,8 +118,23 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 #### Write Analyze 7.5 file(s) ####
 ## --------------------------------
 
-writeAnalyze <- function(object, file, ...) {
-	.Deprecated("readImzML")
-	invisible(writeImzML(object, file, ...))
+writeAnalyze <- function(object, file, ...)
+{
+	path <- normalizePath(file, mustWork=FALSE)
+	if ( !is(object, "MSImagingExperiment") )
+		object <- convertMSImagingExperiment2Arrays(object)
+	if ( getCardinalVerbose() )
+		message("writing Analyze 7.5 file: ", sQuote(file))
+	ok <- CardinalIO::writeAnalyze(spectra(object), mz=mz(object), file=file, ...)
+	if ( ok ) {
+		if ( getCardinalVerbose() ) {
+			outpath <- attr(ok, "outpath")
+			message("wrote file: ", sQuote(basename(outpath[1L])))
+			message("wrote file: ", sQuote(basename(outpath[2L])))
+			message("wrote file: ", sQuote(basename(outpath[3L])))
+		}
+	} else {
+		stop("failed to write Analyze 7.5")
+	}
 }
 

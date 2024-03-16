@@ -80,12 +80,6 @@ importFrom("mclust",
 	"Mclust",
 	"mclustBIC")
 
-importFrom("signal",
-	"interp1",
-	"kaiser",
-	"pchip",
-	"sgolayfilt")
-
 exportClasses(
 	"Hashmat",
 	"IAnnotatedDataFrame",
@@ -182,6 +176,7 @@ exportMethods(
 	"[[",
 	"[[<-",
 	"annotatedDataFrameFrom",
+	"coerce",
 	"combine",
 	"coord",
 	"coord<-",
@@ -196,6 +191,8 @@ exportMethods(
 	"dims",
 	"dimnames",
 	"dimnames<-",
+	"domain",
+	"domain<-",
 	"experimentData",
 	"experimentData<-",
 	"features",
@@ -222,14 +219,15 @@ exportMethods(
 	"initialize",
 	"isCentroided",
 	"is3D",
-	"domain",
-	"domain<-",
+	"keys",
+	"keys<-",
 	"modelData",
 	"modelData<-",
 	"mz",
 	"mz<-",
 	"mzData",
 	"mzData<-",
+	"nrun",
 	"pData",
 	"pData<-",
 	"peaks",
@@ -324,10 +322,12 @@ exportMethods(
 
 exportMethods(
 	"process",
+	"bin",
 	"normalize",
 	"smooth",
 	"smoothSignal",
 	"reduceBaseline",
+	"recalibrate",
 	"mzAlign",
 	"mzBin",
 	"mzFilter",
@@ -376,6 +376,12 @@ exportMethods(
 	"subset")
 
 export(
+	"rowSums",
+	"rowMeans",
+	"rowStats",
+	"colSums",
+	"colMeans",
+	"colStats",
 	"subsetFeatures",
 	"subsetPixels",
 	"summarizeFeatures",

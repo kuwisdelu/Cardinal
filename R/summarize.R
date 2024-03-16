@@ -1,52 +1,106 @@
 
 ## Summarize
 
+setMethod("rowSums", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		rowStats(x, stat="sum", ..., na.rm=na.rm)
+	})
+
+setMethod("colSums", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		colStats(x, stat="sum", ..., na.rm=na.rm)
+	})
+
+setMethod("rowMeans", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		rowStats(x, stat="mean", ..., na.rm=na.rm)
+	})
+
+setMethod("colMeans", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		colStats(x, stat="mean", ..., na.rm=na.rm)
+	})
+
 setMethod("rowStats", "SpectralImagingExperiment",
-	function(x, stat, ..., BPPARAM = bpparam()) {
+	function(x, stat, ..., BPPARAM = getCardinalBPPARAM())
+	{
 		rowStats(spectra(x), stat=stat,
 			nchunks=getCardinalNChunks(),
 			verbose=getCardinalVerbose(),
-			BPPARAM=getCardinalBPPARAM(), ...)
+			BPPARAM=BPPARAM, ...)
 	})
 
 setMethod("colStats", "SpectralImagingExperiment",
-	function(x, stat, ..., BPPARAM = bpparam()) {
+	function(x, stat, ..., BPPARAM = getCardinalBPPARAM())
+	{
 		colStats(spectra(x), stat=stat,
 			nchunks=getCardinalNChunks(),
 			verbose=getCardinalVerbose(),
-			BPPARAM=getCardinalBPPARAM(), ...)
+			BPPARAM=BPPARAM, ...)
 	})
 
-summarizeFeatures <- function(x, stat = "mean", ...) {
+summarizeFeatures <- function(x, stat = "mean",
+	groups = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+{
 	if ( "FUN" %in% ...names() ) {
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
-	if ( length(stat) != 1L )
-		stop("stat must be a single string")
-	nm <- if (is.null(names(stat))) stat else names(stat)
-	ans <- rowStats(x, stat=stat, ...)
-	if ( is.array(ans) ) {
-		featureData(x)[colnames(ans)] <- ans
+	if ( is(x, "MSImagingArrays") ) {
+		x <- convertMSImagingArrays2Experiment(x, BPPARAM=BPPARAM)
 	} else {
-		featureData(x)[[nm]] <- ans
+		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
+	}
+	if ( is.null(names(stat)) ) {
+		labels <- stat
+	} else {
+		labels <- ifelse(nchar(names(stat)), names(stat), stat)
+	}
+	ans <- rowStats(x, stat=stat, group=groups,
+		simplify=FALSE, BPPARAM=BPPARAM, ...)
+	for ( i in seq_along(ans) ) {
+		y <- matter:::drop_attr(ans[[i]])
+		if ( is.array(y) ) {
+			nm <- paste0(colnames(y), ".", labels[i])
+			featureData(x)[nm] <- y
+		} else {
+			featureData(x)[[labels[i]]] <- y
+		}
 	}
 	x
 }
 
-summarizePixels <- function(x, stat = c(tic="sum"), ...) {
+summarizePixels <- function(x, stat = c(tic="sum"),
+	groups = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+{
 	if ( "FUN" %in% ...names() ) {
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
-	if ( length(stat) != 1L )
-		stop("stat must be a single string")
-	nm <- if (is.null(names(stat))) stat else names(stat)
-	ans <- colStats(x, stat=stat, ...)
-	if ( is.array(ans) ) {
-		pixelData(x)[colnames(ans)] <- ans
+	if ( is(x, "MSImagingArrays") ) {
+		x <- convertMSImagingArrays2Experiment(x, BPPARAM=BPPARAM)
 	} else {
-		pixelData(x)[[nm]] <- ans
+		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
+	}
+	if ( is.null(names(stat)) ) {
+		labels <- stat
+	} else {
+		labels <- ifelse(nchar(names(stat)), names(stat), stat)
+	}
+	ans <- colStats(x, stat=stat, group=groups,
+		simplify=FALSE, BPPARAM=BPPARAM, ...)
+	for ( i in seq_along(ans) ) {
+		y <- matter:::drop_attr(ans[[i]])
+		if ( is.array(y) ) {
+			nm <- paste0(colnames(y), ".", labels[i])
+			pixelData(x)[nm] <- y
+		} else {
+			pixelData(x)[[labels[i]]] <- y
+		}
 	}
 	x
 }

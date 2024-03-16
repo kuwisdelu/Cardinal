@@ -63,8 +63,9 @@ SpectralImagingExperiment <- function(spectraData = SimpleList(),
 setMethod("show", "SpectralImagingExperiment",
 	function(object) {
 		# dimensions
-		cat(class(object), "of length", length(object),
-			"with", nrow(object), "features", "\n\n")
+		label <- if(length(object) != 1L) "spectra" else "spectrum"
+		cat(class(object), "with", nrow(object), "features",
+			"and", length(object), label, "\n\n")
 		# spectraData()
 		cat(sprintf("spectraData(%d): %s\n", length(spectraData(object)),
 			.paste_head_tail(names(spectraData(object)))))
@@ -342,7 +343,8 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 setMethod("show", "SpectralImagingArrays",
 	function(object) {
 		# dimensions
-		cat(class(object), "of length", length(object), "\n\n")
+		label <- if(length(object) != 1L) "spectra" else "spectrum"
+		cat(class(object), "with", length(object), label, "\n\n")
 		# spectraData()
 		cat(sprintf("spectraData(%d): %s\n", length(spectraData(object)),
 			.paste_head_tail(names(spectraData(object)))))
@@ -374,7 +376,7 @@ setMethod("pixels", "SpectralImagingArrays",
 	if ( !missing(coord) ) {
 		coord <- as.data.frame(as.list(coord))
 		if ( is.na(tol) )
-			tol <- vapply(coord(object), matter::estres, numeric(1L))
+			tol <- vapply(coord(object), estres, numeric(1L))
 		i_coord <- kdsearch(coord, coord(object), tol=tol)
 		i_coord <- unique(unlist(i_coord))
 		index <- intersect(i_coord, index)
@@ -461,7 +463,7 @@ setValidity("SpectralImagingData", .valid_SpectralImagingData)
 
 # Make matter::mem() report virtual memory correctly
 setMethod("vm_used", "SpectralImagingData",
-	function(x) matter::vm_used(spectraData(x)))
+	function(x) vm_used(spectraData(x)))
 
 ## Slot getters and setters
 

@@ -1,3 +1,5 @@
+require(testthat)
+require(Cardinal)
 
 context("XDataFrame")
 
@@ -188,6 +190,9 @@ test_that("PositionDataFrame", {
 	expect_setequal(runNames(head(d3, 6L)), "run3")
 	expect_setequal(runNames(tail(d3, 6L)), "run4")
 
+	df <- DataFrame(expand.grid(x=1:3, y=1:3), A=1:9)
+	expect_true(validObject(as(df, "PositionDataFrame")))
+
 })
 
 test_that("PositionDataFrame rbind/cbind", {
@@ -235,6 +240,9 @@ test_that("MassDataFrame", {
 	mz3 <- rev(mz2)
 
 	expect_error(mz(d0) <- mz3)
+
+	df <- DataFrame(mz=seq(500, 505, by=0.1))
+	expect_true(validObject(as(df, "MassDataFrame")))
 
 })
 

@@ -2,8 +2,9 @@
 #### Read MS imaging data file(s) ####
 ## -----------------------------------
 
-readMSIData <- function(file, ...) {
-	ext <- tools::file_ext(path)
+readMSIData <- function(file, ...)
+{
+	ext <- tools::file_ext(file)
 	if ( tolower(ext) %in% c("ibd", "imzml") ) {
 		readImzML(file, ...)
 	} else if ( tolower(ext) %in% c("img", "hdr", "t2m") ) {
@@ -17,7 +18,7 @@ readMSIData <- function(file, ...) {
 #### Read imzML file(s) ####
 ## -------------------------
 
-readImzML <- function(file, attach.only = TRUE,
+readImzML <- function(file, memory = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, as = "auto", parse.only=FALSE,
 	BPPARAM = getCardinalBPPARAM(), ...)
@@ -26,6 +27,10 @@ readImzML <- function(file, attach.only = TRUE,
 		.Deprecated(old="name", new="file")
 	if ( "folder" %in% ...names() )
 		.Deprecated(old="folder", new="file")
+	if ( "attach.only" %in% ...names() ) {
+		.Deprecated(old="attach.only", new="memory")
+		memory <- !list(...)$attach.only
+	}
 	if ( tools::file_ext(file) != "" ) {
 		path <- normalizePath(file, mustWork=TRUE)
 	} else {
@@ -67,6 +72,21 @@ readImzML <- function(file, attach.only = TRUE,
 		ans <- convertMSImagingArrays2Experiment(ans,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max, BPPARAM=BPPARAM)
+	}
+	if ( memory ) {
+		if ( getCardinalVerbose() )
+			message("loading spectra into memory")
+		if ( is(ans, "MSImagingArrays") ) {
+			mz(ans) <- as.list(mz(ans))
+			intensity(ans) <- as.list(intensity(ans))
+		} else {
+			if ( is.sparse(spectra(ans)) ) {
+				atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
+				atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+			} else {
+				spectra(ans) <- as.matrix(spectra(ans))
+			}
+		}
 	}
 	if ( getCardinalVerbose() ) {
 		message("returning ", class(ans))
@@ -144,7 +164,7 @@ readImzML <- function(file, attach.only = TRUE,
 			mz <- fdata[["mz"]]
 			if ( is.null(mz) )
 				stop("'mz' missing from feature metadata")
-			spectra <- matter::sparse_mat(index=mz(object),
+			spectra <- sparse_mat(index=mz(object),
 				data=intensity(object), domain=mz,
 				nrow=length(mz), ncol=length(object),
 				tolerance=0.5 * estres(mz, tol=NA),
@@ -166,12 +186,16 @@ readImzML <- function(file, attach.only = TRUE,
 #### Read Analyze 7.5 file(s) ####
 ## -------------------------------
 
-readAnalyze <- function(file, attach.only = TRUE, as = "auto", ...)
+readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
 {
 	if ( "name" %in% ...names() )
 		.Deprecated(old="name", new="file")
 	if ( "folder" %in% ...names() )
 		.Deprecated(old="folder", new="file")
+	if ( "attach.only" %in% ...names() ) {
+		.Deprecated(old="attach.only", new="memory")
+		memory <- !list(...)$attach.only
+	}
 	if ( tools::file_ext(file) != "" ) {
 		path <- normalizePath(file, mustWork=TRUE)
 	} else {
@@ -192,6 +216,21 @@ readAnalyze <- function(file, attach.only = TRUE, as = "auto", ...)
 			message("creating MSImagingExperiment")
 		ans <- convertMSImagingArrays2Experiment(ans)
 	}
+	if ( memory ) {
+		if ( getCardinalVerbose() )
+			message("loading spectra into memory")
+		if ( is(ans, "MSImagingArrays") ) {
+			mz(ans) <- as.list(mz(ans))
+			intensity(ans) <- as.list(intensity(ans))
+		} else {
+			if ( is.sparse(spectra(ans)) ) {
+				atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
+				atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+			} else {
+				spectra(ans) <- as.matrix(spectra(ans))
+			}
+		}
+	}
 	if ( getCardinalVerbose() ) {
 		message("returning ", class(ans))
 		message("done.")
@@ -203,12 +242,12 @@ readAnalyze <- function(file, attach.only = TRUE, as = "auto", ...)
 {
 	parse <- CardinalIO::parseAnalyze(path)
 	dms <- dim(parse$img)
-	mz <- matter::matter_list(
+	mz <- matter_list(
 		type=type(atomdata(parse$mz)),
 		path=path(atomdata(parse$mz)),
 		lengths=rep.int(dms[1L], prod(dms[-1L])),
 		offset=rep.int(0, prod(dms[-1L])))
-	intensity <- matter::matter_list(
+	intensity <- matter_list(
 		type=type(atomdata(parse$img)),
 		path=path(atomdata(parse$img)),
 		lengths=rep.int(dms[1L], prod(dms[-1L])))

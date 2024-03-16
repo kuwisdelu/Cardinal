@@ -75,11 +75,11 @@ setMethod("features", "MSImagingExperiment",
 		if ( !missing(mz) ) {
 			ref <- switch(units, ppm="x", mz="abs")
 			if ( is.na(tolerance) ) {
-				tol <- matter::estres(mz(object), tol.ref=ref)
+				tol <- estres(mz(object), tol.ref=ref)
 			} else {
 				tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 			}
-			i_mz <- matter::bsearch(mz, mz(object), tol=tol, tol.ref=ref)
+			i_mz <- bsearch(mz, mz(object), tol=tol, tol.ref=ref)
 			i <- intersect(i_mz, i)
 		}
 		setNames(i, featureNames(object)[i])
@@ -89,7 +89,7 @@ setMethod("features", "MSImagingExperiment",
 
 setMethod("mz", "missing",
 	function(from, to, by, units = c("ppm", "mz"), ...) {
-		seq_ppm(from=from, to=to, by=by, units=units)
+		seq_mz(from=from, to=to, by=by, units=units)
 	})
 
 setMethod("mz", "MSImagingExperiment",
@@ -206,7 +206,7 @@ convertMSImagingExperiment2Arrays <- function(object)
 		continuous=continuous)
 }
 
-convertMSImagingArrays2Experiment <- function(object,
+convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -216,7 +216,8 @@ convertMSImagingArrays2Experiment <- function(object,
 		stop("object must be of class MSImagingArrays")
 	units <- match.arg(units)
 	if ( isTRUE(object@continuous) ) {
-		mz <- mz(object)[[1L]]
+		if ( is.null(mz) )
+			mz <- mz(object)[[1L]]
 		if ( is.matter(intensity(object)) ) {
 			spectra <- as(intensity(object), "matter_mat")
 		} else {
@@ -224,44 +225,53 @@ convertMSImagingArrays2Experiment <- function(object,
 		}
 		featureData <- MassDataFrame(mz=mz)
 	} else {
-		if ( is.null(mass.range) || is.na(resolution) )
+		if ( is.null(mz) )
 		{
-			if ( getCardinalVerbose() )
-				message("auto-determining m/z bins")
 			mzlist <- mz(object)
 			if ( is.finite(guess.max) ) {
 				i <- seq(1L, length(object), length.out=guess.max)
 				mzlist <- mzlist[i]
 			}
-			mz <- estimateProfileMz(mzlist, units=units, BPPARAM=BPPARAM)
-			if ( is.null(mass.range) )
-				mass.range <- c(min(mz), max(mz))
-			if ( is.na(resolution) )
-				resolution <- attr(mz, "resolution")
-		}
-		mz <- seq_mz(from=mass.range[1L], to=mass.range[2L],
-			by=resolution, units=units)
-		if ( isCentroided(object) ) {
-			sampler <- "max"
-			tolerance <- switch(units,
-				ppm=c(relative=1e-6 * unname(resolution)),
-				mz=c(absolute=unname(resolution)))
-			if ( getCardinalVerbose() )
-				message("using mass tolerance: ", resolution, " ", units)
-			mz <- estimateCentroidMz(mzlist, mz, units=units, BPPARAM=BPPARAM)
-			if ( getCardinalVerbose() )
-				message("binned to ", length(mz), " peaks")
-			featureData <- MassDataFrame(mz=as.vector(mz), n=attr(mz, "n"))
-		} else {
+			if ( is.null(mass.range) || is.na(resolution) )
+			{
+				if ( getCardinalVerbose() )
+					message("auto-determining m/z bins")
+				mz <- estimateProfileMz(mzlist, units=units, BPPARAM=BPPARAM)
+				if ( is.null(mass.range) )
+					mass.range <- c(min(mz), max(mz))
+				if ( is.na(resolution) )
+					resolution <- attr(mz, "resolution")
+			}
+			mz <- seq_mzr(mass.range, by=resolution, units=units)
+			if ( isCentroided(object) ) {
+				sampler <- "max"
+				tolerance <- 0.5 * switch(units,
+					ppm=c(relative=1e-6 * unname(resolution)),
+					mz=c(absolute=unname(resolution)))
+				if ( getCardinalVerbose() )
+					message("using mass tolerance: ", resolution, " ", units)
+				mz <- estimateCentroidMz(mzlist, mz, units=units, BPPARAM=BPPARAM)
+				if ( getCardinalVerbose() )
+					message("binned to ", length(mz), " peaks")
+				featureData <- MassDataFrame(mz=as.vector(mz), n=attr(mz, "n"))
+			} else {
+				sampler <- "linear"
+				tolerance <- 2 * switch(units,
+					ppm=c(relative=1e-6 * unname(resolution)),
+					mz=c(absolute=unname(resolution)))
+				if ( getCardinalVerbose() )
+					message("using mass range: ", mass.range[1L], " to ", mass.range[2L])
+				if ( getCardinalVerbose() )
+					message("using mass resolution: ", resolution, " ", units)
+				featureData <- MassDataFrame(mz=mz)
+			}
+		} else
+		{
 			sampler <- "linear"
-			tolerance <- attr(mz, "tolerance")
-			if ( getCardinalVerbose() )
-				message("using mass range: ", mass.range[1L], " to ", mass.range[2L])
-			if ( getCardinalVerbose() )
-				message("using mass resolution: ", resolution, " ", units)
+			tolerance <- 2 * estres(mz, tol.ref=switch(units, ppm="x", mz="abs"))
 			featureData <- MassDataFrame(mz=mz)
 		}
-		spectra <- matter::sparse_mat(index=mz(object),
+		spectra <- sparse_mat(index=mz(object),
 			data=intensity(object), domain=mz,
 			nrow=length(mz), ncol=length(object),
 			tolerance=tolerance, sampler=sampler)
@@ -280,7 +290,7 @@ estimateProfileMz <- function(mzlist, units = c("ppm", "mz"),
 	units <- match.arg(units)
 	ref <- switch(units, ppm="x", mz="abs")
 	FUN <- function(x) {
-		res <- matter::estres(x, tol.ref=ref)
+		res <- estres(x, tol.ref=ref)
 		res <- switch(units, ppm=1e6 * res, mz=res)
 		c(min=min(x), max=max(x), res=res)
 	}
@@ -303,7 +313,7 @@ estimateCentroidMz <- function(mzlist, mz, units = c("ppm", "mz"),
 {
 	units <- match.arg(units)
 	ref <- switch(units, ppm="x", mz="abs")
-	tol <- matter::estres(mz, tol.ref=ref)
+	tol <- estres(mz, tol.ref=ref)
 	FUN <- function(x) {
 		matter::binpeaks(x, domain=mz, tol=tol, tol.ref=ref,
 			merge=FALSE, na.drop=FALSE)
@@ -322,6 +332,12 @@ estimateCentroidMz <- function(mzlist, mz, units = c("ppm", "mz"),
 			tolerance=c(absolute=unname(tol)),
 			n=nobs(peaks)))
 }
+
+setAs("MSImagingArrays", "MSImagingExperiment",
+	function(from) convertMSImagingArrays2Experiment(from))
+
+setAs("MSImagingExperiment", "MSImagingArrays",
+	function(from) convertMSImagingExperiment2Arrays(from))
 
 setMethod("updateObject", "MSImagingExperiment",
 	function(object, ..., verbose = FALSE)

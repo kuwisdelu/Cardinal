@@ -117,13 +117,13 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 	} else {
 		by <- names(Y)
 	}
-	if ( .has_pending_processing(x) )
+	if ( length(processingData(x)) > 0L )
 	{
 		if ( !is.null(groups) )
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		xi <- process(x[,i], spectra=vars[1L], domain=vars[2L], BPPARAM=NULL)
+		xi <- process(x[,i], spectra=vars[1L], index=vars[2L], BPPARAM=NULL)
 		plot1 <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
@@ -132,14 +132,16 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		combine(plot1, plot2)
+		plot <- combine(plot1, plot2)
 	} else
 	{
-		.plot_spectra_formula(X, Y, formula,
+		plot <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
 	}
+	.lastplot$spectrum <- plot
+	plot
 })
 
 # SpectralImagingArrays
@@ -191,13 +193,13 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	} else {
 		by <- names(Y)
 	}
-	if ( .has_pending_processing(x) )
+	if ( length(processingData(x)) > 0L )
 	{
 		if ( !is.null(groups) )
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		xi <- process(x[i], spectra=vars[1L], domain=vars[2L], BPPARAM=NULL)
+		xi <- process(x[i], spectra=vars[1L], index=vars[2L], BPPARAM=NULL)
 		plot1 <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
@@ -206,14 +208,16 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		combine(plot1, plot2)
+		plot <- combine(plot1, plot2)
 	} else
 	{
-		.plot_spectra_formula(X, Y, formula,
+		plot <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
 	}
+	.lastplot$spectrum <- plot
+	plot
 })
 
 .plot_spectra_formula <- function(x, y,
@@ -235,7 +239,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		groups <- factor(groups, levels=unique(groups))
 	if ( !is.null(by) && !is.factor(by) )
 		by <- factor(by, levels=unique(by))
-	matter::plot_signal(X, Y, by=by, group=groups,
+	plot_signal(X, Y, by=by, group=groups,
 		xlab=xlab, ylab=ylab, ...)
 }
 

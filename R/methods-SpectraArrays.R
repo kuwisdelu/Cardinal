@@ -79,7 +79,7 @@ setMethod("show", "SpectraArrays",
 		}
 		dms <- c(sprintf(dms_text, length(dms)), .select_head_tail(dms))
 		# matter::mem()
-		mem <- vapply(arrays, function(x) format(matter::mem(x)), character(2L))
+		mem <- vapply(arrays, function(x) format(mem(x)), character(2L))
 		rmem <- c(sprintf("real mem(%d):", length(mem[1L,])), .select_head_tail(mem[1L,]))
 		vmem <- c(sprintf("virtual mem(%d):", length(mem[2L,])), .select_head_tail(mem[2L,]))
 		out <- rbind(cls, dms, rmem, vmem)
@@ -92,7 +92,7 @@ setMethod("show", "SpectraArrays",
 setMethod("vm_used", "SpectraArrays",
 	function(x) {
 		arrays <- as(x, "SimpleList", strict=FALSE)
-		vm <- vapply(arrays, function(y) matter::vm_used(y), numeric(1L))
+		vm <- vapply(arrays, function(y) vm_used(y), numeric(1L))
 		if ( all(is.na(vm)) ) {
 			matter:::size_bytes(NA_real_)
 		} else {
@@ -185,7 +185,7 @@ setMethod("dim", "SpectraArrays",
 	}
 	get_array_subset <- function(a)
 	{
-		drop <- if (matter::is.matter(a)) NULL else FALSE
+		drop <- if (is.matter(a)) NULL else FALSE
 		ndim <- if (is.null(dim(a))) 1L else length(dim(a))        
 		more_subscripts <- rep.int(list(quote(expr=)), ndim - length(subscripts))
 		args <- c(list(a), subscripts, more_subscripts, list(drop=drop))
@@ -209,7 +209,7 @@ setMethod("[", "SpectraArrays",
 	}
 	set_array_subset <- function(a, v)
 	{
-		drop <- if (matter::is.matter(a)) NULL else FALSE
+		drop <- if (is.matter(a)) NULL else FALSE
 		ndim <- if (is.null(dim(a))) 1L else length(dim(a))        
 		more_subscripts <- rep.int(list(quote(expr=)), ndim - length(subscripts))
 		args <- c(list(a), subscripts, more_subscripts, list(value=v))

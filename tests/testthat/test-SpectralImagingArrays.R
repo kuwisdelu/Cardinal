@@ -1,3 +1,5 @@
+require(testthat)
+require(Cardinal)
 
 context("SpectralImagingArrays")
 

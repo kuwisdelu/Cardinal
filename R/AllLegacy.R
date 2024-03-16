@@ -221,7 +221,7 @@ setClass("SpatialFastmap", contains="ResultSet")
 setClass("SpatialKMeans", contains="ResultSet")
 setClass("SpatialShrunkenCentroids", contains="ResultSet")
 
-####---------------------------------------------------####
+## define 3.x classes for installation
 
 setClass("MeansTest")
 setClass("PCA2")
