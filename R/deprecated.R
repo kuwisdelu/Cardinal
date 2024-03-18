@@ -2,6 +2,64 @@
 #### Deprecated and defunct ####
 ## -----------------------------
 
+setMethod("smoothSignal", "SpectralImagingExperiment",
+	function(object, method = c("gaussian", "sgolay", "ma"), ...)
+	{
+		.Deprecated("smooth")
+		smooth(object, method=match.arg(method), ...)
+	})
+
+setMethod("mzBin", c("MSImagingExperiment", "numeric"),
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"), fun="sum", ...)
+	{
+		.Deprecated("bin")
+		bin(object, ref=ref, tolerance=tolerance, units=units, method=fun, ...)
+	})
+
+setMethod("mzBin", c("MSImagingExperiment", "missing"),
+	function(object, from=min(mz(object)), to=max(mz(object)), by = resolution,
+			resolution = NA, units = c("ppm", "mz"), fun="sum", ...)
+	{
+		.Deprecated("bin")
+		bin(object, tolerance=0.5 * resolution, units=units, method=fun, ...)
+	})
+
+setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"),
+		span = 0.75, control = loess.control(), ...)
+	{
+		.Deprecated("recalibrate")
+		recalibrate(object, ref=ref, tolerance=tolerance, units=units, ...)
+	})
+
+setMethod("mzAlign", c("MSImagingExperiment", "missing"),
+	function(object, tolerance = NA, units = c("ppm", "mz"),
+		span = 0.75, control = loess.control(), quantile = 0.2, ...)
+	{
+		.Deprecated("recalibrate")
+		ref <- rowStats(object, stat="mean")
+		ref <- mz(object)[findpeaks(ref, relheight=0)]
+		recalibrate(object, ref=ref, tolerance=tolerance, units=units, ...)
+	})
+
+setMethod("mzFilter", "MSImagingExperiment",
+	function(object, ..., freq.min = NA, rm.zero = TRUE)
+	{
+		.Deprecated("subsetFeatures")
+		if ( !is.na(freq.min) && !is.null(fData(object)[["freq"]]) )
+			object <- object[fData(object)[["freq"]] >= freq.min,]
+		object
+	})
+
+setMethod("peakFilter", "MSImagingExperiment",
+	function(object, ..., freq.min = 0.01, rm.zero = TRUE)
+	{
+		.Deprecated("subsetFeatures")
+		if ( !is.na(freq.min) && !is.null(fData(object)[["freq"]]) )
+			object <- object[fData(object)[["freq"]] >= freq.min],]
+		object
+	})
+
 getCardinalNumBlocks <- function() {
 	.Deprecated("getCardinalNChunks")
 	getCardinalNChunks()
