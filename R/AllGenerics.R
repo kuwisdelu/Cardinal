@@ -35,7 +35,7 @@ setGeneric("recalibrate", function(object, ...) standardGeneric("recalibrate"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ...) standardGeneric("peakAlign"))
-setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
+setGeneric("peakProcess", function(object, ...) standardGeneric("peakProcess"))
 
 #### Co-registration and co-localization ####
 ## ------------------------------------------

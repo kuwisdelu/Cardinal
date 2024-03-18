@@ -2,24 +2,74 @@
 #### Peak processing ####
 ## ----------------------
 
-setMethod("peakPick", "MSImagingExperiment",
-	function(object, ref,
+setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
+	function(object,
+		spectra = "intensity", index = "mz",
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
 		tolerance = NA, units = c("ppm", "mz"),
-		SNR = 2, type = c("height", "area"), ...)
+		SNR = 2, type = c("height", "area"),
+		filter = TRUE, sample = Inf,
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( isCentroided(object) ) {
-		stop("object is already centroided")
+	if ( is.finite(sample) )
+	{
+		if ( sample < 1 ) {
+			n <- ceiling(sample * length(object))
+			prop <- 100 * sample
+		} else if ( sample > 0 ) {
+			n <- sample
+			prop <- round(100 * n / length(object))
+		} else {
+			stop("'sample' must be positive")
+		}
+		if ( getCardinalVerbose() ) {
+			label <- if (n != 1L) "spectra" else "spectrum"
+			message("processing peaks for ", n, " ", label, " ",
+				"(~", prop, "% of data)")
+		}
+		i <- seq.default(1L, length(object), length.out=n)
+		ref <- peakProcess(object[i],
+			spectra=spectra, index=index, method=method,
+			tolerance=tolerance, units=units,
+			SNR=SNR, type=type, filter=filter,
+			BPPARAM=BPPARAM, ...)
+		if ( getCardinalVerbose() )
+			message("extracting reference peaks from all spectra")
+		object <- peakPick(object, ref=mz(ref),
+			tolerance=tolerance, units=units,
+			type=type)
+		object <- peakAlign(object, ref=mz(ref),
+			spectra=spectra, index=index,
+			tolerance=tolerance, units=units,
+			BPPARAM=BPPARAM, ...)
 	} else {
-		centroided(object) <- TRUE
+		object <- peakPick(object, method=method,
+			tolerance=tolerance, units=units,
+			SNR=SNR, type=type)
+		object <- peakAlign(object, spectra=spectra, index=index,
+			tolerance=tolerance, units=units,
+			BPPARAM=BPPARAM, ...)
+		if ( isTRUE(filter) || filter > 0 ) {
+			if ( is.numeric(filter) ) {
+				if ( filter < 1 ) {
+					n <- ceiling(filter * length(object))
+				} else if ( filter > 0) {
+					n <- as.integer(filter)
+				} else {
+					stop("'filter' must be positive")
+				}
+			} else {
+				n <- 1L
+			}
+			if ( getCardinalVerbose() )
+				message("filtering to remove peaks with counts < ", n)
+			object <- object[featureData(object)[["count"]] > n,]
+		}
 	}
-	units <- switch(match.arg(units), ppm="relative", mz="absolute")
-	if ( !is.na(tolerance) )
-		tolerance <- switch(units,
-			relative=1e-6 * tolerance,
-			absolute=tolerance)
-	callNextMethod(object, ref=ref, method=method, SNR=SNR,
-		type=type, tolerance=tolerance, units=units, ...)
+	if ( getCardinalVerbose() )
+		message("processed to ", nrow(object), " peaks")
+	if ( validObject(object) )
+		object
 })
 
 
@@ -192,6 +242,9 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		tolerance = NA, units = c("relative", "absolute"),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( length(processingData(object)) > 0L )
+		object <- process(object, spectra=spectra, index=index,
+			BPPARAM=BPPARAM, ...)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -226,6 +279,9 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		tolerance = NA, units = c("relative", "absolute"),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( length(processingData(object)) > 0L )
+		object <- process(object, spectra=spectra, index=index,
+			BPPARAM=BPPARAM, ...)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -296,7 +352,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	featureData <- DataFrame(setNames(list(ref), tname))
 	if ( !is.null(n) ) {
 		featureData[["count"]] <- n
-		featureData[["freq"]] <- n / length(spectra)
+		featureData[["freq"]] <- n / length(object)
 	}
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(object),

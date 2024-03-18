@@ -102,6 +102,12 @@ test_that("process peaks - MSImagingArrays", {
 	expect_is(ms9, "MSImagingExperiment")
 	expect_equal(mz(ms9), peaks)
 
+	ms10 <- peakProcess(ms)
+	ms11 <- peakProcess(ms, sample=0.1, filter=FALSE)
+
+	expect_is(ms10, "MSImagingExperiment")
+	expect_is(ms11, "MSImagingExperiment")
+
 })
 
 test_that("process peaks - MSImagingExperiment", {
@@ -143,5 +149,11 @@ test_that("process peaks - MSImagingExperiment", {
 	expect_is(ms8, "MSImagingExperiment")
 	expect_is(ms9, "MSImagingExperiment")
 	expect_equal(mz(ms9), peaks)
+
+	ms10 <- peakProcess(ms)
+	ms11 <- peakProcess(ms, sample=0.1, filter=FALSE)
+
+	expect_is(ms10, "MSImagingExperiment")
+	expect_is(ms11, "MSImagingExperiment")
 
 })

@@ -1,5 +1,6 @@
 
-# utilizies
+#### Deprecated and defunct ####
+## -----------------------------
 
 getCardinalNumBlocks <- function() {
 	.Deprecated("getCardinalNChunks")
@@ -48,7 +49,6 @@ setMethod("spatialApply", "SpectralImagingExperiment",
 
 
 ## image
-
 image3d <- function(
 	x = seq(0, 1, length.out=dim(values)[1]),
 	y = seq(0, 1, length.out=dim(values)[2]),

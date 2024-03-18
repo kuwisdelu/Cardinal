@@ -332,6 +332,7 @@ exportMethods(
 	"mzAlign",
 	"mzBin",
 	"mzFilter",
+	"peakProcess",
 	"peakPick",
 	"peakAlign",
 	"peakBin",
