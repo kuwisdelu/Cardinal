@@ -373,16 +373,17 @@ exportMethods("topFeatures")
 exportMethods(
 	"aggregate",
 	"slice",
-	"sort",
-	"subset")
+	"sort")
 
 export(
-	"rowSums",
-	"rowMeans",
-	"rowStats",
 	"colSums",
 	"colMeans",
 	"colStats",
+	"rowSums",
+	"rowMeans",
+	"rowStats",
+	"spectrapply",
+	"subset",
 	"subsetFeatures",
 	"subsetPixels",
 	"summarizeFeatures",

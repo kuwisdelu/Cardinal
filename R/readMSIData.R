@@ -242,15 +242,14 @@ readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
 {
 	parse <- CardinalIO::parseAnalyze(path)
 	dms <- dim(parse$img)
-	mz <- matter_list(
-		type=type(atomdata(parse$mz)),
-		path=path(atomdata(parse$mz)),
-		lengths=rep.int(dms[1L], prod(dms[-1L])),
-		offset=rep.int(0, prod(dms[-1L])))
-	intensity <- matter_list(
+	mz <- matter_vec(
+		type=type(atomdata(parse$t2m)),
+		path=path(atomdata(parse$t2m)),
+		length=dms[1L])
+	spectra <- matter_mat(
 		type=type(atomdata(parse$img)),
 		path=path(atomdata(parse$img)),
-		lengths=rep.int(dms[1L], prod(dms[-1L])))
+		nrow=dms[1L], ncol=prod(dms[-1L]))
 	if ( length(dms) > 3L && dms[4L] != 1L ) {
 		coord <- expand.grid(
 			x=seq_len(dms[2L]),
@@ -262,11 +261,10 @@ readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
 			y=seq_len(dms[3L]))
 	}
 	run <- basename(tools::file_path_sans_ext(path))
-	spectraData <- SpectraArrays(list(mz=mz, intensity=intensity))
+	featureData <- MassDataFrame(mz=as.vector(mz))
 	pixelData <- PositionDataFrame(coord=coord, run=run)
-	MSImagingArrays(spectraData, pixelData=pixelData,
-		experimentData=NULL,
-		centroided=NA,
-		continuous=TRUE)
+	MSImagingExperiment(spectra,
+		featureData=featureData,
+		pixelData=pixelData)
 }
 

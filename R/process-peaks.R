@@ -1,4 +1,28 @@
 
+#### Peak processing ####
+## ----------------------
+
+setMethod("peakPick", "MSImagingExperiment",
+	function(object, ref,
+		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+		tolerance = NA, units = c("ppm", "mz"),
+		SNR = 2, type = c("height", "area"), ...)
+{
+	if ( isCentroided(object) ) {
+		stop("object is already centroided")
+	} else {
+		centroided(object) <- TRUE
+	}
+	units <- switch(match.arg(units), ppm="relative", mz="absolute")
+	if ( !is.na(tolerance) )
+		tolerance <- switch(units,
+			relative=1e-6 * tolerance,
+			absolute=tolerance)
+	callNextMethod(object, ref=ref, method=method, SNR=SNR,
+		type=type, tolerance=tolerance, units=units, ...)
+})
+
+
 #### Peak picking ####
 ## -------------------
 

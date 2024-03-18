@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("readImzML + writeImzML")
+context("read/write imzML and Analyze 7.5")
 
 test_that("read/write continuous", {
 
@@ -27,6 +27,14 @@ test_that("read/write continuous", {
 
 	expect_equal(pData(mse2), pData(mse3))
 	expect_equal(fData(mse2), fData(mse3))
+
+	path4 <- paste0(tempfile(), ".img")
+	writeAnalyze(mse, path4)
+	mse4 <- readAnalyze(path4)
+
+	expect_true(is(mse4, "MSImagingExperiment"))
+	expect_equal(mz(mse), mz(mse4))
+	expect_equal(spectra(mse)[,1L], spectra(mse4)[,1L])
 
 })
 

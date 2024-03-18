@@ -1,16 +1,13 @@
 
-#### Define new generics from R stats ####
-## ---------------------------------------
+#### Generics from stats ####
+## --------------------------
 setGeneric("predict")
 setGeneric("fitted")
 
-#### Basic getters and setters ####
-## --------------------------------
+#### Getters and setters ####
+## --------------------------
 setGeneric("keys", function(object, ...) standardGeneric("keys"))
 setGeneric("keys<-", function(object, ..., value) standardGeneric("keys<-"))
-
-#### Spectral imaging getters and setters ####
-## --------------------------------------------
 setGeneric("features", function(object, ...) standardGeneric("features"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
 setGeneric("pixelData", function(object) standardGeneric("pixelData"))
@@ -26,8 +23,8 @@ setGeneric("run<-", function(object, ..., value) standardGeneric("run<-"))
 setGeneric("runNames", function(object) standardGeneric("runNames"))
 setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 
-#### Define new generics from EBImage ####
-## ---------------------------------------
+#### Generics from EBImage ####
+## ----------------------------
 setGeneric("imageData")
 setGeneric("imageData<-")
 
@@ -38,7 +35,7 @@ setGeneric("recalibrate", function(object, ...) standardGeneric("recalibrate"))
 setGeneric("reduceBaseline", function(object, ...) standardGeneric("reduceBaseline"))
 setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 setGeneric("peakAlign", function(object, ...) standardGeneric("peakAlign"))
-setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
+setGeneric("peakPick", function(object, ...) standardGeneric("peakPick"))
 
 #### Co-registration and co-localization ####
 ## ------------------------------------------
@@ -57,6 +54,7 @@ setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 #### Statistical analysis and tools ####
 ## -------------------------------------
 setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
+setGeneric("NMF", function(x, ...) standardGeneric("NMF"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
 setGeneric("OPLS", function(x, y, ...) standardGeneric("OPLS"))
@@ -73,17 +71,14 @@ setGeneric("topFeatures", function(object, ...) standardGeneric("topFeatures"))
 
 #### Plotting ####
 ## ---------------
-setGeneric("is3D", function(object) standardGeneric("is3D"))
-setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
 setGeneric("selectROI", function(object, ...) standardGeneric("selectROI"))
-
-#### Data export ####
-## ------------------
-setGeneric("writeImzML", function(object, ...) standardGeneric("writeImzML"))
+setGeneric("image3D", function(x, ...) standardGeneric("image3D"))
+setGeneric("is3D", function(object) standardGeneric("is3D"))
 
 #### Deprecated ####
 ## ------------------
 
+# getters and setters
 setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
 setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 setMethod("iData", "ANY", function(x, i, ...) {
@@ -95,7 +90,6 @@ setReplaceMethod("iData", "ANY", function(x, i, ..., value) {
 		spectra(x, i, ...) <- values
 		x
 	})
-
 setGeneric("coordLabels", function(object) standardGeneric("coordLabels"))
 setGeneric("coordLabels<-", function(object, value) standardGeneric("coordLabels<-"))
 setGeneric("peakData", function(object, ...) standardGeneric("peakData"))
@@ -155,6 +149,7 @@ setGeneric("mzAlign", function(object, ref, ...) standardGeneric("mzAlign"))
 setGeneric("mzBin", function(object, ref, ...) standardGeneric("mzBin"))
 setGeneric("mzFilter", function(object, ...) standardGeneric("mzFilter"))
 setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))
+setGeneric("peakFilter", function(object, ...) standardGeneric("peakFilter"))
 
 # apply
 setGeneric("cvApply", function(.x, .y, .fun, ...) standardGeneric("cvApply"))

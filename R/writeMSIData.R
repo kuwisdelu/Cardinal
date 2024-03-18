@@ -48,7 +48,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 			}
 		}
 		experimentData(object) <- e
-		ok <- .write_MSImagingExperiment_OR_Arrays(object, path=path, ...)
+		ok <- .write_imzML(object, path=path, ...)
 		if ( getCardinalVerbose() ) {
 			if ( bundle )
 				message("output bundle directory: ", sQuote(dirname(path)))
@@ -57,7 +57,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		invisible(ok)
 	})
 
-.write_MSImagingExperiment_OR_Arrays <- function(object, path,
+.write_imzML <- function(object, path,
 	positions = NULL, mz = NULL, intensity = NULL, ...)
 {
 	if ( is.null(positions) )
@@ -118,14 +118,27 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 #### Write Analyze 7.5 file(s) ####
 ## --------------------------------
 
-writeAnalyze <- function(object, file, ...)
+setMethod("writeAnalyze", "MSImagingExperiment", 
+	function(object, file, ...)
+	{
+		.write_Analyze(spectra(object), file=file,
+			positions=coord(object), domain=mz(object), ...)
+	})
+
+setMethod("writeAnalyze", "SpectralImagingExperiment", 
+	function(object, file, ...)
+	{
+		.write_Analyze(spectra(object), file=file,
+			positions=coord(object), ...)
+	})
+
+.write_Analyze <- function(x, file, positions, domain, ...)
 {
 	path <- normalizePath(file, mustWork=FALSE)
-	if ( !is(object, "MSImagingExperiment") )
-		object <- convertMSImagingExperiment2Arrays(object)
 	if ( getCardinalVerbose() )
 		message("writing Analyze 7.5 file: ", sQuote(file))
-	ok <- CardinalIO::writeAnalyze(spectra(object), mz=mz(object), file=file, ...)
+	ok <- CardinalIO::writeAnalyze(x, file=file,
+		positions=positions, domain=domain, ...)
 	if ( ok ) {
 		if ( getCardinalVerbose() ) {
 			outpath <- attr(ok, "outpath")
