@@ -167,7 +167,7 @@ readImzML <- function(file, memory = FALSE,
 			spectra <- sparse_mat(index=mz(object),
 				data=intensity(object), domain=mz,
 				nrow=length(mz), ncol=length(object),
-				tolerance=0.5 * estres(mz, tol=NA),
+				tolerance=0.5 * estres(mz),
 				sampler="max")
 			object <- MSImagingExperiment(spectra,
 				featureData=MassDataFrame(mz=mz),

@@ -1,5 +1,7 @@
 
-# Simulate a mass spectrum
+#### Simulate mass spectra ####
+## ----------------------------
+
 simulateSpectra <- function(n = 1L, npeaks = 50L,
 	mz = rlnorm(npeaks, 7, 0.3), intensity = rlnorm(npeaks, 1, 0.9),
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
@@ -45,7 +47,10 @@ simulateSpectrum <- function(...)
 	simulateSpectra(...)
 }
 
-# Simulate a mass spectrometry imaging experiment
+
+#### Simulate MS-based image ####
+## ------------------------------
+
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",

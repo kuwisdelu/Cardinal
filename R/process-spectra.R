@@ -80,7 +80,7 @@ setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
 {
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
-		tol <- estres(ref, tol.ref=switch(units, ppm="x", mz="abs"))
+		tol <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
 	} else {
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 	}
@@ -97,7 +97,7 @@ setMethod("recalibrate", "SpectralImagingData",
 {
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
-		tol <- estres(ref, tol.ref=switch(units, relative="x", absolute="abs"))
+		tol <- estres(ref, ref=switch(units, relative="x", absolute="abs"))
 	} else {
 		tol <- tolerance
 	}

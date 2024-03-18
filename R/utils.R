@@ -5,13 +5,6 @@ CardinalVersion <- function() {
 	paste0(utils::packageVersion("Cardinal"), collapse=".")
 }
 
-# set up data viz variables
-.lastplot <- list2env(list(
-	image = NULL,
-	spectrum = NULL,
-	subset = TRUE
-))
-
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {
 	setCardinalVerbose()
@@ -43,6 +36,13 @@ setCardinalNChunks <- function(n = 20L) {
 	options("Cardinal.nchunks" = n)
 }
 
+# set up data viz variables
+.lastplot <- list2env(list(
+	image = NULL,
+	spectrum = NULL,
+	subset = TRUE
+))
+
 ## Mass utilities
 
 seq_mz <- function(from, to, by, units = c("ppm", "mz"))
@@ -63,7 +63,7 @@ seq_mzr <- function(range, by, units = c("ppm", "mz"))
 }
 
 
-# Miscellanious utilities
+## Miscellanious utilities
 
 makeFactor <- function(..., ordered = FALSE)
 {

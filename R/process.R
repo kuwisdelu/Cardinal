@@ -134,6 +134,8 @@ setMethod("process", "SpectralImagingExperiment",
 		index <- seq_len(nrow(object))
 	} else {
 		index <- featureData(object)[[tnm]]
+		if ( is.null(index) )
+			stop("index ", sQuote(tnm), " not found")
 	}
 	FUN <- function(X, T)
 	{
@@ -258,6 +260,8 @@ setMethod("process", "SpectralImagingArrays",
 		index <- lapply(lengths(spectra), seq_len)
 	} else {
 		index <- spectra(object, tnm)
+		if ( is.null(index) )
+			stop("index ", sQuote(tnm), " not found")
 	}
 	FUN <- function(X, T, MoreArgs)
 	{

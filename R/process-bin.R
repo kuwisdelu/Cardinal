@@ -11,10 +11,11 @@ setMethod("bin", "MSImagingExperiment",
 			"linear", "cubic", "gaussian", "lanczos"),
 		resolution = NA, units = c("ppm", "mz"), ...)
 {
-	units <- match.arg(units)
-	units <- switch(units, ppm="relative", mz="absolute")
+	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
-		resolution <- switch(ppm=1e-6 * resolution, mz=resolution)
+		resolution <- switch(units,
+			relative=1e-6 * resolution,
+			absolute=resolution)
 	ans <- callNextMethod(x, ref=ref, spectra=spectra, index=index,
 		method=method, resolution=resolution, units=units)
 	spectraData <- spectraData(ans)
@@ -35,10 +36,11 @@ setMethod("bin", "MSImagingArrays",
 			"linear", "cubic", "gaussian", "lanczos"),
 		resolution = NA, units = c("ppm", "mz"), ...)
 {
-	units <- match.arg(units)
-	units <- switch(units, ppm="relative", mz="absolute")
+	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
-		resolution <- switch(ppm=1e-6 * resolution, mz=resolution)
+		resolution <- switch(units,
+			relative=1e-6 * resolution,
+			absolute=resolution)
 	ans <- callNextMethod(x, ref=ref, spectra=spectra, index=index,
 		method=method, resolution=resolution, units=units)
 	spectraData <- spectraData(ans)
@@ -69,10 +71,12 @@ setMethod("bin", "SpectralImagingExperiment",
 		domain <- seq_len(nrow(x))
 	} else {
 		domain <- featureData(x)[[tnm]]
+		if ( is.null(domain) )
+			stop("index ", sQuote(tnm), " not found")
 	}
 	if ( is.sparse(spectra) ) {
-		spectra <- atomdata(spectra)
 		index <- atomindex(spectra)
+		spectra <- atomdata(spectra)
 	} else {
 		if ( is.matter(spectra(x)) ) {
 			spectra <- as(spectra, "matter_list")
@@ -81,12 +85,12 @@ setMethod("bin", "SpectralImagingExperiment",
 		}
 		index <- rep.int(list(domain), ncol(x))
 	}
-	tol.ref <- switch(units, relative="x", absolute="abs")
+	res.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(resolution) ) {
 		if ( missing(ref) || is.null(ref) ) {
-			res <- estres(domain, tol.ref=tol.ref)
+			res <- estres(domain, ref=res.ref)
 		} else {
-			res <- estres(ref, tol.ref=tol.ref)
+			res <- estres(ref, ref=res.ref)
 		}
 	} else {
 		res <- setNames(resolution, units)
@@ -139,13 +143,15 @@ setMethod("bin", "SpectralImagingArrays",
 		index <- lapply(lengths(spectra), seq_len)
 	} else {
 		index <- spectra(x, tnm)
+		if ( is.null(index) )
+			stop("index ", sQuote(tnm), " not found")
 	}
-	tol.ref <- switch(units, relative="x", absolute="abs")
+	res.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(resolution) ) {
 		if ( missing(ref) || is.null(ref) ) {
-			res <- estres(index[[1L]], tol.ref=tol.ref)
+			res <- estres(index[[1L]], ref=res.ref)
 		} else {
-			res <- estres(ref, tol.ref=tol.ref)
+			res <- estres(ref, ref=res.ref)
 		}
 	} else {
 		res <- setNames(resolution, units)

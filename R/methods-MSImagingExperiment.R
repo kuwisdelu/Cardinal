@@ -75,7 +75,7 @@ setMethod("features", "MSImagingExperiment",
 		if ( !missing(mz) ) {
 			ref <- switch(units, ppm="x", mz="abs")
 			if ( is.na(tolerance) ) {
-				tol <- estres(mz(object), tol.ref=ref)
+				tol <- estres(mz(object), ref=ref)
 			} else {
 				tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 			}
@@ -268,7 +268,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		} else
 		{
 			sampler <- "linear"
-			tolerance <- 2 * estres(mz, tol.ref=switch(units, ppm="x", mz="abs"))
+			tolerance <- 2 * estres(mz, ref=switch(units, ppm="x", mz="abs"))
 			featureData <- MassDataFrame(mz=mz)
 		}
 		spectra <- sparse_mat(index=mz(object),
@@ -290,7 +290,7 @@ estimateProfileMz <- function(mzlist, units = c("ppm", "mz"),
 	units <- match.arg(units)
 	ref <- switch(units, ppm="x", mz="abs")
 	FUN <- function(x) {
-		res <- estres(x, tol.ref=ref)
+		res <- estres(x, ref=ref)
 		res <- switch(units, ppm=1e6 * res, mz=res)
 		c(min=min(x), max=max(x), res=res)
 	}
@@ -313,7 +313,7 @@ estimateCentroidMz <- function(mzlist, mz, units = c("ppm", "mz"),
 {
 	units <- match.arg(units)
 	ref <- switch(units, ppm="x", mz="abs")
-	tol <- estres(mz, tol.ref=ref)
+	tol <- estres(mz, ref=ref)
 	FUN <- function(x) {
 		matter::binpeaks(x, domain=mz, tol=tol, tol.ref=ref,
 			merge=FALSE, na.drop=FALSE)

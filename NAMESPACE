@@ -124,6 +124,7 @@ export(
 	"darkmode",
 	"discrete.colors",
 	"divergent.colors",
+	"estimateDomain",
 	"gradient.colors",
 	"intensity.colors",
 	"jet.colors",
