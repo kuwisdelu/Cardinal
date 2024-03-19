@@ -1,6 +1,6 @@
 
-#### Estimate domain ####
-## ----------------------
+#### Estimate shared domain ####
+## ------------------------------
 
 estimateDomain <- function(xlist,
 	units = c("relative", "absolute"),
