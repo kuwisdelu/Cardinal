@@ -64,8 +64,9 @@ readImzML <- function(file, memory = FALSE,
 	ans <- .read_featureData(ans, path)
 	ans <- .read_pixelData(ans, path)
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
-	if ( as == "MSImagingExperiment" || is(ans, "MSImagingExperiment") ||
-		(as == "auto" && (isTRUE(ans@centroided) || isTRUE(ans@continuous))) )
+	if ( as == "MSImagingExperiment" || 
+		(as == "auto" && isTRUE(ans@continuous)) ||
+		(!is.null(mass.range) || !is.na(resolution)) )
 	{
 		if ( getCardinalVerbose() )
 			message("creating MSImagingExperiment")
@@ -73,6 +74,8 @@ readImzML <- function(file, memory = FALSE,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max, BPPARAM=BPPARAM)
 	}
+	if ( as == "MSImagingArrays" )
+		ans <- convertMSImagingExperiment2Arrays(ans)
 	if ( memory ) {
 		if ( getCardinalVerbose() )
 			message("loading spectra into memory")
