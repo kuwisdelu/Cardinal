@@ -301,6 +301,12 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		if ( getCardinalVerbose() )
 			message("generating reference peaks")
 		domain <- estimateDomain(index, units=units, BPPARAM=BPPARAM)
+		if ( !is.na(tolerance) ) {
+			resolution <- 2 * tolerance
+			domain <- switch(units,
+				relative=seq_rel(min(domain), max(domain), by=resolution),
+				absolute=seq.default(min(domain), max(domain), by=resolution))
+		}
 	} else {
 		domain <- ref
 	}

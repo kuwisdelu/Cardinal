@@ -24,7 +24,9 @@ estimateDomain <- function(xlist,
 	by <- switch(units,
 		relative=round(2 * by, digits=6L) * 0.5,
 		absolute=round(by, digits=4L))
-	switch(units,
+	ans <- switch(units,
 		relative=seq_rel(from, to, by=by),
 		absolute=seq.default(from, to, by=by))
+	structure(as.vector(ans),
+		resolution = setNames(by, units))
 }

@@ -141,7 +141,7 @@ simulateImage <- function(pixelData, featureData, preset,
 }
 
 addShape <- function(pixelData, center, size,
-	shape=c("circle", "square"), name=shape)
+	shape=c("circle", "square"), name = shape)
 {
 	shape <- match.arg(shape)
 	coord <- as.matrix(coord(pixelData))

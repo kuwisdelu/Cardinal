@@ -101,3 +101,22 @@ test_that("MSImagingArrays combine", {
 	expect_equal(pData(msa3), rbind(pData(msa), pData(msa2)))
 
 })
+
+test_that("MSImagingArrays/MSImagingExperiment conversion", {
+
+	path <- CardinalIO::exampleImzMLFile("processed")
+	msa <- readImzML(path)
+	msa2 <- msa
+	centroided(msa2) <- TRUE
+
+	mse <- convertMSImagingArrays2Experiment(msa)
+	mse2 <- convertMSImagingArrays2Experiment(msa2)
+	mse3 <- convertMSImagingArrays2Experiment(msa, mz=mz(mse))
+	msa3 <- convertMSImagingExperiment2Arrays(mse)
+	
+	expect_is(mse, "MSImagingExperiment")
+	expect_is(mse2, "MSImagingExperiment")
+	expect_is(msa3, "MSImagingArrays")
+
+})
+

@@ -215,7 +215,9 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	if ( !is(object, "MSImagingArrays") )
 		stop("object must be of class MSImagingArrays")
 	units <- match.arg(units)
+	guess.max <- min(guess.max, length(object))
 	if ( isTRUE(object@continuous) ) {
+		# lossless coversion
 		if ( is.null(mz) )
 			mz <- mz(object)[[1L]]
 		if ( is.matter(intensity(object)) ) {
@@ -224,113 +226,88 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			spectra <- do.call(cbind, intensity(object))
 		}
 		featureData <- MassDataFrame(mz=mz)
-	} else {
-		if ( is.null(mz) )
-		{
-			mzlist <- mz(object)
-			if ( is.finite(guess.max) ) {
-				i <- seq(1L, length(object), length.out=guess.max)
-				mzlist <- mzlist[i]
-			}
-			if ( is.null(mass.range) || is.na(resolution) )
-			{
-				if ( getCardinalVerbose() )
-					message("auto-determining m/z bins")
-				mz <- estimateProfileMz(mzlist, units=units, BPPARAM=BPPARAM)
-				if ( is.null(mass.range) )
-					mass.range <- c(min(mz), max(mz))
-				if ( is.na(resolution) )
-					resolution <- attr(mz, "resolution")
-			}
-			mz <- seq_mzr(mass.range, by=resolution, units=units)
-			if ( isCentroided(object) ) {
-				sampler <- "max"
-				tolerance <- 0.5 * switch(units,
-					ppm=c(relative=1e-6 * unname(resolution)),
-					mz=c(absolute=unname(resolution)))
-				if ( getCardinalVerbose() )
-					message("using mass tolerance: ", resolution, " ", units)
-				mz <- estimateCentroidMz(mzlist, mz, units=units, BPPARAM=BPPARAM)
-				if ( getCardinalVerbose() )
-					message("binned to ", length(mz), " peaks")
-				featureData <- MassDataFrame(mz=as.vector(mz), n=attr(mz, "n"))
-			} else {
-				sampler <- "linear"
-				tolerance <- 2 * switch(units,
-					ppm=c(relative=1e-6 * unname(resolution)),
-					mz=c(absolute=unname(resolution)))
-				if ( getCardinalVerbose() )
-					message("using mass range: ", mass.range[1L], " to ", mass.range[2L])
-				if ( getCardinalVerbose() )
-					message("using mass resolution: ", resolution, " ", units)
-				featureData <- MassDataFrame(mz=mz)
-			}
-		} else
-		{
-			sampler <- "linear"
-			tolerance <- 2 * estres(mz, ref=switch(units, ppm="x", mz="abs"))
-			featureData <- MassDataFrame(mz=mz)
+		ans <- MSImagingExperiment(spectra,
+			featureData=featureData,
+			pixelData=pixelData(object),
+			experimentData=experimentData(object),
+			metadata=metadata(object),
+			centroided=centroided(object))
+	} else if ( !is.null(mz) ) {
+		# reference m/z axis
+		if ( is.na(resolution) ) {
+			res.ref <- switch(units, ppm="relative", mz="absolute")
+			resolution <- estres(mz, ref=res.ref)
+			resolution <- switch(units,
+				ppm=1e6 * resolution,
+				mz=resolution)
 		}
-		spectra <- sparse_mat(index=mz(object),
-			data=intensity(object), domain=mz,
-			nrow=length(mz), ncol=length(object),
-			tolerance=tolerance, sampler=sampler)
+		ans <- bin(object, ref=mz, method="max",
+			resolution=resolution, units=units)
+	} else if ( isCentroided(object) ) {
+		# centroid m/z axis
+		ref <- object
+		if ( is.finite(guess.max) ) {
+			i <- seq(1L, length(object), length.out=guess.max)
+			ref <- ref[i]
+		}
+		if ( getCardinalVerbose() )
+			message("determining centroid m/z-axis from ",
+				guess.max, " sample spectra")
+		tolerance <- 0.5 * resolution
+		ref <- peakAlign(ref, ref=NULL,
+			tolerance=tolerance, units=units,
+			BPPARAM=BPPARAM)
+		if ( is.null(mass.range) )
+			mass.range <- round(range(mz(ref)), digits=4L)
+		if ( is.na(tolerance) ) {
+			tolerance <- tolerance(spectra(ref))
+			tolerance <- switch(units, ppm=1e6 * tolerance, mz=tolerance)
+		}
+		if ( any(mz(ref) < min(mass.range)) )
+			ref <- ref[mz(ref) < min(mass.range),]
+		if ( any(mz(ref) > max(mass.range)) )
+			ref <- ref[mz(ref) > max(mass.range),]
+		if ( getCardinalVerbose() ) {
+			message("applying centroid m/z-axis to all spectra")
+			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
+			message("using tolerance ", tolerance, " ", units)
+		}
+		ans <- peakAlign(object, ref=mz(ref),
+			tolerance=tolerance, units=units,
+			BPPARAM=BPPARAM)
+	} else {
+		# profile m/z axis
+		mzlist <- mz(object)
+		if ( is.finite(guess.max) ) {
+			i <- seq(1L, length(object), length.out=guess.max)
+			mzlist <- mzlist[i]
+		}
+		if ( is.null(mass.range) || is.na(resolution) )
+		{
+			if ( getCardinalVerbose() )
+				message("determining profile m/z-axis from ",
+					guess.max, " sample spectra")
+			mz <- estimateDomain(mzlist,
+				units=switch(ppm="relative", mz="absolute"),
+				BPPARAM=BPPARAM)
+			if ( is.null(mass.range) )
+				mass.range <- round(range(mz), digits=4L)
+			if ( is.na(resolution) )
+				resolution <- 1e6 * attr(mz, "resolution")
+		} else {
+			mz <- mz(from=min(mass.range), to=max(mass.range),
+				by=resolution, units=units)
+		}
+		if ( getCardinalVerbose() ) {
+			message("applying profile m/z-axis to all spectra")
+			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
+			message("using resolution ", resolution, " ", units)
+		}
+		ans <- bin(object, ref=mz, method="linear",
+			resolution=resolution, units=units)
 	}
-	MSImagingExperiment(spectra,
-		featureData=featureData,
-		pixelData=pixelData(object),
-		experimentData=experimentData(object),
-		metadata=metadata(object),
-		centroided=centroided(object))
-}
-
-estimateProfileMz <- function(mzlist, units = c("ppm", "mz"),
-	BPPARAM = getCardinalBPPARAM())
-{
-	units <- match.arg(units)
-	ref <- switch(units, ppm="x", mz="abs")
-	FUN <- function(x) {
-		res <- estres(x, ref=ref)
-		res <- switch(units, ppm=1e6 * res, mz=res)
-		c(min=min(x), max=max(x), res=res)
-	}
-	ans <- chunkLapply(mzlist, FUN,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
-		BPPARAM=BPPARAM)
-	ans <- do.call(rbind, ans)
-	mz.min <- floor(min(ans[,1L]))
-	mz.max <- ceiling(max(ans[,2L]))
-	res <- median(ans[,3L])
-	res <- switch(units,
-		ppm=round(res / 0.5, digits=0L) * 0.5,
-		mz=round(res, digits=4L))
-	seq_mz(from=mz.min, to=mz.max, by=res, units=units)
-}
-
-estimateCentroidMz <- function(mzlist, mz, units = c("ppm", "mz"),
-	BPPARAM = getCardinalBPPARAM())
-{
-	units <- match.arg(units)
-	ref <- switch(units, ppm="x", mz="abs")
-	tol <- estres(mz, ref=ref)
-	FUN <- function(x) {
-		matter::binpeaks(x, domain=mz, tol=tol, tol.ref=ref,
-			merge=FALSE, na.drop=FALSE)
-	}
-	peaks <- chunk_lapply(mzlist, FUN, simplify=matter::stat_c,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
-		BPPARAM=BPPARAM)
-	peaks <- peaks[!is.na(peaks)]
-	peaks <- mergepeaks(peaks, tol=tol, tol.ref=ref)
-	switch(units,
-		ppm=structure(as.vector(peaks),
-			tolerance=c(relative=unname(tol)),
-			n=nobs(peaks)),
-		mz=structure(as.vector(peaks),
-			tolerance=c(absolute=unname(tol)),
-			n=nobs(peaks)))
+	if ( validObject(ans) )
+		ans
 }
 
 setAs("MSImagingArrays", "MSImagingExperiment",

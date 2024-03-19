@@ -345,6 +345,10 @@ export("makeFactor")
 export("CardinalVersion")
 
 export(
+	"convertMSImagingExperiment2Arrays",
+	"convertMSImagingArrays2Experiment")
+
+export(
 	"getCardinalBPPARAM",
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",
