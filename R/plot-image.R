@@ -110,8 +110,8 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	plot <- .plot_image_formula(X, Y, vals, formula,
 		by=by, groups=groups, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
-	.lastplot$subset <- subset
-	.lastplot$image <- plot
+	.lastplot$subset <<- subset
+	.lastplot$image <<- plot
 	plot
 })
 

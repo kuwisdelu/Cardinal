@@ -140,7 +140,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
 	}
-	.lastplot$spectrum <- plot
+	.lastplot$spectrum <<- plot
 	plot
 })
 
@@ -216,7 +216,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
 	}
-	.lastplot$spectrum <- plot
+	.lastplot$spectrum <<- plot
 	plot
 })
 

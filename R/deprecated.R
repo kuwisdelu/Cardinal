@@ -56,7 +56,7 @@ setMethod("peakFilter", "MSImagingExperiment",
 	{
 		.Deprecated("subsetFeatures")
 		if ( !is.na(freq.min) && !is.null(fData(object)[["freq"]]) )
-			object <- object[fData(object)[["freq"]] >= freq.min],]
+			object <- object[fData(object)[["freq"]] >= freq.min,]
 		object
 	})
 

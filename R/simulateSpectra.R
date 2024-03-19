@@ -55,10 +55,9 @@ simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
 	representation = c("profile", "centroid"), units=c("ppm", "mz"),
-	as = c("MSImagingExperiment", "SparseImagingExperiment"),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( !missing(preset) ) {
+	if ( !missing(preset) || !is.null(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
@@ -150,14 +149,12 @@ addShape <- function(pixelData, center, size,
 	} else if ( !is.null(names(center)) ) {
 		center <- center[colnames(coord)]
 	}
-	isShape <- apply(coord, 1, function(pos) {
-		if ( shape == "circle" ) {
-			sqrt(sum((pos - center)^2)) <= size
-		} else if ( shape == "square" ) {
-			all(abs(pos - center) <= size)
-		}
+	in_shape <- apply(coord, 1L, function(pos) {
+		switch(shape,
+			circle=sqrt(sum((pos - center)^2)) <= size,
+			square=all(abs(pos - center) <= size))
 	})
-	pixelData[[name]] <- isShape
+	pixelData[[name]] <- in_shape
 	pixelData
 }
 
@@ -171,16 +168,17 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 	sdx <- jitter * nx / 20
 	sdy <- jitter * ny / 20
 	sdr <- jitter * sqrt(sdx * sdy)
-	coords <- expand.grid(x=1:nx, y=1:ny)
-	pdata <- PositionDataFrame(coords, run="run0")
+	coords <- expand.grid(x=seq_len(nx), y=seq_len(ny))
+	pdata <- PositionDataFrame(coord=coords, run="run0")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
 	i <- (abs(preset) - 1L) %% numPresets + 1L
-	.message("using image preset = ", i)
+	if ( getCardinalVerbose() )
+		message("using image preset = ", i)
 	if ( i == 1L ) {
 		# centered circle
 		rx <- nx / 2
 		ry <- ny / 2
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -193,12 +191,12 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata <- do.call("rbind", pdata)
 		fdata <- MassDataFrame(mz=mzs,
-			circle=c(pos(rnorm(npeaks, peakheight, sd=sdsample))))
+			circle=c(pmax(0, rnorm(npeaks, peakheight, sd=sdsample))))
 	} else if ( i == 2L ) {
 		# topleft circle + bottomright square
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -221,13 +219,13 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
 		fdata <- MassDataFrame(mz=mzs,
-			circle=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
-			square=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))))
+			circle=c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			square=c(rep(0, n1), pmax(0, rnorm(n2 + n3, peakheight[2], sd=sdsample))))
 	} else if ( i == 3L ) {
 		# 2 corner squares + centered circle
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -256,14 +254,14 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		fdata <- MassDataFrame(mz=mzs,
-			square1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
-			square2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))),
-			circle=c(rep(0, n1), pos(rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3)))
+			square1=c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			square2=c(rep(0, n1), pmax(0, rnorm(n2 + n3, peakheight[2], sd=sdsample))),
+			circle=c(rep(0, n1), pmax(0, rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3)))
 	} else if ( i == 4L ) {
 		# centered circle w/ diff conditions
 		rx <- nx / 2
 		ry <- ny / 2
-		pdata_a <- lapply(1:nruns, function(i) {
+		pdata_a <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -277,7 +275,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
-		pdata_b <- lapply(1:nruns, function(i) {
+		pdata_b <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -296,7 +294,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n1 <- floor(npeaks / 2)
 		n2 <- npeaks - n1
 		diff <- c(rep(TRUE, n1), rep(FALSE, n2))
-		peakheight_circle <- pos(rnorm(npeaks, peakheight, sd=sdsample))
+		peakheight_circle <- pmax(0, rnorm(npeaks, peakheight, sd=sdsample))
 		peakdiff_circle <- diff * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
 			circleA=peakheight_circle,
@@ -306,7 +304,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# topleft circle + bottomright square w/ diff conditions
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata_a <- lapply(1:nruns, function(i) {
+		pdata_a <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -327,7 +325,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
-		pdata_b <- lapply(1:nruns, function(i) {
+		pdata_b <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -356,8 +354,8 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		peakheight <- rep_len(peakheight, 2)
 		diff.circle <- c(rep(TRUE, n1), rep(FALSE, n2 + n3))
 		diff.square <- c(rep(FALSE, n1 + n2), rep(TRUE, n3))
-		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
-		peakheight_square <- c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample)))
+		peakheight_circle <- c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakheight_square <- c(rep(0, n1), pmax(0, rnorm(n2 + n3, peakheight[2], sd=sdsample)))
 		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
 		peakdiff_square <- diff.square * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
@@ -370,7 +368,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# 2 corner squares + centered circle w/ diff conditions
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -396,7 +394,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			pdata_i[,"circleB"] <- FALSE
 			runNames(pdata_i) <- paste0("runA", i)
 			pdata_i
-		}, pdata, 1:nruns, SIMPLIFY=FALSE)
+		}, pdata, seq_len(nruns), SIMPLIFY=FALSE)
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
 		pdata_b <- mapply(function(pdata_i, i) {
@@ -409,7 +407,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			pdata_i[,"circleA"] <- FALSE
 			runNames(pdata_i) <- paste0("runB", i)
 			pdata_i
-		}, pdata, 1:nruns, SIMPLIFY=FALSE)
+		}, pdata, seq_len(nruns), SIMPLIFY=FALSE)
 		pdata_b <- do.call("rbind", pdata_b)
 		pdata_b$condition <- "B"
 		pdata <- rbind(pdata_a, pdata_b)
@@ -419,11 +417,11 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 3)
 		diff.circle <- c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3))
-		peakheight_circle <- c(rep(0, n1), pos(rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3))
+		peakheight_circle <- c(rep(0, n1), pmax(0, rnorm(n2, peakheight[3], sd=sdsample)), rep(0, n3))
 		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			square1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
-			square2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))),
+			square1=c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			square2=c(rep(0, n1), pmax(0, rnorm(n2 + n3, peakheight[2], sd=sdsample))),
 			circleA=peakheight_circle,
 			circleB=peakheight_circle + peakdiff_circle,
 			diff.circle=diff.circle)
@@ -431,7 +429,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# pairs of circles w/ diff conditions + ref peak
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -458,10 +456,10 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
 		diff <- c(rep(TRUE, n1), rep(FALSE, n2), rep(FALSE, n3))
-		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakheight_circle <- c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
 		peakdiff_circle <- diff * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			ref=c(rep(0, n1 + n2), pos(rnorm(n3, peakheight[2], sd=sdsample))),
+			ref=c(rep(0, n1 + n2), pmax(0, rnorm(n3, peakheight[2], sd=sdsample))),
 			circleA=peakheight_circle,
 			circleB=peakheight_circle + peakdiff_circle,
 			diff=diff)
@@ -469,7 +467,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# pairs of circles + squares w/ diff conditions + ref peak
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(1:nruns, function(i) {
+		pdata <- lapply(seq_len(nruns), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -507,12 +505,12 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		peakheight <- rep_len(peakheight, 3)
 		diff.circle <- c(rep(TRUE, n1), rep(FALSE, n2), rep(FALSE, n3))
 		diff.square <- c(rep(FALSE, n1), rep(TRUE, n2), rep(FALSE, n3))
-		peakheight_circle <- c(pos(rnorm(n1 + n2, peakheight[2], sd=sdsample)), rep(0, n3))
+		peakheight_circle <- c(pmax(0, rnorm(n1 + n2, peakheight[2], sd=sdsample)), rep(0, n3))
 		peakdiff_circle <- diff.circle * rep_len(peakdiff, npeaks)
-		peakheight_square <- c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
+		peakheight_square <- c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3))
 		peakdiff_square <- diff.square * rep_len(peakdiff, npeaks)
 		fdata <- MassDataFrame(mz=mzs,
-			ref=c(rep(0, n1 + n2), pos(rnorm(n3, peakheight[3], sd=sdsample))),
+			ref=c(rep(0, n1 + n2), pmax(0, rnorm(n3, peakheight[3], sd=sdsample))),
 			squareA=peakheight_square,
 			squareB=peakheight_square + peakdiff_square,
 			circleA=peakheight_circle,
@@ -523,7 +521,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# small spheres inside large sphere (3D)
 		rx <- nx / 2
 		ry <- ny / 2
-		runscales <- sqrt(1 + abs(1:nruns - ceiling(nruns / 2)))
+		runscales <- sqrt(1 + abs(seq_len(nruns) - ceiling(nruns / 2)))
 		pdata <- mapply(function(scale, i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -541,15 +539,15 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			runNames(pdata_i) <- paste0("run", i-1)
 			coord(pdata_i)$z <- i
 			pdata_i
-		}, runscales, 1:nruns)
+		}, runscales, seq_len(nruns))
 		pdata <- do.call("rbind", pdata)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)
 		n3 <- npeaks - n1 - n2
 		peakheight <- rep_len(peakheight, 2)
 		fdata <- MassDataFrame(mz=mzs,
-			sphere1=c(pos(rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
-			sphere2=c(rep(0, n1), pos(rnorm(n2 + n3, peakheight[2], sd=sdsample))))
+			sphere1=c(pmax(0, rnorm(n1 + n2, peakheight[1], sd=sdsample)), rep(0, n3)),
+			sphere2=c(rep(0, n1), pmax(0, rnorm(n2 + n3, peakheight[2], sd=sdsample))))
 	}
 	list(pixelData=pdata, featureData=fdata)
 }

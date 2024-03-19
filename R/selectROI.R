@@ -62,3 +62,9 @@ setMethod("selectROI", "SpectralImagingExperiment",
 	list(x=xs, y=ys)
 }
 
+.lastplot <- list2env(list(
+	spectrum = NULL,
+	image = NULL,
+	subset = TRUE
+))
+

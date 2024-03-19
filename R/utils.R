@@ -36,13 +36,6 @@ setCardinalNChunks <- function(n = 20L) {
 	options("Cardinal.nchunks" = n)
 }
 
-# set up data viz variables
-.lastplot <- list2env(list(
-	image = NULL,
-	spectrum = NULL,
-	subset = TRUE
-))
-
 ## Mass utilities
 
 seq_mz <- function(from, to, by, units = c("ppm", "mz"))
@@ -78,7 +71,6 @@ makeFactor <- function(..., ordered = FALSE)
 	inds <- apply(inds, 1, function(i) which(i)[1L])
 	factor(labs[inds], levels=labs, ordered=ordered)
 }
-
 
 
 ## Math utilities
@@ -193,39 +185,33 @@ Mscore <- function(a, b, type=3) {
 
 ## RNG utilities
 
-## Gets the current .Random.seed
-getRNGStream <- function() {
-	if ( exists(".Random.seed", envir=globalenv()) ) {
-		get(".Random.seed", envir=globalenv())
+## get the current .Random.seed
+getRNGStream <- function(e = globalenv())
+{
+	if ( exists(".Random.seed", envir=e) ) {
+		get(".Random.seed", envir=e)
 	} else {
 		NULL
 	}
 }
 
-## Sets the .Random.seed
-setRNGStream <- function(seed = NULL) {
+## set .Random.seed
+setRNGStream <- function(seed = NULL, e = globalenv())
+{
 	if ( !is.null(seed) && is.integer(seed) )
-		assign(".Random.seed", seed, envir=globalenv())
+		assign(".Random.seed", seed, envir=e)
 }
 
-## Generates RNG seeds for parallel computation
-generateRNGStreams <- function(n = 1) {
+## generate parallel RNG seeds
+makeRNGStreams <- function(n = 1)
+{
 	seeds <- vector("list", n)
 	s <- getRNGStream()
-	if ( is.null(s) ) {
-		seeds[1] <- list(NULL)
-	} else {
-		# seeds[[1]] <- s # fails in >=4.1.1
-		seeds <- rep(list(s), n)
-	}
-	if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
-		for ( i in seq_len(n)[-1] ) {
-			s <- nextRNGStream(seeds[[i - 1]])
-			if ( is.null(s) ) {
-				seeds[i] <- list(NULL)
-			} else {
-				seeds[[i]] <- s
-			}
+	if ( !is.null(s) && "L'Ecuyer-CMRG" %in% RNGkind() )
+	{
+		for ( i in seq_len(n) ) {
+			s <- nextRNGStream(s)
+			seeds[[i]] <- s
 		}
 	}
 	seeds
