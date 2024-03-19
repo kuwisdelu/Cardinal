@@ -36,6 +36,12 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 		ref <- switch(units, ppm="x", mz="abs")
 		i <- kdsearch(mz, mz(x), tol=tol, tol.ref=ref)
+		if ( any(lengths(i) == 0L) ) {
+			nomz <- paste0(mz[which(lengths(i) == 0L)], collapse=", ")
+			stop("no features within \u00b1", tol,
+				switch(units, ppm=" ppm", mz=""),
+				" for m/z = ", nomz)
+		}
 		nms <- paste0("m/z = ", round(mz, digits=4L))
 		nms <- paste0(nms, " \u00b1 ", tolerance, switch(units, ppm=" ppm", mz=""))
 		i <- Map(function(j, nm) setNames(j, rep.int(nm, length(j))), i, nms)
@@ -110,8 +116,8 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	plot <- .plot_image_formula(X, Y, vals, formula,
 		by=by, groups=groups, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
-	.lastplot$subset <<- subset
-	.lastplot$image <<- plot
+	.lastplot$subset <- subset
+	.lastplot$image <- plot
 	plot
 })
 

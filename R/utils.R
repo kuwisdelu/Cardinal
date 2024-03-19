@@ -1,5 +1,6 @@
 
-## Options
+#### Options ####
+## --------------
 
 CardinalVersion <- function() {
 	paste0(utils::packageVersion("Cardinal"), collapse=".")
@@ -35,6 +36,47 @@ getCardinalNChunks <- function() {
 setCardinalNChunks <- function(n = 20L) {
 	options("Cardinal.nchunks" = n)
 }
+
+#### Parallel RNG ####
+## --------------------
+
+## generate parallel-safe RNG streams
+RNGStreams <- function(n = 1)
+{
+	seeds <- vector("list", n)
+	s <- getRNGStream()
+	if ( !is.null(s) )
+	{
+		if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
+			for ( i in seq_len(n) ) {
+				s <- nextRNGStream(s)
+				seeds[[i]] <- s
+			}
+		} else {
+			for ( i in seq_len(n) )
+				seeds[[i]] <- s
+		}
+	}
+	seeds
+}
+
+## get the current .Random.seed
+getRNGStream <- function(e = globalenv())
+{
+	if ( exists(".Random.seed", envir=e) ) {
+		get(".Random.seed", envir=e)
+	} else {
+		NULL
+	}
+}
+
+## set .Random.seed
+setRNGStream <- function(seed = NULL, e = globalenv())
+{
+	if ( !is.null(seed) && is.integer(seed) )
+		assign(".Random.seed", seed, envir=e)
+}
+
 
 ## Mass utilities
 
@@ -183,36 +225,3 @@ Mscore <- function(a, b, type=3) {
 }
 
 
-## RNG utilities
-
-## get the current .Random.seed
-getRNGStream <- function(e = globalenv())
-{
-	if ( exists(".Random.seed", envir=e) ) {
-		get(".Random.seed", envir=e)
-	} else {
-		NULL
-	}
-}
-
-## set .Random.seed
-setRNGStream <- function(seed = NULL, e = globalenv())
-{
-	if ( !is.null(seed) && is.integer(seed) )
-		assign(".Random.seed", seed, envir=e)
-}
-
-## generate parallel RNG seeds
-makeRNGStreams <- function(n = 1)
-{
-	seeds <- vector("list", n)
-	s <- getRNGStream()
-	if ( !is.null(s) && "L'Ecuyer-CMRG" %in% RNGkind() )
-	{
-		for ( i in seq_len(n) ) {
-			s <- nextRNGStream(s)
-			seeds[[i]] <- s
-		}
-	}
-	seeds
-}

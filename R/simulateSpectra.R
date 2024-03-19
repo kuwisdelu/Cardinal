@@ -29,8 +29,8 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 		fmax=fmax, baseline=baseline, decay=decay,
 		units=switch(units, ppm="relative", mz="absolute"))
 	if ( representation == "centroid" ) {
-		FUN <- function(yi) approx(domain, yi, mz)$y
-		y <- apply(y, 2L, FUN)
+		FUN <- function(yi) approx(x, yi, mz)$y
+		y <- apply(as.matrix(y), 2L, FUN)
 		ans <- list(mz=mz, intensity=y)
 	} else {
 		peaks <- attr(y, "peaks")
@@ -48,8 +48,8 @@ simulateSpectrum <- function(...)
 }
 
 
-#### Simulate MS-based image ####
-## ------------------------------
+#### Simulate mass spectral image ####
+## -----------------------------------
 
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
@@ -62,37 +62,34 @@ simulateImage <- function(pixelData, featureData, preset,
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
 	}
-	pData <- pixelData[sapply(pixelData, is.logical, slots=FALSE)]
-	fData <- featureData[sapply(featureData, is.numeric, slots=FALSE)]
-	if ( !all(names(pData) %in% names(fData)) )
-		stop("column names of pixelData and featureData do not match")
-	mz <- mz(fData)
+	nms <- intersect(names(pixelData), names(featureData))
+	if ( length(nms) == 0L )
+		stop("no shared column names between pixelData and featureData")
+	pData <- pixelData[nms]
+	fData <- featureData[nms]
+	mz <- mz(featureData)
 	if ( (!missing(from) || !missing(to)) && !missing(preset) ) {
 		mz <- (mz - min(mz)) / max(mz - min(mz))
 		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
-		mz(fData) <- mz(featureData) <- mz
+		mz(featureData) <- mz
 	}
 	units <- match.arg(units)
 	representation <- match.arg(representation)
-	as <- match.arg(as)
-	m <- mz(from=from, to=to, by=by, units=units)
-	nm <- names(pData)
-	rngseeds <- generateRNGStreams(nlevels(run(pData)))
-	data <- bpmapply(function(run, seed) {
-		ii <- run == run(pData)
-		.message("simulating ", sum(ii), " spectra for ", run)
+	domain <- mz(from=from, to=to, by=by, units=units)
+	seeds <- RNGStreams(nlevels(run(pixelData)))
+	FUN <- function(irun, iseed) {
 		# set up RNG streams
 		oseed <- getRNGStream()
 		on.exit(setRNGStream(oseed))
-		setRNGStream(seed)
+		setRNGStream(iseed)
 		# extract run information
-		classes <- as.matrix(pData[ii,,drop=FALSE], slots=FALSE)
-		peaks <- as.matrix(fData[,nm,drop=FALSE], slots=FALSE)
-		runerr <- rnorm(nrow(peaks), sd=sdrun)
-		pixelerr <- rnorm(nrow(pData), sd=sdpixel)
+		group <- as.matrix(pData[irun == run(pixelData),,drop=FALSE])
+		intensity <- as.matrix(fData)
+		runerr <- rnorm(nrow(fData), sd=sdrun)
+		pixelerr <- rnorm(nrow(group), sd=sdpixel)
 		# calculate spatial covariance
 		if ( spcorr > 0 ) {
-			W <- as.matrix(spatialWeights(pData, r=1, matrix=TRUE))
+			W <- as.matrix(spatialWeights(pixelData, r=1, matrix=TRUE))
 			IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
 			SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
 			SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)
@@ -100,43 +97,47 @@ simulateImage <- function(pixelData, featureData, preset,
 			pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
 		}
 		# simulate spectra
-		spectra <- sapply(1:nrow(classes), function(i) {
-			j <- classes[i,]
-			if ( any(j) ) {
-				intensity <- rowSums(peaks[,j,drop=FALSE])
-			} else {
-				intensity <- rep(0, nrow(peaks))
-			}
-			nz <- intensity != 0
-			intensity[nz] <- intensity[nz] + runerr[nz] + pixelerr[i]
-			intensity <- pmax(intensity, 0)
-			simulateSpectrum(mz=mz, intensity=intensity,
-				from=from, to=to, by=by, units=units,
-				representation=representation, ...)$intensity
-		})
+		spectra <- lapply(seq_len(nrow(group)),
+			function(i)
+			{
+				j <- group[i,]
+				if ( any(j) ) {
+					x <- rowSums(intensity[,j,drop=FALSE])
+				} else {
+					x <- rep(0, nrow(fData))
+				}
+				nz <- x != 0
+				x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
+				simulateSpectra(1L, mz=mz, intensity=x,
+					from=from, to=to, by=by, units=units,
+					representation=representation, ...)$intensity
+			})
+		spectra <- do.call(cbind, spectra)
 		# return data
 		if ( representation == "profile" ) {
 			MSImagingExperiment(spectra,
-				featureData=MassDataFrame(mz=m),
-				pixelData=pixelData[ii,])
+				featureData=MassDataFrame(mz=domain),
+				pixelData=pixelData[irun == run(pixelData),,drop=FALSE])
 		} else {
 			MSImagingExperiment(spectra,
 				featureData=MassDataFrame(mz=mz),
-				pixelData=pixelData[ii,])
+				pixelData=pixelData[irun == run(pixelData),,drop=FALSE])
 		}
-	}, runNames(pData), rngseeds, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
-	data <- do.call("cbind", data)
-	if ( representation == "centroid" ) {
-		featureData(data)[names(featureData)] <- featureData
-		centroided(data) <- TRUE
 	}
-	if ( as == "SparseImagingExperiment" )
-		data <- SparseImagingExperiment(iData(data),
-			featureData=as(featureData(data), "XDataFrame"),
-			pixelData=pixelData(data))
+	ans <- chunkMapply(FUN, runNames(pixelData), seeds,
+		nchunks=getCardinalNChunks(),
+		verbose=getCardinalVerbose(),
+		BPPARAM=BPPARAM)
+	ans <- do.call("cbind", ans)
+	if ( representation == "centroid" )
+	{
+		nms <- setdiff(names(featureData), names(featureData(ans)))
+		featureData(ans)[nms] <- featureData[nms]
+		centroided(ans) <- TRUE
+	}
 	design <- list(pixelData=pixelData, featureData=featureData)
-	metadata(data)[["design"]] <- design
-	data
+	metadata(ans)[["design"]] <- design
+	ans
 }
 
 addShape <- function(pixelData, center, size,
