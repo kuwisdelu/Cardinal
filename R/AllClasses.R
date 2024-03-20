@@ -63,9 +63,14 @@ setClass("MSImagingExperiment",
 setClassUnion("MSImagingExperiment_OR_Arrays",
 	c("MSImagingExperiment", "MSImagingArrays"))
 
-#### Class for analysis results ####
-## ---------------------------------
+#### Class for spatially-aware analysis results ####
+## -------------------------------------------------
 
-# setClass("ResultsList", contains = "SimpleList")
+setClass("ResultsList", contains = "SimpleList")
 
+setClass("SpatialResultsList",
+	contains = "ResultsList",
+	slots = c(
+		featureData = "DataFrame",
+		pixelData = "PositionDataFrame"))
 

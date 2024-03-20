@@ -400,6 +400,8 @@ setMethod("show", "MSImagingArrays",
 		}
 		# centroided()
 		cat("centroided:", centroided(object), "\n")
+		# continuous
+		cat("continuous:", object@continuous, "\n")
 	})
 
 ## Getters and setters

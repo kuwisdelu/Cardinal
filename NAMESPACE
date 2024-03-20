@@ -103,7 +103,9 @@ exportClasses(
 	"SpectralImagingArrays",
 	"SpectralImagingExperiment",
 	"MSImagingArrays",
-	"MSImagingExperiment")
+	"MSImagingExperiment",
+	"ResultsList",
+	"SpatialResultsList")
 
 export(
 	"XDataFrame",
@@ -113,7 +115,8 @@ export(
 	"SpectralImagingArrays",
 	"SpectralImagingExperiment",
 	"MSImagingArrays",
-	"MSImagingExperiment")
+	"MSImagingExperiment",
+	"ResultsList")
 
 export(
 	"addShape",
@@ -181,10 +184,8 @@ exportMethods(
 	"combine",
 	"coord",
 	"coord<-",
-	"coordinates",
-	"coordinates<-",
-	"coordnames",
-	"coordnames<-",
+	"coordNames",
+	"coordNames<-",
 	"coordLabels",
 	"coordLabels<-",
 	"dim",

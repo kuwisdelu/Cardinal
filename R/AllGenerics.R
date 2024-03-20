@@ -4,8 +4,8 @@
 setGeneric("predict")
 setGeneric("fitted")
 
-#### Getters and setters ####
-## --------------------------
+#### Basic getters and setters ####
+## ---------------------------------
 setGeneric("keys", function(object, ...) standardGeneric("keys"))
 setGeneric("keys<-", function(object, ..., value) standardGeneric("keys<-"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
@@ -65,6 +65,15 @@ setGeneric("spatialDGMM", function(x, ...) standardGeneric("spatialDGMM"))
 setGeneric("meansTest", function(x, ...) standardGeneric("meansTest"))
 setGeneric("segmentationTest", function(x, ...) standardGeneric("segmentationTest"))
 
+#### Model getters and setters ####
+## --------------------------------
+setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
+setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
+setGeneric("resultData", function(object, ...) standardGeneric("resultData"))
+setGeneric("resultData<-", function(object, ..., value) standardGeneric("resultData<-"))
+setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
+setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
+
 #### Results ####
 ## --------------
 setGeneric("topFeatures", function(object, ...) standardGeneric("topFeatures"))
@@ -98,14 +107,6 @@ setGeneric("mzData", function(object, ...) standardGeneric("mzData"))
 setGeneric("mzData<-", function(object, ..., value) standardGeneric("mzData<-"))
 setGeneric("intensityData", function(object, ...) standardGeneric("intensityData"))
 setGeneric("intensityData<-", function(object, ..., value) standardGeneric("intensityData<-"))
-
-# models and results
-setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
-setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
-setGeneric("resultData", function(object, i, ...) standardGeneric("resultData"))
-setGeneric("resultData<-", function(object, i, ..., value) standardGeneric("resultData<-"))
-setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))
-setGeneric("resultNames<-", function(object, ..., value) standardGeneric("resultNames<-"))
 
 # resolution
 setGeneric("resolution", function(object) standardGeneric("resolution"))

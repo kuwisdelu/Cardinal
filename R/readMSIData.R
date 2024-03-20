@@ -106,6 +106,7 @@ readImzML <- function(file, memory = FALSE,
 	mz <- parse[["ibd"]][["mz"]]
 	intensity <- parse[["ibd"]][["intensity"]]
 	positions <- parse[["run"]][["spectrumList"]][["positions"]]
+	ids <- names(intensity)
 	if ( length(unique(positions[["position z"]])) > 1L ) {
 		coord <- data.frame(
 			x=as.numeric(positions[["position x"]]),
@@ -118,7 +119,7 @@ readImzML <- function(file, memory = FALSE,
 	}
 	run <- basename(tools::file_path_sans_ext(path))
 	spectraData <- SpectraArrays(list(mz=mz, intensity=intensity))
-	pixelData <- PositionDataFrame(coord=coord, run=run)
+	pixelData <- PositionDataFrame(coord=coord, run=run, row.names=ids)
 	fileContent <- parse[["fileDescription"]][["fileContent"]]
 	if ( "IMS:1000030" %in% names(fileContent)) {
 		continuous <- TRUE
