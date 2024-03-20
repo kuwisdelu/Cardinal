@@ -251,7 +251,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			ref <- ref[i]
 		}
 		if ( getCardinalVerbose() )
-			message("determining centroid m/z-axis from ",
+			message("estimating centroid m/z-axis from ",
 				guess.max, " sample spectra")
 		tolerance <- 0.5 * resolution
 		ref <- peakAlign(ref, ref=NULL,
@@ -268,7 +268,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		if ( any(mz(ref) > max(mass.range)) )
 			ref <- ref[mz(ref) > max(mass.range),]
 		if ( getCardinalVerbose() ) {
-			message("applying centroid m/z-axis to all spectra")
+			message("applying centroid m/z-values to all spectra")
 			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
 			message("using tolerance ", tolerance, " ", units)
 		}
@@ -285,7 +285,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		if ( is.null(mass.range) || is.na(resolution) )
 		{
 			if ( getCardinalVerbose() )
-				message("determining profile m/z-axis from ",
+				message("estimating profile m/z-axis from ",
 					guess.max, " sample spectra")
 			mz <- estimateDomain(mzlist,
 				units=switch(ppm="relative", mz="absolute"),
@@ -299,7 +299,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 				by=resolution, units=units)
 		}
 		if ( getCardinalVerbose() ) {
-			message("applying profile m/z-axis to all spectra")
+			message("applying profile m/z-values to all spectra")
 			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
 			message("using resolution ", resolution, " ", units)
 		}

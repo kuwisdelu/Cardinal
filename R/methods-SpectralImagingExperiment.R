@@ -88,6 +88,12 @@ setMethod("show", "SpectralImagingExperiment",
 		}
 		# processingData()
 		.print_pending_processing(object)
+		# metadata()
+		if ( length(metadata(object)) > 0L )
+		{
+			cat(sprintf("metadata(%d): %s\n", length(metadata(object)),
+				.paste_head_tail(names(metadata(object)))))
+		}
 	})
 
 # find pixels by position
@@ -356,6 +362,12 @@ setMethod("show", "SpectralImagingArrays",
 			.paste_head_tail(runNames(object))))
 		# processingData()
 		.print_pending_processing(object)
+		# metadata()
+		if ( length(metadata(object)) > 0L )
+		{
+			cat(sprintf("metadata(%d): %s\n", length(metadata(object)),
+				.paste_head_tail(names(metadata(object)))))
+		}
 	})
 
 # find spectra by position

@@ -16,8 +16,9 @@ setMethod("addProcessing", "SpectralImagingData",
 # MSImagingExperiment
 
 setMethod("process", "MSImagingExperiment",
-	function(object, spectra = "intensity", index = "mz", domain = NULL,
-		outfile = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, spectra = "intensity", index = "mz",
+		domain = NULL, outfile = NULL,
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
@@ -32,8 +33,9 @@ setMethod("process", "MSImagingExperiment",
 			experimentData(object)[["dataProcessing"]] <- dp
 		}, silent=TRUE)
 	}
-	ans <- callNextMethod(object, spectra=spectra, index=index, domain=domain,
-		outfile=outfile, BPPARAM=BPPARAM, ...)
+	ans <- callNextMethod(object, spectra=spectra, index=index,
+		domain=domain, outfile=outfile,
+		BPPARAM=BPPARAM, ...)
 	.postprocess_MSIMagingExperiment(ans, outfile, spectra)
 })
 
@@ -66,8 +68,9 @@ setMethod("process", "MSImagingExperiment",
 # MSImagingArrays
 
 setMethod("process", "MSImagingArrays",
-	function(object, spectra = "intensity", index = "mz", domain = NULL,
-		outfile = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, spectra = "intensity", index = "mz",
+		domain = NULL, outfile = NULL,
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
@@ -82,8 +85,9 @@ setMethod("process", "MSImagingArrays",
 			experimentData(object)[["dataProcessing"]] <- dp
 		}, silent=TRUE)
 	}
-	ans <- callNextMethod(object, spectra=spectra, index=index, domain=domain,
-		outfile=outfile, BPPARAM=BPPARAM, ...)
+	ans <- callNextMethod(object, spectra=spectra, index=index,
+		domain=domain, outfile=outfile,
+		BPPARAM=BPPARAM, ...)
 	if ( !is.null(domain) ) {
 		ans <- convertMSImagingArrays2Experiment(ans, mz=domain)
 		.postprocess_MSIMagingExperiment(ans, outfile, spectra)
@@ -111,8 +115,11 @@ setMethod("process", "MSImagingArrays",
 # SpectralImagingExperiment
 
 setMethod("process", "SpectralImagingExperiment",
-	function(object, spectra = "intensity", index = NULL, domain = NULL,
-		outfile = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, spectra = "intensity", index = NULL,
+		domain = NULL, outfile = NULL,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) == 0L )
 		return(object)
@@ -182,11 +189,11 @@ setMethod("process", "SpectralImagingExperiment",
 		}
 	}
 	ans <- chunk_colapply(spectra, FUN, T=index,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 	object <- .postprocess_SpectralImagingExperiment(ans,
 		object=object, domain=domain, xname=xnm, tname=tnm)
+	metadata(object)[["processing"]] <- c(metadata(object)[["processing"]], ps)
 	processingData(object) <- list()
 	if ( !is.null(outfile) )
 		ipcremove(pid)
@@ -237,8 +244,11 @@ setMethod("process", "SpectralImagingExperiment",
 # SpectralImagingArrays
 
 setMethod("process", "SpectralImagingArrays",
-	function(object, spectra = "intensity", index = NULL, domain = NULL,
-		outfile = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, spectra = "intensity", index = NULL,
+		domain = NULL, outfile = NULL,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) == 0L )
 		return(object)
@@ -305,11 +315,11 @@ setMethod("process", "SpectralImagingArrays",
 		}
 	}
 	ans <- chunk_mapply(FUN, spectra, index,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 	object <- .postprocess_SpectralImagingArrays(ans,
 		object=object, domain=domain, xname=xnm, tname=tnm)
+	metadata(object)[["processing"]] <- c(metadata(object)[["processing"]], ps)
 	processingData(object) <- list()
 	if ( !is.null(outfile) )
 		ipcremove(pid)
@@ -324,7 +334,7 @@ setMethod("process", "SpectralImagingArrays",
 			index <- NULL
 		} else {
 			index <- rep.int(list(domain), length(object))
-			if ( is(object, "MSImagingExperiment") )
+			if ( .hasSlot(object, "continuous") )
 				object@continuous <- TRUE
 		}
 		spectra <- ans

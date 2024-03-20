@@ -6,21 +6,22 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 	function(object,
 		spectra = "intensity", index = "mz",
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-		tolerance = NA, units = c("ppm", "mz"),
 		SNR = 2, type = c("height", "area"),
-		filter = TRUE, sample = Inf,
+		tolerance = NA, units = c("ppm", "mz"),
+		sampleSize = Inf, filterFreq = TRUE,
+		outfile = NULL,
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( is.finite(sample) )
+	if ( is.finite(sampleSize) )
 	{
-		if ( sample < 1 ) {
-			n <- ceiling(sample * length(object))
-			prop <- 100 * sample
-		} else if ( sample > 0 ) {
-			n <- sample
+		if ( sampleSize < 1 ) {
+			n <- ceiling(sampleSize * length(object))
+			prop <- 100 * sampleSize
+		} else if ( sampleSize > 0 ) {
+			n <- sampleSize
 			prop <- round(100 * n / length(object))
 		} else {
-			stop("'sample' must be positive")
+			stop("'sampleSize' must be positive")
 		}
 		if ( getCardinalVerbose() ) {
 			label <- if (n != 1L) "spectra" else "spectrum"
@@ -30,33 +31,31 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		i <- seq.default(1L, length(object), length.out=n)
 		ref <- peakProcess(object[i],
 			spectra=spectra, index=index, method=method,
-			tolerance=tolerance, units=units,
-			SNR=SNR, type=type, filter=filter,
-			BPPARAM=BPPARAM, ...)
+			SNR=SNR, type=type, tolerance=tolerance, units=units,
+			filterFreq=filterFreq, BPPARAM=BPPARAM, ...)
 		if ( getCardinalVerbose() )
 			message("extracting reference peaks from all spectra")
 		object <- peakPick(object, ref=mz(ref),
-			tolerance=tolerance, units=units,
-			type=type)
-		object <- peakAlign(object, ref=mz(ref),
+			tolerance=tolerance, units=units, type=type)
+		object <- process(object,
 			spectra=spectra, index=index,
-			tolerance=tolerance, units=units,
+			domain=mz(ref), outfile=outfile,
 			BPPARAM=BPPARAM, ...)
+		featureData(object) <- featureData(ref)
 	} else {
 		object <- peakPick(object, method=method,
-			tolerance=tolerance, units=units,
-			SNR=SNR, type=type)
+			tolerance=tolerance, units=units, SNR=SNR, type=type)
 		object <- peakAlign(object, spectra=spectra, index=index,
-			tolerance=tolerance, units=units,
+			tolerance=tolerance, units=units, outfile=outfile,
 			BPPARAM=BPPARAM, ...)
-		if ( isTRUE(filter) || filter > 0 ) {
-			if ( is.numeric(filter) ) {
-				if ( filter < 1 ) {
-					n <- ceiling(filter * length(object))
-				} else if ( filter > 0) {
-					n <- as.integer(filter)
+		if ( isTRUE(filterFreq) || filterFreq > 0 ) {
+			if ( is.numeric(filterFreq) ) {
+				if ( filterFreq < 1 ) {
+					n <- ceiling(filterFreq * length(object))
+				} else if ( filterFreq > 0) {
+					n <- as.integer(filterFreq)
 				} else {
-					stop("'filter' must be positive")
+					stop("'filterFreq' must be positive")
 				}
 			} else {
 				n <- 1L
@@ -79,8 +78,8 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 setMethod("peakPick", "MSImagingExperiment",
 	function(object, ref,
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-		tolerance = NA, units = c("ppm", "mz"),
-		SNR = 2, type = c("height", "area"), ...)
+		SNR = 2, type = c("height", "area"),
+		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	if ( isCentroided(object) ) {
 		stop("object is already centroided")
@@ -99,8 +98,8 @@ setMethod("peakPick", "MSImagingExperiment",
 setMethod("peakPick", "MSImagingArrays",
 	function(object, ref,
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-		tolerance = NA, units = c("ppm", "mz"),
-		SNR = 2, type = c("height", "area"), ...)
+		SNR = 2, type = c("height", "area"),
+		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	if ( isCentroided(object) ) {
 		stop("object is already centroided")
@@ -119,8 +118,8 @@ setMethod("peakPick", "MSImagingArrays",
 setMethod("peakPick", "SpectralImagingData",
 	function(object, ref,
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-		tolerance = NA, units = c("relative", "absolute"),
-		SNR = 2, type = c("height", "area"), ...)
+		SNR = 2, type = c("height", "area"),
+		tolerance = NA, units = c("relative", "absolute"), ...)
 {
 	method <- match.arg(method)
 	type <- match.arg(type)
@@ -210,9 +209,9 @@ setMethod("peakAlign", "MSImagingExperiment",
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
-		featureData=featureData, elementMetadata=pixelData(object),
+		featureData=featureData, elementMetadata=pixelData(ans),
 		experimentData=experimentData(object), centroided=TRUE,
-		metadata=metadata(object), processing=list())
+		metadata=metadata(ans), processing=list())
 })
 
 setMethod("peakAlign", "MSImagingArrays",
@@ -231,9 +230,9 @@ setMethod("peakAlign", "MSImagingArrays",
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
-		featureData=featureData, elementMetadata=pixelData(object),
+		featureData=featureData, elementMetadata=pixelData(ans),
 		experimentData=experimentData(object), centroided=TRUE,
-		metadata=metadata(object), processing=list())
+		metadata=metadata(ans), processing=list())
 })
 
 setMethod("peakAlign", "SpectralImagingExperiment",

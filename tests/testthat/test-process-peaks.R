@@ -86,10 +86,12 @@ test_that("process peaks - MSImagingArrays", {
 	peaks <- matter::findpeaks(fData(ms4)$mean, snr=6)
 	peaks <- mz(ms4)[peaks]
 	ms5 <- peakPick(ms, ref=peaks)
-	ms5 <- process(ms5)
-	n4 <- lengths(intensity(ms5))
+	ms5 <- process(ms5, domain=peaks)
+	n4 <- nrow(ms5)
 
-	expect_true(all(n4 == length(peaks)))
+	expect_equal(n4, length(peaks))
+	expect_is(ms5, "MSImagingExperiment")
+	expect_is(spectra(ms5), "matrix")
 
 	ms6 <- peakAlign(ms3, units="ppm")
 	ms7 <- peakAlign(ms3, units="mz")
@@ -103,10 +105,12 @@ test_that("process peaks - MSImagingArrays", {
 	expect_equal(mz(ms9), peaks)
 
 	ms10 <- peakProcess(ms)
-	ms11 <- peakProcess(ms, sample=0.1, filter=FALSE)
+	ms11 <- peakProcess(ms, sampleSize=0.1, filterFreq=FALSE)
 
 	expect_is(ms10, "MSImagingExperiment")
 	expect_is(ms11, "MSImagingExperiment")
+	expect_is(spectra(ms10), "sparse_mat")
+	expect_is(spectra(ms11), "matrix")
 
 })
 
@@ -134,10 +138,12 @@ test_that("process peaks - MSImagingExperiment", {
 	peaks <- matter::findpeaks(fData(ms4)$mean, snr=6)
 	peaks <- mz(ms4)[peaks]
 	ms5 <- peakPick(ms, ref=peaks)
-	ms5 <- process(ms5)
-	n4 <- lengths(matter::atomdata(spectra(ms5)))
+	ms5 <- process(ms5, domain=peaks)
+	n4 <- nrow(ms5)
 
-	expect_true(all(n4 == length(peaks)))
+	expect_equal(n4, length(peaks))
+	expect_is(ms5, "MSImagingExperiment")
+	expect_is(spectra(ms5), "matrix")
 
 	ms6 <- peakAlign(ms3, units="ppm")
 	ms7 <- peakAlign(ms3, units="mz")
@@ -151,9 +157,11 @@ test_that("process peaks - MSImagingExperiment", {
 	expect_equal(mz(ms9), peaks)
 
 	ms10 <- peakProcess(ms)
-	ms11 <- peakProcess(ms, sample=0.1, filter=FALSE)
+	ms11 <- peakProcess(ms, sampleSize=0.1, filterFreq=FALSE)
 
 	expect_is(ms10, "MSImagingExperiment")
 	expect_is(ms11, "MSImagingExperiment")
+	expect_is(spectra(ms10), "sparse_mat")
+	expect_is(spectra(ms11), "matrix")
 
 })
