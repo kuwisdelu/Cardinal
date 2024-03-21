@@ -117,11 +117,13 @@ simulateImage <- function(pixelData, featureData, preset,
 		if ( representation == "profile" ) {
 			MSImagingExperiment(spectra,
 				featureData=MassDataFrame(mz=domain),
-				pixelData=pixelData[irun == run(pixelData),,drop=FALSE])
+				pixelData=pixelData[irun == run(pixelData),,drop=FALSE],
+				centroided=FALSE)
 		} else {
 			MSImagingExperiment(spectra,
 				featureData=MassDataFrame(mz=mz),
-				pixelData=pixelData[irun == run(pixelData),,drop=FALSE])
+				pixelData=pixelData[irun == run(pixelData),,drop=FALSE],
+				centroided=TRUE)
 		}
 	}
 	ans <- chunkMapply(FUN, runNames(pixelData), seeds,

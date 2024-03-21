@@ -68,9 +68,14 @@ setClassUnion("MSImagingExperiment_OR_Arrays",
 
 setClass("ResultsList", contains = "SimpleList")
 
-setClass("SpatialResultsList",
-	contains = "ResultsList",
+setClass("SpatialResults",
+	contains = "Annotated",
 	slots = c(
+		model = "ANY",
 		featureData = "DataFrame",
 		pixelData = "PositionDataFrame"))
+
+setClass("SpatialPCA", contains="SpatialResults")
+setClass("SpatialNMF", contains="SpatialResults")
+
 

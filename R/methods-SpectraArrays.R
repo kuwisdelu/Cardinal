@@ -157,8 +157,9 @@ setReplaceMethod("$", "SpectraArrays",
 	})
 
 # allow tab completion in console
-.DollarNames.SpectraArrays <- function(x, pattern = "")
+.DollarNames.SpectraArrays <- function(x, pattern = "") {
 	grep(pattern, names(x), value=TRUE)
+}
 
 ## Array-like getters and setters
 

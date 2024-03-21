@@ -104,8 +104,8 @@ exportClasses(
 	"SpectralImagingExperiment",
 	"MSImagingArrays",
 	"MSImagingExperiment",
-	"ResultsList",
-	"SpatialResultsList")
+	"SpatialResults",
+	"ResultsList")
 
 export(
 	"XDataFrame",
@@ -116,6 +116,7 @@ export(
 	"SpectralImagingExperiment",
 	"MSImagingArrays",
 	"MSImagingExperiment",
+	"SpatialResults",
 	"ResultsList")
 
 export(
@@ -364,6 +365,7 @@ exportMethods(
 	"coregister")
 
 exportMethods(
+	"NMF",
 	"PCA",
 	"PLS",
 	"OPLS",

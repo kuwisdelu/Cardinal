@@ -110,20 +110,24 @@ setMethod("colMeans", "SpectralImagingExperiment",
 	})
 
 setMethod("rowStats", "SpectralImagingExperiment",
-	function(x, stat, ..., BPPARAM = getCardinalBPPARAM())
+	function(x, stat, ...,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM())
 	{
 		rowStats(spectra(x), stat=stat,
-			nchunks=getCardinalNChunks(),
-			verbose=getCardinalVerbose(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	})
 
 setMethod("colStats", "SpectralImagingExperiment",
-	function(x, stat, ..., BPPARAM = getCardinalBPPARAM())
+	function(x, stat, ...,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM())
 	{
 		colStats(spectra(x), stat=stat,
-			nchunks=getCardinalNChunks(),
-			verbose=getCardinalVerbose(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	})
 

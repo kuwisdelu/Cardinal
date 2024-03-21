@@ -65,7 +65,7 @@ setMethod("show", "SpectralImagingExperiment",
 		# dimensions
 		label <- if(length(object) != 1L) "spectra" else "spectrum"
 		cat(class(object), "with", nrow(object), "features",
-			"and", length(object), label, "\n\n")
+			"and", length(object), label, "\n")
 		# spectraData()
 		cat(sprintf("spectraData(%d): %s\n", length(spectraData(object)),
 			.paste_head_tail(names(spectraData(object)))))
@@ -350,7 +350,7 @@ setMethod("show", "SpectralImagingArrays",
 	function(object) {
 		# dimensions
 		label <- if(length(object) != 1L) "spectra" else "spectrum"
-		cat(class(object), "with", length(object), label, "\n\n")
+		cat(class(object), "with", length(object), label, "\n")
 		# spectraData()
 		cat(sprintf("spectraData(%d): %s\n", length(spectraData(object)),
 			.paste_head_tail(names(spectraData(object)))))
@@ -648,6 +648,7 @@ setReplaceMethod("$", "SpectralImagingData",
 	})
 
 # allow tab completion in console
-.DollarNames.SpectralImagingData <- function(x, pattern = "")
+.DollarNames.SpectralImagingData <- function(x, pattern = "") {
 	grep(pattern, names(pixelData(x)), value=TRUE)
+}
 

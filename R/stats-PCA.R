@@ -1,109 +1,44 @@
 
+#### Principal components analysis ####
+## ------------------------------------
+
 setMethod("PCA", "SpectralImagingExperiment", 
-	function(x, ncomp = 3, center = TRUE, scale = FALSE, ...)
-	{
-		.checkForIncompleteProcessing(x)
-		if ( max(ncomp) > ncol(x) )
-			.stop("can't fit more components than number of pixels")
-		if ( max(ncomp) > nrow(x) )
-			.stop("can't fit more components than number of features")
-		if ( length(ncomp) > 1L )
-			ncomp <- max(ncomp)
-		.message("projecting ", ncomp, " principal components...")
-		if ( is(iData(x), "matter_mat") ) {
-			Xt <- t(iData(x))
-		} else {
-			Xt <- t(as.matrix(iData(x)))
-		}
-		Xt <- scale(Xt, center=center, scale=scale)
-		if ( isTRUE(center) )
-			center <- attr(Xt, "scaled:center")
-		if ( isTRUE(scale) )
-			scale <- attr(Xt, "scaled:scale")
-		results <- .PCA2_fit(Xt, ncomp=ncomp)
-		scaled <- SimpleList(center=center, scale=scale)
-		models <- DataFrame(ncomp=ncomp)
-		.PCA2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(x),
-			elementMetadata=pixelData(x),
-			metadata=list(
-				mapping=metadata(x)$mapping,
-				scaled=scaled),
-			resultData=as(list(results), "List"),
-			modelData=models)
-	})
+	function(x, ncomp = 3,
+		center = TRUE, scale = FALSE,
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(x)) > 0L )
+		warning("pending processing steps will be ignored")
+	if ( length(ncomp) > 1L )
+		ncomp <- max(ncomp)
+	ans <- prcomp_lanczos(spectra(x), k=ncomp,
+		center=center, scale.=scale, transpose=TRUE,
+		nchunks=getCardinalNChunks(),
+		verbose=getCardinalVerbose(),
+		BPPARAM=getCardinalBPPARAM(), ...)
+	if ( getCardinalVerbose() )
+		message("returning principal components")
+	as(SpatialResults(ans, x), "SpatialPCA")
+})
 
-setMethod("predict", "PCA2",
-	function(object, newx, ncomp, ...)
-	{
-		if ( !is(newx, "SpectralImagingExperiment") )
-			.stop("'newx' must inherit from 'SpectralImagingExperiment'")
-		.checkForIncompleteProcessing(newx)
-		if ( missing(ncomp) )
-			ncomp <- max(modelData(object)$ncomp)
-		.message("projecting ", ncomp, " principal components...")
-		if ( is(iData(newx), "matter_mat") ) {
-			Xt <- t(iData(newx))
-		} else {
-			Xt <- t(as.matrix(iData(newx)))
-		}
-		scaled <- metadata(object)$scaled
-		Xt <- scale(Xt, center=scaled$center, scale=scaled$scale)
-		results <- mapply(function(res, nc) {
-			.PCA2_predict(Xt, ncomp=nc, loadings=res$loadings)
-		}, resultData(object), ncomp, SIMPLIFY=FALSE)
-		models <- DataFrame(ncomp=ncomp)
-		.PCA2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(newx),
-			elementMetadata=pixelData(newx),
-			metadata=list(
-				mapping=list(
-					feature="loadings",
-					pixel="scores")),
-			resultData=as(results, "List"),
-			modelData=models)
-	})
+setMethod("predict", "SpatialPCA",
+	function(object, newdata, BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( !is(newdata, "SpectralImagingExperiment") )
+		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+	if ( length(processingData(newdata)) > 0L )
+		warning("pending processing steps will be ignored")
+	if ( nrow(newdata) != nrow(object$rotation) )
+		stop("'newdata' does not have the correct number of dimensions")
+	if ( (!isFALSE(object$center) || !isFALSE(object$scale)) ) {
+		x <- rowscale(spectra(newdata),
+			center=object$center, scale=object$scale,
+			nchunks=getCardinalNChunks(),
+			verbose=getCardinalVerbose(),
+			BPPARAM=BPPARAM)
+	} else {
+		x <- spectra(newdata)
+	}
+	crossprod(x, object$rotation)
+})
 
-setAs("PCA", "PCA2",
-	function(from) {
-		to <- .coerce_ImagingResult(from, "PCA2")
-		metadata(to)$mapping <- list(feature="loadings", pixel="scores")
-		i <- which.max(modelData(to)$ncomp)
-		.PCA2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(to),
-			elementMetadata=pixelData(to),
-			metadata=metadata(to),
-			resultData=resultData(to)[i],
-			modelData=modelData(to)[i,,drop=FALSE])
-	})
-
-.PCA2_fit <- function(x, ncomp, ...) {
-	sv <- irlba(x, nu=ncomp, nv=ncomp, fastpath=is.matrix(x))
-	sdev <- sv$d[1:ncomp] / sqrt(max(1, nrow(x) - 1))
-	loadings <- sv$v
-	scores <- x %*% loadings
-	colnames(loadings) <- paste("PC", 1:ncomp, sep="")
-	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev)
-}
-
-.PCA2_predict <- function(x, ncomp, loadings, ...) {
-	scores <- x %*% loadings[,1:ncomp,drop=FALSE]
-	sdev <- apply(scores, 2, sd)
-	colnames(scores) <- paste("PC", 1:ncomp, sep="")
-	list(scores=scores, loadings=loadings, sdev=sdev)
-}
-
-setMethod("summary", "PCA2",
-	function(object, ...)
-	{
-		out <- SummaryDataFrame(
-			Component=seq_len(modelData(object)$ncomp[1L]),
-			`Standard deviation`=resultData(object, 1L, "sdev"),
-			.summary="Principal components analysis:\n")
-		metadata(out)$modelData <- modelData(object)
-		as(out, "SummaryPCA")
-	})

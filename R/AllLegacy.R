@@ -214,14 +214,14 @@ setClass("ResultSet",
 			ResultSet="0.1.0"))))
 
 setClass("CrossValidated", contains="ResultSet")
-setClass("PCA", contains="ResultSet")
+# setClass("PCA", contains="ResultSet")
 setClass("PLS", contains="ResultSet")
 setClass("OPLS", contains="ResultSet")
 setClass("SpatialFastmap", contains="ResultSet")
 setClass("SpatialKMeans", contains="ResultSet")
 setClass("SpatialShrunkenCentroids", contains="ResultSet")
 
-## define 3.x classes for installation
+## define 2.x classes for installation
 
 setClass("MeansTest")
 setClass("PCA2")
