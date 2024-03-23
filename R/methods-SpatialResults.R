@@ -164,7 +164,7 @@ setMethod("nrun", "SpatialResults",
 
 setValidity("ResultsList", .valid_ResultsList)
 
-ResultsList <- function(...)
+ResultsList <- function(..., mcols = NULL)
 {
 	if ( ...length() == 1L && is(..1, "list_OR_List") ) {
 		if ( is(..1, "List") ) {
@@ -175,11 +175,14 @@ ResultsList <- function(...)
 	} else {
 		x <- SimpleList(...)
 	}
-	new("ResultsList", x, elementType=class(x[[1L]])[1L])
+	new("ResultsList", x, elementMetadata=mcols,
+		elementType=class(x[[1L]])[1L])
 }
 
 setMethod("show", "ResultsList",
 	function(object) {
 		callNextMethod()
-		cat("model class:", object@elementType, "\n")
+		cat("model:", object@elementType, "\n")
+		if ( !is.null(mcols(object)) )
+			print(as.data.frame(mcols(object)))
 	})

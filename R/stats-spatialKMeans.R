@@ -1,108 +1,80 @@
 
-setMethod("spatialKMeans", "SpectralImagingExperiment",
-	function(x, r = 1, k = 3,
-		method = c("gaussian", "adaptive"),
-		dist = "chebyshev", tol.dist = 1e-9,
-		iter.max = 10, nstart = 10,
-		algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
-		ncomp = 10, BPPARAM = getCardinalBPPARAM(), ...)
-	{
-		.checkForIncompleteProcessing(x)
-		BPPARAM <- .protectNestedBPPARAM(BPPARAM)
-		method <- match.arg(method)
-		if ( max(k) > ncol(x) )
-			.stop("can't fit more clusters than number of pixels")
-		if ( max(k) > nrow(x) )
-			.stop("can't fit more clusters than number of features")
-		ncomp <- min(ncomp, nrow(x), ncol(x))
-		.message("reducing dimension prior to k-means")
-		fastmap <- spatialFastmap(x, r=r, ncomp=ncomp,
-			method=method, dist=dist, tol.dist=tol.dist,
-			iter.max=1, BPPARAM=BPPARAM, ...)
-		metric <- metadata(fastmap)$metric
-		results <- list()
-		.message("clustering components...")
-		for ( i in seq_along(r) ) {
-			rngseeds <- generateRNGStreams(length(k))
-			results[[i]] <- bpmapply(function(ki, seed, BPPARAM) {
-				.message("r = ", r[i], ", k = ", ki)
-				.spatialKMeans2(x=x, r=r[i], k=ki, fastmap=fastmap,
-					seed=seed, iter.max=iter.max, nstart=nstart,
-					algorithm=algorithm, BPPARAM=BPPARAM)
-			}, k, rngseeds, SIMPLIFY=FALSE, BPPARAM=BPPARAM)
-		}
-		results <- do.call("c", results)
-		models <- DataFrame(rev(expand.grid(k=k, r=r)))
-		.SpatialKMeans2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(x),
-			elementMetadata=pixelData(x),
-			metadata=list(
-				mapping=list(
-					feature=c("centers", "correlation"),
-					pixel="cluster"),
-				method=method, dist=dist,
-				metric=metric),
-			resultData=as(results, "List"),
-			modelData=models)
-	})
+#### Spatially-aware K-Means ####
+## ------------------------------
 
-setAs("SpatialKMeans", "SpatialKMeans2",
-	function(from) {
-		to <- .coerce_ImagingResult(from, "SpatialKMeans2")
-		metadata(to)$mapping <- list(pixel="cluster",
-			feature=c("centers", "betweenss", "withinss"))
-		metadata(to)$method <- resultData(to, 1, "method")
-		metadata(to)$distance <- "chebyshev"
-		to
-	})
-
-.spatialKMeans2 <- function(x, r, k, fastmap, seed, iter.max,
-									nstart, algorithm, BPPARAM)
+setMethod("spatialKMeans", "ANY",
+	function(x, coord, r = 1, k = 3, ncomp = 20,
+		neighbors = findNeighbors(coord, r=r),
+		weights = c("gaussian", "adaptive"),
+		transpose = FALSE, niter = 2L,
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	oseed <- getRNGStream()
-	on.exit(setRNGStream(oseed))
-	setRNGStream(seed)
-	# cluster FastMap components using k-means
-	proj <- resultData(fastmap, list(r=r), "scores")
-	cluster <- kmeans(proj, centers=k, iter.max=iter.max,
-		nstart=nstart, algorithm=algorithm)$cluster
-	cluster <- factor(cluster)
-	centers <- rowStats(iData(x), stat="mean", group=cluster,
-		nchunks=getCardinalNumBlocks(),
-		verbose=FALSE, BPPARAM=BPPARAM)
-	colnames(centers) <- levels(cluster)
-	# calculate correlation with clusters
-	do_rbind <- function(ans) do.call("rbind", ans)
-	corr <- chunk_rowapply(iData(x),
-		function(xbl) {
-			t(apply(xbl, 1, function(xi) {
-				vapply(levels(cluster), function(l) {
-					mask <- cluster == l
-					if ( all(!mask) ) {
-						0
-					} else {
-						cor(xi, mask)
-					}
-				}, numeric(1))
-			}))
-		},
-		simplify=rbind, verbose=FALSE,
-		nchunks=getCardinalNumBlocks(),
+	if ( is.character(weights) ) {
+		if ( getCardinalVerbose() )
+			message("calculating gaussian weights")
+		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
+		if ( match.arg(weights) == "adaptive" )
+		{
+			if ( getCardinalVerbose() )
+				message("calculating adaptive weights")
+			awts <- spatialWeights(x, neighbors=neighbors,
+				weights="adaptive", byrow=!transpose,
+				nchunks=getCardinalNChunks(),
+				verbose=getCardinalVerbose(),
+				BPPARAM=BPPARAM, ...)
+			wts <- Map("*", wts, awts)
+		}
+	} else {
+		wts <- rep_len(weights, length(neighbors))
+		weights <- "custom"
+	}
+	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
+		neighbors=neighbors, weights=wts,
+		transpose=transpose, niter=niter,
 		BPPARAM=BPPARAM)
-	colnames(corr) <- levels(cluster)
-	list(cluster=cluster, centers=centers, correlation=corr)
-}
-
-setMethod("summary", "SpatialKMeans2",
-	function(object, ...)
+	k <- rev(sort(k))
+	ans <- vector("list", length=length(k))
+	for ( i in seq_along(k) )
 	{
-		out <- SummaryDataFrame(
-			`Radius (r)`=modelData(object)$r,
-			`Clusters (k)`=modelData(object)$k,
-			.summary=list("Spatially-aware K-means clustering:\n",
-				paste0(" Method = ", metadata(object)$method),
-				paste0(" Distance = ", metadata(object)$dist, "\n")))
-		metadata(out)$modelData <- modelData(object)
-		as(out, "SummarySpatialKMeans")
-	})
+		if ( i > 1L ) {
+			centers <- ans[[i - 1L]]$centers[seq_len(k[i]),,drop=FALSE]
+		} else {
+			centers <- k[i]
+		}
+		if ( getCardinalVerbose() )
+			message("fitting k-means for  k = ", k[i])
+		ans[[i]] <- kmeans(proj$x, centers=centers, ...)
+		ans[[i]]$weights <- weights
+		ans[[i]]$ncomp <- ncomp
+		ans[[i]]$r <- r
+	}
+	if ( getCardinalVerbose() )
+		message("returning spatially-aware k-means")
+	if ( length(ans) > 1L ) {
+		params <- DataFrame(r=r, k=k, weights=weights, ncomp=ncomp)
+		ResultsList(ans, mcols=params)
+	} else {
+		ans[[1L]]
+	}
+})
+
+setMethod("spatialKMeans", "SpectralImagingExperiment", 
+	function(x, r = 1, k = 3, ncomp = 20,
+		neighbors = findNeighbors(x, r=r),
+		weights = c("gaussian", "adaptive"),
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(x)) > 0L )
+		warning("pending processing steps will be ignored")
+	ans <- spatialKMeans(spectra(x),
+		coord=coord(x), r=r, k=k, ncomp=ncomp,
+		neighbors=neighbors, weights=weights, transpose=TRUE,
+		BPPARAM=BPPARAM, ...)
+	if ( is(ans, "ResultsList") ) {
+		FUN <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
+		ResultsList(lapply(ans, FUN), mcols=mcols(ans))
+	} else {
+		as(SpatialResults(ans, x), "SpatialKMeans")
+	}
+})
+

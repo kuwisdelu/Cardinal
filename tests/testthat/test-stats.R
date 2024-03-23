@@ -97,3 +97,22 @@ test_that("spatialFastmap", {
 	expect_equal(fm2$x, pred2)
 
 })
+
+test_that("spatialKMeans", {
+
+	set.seed(1)
+	s <- simulateImage(preset=2, dim=c(10L, 10L))
+	km <- spatialKMeans(s, k=2:4, weights="gaussian")
+	km2 <- spatialKMeans(s, k=2:4, weights="adaptive")
+
+	expect_true(validObject(km))
+	expect_true(validObject(km2))
+	expect_length(km, 3L)
+	expect_length(km2, 3L)
+	expect_is(km, "ResultsList")
+	expect_is(km2, "ResultsList")
+	expect_is(km[[1L]], "SpatialKMeans")
+	expect_is(km2[[1L]], "SpatialKMeans")
+
+})
+

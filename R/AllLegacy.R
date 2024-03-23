@@ -218,7 +218,7 @@ setClass("CrossValidated", contains="ResultSet")
 # setClass("PLS", contains="ResultSet")
 # setClass("OPLS", contains="ResultSet")
 # setClass("SpatialFastmap", contains="ResultSet")
-setClass("SpatialKMeans", contains="ResultSet")
+# setClass("SpatialKMeans", contains="ResultSet")
 setClass("SpatialShrunkenCentroids", contains="ResultSet")
 
 ## define 2.x classes for installation
