@@ -17,7 +17,7 @@ CardinalVersion <- function() {
 getCardinalBPPARAM <- function() {
 	getOption("Cardinal.bpparam")
 }
-setCardinalBPPARAM <- function(BPPARAM = SerialParam()) {
+setCardinalBPPARAM <- function(BPPARAM = SerialParam(progressbar=TRUE)) {
 	options("Cardinal.bpparam" = BPPARAM)
 }
 

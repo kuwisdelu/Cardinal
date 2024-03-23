@@ -83,3 +83,17 @@ test_that("OPLS", {
 
 })
 
+test_that("spatialFastmap", {
+
+	set.seed(1)
+	s <- simulateImage(preset=1, dim=c(10L, 10L))
+	fm <- spatialFastmap(s, ncomp=2, weights="gaussian")
+	pred <- predict(fm, newdata=s)
+	
+	fm2 <- spatialFastmap(s, ncomp=2, weights="adaptive")
+	pred2 <- predict(fm2, newdata=s)
+
+	expect_equal(fm$x, pred)
+	expect_equal(fm2$x, pred2)
+
+})

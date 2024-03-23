@@ -79,5 +79,6 @@ setClass("SpatialNMF", contains="SpatialResults")
 setClass("SpatialPCA", contains="SpatialResults")
 setClass("SpatialPLS", contains="SpatialResults")
 setClass("SpatialOPLS", contains="SpatialResults")
+setClass("SpatialFastmap", contains="SpatialResults")
 
 

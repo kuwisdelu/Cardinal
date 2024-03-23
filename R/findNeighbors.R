@@ -6,24 +6,24 @@ setMethod("findNeighbors", "SpectralImagingData",
 	function(x, r = 1, groups = run(x), metric = "maximum", p = 2,
 		offsets = TRUE, matrix = FALSE, ...)
 {
-	findNeighbors(pixelData(x), r=r, groups=groups,
-		metric=metric, p=p, offsets=offsets, matrix=matrix)
+	.findNeighbors(coord(x), r=r, groups=groups, metric=metric, p=p,
+		offsets=offsets, matrix=matrix)
 })
 
 setMethod("findNeighbors", "PositionDataFrame",
 	function(x, r = 1, groups = run(x), metric = "maximum", p = 2,
 		offsets = TRUE, matrix = FALSE, ...)
 {
-	findNeighbors(as.matrix(coord(x)), r=r, groups=groups,
-		metric=metric, p=p, offsets=offsets, matrix=matrix)
+	.findNeighbors(coord(x), r=r, groups=groups, metric=metric, p=p,
+		offsets=offsets, matrix=matrix)
 })
 
-setMethod("findNeighbors", "matrix",
+setMethod("findNeighbors", "ANY",
 	function(x, r = 1, groups = NULL, metric = "maximum", p = 2,
 		offsets = TRUE, matrix = FALSE, ...)
 {
-	.findNeighbors(x, r=r, groups=groups,
-		metric=metric, p=p, offsets=offsets, matrix=matrix)
+	.findNeighbors(x, r=r, groups=groups, metric=metric, p=p,
+		offsets=offsets, matrix=matrix)
 })
 
 .findNeighbors <- function(x, r, groups, metric, p, offsets, matrix)
