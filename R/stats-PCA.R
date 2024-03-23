@@ -2,6 +2,21 @@
 #### Principal components analysis ####
 ## ------------------------------------
 
+setMethod("PCA", "ANY", 
+	function(x, ncomp = 3,
+		center = TRUE, scale = FALSE,
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	ans <- prcomp_lanczos(x, k=max(ncomp),
+		center=center, scale.=scale,
+		nchunks=getCardinalNChunks(),
+		verbose=getCardinalVerbose(),
+		BPPARAM=BPPARAM, ...)
+	if ( getCardinalVerbose() )
+		message("returning principal components")
+	ans
+})
+
 setMethod("PCA", "SpectralImagingExperiment", 
 	function(x, ncomp = 3,
 		center = TRUE, scale = FALSE,
@@ -9,20 +24,14 @@ setMethod("PCA", "SpectralImagingExperiment",
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
-	if ( length(ncomp) > 1L )
-		ncomp <- max(ncomp)
-	ans <- prcomp_lanczos(spectra(x), k=ncomp,
-		center=center, scale.=scale, transpose=TRUE,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
-		BPPARAM=getCardinalBPPARAM(), ...)
-	if ( getCardinalVerbose() )
-		message("returning principal components")
+	ans <- PCA(spectra(x), ncomp=ncomp, transpose=TRUE,
+		center=center, scale=scale, BPPARAM=BPPARAM, ...)
 	as(SpatialResults(ans, x), "SpatialPCA")
 })
 
 setMethod("predict", "SpatialPCA",
-	function(object, newdata, BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, newdata,
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
 		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
@@ -35,7 +44,7 @@ setMethod("predict", "SpatialPCA",
 			center=object$center, scale=object$scale,
 			nchunks=getCardinalNChunks(),
 			verbose=getCardinalVerbose(),
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM, ...)
 	} else {
 		x <- spectra(newdata)
 	}

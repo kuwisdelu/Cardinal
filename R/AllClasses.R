@@ -75,7 +75,9 @@ setClass("SpatialResults",
 		featureData = "DataFrame",
 		pixelData = "PositionDataFrame"))
 
-setClass("SpatialPCA", contains="SpatialResults")
 setClass("SpatialNMF", contains="SpatialResults")
+setClass("SpatialPCA", contains="SpatialResults")
+setClass("SpatialPLS", contains="SpatialResults")
+setClass("SpatialOPLS", contains="SpatialResults")
 
 

@@ -1,296 +1,178 @@
 
-setMethod("PLS",
-	signature = c(x = "SpectralImagingExperiment", y = "ANY"),
-	function(x, y, ncomp = 3, method = c("pls", "opls"),
+#### Projection to latent structures ####
+## --------------------------------------
+
+setMethod("PLS", "ANY", 
+	function(x, y, ncomp = 3,
+		method = c("nipals", "simpls", "kernel1", "kernel2"),
 		center = TRUE, scale = FALSE,
-		iter.max = 100, ...)
-	{
-		.checkForIncompleteProcessing(x)
-		method <- match.arg(method)
-		if ( max(ncomp) > ncol(x) )
-			.stop("can't fit more components than number of pixels")
-		if ( max(ncomp) > nrow(x) )
-			.stop("can't fit more components than number of features")
-		if ( length(ncomp) > 1L ) {
-			nc <- max(ncomp)
-		} else {
-			nc <- ncomp
-		}
-		.message("preparing data...")
-		if ( is.factor(y) || is.character(y) ) {
-			type <- "classification"
-			Y <- .factor_matrix(y)
-		} else {
-			type <- "regression"
-			Y <- as.matrix(y)
-		}
-		Xt <- t(as.matrix(iData(x)))
-		Xt <- scale(Xt, center=center, scale=scale)
-		Y <- scale(Y, center=center, scale=scale)
-		if ( center ) {
-			center <- attr(Xt, "scaled:center")
-			Ycenter <- attr(Y, "scaled:center")
-		} else {
-			Ycenter <- FALSE
-		}
-		if ( scale ) {
-			scale <- attr(Xt, "scaled:scale")
-			Yscale <- attr(Y, "scaled:scale")
-		} else {
-			Yscale <- FALSE
-		}
-		.message("projecting ", nc, " latent components...")
-		results <- .PLS2_fit(Xt, Y, ncomp=nc,
-			method=method, iter.max=iter.max)
-		scaled <- SimpleList(center=center, scale=scale,
-			Ycenter=Ycenter, Yscaled=Yscale)
-		models <- DataFrame(ncomp=nc)
-		out <- .PLS2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(x),
-			elementMetadata=pixelData(x),
-			metadata=list(
-				mapping=list(
-					feature=c("coefficients", "loadings", "weights"),
-					pixel=c("fitted", "scores")),
-				method=method, scaled=scaled,
-				type=type),
-			resultData=as(list(results), "List"),
-			modelData=models)
-		if ( method == "opls" )
-			out <- as(out, "OPLS2")
-		predict(out, newx=x, newy=y, ncomp=ncomp)
-	})
-
-setMethod("OPLS",
-	signature = c(x = "SpectralImagingExperiment", y = "ANY"),
-	function(x, y, ncomp = 3, ...)
-	{
-		PLS(x, y, ncomp=ncomp, method="opls", ...)
-	})
-
-setMethod("predict", "PLS2",
-	function(object, newx, newy, ncomp, ...)
-	{
-		if ( !is(newx, "SpectralImagingExperiment") )
-			.stop("'newx' must inherit from 'SpectralImagingExperiment'")
-		.checkForIncompleteProcessing(newx)
-		if ( missing(ncomp) )
-			ncomp <- modelData(object)$ncomp
-		type <- metadata(object)$type
-		.message("preparing data...")
-		Xt <- t(as.matrix(iData(newx)))
-		scaled <- metadata(object)$scaled
-		method <- metadata(object)$method
-		Xt <- scale(Xt, center=scaled$center, scale=scaled$scale)
-		result_t <- resultData(object)[which.max(modelData(object)$ncomp)]
-		results <- mapply(function(res, nc) {
-			.message("predicting using ", nc, " latent components...")
-			res <- .PLS2_predict(Xt, ncomp=nc, method=method,
-				loadings=res$loadings, weights=res$loadings,
-				Yweights=res$Yweights, Oloadings=res$Oloadings,
-				Oweights=res$Oweights)
-			if ( isFALSE(scaled$Ycenter) ) {
-				Ycenter <- 0
-			} else {
-				Ycenter <- scaled$Ycenter
-			}
-			if ( isFALSE(scaled$Yscale) ) {
-				Yscale <- 1
-			} else {
-				Yscale <- scaled$Yscale
-			}
-			res$fitted <- t(Yscale * t(res$fitted) + Ycenter)
-			if ( metadata(object)$type == "classification" ) {
-				class <- apply(res$fitted, 1, which.max)
-				res$class <- factor(class,
-					levels=seq_len(ncol(res$fitted)),
-					labels=colnames(res$fitted))
-			}
-			res
-		}, result_t, ncomp, SIMPLIFY=FALSE)
-		models <- DataFrame(ncomp=ncomp)
-		out <- .PLS2(
-			imageData=.SimpleImageArrayList(),
-			featureData=featureData(newx),
-			elementMetadata=pixelData(newx),
-			metadata=metadata(object),
-			resultData=as(results, "List"),
-			modelData=models)
-		mapping <- metadata(object)$mapping
-		if ( type == "classification" )
-			mapping$pixel <- c(mapping$pixel, "class")
-		if ( method == "opls" )
-			mapping$feature <- c(mapping$pixel, c("Oloadings", "Oweights"))
-		metadata(out)$mapping <- mapping
-		if ( method == "opls" )
-			out <- as(out, "OPLS2")
-		if ( !missing(newy) ) {
-			if ( is.factor(newy) || is.character(newy) ) {
-				pixelData(out)$.response <- as.factor(newy)
-			} else {
-				newy <- as.matrix(newy)
-				i <- if (ncol(newy) > 1) seq_len(ncol(newy)) else ""
-				nms <- paste0(".response", i)
-				pixelData(out)[nms] <- as.data.frame(newy)
-			}
-		}
-		out
-	})
-
-setMethod("fitted", "PLS2",
-	function(object, ...) {
-		if ( metadata(object)$type == "classification" ) {
-			object$class
-		} else {
-			object$fitted
-		}
-	})
-
-setAs("PLS", "PLS2",
-	function(from) {
-		to <- .coerce_ImagingResult(from, "PLS2")
-		metadata(to)$mapping <- list(
-					feature=c("coefficients", "loadings", "weights"),
-					pixel=c("fitted", "scores"))
-		if ( !is.null(resultData(to, 1, "y")) ) {
-			y <- resultData(to, 1, "y")
-			if ( is.factor(y) || is.character(y) ) {
-				resultData(to) <- endoapply(resultData(to),
-					function(res) rename(res, classes="class"))
-				metadata(to)$type <- "classification"
-			} else {
-				metadata(to)$type <- "regression"
-			}
-			metadata(to)$method <- "pls"
-			if ( is.null(dim(y)) )
-				pixelData(to)$.response <- y
-		}
-		to
-	})
-
-setAs("OPLS", "OPLS2",
-	function(from) {
-		to <- .coerce_ImagingResult(from, "OPLS2")
-		metadata(to)$mapping <- list(
-					feature=c("coefficients", "loadings", "weights"),
-					pixel=c("fitted", "scores"))
-		if ( !is.null(resultData(to, 1, "y")) ) {
-			y <- resultData(to, 1, "y")
-			if ( is.factor(y) || is.character(y) ) {
-				resultData(to) <- endoapply(resultData(to),
-					function(res) rename(res, classes="class"))
-				metadata(to)$type <- "classification"
-			} else {
-				metadata(to)$type <- "regression"
-			}
-			metadata(to)$method <- "opls"
-			if ( is.null(dim(y)) )
-				pixelData(to)$.response <- y
-		}
-		to
-	})
-
-.PLS2_fit <- function(X, Y, ncomp, method, iter.max) {
-	nas <- apply(Y, 1, anyNA)
-	X <- X[!nas,,drop=FALSE]
-	Y <- Y[!nas,,drop=FALSE]
-	if ( method == "opls" ) {
-		fit <- nipals.OPLS(X, Y, ncomp=ncomp, iter.max=iter.max)
-		fit$loadings <- matrix(nrow=ncol(X), ncol=ncomp,
-			dimnames=dimnames(fit$Oloadings))
-		fit$weights <- matrix(nrow=ncol(X), ncol=ncomp,
-			dimnames=dimnames(fit$Oweights))
-		fit$Yweights <- matrix(nrow=ncol(Y), ncol=ncomp,
-			dimnames=list(colnames(Y), colnames(fit$Oweights)))
-		for ( nc in 1:ncomp ) {
-			Oloadings <- fit$Oloadings[,1:nc,drop=FALSE]
-			Oweights <- fit$Oweights[,1:nc,drop=FALSE]
-			Oscores <- X %*% Oweights
-			Xortho <- tcrossprod(Oscores, Oloadings)
-			Xnew <- X - Xortho
-			fit1 <- nipals.PLS(Xnew, Y, ncomp=1, iter.max=iter.max)
-			fit$loadings[,nc] <- fit1$loadings[,1]
-			fit$weights[,nc] <- fit1$weights[,1]
-			fit$Yweights[,nc] <- fit1$Yweights[,1]
-		}
-	} else {
-		fit <- nipals.PLS(X, Y, ncomp=ncomp, iter.max=iter.max)
-	}
-	fit
-}
-
-.PLS2_predict <- function(X, ncomp, method, loadings, weights,
-	Yweights, Oloadings, Oweights)
+		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( method == "opls" ) {
-		Oloadings <- Oloadings[,1:ncomp,drop=FALSE]
-		Oweights <- Oweights[,1:ncomp,drop=FALSE]
-		Oscores <- X %*% Oweights
-		Xortho <- tcrossprod(Oscores, Oloadings)
-		X <- X - Xortho
-		loadings_t <- loadings[,ncomp,drop=FALSE]
-		weights_t <- weights[,ncomp,drop=FALSE]
-		Yweights_t <- Yweights[,ncomp,drop=FALSE]
-		opls_out <- list(Oloadings=Oloadings, Oweights=Oweights)
+	method <- match.arg(method)
+	msg <- "projecting to latent structures "
+	if ( method == "nipals" ) {
+		if ( getCardinalVerbose() )
+			message(msg, "using NIPALS")
+		ans <- pls_nipals(x, y=y, k=max(ncomp),
+			center=center, scale.=scale,
+			verbose=getCardinalVerbose(),
+			nchunks=getCardinalNChunks(),
+			BPPARAM=BPPARAM, ...)
+	} else if ( method == "simpls" ) {
+		if ( getCardinalVerbose() )
+			message(msg, "using SIMPLS")
+		ans <- pls_simpls(x, y=y, k=max(ncomp),
+			center=center, scale.=scale,
+			verbose=getCardinalVerbose(),
+			nchunks=getCardinalNChunks(),
+			BPPARAM=BPPARAM, ...)
+	} else if ( method == "kernel1" ) {
+		if ( getCardinalVerbose() )
+			message(msg, "using SIMPLS")
+		ans <- pls_kernel(x, y=y, k=max(ncomp), method=1L,
+			center=center, scale.=scale,
+			verbose=getCardinalVerbose(),
+			nchunks=getCardinalNChunks(),
+			BPPARAM=BPPARAM, ...)
+	} else if ( method == "kernel2" ) {
+		if ( getCardinalVerbose() )
+			message(msg, "using SIMPLS")
+		ans <- pls_kernel(x, y=y, k=max(ncomp), method=2L,
+			center=center, scale.=scale,
+			verbose=getCardinalVerbose(),
+			nchunks=getCardinalNChunks(),
+			BPPARAM=BPPARAM, ...)
 	} else {
-		loadings_t <- loadings[,1:ncomp,drop=FALSE]
-		weights_t <- weights[,1:ncomp,drop=FALSE]
-		Yweights_t <- Yweights[,1:ncomp,drop=FALSE]
-		opls_out <- list()
+		stop("unsupported method: ", method)
 	}
-	projection <- weights_t %*% solve(crossprod(loadings_t, weights_t))
-	coefficients <- tcrossprod(projection, Yweights_t)
-	scores <- X %*% projection
-	fitted <- X %*% coefficients
-	colnames(coefficients) <- rownames(Yweights)
-	colnames(fitted) <- rownames(Yweights)
-	pls_out <- list(fitted=fitted, scores=scores,
-		loadings=loadings[,1:ncomp,drop=FALSE],
-		weights=weights[,1:ncomp,drop=FALSE],
-		Yweights=Yweights[,1:ncomp,drop=FALSE],
-		projection=projection, coefficients=coefficients)
-	c(pls_out, opls_out)
-}
+	if ( getCardinalVerbose() )
+		message("returning projection to latent structures")
+	ans
+})
 
+setMethod("PLS", "SpectralImagingExperiment", 
+	function(x, y, ncomp = 3,
+		method = c("nipals", "simpls", "kernel1", "kernel2"),
+		center = TRUE, scale = FALSE,
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(x)) > 0L )
+		warning("pending processing steps will be ignored")
+	ans <- PLS(spectra(x), y=y, ncomp=ncomp,
+		center=center, scale=scale, transpose=TRUE,
+		BPPARAM=BPPARAM, ...)
+	as(SpatialResults(ans, x), "SpatialPLS")
+})
 
-setMethod("summary", "PLS2",
-	function(object, ...)
-	{
-		if ( metadata(object)$type == "classification" ) {
-			y <- pixelData(object)$.response
-			pos <- levels(as.factor(y))[1L]
-			acc <- sapply(resultData(object), function(res)
-				mean(res$class == y, na.rm=TRUE))
-			sens <- sapply(resultData(object), function(res)
-				sensitivity(y, res$class, positive=pos))
-			spec <- sapply(resultData(object), function(res)
-				specificity(y, res$class, positive=pos))
-			description <- paste0(" Classification on ", nlevels(y), " classes: ")
-			description <- paste0(description, paste0(levels(y), collapse=" "))
-			out <- SummaryDataFrame(
-				`Number of Components`=modelData(object)$ncomp,
-				Accuracy=acc, Sensitivity=sens, Specificity=spec)
-		} else {
-			# do something
-			nm <- grepl(".response", names(pixelData(object)))
-			y <- as.matrix(pixelData(object)[,nm,drop=FALSE])
-			rmse <- sapply(resultData(object), function(res)
-				sqrt(mean((res$fitted - y)^2, na.rm=TRUE)))
-			mae <- sapply(resultData(object), function(res)
-				mean(abs(res$fitted - y), na.rm=TRUE))
-			if ( ncol(y) > 1L ) {
-				description <- paste0(" Regression with ", ncol(y), " response variables")
-			} else {
-				description <- paste0(" Regression with ", ncol(y), " response variable")
+setMethod("predict", "SpatialPLS",
+	function(object, newdata, ncomp,
+		type = c("response", "class"), simplify = TRUE, ...)
+{
+	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
+		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+	if ( !missing(newdata) ) {
+		if ( length(processingData(newdata)) > 0L )
+			warning("pending processing steps will be ignored")
+		predict(object@model, newdata=spectra(newdata), k=ncomp,
+			type=type, simplify=simplify, ...)
+	} else {
+		predict(object@model, type=type, ...)
+	}
+})
+
+#### Orthogonal projection to latent structures ####
+## -------------------------------------------------
+
+setMethod("OPLS", "ANY", 
+	function(x, y, ncomp = 3,
+		center = TRUE, scale = FALSE, retx = TRUE,
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( getCardinalVerbose() )
+		message("preprocessing data to remove orthogonal variation")
+	ans <- opls_nipals(x, y=y, k=max(ncomp),
+		center=center, scale.=scale,
+		verbose=getCardinalVerbose(),
+		nchunks=getCardinalNChunks(),
+		BPPARAM=BPPARAM, ...)
+	fit <- lapply(setNames(ncomp, paste0("C", ncomp)),
+		function(k) {
+			if ( getCardinalVerbose() ) {
+				label <- if (k != 1L) "components" else "component"
+				message("using data with ", k,
+					" orthogonal ", label, " removed")
 			}
-			out <- SummaryDataFrame(
-				`Number of Components`=modelData(object)$ncomp,
-				RMSE=rmse, MAE=mae)
+			if ( k != ncol(ans$loadings) ) {
+				xk <- predict(ans, newdata=x, k=k)
+			} else {
+				xk <- ans$x
+			}
+			pls_nipals(xk, y=y, k=1L,
+				center=FALSE, scale.=FALSE,
+				verbose=getCardinalVerbose(),
+				nchunks=getCardinalNChunks(),
+				BPPARAM=BPPARAM, ...)
+		})
+	nms <- c("coefficients", "residuals", "fitted.values")
+	ans$ncomp <- ncomp
+	ans$regressions <- fit
+	ans[nms] <- fit[[which.max(ncomp)]][nms]
+	if ( !retx )
+		ans$x <- NULL
+	if ( getCardinalVerbose() )
+		message("returning projection to latent structures")
+	ans
+})
+
+setMethod("OPLS", "SpectralImagingExperiment", 
+	function(x, y, ncomp = 3,
+		center = TRUE, scale = FALSE, retx = TRUE,
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(x)) > 0L )
+		warning("pending processing steps will be ignored")
+	ans <- OPLS(spectra(x), y=y, ncomp=ncomp,
+		center=center, scale=scale, transpose=TRUE,
+		BPPARAM=BPPARAM, ...)
+	as(SpatialResults(ans, x), "SpatialOPLS")
+})
+
+setMethod("predict", "SpatialOPLS",
+	function(object, newdata, ncomp,
+		type = c("response", "class"), simplify = TRUE, ...)
+{
+	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
+		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+	if ( missing(ncomp) )
+		ncomp <- max(object$ncomp)
+	if ( !all(ncomp %in% object$ncomp) )
+		stop("can only predict for ncomp = ",
+			paste0(object$ncomp, collapse=", "))
+	type <- match.arg(type)
+	ans <- lapply(ncomp,
+		function(k, newdata) {
+			fit <- object$regressions[[which(object$ncomp %in% k)[1L]]]
+			if ( !missing(newdata) ) {
+				if ( length(processingData(newdata)) > 0L )
+					warning("pending processing steps will be ignored")
+				xk <- predict(object@model, newdata=spectra(newdata), k=k)
+				predict(fit, newdata=xk, type=type, simplify=TRUE, ...)
+			} else {
+				predict(fit, type=type, ...)
+			}
+		}, newdata=newdata)
+	if ( simplify ) {
+		if ( length(ans) > 1L ) {
+			if ( type == "class" ) {
+				as.data.frame(ans)
+			} else {
+				simplify2array(ans)
+			}
+		} else {
+			ans[[1L]]
 		}
-		metadata(out)$type <- metadata(object)$type
-		method <- paste0(" Method = ", metadata(object)$method, "\n")
-		out@summary <-list("Projection to latent components:\n",
-			description, method)
-		as(out, "SummaryPLS")
-	})
+	} else {
+		ans
+	}
+})
+
