@@ -7,6 +7,9 @@
 setMethod("plot", c(x = "MSImagingExperiment", y = "numeric"),
 	function(x, y, ...) plot(x, i = y, ...))
 
+setMethod("plot", c(x = "MSImagingExperiment", y = "character"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
 setMethod("plot", c(x = "MSImagingExperiment", y = "formula"),
 	function(x, y, ...) plot(x, formula = y, ...))
 
@@ -71,6 +74,9 @@ setMethod("plot", c(x = "MSImagingArrays", y = "missing"),
 setMethod("plot", c(x = "SpectralImagingExperiment", y = "numeric"),
 	function(x, y, ...) plot(x, i = y, ...))
 
+setMethod("plot", c(x = "SpectralImagingExperiment", y = "character"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
 setMethod("plot", c(x = "SpectralImagingExperiment", y = "formula"),
 	function(x, y, ...) plot(x, formula = y, ...))
 
@@ -91,14 +97,25 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		lhs <- names(spectraData(x))[1L]
 		rhs <- names(featureData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
+	} else if ( is.character(formula) ) {
+		rhs <- names(featureData(x))[1L]
+		formula <- as.formula(paste0(formula, "~", rhs))
+		i <- NULL
 	}
 	vars <- all.vars(formula)
 	if ( length(formula) != 3L || length(vars) != 2L )
 		stop("formula must specify exactly 2 variables")
-	X <- featureData(x)[[vars[2L]]]
-	Y <- spectraData(x)[[vars[1L]]][,i,drop=FALSE]
-	X <- rep.int(list(X), ncol(Y))
-	Y <- apply(Y, 2L, identity, simplify=FALSE)
+	if ( is.null(i) ) {
+		X <- as.list(featureData(x)[vars[2L]])
+		Y <- as.list(featureData(x)[vars[1L]])
+	} else {
+		X <- featureData(x)[[vars[2L]]]
+		Y <- spectraData(x)[[vars[1L]]][,i,drop=FALSE]
+	}
+	if ( !is.list(X) )
+		X <- rep.int(list(X), ncol(Y))
+	if ( !is.list(Y) )
+		Y <- apply(Y, 2L, identity, simplify=FALSE)
 	if ( is.null(names(i)) ) {
 		if ( is.null(names(Y)) ) {
 			if ( is.null(pixelNames(x)) ) {

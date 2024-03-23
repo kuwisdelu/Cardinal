@@ -72,13 +72,21 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		lhs <- names(spectraData(x))[1L]
 		rhs <- paste0(coordNames(x)[1:2], collapse="*")
 		formula <- as.formula(paste0(lhs, "~", rhs))
+	} else if ( is.character(formula) ) {
+		rhs <- paste0(coordNames(x)[1:2], collapse="*")
+		formula <- as.formula(paste0(formula, "~", rhs))
+		i <- NULL
 	}
 	vars <- all.vars(formula)
 	if ( length(formula) != 3L || length(vars) != 3L )
 		stop("formula must specify exactly 3 variables")
 	X <- pixelData(x)[[vars[2L]]]
 	Y <- pixelData(x)[[vars[3L]]]
-	vals <- spectraData(x)[[vars[1L]]][i,,drop=FALSE]
+	if ( is.null(i) ) {
+		vals <- as.data.frame(pixelData(x)[vars[1L]])
+	} else {
+		vals <- spectraData(x)[[vars[1L]]][i,,drop=FALSE]
+	}
 	if ( !is.null(names(i)) && anyDuplicated(names(i)) ) {
 		vals <- rowsum(vals, group=names(i), reorder=FALSE, na.rm=TRUE)
 		i <- setNames(rep.int(NA, nrow(vals)), unique(names(i)))
@@ -92,9 +100,15 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	} else {
 		runs <- run(x)
 	}
-	X <- rep.int(list(X), nrow(vals))
-	Y <- rep.int(list(Y), nrow(vals))
-	vals <- apply(vals, 1L, identity, simplify=FALSE)
+	if ( is.data.frame(vals) ) {
+		X <- list(X)
+		Y <- list(Y)
+		vals <- as.list(vals)
+	} else {
+		X <- rep.int(list(X), nrow(vals))
+		Y <- rep.int(list(Y), nrow(vals))
+		vals <- apply(vals, 1L, identity, simplify=FALSE)
+	}
 	if ( is.null(names(i)) ) {
 		if ( is.null(names(vals)) ) {
 			if ( is.null(featureNames(x)) ) {
