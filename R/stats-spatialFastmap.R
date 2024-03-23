@@ -17,7 +17,7 @@ setMethod("spatialFastmap", "ANY",
 		if ( getCardinalVerbose() )
 			message("calculating adaptive weights")
 		awts <- spatialWeights(x, neighbors=neighbors,
-			transpose=transpose, sd=NULL,
+			weights="adaptive", byrow=!transpose,
 			nchunks=getCardinalNChunks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM, ...)
@@ -69,8 +69,8 @@ setMethod("predict", "SpatialFastmap",
 	wts <- spatialWeights(as.matrix(coord(newdata)), neighbors=neighbors)
 	if ( object$weights == "adaptive" )
 	{
-		awts <- spatialWeights(newdata, neighbors=neighbors,
-			transpose=transpose, sd=NULL,
+		awts <- spatialWeights(spectra(newdata), neighbors=neighbors,
+			weights="adaptive", byrow=!object$transpose,
 			nchunks=getCardinalNChunks(),
 			verbose=getCardinalVerbose(),
 			BPPARAM=BPPARAM, ...)
@@ -91,15 +91,15 @@ setMethod("predict", "SpatialFastmap",
 		if ( verbose )
 			message("calculating distances from index: ", i)
 		if ( is.null(weights) ) {
-			weights <- rep.int(1, nrow(neighbors))
+			weights <- rep.int(1, length(neighbors))
 		} else {
-			weights <- rep_len(weights, nrow(neighbors))
+			weights <- rep_len(weights, length(neighbors))
 		}
 		d <- rowDists(y, x[i,,drop=FALSE], metric=metric, p=p,
 			verbose=verbose, nchunks=nchunks,
 			BPPARAM=BPPARAM)
 		FUN <- function(nbi, wts) sum(wts * d[nbi]) / sum(wts)
-		mapply(FUN, neighbors$index, weights)
+		mapply(FUN, neighbors, weights)
 	}
 }
 
@@ -111,14 +111,14 @@ setMethod("predict", "SpatialFastmap",
 		if ( verbose )
 			message("calculating distances from index: ", i)
 		if ( is.null(weights) ) {
-			weights <- rep.int(1, nrow(neighbors))
+			stop("spatially-aware weights are NULL")
 		} else {
-			weights <- rep_len(weights, nrow(neighbors))
+			weights <- rep_len(weights, length(neighbors))
 		}
 		d <- colDists(y, x[,i,drop=FALSE], metric=metric, p=p,
 			verbose=verbose, nchunks=nchunks,
 			BPPARAM=BPPARAM)
 		FUN <- function(nbi, wts) sum(wts * d[nbi]) / sum(wts)
-		mapply(FUN, neighbors$index, weights)
+		mapply(FUN, neighbors, weights)
 	}
 }

@@ -5,58 +5,59 @@
 setMethod("spatialWeights", "SpectralImagingExperiment",
 	function(x, r = 1,
 		neighbors = findNeighbors(x, r=r),
-		sd = NULL, matrix = FALSE,
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	.spatialWeights(spectra(x), neighbors=neighbors,
-		transpose=TRUE, sd=sd, matrix=matrix, BPPARAM=BPPARAM)
+		weights="adaptive", sd=NA, byrow=FALSE,
+		matrix=FALSE, BPPARAM=BPPARAM)
 })
 
 setMethod("spatialWeights", "PositionDataFrame",
 	function(x, r = 1,
 		neighbors = findNeighbors(x, r=r),
-		sd = ((2 * r) + 1) / 4, matrix = FALSE,
-		BPPARAM = getCardinalBPPARAM(), ...)
+		sd = ((2 * r) + 1) / 4, matrix = FALSE, ...)
 {
 	.spatialWeights(as.matrix(coord(x)), neighbors=neighbors,
-		transpose=FALSE, sd=sd, matrix=matrix, BPPARAM=BPPARAM)
+		weights="gaussian", sd=sd, byrow=TRUE,
+		matrix=matrix, BPPARAM=NULL)
 })
 
 setMethod("spatialWeights", "ANY",
-	function(x, coord = x, r = 1,
+	function(x, coord = x, r = 1, byrow = TRUE,
 		neighbors = findNeighbors(coord, r=r),
-		sd = ((2 * r) + 1) / 4,
-		transpose = FALSE, matrix = FALSE,
+		weights = c("gaussian", "adaptive"),
+		sd = ((2 * r) + 1) / 4, matrix = FALSE,
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	.spatialWeights(x, neighbors=neighbors,
-		transpose=transpose, sd=sd, matrix=matrix, BPPARAM=BPPARAM)
+		weights=weights, sd=sd, byrow=byrow,
+		matrix=matrix, BPPARAM=BPPARAM)
 })
 
 .spatialWeights <- function(x, neighbors,
-	transpose, sd, matrix, BPPARAM)
+	weights, sd, byrow, matrix, BPPARAM)
 {
-	nb <- neighbors$index
-	if ( transpose ) {
+	weights <- match.arg(weights, c("gaussian", "adaptive"))
+	if ( byrow ) {
 		if ( is.matrix(x) || is.data.frame(x) ) {
-			ds <- coldist_at(x, ix=seq_len(ncol(x)), iy=nb)
+			ds <- rowdist_at(x, ix=seq_len(nrow(x)), iy=neighbors)
 		} else {
-			ds <- colDists(x, at=nb,
+			ds <- rowDists(x, at=neighbors,
 				nchunks=getCardinalNChunks(),
 				verbose=getCardinalVerbose(),
 				BPPARAM=BPPARAM)
 		}
 	} else {
 		if ( is.matrix(x) || is.data.frame(x) ) {
-			ds <- rowdist_at(x, ix=seq_len(nrow(x)), iy=nb)
+			ds <- coldist_at(x, ix=seq_len(ncol(x)), iy=neighbors)
 		} else {
-			ds <- rowDists(x, at=nb,
+			ds <- colDists(x, at=neighbors,
 				nchunks=getCardinalNChunks(),
 				verbose=getCardinalVerbose(),
 				BPPARAM=BPPARAM)
 		}
 	}
-	if ( is.null(sd) ) {
+	if ( weights == "adaptive" ) {
 		sds <- vapply(ds, function(d) (max(d) / 2)^2, numeric(1L))
 	} else {
 		sds <- rep_len(sd, nrow(x))
@@ -64,8 +65,9 @@ setMethod("spatialWeights", "ANY",
 	FUN <- function(d, sd) exp(-d^2 / (2 * sd^2))
 	wts <- Map(FUN, ds, sds)
 	if ( matrix ) {
-		sparse_mat(index=nb, data=wts,
-			nrow=length(nb), ncol=length(nb), offset=1L)
+		sparse_mat(index=neighbors, data=wts,
+			nrow=length(neighbors), ncol=length(neighbors),
+			offset=1L)
 	} else {
 		wts
 	}
