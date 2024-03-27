@@ -22,6 +22,8 @@ setGeneric("run", function(object, ...) standardGeneric("run"))
 setGeneric("run<-", function(object, ..., value) standardGeneric("run<-"))
 setGeneric("runNames", function(object) standardGeneric("runNames"))
 setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
+setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
+setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
 
 #### Generics from EBImage ####
 ## ----------------------------
@@ -98,8 +100,6 @@ setGeneric("mzData", function(object, ...) standardGeneric("mzData"))
 setGeneric("mzData<-", function(object, ..., value) standardGeneric("mzData<-"))
 setGeneric("intensityData", function(object, ...) standardGeneric("intensityData"))
 setGeneric("intensityData<-", function(object, ..., value) standardGeneric("intensityData<-"))
-setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
-setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
 setGeneric("resultData", function(object, ...) standardGeneric("resultData"))
 setGeneric("resultData<-", function(object, ..., value) standardGeneric("resultData<-"))
 setGeneric("resultNames", function(object, ...) standardGeneric("resultNames"))

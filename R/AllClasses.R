@@ -81,5 +81,6 @@ setClass("SpatialPLS", contains="SpatialResults")
 setClass("SpatialOPLS", contains="SpatialResults")
 setClass("SpatialFastmap", contains="SpatialResults")
 setClass("SpatialKMeans", contains="SpatialResults")
+setClass("SpatialShrunkenCentroids", contains="SpatialResults")
 
 

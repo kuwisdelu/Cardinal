@@ -4,23 +4,24 @@
 
 setMethod("spatialFastmap", "ANY",
 	function(x, coord, r = 1, ncomp = 3,
-		neighbors = findNeighbors(coord, r=r),
 		weights = c("gaussian", "adaptive"),
+		neighbors = findNeighbors(coord, r=r),
 		transpose = FALSE, niter = 3L,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is.character(weights) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("calculating gaussian weights")
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
 		if ( match.arg(weights) == "adaptive" )
 		{
-			if ( getCardinalVerbose() )
+			if ( verbose )
 				message("calculating adaptive weights")
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
-				nchunks=getCardinalNChunks(),
-				verbose=getCardinalVerbose(),
+				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM, ...)
 			wts <- Map("*", wts, awts)
 		}
@@ -35,36 +36,35 @@ setMethod("spatialFastmap", "ANY",
 	}
 	ncomp <- min(ncomp, dim(x))
 	ans <- fastmap(x, k=ncomp, distfun=distfun,
-		neighbors=neighbors, weights=wts,
+		neighbors=neighbors, neighbor.weights=wts,
 		transpose=transpose, niter=niter,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	ans$weights <- weights
 	ans$r <- r
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("returning FastMap projection")
 	ans
 })
 
 setMethod("spatialFastmap", "SpectralImagingExperiment", 
 	function(x, r = 1, ncomp = 3,
-		neighbors = findNeighbors(x, r=r),
 		weights = c("gaussian", "adaptive"),
-		BPPARAM = getCardinalBPPARAM(), ...)
+		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
 	ans <- spatialFastmap(spectra(x),
 		coord=coord(x), r=r, ncomp=ncomp,
-		neighbors=neighbors, weights=weights, transpose=TRUE,
-		BPPARAM=BPPARAM, ...)
+		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialFastmap")
 })
 
 setMethod("predict", "SpatialFastmap",
 	function(object, newdata,
 		neighbors = findNeighbors(newdata, r=object$r),
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
@@ -76,56 +76,65 @@ setMethod("predict", "SpatialFastmap",
 	wts <- spatialWeights(as.matrix(coord(newdata)), neighbors=neighbors)
 	if ( object$weights == "adaptive" )
 	{
-		awts <- spatialWeights(spectra(newdata), neighbors=neighbors,
-			weights="adaptive", byrow=!object$transpose,
-			nchunks=getCardinalNChunks(),
-			verbose=FALSE,
+		awts <- spatialWeights(newdata, neighbors=neighbors,
+			nchunks=nchunks, verbose=FALSE,
 			BPPARAM=BPPARAM, ...)
 		wts <- Map("*", wts, awts)
 	}
 	predict(object@model, newdata=spectra(newdata),
-		neighbors=neighbors, weights=wts,
-		nchunks=getCardinalNChunks(),
-		verbose=FALSE,
+		neighbors=neighbors, neighbor.weights=wts,
+		nchunks=nchunks, verbose=FALSE,
 		BPPARAM=BPPARAM, ...)
 })
 
 .spatialRowDistFun <- function(x, y, neighbors,
-	weights = NULL, metric = "euclidean", p = 2,
-	verbose = NA, nchunks = NA, BPPARAM = bpparam(), ...)
+	neighbor.weights = NULL, metric = "euclidean", p = 2, weights = NULL,
+	verbose = NA, nchunks = NA, BPPARAM = getCardinalBPPARAM(), ...)
 {
 	function(i) {
 		if ( isTRUE(verbose) )
-			message("calculating distances from index: ", i)
-		if ( is.null(weights) ) {
-			weights <- rep.int(1, length(neighbors))
+			message("calculating distances from index: ", paste0(i, collapse=" "))
+		if ( is.null(neighbor.weights) ) {
+			wts <- rep.int(1, length(neighbors))
 		} else {
-			weights <- rep_len(weights, length(neighbors))
+			wts <- rep_len(neighbor.weights, length(neighbors))
 		}
-		d <- rowDists(y, x[i,,drop=FALSE], metric=metric, p=p,
+		d <- rowDists(y, x[i,,drop=FALSE],
+			metric=metric, p=p, weights=weights,
 			verbose=isTRUE(verbose), nchunks=nchunks,
 			BPPARAM=BPPARAM)
-		FUN <- function(nbi, wts) sum(wts * d[nbi]) / sum(wts)
-		mapply(FUN, neighbors, weights)
+		if ( length(i) > 1L ) {
+			FUN <- function(nbi, wi) colSums(wi * d[nbi,]) / sum(wi)
+			t(mapply(FUN, neighbors, wts))
+		} else {
+			FUN <- function(nbi, wi) sum(wi * d[nbi]) / sum(wi)
+			mapply(FUN, neighbors, wts)
+		}
 	}
 }
 
 .spatialColDistFun <- function(x, y, neighbors,
-	weights = NULL, metric = "euclidean", p = 2,
-	verbose = NA, nchunks = NA, BPPARAM = bpparam(), ...)
+	neighbor.weights = NULL, metric = "euclidean", p = 2, weights = NULL,
+	verbose = NA, nchunks = NA, BPPARAM = getCardinalBPPARAM(), ...)
 {
 	function(i) {
 		if ( isTRUE(verbose) )
-			message("calculating distances from index: ", i)
-		if ( is.null(weights) ) {
+			message("calculating distances from index: ", paste0(i, collapse=" "))
+		if ( is.null(neighbor.weights) ) {
 			stop("spatially-aware weights are NULL")
 		} else {
-			weights <- rep_len(weights, length(neighbors))
+			wts <- rep_len(neighbor.weights, length(neighbors))
 		}
-		d <- colDists(y, x[,i,drop=FALSE], metric=metric, p=p,
+		d <- colDists(y, x[,i,drop=FALSE],
+			metric=metric, p=p, weights=weights,
 			verbose=isTRUE(verbose), nchunks=nchunks,
 			BPPARAM=BPPARAM)
-		FUN <- function(nbi, wts) sum(wts * d[nbi]) / sum(wts)
-		mapply(FUN, neighbors, weights)
+		if ( length(i) > 1L ) {
+			FUN <- function(nbi, wi) colSums(wi * d[nbi,]) / sum(wi)
+			t(mapply(FUN, neighbors, wts))
+		} else {
+			FUN <- function(nbi, wi) sum(wi * d[nbi]) / sum(wi)
+			mapply(FUN, neighbors, wts)
+		}
 	}
 }

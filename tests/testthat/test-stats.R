@@ -49,6 +49,7 @@ test_that("PLS", {
 
 	expect_is(pred, "factor")
 	expect_equal(levels(pred), c("yes", "no"))
+	expect_equal(fitted(pl, "class"), pred)
 	expect_equivalent(pred01, pred012[,,1L])
 	expect_equivalent(pred02, pred012[,,2L])
 	expect_equivalent(fitted(pl), pred02)
@@ -78,6 +79,7 @@ test_that("OPLS", {
 	pred2 <- predict(op, newdata=s, ncomp=2)
 
 	expect_equal(pred, s$class)
+	expect_equal(pred, fitted(op, "class"))
 	expect_equal(pred1, op$regressions[[1L]]$fitted.values)
 	expect_equal(pred2, op$regressions[[2L]]$fitted.values)
 
@@ -101,7 +103,8 @@ test_that("spatialFastmap", {
 test_that("spatialKMeans", {
 
 	set.seed(1)
-	s <- simulateImage(preset=2, dim=c(10L, 10L))
+	s <- simulateImage(preset=2, dim=c(10L, 10L),
+		representation="centroid")
 	km <- spatialKMeans(s, k=2:4, weights="gaussian")
 	km2 <- spatialKMeans(s, k=2:4, weights="adaptive")
 
@@ -113,6 +116,63 @@ test_that("spatialKMeans", {
 	expect_is(km2, "ResultsList")
 	expect_is(km[[1L]], "SpatialKMeans")
 	expect_is(km2[[1L]], "SpatialKMeans")
+	expect_setequal(km[[1L]]$cluster, 1:4)
+	expect_setequal(km[[2L]]$cluster, 1:3)
+	expect_setequal(km[[3L]]$cluster, 1:2)
+
+})
+
+test_that("spatialShrunkenCentroids (classification)", {
+
+	set.seed(1)
+	s <- simulateImage(preset=2, dim=c(10L, 10L),
+		representation="centroid")
+	s$class <- makeFactor(circle=s$circle, square=s$square,
+		bg=!s$circle & !s$square)
+
+	set.seed(2)
+	ssc <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="gaussian")
+	ssc2 <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="adaptive")
+	pred <- predict(ssc[[1L]], newdata=s, type="class")
+	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
+
+	expect_true(validObject(ssc))
+	expect_true(validObject(ssc2))
+	expect_length(ssc, 4L)
+	expect_length(ssc2, 4L)
+	expect_is(ssc, "ResultsList")
+	expect_is(ssc2, "ResultsList")
+	expect_is(ssc[[1L]], "SpatialShrunkenCentroids")
+	expect_is(ssc2[[1L]], "SpatialShrunkenCentroids")
+	expect_equal(fitted(ssc[[1L]], "class"), pred)
+	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
+
+})
+
+test_that("spatialShrunkenCentroids (clustering)", {
+
+	set.seed(1)
+	s <- simulateImage(preset=2, dim=c(10L, 10L),
+		representation="centroid")
+	s$class <- makeFactor(circle=s$circle, square=s$square,
+		bg=!s$circle & !s$square)
+
+	set.seed(2)
+	ssc <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="gaussian")
+	ssc2 <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="adaptive")
+	pred <- predict(ssc[[1L]], newdata=s, type="class")
+	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
+
+	expect_true(validObject(ssc))
+	expect_true(validObject(ssc2))
+	expect_length(ssc, 8L)
+	expect_length(ssc2, 8L)
+	expect_is(ssc, "ResultsList")
+	expect_is(ssc2, "ResultsList")
+	expect_is(ssc[[1L]], "SpatialShrunkenCentroids")
+	expect_is(ssc2[[1L]], "SpatialShrunkenCentroids")
+	expect_equal(fitted(ssc[[1L]], "class"), pred)
+	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
 
 })
 

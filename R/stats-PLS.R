@@ -64,6 +64,20 @@ setMethod("PLS", "SpectralImagingExperiment",
 	as(SpatialResults(ans, x), "SpatialPLS")
 })
 
+setMethod("fitted", "SpatialPLS",
+	function(object, type = c("response", "class"), ...)
+{
+	type <- match.arg(type)
+	ans <- object$fitted.values
+	if ( type == "class" ) {
+		cls <- apply(ans, 1L, which.max)
+		ans <- factor(cls,
+			levels=seq_len(ncol(ans)),
+			labels=colnames(ans))
+	}
+	ans
+})
+
 setMethod("predict", "SpatialPLS",
 	function(object, newdata, ncomp,
 		type = c("response", "class"), simplify = TRUE, ...)
@@ -76,7 +90,7 @@ setMethod("predict", "SpatialPLS",
 		predict(object@model, newdata=spectra(newdata), k=ncomp,
 			type=type, simplify=simplify, ...)
 	} else {
-		predict(object@model, type=type, ...)
+		fitted(object@model, type=type, ...)
 	}
 })
 
@@ -137,6 +151,20 @@ setMethod("OPLS", "SpectralImagingExperiment",
 	as(SpatialResults(ans, x), "SpatialOPLS")
 })
 
+setMethod("fitted", "SpatialOPLS",
+	function(object, type = c("response", "class"), ...)
+{
+	type <- match.arg(type)
+	ans <- object$fitted.values
+	if ( type == "class" ) {
+		cls <- apply(ans, 1L, which.max)
+		ans <- factor(cls,
+			levels=seq_len(ncol(ans)),
+			labels=colnames(ans))
+	}
+	ans
+})
+
 setMethod("predict", "SpatialOPLS",
 	function(object, newdata, ncomp,
 		type = c("response", "class"), simplify = TRUE, ...)
@@ -158,7 +186,7 @@ setMethod("predict", "SpatialOPLS",
 				xk <- predict(object@model, newdata=spectra(newdata), k=k)
 				predict(fit, newdata=xk, type=type, simplify=TRUE, ...)
 			} else {
-				predict(fit, type=type, ...)
+				fitted(fit, type=type, ...)
 			}
 		}, newdata=newdata)
 	if ( simplify ) {

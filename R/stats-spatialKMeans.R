@@ -1,26 +1,28 @@
 
-#### Spatially-aware K-Means ####
+#### Spatially-aware k-means ####
 ## ------------------------------
 
 setMethod("spatialKMeans", "ANY",
-	function(x, coord, r = 1, k = 3, ncomp = 20,
-		neighbors = findNeighbors(coord, r=r),
+	function(x, coord, r = 1, k = 2, ncomp = 20,
 		weights = c("gaussian", "adaptive"),
+		neighbors = findNeighbors(coord, r=r),
 		transpose = FALSE, niter = 2L,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is.character(weights) ) {
-		if ( getCardinalVerbose() )
+		weights <- match.arg(weights)
+		if ( verbose )
 			message("calculating gaussian weights")
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( match.arg(weights) == "adaptive" )
+		if ( weights == "adaptive" )
 		{
-			if ( getCardinalVerbose() )
+			if ( verbose )
 				message("calculating adaptive weights")
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
-				nchunks=getCardinalNChunks(),
-				verbose=getCardinalVerbose(),
+				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM, ...)
 			wts <- Map("*", wts, awts)
 		}
@@ -31,7 +33,8 @@ setMethod("spatialKMeans", "ANY",
 	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=wts,
 		transpose=transpose, niter=niter,
-		BPPARAM=BPPARAM)
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM, ...)
 	k <- rev(sort(k))
 	ans <- vector("list", length=length(k))
 	for ( i in seq_along(k) )
@@ -41,38 +44,37 @@ setMethod("spatialKMeans", "ANY",
 		} else {
 			centers <- k[i]
 		}
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("fitting k-means for  k = ", k[i])
 		ans[[i]] <- kmeans(proj$x, centers=centers, ...)
 		ans[[i]]$weights <- weights
 		ans[[i]]$ncomp <- ncomp
 		ans[[i]]$r <- r
+		ans[[i]]$k <- k[i]
 	}
-	if ( getCardinalVerbose() )
-		message("returning spatially-aware k-means")
+	if ( verbose )
+		message("returning spatial k-means")
 	if ( length(ans) > 1L ) {
-		params <- DataFrame(r=r, k=k, weights=weights, ncomp=ncomp)
-		ResultsList(ans, mcols=params)
+		mcols <- DataFrame(r=r, k=k, weights=weights, ncomp=ncomp)
+		ResultsList(ans, mcols=mcols)
 	} else {
 		ans[[1L]]
 	}
 })
 
 setMethod("spatialKMeans", "SpectralImagingExperiment", 
-	function(x, r = 1, k = 3, ncomp = 20,
-		neighbors = findNeighbors(x, r=r),
+	function(x, r = 1, k = 2, ncomp = 20,
 		weights = c("gaussian", "adaptive"),
-		BPPARAM = getCardinalBPPARAM(), ...)
+		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
 	ans <- spatialKMeans(spectra(x),
 		coord=coord(x), r=r, k=k, ncomp=ncomp,
-		neighbors=neighbors, weights=weights, transpose=TRUE,
-		BPPARAM=BPPARAM, ...)
+		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
 	if ( is(ans, "ResultsList") ) {
-		FUN <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
-		ResultsList(lapply(ans, FUN), mcols=mcols(ans))
+		f <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
+		ResultsList(lapply(ans, f), mcols=mcols(ans))
 	} else {
 		as(SpatialResults(ans, x), "SpatialKMeans")
 	}

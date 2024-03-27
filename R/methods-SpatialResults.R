@@ -55,6 +55,17 @@ setMethod("$", "SpatialResults",
 
 ## Slot getters and setters
 
+# modelData
+
+setMethod("modelData", "SpatialResults",
+	function(object, ...) object@model)
+setReplaceMethod("modelData", "SpatialResults",
+	function(object, ..., value) {
+		object@model <- value
+		if ( validObject(object) )
+			object
+	})
+
 # featureData
 
 setMethod("featureData", "SpatialResults",
