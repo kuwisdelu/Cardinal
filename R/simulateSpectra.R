@@ -53,8 +53,10 @@ simulateSpectrum <- function(...)
 
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-	sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
-	representation = c("profile", "centroid"), units=c("ppm", "mz"),
+	sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
+	representation = c("profile", "centroid"),
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !missing(preset) || !is.null(preset) ) {
@@ -87,7 +89,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		intensity <- as.matrix(fData)
 		runerr <- rnorm(nrow(fData), sd=sdrun)
 		pixelerr <- rnorm(nrow(group), sd=sdpixel)
-		# calculate spatial covariance
+		# calculate spatial autoregressive (SAR) covariance
 		if ( spcorr > 0 ) {
 			W <- as.matrix(spatialWeights(pixelData, r=1, matrix=TRUE))
 			IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
@@ -127,8 +129,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		}
 	}
 	ans <- chunkMapply(FUN, runNames(pixelData), seeds,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 	ans <- do.call("cbind", ans)
 	if ( representation == "centroid" )

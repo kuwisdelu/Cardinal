@@ -27,7 +27,7 @@ setMethod("spatialFastmap", "ANY",
 		}
 	} else {
 		wts <- rep_len(weights, length(neighbors))
-		weights <- "custom"
+		weights <- "user-provided weights"
 	}
 	if ( transpose ) {
 		distfun <- .spatialColDistFun
@@ -64,7 +64,6 @@ setMethod("predict", "SpatialFastmap",
 	function(object, newdata,
 		neighbors = findNeighbors(newdata, r=object$r),
 		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )

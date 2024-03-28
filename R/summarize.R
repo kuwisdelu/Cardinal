@@ -52,15 +52,18 @@ setMethod("colStats", "SpectralImagingExperiment",
 #### Summarization ####
 ## ---------------------
 
-summarizeFeatures <- function(x, stat = "mean",
-	groups = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+summarizeFeatures <- function(x, stat = "mean", groups = NULL,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "FUN" %in% ...names() ) {
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
 	if ( is(x, "MSImagingArrays") ) {
-		x <- convertMSImagingArrays2Experiment(x, BPPARAM=BPPARAM)
+		x <- convertMSImagingArrays2Experiment(x,
+			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
 	} else {
 		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
 	}
@@ -69,8 +72,9 @@ summarizeFeatures <- function(x, stat = "mean",
 	} else {
 		labels <- ifelse(nchar(names(stat)), names(stat), stat)
 	}
-	ans <- rowStats(x, stat=stat, group=groups,
-		simplify=FALSE, BPPARAM=BPPARAM, ...)
+	ans <- rowStats(x, stat=stat, group=groups, simplify=FALSE,
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
 		y <- matter:::drop_attr(ans[[i]])
 		if ( is.array(y) ) {
@@ -83,15 +87,18 @@ summarizeFeatures <- function(x, stat = "mean",
 	x
 }
 
-summarizePixels <- function(x, stat = c(tic="sum"),
-	groups = NULL, BPPARAM = getCardinalBPPARAM(), ...)
+summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "FUN" %in% ...names() ) {
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
 	if ( is(x, "MSImagingArrays") ) {
-		x <- convertMSImagingArrays2Experiment(x, BPPARAM=BPPARAM)
+		x <- convertMSImagingArrays2Experiment(x,
+			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
 	} else {
 		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
 	}
@@ -100,8 +107,9 @@ summarizePixels <- function(x, stat = c(tic="sum"),
 	} else {
 		labels <- ifelse(nchar(names(stat)), names(stat), stat)
 	}
-	ans <- colStats(x, stat=stat, group=groups,
-		simplify=FALSE, BPPARAM=BPPARAM, ...)
+	ans <- colStats(x, stat=stat, group=groups, simplify=FALSE,
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
 		y <- matter:::drop_attr(ans[[i]])
 		if ( is.array(y) ) {

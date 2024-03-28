@@ -2,28 +2,24 @@
 #### Find spatial neighbors ####
 ## -----------------------------
 
-setMethod("findNeighbors", "SpectralImagingData",
-	function(x, r = 1, groups = run(x),
-		metric = "maximum", p = 2, matrix = FALSE, ...)
-{
-	.findNeighbors(coord(x), r=r, groups=groups,
-		metric=metric, p=p, matrix=matrix)
-})
-
-setMethod("findNeighbors", "PositionDataFrame",
-	function(x, r = 1, groups = run(x),
-		metric = "maximum", p = 2, matrix = FALSE, ...)
-{
-	.findNeighbors(coord(x), r=r, groups=groups,
-		metric=metric, p=p, matrix=matrix)
-})
-
 setMethod("findNeighbors", "ANY",
 	function(x, r = 1, groups = NULL,
 		metric = "maximum", p = 2, matrix = FALSE, ...)
 {
 	.findNeighbors(x, r=r, groups=groups,
 		metric=metric, p=p, matrix=matrix)
+})
+
+setMethod("findNeighbors", "SpectralImagingData",
+	function(x, r = 1, groups = run(x), ...)
+{
+	findNeighbors(coord(x), r=r, groups=groups, ...)
+})
+
+setMethod("findNeighbors", "PositionDataFrame",
+	function(x, r = 1, groups = run(x), ...)
+{
+	findNeighbors(coord(x), r=r, groups=groups, ...)
 })
 
 .findNeighbors <- function(x, r, groups, metric, p, matrix)

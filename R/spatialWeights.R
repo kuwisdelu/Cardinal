@@ -2,40 +2,41 @@
 #### Find spatial neighbors ####
 ## -----------------------------
 
-setMethod("spatialWeights", "SpectralImagingExperiment",
-	function(x, r = 1,
-		neighbors = findNeighbors(x, r=r),
-		BPPARAM = getCardinalBPPARAM(), ...)
-{
-	.spatialWeights(spectra(x), neighbors=neighbors,
-		weights="adaptive", sd=NA, byrow=FALSE,
-		matrix=FALSE, BPPARAM=BPPARAM)
-})
-
-setMethod("spatialWeights", "PositionDataFrame",
-	function(x, r = 1,
-		neighbors = findNeighbors(x, r=r),
-		sd = ((2 * r) + 1) / 4, matrix = FALSE, ...)
-{
-	.spatialWeights(as.matrix(coord(x)), neighbors=neighbors,
-		weights="gaussian", sd=sd, byrow=TRUE,
-		matrix=matrix, BPPARAM=NULL)
-})
-
 setMethod("spatialWeights", "ANY",
 	function(x, coord = x, r = 1, byrow = TRUE,
 		neighbors = findNeighbors(coord, r=r),
 		weights = c("gaussian", "adaptive"),
 		sd = ((2 * r) + 1) / 4, matrix = FALSE,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	.spatialWeights(x, neighbors=neighbors,
-		weights=weights, sd=sd, byrow=byrow,
-		matrix=matrix, BPPARAM=BPPARAM)
+		weights=weights, sd=sd, byrow=byrow, matrix=matrix,
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM)
 })
 
-.spatialWeights <- function(x, neighbors,
-	weights, sd, byrow, matrix, BPPARAM)
+setMethod("spatialWeights", "SpectralImagingExperiment",
+	function(x, r = 1,
+		neighbors = findNeighbors(x, r=r), ...)
+{
+	spatialWeights(spectra(x), neighbors=neighbors,
+		weights="adaptive", byrow=FALSE, ...)
+})
+
+setMethod("spatialWeights", "PositionDataFrame",
+	function(x, r = 1,
+		neighbors = findNeighbors(x, r=r),
+		sd = ((2 * r) + 1) / 4, ...)
+{
+	spatialWeights(as.matrix(coord(x)), neighbors=neighbors,
+		weights="gaussian", sd=sd, ...)
+})
+
+.spatialWeights <- function(x,
+	neighbors, weights, sd, byrow, matrix,
+	nchunks, verbose, BPPARAM)
 {
 	weights <- match.arg(weights, c("gaussian", "adaptive"))
 	if ( byrow ) {
@@ -43,8 +44,7 @@ setMethod("spatialWeights", "ANY",
 			ds <- rowdist_at(x, ix=seq_len(nrow(x)), iy=neighbors)
 		} else {
 			ds <- rowDists(x, at=neighbors,
-				nchunks=getCardinalNChunks(),
-				verbose=getCardinalVerbose(),
+				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM)
 		}
 	} else {
@@ -52,8 +52,7 @@ setMethod("spatialWeights", "ANY",
 			ds <- coldist_at(x, ix=seq_len(ncol(x)), iy=neighbors)
 		} else {
 			ds <- colDists(x, at=neighbors,
-				nchunks=getCardinalNChunks(),
-				verbose=getCardinalVerbose(),
+				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM)
 		}
 	}

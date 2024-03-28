@@ -6,46 +6,44 @@ setMethod("PLS", "ANY",
 	function(x, y, ncomp = 3,
 		method = c("nipals", "simpls", "kernel1", "kernel2"),
 		center = TRUE, scale = FALSE,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	method <- match.arg(method)
 	msg <- "projecting to latent structures "
 	if ( method == "nipals" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using NIPALS")
 		ans <- pls_nipals(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
-			verbose=getCardinalVerbose(),
-			nchunks=getCardinalNChunks(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "simpls" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using SIMPLS")
 		ans <- pls_simpls(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
-			verbose=getCardinalVerbose(),
-			nchunks=getCardinalNChunks(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel1" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using SIMPLS")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=1L,
 			center=center, scale.=scale,
-			verbose=getCardinalVerbose(),
-			nchunks=getCardinalNChunks(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel2" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using SIMPLS")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=2L,
 			center=center, scale.=scale,
-			verbose=getCardinalVerbose(),
-			nchunks=getCardinalNChunks(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	} else {
 		stop("unsupported method: ", method)
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("returning projection to latent structures")
 	ans
 })
@@ -53,14 +51,12 @@ setMethod("PLS", "ANY",
 setMethod("PLS", "SpectralImagingExperiment", 
 	function(x, y, ncomp = 3,
 		method = c("nipals", "simpls", "kernel1", "kernel2"),
-		center = TRUE, scale = FALSE,
-		BPPARAM = getCardinalBPPARAM(), ...)
+		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
 	ans <- PLS(spectra(x), y=y, ncomp=ncomp,
-		center=center, scale=scale, transpose=TRUE,
-		BPPARAM=BPPARAM, ...)
+		center=center, scale=scale, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialPLS")
 })
 
@@ -100,18 +96,19 @@ setMethod("predict", "SpatialPLS",
 setMethod("OPLS", "ANY", 
 	function(x, y, ncomp = 3,
 		center = TRUE, scale = FALSE, retx = TRUE,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("preprocessing data to remove orthogonal variation")
 	ans <- opls_nipals(x, y=y, k=max(ncomp),
 		center=center, scale.=scale,
-		verbose=getCardinalVerbose(),
-		nchunks=getCardinalNChunks(),
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	fit <- lapply(setNames(ncomp, paste0("C", ncomp)),
 		function(k) {
-			if ( getCardinalVerbose() ) {
+			if ( verbose ) {
 				label <- if (k != 1L) "components" else "component"
 				message("using data with ", k,
 					" orthogonal ", label, " removed")
@@ -123,8 +120,7 @@ setMethod("OPLS", "ANY",
 			}
 			pls_nipals(xk, y=y, k=1L,
 				center=FALSE, scale.=FALSE,
-				verbose=getCardinalVerbose(),
-				nchunks=getCardinalNChunks(),
+				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM, ...)
 		})
 	nms <- c("coefficients", "residuals", "fitted.values")
@@ -133,21 +129,19 @@ setMethod("OPLS", "ANY",
 	ans[nms] <- fit[[which.max(ncomp)]][nms]
 	if ( !retx )
 		ans$x <- NULL
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("returning projection to latent structures")
 	ans
 })
 
 setMethod("OPLS", "SpectralImagingExperiment", 
 	function(x, y, ncomp = 3,
-		center = TRUE, scale = FALSE, retx = TRUE,
-		BPPARAM = getCardinalBPPARAM(), ...)
+		center = TRUE, scale = FALSE, retx = TRUE, ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
 	ans <- OPLS(spectra(x), y=y, ncomp=ncomp,
-		center=center, scale=scale, transpose=TRUE,
-		BPPARAM=BPPARAM, ...)
+		center=center, scale=scale, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialOPLS")
 })
 

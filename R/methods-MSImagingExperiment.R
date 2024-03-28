@@ -208,7 +208,10 @@ convertMSImagingExperiment2Arrays <- function(object)
 
 convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
-	guess.max = 1000L, BPPARAM = getCardinalBPPARAM(), ...)
+	guess.max = 1000L, tolerance = 0.5 * resolution,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is(object, "MSImagingExperiment") )
 		return(object)
@@ -250,10 +253,9 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			i <- seq(1L, length(object), length.out=guess.max)
 			ref <- ref[i]
 		}
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("estimating centroid m/z-axis from ",
 				guess.max, " sample spectra")
-		tolerance <- 0.5 * resolution
 		ref <- peakAlign(ref, ref=NULL,
 			tolerance=tolerance, units=units,
 			BPPARAM=BPPARAM)
@@ -267,7 +269,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			ref <- ref[mz(ref) < min(mass.range),]
 		if ( any(mz(ref) > max(mass.range)) )
 			ref <- ref[mz(ref) > max(mass.range),]
-		if ( getCardinalVerbose() ) {
+		if ( verbose ) {
 			message("applying centroid m/z-values to all spectra")
 			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
 			message("using tolerance ", tolerance, " ", units)
@@ -284,7 +286,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		}
 		if ( is.null(mass.range) || is.na(resolution) )
 		{
-			if ( getCardinalVerbose() )
+			if ( verbose )
 				message("estimating profile m/z-axis from ",
 					guess.max, " sample spectra")
 			mz <- estimateDomain(mzlist,
@@ -298,7 +300,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			mz <- mz(from=min(mass.range), to=max(mass.range),
 				by=resolution, units=units)
 		}
-		if ( getCardinalVerbose() ) {
+		if ( verbose ) {
 			message("applying profile m/z-values to all spectra")
 			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
 			message("using resolution ", resolution, " ", units)

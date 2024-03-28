@@ -12,19 +12,11 @@ SpatialResults <- function(model, data,
 setMethod("show", "SpatialResults",
 	function(object) {
 		# length
-		cat(class(object), "with", length(object), "components\n")
+		cat(class(object), "on", nrow(featureData(object)), "variables",
+			"and", nrow(pixelData(object)), "observations\n")
 		# names()
 		cat(sprintf("names(%d): %s\n", length(names(object)),
 			.paste_head_tail(names(object))))
-		# featureData()
-		cat(sprintf("featureData(%d): %s\n", length(featureData(object)),
-			.paste_head_tail(names(featureData(object)))))
-		# pixelData()
-		cat(sprintf("pixelData(%d): %s\n", length(pixelData(object)),
-			.paste_head_tail(names(pixelData(object)))))
-		# runNames()
-		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
-			.paste_head_tail(runNames(object))))
 		# coord()
 		if ( length(object) > 0L )
 		{
@@ -33,6 +25,12 @@ setMethod("show", "SpatialResults",
 			cat(sprintf("coord(%d): %s\n", length(coordNames(object)),
 				.paste_head_tail(lims)))
 		}
+		# runNames()
+		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
+			.paste_head_tail(runNames(object))))
+		# modelData()
+		cat("modelData(): ")
+		print(object@model)
 	})
 
 ## Basic getters and setters

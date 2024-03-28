@@ -4,7 +4,9 @@
 
 estimateDomain <- function(xlist,
 	units = c("relative", "absolute"),
-	BPPARAM = getCardinalBPPARAM())
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	units <- match.arg(units)
 	ref <- switch(units, relative="x", absolute="abs")
@@ -14,9 +16,8 @@ estimateDomain <- function(xlist,
 		c(min=min(x), max=max(x), res=res)
 	}
 	ans <- chunkLapply(xlist, FUN,
-		nchunks=getCardinalNChunks(),
-		verbose=getCardinalVerbose(),
-		BPPARAM=BPPARAM)
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM, ...)
 	ans <- do.call(rbind, ans)
 	from <- floor(min(ans[,1L], na.rm=TRUE))
 	to <- ceiling(max(ans[,2L], na.rm=TRUE))

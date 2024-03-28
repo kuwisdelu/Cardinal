@@ -3,7 +3,7 @@
 ## ------------------------------
 
 setMethod("spatialKMeans", "ANY",
-	function(x, coord, r = 1, k = 2, ncomp = 20,
+	function(x, coord, r = 1, k = 2, ncomp = max(k),
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
 		transpose = FALSE, niter = 2L,
@@ -28,7 +28,7 @@ setMethod("spatialKMeans", "ANY",
 		}
 	} else {
 		wts <- rep_len(weights, length(neighbors))
-		weights <- "custom"
+		weights <- "user-provided weights"
 	}
 	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=wts,
@@ -63,7 +63,7 @@ setMethod("spatialKMeans", "ANY",
 })
 
 setMethod("spatialKMeans", "SpectralImagingExperiment", 
-	function(x, r = 1, k = 2, ncomp = 20,
+	function(x, r = 1, k = 2, ncomp = max(k),
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(x, r=r), ...)
 {

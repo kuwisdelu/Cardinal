@@ -17,8 +17,7 @@ setMethod("addProcessing", "SpectralImagingData",
 
 setMethod("process", "MSImagingExperiment",
 	function(object, spectra = "intensity", index = "mz",
-		domain = NULL, outfile = NULL,
-		BPPARAM = getCardinalBPPARAM(), ...)
+		domain = NULL, outfile = NULL, ...)
 {
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
@@ -34,8 +33,7 @@ setMethod("process", "MSImagingExperiment",
 		}, silent=TRUE)
 	}
 	ans <- callNextMethod(object, spectra=spectra, index=index,
-		domain=domain, outfile=outfile,
-		BPPARAM=BPPARAM, ...)
+		domain=domain, outfile=outfile, ...)
 	.postprocess_MSIMagingExperiment(ans, outfile, spectra)
 })
 
@@ -69,8 +67,7 @@ setMethod("process", "MSImagingExperiment",
 
 setMethod("process", "MSImagingArrays",
 	function(object, spectra = "intensity", index = "mz",
-		domain = NULL, outfile = NULL,
-		BPPARAM = getCardinalBPPARAM(), ...)
+		domain = NULL, outfile = NULL, ...)
 {
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
@@ -86,8 +83,7 @@ setMethod("process", "MSImagingArrays",
 		}, silent=TRUE)
 	}
 	ans <- callNextMethod(object, spectra=spectra, index=index,
-		domain=domain, outfile=outfile,
-		BPPARAM=BPPARAM, ...)
+		domain=domain, outfile=outfile, ...)
 	if ( !is.null(domain) ) {
 		ans <- convertMSImagingArrays2Experiment(ans, mz=domain)
 		.postprocess_MSIMagingExperiment(ans, outfile, spectra)
@@ -124,13 +120,13 @@ setMethod("process", "SpectralImagingExperiment",
 	if ( length(processingData(object)) == 0L )
 		return(object)
 	ps <- processingData(object)
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("processing ", paste0(names(ps), collapse=", "))
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
 		put <- matter:::chunk_writer(pid, outfile)
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("writing output to path = ", sQuote(outfile))
 	}
 	xnm <- spectra
@@ -253,13 +249,13 @@ setMethod("process", "SpectralImagingArrays",
 	if ( length(processingData(object)) == 0L )
 		return(object)
 	ps <- processingData(object)
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("processing ", paste0(names(ps), collapse=", "))
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
 		put <- matter:::chunk_writer(pid, outfile)
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("writing output to path = ", sQuote(outfile))
 	}
 	xnm <- spectra

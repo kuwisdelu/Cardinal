@@ -59,7 +59,8 @@ setMethod("bin", "SpectralImagingExperiment",
 		spectra = "intensity", index = NULL,
 		method = c("sum", "mean", "max", "min",
 			"linear", "cubic", "gaussian", "lanczos"),
-		resolution = NA, units = c("relative", "absolute"), ...)
+		resolution = NA, units = c("relative", "absolute"),
+		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
 	units <- match.arg(units)
@@ -104,7 +105,7 @@ setMethod("bin", "SpectralImagingExperiment",
 	}
 	from <- round(min(ref), digits=4L)
 	to <- round(max(ref), digits=4L)
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("binned ", xnm, " from ", tnm, " ", from, " to ", to,
 			" with ", units, " resolution ", round(res, digits=6L))
 	if ( method %in% c("sum", "mean", "max", "min") ) {
@@ -131,7 +132,8 @@ setMethod("bin", "SpectralImagingArrays",
 		spectra = "intensity", index = NULL,
 		method = c("sum", "mean", "max", "min",
 			"linear", "cubic", "gaussian", "lanczos"),
-		resolution = NA, units = c("relative", "absolute"), ...)
+		resolution = NA, units = c("relative", "absolute"),
+		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
 	units <- match.arg(units)
@@ -165,7 +167,7 @@ setMethod("bin", "SpectralImagingArrays",
 	}
 	from <- round(min(ref), digits=4L)
 	to <- round(max(ref), digits=4L)
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("binned ", xnm, " from ", tnm, " ", from, " to ", to,
 			" with ", units, " resolution ", round(res, digits=6L))
 	if ( method %in% c("sum", "mean", "max", "min") ) {

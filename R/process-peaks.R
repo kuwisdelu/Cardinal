@@ -8,8 +8,9 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
 		SNR = 2, type = c("height", "area"),
 		tolerance = NA, units = c("ppm", "mz"),
-		sampleSize = Inf, filterFreq = TRUE,
-		outfile = NULL,
+		sampleSize = Inf, filterFreq = TRUE, outfile = NULL,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is.finite(sampleSize) )
@@ -23,30 +24,35 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		} else {
 			stop("'sampleSize' must be positive")
 		}
-		if ( getCardinalVerbose() ) {
+		if ( verbose ) {
 			label <- if (n != 1L) "spectra" else "spectrum"
 			message("processing peaks for ", n, " ", label, " ",
 				"(~", prop, "% of data)")
 		}
 		i <- seq.default(1L, length(object), length.out=n)
 		ref <- peakProcess(object[i],
-			spectra=spectra, index=index, method=method,
-			SNR=SNR, type=type, tolerance=tolerance, units=units,
-			filterFreq=filterFreq, BPPARAM=BPPARAM, ...)
-		if ( getCardinalVerbose() )
+			spectra=spectra, index=index,
+			method=method, SNR=SNR, type=type,
+			tolerance=tolerance, units=units, filterFreq=filterFreq,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...)
+		if ( verbose )
 			message("extracting reference peaks from all spectra")
 		object <- peakPick(object, ref=mz(ref),
 			tolerance=tolerance, units=units, type=type)
 		object <- process(object,
 			spectra=spectra, index=index,
 			domain=mz(ref), outfile=outfile,
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 		featureData(object) <- featureData(ref)
 	} else {
 		object <- peakPick(object, method=method,
 			tolerance=tolerance, units=units, SNR=SNR, type=type)
-		object <- peakAlign(object, spectra=spectra, index=index,
+		object <- peakAlign(object,
+			spectra=spectra, index=index,
 			tolerance=tolerance, units=units, outfile=outfile,
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 		if ( isTRUE(filterFreq) || filterFreq > 0 ) {
 			if ( is.numeric(filterFreq) ) {
@@ -60,12 +66,12 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			} else {
 				n <- 1L
 			}
-			if ( getCardinalVerbose() )
+			if ( verbose )
 				message("filtering to remove peaks with counts < ", n)
 			object <- object[featureData(object)[["count"]] > n,]
 		}
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("processed to ", nrow(object), " peaks")
 	if ( validObject(object) )
 		object
@@ -196,8 +202,7 @@ setMethod("peakPick", "SpectralImagingData",
 setMethod("peakAlign", "MSImagingExperiment",
 	function(object, ref,
 		spectra = "intensity", index = "mz",
-		tolerance = NA, units = c("ppm", "mz"),
-		BPPARAM = getCardinalBPPARAM(), ...)
+		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
@@ -205,7 +210,7 @@ setMethod("peakAlign", "MSImagingExperiment",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(object, ref=ref, spectra=spectra, index=index,
-		tolerance=tolerance, units=units, BPPARAM=BPPARAM)
+		tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -217,8 +222,7 @@ setMethod("peakAlign", "MSImagingExperiment",
 setMethod("peakAlign", "MSImagingArrays",
 	function(object, ref,
 		spectra = "intensity", index = "mz",
-		tolerance = NA, units = c("ppm", "mz"),
-		BPPARAM = getCardinalBPPARAM(), ...)
+		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
@@ -226,7 +230,7 @@ setMethod("peakAlign", "MSImagingArrays",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(object, ref=ref, spectra=spectra, index=index,
-		tolerance=tolerance, units=units, BPPARAM=BPPARAM)
+		tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -239,10 +243,13 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 	function(object, ref,
 		spectra = "intensity", index = NULL,
 		tolerance = NA, units = c("relative", "absolute"),
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
 		object <- process(object, spectra=spectra, index=index,
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	units <- match.arg(units)
 	xnm <- spectra
@@ -263,12 +270,13 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		stop("nothing to align for spectra ", sQuote(xnm), "; ",
 			"has peakPick() been used?")
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("detected ~", round(mean(lengths(index)), digits=1L),
 			" peaks per spectrum")
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, xname=xnm, tname=tnm,
 		tolerance=tolerance, units=units,
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 })
 
@@ -276,10 +284,13 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	function(object, ref,
 		spectra = "intensity", index = NULL,
 		tolerance = NA, units = c("relative", "absolute"),
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
 		object <- process(object, spectra=spectra, index=index,
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	units <- match.arg(units)
 	xnm <- spectra
@@ -293,13 +304,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		if ( is.null(index) )
 			stop("index ", sQuote(tnm), " not found")
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("detected ~", round(mean(lengths(index)), digits=1L),
 			" peaks per spectrum")
 	if ( missing(ref) || is.null(ref) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("generating reference peaks")
-		domain <- estimateDomain(index, units=units, BPPARAM=BPPARAM)
+		domain <- estimateDomain(index, units=units,
+			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
 		if ( !is.na(tolerance) ) {
 			resolution <- 2 * tolerance
 			domain <- switch(units,
@@ -312,11 +324,13 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, xname=xnm, tname=tnm,
 		tolerance=tolerance, units=units,
+		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 })
 
 .peakAlign <- function(object, ref, spectra, index,
-	domain, xname, tname, tolerance, units, BPPARAM)
+	domain, xname, tname, tolerance, units,
+	nchunks, verbose, BPPARAM)
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(tolerance) ) {
@@ -328,15 +342,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		tol <- setNames(unname(tolerance), units)
 	}
 	if ( missing(ref) || is.null(ref) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("binning peaks to reference")
 		FUN <- function(x) {
 			matter::binpeaks(x, domain=domain, tol=tol, tol.ref=tol.ref,
 				merge=FALSE, na.drop=FALSE)
 		}
 		peaks <- chunk_lapply(index, FUN, simplify=matter::stat_c,
-			nchunks=getCardinalNChunks(),
-			verbose=getCardinalVerbose(),
+			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM)
 		peaks <- peaks[!is.na(peaks)]
 		peaks <- mergepeaks(peaks, tol=tol, tol.ref=tol.ref)
@@ -345,7 +358,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	} else {
 		n <- NULL
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("aligned to ", length(ref),
 			" reference peaks with ", units,
 				" tolerance ", tol)

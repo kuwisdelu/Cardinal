@@ -4,22 +4,18 @@
 
 setMethod("spectrapply", "MSImagingExperiment",
 	function(object, FUN, ...,
-		spectra = "intensity", index = "mz",
-		BPPARAM = getCardinalBPPARAM())
+		spectra = "intensity", index = "mz")
 	{
 		callNextMethod(object, FUN=FUN, ...,
-			spectra=spectra, index=index,
-			BPPARAM=BPPARAM)
+			spectra=spectra, index=index)
 	})
 
 setMethod("spectrapply", "MSImagingArrays",
 	function(object, FUN, ...,
-		spectra = "intensity", index = "mz",
-		BPPARAM = getCardinalBPPARAM())
+		spectra = "intensity", index = "mz")
 	{
 		callNextMethod(object, FUN=FUN, ...,
-			spectra=spectra, index=index,
-			BPPARAM=BPPARAM)
+			spectra=spectra, index=index)
 	})
 
 setMethod("spectrapply", "SpectralImagingExperiment",

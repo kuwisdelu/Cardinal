@@ -19,7 +19,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
 		if ( weights == "adaptive" )
 		{
-			if ( getCardinalVerbose() )
+			if ( verbose )
 				message("calculating adaptive weights")
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
@@ -29,7 +29,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 		}
 	} else {
 		wts <- rep_len(weights, length(neighbors))
-		weights <- "custom"
+		weights <- "user-provided weights"
 	}
 	# calculate global centroid
 	if ( is.null(center) ) {
@@ -110,7 +110,6 @@ setMethod("predict", "SpatialShrunkenCentroids",
 		type = c("response", "class"),
 		neighbors = findNeighbors(newdata, r=object$r),
 		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
@@ -222,7 +221,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 				y <- droplevels(fit$class)
 				if ( nlevels(fit$class) < nlevels(y) )
 				{
-					if ( getCardinalVerbose() )
+					if ( verbose )
 						message("# of clusters dropped to ", nlevels(y))
 					y <- factor(as.integer(y))
 				} else {

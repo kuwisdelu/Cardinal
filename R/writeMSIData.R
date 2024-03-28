@@ -19,15 +19,16 @@ writeMSIData <- function(object, file, ...)
 ## --------------------------
 
 setMethod("writeImzML", "MSImagingExperiment_OR_Arrays", 
-	function(object, file, bundle = TRUE, ...)
+	function(object, file, bundle = TRUE,
+		verbose = getCardinalVerbose(), ...)
 	{
 		path <- normalizePath(file, mustWork=FALSE)
 		if ( bundle ) {
 			if ( ok <- dir.exists(path) ) {
-				if ( getCardinalVerbose() )
+				if ( verbose )
 					message("using bundle directory: ", sQuote(path))
 			} else {
-				if ( getCardinalVerbose() )
+				if ( verbose )
 					message("creating bundle directory: ", sQuote(path))
 				ok <- dir.create(path)
 				if ( !ok )
@@ -48,8 +49,8 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 			}
 		}
 		experimentData(object) <- e
-		ok <- .write_imzML(object, path=path, ...)
-		if ( getCardinalVerbose() ) {
+		ok <- .write_imzML(object, path=path, verbose=verbose, ...)
+		if ( verbose ) {
 			if ( bundle )
 				message("output bundle directory: ", sQuote(dirname(path)))
 			message("done.")
@@ -57,7 +58,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		invisible(ok)
 	})
 
-.write_imzML <- function(object, path,
+.write_imzML <- function(object, path, verbose,
 	positions = NULL, mz = NULL, intensity = NULL, ...)
 {
 	if ( is.null(positions) )
@@ -71,12 +72,12 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	} else {
 		format <- "processed"
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("writing ", sQuote(format), " imzML file: ", sQuote(path))
 	ok <- CardinalIO::writeImzML(experimentData(object), file=path,
 		positions=positions, mz=mz, intensity=intensity, ...)
 	if ( ok ) {
-		if ( getCardinalVerbose() ) {
+		if ( verbose ) {
 			outpath <- attr(ok, "outpath")
 			message("wrote file: ", sQuote(basename(outpath[1L])))
 			message("wrote file: ", sQuote(basename(outpath[2L])))
@@ -84,12 +85,12 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	} else {
 		stop("failed to write imzML")
 	}
-	.write_featureData(object, path)
-	.write_pixelData(object, path)
+	.write_featureData(object, path, verbose)
+	.write_pixelData(object, path, verbose)
 	invisible(ok)
 }
 
-.write_pixelData <- function(object, path)
+.write_pixelData <- function(object, path, verbose)
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".pdata")
 	vars <- setdiff(spectraVariables(object), coordNames(object))
@@ -97,19 +98,19 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		if ( file.exists(path) )
 			warning("file ", sQuote(path), " already exists and will be overwritten")
 		write.table(pixelData(object)[vars], file=path)
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("wrote file: ", sQuote(basename(path)))
 	}
 }
 
-.write_featureData <- function(object, path)
+.write_featureData <- function(object, path, verbose)
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".fdata")
 	if ( is(object, "MSImagingExperiment") && length(featureData(object)) > 1L ) {
 		if ( file.exists(path) )
 			warning("file ", sQuote(path), " already exists and will be overwritten")
 		write.table(featureData(object), file=path)
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("wrote file: ", sQuote(basename(path)))
 	}
 }
@@ -119,28 +120,28 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 ## --------------------------------
 
 setMethod("writeAnalyze", "MSImagingExperiment", 
-	function(object, file, ...)
+	function(object, file, verbose = getCardinalVerbose(), ...)
 	{
-		.write_Analyze(spectra(object), file=file,
+		.write_Analyze(spectra(object), file=file, verbose=verbose,
 			positions=coord(object), domain=mz(object), ...)
 	})
 
 setMethod("writeAnalyze", "SpectralImagingExperiment", 
-	function(object, file, ...)
+	function(object, file, verbose = getCardinalVerbose(), ...)
 	{
-		.write_Analyze(spectra(object), file=file,
+		.write_Analyze(spectra(object), file=file, verbose=verbose,
 			positions=coord(object), ...)
 	})
 
-.write_Analyze <- function(x, file, positions, domain, ...)
+.write_Analyze <- function(x, file, verbose, positions, domain, ...)
 {
 	path <- normalizePath(file, mustWork=FALSE)
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("writing Analyze 7.5 file: ", sQuote(file))
 	ok <- CardinalIO::writeAnalyze(x, file=file,
 		positions=positions, domain=domain, ...)
 	if ( ok ) {
-		if ( getCardinalVerbose() ) {
+		if ( verbose ) {
 			outpath <- attr(ok, "outpath")
 			message("wrote file: ", sQuote(basename(outpath[1L])))
 			message("wrote file: ", sQuote(basename(outpath[2L])))

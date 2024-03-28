@@ -18,6 +18,8 @@ getCardinalBPPARAM <- function() {
 	getOption("Cardinal.bpparam")
 }
 setCardinalBPPARAM <- function(BPPARAM = NULL) {
+	if ( !is.null(BPPARAM) && !is(BPPARAM, "BiocParallelParam") )
+		stop("BPPARAM must be a BiocParallelParam instance or NULL")
 	options("Cardinal.bpparam" = BPPARAM)
 }
 
@@ -26,6 +28,9 @@ getCardinalVerbose <- function() {
 	getOption("Cardinal.verbose")
 }
 setCardinalVerbose <- function(verbose = interactive()) {
+	verbose <- as.logical(verbose)
+	if ( !isTRUE(verbose) && !isFALSE(verbose) )
+		stop("verbose must be a single logical value")
 	options("Cardinal.verbose" = verbose)
 }
 
@@ -33,8 +38,11 @@ setCardinalVerbose <- function(verbose = interactive()) {
 getCardinalNChunks <- function() {
 	getOption("Cardinal.nchunks")
 }
-setCardinalNChunks <- function(n = 20L) {
-	options("Cardinal.nchunks" = n)
+setCardinalNChunks <- function(nchunks = 20L) {
+	nchunks <- as.integer(nchunks)
+	if ( !isTRUE(nchunks > 0L) || length(nchunks) != 1L )
+		stop("nchunks must be a single positive integer")
+	options("Cardinal.nchunks" = nchunks)
 }
 
 #### Parallel RNG ####

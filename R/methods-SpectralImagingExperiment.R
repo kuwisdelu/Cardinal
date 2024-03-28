@@ -75,9 +75,6 @@ setMethod("show", "SpectralImagingExperiment",
 		# pixelData()
 		cat(sprintf("pixelData(%d): %s\n", length(pixelData(object)),
 			.paste_head_tail(names(pixelData(object)))))
-		# runNames()
-		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
-			.paste_head_tail(runNames(object))))
 		# coord()
 		if ( length(object) > 0L )
 		{
@@ -86,6 +83,9 @@ setMethod("show", "SpectralImagingExperiment",
 			cat(sprintf("coord(%d): %s\n", length(coordNames(object)),
 				.paste_head_tail(lims)))
 		}
+		# runNames()
+		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
+			.paste_head_tail(runNames(object))))
 		# processingData()
 		.print_pending_processing(object)
 		# metadata()
@@ -357,6 +357,14 @@ setMethod("show", "SpectralImagingArrays",
 		# pixelData()
 		cat(sprintf("pixelData(%d): %s\n", length(pixelData(object)),
 			.paste_head_tail(names(pixelData(object)))))
+		# coord()
+		if ( length(object) > 0L )
+		{
+			lims <- vapply(coord(object), range, numeric(2L))
+			lims <- paste0(coordNames(object), " = ", lims[1L,], "...", lims[2L,])
+			cat(sprintf("coord(%d): %s\n", length(coordNames(object)),
+				.paste_head_tail(lims)))
+		}
 		# runNames()
 		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
 			.paste_head_tail(runNames(object))))

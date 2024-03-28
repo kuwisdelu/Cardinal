@@ -21,6 +21,8 @@ readMSIData <- function(file, ...)
 readImzML <- function(file, memory = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, as = "auto", parse.only=FALSE,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "name" %in% ...names() )
@@ -42,14 +44,14 @@ readImzML <- function(file, memory = FALSE,
 		}
 	}
 	if ( isTRUE(file.info(path)$isdir) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("detected bundle directory: ", sQuote(path))
 		path <- file.path(path, basename(path))
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("parsing imzML file: ", sQuote(path))
 	ans <- .read_imzML(path, parse.only=parse.only)
-	if ( getCardinalVerbose() ) {
+	if ( verbose ) {
 		if ( isTRUE(ans@continuous) )
 			message("detected 'continuous' imzML")
 		if ( isFALSE(ans@continuous) )
@@ -61,23 +63,25 @@ readImzML <- function(file, memory = FALSE,
 	}
 	if ( parse.only )
 		return(ans)
-	ans <- .read_featureData(ans, path)
-	ans <- .read_pixelData(ans, path)
+	ans <- .read_featureData(ans, path, verbose)
+	ans <- .read_pixelData(ans, path, verbose)
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || 
 		(as == "auto" && isTRUE(ans@continuous)) ||
 		(!is.null(mass.range) || !is.na(resolution)) )
 	{
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("creating MSImagingExperiment")
 		ans <- convertMSImagingArrays2Experiment(ans,
 			mass.range=mass.range, resolution=resolution,
-			units=units, guess.max=guess.max, BPPARAM=BPPARAM)
+			units=units, guess.max=guess.max,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM)
 	}
 	if ( as == "MSImagingArrays" )
 		ans <- convertMSImagingExperiment2Arrays(ans)
 	if ( memory ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("loading spectra into memory")
 		if ( is(ans, "MSImagingArrays") ) {
 			mz(ans) <- as.list(mz(ans))
@@ -91,7 +95,7 @@ readImzML <- function(file, memory = FALSE,
 			}
 		}
 	}
-	if ( getCardinalVerbose() ) {
+	if ( verbose ) {
 		message("returning ", class(ans))
 		message("done.")
 	}
@@ -141,11 +145,11 @@ readImzML <- function(file, memory = FALSE,
 		continuous=continuous)
 }
 
-.read_pixelData <- function(object, path)
+.read_pixelData <- function(object, path, verbose)
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".pdata")
 	if ( file.exists(path) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("detected file: ", sQuote(basename(path)))
 		pdata <- read.table(path)
 		run <- pdata[["run"]]
@@ -157,11 +161,11 @@ readImzML <- function(file, memory = FALSE,
 	object
 }
 
-.read_featureData <- function(object, path)
+.read_featureData <- function(object, path, verbose)
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".fdata")
 	if ( file.exists(path) ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("detected file: ", sQuote(basename(path)))
 		fdata <- read.table(path)
 		if ( is(object, "MSImagingArrays") ) {
@@ -190,7 +194,8 @@ readImzML <- function(file, memory = FALSE,
 #### Read Analyze 7.5 file(s) ####
 ## -------------------------------
 
-readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
+readAnalyze <- function(file, memory = FALSE, as = "auto",
+	verbose = getCardinalVerbose(), ...)
 {
 	if ( "name" %in% ...names() )
 		.Deprecated(old="name", new="file")
@@ -210,18 +215,18 @@ readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
 			path <- normalizePath(paste0(file, ".imzML"))
 		}
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("parsing Analyze file: '", path, "'")
 	ans <- .read_Analyze(path)
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || as == "auto" )
 	{
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("creating MSImagingExperiment")
 		ans <- convertMSImagingArrays2Experiment(ans)
 	}
 	if ( memory ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message("loading spectra into memory")
 		if ( is(ans, "MSImagingArrays") ) {
 			mz(ans) <- as.list(mz(ans))
@@ -235,7 +240,7 @@ readAnalyze <- function(file, memory = FALSE, as = "auto", ...)
 			}
 		}
 	}
-	if ( getCardinalVerbose() ) {
+	if ( verbose ) {
 		message("returning ", class(ans))
 		message("done.")
 	}
