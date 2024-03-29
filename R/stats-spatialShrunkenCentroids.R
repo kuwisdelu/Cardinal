@@ -187,7 +187,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 			nchunks=nchunks, verbose=FALSE,
 			BPPARAM=BPPARAM, ...)
 	}
-	if ( is(init, "SpatialKMeans") )
+	if ( length(k) == 1L )
 		init <- list(init)
 	# iterate over parameters
 	i <- 1
@@ -217,15 +217,15 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 				if ( verbose )
 					message("clustering iteration ", iter, ": ",
 						utot, " cluster assignments updated (",
-						100 * (1 - uprop), "% complete)")
+						round(100 * (1 - uprop), digits=2L), "% complete)")
 				y <- droplevels(fit$class)
-				if ( nlevels(fit$class) < nlevels(y) )
+				if ( nlevels(y) < nlevels(fit$class) )
 				{
 					if ( verbose )
-						message("# of clusters dropped to ", nlevels(y))
+						message("clustering iteration ", iter, ": ",
+							"number of clusters dropped from ",
+							nlevels(fit$class), " to ", nlevels(y))
 					y <- factor(as.integer(y))
-				} else {
-					y <- fit$class
 				}
 				iter <- iter + 1L
 			}

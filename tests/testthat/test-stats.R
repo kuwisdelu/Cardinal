@@ -147,6 +147,14 @@ test_that("spatialShrunkenCentroids (classification)", {
 	expect_equal(fitted(ssc[[1L]], "class"), pred)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
 
+	set.seed(3)
+	s$one <- rep.int(factor("one"), length(s))
+	ssc3 <- spatialShrunkenCentroids(s, s$one, s=3)
+
+	expect_equal(ssc3$class, as.factor(s$one))
+	expect_true(all(ssc3$statistic == 0))
+	expect_equivalent(ssc3$centers, rowMeans(spectra(s)))
+
 })
 
 test_that("spatialShrunkenCentroids (clustering)", {
@@ -173,6 +181,32 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	expect_is(ssc2[[1L]], "SpatialShrunkenCentroids")
 	expect_equal(fitted(ssc[[1L]], "class"), pred)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
+
+	set.seed(3)
+	ssc3 <- spatialShrunkenCentroids(s, k=1, s=0)
+
+	expect_setequal(ssc3$class, factor(1L))
+	expect_true(all(ssc3$statistic == 0))
+	expect_equivalent(ssc3$centers, rowMeans(spectra(s)))
+
+	set.seed(4)
+	ssc4 <- spatialShrunkenCentroids(s, k=4, s=12)
+
+	expect_lte(nlevels(ssc3$class), 4)
+
+	set.seed(5)
+	coord <- expand.grid(x=1:9, y=1:9)
+	n <- nrow(coord)
+	p <- 10
+	x <- matrix(rnorm(n * p), nrow=p, ncol=n)
+	s2 <- SpectralImagingExperiment(x,
+		pixelData=PositionDataFrame(coord))
+	ssc5 <- spatialShrunkenCentroids(s2, k=5, s=0)
+
+	expect_lte(nlevels(ssc5$class), 5)
+
+	set.seed(6)
+	expect_warning(spatialShrunkenCentroids(s2, k=6, s=12))
 
 })
 
