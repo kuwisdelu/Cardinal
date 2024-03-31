@@ -78,12 +78,9 @@ simulateImage <- function(pixelData, featureData, preset,
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	domain <- mz(from=from, to=to, by=by, units=units)
-	seeds <- RNGStreams(nlevels(run(pixelData)))
-	FUN <- function(irun, iseed) {
-		# set up RNG streams
-		oseed <- getRNGStream()
-		on.exit(setRNGStream(oseed))
-		setRNGStream(iseed)
+	seeds <- RNGStreams(nrun(pixelData))
+	FUN <- function(irun)
+	{
 		# extract run information
 		group <- as.matrix(pData[irun == run(pixelData),,drop=FALSE])
 		intensity <- as.matrix(fData)
@@ -128,8 +125,8 @@ simulateImage <- function(pixelData, featureData, preset,
 				centroided=TRUE)
 		}
 	}
-	ans <- chunkMapply(FUN, runNames(pixelData), seeds,
-		nchunks=nchunks, verbose=verbose,
+	ans <- chunkMapply(FUN, runNames(pixelData),
+		nchunks=nchunks, verbose=verbose, seeds=seeds,
 		BPPARAM=BPPARAM)
 	ans <- do.call("cbind", ans)
 	if ( representation == "centroid" )

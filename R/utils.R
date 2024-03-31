@@ -45,47 +45,6 @@ setCardinalNChunks <- function(nchunks = 20L) {
 	options("Cardinal.nchunks" = nchunks)
 }
 
-#### Parallel RNG ####
-## --------------------
-
-## generate parallel-safe RNG streams
-RNGStreams <- function(n = 1)
-{
-	seeds <- vector("list", n)
-	s <- getRNGStream()
-	if ( !is.null(s) )
-	{
-		if ( "L'Ecuyer-CMRG" %in% RNGkind() ) {
-			for ( i in seq_len(n) ) {
-				s <- nextRNGStream(s)
-				seeds[[i]] <- s
-			}
-		} else {
-			for ( i in seq_len(n) )
-				seeds[[i]] <- s
-		}
-	}
-	seeds
-}
-
-## get the current .Random.seed
-getRNGStream <- function(e = globalenv())
-{
-	if ( exists(".Random.seed", envir=e) ) {
-		get(".Random.seed", envir=e)
-	} else {
-		NULL
-	}
-}
-
-## set .Random.seed
-setRNGStream <- function(seed = NULL, e = globalenv())
-{
-	if ( !is.null(seed) && is.integer(seed) )
-		assign(".Random.seed", seed, envir=e)
-}
-
-
 ## Mass utilities
 
 seq_mz <- function(from, to, by, units = c("ppm", "mz"))

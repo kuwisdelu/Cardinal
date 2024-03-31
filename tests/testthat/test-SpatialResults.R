@@ -16,7 +16,7 @@ test_that("SpatialResults and ResultsList", {
 	Coord <- expand.grid(x=1:9, y=1:9)
 	n <- nrow(Coord)
 	pdf <- PositionDataFrame(coord=Coord, A=seq_len(n), B=rev(seq_len(n)))
-	sr <- SpatialResults(fit1, featureData.=mdf, pixelData.=pdf)
+	sr <- SpatialResults(fit1, featureData=mdf, pixelData=pdf)
 
 	expect_equal(length(sr), length(fit1))
 	expect_equal(names(sr), names(fit1))

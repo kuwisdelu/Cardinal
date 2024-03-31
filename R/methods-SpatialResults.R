@@ -3,10 +3,11 @@
 ## ---------------------
 
 SpatialResults <- function(model, data,
-	featureData. = featureData(data), pixelData. = pixelData(data))
+	featureData = if (!missing(data)) fData(data) else NULL,
+	pixelData = if (!missing(data)) pData(data) else NULL)
 {
 	new("SpatialResults", model=model,
-		featureData=featureData., pixelData=pixelData.)
+		featureData=featureData, pixelData=pixelData)
 }
 
 setMethod("show", "SpatialResults",

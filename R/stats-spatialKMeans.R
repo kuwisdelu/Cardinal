@@ -30,6 +30,11 @@ setMethod("spatialKMeans", "ANY",
 		wts <- rep_len(weights, length(neighbors))
 		weights <- "user-provided weights"
 	}
+	if ( transpose ) {
+		k <- pmin(k, nrow(x))
+	} else {
+		k <- pmin(k, ncol(x))
+	}
 	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=wts,
 		transpose=transpose, niter=niter,
@@ -45,7 +50,7 @@ setMethod("spatialKMeans", "ANY",
 			centers <- k[i]
 		}
 		if ( verbose )
-			message("fitting k-means for  k = ", k[i])
+			message("fitting k-means for k = ", k[i])
 		ans[[i]] <- kmeans(proj$x, centers=centers, ...)
 		ans[[i]]$weights <- weights
 		ans[[i]]$ncomp <- ncomp
@@ -55,8 +60,8 @@ setMethod("spatialKMeans", "ANY",
 	if ( verbose )
 		message("returning spatial k-means")
 	if ( length(ans) > 1L ) {
-		mcols <- DataFrame(r=r, k=k, weights=weights, ncomp=ncomp)
-		ResultsList(ans, mcols=mcols)
+		ResultsList(ans,
+			mcols=DataFrame(r=r, k=k, weights=weights, ncomp=ncomp))
 	} else {
 		ans[[1L]]
 	}
@@ -72,11 +77,11 @@ setMethod("spatialKMeans", "SpectralImagingExperiment",
 	ans <- spatialKMeans(spectra(x),
 		coord=coord(x), r=r, k=k, ncomp=ncomp,
 		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
+	f <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
 	if ( is(ans, "ResultsList") ) {
-		f <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
 		ResultsList(lapply(ans, f), mcols=mcols(ans))
 	} else {
-		as(SpatialResults(ans, x), "SpatialKMeans")
+		f(ans)
 	}
 })
 

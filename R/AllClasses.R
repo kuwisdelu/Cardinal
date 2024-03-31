@@ -72,7 +72,7 @@ setClass("SpatialResults",
 	contains = "Annotated",
 	slots = c(
 		model = "ANY",
-		featureData = "DataFrame",
+		featureData = "DataFrame_OR_NULL",
 		pixelData = "PositionDataFrame"))
 
 setClass("SpatialNMF", contains="SpatialResults")
@@ -82,5 +82,5 @@ setClass("SpatialOPLS", contains="SpatialResults")
 setClass("SpatialFastmap", contains="SpatialResults")
 setClass("SpatialKMeans", contains="SpatialResults")
 setClass("SpatialShrunkenCentroids", contains="SpatialResults")
-
+setClass("SpatialDGMM", contains="SpatialResults")
 

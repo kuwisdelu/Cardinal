@@ -210,3 +210,37 @@ test_that("spatialShrunkenCentroids (clustering)", {
 
 })
 
+test_that("spatialDGMM", {
+
+	set.seed(1)
+	s <- simulateImage(preset=2, dim=c(10L, 10L),
+		representation="centroid")
+
+	set.seed(2)
+	gm <- spatialDGMM(s, k=4, weights="gaussian")
+	gm2 <- spatialDGMM(s, k=4, weights="adaptive")
+
+	expect_true(validObject(gm))
+	expect_true(validObject(gm2))
+	expect_is(gm, "SpatialDGMM")
+	expect_is(gm2, "SpatialDGMM")
+	expect_length(gm$class, nrow(s))
+	expect_length(gm2$class, nrow(s))
+	expect_is(gm$class[[1L]], "drle_fct")
+	expect_is(gm2$class[[1L]], "drle_fct")
+	expect_setequal(as.factor(gm$class[[1L]]), factor(1:4))
+	expect_setequal(as.factor(gm2$class[[1L]]), factor(1:4))
+
+	set.seed(3)
+	i <- seq_len(15)
+	gm3 <- spatialDGMM(s, i=i, r=2, k=3:5)
+
+	expect_is(gm3, "ResultsList")
+	expect_length(gm3, 3L)
+	expect_length(gm3[[1L]]$class, length(i))
+	expect_setequal(as.factor(gm3[[1L]]$class[[1L]]), factor(1:5))
+	expect_setequal(as.factor(gm3[[2L]]$class[[1L]]), factor(1:4))
+	expect_setequal(as.factor(gm3[[3L]]$class[[1L]]), factor(1:3))
+
+})
+

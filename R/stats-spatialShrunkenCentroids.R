@@ -66,8 +66,8 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	if ( verbose )
 		message("returning shrunken centroids classification")
 	if ( length(ans) > 1L ) {
-		mcols <- DataFrame(r=r, s=s, weights=weights)
-		ResultsList(ans, mcols=mcols)
+		ResultsList(ans,
+			mcols=DataFrame(r=r, s=s, weights=weights))
 	} else {
 		ans[[1L]]
 	}
@@ -239,8 +239,8 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 	if ( length(ans) > 1L ) {
 		s <- vapply(ans, function(a) a$s, numeric(1L))
 		k <- vapply(ans, function(a) a$k, numeric(1L))
-		mcols <- DataFrame(r=r, k=k, s=s, weights=weights)
-		ResultsList(ans, mcols=mcols)
+		ResultsList(ans,
+			mcols=DataFrame(r=r, k=k, s=s, weights=weights))
 	} else {
 		ans[[1L]]
 	}
@@ -256,11 +256,11 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "mi
 	ans <- spatialShrunkenCentroids(spectra(x),
 		coord=coord(x), r=r, k=k, s=s, neighbors=neighbors,
 		weights=weights, transpose=TRUE, ...)
+	f <- function(a) as(SpatialResults(a, x), "SpatialShrunkenCentroids")
 	if ( is(ans, "ResultsList") ) {
-		f <- function(a) as(SpatialResults(a, x), "SpatialShrunkenCentroids")
 		ResultsList(lapply(ans, f), mcols=mcols(ans))
 	} else {
-		as(SpatialResults(ans, x), "SpatialShrunkenCentroids")
+		f(ans)
 	}
 })
 
