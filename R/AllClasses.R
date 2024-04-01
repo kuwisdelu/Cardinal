@@ -83,4 +83,6 @@ setClass("SpatialFastmap", contains="SpatialResults")
 setClass("SpatialKMeans", contains="SpatialResults")
 setClass("SpatialShrunkenCentroids", contains="SpatialResults")
 setClass("SpatialDGMM", contains="SpatialResults")
+setClass("MeansTest", contains="ResultsList")
+setClass("SegmentationTest", contains="ResultsList")
 

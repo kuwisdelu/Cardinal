@@ -11,6 +11,10 @@ setMethod("spatialKMeans", "ANY",
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "method" %in% ...names() ) {
+		.Deprecated(old="method", new="weights")
+		weights <- list(...)$method
+	}
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
 		if ( verbose )

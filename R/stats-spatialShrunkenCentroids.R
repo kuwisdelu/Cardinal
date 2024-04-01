@@ -11,6 +11,10 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "method" %in% ...names() ) {
+		.Deprecated(old="method", new="weights")
+		weights <- list(...)$method
+	}
 	y <- as.factor(y)
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
@@ -144,6 +148,10 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "method" %in% ...names() ) {
+		.Deprecated(old="method", new="weights")
+		weights <- list(...)$method
+	}
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
 		if ( verbose )

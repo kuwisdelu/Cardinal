@@ -88,8 +88,16 @@ setMethod("features", "MSImagingExperiment",
 # mz
 
 setMethod("mz", "missing",
-	function(from, to, by, units = c("ppm", "mz"), ...) {
-		seq_mz(from=from, to=to, by=by, units=units)
+	function(from, to, by, units = c("ppm", "mz"), ...)
+	{
+		units <- match.arg(units)
+		by <- unname(by)
+		mz <- switch(units,
+			ppm=seq_rel(from=from, to=to, by=1e-6 * by),
+			mz=seq.default(from=from, to=to, by=by))
+		switch(units,
+			ppm=structure(mz, resolution=c(ppm=by)),
+			mz=structure(mz, resolution=c(mz=by)))
 	})
 
 setMethod("mz", "MSImagingExperiment",

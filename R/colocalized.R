@@ -1,4 +1,7 @@
 
+#### Find features colocalized with a reference ####
+## ------------------------------------------------
+
 setMethod("colocalized", "MSImagingExperiment",
 	function(object, mz, ...)
 {
@@ -13,9 +16,9 @@ setMethod("colocalized", "MSImagingExperiment",
 })
 
 setMethod("colocalized", "SpectralImagingExperiment",
-	function(object, i, ref, n = Inf,
+	function(object, i, ref,
+		threshold = median, n = Inf,
 		sort.by = c("cor", "MOC", "M1", "M2", "Dice"),
-		threshold = median,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)

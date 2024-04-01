@@ -14,6 +14,21 @@ setMethod("selectROI", "SpectralImagingExperiment",
 	.select_ROI(object, mode)
 })
 
+# combine logical ROIs into a factor
+makeFactor <- function(..., ordered = FALSE)
+{
+	inds <- list(...)
+	labs <- vapply(substitute(...()), deparse, character(1L))
+	if ( !is.null(names(inds)) ) {
+		nz <- nzchar(names(inds))
+		labs[nz] <- names(inds)[nz]
+	}
+	names(labs) <- NULL
+	inds <- do.call("cbind", inds)
+	inds <- apply(inds, 1, function(i) which(i)[1L])
+	factor(labs[inds], levels=labs, ordered=ordered)
+}
+
 .select_ROI <- function(object, mode)
 {
 	if ( length(dev.list()) == 0L )

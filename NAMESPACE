@@ -374,9 +374,9 @@ exportMethods(
 	"spatialShrunkenCentroids",
 	"spatialDGMM",
 	"meansTest",
-	"segmentationTest")
+	"topFeatures")
 
-exportMethods("topFeatures")
+export("segmentationTest")
 
 exportMethods(
 	"aggregate",

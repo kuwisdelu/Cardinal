@@ -11,6 +11,10 @@ setMethod("spatialFastmap", "ANY",
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "method" %in% ...names() ) {
+		.Deprecated(old="method", new="weights")
+		weights <- list(...)$method
+	}
 	if ( is.character(weights) ) {
 		if ( verbose )
 			message("calculating gaussian weights")

@@ -1,4 +1,7 @@
 
+#### Spatially-aware Gaussian mixture models ####
+## ---------------------------------------------
+
 setMethod("spatialDGMM", "ANY",
 	function(x, coord, i, r = 1, k = 2, groups = NULL,
 		weights = c("gaussian", "adaptive"),
@@ -8,6 +11,10 @@ setMethod("spatialDGMM", "ANY",
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "method" %in% ...names() ) {
+		.Deprecated(old="method", new="weights")
+		weights <- list(...)$method
+	}
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
 		if ( verbose )

@@ -244,3 +244,54 @@ test_that("spatialDGMM", {
 
 })
 
+test_that("meansTest", {
+
+	set.seed(1)
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nruns=3,
+		representation="centroid")
+	s$truecondition <- ifelse(s$circleA | s$circleB, s$condition, NA)
+	s$truecondition <- factor(s$truecondition)
+	levels(s$truecondition) <- levels(s$condition)
+	s$sample <- replace(run(s), is.na(s$truecondition), NA)
+
+	mt <- meansTest(s, fixed=~condition)
+	mt2 <- meansTest(s, fixed=~truecondition)
+	mt3 <- meansTest(s, fixed=~condition, samples=s$sample)
+
+	expect_true(validObject(mt))
+	expect_true(validObject(mt2))
+	expect_true(validObject(mt3))
+	expect_true(all(mcols(mt)$LR > 0))
+	expect_true(all(mcols(mt2)$LR > 0))
+	expect_true(all(mcols(mt3)$LR > 0))
+	expect_true(all(mcols(mt)$PValue > 0))
+	expect_true(all(mcols(mt2)$PValue > 0))
+	expect_true(all(mcols(mt3)$PValue > 0))
+
+	set.seed(2)
+	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nruns=1,
+		representation="centroid")
+	
+	mt4 <- meansTest(s2, fixed=~condition)
+
+	expect_true(validObject(mt4))
+	expect_true(all(is.infinite(mcols(mt4)$LR)))
+	expect_true(all(mcols(mt4)$PValue <= 0))
+
+	set.seed(3)
+	gm <- spatialDGMM(s, r=1, k=2)
+	gm2 <- spatialDGMM(s2, r=1, k=2)
+
+	mt5 <- meansTest(gm, ~condition)
+	mt6 <- meansTest(gm, ~truecondition)
+	mt7 <- meansTest(gm2, ~condition)
+	st <- segmentationTest(s, ~condition)
+
+	expect_equal(mcols(mt5)$LR, mcols(mt6)$LR)
+	expect_equal(mcols(mt5)$PValue, mcols(mt6)$PValue)
+	expect_true(all(is.infinite(mcols(mt7)$LR)))
+	expect_true(all(mcols(mt7)$PValue <= 0))
+	expect_true(validObject(st))
+
+})
+

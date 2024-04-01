@@ -217,11 +217,9 @@ setClass("CrossValidated", contains="ResultSet")
 
 ## define 2.x classes for installation
 
-setClass("MeansTest")
 setClass("PCA2")
 setClass("PLS2")
 setClass("OPLS2")
-setClass("SegmentationTest")
 setClass("SpatialFastmap2")
 setClass("SpatialKMeans2")
 setClass("SpatialShrunkenCentroids2")
