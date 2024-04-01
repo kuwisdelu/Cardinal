@@ -18,6 +18,7 @@ test_that("SpatialResults and ResultsList", {
 	pdf <- PositionDataFrame(coord=Coord, A=seq_len(n), B=rev(seq_len(n)))
 	sr <- SpatialResults(fit1, featureData=mdf, pixelData=pdf)
 
+	expect_equal(modelData(sr), fit1)
 	expect_equal(length(sr), length(fit1))
 	expect_equal(names(sr), names(fit1))
 	expect_equal(sr[["coefficients"]], fit1[["coefficients"]])

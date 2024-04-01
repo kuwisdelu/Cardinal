@@ -42,7 +42,7 @@ setGeneric("peakProcess", function(object, ...) standardGeneric("peakProcess"))
 #### Co-registration and co-localization ####
 ## ------------------------------------------
 setGeneric("coregister", function(object, ref, ...) standardGeneric("coregister"))
-setGeneric("colocalized", function(object, ref, ...) standardGeneric("colocalized"))
+setGeneric("colocalized", function(object, ...) standardGeneric("colocalized"))
 
 #### Data transformation ####
 ## --------------------------
