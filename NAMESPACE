@@ -142,6 +142,7 @@ export(
 	"simulateImage",
 	"simulateSpectra",
 	"simulateSpectrum",
+	"slice",
 	"writeAnalyze",
 	"writeImzML",
 	"writeMSIData")
@@ -382,7 +383,6 @@ export("segmentationTest")
 
 exportMethods(
 	"aggregate",
-	"slice",
 	"sort")
 
 export(

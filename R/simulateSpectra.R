@@ -160,7 +160,7 @@ addShape <- function(pixelData, center, size,
 	pixelData
 }
 
-presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
+presetImageDef <- function(preset = 1L, nrun = 1, npeaks = 30L,
 	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
 	sdsample = 0.2, jitter = TRUE, ...)
 {
@@ -180,7 +180,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# centered circle
 		rx <- nx / 2
 		ry <- ny / 2
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -198,7 +198,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# topleft circle + bottomright square
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -227,7 +227,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# 2 corner squares + centered circle
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -263,7 +263,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# centered circle w/ diff conditions
 		rx <- nx / 2
 		ry <- ny / 2
-		pdata_a <- lapply(seq_len(nruns), function(i) {
+		pdata_a <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -277,7 +277,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
-		pdata_b <- lapply(seq_len(nruns), function(i) {
+		pdata_b <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -306,7 +306,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# topleft circle + bottomright square w/ diff conditions
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata_a <- lapply(seq_len(nruns), function(i) {
+		pdata_a <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -327,7 +327,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		})
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
-		pdata_b <- lapply(seq_len(nruns), function(i) {
+		pdata_b <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -370,7 +370,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# 2 corner squares + centered circle w/ diff conditions
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -396,7 +396,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			pdata_i[,"circleB"] <- FALSE
 			runNames(pdata_i) <- paste0("runA", i)
 			pdata_i
-		}, pdata, seq_len(nruns), SIMPLIFY=FALSE)
+		}, pdata, seq_len(nrun), SIMPLIFY=FALSE)
 		pdata_a <- do.call("rbind", pdata_a)
 		pdata_a$condition <- "A"
 		pdata_b <- mapply(function(pdata_i, i) {
@@ -409,7 +409,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			pdata_i[,"circleA"] <- FALSE
 			runNames(pdata_i) <- paste0("runB", i)
 			pdata_i
-		}, pdata, seq_len(nruns), SIMPLIFY=FALSE)
+		}, pdata, seq_len(nrun), SIMPLIFY=FALSE)
 		pdata_b <- do.call("rbind", pdata_b)
 		pdata_b$condition <- "B"
 		pdata <- rbind(pdata_a, pdata_b)
@@ -431,7 +431,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# pairs of circles w/ diff conditions + ref peak
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -469,7 +469,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# pairs of circles + squares w/ diff conditions + ref peak
 		rx <- nx / 4
 		ry <- ny / 4
-		pdata <- lapply(seq_len(nruns), function(i) {
+		pdata <- lapply(seq_len(nrun), function(i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
 				center=c(
@@ -523,7 +523,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 		# small spheres inside large sphere (3D)
 		rx <- nx / 2
 		ry <- ny / 2
-		runscales <- sqrt(1 + abs(seq_len(nruns) - ceiling(nruns / 2)))
+		runscales <- sqrt(1 + abs(seq_len(nrun) - ceiling(nrun / 2)))
 		pdata <- mapply(function(scale, i) {
 			pdata_i <- pdata
 			pdata_i <- addShape(pdata_i,
@@ -541,7 +541,7 @@ presetImageDef <- function(preset = 1L, nruns = 1, npeaks = 30L,
 			runNames(pdata_i) <- paste0("run", i-1)
 			coord(pdata_i)$z <- i
 			pdata_i
-		}, runscales, seq_len(nruns))
+		}, runscales, seq_len(nrun))
 		pdata <- do.call("rbind", pdata)
 		n1 <- floor(npeaks / 3)
 		n2 <- floor(npeaks / 3)

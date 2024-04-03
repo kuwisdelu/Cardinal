@@ -250,7 +250,7 @@ test_that("spatialDGMM", {
 test_that("meansTest", {
 
 	set.seed(1)
-	s <- simulateImage(preset=4, dim=c(10L, 10L), nruns=3,
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=3,
 		representation="centroid")
 	s$truecondition <- ifelse(s$circleA | s$circleB, s$condition, NA)
 	s$truecondition <- factor(s$truecondition)
@@ -273,7 +273,7 @@ test_that("meansTest", {
 	expect_true(all(mcols(mt3)$PValue > 0))
 
 	set.seed(2)
-	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nruns=1,
+	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
 		representation="centroid")
 	featureNames(s2) <- paste0("Feature", seq_len(nrow(s2)))
 	

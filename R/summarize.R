@@ -1,56 +1,6 @@
 
-#### Row/column statistics ####
-## ----------------------------
-
-setMethod("rowSums", "SpectralImagingExperiment",
-	function(x, na.rm = FALSE, dims = 1, ...)
-	{
-		rowStats(x, stat="sum", ..., na.rm=na.rm)
-	})
-
-setMethod("colSums", "SpectralImagingExperiment",
-	function(x, na.rm = FALSE, dims = 1, ...)
-	{
-		colStats(x, stat="sum", ..., na.rm=na.rm)
-	})
-
-setMethod("rowMeans", "SpectralImagingExperiment",
-	function(x, na.rm = FALSE, dims = 1, ...)
-	{
-		rowStats(x, stat="mean", ..., na.rm=na.rm)
-	})
-
-setMethod("colMeans", "SpectralImagingExperiment",
-	function(x, na.rm = FALSE, dims = 1, ...)
-	{
-		colStats(x, stat="mean", ..., na.rm=na.rm)
-	})
-
-setMethod("rowStats", "SpectralImagingExperiment",
-	function(x, stat, ...,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
-		BPPARAM = getCardinalBPPARAM())
-	{
-		rowStats(spectra(x), stat=stat,
-			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM, ...)
-	})
-
-setMethod("colStats", "SpectralImagingExperiment",
-	function(x, stat, ...,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
-		BPPARAM = getCardinalBPPARAM())
-	{
-		colStats(spectra(x), stat=stat,
-			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM, ...)
-	})
-
-
-#### Summarization ####
-## ---------------------
+#### Summarize features (masses) ####
+## ---------------------------------
 
 summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 	nchunks = getCardinalNChunks(),
@@ -87,6 +37,10 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 	x
 }
 
+
+#### Summarize pixels (spectra) ####
+## --------------------------------
+
 summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 	nchunks = getCardinalNChunks(),
 	verbose = getCardinalVerbose(),
@@ -121,3 +75,55 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 	}
 	x
 }
+
+
+#### Row/column statistics ####
+## ----------------------------
+
+setMethod("rowStats", "SpectralImagingExperiment",
+	function(x, stat, ...,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM())
+	{
+		rowStats(spectra(x), stat=stat,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...)
+	})
+
+setMethod("colStats", "SpectralImagingExperiment",
+	function(x, stat, ...,
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM())
+	{
+		colStats(spectra(x), stat=stat,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...)
+	})
+
+setMethod("rowSums", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		rowStats(x, stat="sum", ..., na.rm=na.rm)
+	})
+
+setMethod("colSums", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		colStats(x, stat="sum", ..., na.rm=na.rm)
+	})
+
+setMethod("rowMeans", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		rowStats(x, stat="mean", ..., na.rm=na.rm)
+	})
+
+setMethod("colMeans", "SpectralImagingExperiment",
+	function(x, na.rm = FALSE, dims = 1, ...)
+	{
+		colStats(x, stat="mean", ..., na.rm=na.rm)
+	})
+
+

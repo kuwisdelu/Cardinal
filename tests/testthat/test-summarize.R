@@ -5,8 +5,6 @@ context("summarize")
 
 test_that("summarizeFeatures", {
 
-	register(SerialParam())
-
 	path <- CardinalIO::exampleImzMLFile("continuous")
 	mse <- readImzML(path, memory=TRUE)
 	g <- makeFactor(A=mse$y==1, B=mse$y==2, C=mse$y==3)
@@ -33,8 +31,6 @@ test_that("summarizeFeatures", {
 })
 
 test_that("summarizePixels", {
-
-	register(SerialParam())
 
 	path <- CardinalIO::exampleImzMLFile("continuous")
 	mse <- readImzML(path, memory=TRUE)
