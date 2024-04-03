@@ -215,3 +215,10 @@ setMethod("predict", "ResultsList",
 		ans
 	}
 })
+
+setMethod("topFeatures", "ResultsList",
+	function(object, ...)
+{
+	lapply(object, topFeatures, ...)
+})
+

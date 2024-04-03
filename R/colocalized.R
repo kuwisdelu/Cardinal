@@ -18,7 +18,7 @@ setMethod("colocalized", "MSImagingExperiment",
 setMethod("colocalized", "SpectralImagingExperiment",
 	function(object, i, ref,
 		threshold = median, n = Inf,
-		sort.by = c("cor", "MOC", "M1", "M2", "Dice"),
+		sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -28,7 +28,12 @@ setMethod("colocalized", "SpectralImagingExperiment",
 		ref <- as.matrix(spectra(object)[i,,drop=FALSE])
 		ref <- apply(ref, 1L, identity, simplify=FALSE)
 	}
-	if ( !is(ref, "List") && !is.list(ref) )
+	if ( is.factor(ref) || is.character(ref) ) {
+		ref <- as.factor(ref)
+		lvl <- setNames(levels(ref), levels(ref))
+		ref <- lapply(lvl, function(ci) ref %in% ci)
+	}
+	if ( !is.list(ref) && !is(ref, "List") )
 		ref <- list(ref)
 	if ( verbose ) {
 		lab <- if (length(ref) != 1L) "images" else "image"
@@ -45,23 +50,10 @@ setMethod("colocalized", "SpectralImagingExperiment",
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	scores <- simplify2array(lapply(scores, t))
-	ans <- apply(scores, 1L, function(s)
+	ans <- apply(scores, 1L, function(sc)
 		{
-			s <- as.data.frame(t(s))
-			data <- featureData(object)
-			data$i <- seq_len(nrow(data))
-			data[names(s)] <- s
-			if ( is(data, "XDataFrame") ) {
-				nms <- c("i", union(unlist(keys(data)), names(s)))
-			} else {
-				nms <- c("i", names(s))
-			}
-			data <- data[nms]
-			if ( sort.by != "none" ) {
-				data <- as(data, "DFrame", strict=TRUE)
-				j <- order(data[[sort.by]], decreasing=TRUE)
-				data <- data[j,,drop=FALSE]
-			}
+			sc <- as.data.frame(t(sc))
+			data <- .rank_featureData(object, sc, sort.by)
 			head(data, n=n)
 		})
 	if ( length(ans) > 1L ) {
@@ -70,4 +62,23 @@ setMethod("colocalized", "SpectralImagingExperiment",
 		ans[[1L]]
 	}
 })
+
+.rank_featureData <- function(object, importance, sort.by)
+{
+	data <- featureData(object)
+	data$i <- seq_len(nrow(data))
+	if ( is(data, "XDataFrame") ) {
+		keep <- c("i", unlist(keys(data)))
+	} else {
+		keep <- "i"
+	}
+	data <- data[keep]
+	data <- cbind(data, importance)
+	if ( sort.by != "none" ) {
+		data <- as(data, "DFrame", strict=TRUE)
+		i <- order(data[[sort.by]], decreasing=TRUE)
+		data <- data[i,,drop=FALSE]
+	}
+	data
+}
 

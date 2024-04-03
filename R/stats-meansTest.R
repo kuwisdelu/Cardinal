@@ -76,11 +76,9 @@ setMethod("meansTest", "ANY",
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results
 	if ( is.null(random) ) {
-		mcols <- DataFrame(
-			fixed=deparse1(fixed), tests)
+		mcols <- DataFrame(fixed=deparse1(fixed), tests)
 	} else {
-		mcols <- DataFrame(
-			fixed=deparse1(fixed),
+		mcols <- DataFrame(fixed=deparse1(fixed),
 			random=deparse1(random), tests)
 	}
 	as(ResultsList(models, mcols=mcols), "MeansTest")
@@ -134,7 +132,7 @@ setMethod("meansTest", "ANY",
 			stop("don't know how to test model of class ",
 				sQuote(class(model)))
 		}
-		c(LR=LR, PValue=PValue)
+		c(statistic=LR, pvalue=PValue)
 	}
 	TEST
 }
@@ -150,12 +148,27 @@ setMethod("meansTest", "SpectralImagingExperiment",
 	featureData <- featureData(x)
 	featureData$i <- seq_len(nrow(featureData))
 	if ( is(featureData, "XDataFrame") ) {
-		nms <- c(union(unlist(keys(featureData)), names(mcols(ans))))
+		keep <- c("i", unlist(keys(featureData)))
 	} else {
-		nms <- names(mcols(ans))
+		keep <- "i"
 	}
-	mcols(ans) <- cbind(featureData, mcols(ans))[nms]
+	mcols(ans) <- cbind(featureData[keep], mcols(ans))
 	ans
+})
+
+setMethod("topFeatures", "MeansTest",
+	function(object, n = Inf, sort.by = "statistic", ...)
+{
+	sort.by <- match.arg(sort.by)
+	topf <- mcols(object)
+	if ( "fixed" %in% names(topf) )
+		topf$fixed <- NULL
+	if ( "random" %in% names(topf) )
+		topf$random <- NULL
+	topf$fdr <- p.adjust(topf$pvalue, method="fdr")
+	i <- order(topf[[sort.by]], decreasing=TRUE)
+	topf <- topf[i,,drop=FALSE]
+	head(topf, n=n)
 })
 
 #### Model-based testing of class means ####
@@ -217,22 +230,20 @@ setMethod("meansTest", "SpatialDGMM",
 		BPPARAM=BPPARAM, ...)
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results
-	featureData <- featureData(x)
-	featureData$i <- seq_len(nrow(featureData))
 	if ( is.null(random) ) {
-		mcols <- DataFrame(
-			fixed=deparse1(fixed), tests)
+		mcols <- DataFrame(fixed=deparse1(fixed), tests)
 	} else {
-		mcols <- DataFrame(
-			fixed=deparse1(fixed),
+		mcols <- DataFrame(fixed=deparse1(fixed),
 			random=deparse1(random), tests)
 	}
+	featureData <- featureData(x)
+	featureData$i <- seq_len(nrow(featureData))
 	if ( is(featureData, "XDataFrame") ) {
-		nms <- c(union(unlist(keys(featureData)), names(mcols)))
+		keep <- c("i", unlist(keys(featureData)))
 	} else {
-		nms <- names(mcols)
+		keep <- "i"
 	}
-	mcols <- cbind(featureData, mcols)[nms]
+	mcols <- cbind(featureData[keep], mcols)
 	as(ResultsList(models, mcols=mcols), "MeansTest")
 })
 

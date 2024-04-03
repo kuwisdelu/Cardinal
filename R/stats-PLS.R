@@ -107,6 +107,18 @@ setMethod("predict", "SpatialPLS",
 	}
 })
 
+setMethod("topFeatures", "SpatialPLS",
+	function(object, n = Inf, sort.by = c("vip", "coefficients"), ...)
+{
+	sort.by <- match.arg(sort.by)
+	vips <- vip(object@model)
+	coefs <- coef(object@model)
+	resp <- rep(colnames(coefs), each=nrow(coefs))
+	topf <- DataFrame(response=resp, vip=vips, coefficients=as.vector(coefs))
+	topf <- .rank_featureData(object, topf, sort.by)
+	head(topf, n=n)
+})
+
 #### Orthogonal projection to latent structures ####
 ## -------------------------------------------------
 
@@ -214,5 +226,17 @@ setMethod("predict", "SpatialOPLS",
 	} else {
 		ans
 	}
+})
+
+setMethod("topFeatures", "SpatialOPLS",
+	function(object, n = Inf, sort.by = c("vip", "coefficients"), ...)
+{
+	sort.by <- match.arg(sort.by)
+	vips <- vip(object$regressions[[which.max(object$ncomp)]])
+	coefs <- coef(object@model)
+	resp <- rep(colnames(coefs), each=nrow(coefs))
+	topf <- DataFrame(response=resp, vip=vips, coefficients=as.vector(coefs))
+	topf <- .rank_featureData(object, topf, sort.by)
+	head(topf, n=n)
 })
 

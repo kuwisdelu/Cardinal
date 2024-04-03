@@ -1,6 +1,6 @@
 
-#### Spatially-aware shrunken centroids ####
-## -----------------------------------------
+#### Spatial shrunken centroids (classification) ####
+## -------------------------------------------------
 
 setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	function(x, y, coord, r = 1, s = 0,
@@ -139,6 +139,24 @@ setMethod("predict", "SpatialShrunkenCentroids",
 	}
 })
 
+setMethod("topFeatures", "SpatialShrunkenCentroids",
+	function(object, n = Inf, sort.by = c("statistic", "centers"), ...)
+{
+	sort.by <- match.arg(sort.by)
+	stats <- object$statistic
+	means <- object$centers
+	sds <- object$sd
+	class <- rep(colnames(stats), each=nrow(stats))
+	topf <- DataFrame(class=class, statistic=as.vector(stats),
+		centers=as.vector(means), sd=sds)
+	topf <- .rank_featureData(object, topf, sort.by)
+	head(topf, n=n)
+})
+
+
+#### Spatial shrunken centroids (clustering) ####
+## ---------------------------------------------
+
 setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 	function(x, coord, r = 1, k = 2, s = 0,
 		weights = c("gaussian", "adaptive"),
@@ -192,7 +210,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		if ( verbose )
 			message("initializing clusters with spatial k-means")
 		init <- spatialKMeans(x, k=k, transpose=transpose,
-			neighbors=neighbors, weights=wts,
+			neighbors=neighbors, weights=wts, correlation=FALSE,
 			nchunks=nchunks, verbose=FALSE,
 			BPPARAM=BPPARAM, ...)
 	}
@@ -273,4 +291,6 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "mi
 		f(ans)
 	}
 })
+
+
 

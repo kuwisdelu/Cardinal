@@ -46,6 +46,7 @@ test_that("PLS", {
 	pred01 <- predict(pl, newdata=s, ncomp=1)
 	pred02 <- predict(pl, newdata=s, ncomp=2)
 	pred012 <- predict(pl, newdata=s, ncomp=1:2)
+	topf <- topFeatures(pl)
 
 	expect_is(pred, "factor")
 	expect_equal(levels(pred), c("yes", "no"))
@@ -53,6 +54,8 @@ test_that("PLS", {
 	expect_equivalent(pred01, pred012[,,1L])
 	expect_equivalent(pred02, pred012[,,2L])
 	expect_equivalent(fitted(pl), pred02)
+	expect_is(topf, "DataFrame")
+	expect_false(is.unsorted(rev(topf$vip)))
 
 	pl2 <- PLS(s, s$class, ncomp=2, method="simpls")
 	pred2 <- predict(pl2, newdata=s)
@@ -73,6 +76,7 @@ test_that("OPLS", {
 	s <- simulateImage(preset=1, dim=c(10L, 10L))
 	s$class <- makeFactor(yes=s$circle, no=!s$circle)
 	op <- OPLS(s, s$class, ncomp=1:2)
+	topf <- topFeatures(op)
 
 	pred <- predict(op, type="class")
 	pred1 <- predict(op, newdata=s, ncomp=1)
@@ -83,6 +87,8 @@ test_that("OPLS", {
 	expect_equal(pred, fitted(op, "class"))
 	expect_equal(pred1, op$regressions[[1L]]$fitted.values)
 	expect_equal(pred2, op$regressions[[2L]]$fitted.values)
+	expect_is(topf, "DataFrame")
+	expect_false(is.unsorted(rev(topf$vip)))
 
 })
 
@@ -108,6 +114,7 @@ test_that("spatialKMeans", {
 		representation="centroid")
 	km <- spatialKMeans(s, k=2:4, weights="gaussian")
 	km2 <- spatialKMeans(s, k=2:4, weights="adaptive")
+	topf <- topFeatures(km)
 
 	expect_true(validObject(km))
 	expect_true(validObject(km2))
@@ -120,6 +127,11 @@ test_that("spatialKMeans", {
 	expect_setequal(km[[1L]]$cluster, 1:4)
 	expect_setequal(km[[2L]]$cluster, 1:3)
 	expect_setequal(km[[3L]]$cluster, 1:2)
+	expect_equal(ncol(km[[1L]]$correlation), 4L)
+	expect_equal(ncol(km[[2L]]$correlation), 3L)
+	expect_equal(ncol(km[[3L]]$correlation), 2L)
+	expect_is(topf[[1L]], "DataFrame")
+	expect_false(is.unsorted(rev(topf[[1L]]$correlation)))
 
 })
 
@@ -136,6 +148,7 @@ test_that("spatialShrunkenCentroids (classification)", {
 	pred <- predict(ssc[[1L]], newdata=s, type="class")
 	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
 	pred12 <- predict(ssc2[1:2], newdata=s, type="class")
+	topf <- topFeatures(ssc)
 
 	expect_true(validObject(ssc))
 	expect_true(validObject(ssc2))
@@ -147,6 +160,8 @@ test_that("spatialShrunkenCentroids (classification)", {
 	expect_is(ssc2[[1L]], "SpatialShrunkenCentroids")
 	expect_equal(fitted(ssc[[1L]], "class"), pred)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
+	expect_is(topf[[1L]], "DataFrame")
+	expect_false(is.unsorted(rev(topf[[1L]]$statistic)))
 
 	s$one <- rep.int(factor("one"), length(s))
 	ssc3 <- spatialShrunkenCentroids(s, s$one, s=3)
@@ -171,6 +186,7 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	pred <- predict(ssc[[1L]], newdata=s, type="class")
 	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
 	pred3 <- predict(ssc2, newdata=s, type="class")
+	topf <- topFeatures(ssc)
 
 	expect_true(validObject(ssc))
 	expect_true(validObject(ssc2))
@@ -184,6 +200,8 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred3[[1L]])
 	expect_equal(fitted(ssc2[[2L]], "class"), pred3[[2L]])
+	expect_is(topf[[1L]], "DataFrame")
+	expect_false(is.unsorted(rev(topf[[1L]]$statistic)))
 
 	set.seed(3)
 	ssc3 <- spatialShrunkenCentroids(s, k=1, s=0)
@@ -256,21 +274,24 @@ test_that("meansTest", {
 	s$truecondition <- factor(s$truecondition)
 	levels(s$truecondition) <- levels(s$condition)
 	s$sample <- replace(run(s), is.na(s$truecondition), NA)
-	featureNames(s) <- paste0("Feature", seq_len(nrow(s)))
+	featureNames(s) <- paste0("V", seq_len(nrow(s)))
 
 	mt <- meansTest(s, fixed=~condition)
 	mt2 <- meansTest(s, fixed=~truecondition)
 	mt3 <- meansTest(s, fixed=~condition, samples=s$sample)
+	topf <- topFeatures(mt)
 
 	expect_true(validObject(mt))
 	expect_true(validObject(mt2))
 	expect_true(validObject(mt3))
-	expect_true(all(mcols(mt)$LR > 0))
-	expect_true(all(mcols(mt2)$LR > 0))
-	expect_true(all(mcols(mt3)$LR > 0))
+	expect_true(all(mcols(mt)$statistic > 0))
+	expect_true(all(mcols(mt2)$statistic > 0))
+	expect_true(all(mcols(mt3)$statistic > 0))
 	expect_true(all(mcols(mt)$PValue > 0))
 	expect_true(all(mcols(mt2)$PValue > 0))
 	expect_true(all(mcols(mt3)$PValue > 0))
+	expect_is(topf, "DataFrame")
+	expect_false(is.unsorted(rev(topf$statistic)))
 
 	set.seed(2)
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
@@ -280,7 +301,7 @@ test_that("meansTest", {
 	mt4 <- meansTest(s2, fixed=~condition)
 
 	expect_true(validObject(mt4))
-	expect_true(all(is.infinite(mcols(mt4)$LR)))
+	expect_true(all(is.infinite(mcols(mt4)$statistic)))
 	expect_true(all(mcols(mt4)$PValue <= 0))
 
 	set.seed(3)
@@ -292,9 +313,9 @@ test_that("meansTest", {
 	mt7 <- meansTest(gm2, ~condition)
 	st <- segmentationTest(s, ~condition)
 
-	expect_equal(mcols(mt5)$LR, mcols(mt6)$LR)
+	expect_equal(mcols(mt5)$statistic, mcols(mt6)$statistic)
 	expect_equal(mcols(mt5)$PValue, mcols(mt6)$PValue)
-	expect_true(all(is.infinite(mcols(mt7)$LR)))
+	expect_true(all(is.infinite(mcols(mt7)$statistic)))
 	expect_true(all(mcols(mt7)$PValue <= 0))
 	expect_true(validObject(st))
 

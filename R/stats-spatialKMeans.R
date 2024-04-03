@@ -6,7 +6,7 @@ setMethod("spatialKMeans", "ANY",
 	function(x, coord, r = 1, k = 2, ncomp = max(k),
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		transpose = FALSE, niter = 2L,
+		transpose = FALSE, niter = 2L, correlation = TRUE,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -56,6 +56,22 @@ setMethod("spatialKMeans", "ANY",
 		if ( verbose )
 			message("fitting k-means for k = ", k[i])
 		ans[[i]] <- kmeans(proj$x, centers=centers, ...)
+		if ( correlation )
+		{
+			if ( verbose )
+				message("calculating correlations with clusters")
+			cls <- as.factor(ans[[i]]$cluster)
+			lvl <- setNames(levels(cls), levels(cls))
+			cls <- lapply(lvl, function(ci) cls %in% ci)
+			margin <- if (transpose) 1L else 2L
+			FUN <- function(xi) vapply(cls, cor, numeric(1L), y=xi)
+			corr <- chunkApply(x, margin, FUN,
+				nchunks=nchunks, verbose=verbose,
+				BPPARAM=BPPARAM)
+			corr <- do.call(rbind, corr)
+			rownames(corr) <- dimnames(x)[[margin]]
+			ans[[i]]$correlation <- corr
+		}
 		ans[[i]]$weights <- weights
 		ans[[i]]$ncomp <- ncomp
 		ans[[i]]$r <- r
@@ -89,4 +105,18 @@ setMethod("spatialKMeans", "SpectralImagingExperiment",
 		f(ans)
 	}
 })
+
+setMethod("topFeatures", "SpatialKMeans",
+	function(object, n = Inf, sort.by = "correlation", ...)
+{
+	sort.by <- match.arg(sort.by)
+	corr <- object$correlation
+	if ( is.null(corr) )
+		stop("missing component: 'correlation'")
+	cluster <- rep(colnames(corr), each=nrow(corr))
+	topf <- DataFrame(cluster=cluster, correlation=as.vector(corr))
+	topf <- .rank_featureData(object, topf, sort.by)
+	head(topf, n=n)
+})
+
 
