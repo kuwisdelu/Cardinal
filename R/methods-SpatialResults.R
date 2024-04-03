@@ -196,3 +196,22 @@ setMethod("show", "ResultsList",
 		if ( !is.null(mcols(object)) )
 			print(as.data.frame(mcols(object)))
 	})
+
+setMethod("predict", "ResultsList",
+	function(object, ..., simplify = TRUE)
+{
+	ans <- lapply(object, predict, ...)
+	if ( simplify ) {
+		if ( length(ans) > 1L ) {
+			if ( is.factor(ans[[1L]]) ) {
+				as.data.frame(ans, check.names=FALSE)
+			} else {
+				simplify2array(ans)
+			}
+		} else {
+			ans[[1L]]
+		}
+	} else {
+		ans
+	}
+})

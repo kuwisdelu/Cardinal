@@ -77,6 +77,7 @@ test_that("OPLS", {
 	pred <- predict(op, type="class")
 	pred1 <- predict(op, newdata=s, ncomp=1)
 	pred2 <- predict(op, newdata=s, ncomp=2)
+	pred12 <- predict(op, newdata=s, ncomp=1:2)
 
 	expect_equal(pred, s$class)
 	expect_equal(pred, fitted(op, "class"))
@@ -130,11 +131,11 @@ test_that("spatialShrunkenCentroids (classification)", {
 	s$class <- makeFactor(circle=s$circle, square=s$square,
 		bg=!s$circle & !s$square)
 
-	set.seed(2)
 	ssc <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="gaussian")
 	ssc2 <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="adaptive")
 	pred <- predict(ssc[[1L]], newdata=s, type="class")
 	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
+	pred12 <- predict(ssc2[1:2], newdata=s, type="class")
 
 	expect_true(validObject(ssc))
 	expect_true(validObject(ssc2))
@@ -147,7 +148,6 @@ test_that("spatialShrunkenCentroids (classification)", {
 	expect_equal(fitted(ssc[[1L]], "class"), pred)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
 
-	set.seed(3)
 	s$one <- rep.int(factor("one"), length(s))
 	ssc3 <- spatialShrunkenCentroids(s, s$one, s=3)
 
@@ -170,6 +170,7 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	ssc2 <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="adaptive")
 	pred <- predict(ssc[[1L]], newdata=s, type="class")
 	pred2 <- predict(ssc2[[1L]], newdata=s, type="class")
+	pred3 <- predict(ssc2, newdata=s, type="class")
 
 	expect_true(validObject(ssc))
 	expect_true(validObject(ssc2))
@@ -181,6 +182,8 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	expect_is(ssc2[[1L]], "SpatialShrunkenCentroids")
 	expect_equal(fitted(ssc[[1L]], "class"), pred)
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
+	expect_equal(fitted(ssc2[[1L]], "class"), pred3[[1L]])
+	expect_equal(fitted(ssc2[[2L]], "class"), pred3[[2L]])
 
 	set.seed(3)
 	ssc3 <- spatialShrunkenCentroids(s, k=1, s=0)
@@ -253,6 +256,7 @@ test_that("meansTest", {
 	s$truecondition <- factor(s$truecondition)
 	levels(s$truecondition) <- levels(s$condition)
 	s$sample <- replace(run(s), is.na(s$truecondition), NA)
+	featureNames(s) <- paste0("Feature", seq_len(nrow(s)))
 
 	mt <- meansTest(s, fixed=~condition)
 	mt2 <- meansTest(s, fixed=~truecondition)
@@ -271,6 +275,7 @@ test_that("meansTest", {
 	set.seed(2)
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nruns=1,
 		representation="centroid")
+	featureNames(s2) <- paste0("Feature", seq_len(nrow(s2)))
 	
 	mt4 <- meansTest(s2, fixed=~condition)
 

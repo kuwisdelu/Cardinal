@@ -129,6 +129,7 @@ export(
 	"discrete.colors",
 	"divergent.colors",
 	"estimateDomain",
+	"estimateReferencePeaks",
 	"gradient.colors",
 	"intensity.colors",
 	"jet.colors",
@@ -313,7 +314,6 @@ exportMethods(
 	"spectrumRepresentation<-")
 
 exportMethods(
-	"crossValidate",
 	"cvApply",
 	"featureApply",
 	"pixelApply",
@@ -363,6 +363,8 @@ export(
 exportMethods(
 	"colocalized",
 	"coregister")
+
+export("crossValidate")
 
 exportMethods(
 	"NMF",

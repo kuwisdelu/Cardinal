@@ -55,7 +55,7 @@ setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------
-setGeneric("crossValidate", function(x, y, ...) standardGeneric("crossValidate"))
+setGeneric("topFeatures", function(object, ...) standardGeneric("topFeatures"))
 setGeneric("NMF", function(x, ...) standardGeneric("NMF"))
 setGeneric("PCA", function(x, ...) standardGeneric("PCA"))
 setGeneric("PLS", function(x, y, ...) standardGeneric("PLS"))
@@ -65,7 +65,6 @@ setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 setGeneric("spatialDGMM", function(x, ...) standardGeneric("spatialDGMM"))
 setGeneric("meansTest", function(x, ...) standardGeneric("meansTest"))
-setGeneric("topFeatures", function(object, ...) standardGeneric("topFeatures"))
 
 #### Plotting ####
 ## ---------------

@@ -78,6 +78,10 @@ setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
 		method = c("locmax", "dtw", "cow"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
 		tol <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
@@ -95,6 +99,10 @@ setMethod("recalibrate", "SpectralImagingData",
 		method = c("locmax", "dtw", "cow"),
 		tolerance = NA, units = c("relative", "absolute"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
 		tol <- estres(ref, ref=switch(units, relative="x", absolute="abs"))

@@ -31,3 +31,25 @@ estimateDomain <- function(xlist,
 	structure(as.vector(ans),
 		resolution = setNames(by, units))
 }
+
+
+#### Estimate reference peaks ####
+## ------------------------------
+
+estimateReferencePeaks <- function(x, SNR = 2,
+	method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(x)) > 0L )
+		warning("processing steps will be ignored by estimateReferencePeaks()")
+	method <- match.arg(method)
+	ans <- summarizeFeatures(x, stat="mean",
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM)
+	featureData <- featureData(ans)
+	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)
+	featureData[peaks,,drop=FALSE]
+}
+

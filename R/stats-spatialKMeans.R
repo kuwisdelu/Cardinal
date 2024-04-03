@@ -61,6 +61,7 @@ setMethod("spatialKMeans", "ANY",
 		ans[[i]]$r <- r
 		ans[[i]]$k <- k[i]
 	}
+	names(ans) <- paste0("k=", k)
 	if ( verbose )
 		message("returning spatial k-means")
 	if ( length(ans) > 1L ) {

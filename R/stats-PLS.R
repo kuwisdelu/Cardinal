@@ -80,11 +80,28 @@ setMethod("predict", "SpatialPLS",
 {
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
 		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+	type <- match.arg(type)
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
 			warning("pending processing steps will be ignored")
-		predict(object@model, newdata=spectra(newdata), k=ncomp,
-			type=type, simplify=simplify, ...)
+		if ( missing(ncomp) )
+			ncomp <- ncol(object$loadings)
+		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,
+			type=type, simplify=FALSE, ...)
+		names(ans) <- paste0("ncomp=", ncomp)
+		if ( simplify ) {
+			if ( length(ans) > 1L ) {
+				if ( type == "class" ) {
+					as.data.frame(ans, check.names=FALSE)
+				} else {
+					simplify2array(ans)
+				}
+			} else {
+				ans[[1L]]
+			}
+		} else {
+			ans
+		}
 	} else {
 		fitted(object@model, type=type, ...)
 	}
@@ -106,7 +123,7 @@ setMethod("OPLS", "ANY",
 		center=center, scale.=scale,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
-	fit <- lapply(setNames(ncomp, paste0("C", ncomp)),
+	fit <- lapply(setNames(ncomp, paste0("ncomp=", ncomp)),
 		function(k) {
 			if ( verbose ) {
 				label <- if (k != 1L) "components" else "component"
@@ -183,6 +200,7 @@ setMethod("predict", "SpatialOPLS",
 				fitted(fit, type=type, ...)
 			}
 		}, newdata=newdata)
+	names(ans) <- paste0("ncomp=", ncomp)
 	if ( simplify ) {
 		if ( length(ans) > 1L ) {
 			if ( type == "class" ) {

@@ -11,6 +11,10 @@ setMethod("bin", "MSImagingExperiment",
 			"linear", "cubic", "gaussian", "lanczos"),
 		resolution = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,
@@ -36,6 +40,10 @@ setMethod("bin", "MSImagingArrays",
 			"linear", "cubic", "gaussian", "lanczos"),
 		resolution = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,

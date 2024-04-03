@@ -67,6 +67,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 			a$r <- r
 			a
 		})
+	names(ans) <- paste0("r=", r, ",s=", s)
 	if ( verbose )
 		message("returning shrunken centroids classification")
 	if ( length(ans) > 1L ) {
@@ -242,11 +243,12 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 			i <- i + 1
 		}
 	}
+	k <- vapply(ans, function(a) a$k, numeric(1L))
+	s <- vapply(ans, function(a) a$s, numeric(1L))
+	names(ans) <- paste0("r=", r, ",k=", k, ",s=", s)
 	if ( verbose )
 		message("returning shrunken centroids clustering")
 	if ( length(ans) > 1L ) {
-		s <- vapply(ans, function(a) a$s, numeric(1L))
-		k <- vapply(ans, function(a) a$k, numeric(1L))
 		ResultsList(ans,
 			mcols=DataFrame(r=r, k=k, s=s, weights=weights))
 	} else {

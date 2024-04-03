@@ -63,6 +63,7 @@ setMethod("meansTest", "ANY",
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
+	names(models) <- if (byrow) rownames(x) else colnames(x)
 	# test models
 	TEST <- .lm_test_fun(reduced)
 	if ( verbose ) {
@@ -145,6 +146,7 @@ setMethod("meansTest", "SpectralImagingExperiment",
 	ans <- meansTest(spectra(x, response), data=pixelData(x),
 		fixed=fixed, random=random, samples=samples,
 		response=response, byrow=TRUE, ...)
+	names(ans) <- featureNames(x)
 	featureData <- featureData(x)
 	featureData$i <- seq_len(nrow(featureData))
 	if ( is(featureData, "XDataFrame") ) {
@@ -203,6 +205,7 @@ setMethod("meansTest", "SpatialDGMM",
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
+	names(models) <- rownames(featureData(x))
 	# test models
 	TEST <- .lm_test_fun(reduced)
 	if ( verbose ) {

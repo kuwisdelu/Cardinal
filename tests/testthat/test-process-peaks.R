@@ -106,11 +106,14 @@ test_that("process peaks - MSImagingArrays", {
 
 	ms10 <- peakProcess(ms)
 	ms11 <- peakProcess(ms, sampleSize=0.1, filterFreq=FALSE)
+	ms12 <- peakProcess(ms, ref=ms5)
 
 	expect_is(ms10, "MSImagingExperiment")
 	expect_is(ms11, "MSImagingExperiment")
+	expect_is(ms12, "MSImagingExperiment")
 	expect_is(spectra(ms10), "sparse_mat")
 	expect_is(spectra(ms11), "matrix")
+	expect_is(spectra(ms12), "matrix")
 
 })
 
@@ -158,10 +161,19 @@ test_that("process peaks - MSImagingExperiment", {
 
 	ms10 <- peakProcess(ms)
 	ms11 <- peakProcess(ms, sampleSize=0.1, filterFreq=FALSE)
+	ms12 <- peakProcess(ms, ref=ms5)
 
 	expect_is(ms10, "MSImagingExperiment")
 	expect_is(ms11, "MSImagingExperiment")
+	expect_is(ms12, "MSImagingExperiment")
 	expect_is(spectra(ms10), "sparse_mat")
 	expect_is(spectra(ms11), "matrix")
+	expect_is(spectra(ms12), "matrix")
+
+	ms13 <- peakProcess(ms10)
+	ms14 <- peakProcess(ms10, ms10)
+
+	expect_equal(ms10, ms13)
+	expect_equal(ms10, ms14)
 
 })

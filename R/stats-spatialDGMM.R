@@ -62,6 +62,7 @@ setMethod("spatialDGMM", "ANY",
 		ans[[j]]$r <- r
 		ans[[j]]$k <- k[j]
 	}
+	names(ans) <- paste0("k=", k)
 	if ( verbose ) {
 		lab <- if (length(k) != 1L || length(i) != 1L) "models" else "model"
 		message("returning spatial Gaussian mixture ", lab)

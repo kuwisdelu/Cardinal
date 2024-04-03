@@ -3,7 +3,7 @@
 ## ----------------------
 
 setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
-	function(object,
+	function(object, ref,
 		spectra = "intensity", index = "mz",
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
 		SNR = 2, type = c("height", "area"),
@@ -13,32 +13,49 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( is.finite(sampleSize) )
+	if ( (!missing(ref) && !is.null(ref)) || is.finite(sampleSize) )
 	{
-		if ( sampleSize < 1 ) {
-			n <- ceiling(sampleSize * length(object))
-			prop <- 100 * sampleSize
-		} else if ( sampleSize > 0 ) {
-			n <- sampleSize
-			prop <- round(100 * n / length(object))
+		# extract peaks based on a reference
+		if ( missing(ref) || is.null(ref) )
+		{
+			# create reference peaks from sample spectra
+			if ( sampleSize < 1 ) {
+				# sample size is a proportion
+				n <- ceiling(sampleSize * length(object))
+				perc <- 100 * sampleSize
+			} else if ( sampleSize > 0 ) {
+				# sample size is a count
+				n <- min(sampleSize, length(object))
+				perc <- round(100 * n / length(object))
+			} else {
+				stop("'sampleSize' must be positive")
+			}
+			if ( verbose ) {
+				label <- if (n != 1L) "spectra" else "spectrum"
+				message("processing peaks for ", n, " ", label, " ",
+					"(~", perc, "% of data)")
+			}
+			i <- seq.default(1L, length(object), length.out=n)
+			ref <- peakProcess(object[i],
+				spectra=spectra, index=index,
+				method=method, SNR=SNR, type=type,
+				tolerance=tolerance, units=units, filterFreq=filterFreq,
+				nchunks=nchunks, verbose=verbose,
+				BPPARAM=BPPARAM, ...)
 		} else {
-			stop("'sampleSize' must be positive")
+			# check if peaks are already processed
+			if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+				ref <- mz(ref)
+			if ( isTRUE(all.equal(mz(object), ref)) ) {
+				if ( verbose )
+					message("peaks are already processed")
+				return(object)
+			}
 		}
-		if ( verbose ) {
-			label <- if (n != 1L) "spectra" else "spectrum"
-			message("processing peaks for ", n, " ", label, " ",
-				"(~", prop, "% of data)")
-		}
-		i <- seq.default(1L, length(object), length.out=n)
-		ref <- peakProcess(object[i],
-			spectra=spectra, index=index,
-			method=method, SNR=SNR, type=type,
-			tolerance=tolerance, units=units, filterFreq=filterFreq,
-			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM, ...)
+		# extract the peaks
 		if ( verbose )
 			message("extracting reference peaks from all spectra")
-		object <- peakPick(object, ref=mz(ref),
+		object <- peakPick(object, ref=ref,
 			tolerance=tolerance, units=units, type=type)
 		object <- process(object,
 			spectra=spectra, index=index,
@@ -47,23 +64,37 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			BPPARAM=BPPARAM, ...)
 		featureData(object) <- featureData(ref)
 	} else {
-		object <- peakPick(object, method=method,
-			tolerance=tolerance, units=units, SNR=SNR, type=type)
+		if ( isCentroided(object) ) {
+			if ( length(processingData(object)) == 0L ) {
+				if ( verbose )
+					message("peaks are already processed")
+				return(object)
+			}
+		} else {
+			# pick peaks on all spectra
+			object <- peakPick(object, method=method,
+				tolerance=tolerance, units=units, SNR=SNR, type=type)
+		}
+		# align peaks across all spectra
 		object <- peakAlign(object,
 			spectra=spectra, index=index,
 			tolerance=tolerance, units=units, outfile=outfile,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
+		# filter peaks
 		if ( isTRUE(filterFreq) || filterFreq > 0 ) {
 			if ( is.numeric(filterFreq) ) {
 				if ( filterFreq < 1 ) {
+					# filterFeq is a proportion
 					n <- ceiling(filterFreq * length(object))
 				} else if ( filterFreq > 0) {
+					# filterFeq is a count
 					n <- as.integer(filterFreq)
 				} else {
 					stop("'filterFreq' must be positive")
 				}
 			} else {
+				# remove singleton peaks
 				n <- 1L
 			}
 			if ( verbose )
@@ -71,6 +102,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			object <- object[featureData(object)[["count"]] > n,]
 		}
 	}
+	# return object
 	if ( verbose )
 		message("processed to ", nrow(object), " peaks")
 	if ( validObject(object) )
@@ -87,6 +119,10 @@ setMethod("peakPick", "MSImagingExperiment",
 		SNR = 2, type = c("height", "area"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	if ( isCentroided(object) ) {
 		stop("object is already centroided")
 	} else {
@@ -107,6 +143,10 @@ setMethod("peakPick", "MSImagingArrays",
 		SNR = 2, type = c("height", "area"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	if ( isCentroided(object) ) {
 		stop("object is already centroided")
 	} else {
@@ -204,6 +244,10 @@ setMethod("peakAlign", "MSImagingExperiment",
 		spectra = "intensity", index = "mz",
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -224,6 +268,10 @@ setMethod("peakAlign", "MSImagingArrays",
 		spectra = "intensity", index = "mz",
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	if ( !missing(ref) ) {
+		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+			ref <- mz(ref)
+	}
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -262,6 +310,13 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		domain <- featureData(object)[[tnm]]
 		if ( is.null(domain) )
 			stop("index ", sQuote(tnm), " not found")
+	}
+	if ( !missing(ref) && !is.null(ref) ) {
+		if ( isTRUE(all.equal(domain, ref)) ) {
+			if ( verbose )
+				message("peaks are already aligned")
+			return(object)
+		}
 	}
 	if ( is.sparse(spectra) ) {
 		index <- atomindex(spectra)

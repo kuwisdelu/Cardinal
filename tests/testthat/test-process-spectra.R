@@ -102,6 +102,12 @@ test_that("process spectra - MSImagingArrays", {
 
 	expect_is(ms5, "MSImagingArrays")
 
+	peaks2 <- estimateReferencePeaks(ms)
+	ms6 <- recalibrate(ms, ref=peaks2, tolerance=200)
+	ms6 <- process(ms6)
+
+	expect_is(ms6, "MSImagingArrays")
+
 })
 
 test_that("process spectra - MSImagingExperiment", {
@@ -138,5 +144,11 @@ test_that("process spectra - MSImagingExperiment", {
 	ms5 <- process(ms5)
 
 	expect_is(ms5, "MSImagingExperiment")
+
+	peaks2 <- estimateReferencePeaks(ms)
+	ms6 <- recalibrate(ms, ref=peaks2, tolerance=200)
+	ms6 <- process(ms6)
+
+	expect_is(ms6, "MSImagingExperiment")
 
 })
