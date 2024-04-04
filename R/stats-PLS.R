@@ -119,6 +119,34 @@ setMethod("topFeatures", "SpatialPLS",
 	head(topf, n=n)
 })
 
+setMethod("plot", c(x = "SpatialPLS", y = "missing"),
+	function(x, type = c("vip", "coefficients", "scores"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( missing(xlab) )
+		xlab <- NULL
+	if ( type == "vip" ) {
+		if ( missing(ylab) )
+			ylab <- "Importance"
+		callNextMethod(x, y=vip(x), xlab=xlab, ylab=ylab, ...)
+	} else if ( type == "coefficients" ) {
+		if ( missing(ylab) )
+			ylab <- "Coefficients"
+		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
+	} else {
+		callNextMethod(x, y=x$scores, xlab=xlab, ylab=ylab,
+			reducedDims=TRUE, ...)
+	}
+})
+
+setMethod("image", c(x = "SpatialPLS"),
+	function(x, type = c("response", "class"), ...)
+{
+	type <- match.arg(type)
+	callNextMethod(x, y=fitted(x, type=type), ...)
+})
+
+
 #### Orthogonal projection to latent structures ####
 ## -------------------------------------------------
 
@@ -238,5 +266,32 @@ setMethod("topFeatures", "SpatialOPLS",
 	topf <- DataFrame(response=resp, vip=vips, coefficients=as.vector(coefs))
 	topf <- .rank_featureData(object, topf, sort.by)
 	head(topf, n=n)
+})
+
+setMethod("plot", c(x = "SpatialOPLS", y = "missing"),
+	function(x, type = c("vip", "coefficients", "scores"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( missing(xlab) )
+		xlab <- NULL
+	if ( type == "vip" ) {
+		if ( missing(ylab) )
+			ylab <- "Importance"
+		callNextMethod(x, y=vip(x$regressions[[which.max(x$ncomp)]]),
+			xlab=xlab, ylab=ylab, ...)
+	} else if ( type == "coefficients" ) {
+		if ( missing(ylab) )
+			ylab <- "Coefficients"
+		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
+	} else {
+		callNextMethod(x, y=x$scores, xlab=xlab, ylab=ylab,
+			reducedDims=TRUE, ...)
+	}
+})
+
+setMethod("image", c(x = "SpatialOPLS"),
+	function(x, type = c("response", "class"), ...)
+{
+	callNextMethod(x, y=fitted(x, type=type), ...)
 })
 

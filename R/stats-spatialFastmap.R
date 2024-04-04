@@ -90,6 +90,34 @@ setMethod("predict", "SpatialFastmap",
 		BPPARAM=BPPARAM, ...)
 })
 
+setMethod("plot", c(x = "SpatialFastmap", y = "missing"),
+	function(x, type = c("scree", "x"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( type == "x" ) {
+		callNextMethod(x, y=x$x, xlab=xlab, ylab=ylab,
+			reducedDims=TRUE, ...)
+	} else {
+		if ( missing(xlab) )
+			xlab <- NULL
+		if ( missing(ylab) )
+			ylab <- "Variances"
+		panel_grid(c(1L,1L))
+		screeplot(x@model, main="", ...)
+		title(xlab=xlab, ylab=ylab, outer=TRUE)
+	}
+})
+
+setMethod("image", c(x = "SpatialFastmap"),
+	function(x, type = "x", superpose=FALSE,
+		col = if (superpose) NULL else cividis, ...)
+{
+	type <- match.arg(type)
+	callNextMethod(x, y=x$x, superpose=superpose,
+		col=col, reducedDims=TRUE, ...)
+})
+
+
 .spatialRowDistFun <- function(x, y, neighbors,
 	neighbor.weights = NULL, metric = "euclidean", p = 2, weights = NULL,
 	verbose = NA, nchunks = NA, BPPARAM = getCardinalBPPARAM(), ...)

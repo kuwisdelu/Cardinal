@@ -39,7 +39,7 @@ test_that("NMF", {
 test_that("PLS", {
 
 	set.seed(1)
-	s <- simulateImage(preset=1, dim=c(10L, 10L))
+	s <- simulateImage(preset=1, dim=c(10L, 10L), nrun=2L)
 	s$class <- makeFactor(yes=s$circle, no=!s$circle)
 	pl <- PLS(s, s$class, ncomp=2, method="nipals")
 	pred <- predict(pl, type="class")
@@ -138,7 +138,7 @@ test_that("spatialKMeans", {
 test_that("spatialShrunkenCentroids (classification)", {
 
 	set.seed(1)
-	s <- simulateImage(preset=2, dim=c(10L, 10L),
+	s <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2L,
 		representation="centroid")
 	s$class <- makeFactor(circle=s$circle, square=s$square,
 		bg=!s$circle & !s$square)
@@ -254,7 +254,7 @@ test_that("spatialDGMM", {
 
 	set.seed(3)
 	i <- seq_len(15)
-	gm3 <- spatialDGMM(s, i=i, r=2, k=3:5)
+	gm3 <- spatialDGMM(s, i=i, r=2, k=3:5, compress=FALSE)
 
 	expect_is(gm3, "ResultsList")
 	expect_length(gm3, 3L)
@@ -287,9 +287,9 @@ test_that("meansTest", {
 	expect_true(all(mcols(mt)$statistic > 0))
 	expect_true(all(mcols(mt2)$statistic > 0))
 	expect_true(all(mcols(mt3)$statistic > 0))
-	expect_true(all(mcols(mt)$PValue > 0))
-	expect_true(all(mcols(mt2)$PValue > 0))
-	expect_true(all(mcols(mt3)$PValue > 0))
+	expect_true(all(mcols(mt)$pvalue > 0))
+	expect_true(all(mcols(mt2)$pvalue > 0))
+	expect_true(all(mcols(mt3)$pvalue > 0))
 	expect_is(topf, "DataFrame")
 	expect_false(is.unsorted(rev(topf$statistic)))
 
@@ -302,7 +302,7 @@ test_that("meansTest", {
 
 	expect_true(validObject(mt4))
 	expect_true(all(is.infinite(mcols(mt4)$statistic)))
-	expect_true(all(mcols(mt4)$PValue <= 0))
+	expect_true(all(mcols(mt4)$pvalue <= 0))
 
 	set.seed(3)
 	gm <- spatialDGMM(s, r=1, k=2)
@@ -314,9 +314,9 @@ test_that("meansTest", {
 	st <- segmentationTest(s, ~condition)
 
 	expect_equal(mcols(mt5)$statistic, mcols(mt6)$statistic)
-	expect_equal(mcols(mt5)$PValue, mcols(mt6)$PValue)
+	expect_equal(mcols(mt5)$pvalue, mcols(mt6)$pvalue)
 	expect_true(all(is.infinite(mcols(mt7)$statistic)))
-	expect_true(all(mcols(mt7)$PValue <= 0))
+	expect_true(all(mcols(mt7)$pvalue <= 0))
 	expect_true(validObject(st))
 
 })

@@ -51,3 +51,32 @@ setMethod("predict", "SpatialPCA",
 	crossprod(x, object$rotation)
 })
 
+setMethod("plot", c(x = "SpatialPCA", y = "missing"),
+	function(x, type = c("rotation", "scree", "x"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( missing(xlab) )
+		xlab <- NULL
+	if ( type == "rotation" ) {
+		if ( missing(ylab) )
+			ylab <- "Loadings"
+		callNextMethod(x, y=x$rotation, xlab=xlab, ylab=ylab, ...)
+	} else if ( type == "x" ) {
+		callNextMethod(x, y=x$x, xlab=xlab, ylab=ylab,
+			reducedDims=TRUE, ...)
+	} else {
+		if ( missing(ylab) )
+			ylab <- "Variances"
+		panel_grid(c(1L,1L))
+		screeplot(x@model, main="", ...)
+		title(xlab=xlab, ylab=ylab, outer=TRUE)
+	}
+})
+
+setMethod("image", c(x = "SpatialPCA"),
+	function(x, type = "x", ...)
+{
+	type <- match.arg(type)
+	callNextMethod(x, y=x$x, ...)
+})
+

@@ -99,3 +99,24 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 	}
 })
 
+setMethod("image", c(x = "SpatialDGMM"),
+	function(x, i = 1L, type = "class", ..., layout = NULL, free = "")
+{
+	type <- match.arg(type)
+	FUN <- function(y, ...) .plot_image_results(x, y=as.factor(y), ...)
+	plots <- lapply(x$class[i], FUN, ...)
+	if ( is.null(featureNames(x)) ) {
+		names(plots) <- paste0("i = ", i)
+	} else {
+		names(plots) <- featureNames(x)[i]
+	}
+	if ( !is.null(layout) ) {
+		layout <- rep_len(layout, 2L)
+		nrow <- layout[1L]
+		ncol <- layout[2L]
+		as_facets(plots, nrow=nrow, ncol=ncol, free=free)
+	} else {
+		as_facets(plots, free=free)
+	}
+})
+

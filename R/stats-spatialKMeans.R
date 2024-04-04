@@ -6,7 +6,8 @@ setMethod("spatialKMeans", "ANY",
 	function(x, coord, r = 1, k = 2, ncomp = max(k),
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		transpose = FALSE, niter = 2L, correlation = TRUE,
+		transpose = FALSE, niter = 2L,
+		centers = TRUE, correlation = TRUE,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -46,20 +47,37 @@ setMethod("spatialKMeans", "ANY",
 		BPPARAM=BPPARAM, ...)
 	k <- rev(sort(k))
 	ans <- vector("list", length=length(k))
+	truecenters <- vector("list", length=length(k))
 	for ( i in seq_along(k) )
 	{
 		if ( i > 1L ) {
-			centers <- ans[[i - 1L]]$centers[seq_len(k[i]),,drop=FALSE]
+			icenters <- ans[[i - 1L]]$centers[seq_len(k[i]),,drop=FALSE]
 		} else {
-			centers <- k[i]
+			icenters <- k[i]
 		}
 		if ( verbose )
 			message("fitting k-means for k = ", k[i])
-		ans[[i]] <- kmeans(proj$x, centers=centers, ...)
+		ans[[i]] <- kmeans(proj$x, centers=icenters, ...)
+		if ( centers )
+		{
+			if ( verbose )
+				message("calculating cluster centers")
+			if ( transpose ) {
+				truecenters[[i]] <- rowStats(x, "mean",
+					group=as.factor(ans[[i]]$cluster),
+					nchunks=nchunks, verbose=verbose,
+					BPPARAM=BPPARAM)
+			} else {
+				truecenters[[i]] <- colStats(x, "mean",
+					group=as.factor(ans[[i]]$cluster),
+					nchunks=nchunks, verbose=verbose,
+					BPPARAM=BPPARAM)
+			}
+		}
 		if ( correlation )
 		{
 			if ( verbose )
-				message("calculating correlations with clusters")
+				message("calculating spatial correlations with clusters")
 			cls <- as.factor(ans[[i]]$cluster)
 			lvl <- setNames(levels(cls), levels(cls))
 			cls <- lapply(lvl, function(ci) cls %in% ci)
@@ -76,6 +94,14 @@ setMethod("spatialKMeans", "ANY",
 		ans[[i]]$ncomp <- ncomp
 		ans[[i]]$r <- r
 		ans[[i]]$k <- k[i]
+	}
+	for ( i in seq_along(k) )
+	{
+		if ( centers ) {
+			ans[[i]]$centers <- truecenters[[i]]
+		} else {
+			ans[[i]]$centers <- NULL
+		}
 	}
 	names(ans) <- paste0("k=", k)
 	if ( verbose )
@@ -117,6 +143,34 @@ setMethod("topFeatures", "SpatialKMeans",
 	topf <- DataFrame(cluster=cluster, correlation=as.vector(corr))
 	topf <- .rank_featureData(object, topf, sort.by)
 	head(topf, n=n)
+})
+
+setMethod("plot", c(x = "SpatialKMeans", y = "missing"),
+	function(x, type = c("correlation", "centers"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( missing(xlab) )
+		xlab <- NULL
+	if ( type == "correlation" ) {
+		if ( is.null(x$correlation) )
+			stop("missing component: 'correlation'")
+		if ( missing(ylab) )
+			ylab <- "Correlation"
+		callNextMethod(x, y=x$correlation, xlab=xlab, ylab=ylab, ...)
+	} else {
+		if ( is.null(x$centers) )
+			stop("missing component: 'centers'")
+		if ( missing(ylab) )
+			ylab <- "Centers"
+		callNextMethod(x, y=x$centers, xlab=xlab, ylab=ylab, ...)
+	}
+})
+
+setMethod("image", c(x = "SpatialKMeans"),
+	function(x, type = "cluster", ...)
+{
+	type <- match.arg(type)
+	callNextMethod(x, y=as.factor(x$cluster), ...)
 })
 
 

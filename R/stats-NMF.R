@@ -42,3 +42,26 @@ setMethod("predict", "SpatialNMF",
 	predict(object@model, newdata=spectra(newdata), ...)
 })
 
+setMethod("plot", c(x = "SpatialNMF", y = "missing"),
+	function(x, type = c("activation", "x"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( type == "activation" ) {
+		if ( missing(xlab) )
+			xlab <- NULL
+		if ( missing(ylab) )
+			ylab <- "Loadings"
+		callNextMethod(x, y=x$activation, xlab=xlab, ylab=ylab, ...)
+	} else {
+		callNextMethod(x, y=x$x, xlab=xlab, ylab=ylab,
+			reducedDims=TRUE, ...)
+	}
+})
+
+setMethod("image", c(x = "SpatialNMF"),
+	function(x, type = "x", ...)
+{
+	type <- match.arg(type)
+	callNextMethod(x, y=x$x, ...)
+})
+

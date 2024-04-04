@@ -153,6 +153,34 @@ setMethod("topFeatures", "SpatialShrunkenCentroids",
 	head(topf, n=n)
 })
 
+setMethod("plot", c(x = "SpatialShrunkenCentroids", y = "missing"),
+	function(x, type = c("statistic", "centers"), ..., xlab, ylab)
+{
+	type <- match.arg(type)
+	if ( missing(xlab) )
+		xlab <- NULL
+	if ( type == "statistic" ) {
+		if ( missing(ylab) )
+			ylab <- "Statistic"
+		callNextMethod(x, y=x$statistic, xlab=xlab, ylab=ylab, ...)
+	} else {
+		if ( missing(ylab) )
+			ylab <- "Shrunken centroids"
+		callNextMethod(x, y=x$centers, xlab=xlab, ylab=ylab, ...)
+	}
+})
+
+setMethod("image", c(x = "SpatialShrunkenCentroids"),
+	function(x, type = c("probability", "class"), ...)
+{
+	type <- match.arg(type)
+	if ( type == "probability" ) {
+		callNextMethod(x, y=x$probability, ...)
+	} else {
+		callNextMethod(x, y=x$class, ...)
+	}
+})
+
 
 #### Spatial shrunken centroids (clustering) ####
 ## ---------------------------------------------
@@ -210,7 +238,8 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		if ( verbose )
 			message("initializing clusters with spatial k-means")
 		init <- spatialKMeans(x, k=k, transpose=transpose,
-			neighbors=neighbors, weights=wts, correlation=FALSE,
+			neighbors=neighbors, weights=wts,
+			centers=FALSE, correlation=FALSE,
 			nchunks=nchunks, verbose=FALSE,
 			BPPARAM=BPPARAM, ...)
 	}
