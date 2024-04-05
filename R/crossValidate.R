@@ -33,9 +33,7 @@ setMethod("image", c(x = "SpatialCV"),
 		layout = NULL, free = "", ...)
 {
 	type <- match.arg(type)
-	y <- fitted(x, type=type)
-	if ( is.array(y) )
-		y <- apply(y, length(dim(y)), identity, simplify=FALSE)
+	y <- fitted(x, type=type, simplify=FALSE)
 	FUN <- function(yi, ...) .plot_image_results(x, yi, ...)
 	images <- lapply(y[i], FUN, ...)
 	if ( is.null(names(images)) )
