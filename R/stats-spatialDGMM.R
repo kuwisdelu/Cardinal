@@ -100,7 +100,8 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 })
 
 setMethod("image", c(x = "SpatialDGMM"),
-	function(x, i = 1L, type = "class", ..., layout = NULL, free = "")
+	function(x, i = 1L, type = "class",
+		layout = NULL, free = "", ...)
 {
 	type <- match.arg(type)
 	FUN <- function(y, ...) .plot_image_results(x, y=as.factor(y), ...)

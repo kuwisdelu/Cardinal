@@ -22,17 +22,17 @@ setMethod("plot", c(x = "ResultsList", y = "ANY"),
 
 setMethod("plot", c(x = "ResultsList", y = "missing"),
 	function(x, i = 1L, ..., layout = NULL)
-	{
-		plots <- lapply(x[i], plot, ...)
-		if ( !is.null(layout) ) {
-			layout <- rep_len(layout, 2L)
-			nrow <- layout[1L]
-			ncol <- layout[2L]
-			as_facets(plots, nrow=nrow, ncol=ncol)
-		} else {
-			as_facets(plots)
-		}
-	})
+{
+	plots <- lapply(x[i], plot, ...)
+	if ( !is.null(layout) ) {
+		layout <- rep_len(layout, 2L)
+		nrow <- layout[1L]
+		ncol <- layout[2L]
+		as_facets(plots, nrow=nrow, ncol=ncol)
+	} else {
+		as_facets(plots)
+	}
+})
 
 
 .plot_spectra_results <- function(x, y, ...,
@@ -55,6 +55,8 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- "Index"
 	}
+	if ( missing(superpose) )
+		superpose <- TRUE
 	if ( superpose ) {
 		by <- NULL
 		groups <- colnames(y)
@@ -119,17 +121,17 @@ setMethod("image", c(x = "SpatialResults"),
 
 setMethod("image", c(x = "ResultsList"),
 	function(x, i = 1L, ..., layout = NULL, free = "")
-	{
-		images <- lapply(x[i], image, ...)
-		if ( !is.null(layout) ) {
-			layout <- rep_len(layout, 2L)
-			nrow <- layout[1L]
-			ncol <- layout[2L]
-			as_facets(images, nrow=nrow, ncol=ncol, free=free)
-		} else {
-			as_facets(images, free=free)
-		}
-	})
+{
+	images <- lapply(x[i], image, ...)
+	if ( !is.null(layout) ) {
+		layout <- rep_len(layout, 2L)
+		nrow <- layout[1L]
+		ncol <- layout[2L]
+		as_facets(images, nrow=nrow, ncol=ncol, free=free)
+	} else {
+		as_facets(images, free=free)
+	}
+})
 
 .plot_image_results <- function(x, y, ...,
 	select, subset, superpose, xlab, ylab)
@@ -162,6 +164,8 @@ setMethod("image", c(x = "ResultsList"),
 		runs <- run(x)
 		coord <- coord(x)[1:2]
 	}
+	if ( missing(superpose) )
+		superpose <- TRUE
 	if ( is.matrix(y) ) {
 		groups <- colnames(y)
 		if ( superpose ) {

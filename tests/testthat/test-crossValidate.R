@@ -6,7 +6,7 @@ context("crossValidate")
 test_that("crossValidate", {
 
 	set.seed(1)
-	ms <- simulateImage(preset=2, dim=c(10L, 10L), nruns=2,
+	ms <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2,
 		representation="centroid")
 	ms$class <- makeFactor(circle=ms$circle, square=ms$square)
 	
