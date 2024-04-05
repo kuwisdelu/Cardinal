@@ -234,7 +234,7 @@ test_that("spatialShrunkenCentroids (clustering)", {
 test_that("spatialDGMM", {
 
 	set.seed(1)
-	s <- simulateImage(preset=2, dim=c(10L, 10L),
+	s <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2L,
 		representation="centroid")
 
 	set.seed(2)

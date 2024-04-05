@@ -21,16 +21,16 @@ setMethod("plot", c(x = "ResultsList", y = "ANY"),
 	function(x, y = 1L, ...) plot(x, i=y, ...))
 
 setMethod("plot", c(x = "ResultsList", y = "missing"),
-	function(x, i = 1L, ..., layout = NULL)
+	function(x, i = 1L, ..., layout = NULL, free = "")
 {
 	plots <- lapply(x[i], plot, ...)
 	if ( !is.null(layout) ) {
 		layout <- rep_len(layout, 2L)
 		nrow <- layout[1L]
 		ncol <- layout[2L]
-		as_facets(plots, nrow=nrow, ncol=ncol)
+		as_facets(plots, nrow=nrow, ncol=ncol, free=free)
 	} else {
-		as_facets(plots)
+		as_facets(plots, free=free)
 	}
 })
 

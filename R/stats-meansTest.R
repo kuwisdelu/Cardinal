@@ -55,21 +55,21 @@ setMethod("meansTest", "ANY",
 			as.data.frame(data[vars])
 		})
 	# fit models
-	FIT <- .lm_fit_fun(fixed, random)
 	if ( verbose ) {
 		lab <- if (n != 1L) "models" else "model"
 		message("fitting ", n, " ", lab)
 	}
+	FIT <- .lm_fit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- if (byrow) rownames(x) else colnames(x)
 	# test models
-	TEST <- .lm_test_fun(reduced)
 	if ( verbose ) {
 		lab <- if (n != 1L) "models" else "model"
 		message("testing ", n, " ", lab)
 	}
+	TEST <- .lm_test_fun(reduced)
 	tests <- chunkMapply(TEST, models, datalist,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
@@ -171,6 +171,56 @@ setMethod("topFeatures", "MeansTest",
 	head(topf, n=n)
 })
 
+setMethod("plot", c(x = "MeansTest", y = "missing"),
+	function(x, i = 1L, type = "boxplot", show.obs = TRUE,
+		fill = FALSE, layout = NULL, ...)
+{
+	type <- match.arg(type)
+	plots <- lapply(x[i], .plot_boxplots,
+		show.obs=show.obs, fill=fill, ...)
+	if ( !is.null(layout) ) {
+		layout <- rep_len(layout, 2L)
+		nrow <- layout[1L]
+		ncol <- layout[2L]
+		as_facets(plots, nrow=nrow, ncol=ncol)
+	} else {
+		as_facets(plots)
+	}
+})
+
+.plot_boxplots <- function(model, select = 1L,
+	xlab = NULL, ylab = NULL, col = NULL, fill = FALSE,
+	xlim = NULL, ylim = NULL, key = TRUE,
+	grid = TRUE, show.obs = TRUE, ...)
+{
+	data <- model$data
+	if ( is.numeric(select) )
+		select <- select + 1L
+	if ( is.null(xlab) )
+		xlab <- names(data)[select]
+	if ( is.null(ylab) )
+		ylab <- names(data)[1L]
+	if ( fill ) {
+		plot <- vizi(x=data[[select]], y=data[[1L]], fill=data[[select]])
+	} else {
+		plot <- vizi(x=data[[select]], y=data[[1L]], color=data[[select]])
+	}
+	plot <- add_mark(plot, "boxplot")
+	if ( show.obs )
+		plot <- add_mark(plot, "points")
+	plot <- set_coord(plot, xlim=xlim, ylim=ylim, grid=grid)
+	plot <- set_channel(plot, "x", label=xlab)
+	plot <- set_channel(plot, "y", label=ylab)
+	if ( fill ) {
+		plot <- set_channel(plot, "fill", label="\n", scheme=col, key=key)
+	} else {
+		plot <- set_channel(plot, "color", label="\n", scheme=col, key=key)
+	}
+	plot <- set_par(plot, ...)
+	plot
+}
+
+
 #### Model-based testing of class means ####
 ## -----------------------------------------
 
@@ -210,21 +260,21 @@ setMethod("meansTest", "SpatialDGMM",
 			as.data.frame(data[vars])
 		})
 	# fit models
-	FIT <- .lm_fit_fun(fixed, random)
 	if ( verbose ) {
 		lab <- if (n != 1L) "models" else "model"
 		message("fitting ", n, " ", lab)
 	}
+	FIT <- .lm_fit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- rownames(featureData(x))
 	# test models
-	TEST <- .lm_test_fun(reduced)
 	if ( verbose ) {
 		lab <- if (n != 1L) "models" else "model"
 		message("testing ", n, " ", lab)
 	}
+	TEST <- .lm_test_fun(reduced)
 	tests <- chunkMapply(TEST, models, datalist,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)

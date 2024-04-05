@@ -99,6 +99,32 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 	}
 })
 
+setMethod("plot", c(x = "SpatialDGMM", y = "missing"),
+	function(x, i = 1L, type = "density",
+		layout = NULL, free = "", ...)
+{
+	type <- match.arg(type)
+	ndim <- length(dim(x$mu))
+	mu <- apply(x$mu, ndim, identity, simplify=FALSE)
+	sigma <- apply(x$sigma, ndim, identity, simplify=FALSE)
+	mu <- mu[i]
+	sigma <- sigma[i]
+	plots <- Map(.plot_density, mu, sigma, MoreArgs=list(...))
+	if ( is.null(featureNames(x)) ) {
+		names(plots) <- paste0("i = ", i)
+	} else {
+		names(plots) <- featureNames(x)[i]
+	}
+	if ( !is.null(layout) ) {
+		layout <- rep_len(layout, 2L)
+		nrow <- layout[1L]
+		ncol <- layout[2L]
+		as_facets(plots, nrow=nrow, ncol=ncol, free=free)
+	} else {
+		as_facets(plots, free=free)
+	}
+})
+
 setMethod("image", c(x = "SpatialDGMM"),
 	function(x, i = 1L, type = "class",
 		layout = NULL, free = "", ...)
@@ -120,4 +146,30 @@ setMethod("image", c(x = "SpatialDGMM"),
 		as_facets(plots, free=free)
 	}
 })
+
+.plot_density <- function(mu, sigma, n = 256L,
+	xlab = "", ylab = "Density", col = NULL,
+	xlim = NULL, ylim = NULL, key = TRUE,
+	grid = TRUE, ...)
+{
+	plot <- vizi()
+	for ( i in seq_len(nrow(mu)) )
+	{
+		for ( j in seq_len(ncol(mu)) )
+		{
+			lower <- mu[i,j] - 3 * sigma[i,j]
+			upper <- mu[i,j] + 3 * sigma[i,j]
+			x <- seq(lower, upper, length.out=n)
+			px <- dnorm(x, mean=mu[i,j], sd=sigma[i,j])
+			plot <- add_mark(plot, "lines",
+				x=x, y=px, color=colnames(mu)[j])
+		}
+	}
+	plot <- set_coord(plot, xlim=xlim, ylim=ylim, grid=grid)
+	plot <- set_channel(plot, "x", label=xlab)
+	plot <- set_channel(plot, "y", label=ylab)
+	plot <- set_channel(plot, "color", label="\n", scheme=col, key=key)
+	plot <- set_par(plot, ...)
+	plot
+}
 
