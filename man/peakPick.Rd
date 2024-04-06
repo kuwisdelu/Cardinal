@@ -39,7 +39,7 @@
 
     \item{type}{The type of value to use to summarize the peak.}
 
-    \item{tolerance}{If \code{ref} is specified, the tolerance to use when deciding if a local peak in a spectrum matches a reference peak.}
+    \item{tolerance}{If \code{ref} is specified, the tolerance to use when deciding if a local peak in a spectrum matches a reference peak. If \code{NA}, then the tolerance is automatically determined as half the minimum distance between peaks in the reference.}
 
     \item{units}{The units for the above tolerance.}
 
@@ -53,18 +53,20 @@
 
     \itemize{
 
-        \item{"diff":}{Estimate noise based on the derivative of the signal using \code{\link{estnoise_diff}}.}
+        \item{"diff": Estimate noise based on the derivative of the signal using \code{\link{estnoise_diff}}.}
 
-        \item{"sd":}{Estimate noise from standard deviation using \code{\link{estnoise_sd}}.}
+        \item{"sd": Estimate noise from standard deviation using \code{\link{estnoise_sd}}.}
 
-        \item{"mad":}{Estimate noise from mean absolute deviation using \code{\link{estnoise_mad}}.}
+        \item{"mad": Estimate noise from mean absolute deviation using \code{\link{estnoise_mad}}.}
 
-        \item{"quantile":}{Estimate noise from a rolling quantile of the difference between the raw signal and a smoothed signal using \code{\link{estnoise_quant}}.}
+        \item{"quantile": Estimate noise from a rolling quantile of the difference between the raw signal and a smoothed signal using \code{\link{estnoise_quant}}.}
 
-        \item{"filter":}{Estimate noise using dynamic filtering of the local peaks using \code{\link{estnoise_filt}}.}
+        \item{"filter": Estimate noise using dynamic filtering of the local peaks using \code{\link{estnoise_filt}}.}
 
-        \item{"cwt":}{Detect peaks based on continuous wavelet transform (CWT) using \code{\link{findpeaks_cwt}}.}
+        \item{"cwt": Detect peaks based on continuous wavelet transform (CWT) using \code{\link{findpeaks_cwt}}.}
     }
+
+    If \code{ref} is provided, then the signal-to-noise ratio is not determined, and any detected peaks are returned as long as they match to a reference peak.
 }
 
 \note{
@@ -80,22 +82,20 @@
 }
 
 \seealso{
-    \code{\link{normalize}},
-    \code{\link{smooth}},
-    \code{\link{recalibrate}},
-    \code{\link{reduceBaseline}},
-    \code{\link{process}}
+    \code{\link{process}},
+    \code{\link{peakAlign}},
+    \code{\link{peakProcess}}
 }
 
 \examples{
 set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
-# queue normalization
+# queue peak picking
 mse2 <- peakPick(mse, method="diff", SNR=6)
 plot(mse2, i=4)
 
-# apply normalization
+# apply peak picking
 mse2 <- process(mse2)
 }
 

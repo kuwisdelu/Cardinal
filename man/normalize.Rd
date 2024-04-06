@@ -27,11 +27,11 @@
 
     \itemize{
 
-        \item{"tic":}{Total ion current normalization using \code{\link{rescale_sum}}.}
+        \item{"tic": Total ion current normalization using \code{\link{rescale_sum}}.}
 
-        \item{"rms":}{Root-mean-squared normalization using \code{\link{rescale_rms}}.}
+        \item{"rms": Root-mean-squared normalization using \code{\link{rescale_rms}}.}
 
-        \item{"reference":}{Normalization according to a reference feature using \code{\link{rescale_ref}}.}
+        \item{"reference": Normalization according to a reference feature using \code{\link{rescale_ref}}.}
     }
 }
 

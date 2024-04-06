@@ -6,7 +6,7 @@
 \alias{image,MSImagingExperiment-method}
 \alias{image,SpectralImagingExperiment-method}
 
-\title{Plot an image from a spectral imaging dataset}
+\title{Plot images from a spectral imaging dataset}
 
 \description{
     Create and display images from the spectra or pixel data of a spectral imaging dataset using a formula interface.
@@ -20,12 +20,12 @@
     tolerance = NA,
     units = c("ppm", "mz"),
     \dots,
-    xlab, ylab,
-    subset = TRUE)
+    xlab, ylab)
 
 \S4method{image}{SpectralImagingExperiment}(x,
     formula,
     i = 1L,
+    run = NULL,
     groups = NULL,
     superpose = FALSE,
     key = TRUE,
@@ -37,7 +37,6 @@
 }
 
 \arguments{
-    
     \item{x}{A spectral imaging dataset.}
     
     \item{formula}{A formula of the form \code{vals ~ x * y} giving the image values and the pixel coordinates. The LHS is taken to be the name of an array in \code{spectraData()} and the RHS is taken to be columns of \code{pixelData()}. Alternatively, if \code{formula} is a string or if \code{i} is NULL, then the LHS is interpreted as the name of a column of \code{pixelData()} as well.}
@@ -50,11 +49,11 @@
     
     \item{units}{The units for the above tolerance.}
 
-    \item{\dots}{Additional arguments passed to \code{\link{plot_image}}.}
+    \item{\dots}{Additional arguments passed to \code{\link[matter]{plot_image}}.}
 
     \item{xlab, ylab}{Plotting labels.}
 
-    \item{subset}{A logical vector indicating which pixels to include in the image.}
+    \item{run}{The names of experimental runs to include, or the index of the levels of the runs to include.}
 
     \item{groups}{A vector coercible to a factor indicating which of the specified features should be plotted with the same color.}
 
@@ -67,6 +66,8 @@
     \item{smooth}{The name of a smoothing method, such as \code{"gauss"} or \code{"bi"} for \code{filt2_gauss()} and \code{filt2_bi()}, etc. See \code{\link{filt2}} for details.}
 
     \item{scale}{If multiple images are plotted, should they be scaled to the same intensity scale?}
+
+    \item{subset}{A logical vector indicating which pixels to include in the image.}
 }
 
 \author{
@@ -74,7 +75,7 @@
 }
 
 \seealso{
-    \code{\link{plot}},
+    \code{\link{image}},
     \code{\link{plot_image}},
     \code{\link{selectROI}}
 }
@@ -88,8 +89,8 @@ image(x, mz=peaks[1L], tolerance=0.5, units="mz")
 image(x, mz=peaks[1L], smooth="gaussian")
 image(x, mz=peaks[1:9], smooth="adaptive")
 
-x <- summarizePixels(x, stat=c(tic="mean"))
-image(x, "tic")
+x <- summarizePixels(x, stat=c(TIC="mean"))
+image(x, "TIC")
 }
 
 \keyword{hplot}

@@ -19,7 +19,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		if ( missing(ref) || is.null(ref) )
 		{
 			# create reference peaks from sample spectra
-			if ( sampleSize < 1 ) {
+			if ( sampleSize <= 1 ) {
 				# sample size is a proportion
 				n <- ceiling(sampleSize * length(object))
 				perc <- 100 * sampleSize
@@ -413,10 +413,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	} else {
 		n <- NULL
 	}
-	if ( verbose )
+	if ( verbose ) {
+		ppm <- switch(units,
+			relative=paste0("(", 1e6 * tol, " ppm)"),
+			absolute="")
 		message("aligned to ", length(ref),
 			" reference peaks with ", units,
-				" tolerance ", tol)
+				" tolerance ", tol, " ", ppm)
+	}
 	spectra <- sparse_mat(index=index,
 		data=spectra, domain=ref,
 		nrow=length(ref), ncol=length(object),

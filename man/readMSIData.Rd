@@ -1,61 +1,105 @@
 \name{readMSIData}
+
 \alias{readMSIData}
 \alias{readImzML}
 \alias{readAnalyze}
 
+\alias{convertMSImagingExperiment2Arrays}
+\alias{convertMSImagingArrays2Experiment}
+
 \title{Read mass spectrometry imaging data files}
+
 \description{
-	Read supported mass spectrometry imaging data files. Supported formats include imzML and Analyze 7.5.
+	Read supported mass spectrometry imaging data files, including imzML and Analyze 7.5.
 }
+
 \usage{
 ## Read any supported MS imaging file
 readMSIData(file, \dots)
 
-## Read imzML files
-readImzML(name, folder = getwd(), attach.only = TRUE,
+## Read imzML file
+readImzML(file, memory = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
-	guess.max = 1000L, as = "MSImagingExperiment", parse.only = FALSE,
+	guess.max = 1000L, as = "auto", parse.only=FALSE,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), \dots)
 
-## Read Analyze 7.5 files
-readAnalyze(name, folder = getwd(), attach.only = TRUE,
-	as = "MSImagingExperiment", \dots)
+## Read Analyze 7.5 file
+readAnalyze(file, memory = FALSE, as = "auto",
+	verbose = getCardinalVerbose(), \dots)
+
+## Convert from MSImagingExperiment to MSImagingArrays
+convertMSImagingExperiment2Arrays(object)
+
+## Convert from MSImagingArrays to MSImagingExperiment
+convertMSImagingArrays2Experiment <- function(object, mz = NULL,
+	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
+	guess.max = 1000L, tolerance = 0.5 * resolution,
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), \dots)
 }
 \arguments{
-	\item{file}{A description of the data file to be read. This may be either an absolute or relative path. The file extension must be included.}
-	\item{name}{The common (base) file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
-	\item{folder}{The path to the folder containing the data files.}
-	\item{attach.only}{Attach the file as a \code{\linkS4class{matter}} on-disk matrix for reading on-demand, rather than loading the data into memory.}
-	\item{mass.range}{For 'processed' imzML files, the mass range to use for the imported data. If known, providing this can improve the loading time dramatically, as otherwise it is calculated from reading the dataset directly.}
-	\item{resolution}{For 'processed' imzML files, the accuracy to which the m/z values will be binned after reading. For \code{units="ppm"}, this is the half-binwidth, and should be set to the native accuracy of the mass spectrometer, if known. For \code{units="mz"}, this is simply the step size between m/z bins. If this is NA, then automatically guess a resolution from the data.}
-	\item{units}{The units for \code{resolution}. Either parts-per-million or absolute m/z units.}
-	\item{guess.max}{The number of spectra used when guessing the mass range and resolution.}
-	\item{as}{After reading in the data, what class of object should be returned? As of Cardinal version >= 2.6, only \code{MSImagingExperiment} is supported.}
-	\item{parse.only}{If TRUE, return only the parsed imzML metadata without creating a new imaging experiment object. (May be useful for diagnosing import problems.)}
-	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. This is only used when \code{mass.range=NULL} and \code{attach.only=TRUE}, when reading the mass range from the m/z data of a "processed" imzML file.}
-	\item{\dots}{Additional arguments passed to read functions.}
+	\item{file}{The absolute or relative file path. The file extension must be included for \code{readMSIData}.}
+
+	\item{memory}{Should the spectra be loaded into memory? If FALSE, the spectra are attached as an out-of-memory matrix.}
+
+	\item{mass.range}{The mass range to use when converting the data to an \code{MSImagingExperiment}.}
+
+	\item{resolution}{The mass resolution to use when converting the data to an \code{MSImagingExperiment}. This is the \emph{inverse} of the instrument resolution, if known. It is the width of the m/z bins when converting the data to an \code{MSImagingExperiment}.}
+
+	\item{units}{The units for the above resolution.}
+
+	\item{guess.max}{The number of spectra to use when guessing the mass range and resolution, if they are not provided.}
+
+	\item{as}{After reading in the data, what class of object should be returned? The data is initially loaded as an \code{MSImagingArrays} object. It may be converted to an \code{MSImagingExperiment} object. Setting to "auto" means to determine whichever is more appropriate depending on whether the spectra appear to have been processed and centroided.}
+
+	\item{parse.only}{If TRUE, return only the parsed imzML metadata without creating a new \code{MSImagingArrays} or \code{MSImagingExperiment} object.}
+
+	\item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+	\item{\dots}{Additional arguments passed to \code{\link[CardinalIO]{parseImzML}} or \code{\link[CardinalIO]{parseAnalyze}}.}
+
+	\item{mz}{A vector of shared m/z values for converting to \code{MSImagingExperiment}, if not to be determined automatically.}
+
+	\item{tolerance}{If the spectra have been centroided but the peaks are unaligned, then this is passed to \code{\link{peakAlign}}.}
 }
+
 \details{
-	In the current implementation, the file extensions must match exactly: '.imzML' and '.ibd' for imzML and '.hdr', '.t2m', and '.img' for Analyze 7.5.
+	The spectra are initially loaded into a \code{MSImagingArrays} object before conversion to \code{MSImagingExperiment} (if applicable).
 
-	The \code{readImzML} function supports reading and returning both the 'continuous' and 'processed' formats.
+	This conversion can be sped up by specifying the \code{mass.range} and \code{resolution} so they do not have to be determined from the spectra directly. Using a larger value of \code{guess.max} can improve the accuracy of the m/z binning for downstream analysis at the expense of a longer conversion time.
 
-	When \code{attach.only=TRUE}, the data is not loaded into memory; only the experimental metadata is read, and the intensity data will only be accessed on-demand. For large datasets, this is memory-efficient. For smaller datasets, this may be slower than simply reading the entire dataset into memory.
+	If greater control is desired, spectra should be imported as \code{MSImagingArrays}, and processing to \code{MSImagingExperiment} can be performed manually.
 
-	If the mass range is known, setting \code{mass.range} will make reading data much faster for very large datasets.
+	If problems are encountered while trying to import imzML files, the files should be verified and fixed with imzMLValidator.
 
-	If problems are encountered while trying to import imzML files, the files should be verified and fixed with the Java-based imzMLValidator application: https://gitlab.com/imzML/imzMLValidator/.
+	A Java version of imzML validator can be found at: \url{https://gitlab.com/imzML/imzMLValidator}.
+
+	A web-based version of imzML validator can be found at: \url{https://imzml.github.io}.
 }
+
 \value{
-	A \code{\linkS4class{MSImagingExperiment}} object.
+	A \code{\linkS4class{MSImagingExperiment}} or \code{\linkS4class{MSImagingArrays}} object.
 }
+
 \author{
 	Kylie A. Bemis
 }
+
 \references{
     Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
 }
+
 \seealso{
+	\code{\link[CardinalIO]{parseImzML}},
+	\code{\link[CardinalIO]{parseAnalyze}}
 	\code{\link{writeMSIData}}
 }
+
 \keyword{IO}

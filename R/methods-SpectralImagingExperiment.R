@@ -341,8 +341,9 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 	{
 		cat(sprintf("processingData(%d): %s\n", length(processingData(object)),
 			.paste_head_tail(names(processingData(object)))))
-		cat("NOTE: use process() to execute pending processing steps\n")
-		cat("NOTE: use plot() to preview pending processing steps\n")
+		cat("NOTE: use process() to execute queued processing steps\n")
+		cat("NOTE: use reset() to remove queued processing steps\n")
+		cat("NOTE: use plot() to preview queued processing steps\n")
 	}
 }
 

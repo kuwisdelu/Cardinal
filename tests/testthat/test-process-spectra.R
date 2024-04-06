@@ -14,6 +14,7 @@ test_that("process spectra - SpectralImagingArrays", {
 	
 	expect_is(s2, "SpectralImagingArrays")
 	expect_equal(rms1, ones)
+	expect_equal(reset(normalize(s)), s)
 
 	file1 <- tempfile()
 	s3 <- normalize(s, method="rms", scale=1)
@@ -45,6 +46,7 @@ test_that("process spectra - SpectralImagingExperiment", {
 
 	expect_is(s2, "SpectralImagingExperiment")
 	expect_equal(sqrt(colMeans(spectra(s2)^2)), ones)
+	expect_equal(reset(normalize(s)), s)
 
 	file1 <- tempfile()
 	s3 <- normalize(s, method="rms", scale=1)

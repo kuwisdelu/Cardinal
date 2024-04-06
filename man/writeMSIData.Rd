@@ -4,53 +4,62 @@
 \alias{writeImzML}
 \alias{writeAnalyze}
 
-\alias{writeMSIData,MSImageSet,character-method}
-\alias{writeImzML,MSImageSet-method}
-\alias{writeAnalyze,MSImageSet-method}
+\alias{writeImzML,MSImagingExperiment_OR_Arrays-method}
+\alias{writeAnalyze,MSImagingExperiment-method}
+\alias{writeAnalyze,SpectralImagingExperiment-method}
 
 \title{Write mass spectrometry imaging data files}
+
 \description{
-	Write supported mass spectrometry imaging data files. Supported formats include imzML and Analyze 7.5.
+	Write supported mass spectrometry imaging data files, including imzML and Analyze 7.5.
 }
+
 \usage{
-\S4method{writeMSIData}{MSImageSet,character}(object, file, outformat=c("imzML", "Analyze"), \dots)
+writeMSIData(object, file, \dots)
 
-\S4method{writeImzML}{MSImageSet}(object, name, folder=getwd(), merge=FALSE,
-	mz.type="32-bit float", intensity.type="32-bit float", \dots)
+\S4method{writeImzML}{MSImagingExperiment_OR_Arrays}(object, file, bundle = TRUE,
+		verbose = getCardinalVerbose(), \dots)
 
-\S4method{writeAnalyze}{MSImageSet}(object, name, folder=getwd(),
-	intensity.type="16-bit integer", \dots)
+\S4method{writeAnalyze}{MSImagingExperiment}(object, file, verbose = getCardinalVerbose(), \dots)
+
+\S4method{writeAnalyze}{SpectralImagingExperiment}(object, file, verbose = getCardinalVerbose(), \dots)
 }
+
 \arguments{
-	\item{object}{An imaging dataset to be written to file.}
-	\item{file}{A description of the data file to be write. This may be either an absolute or relative path. Any file extension will be ignored and replaced with an appropriate one.}
-	\item{name}{The common file name for the '.imzML' and '.ibd' files for imzML or for the '.hdr', '.t2m', and '.img' files for Analyze 7.5.}
-	\item{folder}{The path to the folder containing the data files.}
-	\item{outformat}{The file format to write. Currently, the supported formats are "imzML" or "Analyze".}
-	\item{merge}{Whether the samples/runs should be written to the same file (\code{TRUE}) or split into multiple files (\code{FALSE}). Currently, only \code{FALSE} is supported.}
-	\item{mz.type}{The data type for the m/z values. Acceptable values are "32-bit float" and "64-bit float".}
-	\item{intensity.type}{The data type for the intensity values. Acceptable values are "16-bit integer", "32-bit integer", "64-bit integer", "32-bit float" and "64-bit float".}
-	\item{\dots}{Additional arguments passed to write functions.}
+	\item{object}{A spectral imaging dataset.}
+
+	\item{file}{The absolute or relative file path. The file extension must be included for \code{writeMSIData}.}
+
+	\item{bundle}{Should the ".imzML" and ".ibd" files be bundled into a new directory of the same name?}
+
+	\item{verbose}{Should progress messages be printed?}
+
+	\item{\dots}{Additional arguments passed to \code{\link[CardinalIO]{writeImzML}} or \code{\link[CardinalIO]{writeAnalyze}}.}
 }
 \details{
-	The \code{writeImzML} function supports writing both the 'continuous' and 'processed' formats.
+	The \code{writeImzML} function supports writing both the "continuous" and "processed" formats.
 
-	Exporting the metadata is lossy, and not all metadata will be preserved. If exporting an object that was originally imported from an imzML file, any metadata that appears in \code{metadata()} of the object will be preserved when writing.
+	Exporting the experimental metadata to \code{cvParam} tags is lossy, and not all metadata will be preserved. If exporting an object that was originally imported from an imzML file, only metadata that appears in \code{experimentData()} will be preserved when writing.
 
-	Different experimental runs are written to separate files.
+	Datasets with multiple experimental runs will be merged into a single file. The object's \code{pixelData()} and \code{featureData()} will also be written to tab-delimted files if appropriate. These will be read back in by \code{readImzML()}.
 
-	The imzML files can be modified after writing (such as to add additional experimental metadata) using the Java-based imzMLValidator application: https://gitlab.com/imzML/imzMLValidator/.
+	The imzML files can be modified after writing (such as to add additional experimental metadata) using the Java-based imzMLValidator application: \url{https://gitlab.com/imzML/imzMLValidator/}.
 }
+
 \value{
-	\code{TRUE} if the file was written successfully.
+	\code{TRUE} if the file was written successfully, with the output file paths attached as an attribute.
 }
+
 \author{
 	Kylie A. Bemis
 }
+
 \references{
     Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
 }
+
 \seealso{
 	\code{\link{readMSIData}}
 }
+
 \keyword{IO}

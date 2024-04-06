@@ -28,21 +28,21 @@
 
     \itemize{
 
-        \item{"gaussian":}{Gaussian smoothing using \code{\link{filt1_gauss}}.}
+        \item{"gaussian": Gaussian smoothing using \code{\link{filt1_gauss}}.}
 
-        \item{"bilateral":}{Bilateral filter using \code{\link{filt1_bi}}.}
+        \item{"bilateral": Bilateral filter using \code{\link{filt1_bi}}.}
 
-        \item{"adaptive":}{Adaptive bilateral filter using \code{\link{filt1_adapt}}.}
+        \item{"adaptive": Adaptive bilateral filter using \code{\link{filt1_adapt}}.}
 
-        \item{"diff":}{Nonlinear diffusion smoothing using \code{\link{filt1_diff}}.}
+        \item{"diff": Nonlinear diffusion smoothing using \code{\link{filt1_diff}}.}
 
-        \item{"guide":}{Guided filter using \code{\link{filt1_guide}}.}
+        \item{"guide": Guided filter using \code{\link{filt1_guide}}.}
 
-        \item{"pag":}{Peak-aware guided filter using \code{\link{filt1_pag}}.}
+        \item{"pag": Peak-aware guided filter using \code{\link{filt1_pag}}.}
 
-        \item{"sgolay":}{Savitzky-Golar filter using \code{\link{filt1_sg}}.}
+        \item{"sgolay": Savitzky-Golar filter using \code{\link{filt1_sg}}.}
 
-        \item{"ma":}{Moving average filter using \code{\link{filt1_ma}}.}
+        \item{"ma": Moving average filter using \code{\link{filt1_ma}}.}
     }
 }
 
@@ -70,11 +70,11 @@
 set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
-# queue normalization
+# queue smoothing
 mse2 <- smooth(mse, method="gaussian", width=11)
 plot(mse2, i=4)
 
-# apply normalization
+# apply smoothing
 mse2 <- process(mse2)
 }
 

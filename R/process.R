@@ -3,14 +3,24 @@
 ## ------------------------------
 
 setMethod("addProcessing", "SpectralImagingData",
-	function(object, FUN, label, ...)
+	function(object, FUN, label, verbose = getCardinalVerbose(), ...)
 {
 	ps <- ProcessingStep(FUN, ARGS=list(...))
 	ps <- setNames(list(ps), label)
 	processingData(object) <- c(processingData(object), ps)
+	if ( verbose ) {
+		labels <- names(processingData(object))
+		message("queued processing: ", paste0(labels, collapse=", "))
+	}
 	if ( validObject(object) )
 		object
 })
+
+reset <- function(object, ...)
+{
+	processingData(object) <- list()
+	object
+}
 
 
 # MSImagingExperiment
@@ -121,7 +131,7 @@ setMethod("process", "SpectralImagingExperiment",
 		return(object)
 	ps <- processingData(object)
 	if ( verbose )
-		message("processing ", paste0(names(ps), collapse=", "))
+		message("processing: ", paste0(names(ps), collapse=", "))
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
@@ -250,7 +260,7 @@ setMethod("process", "SpectralImagingArrays",
 		return(object)
 	ps <- processingData(object)
 	if ( verbose )
-		message("processing ", paste0(names(ps), collapse=", "))
+		message("processing: ", paste0(names(ps), collapse=", "))
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()

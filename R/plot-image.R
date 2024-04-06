@@ -12,8 +12,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		tolerance = NA,
 		units = c("ppm", "mz"),
 		...,
-		xlab, ylab,
-		subset = TRUE)
+		xlab, ylab)
 {
 	if ( is.null(mz) )
 		mz <- mz(x)[1L]
@@ -48,7 +47,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		i <- unlist(i)
 	}
 	callNextMethod(x, formula=formula, i=i,
-		xlab=xlab, ylab=ylab, subset=subset, ...)
+		xlab=xlab, ylab=ylab, ...)
 })
 
 # SpectralImagingExperiment
@@ -57,6 +56,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	function(x,
 		formula,
 		i = 1L,
+		run = NULL,
 		groups = NULL,
 		superpose = FALSE,
 		key = TRUE,
@@ -90,6 +90,17 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	if ( !is.null(names(i)) && anyDuplicated(names(i)) ) {
 		vals <- rowsum(vals, group=names(i), reorder=FALSE, na.rm=TRUE)
 		i <- setNames(rep.int(NA, nrow(vals)), unique(names(i)))
+	}
+	if ( !is.null(run) )
+	{
+		if ( !is.character(run) && !is.factor(run) )
+			run <- runNames(x)[run]
+		if ( !all(subset) ) {
+			subset <- rep_len(subset, ncol(x))
+			subset <- subset & run(x) %in% run
+		} else {
+			subset <- run(x) %in% run
+		}
 	}
 	if ( !all(subset) ) {
 		subset <- rep_len(subset, ncol(x))

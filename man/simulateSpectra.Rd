@@ -1,6 +1,6 @@
 \name{simulateSpectrum}
 
-\alias{simulateSpectrum}
+\alias{simulateSpectra}
 \alias{simulateImage}
 
 \alias{addShape}
@@ -17,8 +17,8 @@
 }
 
 \usage{
-simulateSpectrum(n = 1L, peaks = 50L,
-    mz = rlnorm(peaks, 7, 0.3), intensity = rlnorm(peaks, 1, 0.9),
+simulateSpectra(n = 1L, npeaks = 50L,
+    mz = rlnorm(npeaks, 7, 0.3), intensity = rlnorm(npeaks, 1, 0.9),
     from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
     sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
     sdnoise = 0.1, sdmz = 10, resolution = 1000, fmax = 0.5,
@@ -27,14 +27,15 @@ simulateSpectrum(n = 1L, peaks = 50L,
 
 simulateImage(pixelData, featureData, preset,
     from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-    sdrun = 1, sdpixel = 1, spcorr = 0.3, sptype = "SAR",
-    representation = c("profile", "centroid"), units=c("ppm", "mz"),
-    as = c("MSImagingExperiment", "SparseImagingExperiment"),
+    sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
+    representation = c("profile", "centroid"),
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
 
-presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
+presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
     dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
     sdsample = 0.2, jitter = TRUE, \dots)
 }
@@ -42,7 +43,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 \arguments{
     \item{n}{The number of spectra to simulate.}
 
-    \item{peaks, npeaks}{The number of peaks to simulate. Not used if \code{mz} and \code{intensity} are provided.}
+    \item{npeaks}{The number of peaks to simulate. Not used if \code{mz} and \code{intensity} are provided.}
 
     \item{mz}{The theoretical m/z values of the simulated peaks.}
 
@@ -74,6 +75,10 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     \item{representation}{Should a profile spectrum be returned or only the centroided peaks?}
 
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{pixelData}{A \code{\linkS4class{PositionDataFrame}} giving the pixel design of the experiment. The names of the columns should match the names of columns in \code{featureData}. Each column should be a logical vector corresponding to a morphological substructure, indicate which pixels belong to that substructure.}
@@ -82,7 +87,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     \item{preset}{A number indicating a preset image definition to use.}
 
-    \item{nruns}{The number of runs to simulate for each condition.}
+    \item{nrun}{The number of runs to simulate for each condition.}
 
     \item{sdrun}{A standard deviation giving the run-to-run variance.}
 
@@ -90,11 +95,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 
     \item{spcorr}{The spatial autocorrelation. Must be between 0 and 1, where \code{spcorr=0} indicates no spatial autocorrelation.}
 
-    \item{sptype}{The type of spatial autocorrelation.}
-
-    \item{as}{The class of object to be returned.}
-
-    \item{\dots}{Additional arguments to pass to \code{\link{simulateSpectrum}} or \code{\link{presetImageDef}}.}
+    \item{\dots}{Additional arguments to pass to \code{\link{simulateSpectra}} or \code{\link{presetImageDef}}.}
 
     \item{dim}{The dimensions of the preset image.}
 
@@ -116,7 +117,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 }
 
 \details{
-    The \code{simulateSpectrum()} and \code{simulateImage()} functions are used to simulate mass spectra and MS imaging experiments. They provide a great deal of control over the parameters of the simulation, including all sources of variation.
+    The \code{simulateSpectra()} and \code{simulateImage()} functions are used to simulate mass spectra and MS imaging experiments. They provide a great deal of control over the parameters of the simulation, including all sources of variation.
 
     For \code{simulateImage()}, the user should provide the design of the simulated experiment via matching columns in \code{pixelData} and \code{featureData}, where each column corresponds to different morphological substructures or differing conditions. These design data frames are returned in the \code{metadata()} of the returned object for later reference.
 
@@ -148,7 +149,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 }
 
 \value{
-	For \code{simulateSpectrum}, a \code{list} with elements:
+	For \code{simulateSpectra}, a \code{list} with elements:
 
 	\itemize{
         \item{\code{mz}: a numeric vector of the observed m/z values}
@@ -156,7 +157,7 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
         \item{\code{intensity}: a numeric vector or matrix of the intensities}
     }
 
-    For \code{simulateImage}, a \code{\linkS4class{MSImagingExperiment}} or a \code{\linkS4class{SparseImagingExperiment}}.
+    For \code{simulateImage}, a \code{\linkS4class{MSImagingExperiment}} object.
 
     For \code{addShape}, a new \code{\linkS4class{PositionDataFrame}} with a logical column added for the corresponding shape.
 
@@ -168,33 +169,30 @@ presetImageDef(preset = 1L, nruns = 1, npeaks = 30L,
 }
 
 \seealso{
-	\code{\link{simulateSpectrum}},
-    \code{\link{simulateImage}}
+	\code{\link[matter]{simspec}}
 }
 
 \examples{
-setCardinalBPPARAM(SerialParam())
 set.seed(1)
 
 # generate a spectrum
-s <- simulateSpectrum(1)
-plot(intensity ~ mz, data=s, type="l")
+s <- simulateSpectra(1)
+plot(s$intensity ~ s$mz, type="l")
 
 # generate a noisy low-resolution spectrum with a baseline
-s <- simulateSpectrum(1, baseline=2, sdnoise=0.3, resolution=100)
-plot(intensity ~ mz, data=s, type="l")
+s <- simulateSpectra(1, baseline=2, sdnoise=0.3, resolution=100)
+plot(s$intensity ~ s$mz, type="l")
 
 # generate a high-resolution spectrum
-s <- simulateSpectrum(1, peaks=100, resolution=10000)
-plot(intensity ~ mz, data=s, type="l")
+s <- simulateSpectra(1, peaks=100, resolution=10000)
+plot(s$intensity ~ s$mz, type="l")
 
 # generate an image
-x <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
-m <- mz(metadata(x)$design$featureData)
+mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
+peaks <- mz(metadata(mse)$design$featureData)
 
-image(x, mz=m[5])
-
-plot(x, coord=c(x=3, y=3))
+image(mse, mz=peaks[c(1,4,5,6)])
+plot(mse, coord=c(x=3,y=3))
 }
 
 \keyword{datagen}

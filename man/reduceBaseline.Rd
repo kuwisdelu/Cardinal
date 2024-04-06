@@ -27,13 +27,13 @@
 
     \itemize{
 
-        \item{"locmin":}{Interpolate from local minima using \code{\link{estbase_loc}}.}
+        \item{"locmin": Interpolate from local minima using \code{\link{estbase_loc}}.}
 
-        \item{"hull":}{Convex hull estimation using \code{\link{estbase_hull}}.}
+        \item{"hull": Convex hull estimation using \code{\link{estbase_hull}}.}
 
-        \item{"snip":}{Sensitive nonlinear iterative peak (SNIP) clipping using \code{\link{estbase_snip}}.}
+        \item{"snip": Sensitive nonlinear iterative peak (SNIP) clipping using \code{\link{estbase_snip}}.}
 
-        \item{"median":}{Running medians using \code{\link{estbase_med}}.}
+        \item{"median": Running medians using \code{\link{estbase_med}}.}
     }
 }
 
@@ -61,11 +61,11 @@
 set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3), baseline=1)
 
-# queue normalization
+# queue baseline reduction
 mse2 <- reduceBaseline(mse, method="locmin")
 plot(mse2, i=4)
 
-# apply normalization
+# apply baseline reduction
 mse2 <- process(mse2)
 }
 

@@ -38,11 +38,11 @@
 
     \itemize{
 
-        \item{"locmax":}{Align to local maxima using \code{\link{warp1_loc}}.}
+        \item{"locmax": Align to local maxima using \code{\link{warp1_loc}}.}
 
-        \item{"dtw":}{Dynamic time warping using \code{\link{warp1_dtw}}.}
+        \item{"dtw": Dynamic time warping using \code{\link{warp1_dtw}}.}
 
-        \item{"cow":}{Correlation optimized warping using \code{\link{warp1_cow}}.}
+        \item{"cow": Correlation optimized warping using \code{\link{warp1_cow}}.}
     }
 }
 
@@ -71,11 +71,11 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3), sdmz=250)
 plot(mse, i=c(2,4,5), superpose=TRUE, xlim=c(1260,1320))
 
-# queue normalization
+# queue recalibration
 peaks <- estimateReferencePeaks(mse)
 mse2 <- recalibrate(mse, ref=peaks, method="locmax", tolerance=500)
 
-# apply normalization
+# apply recalibration
 mse2 <- process(mse2)
 plot(mse2, i=c(2,4,5), superpose=TRUE, xlim=c(1260,1320))
 }
