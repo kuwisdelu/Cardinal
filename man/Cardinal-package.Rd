@@ -5,7 +5,6 @@
 \alias{Cardinal}
 
 \alias{CardinalVersion}
-\alias{CardinalLog}
 
 \alias{getCardinalBPPARAM}
 \alias{setCardinalBPPARAM}
@@ -13,11 +12,8 @@
 \alias{getCardinalVerbose}
 \alias{setCardinalVerbose}
 
-\alias{getCardinalNumBlocks}
-\alias{setCardinalNumBlocks}
-
-\alias{getCardinalDelayProc}
-\alias{setCardinalDelayProc}
+\alias{getCardinalNChunks}
+\alias{setCardinalNChunks}
 
 \title{Mass spectrometry imaging tools}
 
@@ -39,20 +35,12 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	The following options can be set via \code{options()}.
 
 	\itemize{
-		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=SerialParam())}: The default backend to use for parallel processing. By default, this is initially set to a serial backend (no parallelization).}
+		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=NULL)}: The default backend to use for parallel processing. By default, this is initially set to \code{NULL} (no parallelization). Otherwise, it must be a \code{BiocParallelParam} instance. See documentation for \code{\link{bplapply}}.}
 
-		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should detailed messages be printed?}
+		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should progress messages be printed?}
 
-		\item{\code{getCardinalNumBlocks(), setCardinalNumBlocks(n=20L)}: The default number of data chunks used by \code{pixelApply()}, \code{featureApply()}, and \code{spatialApply()} when \code{.blocks=TRUE}. Used by many methods internally.}
-
-		\item{\code{getCardinalDelayProc(), setCardinalDelayProc(delay=TRUE)}: Should pre-processing functions like \code{normalize()} and \code{peakPeak()} be delayed (until \code{process()} is called)?}
+		\item{\code{getCardinalNChunks(), setCardinalNChunks(n=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
 	}
-}
-
-\section{Logging}{
-
-	For support or debugging help, please provide the output of a call to \code{CardinalLog()}. By default, this saves a log to the file "Cardinal.log" in the current working directory.
-
 }
 
 \author{

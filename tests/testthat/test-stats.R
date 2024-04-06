@@ -39,8 +39,8 @@ test_that("NMF", {
 test_that("PLS", {
 
 	set.seed(1)
-	s <- simulateImage(preset=1, dim=c(10L, 10L), nrun=2L)
-	s$class <- makeFactor(yes=s$circle, no=!s$circle)
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2L)
+	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 	pl <- PLS(s, s$class, ncomp=2, method="nipals")
 	pred <- predict(pl, type="class")
 	pred01 <- predict(pl, newdata=s, ncomp=1)
@@ -49,7 +49,7 @@ test_that("PLS", {
 	topf <- topFeatures(pl)
 
 	expect_is(pred, "factor")
-	expect_equal(levels(pred), c("yes", "no"))
+	expect_equal(levels(pred), c("A", "B"))
 	expect_equal(fitted(pl, "class"), pred)
 	expect_equivalent(pred01, pred012[,,1L])
 	expect_equivalent(pred02, pred012[,,2L])
@@ -138,10 +138,9 @@ test_that("spatialKMeans", {
 test_that("spatialShrunkenCentroids (classification)", {
 
 	set.seed(1)
-	s <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2L,
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2L,
 		representation="centroid")
-	s$class <- makeFactor(circle=s$circle, square=s$square,
-		bg=!s$circle & !s$square)
+	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 
 	ssc <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="gaussian")
 	ssc2 <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="adaptive")
@@ -177,8 +176,6 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
 		representation="centroid")
-	s$class <- makeFactor(circle=s$circle, square=s$square,
-		bg=!s$circle & !s$square)
 
 	set.seed(2)
 	ssc <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="gaussian")

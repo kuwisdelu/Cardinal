@@ -5,162 +5,97 @@
 \alias{MSImagingExperiment}
 \alias{MSImagingExperiment-class}
 
-\alias{spectraData}
-\alias{spectraData<-}
-\alias{spectraData-methods}
-
-\alias{spectra}
-\alias{spectra<-}
-\alias{spectra-methods}
-
-\alias{peaks}
-\alias{peaks<-}
-\alias{peaks-methods}
-
-\alias{peakData}
-\alias{peakData<-}
-\alias{peakData-methods}
-
-\alias{isCentroided}
-
-\alias{centroided}
-\alias{centroided<-}
-
 \alias{show,MSImagingExperiment-method}
-\alias{spectraData,MSImagingExperiment-method}
-\alias{spectraData<-,MSImagingExperiment-method}
-\alias{spectra,MSImagingExperiment-method}
-\alias{spectra<-,MSImagingExperiment-method}
-\alias{mz,MSImagingExperiment-method}
-\alias{mz<-,MSImagingExperiment-method}
-\alias{resolution,MSImagingExperiment-method}
-\alias{resolution<-,MSImagingExperiment-method}
-\alias{centroided,MSImagingExperiment-method}
-\alias{centroided<-,MSImagingExperiment-method}
-\alias{pixels,MSImagingExperiment-method}
-\alias{features,MSImagingExperiment-method}
+\alias{mz,MSImagingArrays-method}
+\alias{mz<-,MSImagingArrays-method}
+\alias{intensity,MSImagingArrays-method}
+\alias{intensity<-,MSImagingArrays-method}
+\alias{centroided,MSImagingExperiment_OR_Arrays-method}
+\alias{centroided<-,MSImagingExperiment_OR_Arrays-method}
+\alias{isCentroided,MSImagingExperiment_OR_Arrays-method}
+\alias{experimentData,MSImagingExperiment_OR_Arrays-method}
+\alias{experimentData<-,MSImagingExperiment_OR_Arrays-method}
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
-\alias{pull,MSImagingExperiment-method}
 
-\alias{peaks,MSImagingExperiment-method}
-\alias{peaks<-,MSImagingExperiment-method}
-\alias{peakData,MSImagingExperiment-method}
-\alias{peakData<-,MSImagingExperiment-method}
-\alias{isCentroided,MSImagingExperiment-method}
-
-\title{MSImagingExperiment: Mass spectrometry imaging experiments}
+\title{MSImagingExperiment: MS imaging data with shared m/z values}
 
 \description{
-   The \code{MSImagingExperiment} class is designed for mass spectrometry imaging experimental data and metadata. It is designed to contain full MSI experiments, including multiple runs and replicates, potentially across multiple files. Both 2D and 3D imaging experiments are supported, as well as any type of experimental metadata such as diagnosis, subject, time point, etc.
+   The \code{MSImagingExperiment} class provides a matrix-like container for high-throughput mass spectrometry imaging data where every mass spectrum shares the same m/z values. It is designed to provide easy access to both the spectra (as columns) and sliced images (as rows).
+
+   It can be converted from a \code{\linkS4class{MSImagingArrays}} object which is designed for representing raw mass spectra.
 }
 
 \usage{
 ## Instance creation
-MSImagingExperiment(
-    imageData = matrix(nrow=0, ncol=0),
-    featureData = MassDataFrame(),
-    pixelData = PositionDataFrame(),
-    metadata = list(),
-    processing = SimpleList(),
-    centroided = FALSE)
+MSImagingExperiment(spectraData = SimpleList(),
+    featureData = MassDataFrame(), pixelData = PositionDataFrame(),
+    experimentData = NULL, centroided = NA, metadata = list())
 
 ## Additional methods documented below
 }
 
 \arguments{
-    \item{imageData}{Either a matrix-like object with number of rows equal to the number of features and number of columns equal to the number of pixels, or an \code{\linkS4class{ImageArrayList}}.}
+    \item{spectraData}{Either a matrix-like object with number of rows equal to the number of features and number of columns equal to the number of pixels, a list of such objects, or a \code{\linkS4class{SpectraArrays}} instance.}
 
-    \item{featureData}{A \code{\linkS4class{MassDataFrame}} with feature metadata, with a row for each m/z value.}
+    \item{featureData}{A \code{\linkS4class{MassDataFrame}} with feature metadata, with a row for each feature.}
 
-    \item{pixelData}{A \code{\linkS4class{PositionDataFrame}} with pixel metadata, with a row for each pixel.}
+    \item{pixelData}{A \code{\linkS4class{PositionDataFrame}} with pixel metadata, with a row for each spectrum.}
 
-    \item{metadata}{A \code{list} with experimental-level metadata.}
+    \item{experimentData}{Either NULL or a \code{\linkS4class{ImzMeta}} object with MS-specific experiment-level metadata.}
 
-    \item{processing}{A \code{\linkS4class{SimpleList}} with processing steps. This should typically be empty for new objects.}
+    \item{centroided}{A logical value indicated whether the spectra have been centroided.}
 
-    \item{centroided}{\code{FALSE} if the object contains profile spectra and \code{TRUE} if the spectra have been peak-picked and centroided.}
-}
-
-\details{
-    The \code{MSImagingExperiment} class is designed as a replacement for the \code{\linkS4class{MSImageSet}} class, using a simplified, robust implementation that should be more future-proof and enable better support for large, high-resolution experiments, multimodal experiments, and experiments with specialized needs such as non-gridded pixel coordinates.
-
-   Subclasses \code{\linkS4class{MSContinuousImagingExperiment}} and \code{\linkS4class{MSProcessedImagingExperiment}} exist to allow downstream methods to make assumptions about the underlying data storage (dense matrices for 'continous' format and sparse matrices for 'processed' format), which can sometimes allow more efficient computations.
+    \item{metadata}{A list of arbitrary metadata.}
 }
 
 \section{Slots}{
     \describe{
-        \item{\code{imageData}:}{An object inheriting from \code{\linkS4class{ImageArrayList}}, storing one or more array-like data elements with conformable dimensions.}
+        \item{\code{spectraData}:}{A \code{\linkS4class{SpectraArrays}} object storing one or more array-like data elements with conformable dimensions.}
 
-        \item{\code{featureData}:}{Contains feature information in a \code{\linkS4class{MassDataFrame}}. Each row includes the metadata associated with an m/z value.}
+        \item{\code{featureData}:}{A \code{\linkS4class{MassDataFrame}} containing feature-level metadata.}
 
-        \item{\code{elementMetadata}:}{Contains pixel information in a \code{\linkS4class{PositionDataFrame}}. Each row includes the metadata for a single observation (e.g., a pixel), including specialized slot-columns for tracking pixel coordinates and experimental runs.}
+        \item{\code{elementMetadata}:}{A \code{\linkS4class{PositionDataFrame}} containing spectrum-level metadata, including each spectrum's pixel coordinates and experimental run information.}
 
-        \item{\code{metadata}:}{A \code{list} containing experiment-level metadata.}
-
-        \item{\code{processing}:}{A \code{\linkS4class{SimpleList}} containing processing steps (including both queued and previously executed processing steps).}
-
-        \item{\code{centroided}:}{\code{FALSE} if the object contains profile spectra and \code{TRUE} if the spectra have been peak-picked and centroided.}
+        \item{\code{processing}:}{A list containing unexecuted \code{\linkS4class{ProcessingStep}} objects.}
     }
 }
 
 \section{Methods}{
-    All methods for \code{\linkS4class{ImagingExperiment}} and \code{\linkS4class{SparseImagingExperiment}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
+    All methods for \code{\linkS4class{MSImagingData}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
-        \item{\code{spectraData(object)}, \code{spectraData(object) <- value}:}{Get or set the spectra list (alias for \code{imageData(object)}).}
-        
-        \item{\code{spectra(object)}, \code{spectra(object) <- value}:}{Get or set the spectra (alias for \code{iData(object)}).}
+        \item{\code{mz(object, ...)}, \code{mz(object, ...) <- value}:}{Get or set the m/z column in the \code{featureData} slot.}
 
-        \item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the m/z values from \code{pixelData}.}
+        \item{\code{intensity(object, ...)}, \code{intensity(object, ...) <- value}:}{Get or set the intensity matrix in the \code{spectraData} slot.}
 
-        \item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the m/z resolution of the dataset. Typically, this should not be set manually.}
+        \item{\code{centroided(object, ...)}, \code{centroided(object, ...) <- value}:}{Get or set the \code{centroided} slot.}
 
-        \item{\code{centroided(object)}, \code{centroided(object) <- value}:}{Get or set the spatial position slot-columns from \code{pixelData}.}
+        \item{\code{isCentroided(object, ...)}:}{Equivalent to \code{isTRUE(centroided(object))}.}
 
-        \item{\code{pixels(object, ..., coord, run)}:}{Returns the row indices of \code{pixelData} corresponding to conditions passed via \dots.}
-
-        \item{\code{features(object, ..., mz)}:}{Returns the row indices of \code{featureData} corresponding to conditions passed via \dots.}
-
-        \item{\code{pull(x, ...)}:}{Pull all data elements of \code{imageData} into memory as matrices.}
-
-        \item{\code{peaks(object)}, \code{peaks(object) <- value}:}{Attempt to get or set the matrix of peaks. Alias for \code{spectra()} if \code{centroided()} is TRUE; replacement version also sets \code{centroided} to TRUE.}
-
-        \item{\code{peakData(object)}, \code{peakData(object) <- value}:}{Attempt to get or set the underlying m/z and intensity arrays of the peak data in processed experiments. (Currently only implemented for \code{\linkS4class{MSProcessedImagingExperiment}}).}
-
-        \item{\code{isCentroided(object)}:}{Attempts to infer if the mass spectra are centroided or not (without referencing the \code{centroided} slot.}
-
-        \item{\code{msiInfo(object, ...)}:}{Returns metadata for writing the object to imzML.}
-
-        \item{\code{rbind(...)}, \code{cbind(...)}:}{Combine \code{MSImagingExperiment} objects by row or column.}
+        \item{\code{experimentData(object)}, \code{experimentData(object) <- value}:}{Get or set the \code{experimentData} slot.}
     }
 }
 
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\linkS4class{ImagingExperiment}},
-    \code{\linkS4class{SparseImagingExperiment}},
-    \code{\linkS4class{MSContinuousImagingExperiment}},
-    \code{\linkS4class{MSProcessedImagingExperiment}}
+    \code{\linkS4class{SpectralImagingExperiment}},
+    \code{\linkS4class{MSImagingArrays}}
 }
 
 \examples{
-mz <- mz(from=200, to=220, by=400)
+set.seed(1)
+x <- matrix(rlnorm(81), nrow=9, ncol=9)
+mz <- sort(runif(9))
 coord <- expand.grid(x=1:3, y=1:3)
-data <- matrix(runif(length(mz) * nrow(coord)),
-    nrow=length(mz), ncol=nrow(coord))
 
-idata <- ImageArrayList(data)
-fdata <- MassDataFrame(mz=mz)
-pdata <- PositionDataFrame(coord=coord)
+mse <- MSImagingExperiment(
+    spectraData=x,
+    featureData=MassDataFrame(mz=mz),
+    pixelData=PositionDataFrame(coord))
 
-x <- MSImagingExperiment(
-    imageData=idata,
-    featureData=fdata,
-    pixelData=pdata)
-
-print(x)
+print(mse)
 }
 
 \keyword{classes}

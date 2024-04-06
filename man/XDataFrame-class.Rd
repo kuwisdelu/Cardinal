@@ -5,57 +5,52 @@
 \alias{XDataFrame}
 \alias{XDataFrame-class}
 
-\alias{showNames}
-\alias{showNames,XDataFrame-method}
+\alias{class:XDFrame}
+\alias{XDFrame}
+\alias{XDFrame-class}
 
-\alias{names,XDataFrame-method}
-\alias{length,XDataFrame-method}
-\alias{sort,XDataFrame-method}
-\alias{lapply,XDataFrame-method}
-\alias{as.data.frame,XDataFrame-method}
-\alias{as.matrix,XDataFrame-method}
-\alias{as.env,XDataFrame-method}
-\alias{as.env,list-method}
+\alias{classNameForDisplay,XDFrame-method}
+
 \alias{show,XDataFrame-method}
+\alias{keys,XDataFrame-method}
+\alias{keys<-,XDataFrame-method}
+\alias{names<-,XDataFrame-method}
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
 
 \alias{[,XDataFrame,ANY,ANY,ANY-method}
 
 \alias{[[<-,XDataFrame-method}
-\alias{[[<-,XDataFrame,ANY,ANY-method}
 \alias{$<-,XDataFrame-method}
 
-\title{XDataFrame: DataFrame with eXtra metadata columns}
+\title{XDataFrame: Extended data frame with key columns}
 
 \description{
-	An \code{XDataFrame} is an (indirect) extension of the \code{\linkS4class{DataFrame}} class as defined in the 'S4Vectors' package, modified to support eXtra "slot-columns" that behave differently from other columns. It is intended to facilitate \code{data.frame}-like classes that require specialized column access and behavior. The specialized slot-columns are stored as distinct slots, unlike regular columns.
+	The \code{XDataFrame} extends the \code{\linkS4class{DataFrame}} class from the \code{S4Vectors} package with support for columns (or sets of columns) designated as keys.
 }
 
 \usage{
-XDataFrame(\dots)
+XDataFrame(\dots, keys = list())
 }
 
 \arguments{
 	\item{\dots}{Arguments passed to the \code{DataFrame()}.}
+
+	\item{keys}{A named list of character vectors giving the names of key columns. The names of the list become the names of the keys (which may be different from the columns). The character vectors specify the names of columns that compose that key.}
+}
+
+\details{
+	For the most part, \code{XDataFrame} behaves identically to \code{DataFrame}, and key columns can be get or set as usual. The \code{XDataFrame} class is primarily intended as a way to enforce additional requirements or constraints on specific sets of columns in a structured way. It provides an abstracted way of manipulating sets of columns that are expected to follow certain rules. The keys remain consistent and accessible even if the columns of the data frame are renamed.
+
+	The base class currently has only minimal requirements for keys (i.e., that they are valid columns in the data frame). Additionally, keys are checked for compatibility when combining data frames. Uniqueness is \emph{not} checked.
+
+	Subclasses can enforce additional constraints on key columns. For example, the \code{\linkS4class{PositionDataFrame}} and \code{\linkS4class{MassDataFrame}} classes.
 }
 
 \section{Methods}{
 	\describe{
-		\item{\code{names(object)}:}{Return the column names, not including any slot-columns.}
-
-		\item{\code{length(object)}:}{Return the number of columns, not including any slot-columns.}
-
-		\item{\code{lapply(X, FUN, ..., slots = FALSE)}:}{Returns a list of the same length as \code{X}, where each element is the result of applying \code{FUN} to the corresponding element of \code{X}. This version includes an additional argument for whether the slot-columns should be included or not. This method should be overwritten by subclasses to ensure correct behavior.}
-
-		\item{\code{as.env(x, ...)}:}{Create an environment from \code{x} with a symbol for each column, including the slot-columns. This method should be overwritten by subclasses to ensure correct behavior.}
+		\item{\code{keys(object, i = NULL, ..., drop = TRUE)}, \code{keys(object, i = NULL, ...) <- value}:}{Get or set the key columns. By default, this gets or sets the \code{keys} slot. Provide \code{i} to get or set specific keys.}
 	}
-}
-
-\details{
-	For the most part, \code{XDataFrame} behaves identically to \code{DataFrame}, with the exception of certain methods being overwritten to account for the additional eXtra "slot-columns" not counted among those returned by \code{ncol(x)}. These additional columns should typically have their own getter and setter methods.
-
-	To implement a subclass of \code{XDataFrame}, one needs to implement two methods to allow the slot-columns to be printed by \code{show} and retained during coercion: (1) the subclass should implement an \code{as.list()} method that includes the slot columns in the resulting list by default and (2) the subclass should implement a \code{showNames()} method that returns the names of all the printable columns (including slot-columns) in the same order as they are returned by \code{as.list()}.
 }
 
 \author{Kylie A. Bemis}
@@ -68,7 +63,7 @@ XDataFrame(\dots)
 
 \examples{
 ## Create an XDataFrame object
-XDataFrame(x=1:10, y=letters[1:10])
+XDataFrame(id=1:10, letter=LETTERS[1:10], keys=list(index="id"))
 }
 
 \keyword{classes}

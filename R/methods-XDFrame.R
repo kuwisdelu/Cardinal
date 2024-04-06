@@ -431,9 +431,9 @@ MassDataFrame <- function(mz, ..., row.names = FALSE)
 }
 
 setMethod("mz", "MassDataFrame",
-	function(object) keys(object, "mz", drop=TRUE))
+	function(object, ...) keys(object, "mz", drop=TRUE))
 setReplaceMethod("mz", "MassDataFrame",
-	function(object, value) {
+	function(object, ..., value) {
 		keys(object, "mz") <- value
 		if ( validObject(object) )
 			object

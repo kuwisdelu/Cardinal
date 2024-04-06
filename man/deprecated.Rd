@@ -50,8 +50,8 @@
 \alias{spatialApply-methods}
 \alias{spatialApply,SparseImagingExperiment-method}
 
-\title{Deprecated functions and methods in Cardinal}
+\title{Deprecated and defunct objects in Cardinal}
 
 \description{
-	These functions are provided for compatibility with older versions of Cardinal, and will be defunct at the next release.
+	These functions are provided for compatibility with older versions of Cardinal, and will be removed in the future.
 }

@@ -499,7 +499,7 @@ setReplaceMethod("spectraData", "SpectralImagingData",
 	})
 
 setMethod("spectraNames", "SpectralImagingData",
-	function(object) names(spectraData(object)))
+	function(object, ...) names(spectraData(object)))
 setReplaceMethod("spectraNames", "SpectralImagingData",
 	function(object, ..., value) {
 		names(spectraData(object)) <- value

@@ -1,14 +1,11 @@
-\name{PCA-methods}
-\docType{methods}
+\name{PCA}
 
-\alias{PCA}
-\alias{class:PCA}
-\alias{PCA-class}
-\alias{PCA-methods}
+\alias{SpatialPCA}
+\alias{class:SpatialPCA}
+\alias{SpatialPCA-class}
 
 \alias{PCA,SparseImagingExperiment-method}
-\alias{predict,PCA2-method}
-\alias{summary,PCA2-method}
+\alias{predict,SpatialPCA-method}
 
 \title{Principal components analysis}
 \description{

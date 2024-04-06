@@ -35,6 +35,9 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	}
 	if ( !is.list(ref) && !is(ref, "List") )
 		ref <- list(ref)
+	if ( any(lengths(ref) != ncol(object)) )
+		stop("length of reference [", length(ref[[1L]]), "] ",
+			"does not match length of object [", length(object), "]")
 	if ( verbose ) {
 		lab <- if (length(ref) != 1L) "images" else "image"
 		message("calculating colocalization with ", length(ref), " ", lab)

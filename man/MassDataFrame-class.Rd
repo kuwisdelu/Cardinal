@@ -5,69 +5,43 @@
 \alias{MassDataFrame}
 \alias{MassDataFrame-class}
 
-\alias{initialize,MassDataFrame-method}
 \alias{mz,MassDataFrame-method}
 \alias{mz<-,MassDataFrame-method}
-\alias{resolution,MassDataFrame-method}
-\alias{resolution<-,MassDataFrame-method}
-\alias{isCentroided,MassDataFrame-method}
-\alias{as.list,MassDataFrame-method}
-\alias{showNames,MassDataFrame-method}
-\alias{[,MassDataFrame,ANY,ANY,ANY-method}
-\alias{cbind,MassDataFrame-method}
-\alias{rbind,MassDataFrame-method}
 
-\title{MassDataFrame: data frame with mass-to-charge ratio metadata}
+\title{MassDataFrame: Extended data frame with key columns}
 
 \description{
-	An \code{MassDataFrame} is an extension of the \code{\linkS4class{XDataFrame}} class with a special slot-column for observed mass-to-charge ratios.
+	A data frame for mass spectrometry feature metadata with a required column for m/z values.
 }
 
 \usage{
-MassDataFrame(mz, \dots, row.names = NULL, check.names = TRUE)
+MassDataFrame(mz, \dots, row.names = FALSE)
 }
 
 \arguments{
-	\item{mz}{A \code{numeric} vector of mass-to-charge ratios.}
-	
-	\item{\dots}{Named arguments that will become columns of the object.}
-	
-	\item{row.names}{Row names to be assigned to the object; no row names are assigned if this is \code{NULL}.}
-	
-	\item{check.names}{Should the column names be checked for syntactic validity?}
+	\item{mz}{A sorted vector of m/z values.}
+
+	\item{\dots}{Arguments passed to the \code{DataFrame()}.}
+
+	\item{row.names}{Either a vector of row names or a logical value indicating whether row names should be generated automatically (from the m/z values).}
 }
 
 \section{Methods}{
 	\describe{
-		\item{\code{mz(object)}, \code{mz(object) <- value}:}{Get or set the mass-to-charge ratio slot-column.}
-
-		\item{\code{resolution(object)}, \code{resolution(object) <- value}:}{Get or set the estimated mass resolution of the mass-to-charge ratios. Typically, this should not be set manually.}
-
-		\item{\code{isCentroided(object)}:}{Guess whether the data are centroided or not, based on the m/z values.}
-
-		\item{\code{as.list(x, ..., slots = TRUE)}:}{Coerce the object to a \code{list}, where the slot-columns are included by default. Use \code{slots=FALSE} to exclude the slot-columns.}
+		\item{\code{mz(object, ...)}, \code{mz(object, ...) <- value}:}{Get or set the m/z values.}
 	}
-}
-
-\details{
-	\code{MassDataFrame} is designed for mass spectrometry data. It includes a slot-column for the mass-to-charge ratio. It is intended to annotate either a single mass spectrum or an experiment where each mass spectrum share the same mass-to-charge ratios. The m/z values can be get and set by the \code{mz(object)} accessor, and are assumed to be unique and sorted in increasing order.
 }
 
 \author{Kylie A. Bemis}
 
 \seealso{
-	\code{\link{XDataFrame}}
+	\code{\link{XDataFrame}},
+	\code{\link{PositionDataFrame}}
 }
 
 \examples{
-## create an MassDataFrame object
-mz <- mz(from=200, to=220, by=200)
-values <- runif(length(mz))
-fdata <- MassDataFrame(mz=mz, values=values)
-
-## check the mass-to-charge ratio properties
-head(mz(fdata))
-resolution(fdata)
+## Create an MassDataFrame object
+MassDataFrame(mz=sort(500 * runif(10)), label=LETTERS[1:10])
 }
 
 \keyword{classes}

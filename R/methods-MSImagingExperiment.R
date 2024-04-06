@@ -111,17 +111,17 @@ setReplaceMethod("mz", "MSImagingExperiment",
 # intensity
 
 setMethod("intensity", "MSImagingExperiment",
-	function(object, ...) spectra(object))
+	function(object, ...) object@spectraData[["intensity"]])
 setReplaceMethod("intensity", "MSImagingExperiment",
 	function(object, ..., value) {
-		spectra(object) <- value
+		object@spectraData[["intensity"]] <- value
 		object
 	})
 
 # centroided
 
 setMethod("centroided", "MSImagingExperiment_OR_Arrays",
-	function(object) object@centroided)
+	function(object, ...) object@centroided)
 setReplaceMethod("centroided", "MSImagingExperiment_OR_Arrays",
 	function(object, ..., value) {
 		object@centroided <- value
@@ -129,7 +129,7 @@ setReplaceMethod("centroided", "MSImagingExperiment_OR_Arrays",
 	})
 
 setMethod("isCentroided", "MSImagingExperiment_OR_Arrays",
-	function(object) isTRUE(object@centroided))
+	function(object, ...) isTRUE(object@centroided))
 
 # experimentData
 
