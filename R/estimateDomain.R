@@ -45,10 +45,13 @@ estimateReferencePeaks <- function(object, SNR = 2,
 	if ( length(processingData(object)) > 0L )
 		warning("processing steps will be ignored by estimateReferencePeaks()")
 	method <- match.arg(method)
-	ans <- summarizeFeatures(object, stat="mean",
-		nchunks=nchunks, verbose=verbose,
-		BPPARAM=BPPARAM)
-	featureData <- featureData(ans)
+	if ( !"mean" %in% names(featureData(object)) )
+	{
+		object <- summarizeFeatures(object, stat="mean",
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM)
+	}
+	featureData <- featureData(object)
 	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)
 	featureData[peaks,,drop=FALSE]
 }

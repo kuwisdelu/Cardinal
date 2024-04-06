@@ -26,6 +26,12 @@
     method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
     SNR = 2, type = c("height", "area"),
     tolerance = NA, units = c("relative", "absolute"), \dots)
+
+estimateReferencePeaks(object, SNR = 2,
+    method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{
@@ -42,6 +48,12 @@
     \item{tolerance}{If \code{ref} is specified, the tolerance to use when deciding if a local peak in a spectrum matches a reference peak. If \code{NA}, then the tolerance is automatically determined as half the minimum distance between peaks in the reference.}
 
     \item{units}{The units for the above tolerance.}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{\dots}{Additional arguments passed to the peak picking function.}
 }
@@ -67,6 +79,8 @@
     }
 
     If \code{ref} is provided, then the signal-to-noise ratio is not determined, and any detected peaks are returned as long as they match to a reference peak.
+
+    The \code{estimateReferencePeaks} function calculates the mean spectrum (or looks for a "mean" column in \code{featureData()}) and performs peak picking on the mean spectrum. It can be used to create a set of reference peaks if all relevant peaks appear in the mean spectrum.
 }
 
 \note{

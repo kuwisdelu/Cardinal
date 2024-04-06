@@ -52,7 +52,7 @@
 }
 
 \value{
-   An object of class \code{SpatialNMF} derived from \code{SpatialResults}, containing the fitted \code{\link{nnmf}} object and the spatial metadata.
+   An object of class \code{SpatialNMF} derived from \code{SpatialResults}, containing the fitted \code{\link[matter]{nnmf}} object and the spatial metadata.
 }
 
 \author{

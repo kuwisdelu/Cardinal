@@ -1,102 +1,145 @@
 \name{PLS-methods}
 \docType{methods}
 
-\alias{PLS}
-\alias{class:PLS}
-\alias{PLS-class}
-\alias{PLS-methods}
+\alias{SpatialPLS}
+\alias{class:SpatialPLS}
+\alias{SpatialPLS-class}
 
-\alias{OPLS}
-\alias{class:OPLS}
-\alias{OPLS-class}
-\alias{OPLS-methods}
+\alias{SpatialOPLS}
+\alias{class:SpatialOPLS}
+\alias{SpatialOPLS-class}
 
-\alias{PLS,SparseImagingExperiment-method}
-\alias{OPLS,SparseImagingExperiment-method}
-\alias{PLS,SparseImagingExperiment,ANY-method}
-\alias{OPLS,SparseImagingExperiment,ANY-method}
-\alias{predict,PLS2-method}
-\alias{fitted,PLS2-method}
-\alias{summary,PLS2-method}
+\alias{PLS-method}
+\alias{PLS,ANY-method}
+\alias{PLS,SpectralImagingExperiment-method}
+\alias{fitted,SpatialOPLS-method}
+\alias{predict,SpatialOPLS-method}
+\alias{topFeatures,SpatialOPLS-method}
+\alias{plot,SpatialOPLS-method}
+\alias{image,SpatialOPLS-method}
 
-\title{Partial least squares}
+\alias{OPLS-method}
+\alias{OPLS,ANY-method}
+\alias{OPLS,SpectralImagingExperiment-method}
+\alias{fitted,SpatialPLS-method}
+\alias{predict,SpatialPLS-method}
+\alias{topFeatures,SpatialPLS-method}
+\alias{plot,SpatialPLS-method}
+\alias{image,SpatialPLS-method}
+
+\title{Partial least squares (projection to latent structures)}
+
 \description{
-	Performs partial least squares (also called projection to latent structures or PLS) on an imaging dataset. This will also perform discriminant analysis (PLS-DA) if the response is a \code{factor}. Orthogonal partial least squares options (O-PLS and O-PLS-DA) are also available.
+	Compute partial least squares (also called projection to latent structures or PLS). This will also perform discriminant analysis (PLS-DA) if the response is a factor. Orthogonal partial least squares options (O-PLS and O-PLS-DA) is also supported; in this case, O-PLS step is a pre-processing step to remove noise orthogonal to the response, before fitting a PLS model with a single component.
 }
+
 \usage{
-\S4method{PLS}{SparseImagingExperiment,ANY}(x, y, ncomp = 3, method = c("pls", "opls"),
-        center = TRUE, scale = FALSE,
-        iter.max = 100, \dots)
+\S4method{PLS}{ANY}(x, y, ncomp = 3,
+    method = c("nipals", "simpls", "kernel1", "kernel2"),
+    center = TRUE, scale = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{OPLS}{SparseImagingExperiment,ANY}(x, y, ncomp = 3, \dots)
+\S4method{PLS}{SpectralImagingExperiment}(x, y, ncomp = 3,
+    method = c("nipals", "simpls", "kernel1", "kernel2"),
+    center = TRUE, scale = FALSE, \dots)
 
-\S4method{predict}{PLS2}(object, newx, newy, ncomp, \dots)
+\S4method{fitted}{SpatialPLS}(object, type = c("response", "class"), \dots)
 
-\S4method{fitted}{PLS2}(object, \dots)
+\S4method{predict}{SpatialPLS}(object, newdata, ncomp,
+        type = c("response", "class"), simplify = TRUE, \dots)
 
-\S4method{summary}{PLS2}(object, \dots)
+\S4method{topFeatures}{SpatialPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
+
+\S4method{plot}{SpatialPLS}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+
+\S4method{image}{SpatialPLS}(x, type = c("response", "class"), \dots)
+
+\S4method{OPLS}{ANY}(x, y, ncomp = 3,
+    center = TRUE, scale = FALSE, retx = TRUE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{OPLS}{SpectralImagingExperiment}(x, y, ncomp = 3,
+    center = TRUE, scale = FALSE, retx = FALSE, \dots)
+
+\S4method{fitted}{SpatialOPLS}(object, type = c("response", "class"), \dots)
+
+\S4method{predict}{SpatialOPLS}(object, newdata, ncomp,
+        type = c("response", "class"), simplify = TRUE, \dots)
+
+\S4method{topFeatures}{SpatialOPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
+
+\S4method{plot}{SpatialOPLS}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+
+\S4method{image}{SpatialOPLS}(x, type = c("response", "class"), \dots)
 }
+
 \arguments{
-    \item{x}{The imaging dataset on which to perform partial least squares.}
-    \item{y}{The response variable, which can be a \code{matrix} or a \code{vector} for ordinary PLS, or a \code{factor} or a \code{character} for PLS-DA.}
-    \item{ncomp}{The number of PLS components to calculate.}
-    \item{method}{The function used to calculate the projection.}
-    \item{center}{Should the data be centered first? This is passed to \code{scale}.}
-    \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
-    \item{iter.max}{The number of iterations to perform for the NIPALS algorithm.}
-    \item{\dots}{Passed to the next PLS method.}
-    \item{object}{The result of a previous call to \code{\link{PLS}}.}
-    \item{newx}{An imaging dataset for which to calculate their PLS projection and predict a response from an already-calculated \code{\link{PLS}} object.}
-    \item{newy}{Optionally, a new response from which residuals should be calcualted.}
+    \item{x}{A data matrix assumed to be P x N.}
+
+    \item{ncomp}{The number of principal components to calculate.}
+
+    \item{method}{The method used for calculating the principal components. See \code{\link[matter]{pls}} for details.}
+
+    \item{center}{Should the data be centered?}
+
+    \item{scale}{Shoud the data be scaled?}
+
+    \item{retx}{Should the (potentially large) processed data matrix be included in the result?}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Options passed to \code{\link[irlba]{irlba}}.}
+
+    \item{object}{A \code{SpatialPCA} object.}
+
+    \item{newdata}{A new \code{SpectralImagingExperiment} for which to make predictions.}
+
+    \item{type}{The type of plot to fitted values to extract or the type of predictions to make.}
+
+    \item{simplify}{If predictions are made using multiple numbers of components, should they be returned as a list, or simplified to an array?}
+
+    \item{n, sort.by}{For \code{topFeatures}, the number of top features to return and how to sort them.}
+
+    \item{xlab, ylab}{Plotting labels.}
 }
+
 \value{
-    An object of class \code{PLS2}, which is a \code{ImagingResult}, or an object of class \code{PLS}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
-
-    \describe{
-        \item{\code{fitted}:}{The fitted response.}
-        \item{\code{loadings}:}{A matrix with the explanatory variable loadings.}
-        \item{\code{weights}:}{A matrix with the explanatory variable weights.}
-        \item{\code{scores}:}{A matrix with the component scores for the explanatary variable.}
-        \item{\code{Yscores}:}{A matrix objects with the component scores for the response variable.}
-        \item{\code{Yweights}:}{A matrix objects with the response variable weights.}
-        \item{\code{coefficients}:}{The matrix of the regression coefficients.}
-    }
-
-    The following components may also be available for classes \code{OPLS} and \code{OPLS2}.
-
-    \describe{
-        \item{\code{Oloadings}:}{A matrix objects with the orthogonal explanatory variable loadings.}
-        \item{\code{Oweights}:}{A matrix with the orthgonal explanatory variable weights.}
-    }
-
-    If \code{y} is a categorical variable, then a categorical \code{class} prediction will also be available in addition to the \code{fitted} numeric response.
+    An object of class \code{SpatialPLS} or \code{SpatialOPLS} derived from \code{SpatialResults}, containing the fitted \code{\link[matter]{pls}} or \code{\link[matter]{opls}} model and the spatial metadata.
 }
+
 \author{
 	Kylie A. Bemis
 }
+
 \references{
     Trygg, J., & Wold, S. (2002). Orthogonal projections to latent structures (O-PLS). Journal of Chemometrics, 16(3), 119-128. doi:10.1002/cem.695
 }
+
 \seealso{
     \code{\link{PCA}},
     \code{\link{spatialShrunkenCentroids}},
 }
+
 \examples{
-setCardinalBPPARAM(SerialParam())
-
 set.seed(1)
-x <- simulateImage(preset=2, npeaks=10, dim=c(10,10),
-    snoise=1, sdpeaks=1, representation="centroid")
+mse <- simulateImage(preset=2, npeaks=20, dim=c(10,10), representation="centroid")
+cls <- makeFactor(circle=pData(mse)$circle, square=pData(mse)$square)
 
-y <- makeFactor(circle=pData(x)$circle, square=pData(x)$square)
+# fit a PLS model with 3 components
+pls <- PLS(mse, cls, ncomp=1:3)
+plot(pls, type="coefficients", annPeaks="circle")
 
-pls <- PLS(x, y, ncomp=1:3)
-
-summary(pls)
-
-opls <- OPLS(x, y, ncomp=1:3)
-
-summary(pls)
+# visualize predictions
+image(pls)
 }
+
 \keyword{multivariate}
 \keyword{classif}

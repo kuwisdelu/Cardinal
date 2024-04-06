@@ -61,7 +61,7 @@
 }
 
 \value{
-   An object of class \code{SpatialPCA} derived from \code{SpatialResults}, containing the fitted \code{\link{prcomp_lanczos}} object and the spatial metadata.
+   An object of class \code{SpatialPCA} derived from \code{SpatialResults}, containing the fitted \code{\link[matter]{prcomp_lanczos}} object and the spatial metadata.
 }
 
 \author{

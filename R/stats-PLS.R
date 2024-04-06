@@ -193,12 +193,12 @@ setMethod("OPLS", "ANY",
 
 setMethod("OPLS", "SpectralImagingExperiment", 
 	function(x, y, ncomp = 3,
-		center = TRUE, scale = FALSE, retx = TRUE, ...)
+		center = TRUE, scale = FALSE, retx = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
 	ans <- OPLS(spectra(x), y=y, ncomp=ncomp,
-		center=center, scale=scale, transpose=TRUE, ...)
+		center=center, scale=scale, retx=retx, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialOPLS")
 })
 
