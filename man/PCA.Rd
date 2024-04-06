@@ -35,7 +35,7 @@
 \S4method{image}{SpatialPCA}(x, type = "x", \dots)
 }
 \arguments{
-    \item{x}{A data matrix assumed to be P x N.}
+    \item{x}{A dataset in P x N matrix format.}
 
     \item{ncomp}{The number of principal components to calculate.}
 

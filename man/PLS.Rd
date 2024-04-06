@@ -5,10 +5,6 @@
 \alias{class:SpatialPLS}
 \alias{SpatialPLS-class}
 
-\alias{SpatialOPLS}
-\alias{class:SpatialOPLS}
-\alias{SpatialOPLS-class}
-
 \alias{PLS-method}
 \alias{PLS,ANY-method}
 \alias{PLS,SpectralImagingExperiment-method}
@@ -17,6 +13,10 @@
 \alias{topFeatures,SpatialOPLS-method}
 \alias{plot,SpatialOPLS-method}
 \alias{image,SpatialOPLS-method}
+
+\alias{SpatialOPLS}
+\alias{class:SpatialOPLS}
+\alias{SpatialOPLS-class}
 
 \alias{OPLS-method}
 \alias{OPLS,ANY-method}
@@ -78,7 +78,7 @@
 }
 
 \arguments{
-    \item{x}{A data matrix assumed to be P x N.}
+    \item{x}{A dataset in P x N matrix format.}
 
     \item{ncomp}{The number of principal components to calculate.}
 
@@ -102,7 +102,7 @@
 
     \item{newdata}{A new \code{SpectralImagingExperiment} for which to make predictions.}
 
-    \item{type}{The type of plot to fitted values to extract or the type of predictions to make.}
+    \item{type}{The type of fitted values to extract or the type of predictions to make.}
 
     \item{simplify}{If predictions are made using multiple numbers of components, should they be returned as a list, or simplified to an array?}
 

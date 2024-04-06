@@ -1,70 +1,122 @@
-\name{spatialShrunkenCentroids-methods}
-\docType{methods}
-\alias{spatialShrunkenCentroids}
+\name{spatialShrunkenCentroids}
+
+\alias{SpatialShrunkenCentroids}
 \alias{class:SpatialShrunkenCentroids}
 \alias{SpatialShrunkenCentroids-class}
-\alias{spatialShrunkenCentroids-methods}
 
-\alias{spatialShrunkenCentroids,SparseImagingExperiment,missing-method}
-\alias{spatialShrunkenCentroids,SparseImagingExperiment,ANY-method}
-\alias{predict,SpatialShrunkenCentroids2-method}
-\alias{fitted,SpatialShrunkenCentroids2-method}
-\alias{summary,SpatialShrunkenCentroids2-method}
-\alias{logLik,SpatialShrunkenCentroids2-method}
+\alias{spatialShrunkenCentroids}
+\alias{spatialShrunkenCentroids,ANY,ANY-method}
+\alias{spatialShrunkenCentroids,SpectralImagingExperiment,ANY-method}
+\alias{spatialShrunkenCentroids,ANY,missing-method}
+\alias{spatialShrunkenCentroids,SpectralImagingExperiment,missing-method}
+\alias{fitted,SpatialShrunkenCentroids-method}
+\alias{predict,SpatialShrunkenCentroids-method}
+\alias{topFeatures,SpatialShrunkenCentroids-method}
+\alias{plot,SpatialShrunkenCentroids-method}
+\alias{image,SpatialShrunkenCentroids-method}
 
 \title{Spatially-aware shrunken centroid clustering and classification}
-\description{
-    Performs spatially-aware nearest shrunken centroid clustering or classification on an imaging dataset. These methods use statistical regularization to shrink the t-statistics of the features toward 0 so that unimportant features are removed from the analysis. A Gaussian spatial kernel or an adaptive kernel based on bilateral filtering are used for spatial smoothing.
-}
-\usage{
-\S4method{spatialShrunkenCentroids}{SparseImagingExperiment,missing}(x, r = 1, k = 3, s = 0,
-    method = c("gaussian", "adaptive"),
-    dist = "chebyshev", init = NULL,
-    iter.max = 10, BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialShrunkenCentroids}{SparseImagingExperiment,ANY}(x, y, r = 1, s = 0,
-    method = c("gaussian", "adaptive"),
-    dist = "chebyshev", priors = table(y),
+\description{
+    Perform spatially-aware nearest shrunken centroid clustering or classification. These methods use statistical regularization to shrink the t-statistics of the features toward 0 so that unimportant features are removed from the model. The dissimilarity to class centroids are spatially smoothed.
+}
+
+\usage{
+\S4method{spatialShrunkenCentroids}{ANY,ANY}(x, y, coord, r = 1, s = 0,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r),
+    priors = table(y), center = NULL, transpose = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{predict}{SpatialShrunkenCentroids2}(object, newx, newy, BPPARAM = getCardinalBPPARAM(), \dots)
+\S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,ANY}(x, y, coord, r = 1, s = 0,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r), \dots)
 
-\S4method{fitted}{SpatialShrunkenCentroids2}(object, \dots)
+\S4method{spatialShrunkenCentroids}{ANY,missing}(x, coord, r = 1, k = 2, s = 0,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r),
+    init = NULL, threshold = 0.01, niter = 10L,
+    center = NULL, transpose = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{summary}{SpatialShrunkenCentroids2}(object, \dots)
+\S4method{spatialShrunkenCentroids}{ANY,missing}(x, coord, r = 1, k = 2, s = 0,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r), \dots)
+
+\S4method{fitted}{SpatialShrunkenCentroids}(object, type = c("response", "class"), \dots)
+
+\S4method{predict}{SpatialShrunkenCentroids}(object, newdata,
+        type = c("response", "class"),
+        neighbors = findNeighbors(newdata, r=object$r),
+        nchunks = getCardinalNChunks(),
+        BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{topFeatures}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
+
+\S4method{image}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
+
+\S4method{plot}{SpatialShrunkenCentroids}(x, type = c("probability", "class"), \dots)
 }
 \arguments{
-    \item{x}{The imaging dataset to segment or classify.}
-    \item{y}{A \code{factor} or \code{character} response.}
-    \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
-    \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
-    \item{s}{The sparsity thresholding parameter by which to shrink the t-statistics.}
-    \item{method}{The method to use to calculate the spatial smoothing weights. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
-    \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
-    \item{init}{Initial cluster configuration. This may either be the result of a call to \code{spatialKMeans}, or a list of factors giving the initial cluster configurations.}
-    \item{iter.max}{The maximum number of clustering iterations.}
-    \item{priors}{Prior probabilities on the classes for classification. Improper priors will be normalized automatically.}
-    \item{\dots}{Passed to internal methods.}
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
-    \item{object}{The result of a previous call to \code{\link{spatialShrunkenCentroids}}.}
-    \item{newx}{An imaging dataset for which to calculate the predicted response from shrunken centroids.}
-    \item{newy}{Optionally, a new response from which residuals should be calculated.}
-}
-\value{
-    An object of class \code{SpatialShrunkenCentroids2}, which is a \code{ImagingResult}, or an object of class \code{SpatialShrunkenCentroids}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
+    \item{x}{A spatial dataset in P x N matrix format.}
 
-    \describe{
-        \item{\code{class, classes}:}{A factor indicating the predicted class for each pixel in the dataset.}
-        \item{\code{probability, probabilities}:}{A matrix of class probabilities.}
-        \item{\code{centers}:}{A matrix of shrunken class centers.}
-        \item{\code{statistic, tstatistics}:}{A matrix of shrunken t-statistics of the features.}
-        \item{\code{scores}:}{A matrix of discriminant scores.}
-        \item{\code{sd}:}{The pooled within-class standard deviations for each feature.}
-    }
+    \item{y}{The response variable.}
+
+    \item{coord}{The spatial coordinates of the rows/columns of \code{x}. Ignored if \code{neighbors} is provided.}
+    
+    \item{r}{The spatial maximum distance for an observation to be considered a neighbor. Ignored if \code{neighbors} is provided.}
+
+    \item{k}{The number of classes for clustering.}
+
+    \item{s}{The sparsity parameter.}
+
+    \item{weights}{The type of spatial weights to use for the smoothing. Gaussian weights are weighted only by distance, while adaptive weights also consider the dissimilarity between neighboring observations.}
+
+    \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
+
+    \item{priors}{The (unnormalized) prior probabilities for each class.}
+
+    \item{center}{The global centroid (if known).}
+
+    \item{transpose}{Should \code{x} be considered P x N?}
+
+    \item{init}{A list of initial cluster configurations. (Should resemble the output of \code{kmeans}.)}
+
+    \item{threshold}{Stop iteration when the proportion of cluster assignment updates is less than this threshold.}
+    
+    \item{niter}{The maximum number of iterations.}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+    
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{object}{A \code{SpatialPCA} object.}
+
+    \item{newdata}{A new \code{SpectralImagingExperiment} for which to make predictions.}
+
+    \item{type}{The type of fitted values to extract or the type of predictions to make.}
+
+    \item{n, sort.by}{For \code{topFeatures}, the number of top features to return and how to sort them.}
+
+    \item{xlab, ylab}{Plotting labels.}
 }
+
+\value{
+    An object of class \code{SpatialShrunkenCentroids} derived from \code{SpatialResults}, containing the fitted \code{\link[matter]{nscentroids}} object and the spatial metadata.
+}
+
 \author{
     Kylie A. Bemis
 }
+
 \references{
     Bemis, K., Harry, A., Eberlin, L. S., Ferreira, C., van de Ven, S. M., Mallick, P., Stolowitz, M., and Vitek, O. (2016.) Probabilistic segmentation of mass spectrometry images helps select important ions and characterize confidence in the resulting segments. Molecular & Cellular Proteomics. doi:10.1074/mcp.O115.053918
 
@@ -72,21 +124,24 @@
 
     Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230-i238. doi:10.1093/bioinformatics/btr246
 }
+
 \seealso{
     \code{\link{spatialKMeans}}
 }
+
 \examples{
-setCardinalBPPARAM(SerialParam())
-
 set.seed(1)
-x <- simulateImage(preset=2, dim=c(10,10), npeaks=10,
-    peakheight=c(4,6,8), representation="centroid")
+mse <- simulateImage(preset=3, dim=c(10,10), npeaks=20,
+    peakheight=c(3,6,9), representation="centroid")
 
-res <- spatialShrunkenCentroids(x, r=1, k=5, s=c(0,3,6), method="adaptive")
+# fit spatial shrunken centroids
+ssc <- spatialShrunkenCentroids(mse, r=1, k=4, s=c(0,3,6,9), weights="adaptive")
 
-summary(res)
+# visualize classes
+image(ssc, i=1:4)
 
-image(res, model=list(s=6))
+# visualize t-statistics
+plot(ssc, i=1:4)
 }
 
 \keyword{spatial}

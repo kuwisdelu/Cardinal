@@ -45,7 +45,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 }
 
 \arguments{
-    \item{x}{An imaging dataset or segmented/summarized imaging dataset.}
+    \item{x}{A dataset in P x N matrix format or a set of spatially segmented images.}
     
     \item{fixed}{A one-sided formula giving the fixed effects of the model on the RHS. The response will added to the LHS, and the formula will be passed to the underlying modeling function.}
     

@@ -1,74 +1,108 @@
-\name{spatialKMeans-methods}
-\docType{methods}
-\alias{spatialKMeans}
+\name{spatialKMeans}
+
+\alias{SpatialKMeans}
 \alias{class:SpatialKMeans}
 \alias{SpatialKMeans-class}
-\alias{spatialKMeans-methods}
 
-\alias{spatialKMeans,SparseImagingExperiment-method}
-\alias{summary,SpatialKMeans2-method}
+\alias{spatialKMeans,ANY-method}
+\alias{spatialKMeans,SpectralImagingExperiment-method}
+\alias{predict,SpatialKMeans-method}
+\alias{plot,SpatialKMeans,missing-method}
+\alias{plot,image-method}
 
-\title{Spatially-aware k-means clustering}
+\title{Spatially-aware K-means clustering}
+
 \description{
-    Performs spatially-aware (SA) or spatially-aware structurally-adaptive (SASA) clustering of imaging data. The data are first projected into an embedded feature space where spatial structure is maintained using the Fastmap algorithm, and then ordinary k-means clustering is performed on the projected dataset.
+    Perform spatially-aware k-means clustering. First the data is projected to a reduced dimension space using \code{\link{spatialFastmap}}. Then ordinary k-means clustering is applied to the projected data.
 }
-\usage{
-\S4method{spatialKMeans}{SparseImagingExperiment}(x, r = 1, k = 3,
-    method = c("gaussian", "adaptive"),
-    dist = "chebyshev", tol.dist = 1e-9,
-    iter.max = 10, nstart = 10,
-    algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),
-    ncomp = 10, BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{summary}{SpatialKMeans2}(object, \dots)
+\usage{
+\S4method{spatialKMeans}{ANY}(x, coord, r = 1, k = 2, ncomp = max(k),
+        weights = c("gaussian", "adaptive"),
+        neighbors = findNeighbors(coord, r=r),
+        transpose = TRUE, niter = 2L,
+        centers = TRUE, correlation = TRUE,
+        nchunks = getCardinalNChunks(),
+        verbose = getCardinalVerbose(),
+        BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{SpectralImagingExperiment}{ANY}(x, r = 1, k = 2, ncomp = max(k),
+        weights = c("gaussian", "adaptive"),
+        neighbors = findNeighbors(x, r=r), \dots)
+
+\S4method{topFeatures}{SpatialKMeans}(object, n = Inf, sort.by = "correlation", \dots)
+
+\S4method{plot}{SpatialKMeans,missing}(x, type = c("correlation", "centers"), \dots, xlab, ylab)
+
+\S4method{image}{SpatialKMeans}(x, type = "cluster", \dots)
 }
 \arguments{
-    \item{x}{The imaging dataset to cluster.}
-    \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
-    \item{k}{The number of clusters. This can be a vector to try different numbers of clusters.}
-    \item{method}{The method to use to calculate the spatial smoothing kernels for the embedding. The 'gaussian' method refers to spatially-aware (SA) clustering, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) clustering.}
-    \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
-    \item{tol.dist}{The distance tolerance used for matching pixels when calculating pairwise distances between neighborhoods. This parameter should only matter when the data is not gridded. (Only considers `radial' distance.)}
-    \item{iter.max}{The maximum number of k-means iterations.}
-    \item{nstart}{The number of restarts for the k-means algorithm.}
-    \item{algorithm}{The k-means algorithm to use. See \code{\link{kmeans}} for details.}
-    \item{ncomp}{The number of fastmap components to calculate.}
-    \item{\dots}{Ignored.}
-    \item{object}{A fitted model object to summarize.}
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
-}
-\value{
-    An object of class \code{SpatialKMeans2}, which is a \code{ImagingResult}, or an object of class \code{SpatialKMeans}, which is a \code{ResultSet}. Each element of the \code{resultData} slot contains at least the following components:
+    \item{x}{A spatial dataset in P x N matrix format.}
 
-    \describe{
-        \item{\code{cluster}:}{A vector of integers indicating the cluster for each pixel in the dataset.}
-        \item{\code{centers}:}{A matrix of cluster centers.}
-        \item{\code{correlation}:}{A matrix with the feature correlations with each cluster.}
-    }
+    \item{coord}{The spatial coordinates of the rows/columns of \code{x}. Ignored if \code{neighbors} is provided.}
+    
+    \item{r}{The spatial maximum distance for an observation to be considered a neighbor. Ignored if \code{neighbors} is provided.}
+
+    \item{k}{The number of clusters.}
+
+    \item{ncomp}{The number of FastMap components.}
+
+    \item{weights}{The type of spatial weights to use for the smoothing. Gaussian weights are weighted only by distance, while adaptive weights also consider the dissimilarity between neighboring observations.}
+
+    \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
+
+    \item{transpose}{Should \code{x} be considered P x N?}
+    
+    \item{niter}{The number of iterations used to calculate the pivots for each FastMap component.}
+
+    \item{centers}{Should the cluster centers be re-calculated on the original data?}
+
+    \item{correlation}{Should the correlations between features and the clusters be calculated?}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+    
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{n, sort.by}{For \code{topFeatures}, the number of top features to return and how to sort them.}
+
+    \item{type}{The type of plot to display.}
+
+    \item{xlab, ylab}{Plotting labels.}
 }
+
+\value{
+    An object of class \code{SpatialKMeans} derived from \code{SpatialResults}, containing the fitted \code{\link[stats]{kmeans}} object and the spatial metadata.
+}
+
 \author{
     Kylie A. Bemis
 }
+
 \references{
     Alexandrov, T., & Kobarg, J. H. (2011). Efficient spatial segmentation of large imaging mass spectrometry datasets with spatially aware clustering. Bioinformatics, 27(13), i230-i238. doi:10.1093/bioinformatics/btr246
 
     Faloutsos, C., & Lin, D. (1995). FastMap: A Fast Algorithm for Indexing, Data-Mining and Visualization of Traditional and Multimedia Datasets. Presented at the Proceedings of the 1995 ACM SIGMOD international conference on Management of data.
 }
+
 \seealso{
+    \code{\link{spatialKMeans}}
     \code{\link{spatialShrunkenCentroids}}
 }
+
 \examples{
-setCardinalBPPARAM(SerialParam())
-
 set.seed(1)
-x <- simulateImage(preset=3, dim=c(10,10), npeaks=10,
-    peakheight=c(4,6,8), representation="centroid")
+mse <- simulateImage(preset=3, dim=c(10,10), npeaks=20,
+    peakheight=c(3,6,9), representation="centroid")
 
-res <- spatialKMeans(x, r=1, k=4, method="adaptive")
+# fit spatial k-means
+skm <- spatialKMeans(mse, r=1, k=4, weights="adaptive")
 
-summary(res)
-
-image(res, model=1)
+# visualize clusters
+image(skm)
 }
 
 \keyword{spatial}

@@ -1,70 +1,98 @@
-\name{spatialDGMM-methods}
-\docType{methods}
-\alias{spatialDGMM}
+\name{spatialDGMM}
+
+\alias{SpatialDGMM}
 \alias{class:SpatialDGMM}
 \alias{SpatialDGMM-class}
-\alias{spatialDGMM-methods}
 
-\alias{spatialDGMM,SparseImagingExperiment-method}
-\alias{summary,SpatialDGMM-method}
+\alias{spatialDGMM}
+\alias{spatialDGMM,ANY-method}
+\alias{spatialDGMM,SpectralImagingExperiment-method}
+\alias{plot,SpatialOPLS-method}
+\alias{image,SpatialOPLS-method}
 
 \title{Spatially-aware Dirichlet Gaussian mixture model}
+
 \description{
-    Fits spatially-aware Dirichlet Gaussian mixture models to each feature and each run in an imaging experiment. Each image is segmented and the means and variances of all Gaussian components are estimated. A linear filter with a spatial kernel is applied to the component probabilities to achieve spatial smoothing. Simulated annealing is used in the EM-algorithm to avoid local optimia and achieve more accurate parameter estimates.
+    Fit a spatially-aware Gaussian mixture models to each feature. The model uses Dirichlet prior is used to achieve spatial smoothing. The means and standard deviations of the Gaussian components are estimated using gradient descent. Simulated annealing is used to avoid local optimia and achieve better parameter estimates.
 }
+
 \usage{
-\S4method{spatialDGMM}{SparseImagingExperiment}(x, r = 1, k = 3, groups = run(x),
-    method = c("gaussian", "adaptive"),
-    dist = "chebyshev", annealing = TRUE,
-    init = c("kmeans", "gmm"), p0 = 0.05,
-    iter.max = 100, tol = 1e-9,
+\S4method{spatialDGMM}{ANY}(x, coord, i, r = 1, k = 2, groups = NULL,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r, groups=groups),
+    annealing = TRUE, compress = TRUE, byrow = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{summary}{SpatialDGMM}(object, \dots)
+\S4method{spatialDGMM}{SpectralImagingExperiment}(x, i, r = 1, k = 2, groups = NULL,
+    weights = c("gaussian", "adaptive"),
+    neighbors = findNeighbors(coord, r=r, groups=groups), \dots)
+
+\S4method{plot}{SpatialDGMM,missing}(x, i = 1L, type = "density",
+        layout = NULL, free = "", \dots)
+
+\S4method{image}{SpatialDGMM}(x, i = 1L, type = "class",
+        layout = NULL, free = "", \dots)
 }
 \arguments{
-    \item{x}{The imaging dataset to segment or classify.}
-    \item{r}{The spatial neighborhood radius of nearby pixels to consider. This can be a vector of multiple radii values.}
-    \item{k}{The maximum number of segments (clusters). This can be a vector to try initializing the clustering with different numbers of maximum segments. The final number of segments may differ.}
-    \item{groups}{Pixels from different groups will be segmented separately. For the validity of downstream statistical analysis, it is important that \emph{each distinct observational unit (e.g., tissue sample) is assigned to a unique group}.}
-    \item{method}{The method to use to calculate the spatial smoothing weights. The 'gaussian' method refers to spatially-aware (SA) weights, and 'adaptive' refers to spatially-aware structurally-adaptive (SASA) weights.}
-    \item{dist}{The type of distance metric to use when calculating neighboring pixels based on \code{r}. The options are `radial', `manhattan', `minkowski', and `chebyshev' (the default).}
-    \item{annealing}{Should simulated annealing be used during the optimization process to improve parameter estimates?}
-    \item{init}{Should the parameter estimates be initialized using k-means ('kmeans') or Gaussian mixture model ('gmm')?}
-    \item{p0}{A regularization parameter applied to estimated posterior class probabilities to avoid singularities. Must be positive for successful gradient descent optimization. Changing this value (within reason) should have only minimal impact on values of parameter estimates, but may greatly affect the algorithm's speed and stability.}
-    \item{iter.max}{The maximum number of EM-algorithm iterations.}
-    \item{tol}{The tolerance convergence criterion for the EM-algorithm. Corresponds to the change in log-likelihood.}
-    \item{\dots}{Passed to internal methods.}
-    \item{object}{A fitted model object to summarize.}
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
-}
-\value{
-    An object of class \code{SpatialDGMM}, which is a \code{ImagingResult}, where each element of the \code{resultData} slot contains at least the following components:
+    \item{x}{A spatial dataset in P x N matrix format.}
 
-    \describe{
-        \item{\code{estimates}:}{A list giving the parameter estimates for the means and variances for each Gaussian component.}
-        \item{\code{class}:}{The predicted Gaussian component.}
-        \item{\code{probability}:}{The probability of class membership for each Gaussian component.}
-    }
+    \item{i}{The rows/columns of \code{x} to segment (if not all of them).}
+
+    \item{coord}{The spatial coordinates of the rows/columns of \code{x}. Ignored if \code{neighbors} is provided.}
+    
+    \item{r}{The spatial maximum distance for an observation to be considered a neighbor. Ignored if \code{neighbors} is provided.}
+
+    \item{k}{The number of Gaussian components.}
+
+    \item{groups}{Observations belonging to the different groups will be segmented independently. This should be set to the samples if statistic testing (via \code{\link{meansTest}} is to be performed.)}
+
+    \item{weights}{The type of spatial weights to use for the smoothing. Gaussian weights are weighted only by distance, while adaptive weights also consider the dissimilarity between neighboring observations.}
+
+    \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
+
+    \item{annealing}{Should simulated annealing be used?}
+    
+    \item{compress}{Should the results be compressed? The results can be larger than the original dataset, so compressing them is useful. If this option is used, then the class probabilities are not returned, and the class assignments are compressed using \code{\link[matter]{drle}}.}
+
+    \item{byrow}{Should the rows or columns of \code{x} be segmented?}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+    
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{type}{The type of plot to display.}
+
+    \item{layout}{A vector of the form \code{c(nrow, ncol)} specifying the number of rows and columns in the facet grid.}
+
+    \item{free}{A string specifying the free spatial dimensions during faceting. E.g., \code{""}, \code{"x"}, \code{"y"}, \code{"xy"}, \code{"yx"}.}
 }
+
+\value{
+    An object of class \code{SpatialDGMM} derived from \code{SpatialResults}, containing the fitted \code{\link[matter]{sgmixn}} object and the spatial metadata.
+}
+
 \author{
     Dan Guo and Kylie A. Bemis
 }
+
 \references{
     Guo, D., Bemis, K., Rawlins, C., Agar, J., and Vitek, O. (2019.) Unsupervised segmentation of mass spectrometric ion images characterizes morphology of tissues. Proceedings of ISMB/ECCB, Basel, Switzerland, 2019.
 }
+
 \examples{
-setCardinalBPPARAM(SerialParam())
+set.seed(1)
+mse <- simulateImage(preset=3, dim=c(10,10), npeaks=9,
+    peakheight=c(3,6,9), representation="centroid")
 
-set.seed(2)
-x <- simulateImage(preset=3, dim=c(10,10), npeaks=6,
-    peakheight=c(4,6,8), representation="centroid")
+gmm <- spatialDGMM(mse, r=1, k=4, weights="adaptive")
 
-res <- spatialDGMM(x, r=1, k=5, method="adaptive")
-
-summary(res)
-
-image(res, model=list(feature=3))
+image(gmm, i=1:9)
 }
 
 \keyword{spatial}

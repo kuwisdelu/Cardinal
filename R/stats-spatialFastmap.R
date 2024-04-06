@@ -6,7 +6,7 @@ setMethod("spatialFastmap", "ANY",
 	function(x, coord, r = 1, ncomp = 3,
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		transpose = FALSE, niter = 3L,
+		transpose = TRUE, niter = 3L,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -109,12 +109,10 @@ setMethod("plot", c(x = "SpatialFastmap", y = "missing"),
 })
 
 setMethod("image", c(x = "SpatialFastmap"),
-	function(x, type = "x", superpose=FALSE,
-		col = if (superpose) NULL else cividis, ...)
+	function(x, type = "x", ...)
 {
 	type <- match.arg(type)
-	callNextMethod(x, y=x$x, superpose=superpose,
-		col=col, reducedDims=TRUE, ...)
+	callNextMethod(x, y=x$x, ...)
 })
 
 

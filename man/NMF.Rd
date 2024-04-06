@@ -28,7 +28,7 @@
 \S4method{image}{SpatialNMF}(x, type = "x", \dots)
 }
 \arguments{
-    \item{x}{A data matrix assumed to be P x N.}
+    \item{x}{A dataset in P x N matrix format.}
 
     \item{ncomp}{The number of components to calculate.}
 

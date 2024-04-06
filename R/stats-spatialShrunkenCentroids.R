@@ -6,7 +6,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	function(x, y, coord, r = 1, s = 0,
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		priors = table(y), center = NULL, transpose = FALSE,
+		priors = table(y), center = NULL, transpose = TRUE,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
