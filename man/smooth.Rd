@@ -12,7 +12,7 @@
 \usage{
 \S4method{smooth}{SpectralImagingData}(object,
     method = c("gaussian", "bilateral", "adaptive",
-            "diff", "guide", "pag", "sgolay", "ma"), \dots)
+        "diff", "guide", "pag", "sgolay", "ma"), \dots)
 }
 
 \arguments{
@@ -71,11 +71,11 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
 # queue normalization
-mse <- smooth(mse, method="gaussian", width=11)
-plot(mse, i=4)
+mse2 <- smooth(mse, method="gaussian", width=11)
+plot(mse2, i=4)
 
 # apply normalization
-mse <- process(mse)
+mse2 <- process(mse2)
 }
 
 \keyword{ts}

@@ -1,46 +1,62 @@
-\name{findNeighbors}
+\name{spatialWeights}
 
-\alias{findNeighbors}
+\alias{spatialWeights}
 
-\alias{findNeighbors,ANY-method}
-\alias{findNeighbors,SpectralImagingData-method}
-\alias{findNeighbors,PositionDataFrame-method}
+\alias{spatialWeights,ANY-method}
+\alias{spatialWeights,SpectralImagingData-method}
+\alias{spatialWeights,PositionDataFrame-method}
 
-\title{Find spatial neighbors}
+\title{Calculate spatial weights}
 
 \description{
-	Methods for calculating the spatial neighbors (pixels within a certain distance) or spatial weights for all pixels in a dataset.
+	Calculate weights for neighboring observations based on either the spatial distance between the neighbors or the dissimilarity between the observations.
 }
 
 \usage{
-\S4method{findNeighbors}{ANY}(x, r = 1, groups = NULL,
-        metric = "maximum", p = 2, matrix = FALSE, \dots)
+\S4method{spatialWeights}{ANY}(x, coord = x, r = 1, byrow = TRUE,
+    neighbors = findNeighbors(coord, r=r),
+    weights = c("gaussian", "adaptive"),
+    sd = ((2 * r) + 1) / 4, matrix = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{findNeighbors}{SpectraImagingData}(x, r = 1, groups = run(x), \dots)
+\S4method{spatialWeights}{SpectraImagingData}(x, r = 1,
+        neighbors = findNeighbors(x, r=r), \dots)
 
-\S4method{findNeighbors}{PositionDataFrame}(x, r = 1, groups = run(x), \dots)
+\S4method{spatialWeights}{PositionDataFrame}(x, r = 1,
+        neighbors = findNeighbors(x, r=r),
+        sd = ((2 * r) + 1) / 4, \dots)
 }
 
 \arguments{
-    \item{x}{An imaging dataset or data frame with spatial dimensions.}
-    
-    \item{r}{The spatial maximum distance for an observation to be considered a neighbor.}
-    
-    \item{groups}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
-    
-    \item{metric}{Distance metric to use when finding the nearest neighbors. Supported metrics include "euclidean", "maximum", "manhattan", and "minkowski".}
+    \item{x}{Either  matrix or data frame of spatial coordinates, or a data matrix with rows or columns located at the coordinates given by \code{coord}.}
 
-    \item{p}{The power for the Minkowski distance.}
+    \item{coord}{The spatial coordinates of the rows/columns of \code{x}. Ignored if \code{neighbors} is provided.}
+    
+    \item{r}{The spatial maximum distance for an observation to be considered a neighbor. Ignored if \code{neighbors} is provided.}
 
-    \item{matrix}{Should the neighbors be returned as a sparse adjacency matrix instead of a list?}
+    \item{byrow}{If \code{x} is a data matrix, then are the weights calculated based on the dissimilarity between the rows (TRUE) or the columns (FALSE).}
+    
+    \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
+    
+    \item{weights}{The type of weights to calculate. Either Gaussian weights with a constant standard deviation, or adaptive weights with a standard deviation based on the dissimilarity between the neighboring observations.}
 
-    \item{\dots}{Additional arguments passed to the next method.}
+    \item{sd}{The standard deviation for the Gaussian weights. Ignored with \code{weights="adaptive"}.}
+
+    \item{matrix}{Should the weights be returned as a sparse adjacency matrix instead of a list?}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Additional arguments passed to the next method.}
 }
 
 \value{
-    Either a list of indices of neighbors or a sparse adjacency matrix (\code{\linkS4class{sparse_mat}}).
+    Either a list of weights of neighbors or a sparse adjacency matrix (\code{\linkS4class{sparse_mat}}).
 }
 
 \author{
@@ -48,22 +64,18 @@
 }
 
 \seealso{
-    \code{\link{spatialWeights}}
+    \code{\link{findNeighbors}}
 }
 
 \examples{
-coord <- expand.grid(x=1:9, y=1:9)
-values <- rnorm(nrow(coord))
-pdata <- PositionDataFrame(coord=coord, values=values)
+set.seed(1)
+mse <- simulateImage(preset=1, dim=c(10,10))
 
-# find spatial neighbors
-findNeighbors(pdata, r=1)
+# calculate weights based on distance
+spatialWeights(pixelData(mse), r=1)
 
-# calculate distance-based weights
-spatialWeights(pdata, r=1)
-
-# visualize weight matrix
-W <- spatialWeights(pdata, r=1, matrix=TRUE)
-image(as.matrix(W), col=bw.colors(100))
+# calculate weights based on spectral dissimilarity
+spatialWeights(mse, r=1)
 }
+
 \keyword{spatial}

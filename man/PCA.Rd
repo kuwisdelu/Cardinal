@@ -4,59 +4,89 @@
 \alias{class:SpatialPCA}
 \alias{SpatialPCA-class}
 
-\alias{PCA,SparseImagingExperiment-method}
+\alias{PCA,ANY-method}
+\alias{PCA,SpectralImagingExperiment-method}
 \alias{predict,SpatialPCA-method}
+\alias{plot,SpatialPCA,missing-method}
+\alias{image,SpatialPCA-method}
 
 \title{Principal components analysis}
+
 \description{
-	Performs principal components analysis efficiently on large datasets using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition of the data matrix.
+	Compute principal components efficiently using implicitly restarted Lanczos bi-diagonalization (IRLBA) algorithm for approximate singular value decomposition.
 }
+
 \usage{
-\S4method{PCA}{SparseImagingExperiment}(x, ncomp = 3, center = TRUE, scale = FALSE, \dots)
+\S4method{PCA}{ANY}(x, ncomp = 3,
+    center = TRUE, scale = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{predict}{PCA2}(object, newx, ncomp, \dots)
+\S4method{PCA}{SpectralImagingExperiment}(x, ncomp = 3,
+    center = TRUE, scale = FALSE, \dots)
 
-\S4method{summary}{PCA2}(object, \dots)
+\S4method{predict}{SpatialPCA}(object, newdata,
+    nchunks = getCardinalNChunks(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{plot}{SpatialPCA,missing}(x, type = c("rotation", "scree", "x"), \dots, xlab, ylab)
+
+\S4method{image}{SpatialPCA}(x, type = "x", \dots)
 }
 \arguments{
-    \item{x}{The imaging dataset for which to calculate the principal components.}
-    \item{ncomp}{The number of principal components to calculate.}
-    \item{center}{Should the data be centered first? This is passed to \code{scale}.}
-    \item{scale}{Shoud the data be scaled first? This is passed to \code{scale}.}
-    \item{\dots}{Ignored.}
-    \item{object}{The result of a previous call to \code{\link{PCA}}.}
-    \item{newx}{An imaging dataset for which to calculate the principal components scores based on the aleady-calculated principal components loadings.}
-}
-\value{
-    An object of class \code{PCA2}, which is a \code{ImagingResult}, or an object of class \code{PCA}, which is a \code{ResultSet}. Each elemnt of \code{resultData} slot contains at least the following components:
+    \item{x}{A data matrix assumed to be P x N.}
 
-    \describe{
-        \item{\code{loadings}:}{A matrix with the principal component loadings.}
-        \item{\code{scores}:}{A matrix with the principal component scores.}
-        \item{\code{sdev}:}{The standard deviations of the principal components.}
-    }
+    \item{ncomp}{The number of principal components to calculate.}
+
+    \item{center}{Should the data be centered?}
+
+    \item{scale}{Shoud the data be scaled?}
+
+    \item{nchunks}{The number of chunks to use for processing.}
+
+    \item{verbose}{Should progress messages be printed?}
+
+    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+
+    \item{\dots}{Options passed to \code{\link[irlba]{irlba}}.}
+
+    \item{object}{A \code{SpatialPCA} object.}
+
+    \item{newdata}{A new \code{SpectralImagingExperiment} for which to calculate the scores.}
+
+    \item{type}{The type of plot to display.}
+
+    \item{xlab, ylab}{Plotting labels.}
 }
+
+\value{
+   An object of class \code{SpatialPCA} derived from \code{SpatialResults}, containing the fitted \code{\link{prcomp_lanczos}} object and the spatial metadata.
+}
+
 \author{
 	Kylie A. Bemis
 }
+
 \seealso{
-    \code{\link{OPLS}},
-    \code{\link{PLS}},
+    \code{\link[matter]{prcomp_lanczos}},
+    \code{\link{NMF}},
+    \code{\link{spatialFastmap}},
     \code{\link{irlba}},
     \code{\link{svd}}
 }
-\examples{
-setCardinalBPPARAM(SerialParam())
 
+\examples{
 set.seed(1)
-data <- simulateImage(preset=2, npeaks=20, dim=c(6,6),
+mse <- simulateImage(preset=2, npeaks=20, dim=c(10,10),
     representation="centroid")
 
-# project to FastMap components
-pca <- PCA(data, ncomp=2)
+# project to principal components
+pc <- PCA(mse, ncomp=2)
 
 # visualize first 2 components
-image(pca, superpose=FALSE)
+image(pc, superpose=FALSE, scale=TRUE)
 }
+
 \keyword{multivariate}
 

@@ -9,12 +9,12 @@
 \title{Find spatial neighbors}
 
 \description{
-	Methods for calculating the spatial neighbors (pixels within a certain distance) or spatial weights for all pixels in a dataset.
+	Find the indices of spatial neighbors for all observations in a dataset.
 }
 
 \usage{
 \S4method{findNeighbors}{ANY}(x, r = 1, groups = NULL,
-        metric = "maximum", p = 2, matrix = FALSE, \dots)
+    metric = "maximum", p = 2, matrix = FALSE, \dots)
 
 \S4method{findNeighbors}{SpectraImagingData}(x, r = 1, groups = run(x), \dots)
 

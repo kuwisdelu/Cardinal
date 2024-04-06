@@ -21,19 +21,19 @@
 
 \usage{
 \S4method{meansTest}{ANY}(x, data, fixed, random, samples,
-        response = "y", reduced = ~ 1, byrow = FALSE,
-        nchunks = getCardinalNChunks(),
-        verbose = getCardinalVerbose(),
-        BPPARAM = getCardinalBPPARAM(), \dots)
+    response = "y", reduced = ~ 1, byrow = FALSE,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{meansTest}{SpectralImagingExperiment}(x, data, fixed, random, samples = run(x),
-        response = "intensity", \dots)
+    response = "intensity", \dots)
 
 \S4method{meansTest}{SpatialDGMM}(x, data, fixed, random, class = 1L,
-        response = "intensity", reduced = ~ 1,
-        nchunks = getCardinalNChunks(),
-        verbose = getCardinalVerbose(),
-        BPPARAM = getCardinalBPPARAM(), \dots)
+    response = "intensity", reduced = ~ 1,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
 segmentationTest(x, fixed, random, samples = run(x),
     class = 1L, response = "intensity", reduced = ~ 1, \dots)

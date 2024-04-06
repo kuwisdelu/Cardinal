@@ -60,10 +60,10 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
 # queue normalization
-mse <- normalize(mse, method="tic")
+mse2 <- normalize(mse, method="tic")
 
 # apply normalization
-mse <- process(mse)
+mse2 <- process(mse2)
 }
 
 \keyword{ts}

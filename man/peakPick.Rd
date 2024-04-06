@@ -1,87 +1,102 @@
-\name{peakPick-methods}
-\docType{methods}
+\name{peakPick}
 
 \alias{peakPick}
-\alias{peakPick-methods}
 \alias{peakPick,MSImagingExperiment-method}
+\alias{peakPick,MSImagingArrays-method}
+\alias{peakPick,SpectralImagingData-method}
 
-\alias{peakPick.mad}
-\alias{peakPick.simple}
-\alias{peakPick.adaptive}
-\alias{peakPick.limpic}
+\title{Peak pick spectra}
 
-\title{Peak pick an imaging dataset}
 \description{
-	Apply peak picking to a mass spectrometry imaging dataset.
+    Apply deferred peak picking to spectra.
 }
+
 \usage{
-\S4method{peakPick}{MSImagingExperiment}(object, method = c("mad", "simple", "adaptive"), \dots)
+\S4method{peakPick}{MSImagingExperiment}(object, ref,
+    method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+    SNR = 2, type = c("height", "area"),
+    tolerance = NA, units = c("ppm", "mz"), \dots)
 
-## Local maxima and SNR with noise based on local MAD
-peakPick.mad(x, SNR=6, window=5, blocks=1, fun=mean, tform=diff, \dots)
+\S4method{peakPick}{MSImagingArrays}(object, ref,
+    method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+    SNR = 2, type = c("height", "area"),
+    tolerance = NA, units = c("ppm", "mz"), \dots)
 
-## Local maxima and SNR with constant noise based on SD
-peakPick.simple(x, SNR=6, window=5, blocks=100, \dots)
-
-## Local maxima and SNR with adaptive noise based on SD
-peakPick.adaptive(x, SNR=6, window=5, blocks=100, spar=1, \dots)
-
-## LIMPIC peak detection
-peakPick.limpic(x, SNR=6, window=5, blocks=100, thresh=0.75, \dots)
+\S4method{peakPick}{SpectralImagingData}(object, ref,
+    method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+    SNR = 2, type = c("height", "area"),
+    tolerance = NA, units = c("relative", "absolute"), \dots)
 }
+
 \arguments{
-    \item{object}{An imaging dataset.}
-    \item{method}{The peak picking method to use.}
-    \item{\dots}{Additional arguments passed to the peak picking method.}
-    \item{x}{The mass spectrum to be peak picked.}
-    \item{SNR}{The minimum signal-to-noise ratio to be considered a peak.}
-    \item{window}{The window width for seeking local maxima.}
-    \item{blocks}{The number of blocks in which to divide the mass spectrum in order to calculate the noise.}
-    \item{fun}{The function used to estimate centrality and average absolute deviation.}
-    \item{tform}{A transformation to be applied to the mass spectrum before estimating noise.}
-    \item{spar}{Smoothing parameter for the spline smoothing applied to the spectrum in order to decide the cutoffs for throwing away false noise spikes that might occur inside peaks.}
-    \item{thresh}{The thresholding quantile to use when comparing slopes in order to throw away peaks that are too flat.}
+    \item{object}{A spectral imaging dataset.}
+
+    \item{ref}{Optional vector giving locations of reference peaks to extract from the dataset.}
+
+    \item{method}{The peak picking method to use. See \code{\link[matter]{findpeaks}} for details.}
+
+    \item{SNR}{The signal-to-noise threshold to use to determine a peak.}
+
+    \item{type}{The type of value to use to summarize the peak.}
+
+    \item{tolerance}{If \code{ref} is specified, the tolerance to use when deciding if a local peak in a spectrum matches a reference peak.}
+
+    \item{units}{The units for the above tolerance.}
+
+    \item{\dots}{Additional arguments passed to the peak picking function.}
 }
+
 \details{
-    Peak picking is usually performed using the provided functions, but a user-created function can also be passed to \code{method}. In this case it should take the following arguments:
+    Unless otherwise specified, peaks are detected as local maxima which are then compared to the estimated noise level to determine a signal-to-noise ratio for each peak. Most of the peak detection methods below are differentiated by how they estimate the noise in the specturm.
+
+    The supported peak picking methods are:
 
     \itemize{
-        \item{\code{x}: A \code{numeric} vector of intensities.}
-        \item{\code{\dots}: Additional arguments.}
+
+        \item{"diff":}{Estimate noise based on the derivative of the signal using \code{\link{estnoise_diff}}.}
+
+        \item{"sd":}{Estimate noise from standard deviation using \code{\link{estnoise_sd}}.}
+
+        \item{"mad":}{Estimate noise from mean absolute deviation using \code{\link{estnoise_mad}}.}
+
+        \item{"quantile":}{Estimate noise from a rolling quantile of the difference between the raw signal and a smoothed signal using \code{\link{estnoise_quant}}.}
+
+        \item{"filter":}{Estimate noise using dynamic filtering of the local peaks using \code{\link{estnoise_filt}}.}
+
+        \item{"cwt":}{Detect peaks based on continuous wavelet transform (CWT) using \code{\link{findpeaks_cwt}}.}
     }
-
-    When applied to an \code{MSImagingExperiment} object, a user-created function should return a \code{integer} vector giving the indices of the detected peaks.
-
-    Internally, \code{\link{pixelApply}} is used to apply the peak picking. See its documentation page for more details on additional objects available to the environment installed to the peak picking function.
 }
+
+\note{
+    The peak picking is deferred until \code{process()} is called.
+}
+
 \value{
-    An object of the same class with the peak picked spectra. Note that the full mass range is retained and the peaks are unaligned, so \code{\link{peakAlign}} should be called before applying further methods.
+    An object of the same class with the processing step queued.
 }
+
 \author{
-	Kylie A. Bemis
+    Kylie A. Bemis
 }
-\references{
-    Mantini, D., Petrucci, F., Pieragostino, D., Del Boccio, P., Di Nicola, M., Di Ilio, C., et al. (2007). LIMPIC: a computational method for the separation of protein MALDI-TOF-MS signals from noise. BMC Bioinformatics, 8(101), 101. doi:10.1186/1471-2105-8-101
-}
+
 \seealso{
-    \code{\linkS4class{MSImagingExperiment}},
-    \code{\link{peakAlign}},
-    \code{\link{peakFilter}},
-    \code{\link{peakBin}},
-    \code{\link{pixelApply}},
+    \code{\link{normalize}},
+    \code{\link{smooth}},
+    \code{\link{recalibrate}},
+    \code{\link{reduceBaseline}},
     \code{\link{process}}
 }
+
 \examples{
-setCardinalBPPARAM(SerialParam())
+set.seed(1)
+mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
-set.seed(2)
-data <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
-data <- data[,pData(data)$circle]
+# queue normalization
+mse2 <- peakPick(mse, method="diff", SNR=6)
+plot(mse2, i=4)
 
-# queue peak picking
-data <- peakPick(data, method="simple", SNR=6)
-
-# apply peak picking
-data_peaks <- process(data, plot=interactive())
+# apply normalization
+mse2 <- process(mse2)
 }
-\keyword{methods}
+
+\keyword{ts}

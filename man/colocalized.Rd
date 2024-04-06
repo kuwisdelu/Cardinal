@@ -15,11 +15,11 @@
 \S4method{colocalized}{MSImagingExperiment}(object, mz, \dots)
 
 \S4method{colocalized}{SpectralImagingExperiment}(object, i, ref,
-        threshold = median, n = Inf,
-        sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
-        nchunks = getCardinalNChunks(),
-        verbose = getCardinalVerbose(),
-        BPPARAM = getCardinalBPPARAM(), \dots)
+    threshold = median, n = Inf,
+    sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{

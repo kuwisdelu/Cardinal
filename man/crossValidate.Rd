@@ -29,6 +29,7 @@ crossValidate(fit., x, y, folds = run(x), \dots,
 \S4method{image}{SpatialCV}(x, i = 1L, type = c("response", "class"),
         layout = NULL, free = "", \dots)
 }
+
 \arguments{
     \item{fit.}{The function used to fit the model.}
 
@@ -62,6 +63,7 @@ crossValidate(fit., x, y, folds = run(x), \dots,
 
     \item{free}{A string specifying the free spatial dimensions during faceting. E.g., \code{""}, \code{"x"}, \code{"y"}, \code{"xy"}, \code{"yx"}.}
 }
+
 \details{
     This method is designed to be used with the provided classification methods, but can also be used with user-provided functions and methods as long as they conform to certain expectations. Internally, \code{\link{cv_do}} from the \code{matter} package is used to perform the cross-validation. See \code{?cv_do} for details.
 }
@@ -73,6 +75,7 @@ crossValidate(fit., x, y, folds = run(x), \dots,
 \author{
 	Kylie A. Bemis
 }
+
 \seealso{
     \code{\link{cv_do}},
     \code{\link{spatialShrunkenCentroids}},

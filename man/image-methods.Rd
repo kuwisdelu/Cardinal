@@ -14,26 +14,26 @@
 
 \usage{
 \S4method{image}{MSImagingExperiment}(x,
-        formula = intensity ~ x * y,
-        i = features(x, mz=mz),
-        mz = NULL,
-        tolerance = NA,
-        units = c("ppm", "mz"),
-        \dots,
-        xlab, ylab,
-        subset = TRUE)
+    formula = intensity ~ x * y,
+    i = features(x, mz=mz),
+    mz = NULL,
+    tolerance = NA,
+    units = c("ppm", "mz"),
+    \dots,
+    xlab, ylab,
+    subset = TRUE)
 
 \S4method{image}{SpectralImagingExperiment}(x,
-        formula,
-        i = 1L,
-        groups = NULL,
-        superpose = FALSE,
-        key = TRUE,
-        \dots,
-        enhance = NULL,
-        smooth = NULL,
-        scale = NULL,
-        subset = TRUE)
+    formula,
+    i = 1L,
+    groups = NULL,
+    superpose = FALSE,
+    key = TRUE,
+    \dots,
+    enhance = NULL,
+    smooth = NULL,
+    scale = NULL,
+    subset = TRUE)
 }
 
 \arguments{

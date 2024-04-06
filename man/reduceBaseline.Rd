@@ -62,11 +62,11 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3), baseline=1)
 
 # queue normalization
-mse <- reduceBaseline(mse, method="locmin")
-plot(mse, i=4)
+mse2 <- reduceBaseline(mse, method="locmin")
+plot(mse2, i=4)
 
 # apply normalization
-mse <- process(mse)
+mse2 <- process(mse2)
 }
 
 \keyword{ts}
