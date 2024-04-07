@@ -1,20 +1,19 @@
 citHeader("To cite the Cardinal package in publications use:")
 
 citEntry(entry="article",  
-         title  = "Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments",
+         title  = "Cardinal v.3: a versatile open-source software for mass spectrometry imaging analysis",
          author = personList(
-           person(given="Kyle D.", family="Bemis"),
-           person(given="April", family="Harry"),
-           person(given="Livia S.", family="Eberlin"),
-           person(given="Christina", family="Ferreira"),
-           person(given="Stephanie M.", family="van de Ven"),
-           person(given="Parag", family="Mallick"),
-           person(given="Mark", family="Stolowitz"),
+           person(given="Kyle Ariel", family="Bemis"),
+           person(given="Melanie Christine", family="Foell"),
+           person(given="Dan", family="Guo"),
+           person(given="Sai Srikanth", family="Lakkimsetty"),
            person(given="Olga", family="Vitek")),
-         journal = "Bioinformatics",
-         year = "2015",
-         doi = "10.1093/bioinformatics/btv146",
-         textVersion = paste("Bemis, K. D., Harry, A., Eberlin, L. S., Ferreira, C., van de Ven, S. M., Mallick, P., Stolowitz, M., and Vitek, O.",
-           "Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments.",
-           "Bioinformatics (2015).", "doi:10.1093/bioinformatics/btv146")
+         journal = "Nature Methods",
+         number = "20",
+         pages = "1883-1886",
+         year = "2023",
+         doi = "10.1038/s41592-023-02070-z",
+         textVersion = paste("Bemis, K. A., Foell, M. C., Guo D., Lakkimsetty, S. S., and Vitek, O.",
+           "Cardinal v.3: a versatile open-source software for mass spectrometry imaging analysis.",
+           "Nature Methods 20, 1883-1886 (2023).", "doi:10.1038/s41592-023-02070-z")
          )
