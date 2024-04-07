@@ -28,7 +28,7 @@ test_that("MSImagingExperiment accessors", {
 	pdata2 <- PositionDataFrame(
 		coord=expand.grid(x=1:5, y=3:4),
 		diagnosis=rep(c("yes", "no"), each=5))
-	expdata <- ImzMeta(spectrumType="MS1 spectrum",
+	expdata <- CardinalIO::ImzMeta(spectrumType="MS1 spectrum",
 		spectrumRepresentation="profile",
 		contactName="Kylie Ariel Bemis")
 	mse <- MSImagingExperiment(s, featureData=fdata, pixelData=pdata,
@@ -114,7 +114,7 @@ test_that("MSImagingExperiment rbind/cbind", {
 	pdata2 <- PositionDataFrame(
 		coord=expand.grid(x=1:5, y=3:4),
 		diagnosis=rep(c("yes", "no"), each=5))
-	expdata <- ImzMeta(spectrumType="MS1 spectrum",
+	expdata <- CardinalIO::ImzMeta(spectrumType="MS1 spectrum",
 		spectrumRepresentation="profile",
 		contactName="Kylie Ariel Bemis")
 	mse <- MSImagingExperiment(s, featureData=fdata, pixelData=pdata,

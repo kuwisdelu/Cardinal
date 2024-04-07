@@ -41,17 +41,21 @@ test_that("SpectralImagingArrays accessors", {
 	expect_equal(run(sa), run(pdata))
 	expect_equal(pData(sa)$diagnosis, pdata$diagnosis)
 
-	j <- 1
-	
-	expect_setequal(pixels(sa, j), 1)
 	expect_setequal(pixels(sa, 1:10), 1:10)
 	expect_setequal(pixels(sa, diagnosis == "yes"), 1:5)
 	expect_setequal(pixels(sa, diagnosis == "no"), 6:10)
-	expect_setequal(pixels(sa, x > 1, y > j), c(7, 8, 9, 10))
 	expect_setequal(pixels(sa, coord=c(x=3, y=1)), 3)
-	expect_setequal(pixels(sa, coord=c(x=3, y=j)), 3)
 	expect_setequal(pixels(sa, run="run0"), 1:10)
-	expect_setequal(pixels(sa, run=j), 1:10)
+
+	j <- 1
+	
+	expect_setequal(pixels(sa, j), 1)
+	expect_setequal(pixels(sa, x > 1, y > j), c(7, 8, 9, 10))
+	expect_setequal(pixels(sa, coord=c(x=3, y=j)), 3)
+
+	expect_equal(subset(sa, j), sa[j])
+	expect_equal(subset(sa, x > 1 & y > j), sa[c(7, 8, 9, 10)])
+	expect_equal(subset(sa, x == 3 & y == j), sa[3])
 
 	pixelData(sa) <- pdata2
 

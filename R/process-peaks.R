@@ -42,6 +42,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				tolerance=tolerance, units=units, filterFreq=filterFreq,
 				nchunks=nchunks, verbose=verbose,
 				BPPARAM=BPPARAM, ...)
+			domain <- mz(ref)
 		} else {
 			# check if peaks are already processed
 			if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
@@ -51,6 +52,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 					message("peaks are already processed")
 				return(object)
 			}
+			domain <- as.numeric(ref)
 		}
 		# extract the peaks
 		if ( verbose )
@@ -59,10 +61,11 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			tolerance=tolerance, units=units, type=type)
 		object <- process(object,
 			spectra=spectra, index=index,
-			domain=mz(ref), outfile=outfile,
+			domain=domain, outfile=outfile,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
-		featureData(object) <- featureData(ref)
+		if ( is(ref, "MSImagingExperiment") )
+			featureData(object) <- featureData(ref)
 	} else {
 		if ( isCentroided(object) ) {
 			if ( length(processingData(object)) == 0L ) {
@@ -435,4 +438,26 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		featureData=featureData, elementMetadata=pixelData(object),
 		metadata=metadata(object), processing=list())
 }
+
+
+#### Estimate reference peaks ####
+## ------------------------------
+
+estimateReferencePeaks <- function(object, SNR = 2,
+	method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(object)) > 0L )
+		warning("processing steps will be ignored by estimateReferencePeaks()")
+	method <- match.arg(method)
+	object <- summarizeFeatures(object, stat="mean",
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM)
+	featureData <- featureData(object)
+	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)
+	featureData[peaks,,drop=FALSE]
+}
+
 

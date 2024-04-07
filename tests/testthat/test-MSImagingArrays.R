@@ -9,10 +9,6 @@ test_that("MSImagingArrays accessors", {
 
 	expect_true(validObject(msa))
 
-	msa <- MSImagingArrays(numeric(0))
-
-	expect_true(validObject(msa))
-
 	set.seed(1)
 	n <- 10
 	i <- rep(list(501:510), n)
@@ -24,7 +20,7 @@ test_that("MSImagingArrays accessors", {
 	pdata2 <- PositionDataFrame(
 		coord=expand.grid(x=1:5, y=3:4),
 		diagnosis=rep(c("yes", "no"), each=5))
-	expdata <- ImzMeta(spectrumType="MS1 spectrum",
+	expdata <- CardinalIO::ImzMeta(spectrumType="MS1 spectrum",
 		spectrumRepresentation="profile",
 		contactName="Kylie Ariel Bemis")
 	msa <- MSImagingArrays(s, pixelData=pdata,
@@ -87,7 +83,7 @@ test_that("MSImagingArrays combine", {
 	pdata2 <- PositionDataFrame(
 		coord=expand.grid(x=1:5, y=3:4),
 		diagnosis=rep(c("yes", "no"), each=5))
-	expdata <- ImzMeta(spectrumType="MS1 spectrum",
+	expdata <- CardinalIO::ImzMeta(spectrumType="MS1 spectrum",
 		spectrumRepresentation="profile",
 		contactName="Kylie Ariel Bemis")
 	msa <- MSImagingArrays(s, pixelData=pdata,

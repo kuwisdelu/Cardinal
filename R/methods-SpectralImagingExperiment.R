@@ -98,9 +98,12 @@ setMethod("show", "SpectralImagingExperiment",
 
 # find pixels by position
 setMethod("pixels", "SpectralImagingExperiment",
-	function(object, ..., coord, run, tolerance = NA)
+	function(object, ..., coord, run, tolerance = NA,
+		env = NULL)
 	{
-		i <- callNextMethod(object, ...)
+		if ( is.null(env) )
+			env <- parent.frame(2)
+		i <- callNextMethod(object, ..., env=env)
 		if ( !missing(coord) || !missing(run) ) {
 			pos <- .find_positions(object, coord, run, tolerance)
 			i <- intersect(i, pos)
@@ -138,11 +141,13 @@ setReplaceMethod("featureNames", "SpectralImagingExperiment",
 	})
 
 setMethod("features", "SpectralImagingExperiment",
-	function(object, ..., env = parent.frame(1L))
+	function(object, ..., env = NULL)
 	{
+		if ( is.null(env) )
+			env <- parent.frame(2)
+		env <- as.env(featureData(object), enclos=env)
 		conditions <- eval(substitute(alist(...)))
-		e <- as.env(featureData(object), enclos=env)
-		i <- .find_conditions(conditions, e, nrow(featureData(object)))
+		i <- .find_conditions(conditions, env, nrow(featureData(object)))
 		setNames(i, featureNames(object)[i])
 	})
 
@@ -224,7 +229,7 @@ setMethod("subset", "SpectralImagingExperiment",
 		}
 		if ( !missing(select) ) {
 			j <- eval(substitute(select), envir=pdata)
-			if ( !is.logical(i) && !is.numeric(i) )
+			if ( !is.logical(j) && !is.numeric(j) )
 				stop("'select' must specify logical or numeric indices")
 		}
 		if ( !missing(subset) && !missing(select) ) {
@@ -381,9 +386,12 @@ setMethod("show", "SpectralImagingArrays",
 
 # find spectra by position
 setMethod("pixels", "SpectralImagingArrays",
-	function(object, ..., coord, run, tolerance = NA)
+	function(object, ..., coord, run, tolerance = NA,
+		env = NULL)
 	{
-		i <- callNextMethod(object, ...)
+		if ( is.null(env) )
+			env <- parent.frame(2)
+		i <- callNextMethod(object, ..., env=env)
 		if ( !missing(coord) || !missing(run) ) {
 			pos <- .find_positions(object, coord, run, tolerance)
 			i <- intersect(i, pos)
@@ -442,6 +450,23 @@ setMethod("[", "SpectralImagingArrays",
 			warning("'drop' ignored when subsetting ", class(x))
 		.subset_SpectralImagingArrays(x, i)
 	})
+
+setMethod("subset", "SpectralImagingArrays",
+	function(x, subset, ...)
+	{
+		pdata <- as.env(pixelData(x), enclos=parent.frame(2))
+		if ( !missing(subset) ) {
+			i <- eval(substitute(subset), envir=pdata)
+			if ( !is.logical(i) && !is.numeric(i) )
+				stop("'subset' must specify logical or numeric indices")
+		}
+		if ( missing(subset) ) {
+			x
+		} else {
+			x[i]
+		}
+	})
+
 
 ## combine
 
@@ -545,11 +570,13 @@ setReplaceMethod("pixelNames", "SpectralImagingData",
 	})
 
 setMethod("pixels", "SpectralImagingData",
-	function(object, ..., env = parent.frame(1L))
+	function(object, ..., env = NULL)
 	{
+		if ( is.null(env) )
+			env <- parent.frame(2)
+		env <- as.env(pixelData(object), enclos=env)
 		conditions <- eval(substitute(alist(...)))
-		e <- as.env(pixelData(object), enclos=env)
-		i <- .find_conditions(conditions, e, nrow(pixelData(object)))
+		i <- .find_conditions(conditions, env, nrow(pixelData(object)))
 		setNames(i, pixelNames(object)[i])
 	})
 

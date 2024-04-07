@@ -119,7 +119,6 @@ setReplaceMethod("names", "XDataFrame",
 	new(class(before), after, keys=keys)
 }
 
-# make sure setting key to NULL removes it as key
 setReplaceMethod("[", "XDataFrame",
 	function(x, i, j, ..., value) {
 		ans <- callNextMethod()
@@ -129,7 +128,6 @@ setReplaceMethod("[", "XDataFrame",
 			ans
 	})
 
-# make sure setting key to NULL removes it as key
 setReplaceMethod("[[", "XDataFrame",
 	function(x, i, value) {
 		ans <- as(x, "DFrame")

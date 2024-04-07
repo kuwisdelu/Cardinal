@@ -61,25 +61,27 @@ readImzML <- function(file, memory = FALSE,
 		if ( isFALSE(ans@centroided) )
 			message("detected 'profile' spectra")
 	}
+	is_dense <- isTRUE(ans@continuous)
 	if ( parse.only )
 		return(ans)
 	ans <- .read_featureData(ans, path, verbose)
 	ans <- .read_pixelData(ans, path, verbose)
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || 
-		(as == "auto" && isTRUE(ans@continuous)) ||
+		(as == "auto" && is_dense) ||
 		(!is.null(mass.range) || !is.na(resolution)) )
 	{
 		if ( verbose )
 			message("creating MSImagingExperiment")
-		ans <- convertMSImagingArrays2Experiment(ans,
-			mass.range=mass.range, resolution=resolution,
-			units=units, guess.max=guess.max,
-			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM)
+		if ( as != "MSImagingArrays" )
+		{
+			ans <- convertMSImagingArrays2Experiment(ans,
+				mass.range=mass.range, resolution=resolution,
+				units=units, guess.max=guess.max,
+				nchunks=nchunks, verbose=verbose,
+				BPPARAM=BPPARAM)
+		}
 	}
-	if ( as == "MSImagingArrays" )
-		ans <- convertMSImagingExperiment2Arrays(ans)
 	if ( memory ) {
 		if ( verbose )
 			message("loading spectra into memory")

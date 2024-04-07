@@ -68,10 +68,13 @@ setMethod("show", "MSImagingExperiment",
 # features
 
 setMethod("features", "MSImagingExperiment",
-	function(object, ..., mz, tolerance = NA, units = c("ppm", "mz"))
+	function(object, ..., mz, tolerance = NA, units = c("ppm", "mz"),
+		env = NULL)
 	{
+		if ( is.null(env) )
+			env <- parent.frame(2)
 		units <- match.arg(units)
-		i <- callNextMethod(object, ...)
+		i <- callNextMethod(object, ..., env=env)
 		if ( !missing(mz) ) {
 			ref <- switch(units, ppm="x", mz="abs")
 			if ( is.na(tolerance) ) {
@@ -462,13 +465,15 @@ setReplaceMethod("intensity", "MSImagingArrays",
 {
 	spectraData <- do.call(c, lapply(objects, spectraData))
 	pixelData <- do.call(rbind, lapply(objects, pixelData))
-	centroided <- all(vapply(objects, centroided, logical(1L)))
+	centroided <- all(vapply(objects, slot, logical(1L), name="centroided"))
+	continuous <- all(vapply(objects, slot, logical(1L), name="continuous"))
 	metadata <- do.call(c, lapply(objects, metadata))
 	new(class(objects[[1L]]),
 		spectraData=spectraData,
 		elementMetadata=pixelData,
 		experimentData=experimentData(objects[[1L]]),
 		centroided=centroided,
+		continuous=continuous,
 		metadata=metadata,
 		processing=list())
 }

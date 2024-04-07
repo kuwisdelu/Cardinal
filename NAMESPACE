@@ -1,4 +1,23 @@
 
+importFrom("grDevices",
+	"col2rgb",
+	"colorRamp",
+	"dev.list",
+	"hcl",
+	"heat.colors",
+	"rainbow",
+	"rgb",
+	"trans3d")
+
+importFrom("graphics",
+	"box",
+	"lines",
+	"locator",
+	"persp",
+	"points",
+	"polygon",
+	"title")
+
 importFrom("stats",
 	"anova",
 	"approx",
@@ -22,6 +41,7 @@ importFrom("stats",
 	"pt",
 	"quantile",
 	"relevel",
+	"screeplot",
 	"setNames",
 	"smooth.spline",
 	"splinefun",
@@ -79,6 +99,10 @@ importFrom("irlba",
 importFrom("mclust",
 	"Mclust",
 	"mclustBIC")
+
+importFrom("utils",
+	"read.table",
+	"write.table")
 
 exportClasses(
 	"Hashmat",

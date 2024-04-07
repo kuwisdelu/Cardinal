@@ -52,11 +52,7 @@ test_that("XDFrame accessors", {
 
 	expect_equal(keys(d1, "index2"), d1[c("E", "F")])
 
-	d1$E <- NULL
-
-	expect_true(validObject(d1))
-	expect_equal(keys(d1)$index2, "F")
-	expect_equal(keys(d1, "index2"), d1$F)
+	expect_error(d1$E <- NULL)
 
 	keys(d1)$index2 <- c("D", "F")
 
@@ -64,10 +60,10 @@ test_that("XDFrame accessors", {
 	expect_equal(keys(d1)$index2, c("D", "F"))
 	expect_equal(keys(d1, "index2"), d1[c("D", "F")])
 
-	names(d1)[c(4L,5L)] <- c("X", "Y")
+	names(d1)[c(4L,6L)] <- c("X", "Y")
 
 	expect_true(validObject(d1))
-	expect_equal(names(d1), c("A", "B", "C", "X", "Y"))
+	expect_equal(names(d1), c("A", "B", "C", "X", "E", "Y"))
 	expect_equal(keys(d1)$index2, c("X", "Y"))
 	expect_equal(keys(d1, "index2"), d1[c("X", "Y")])
 

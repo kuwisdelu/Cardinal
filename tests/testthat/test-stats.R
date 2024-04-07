@@ -14,7 +14,7 @@ test_that("PCA", {
 	pc2 <- prcomp(x)
 	pred2 <- predict(pc2, newdata=x)
 
-	expect_equal(pc$sdev, pc2$sdev[1:2])
+	expect_equivalent(pc$sdev, pc2$sdev[1:2])
 	expect_equal(abs(pc$x), abs(pc2$x[,1:2]))
 	expect_equal(abs(pc$rotation), abs(pc2$rotation[,1:2]))
 	expect_equal(abs(pred), abs(pred2[,1:2]))

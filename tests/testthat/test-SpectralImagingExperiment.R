@@ -47,26 +47,28 @@ test_that("SpectralImagingExperiment accessors", {
 	expect_equal(nrun(se), nrun(pdata))
 	expect_equal(se$diagnosis, pdata$diagnosis)
 
-	w1 <- 920
-	w2 <- 975
-
 	expect_setequal(features(se, 1:10), 1:10)
 	expect_setequal(features(se, wavelength > 920), 5:20)
 	expect_setequal(features(se, wavelength < 975), 1:15)
-	expect_setequal(features(se, wavelength > w1), 5:20)
-	expect_setequal(features(se, wavelength < w2), 1:15)
 	expect_setequal(features(se, 1:10, wavelength > 920), 5:10)
 	expect_setequal(features(se, 1:10, wavelength < 975), 1:10)
+
+	w1 <- 920
+	w2 <- 975
+	
+	expect_setequal(features(se, wavelength > w1), 5:20)
+	expect_setequal(features(se, wavelength < w2), 1:15)
 	expect_setequal(features(se, 1:10, wavelength > w1), 5:10)
 	expect_setequal(features(se, 1:10, wavelength < w2), 1:10)
-
-	expect_equal(subsetPixels(se, 1:5), se[,1:5])
-	expect_equal(subsetPixels(se, diagnosis == "yes"), se[,se$diagnosis == "yes"])
-	expect_equal(subsetFeatures(se, 1:10), se[1:10,])
+	
 	expect_equal(subsetFeatures(se, wavelength > w1), se[5:20,])
 	expect_equal(subsetFeatures(se, wavelength < w2), se[1:15,])
 	expect_equal(subset(se, wavelength > w1, 1:5), se[5:20,1:5])
 	expect_equal(subset(se, wavelength < w2, 1:5), se[1:15,1:5])
+
+	expect_equal(subsetPixels(se, 1:5), se[,1:5])
+	expect_equal(subsetPixels(se, diagnosis == "yes"), se[,se$diagnosis == "yes"])
+	expect_equal(subsetFeatures(se, 1:10), se[1:10,])
 
 	pixelData(se) <- pdata2
 	featureData(se) <- fdata2
