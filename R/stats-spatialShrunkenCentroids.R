@@ -304,7 +304,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 })
 
 setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "missing"),
-	function(x, y, r = 1, k = 2, s = 0,
+	function(x, r = 1, k = 2, s = 0,
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(x, r=r), ...)
 {

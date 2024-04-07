@@ -9,10 +9,20 @@
 \alias{vm_used,SpectraArrays-method}
 \alias{[,SpectraArrays,ANY,ANY,ANY-method}
 \alias{[<-,SpectraArrays,ANY,ANY,ANY-method}
+\alias{$,SpectraArrays-method}
+\alias{$<-,SpectraArrays-method}
+\alias{[[,SpectraArrays-method}
+\alias{[[<-,SpectraArrays-method}
+\alias{names,SpectraArrays-method}
+\alias{names<-,SpectraArrays-method}
+\alias{length,SpectraArrays-method}
 \alias{dim,SpectraArrays-method}
 \alias{cbind,SpectraArrays-method}
 \alias{rbind,SpectraArrays-method}
 \alias{combine,SpectraArrays,ANY-method}
+\alias{c,SpectraArrays-method}
+\alias{coerce,SpectraArrays,SimpleList-method}
+\alias{coerce,SimpleList,SpectraArrays-method}
 
 \title{SpectraArrays: List of spectra arrays}
 

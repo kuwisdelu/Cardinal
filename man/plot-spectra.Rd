@@ -28,46 +28,46 @@
 
 \usage{
 \S4method{plot}{MSImagingExperiment,missing}(x,
-        formula = intensity ~ mz,
-        i = pixels(x, coord=coord, run=run),
-        coord = NULL,
-        run = NULL,
-        \dots,
-        xlab, ylab,
-        isPeaks = isCentroided(x))
+    formula = intensity ~ mz,
+    i = pixels(x, coord=coord, run=run),
+    coord = NULL,
+    run = NULL,
+    \dots,
+    xlab, ylab,
+    isPeaks = isCentroided(x))
 
 \S4method{plot}{MSImagingArrays,missing}(x,
-        formula = intensity ~ mz,
-        i = pixels(x, coord=coord, run=run),
-        coord = NULL,
-        run = NULL,
-        \dots,
-        xlab, ylab,
-        isPeaks = isCentroided(x))
+    formula = intensity ~ mz,
+    i = pixels(x, coord=coord, run=run),
+    coord = NULL,
+    run = NULL,
+    \dots,
+    xlab, ylab,
+    isPeaks = isCentroided(x))
 
 \S4method{plot}{SpectralImagingExperiment,missing}(x,
-        formula,
-        i = 1L,
-        groups = NULL,
-        superpose = FALSE,
-        key = TRUE,
-        \dots,
-        n = 2000L,
-        downsampler = "lttb",
-        isPeaks = FALSE,
-        annPeaks = 0)
+    formula,
+    i = 1L,
+    groups = NULL,
+    superpose = FALSE,
+    key = TRUE,
+    \dots,
+    n = 2000L,
+    downsampler = "lttb",
+    isPeaks = FALSE,
+    annPeaks = 0)
 
 \S4method{plot}{SpectralImagingArrays,missing}(x,
-        formula,
-        i = 1L,
-        groups = NULL,
-        superpose = FALSE,
-        key = TRUE,
-        \dots,
-        n = 2000L,
-        downsampler = "lttb",
-        isPeaks = FALSE,
-        annPeaks = 0)
+    formula,
+    i = 1L,
+    groups = NULL,
+    superpose = FALSE,
+    key = TRUE,
+    \dots,
+    n = 2000L,
+    downsampler = "lttb",
+    isPeaks = FALSE,
+    annPeaks = 0)
 }
 
 \arguments{

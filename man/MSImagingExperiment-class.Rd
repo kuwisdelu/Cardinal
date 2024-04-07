@@ -6,6 +6,7 @@
 \alias{MSImagingExperiment-class}
 
 \alias{show,MSImagingExperiment-method}
+\alias{mz,missing-method}
 \alias{mz,MSImagingExperiment-method}
 \alias{mz<-,MSImagingExperiment-method}
 \alias{intensity,MSImagingExperiment-method}
@@ -14,9 +15,10 @@
 \alias{centroided<-,MSImagingExperiment_OR_Arrays-method}
 \alias{isCentroided,MSImagingExperiment_OR_Arrays-method}
 \alias{experimentData,MSImagingExperiment_OR_Arrays-method}
-\alias{experimentData<-,MSImagingExperiment_OR_Arrays-method}
+\alias{experimentData<-,MSImagingExperiment_OR_Arrays,ANY-method}
 \alias{cbind,MSImagingExperiment-method}
 \alias{rbind,MSImagingExperiment-method}
+\alias{coerce,MSImageSet,MSImagingExperiment-method}
 
 \title{MSImagingExperiment: MS imaging data with shared m/z values}
 
@@ -58,6 +60,10 @@ MSImagingExperiment(spectraData = SimpleList(),
         \item{\code{elementMetadata}:}{A \code{\linkS4class{PositionDataFrame}} containing spectrum-level metadata, including each spectrum's pixel coordinates and experimental run information.}
 
         \item{\code{processing}:}{A list containing unexecuted \code{\linkS4class{ProcessingStep}} objects.}
+
+        \item{\code{experimentData}:}{Either NULL or an \code{\linkS4class{ImzMeta}} object containing experiment-level metadata (necessary for writing the data to imzML).}
+
+        \item{\code{centroided}:}{A logical value indicated whether the spectra have been centroided (if known).}
     }
 }
 

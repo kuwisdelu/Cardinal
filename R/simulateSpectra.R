@@ -11,7 +11,7 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 	representation = c("profile", "centroid"), ...)
 {
 	if ( "peaks" %in% ...names() ) {
-		.Deprecated("npeaks")
+		.Deprecated(old="peaks", new="npeaks")
 		npeaks <- list(...)$peaks
 	}
 	if ( length(mz) != length(intensity) )

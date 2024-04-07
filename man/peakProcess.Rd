@@ -11,14 +11,14 @@
 
 \usage{
 \S4method{peakProcess}{MSImagingExperiment_OR_Arrays}(object, ref,
-        spectra = "intensity", index = "mz",
-        method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-        SNR = 2, type = c("height", "area"),
-        tolerance = NA, units = c("ppm", "mz"),
-        sampleSize = Inf, filterFreq = TRUE, outfile = NULL,
-        nchunks = getCardinalNChunks(),
-        verbose = getCardinalVerbose(),
-        BPPARAM = getCardinalBPPARAM(), \dots)
+    spectra = "intensity", index = "mz",
+    method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
+    SNR = 2, type = c("height", "area"),
+    tolerance = NA, units = c("ppm", "mz"),
+    sampleSize = Inf, filterFreq = TRUE, outfile = NULL,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{

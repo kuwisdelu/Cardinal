@@ -3,6 +3,7 @@
 \alias{colocalized}
 \alias{colocalized,SpectralImagingExperiment-method}
 \alias{colocalized,MSImagingExperiment-method}
+\alias{coregister}
 
 \title{Colocalized features}
 

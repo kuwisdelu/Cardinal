@@ -184,7 +184,7 @@ s <- simulateSpectra(1, baseline=2, sdnoise=0.3, resolution=100)
 plot(s$intensity ~ s$mz, type="l")
 
 # generate a high-resolution spectrum
-s <- simulateSpectra(1, peaks=100, resolution=10000)
+s <- simulateSpectra(1, npeaks=100, resolution=10000)
 plot(s$intensity ~ s$mz, type="l")
 
 # generate an image

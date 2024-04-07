@@ -11,8 +11,9 @@
 \alias{spatialShrunkenCentroids,SpectralImagingExperiment,missing-method}
 \alias{fitted,SpatialShrunkenCentroids-method}
 \alias{predict,SpatialShrunkenCentroids-method}
+\alias{topFeatures}
 \alias{topFeatures,SpatialShrunkenCentroids-method}
-\alias{plot,SpatialShrunkenCentroids-method}
+\alias{plot,SpatialShrunkenCentroids,missing-method}
 \alias{image,SpatialShrunkenCentroids-method}
 
 \title{Spatially-aware shrunken centroid clustering and classification}
@@ -25,14 +26,14 @@
 \S4method{spatialShrunkenCentroids}{ANY,ANY}(x, y, coord, r = 1, s = 0,
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r),
-    priors = table(y), center = NULL, transpose = FALSE,
+    priors = table(y), center = NULL, transpose = TRUE,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,ANY}(x, y, r = 1, s = 0,
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord, r=r), \dots)
+    neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{spatialShrunkenCentroids}{ANY,missing}(x, coord, r = 1, k = 2, s = 0,
     weights = c("gaussian", "adaptive"),
@@ -45,7 +46,7 @@
 
 \S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,missing}(x, r = 1, k = 2, s = 0,
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord(x), r=r), \dots)
+    neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{fitted}{SpatialShrunkenCentroids}(object, type = c("response", "class"), \dots)
 
@@ -55,9 +56,9 @@
         nchunks = getCardinalNChunks(),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{topFeatures}{SpatialShrunkenCentroids}(x, n = Inf, sort.by = c("statistic", "centers"), \dots)
+\S4method{topFeatures}{SpatialShrunkenCentroids}(object, n = Inf, sort.by = c("statistic", "centers"), \dots)
 
-\S4method{plot}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
+\S4method{plot}{SpatialShrunkenCentroids,missing}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
 
 \S4method{image}{SpatialShrunkenCentroids}(x, type = c("probability", "class"), \dots)
 }

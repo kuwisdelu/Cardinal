@@ -6,16 +6,16 @@
 \alias{SpectralImagingArrays-class}
 
 \alias{show,SpectralImagingArrays-method}
-\alias{featureData,SpectralImagingArrays-method}
-\alias{featureData<-,SpectralImagingArrays-method}
-\alias{featureNames,SpectralImagingArrays-method}
-\alias{featureNames<-,SpectralImagingArrays-method}
+\alias{names,SpectralImagingArrays-method}
+\alias{names<-,SpectralImagingArrays-method}
+\alias{length,SpectralImagingArrays-method}
 \alias{[,SpectralImagingArrays,ANY,ANY,ANY-method}
 \alias{[<-,SpectralImagingArrays,ANY,ANY,ANY-method}
 \alias{dim,SpectralImagingArrays-method}
 \alias{cbind,SpectralImagingArrays-method}
 \alias{rbind,SpectralImagingArrays-method}
 \alias{combine,SpectralImagingArrays,ANY-method}
+\alias{c,SpectralImagingArrays-method}
 
 \title{SpectralImagingArrays: Spectral imaging data with arbitrary domain}
 

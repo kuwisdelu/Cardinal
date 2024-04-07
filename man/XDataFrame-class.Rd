@@ -12,13 +12,17 @@
 \alias{classNameForDisplay,XDFrame-method}
 
 \alias{show,XDataFrame-method}
+\alias{keys}
+\alias{keys<-}
 \alias{keys,XDataFrame-method}
 \alias{keys<-,XDataFrame-method}
 \alias{names<-,XDataFrame-method}
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
+\alias{coerce,DataFrame,XDataFrame-method}
 
 \alias{[,XDataFrame,ANY,ANY,ANY-method}
+\alias{[<-,XDataFrame,ANY,ANY,ANY-method}
 
 \alias{[[<-,XDataFrame-method}
 \alias{$<-,XDataFrame-method}

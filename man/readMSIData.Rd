@@ -7,6 +7,9 @@
 \alias{convertMSImagingExperiment2Arrays}
 \alias{convertMSImagingArrays2Experiment}
 
+\alias{coerce,MSImagingExperiment,MSImagingArrays-method}
+\alias{coerce,MSImagingArrays,MSImagingExperiment-method}
+
 \title{Read mass spectrometry imaging data files}
 
 \description{
@@ -33,7 +36,7 @@ readAnalyze(file, memory = FALSE, as = "auto",
 convertMSImagingExperiment2Arrays(object)
 
 ## Convert from MSImagingArrays to MSImagingExperiment
-convertMSImagingArrays2Experiment <- function(object, mz = NULL,
+convertMSImagingArrays2Experiment(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, tolerance = 0.5 * resolution,
 	nchunks = getCardinalNChunks(),

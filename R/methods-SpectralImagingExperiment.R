@@ -218,25 +218,25 @@ setMethod("[", "SpectralImagingExperiment",
 	})
 
 setMethod("subset", "SpectralImagingExperiment",
-	function(x, subset, select, ...)
+	function(x, select, subset, ...)
 	{
 		pdata <- as.env(pixelData(x), enclos=parent.frame(2))
 		fdata <- as.env(featureData(x), enclos=parent.frame(2))
-		if ( !missing(subset) ) {
-			i <- eval(substitute(subset), envir=fdata)
-			if ( !is.logical(i) && !is.numeric(i) )
-				stop("'subset' must specify logical or numeric indices")
-		}
 		if ( !missing(select) ) {
-			j <- eval(substitute(select), envir=pdata)
-			if ( !is.logical(j) && !is.numeric(j) )
+			i <- eval(substitute(select), envir=fdata)
+			if ( !is.logical(i) && !is.numeric(i) )
 				stop("'select' must specify logical or numeric indices")
 		}
-		if ( !missing(subset) && !missing(select) ) {
+		if ( !missing(subset) ) {
+			j <- eval(substitute(subset), envir=pdata)
+			if ( !is.logical(j) && !is.numeric(j) )
+				stop("'subset' must specify logical or numeric indices")
+		}
+		if ( !missing(select) && !missing(subset) ) {
 			x[i,j]
-		} else if ( !missing(subset) ) {
-			x[i,]
 		} else if ( !missing(select) ) {
+			x[i,]
+		} else if ( !missing(subset) ) {
 			x[,j]
 		} else {
 			x

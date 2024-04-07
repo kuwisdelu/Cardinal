@@ -2,6 +2,7 @@
 
 \alias{subsetFeatures}
 \alias{subsetPixels}
+\alias{subset,SpectralImagingArrays-method}
 \alias{subset,SpectralImagingExperiment-method}
 
 \title{Subset a spectral imaging dataset}
@@ -11,7 +12,9 @@
 }
 
 \usage{
-\S4method{subset}{SpectralImagingExperiment}(x, subset, select, \dots)
+\S4method{subset}{SpectralImagingArrays}(x, subset, \dots)
+
+\S4method{subset}{SpectralImagingExperiment}(x, select, subset, \dots)
 
 subsetFeatures(x, \dots)
 
@@ -21,9 +24,9 @@ subsetPixels(x, \dots)
 \arguments{
     \item{x}{A spectral imaging dataset.}
 
-    \item{subset}{Logical expression to be evaluated in the object's \code{featureData()} indicating which rows (features) to keep.}
+    \item{select}{Logical expression to be evaluated in the object's \code{featureData()} indicating which rows (features) to keep.}
 
-    \item{select}{Logical expression to be evaluated in the object's \code{pixelData()} indicating which columns (pixels) to keep.}
+    \item{subset}{Logical expression to be evaluated in the object's \code{pixelData()} indicating which columns (pixels) to keep.}
 
     \item{\dots}{Conditions describing rows (features) or columns (pixels) to be retained. Passed to \code{features()} and \code{pixels()} methods to obtain the subset indices.}
 }

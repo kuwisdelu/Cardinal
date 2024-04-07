@@ -23,29 +23,33 @@ importFrom("stats",
 	"approx",
 	"as.formula",
 	"dnorm",
-	"qnorm",
-	"rnorm",
-	"rlnorm",
-	"runif",
-	"convolve",
 	"kmeans",
 	"lm",
-	"loess",
-	"loess.control",
 	"median",
-	"optim",
-	"optimize",
 	"p.adjust",
 	"pchisq",
-	"pf",
-	"pt",
-	"quantile",
 	"relevel",
+	"rlnorm",
+	"rnorm",
+	"runif",
 	"screeplot",
-	"setNames",
-	"smooth.spline",
-	"splinefun",
-	"supsmu")
+	"setNames")
+
+importFrom("utils",
+	"read.table",
+	"write.table")
+
+importFrom("Matrix",
+	"t",
+	"solve",
+	"chol")
+
+importFrom("EBImage",
+	"imageData",
+	"imageData<-")
+
+importFrom("irlba",
+	"irlba")
 
 importFrom("nlme",
 	"lme")
@@ -53,56 +57,23 @@ importFrom("nlme",
 importFrom("parallel",
 	"nextRNGStream")
 
+import("methods")
+
+import("stats4")
+
+import("S4Vectors")
+
+import("ProtGenerics")
+
 import("BiocGenerics")
 
 import("BiocParallel")
 
 import("Biobase")
 
-importFrom("EBImage",
-	"Image",
-	"imageData",
-	"imageData<-",
-	"colorMode",
-	"colorMode<-",
-	"getFrame",
-	"getFrames",
-	"numberOfFrames")
-
-import("CardinalIO")
-
 import("matter")
 
-import("methods")
-
-import("stats4")
-
-importFrom("Matrix",
-	"t",
-	"solve",
-	"chol")
-
-import("S4Vectors")
-
-import("ProtGenerics")
-
-importFrom("viridisLite",
-	"viridis",
-	"cividis",
-	"magma",
-	"inferno",
-	"plasma")
-
-importFrom("irlba",
-	"irlba")
-
-importFrom("mclust",
-	"Mclust",
-	"mclustBIC")
-
-importFrom("utils",
-	"read.table",
-	"write.table")
+import("CardinalIO")
 
 exportClasses(
 	"Hashmat",
@@ -117,34 +88,7 @@ exportClasses(
 	"SImageSet",
 	"iSet")
 
-exportClasses(
-	"XDataFrame",
-	"XDFrame",
-	"PositionDataFrame",
-	"MassDataFrame",
-	"SpectraArrays",
-	"SpectralImagingData",
-	"SpectralImagingArrays",
-	"SpectralImagingExperiment",
-	"MSImagingArrays",
-	"MSImagingExperiment",
-	"SpatialResults",
-	"ResultsList")
-
 export(
-	"XDataFrame",
-	"PositionDataFrame",
-	"MassDataFrame",
-	"SpectraArrays",
-	"SpectralImagingArrays",
-	"SpectralImagingExperiment",
-	"MSImagingArrays",
-	"MSImagingExperiment",
-	"SpatialResults",
-	"ResultsList")
-
-export(
-	"addShape",
 	"alpha.colors",
 	"bw.colors",
 	"col.map",
@@ -152,60 +96,15 @@ export(
 	"darkmode",
 	"discrete.colors",
 	"divergent.colors",
-	"estimateDomain",
-	"estimateReferencePeaks",
 	"gradient.colors",
 	"intensity.colors",
 	"jet.colors",
 	"lightmode",
 	"risk.colors",
-	"readAnalyze",
-	"readImzML",
-	"readMSIData",
-	"presetImageDef",
-	"simulateImage",
-	"simulateSpectra",
-	"simulateSpectrum",
-	"slice",
-	"writeAnalyze",
-	"writeImzML",
-	"writeMSIData")
+	"simulateSpectrum")
 
 exportMethods(
-	"as.array",
-	"as.matrix",
-	"as.data.frame",
-	"length",
-	"names",
-	"names<-",
-	"rownames",
-	"rownames<-",
-	"colnames",
-	"colnames<-",
-	"cbind",
-	"rbind",
-	"summary")
-
-exportMethods(
-	"image",
-	"image3D",
-	"plot")
-
-exportMethods(
-	"fitted",
-	"predict",
-	"residuals",
-	"coef")
-
-exportMethods("logLik")
-
-exportMethods(
-	"$",
-	"$<-",
-	"[",
-	"[<-",
-	"[[",
-	"[[<-",
+	"aggregate",
 	"annotatedDataFrameFrom",
 	"coerce",
 	"combine",
@@ -213,24 +112,7 @@ exportMethods(
 	"coord<-",
 	"coordNames",
 	"coordNames<-",
-	"coordLabels",
-	"coordLabels<-",
-	"dim",
-	"dim<-",
 	"dims",
-	"dimnames",
-	"dimnames<-",
-	"domain",
-	"domain<-",
-	"experimentData",
-	"experimentData<-",
-	"features",
-	"fData",
-	"fData<-",
-	"featureData",
-	"featureData<-",
-	"featureNames",
-	"featureNames<-",
 	"fvarLabels",
 	"fvarLabels<-",
 	"fvarMetadata",
@@ -241,35 +123,18 @@ exportMethods(
 	"height<-",
 	"iData",
 	"iData<-",
-	"imageData",
-	"imageData<-",
 	"intensityData",
 	"intensityData<-",
 	"initialize",
-	"isCentroided",
 	"is3D",
-	"keys",
-	"keys<-",
-	"modelData",
-	"modelData<-",
-	"mz",
-	"mz<-",
 	"mzData",
 	"mzData<-",
-	"nrun",
-	"pData",
-	"pData<-",
 	"peaks",
 	"peaks<-",
 	"peakData",
 	"peakData<-",
 	"phenoData",
 	"phenoData<-",
-	"pixels",
-	"pixelData",
-	"pixelData<-",
-	"pixelNames",
-	"pixelNames<-",
 	"protocolData",
 	"protocolData<-",
 	"resultData",
@@ -278,21 +143,10 @@ exportMethods(
 	"resultNames<-",
 	"resolution",
 	"resolution<-",
-	"run",
-	"run<-",
-	"runNames",
-	"runNames<-",
-	"sampler",
-	"sampler<-",
 	"sampleNames",
 	"sampleNames<-",
-	"show",
-	"spectra",
-	"spectra<-",
 	"storageMode",
 	"storageMode<-",
-	"tolerance",
-	"tolerance<-",
 	"varLabels",
 	"varLabels<-",
 	"varMetadata",
@@ -345,54 +199,133 @@ exportMethods(
 	"spatialApply")
 
 exportMethods(
-	"findNeighbors",
-	"spatialWeights")
-
-exportMethods(
-	"addProcessing",
-	"process",
-	"bin",
-	"normalize",
-	"smooth",
 	"smoothSignal",
-	"reduceBaseline",
-	"recalibrate",
 	"mzAlign",
 	"mzBin",
 	"mzFilter",
-	"peakProcess",
-	"peakPick",
-	"peakAlign",
 	"peakBin",
 	"peakFilter")
 
-export("reset")
-
-exportMethods("selectROI")
-
-export("makeFactor")
-
-export("CardinalVersion")
+exportClasses(
+	"XDataFrame",
+	"XDFrame",
+	"PositionDataFrame",
+	"MassDataFrame",
+	"SpectraArrays",
+	"SpectralImagingData",
+	"SpectralImagingArrays",
+	"SpectralImagingExperiment",
+	"MSImagingArrays",
+	"MSImagingExperiment",
+	"SpatialResults",
+	"ResultsList")
 
 export(
-	"convertMSImagingExperiment2Arrays",
-	"convertMSImagingArrays2Experiment")
-
-export(
-	"getCardinalBPPARAM",
-	"setCardinalBPPARAM",
-	"getCardinalVerbose",
-	"setCardinalVerbose",
-	"getCardinalNChunks",
-	"setCardinalNChunks",
-	"getCardinalNumBlocks",
-	"setCardinalNumBlocks")
+	"XDataFrame",
+	"PositionDataFrame",
+	"MassDataFrame",
+	"SpectraArrays",
+	"SpectralImagingArrays",
+	"SpectralImagingExperiment",
+	"MSImagingArrays",
+	"MSImagingExperiment",
+	"SpatialResults",
+	"ResultsList")
 
 exportMethods(
+	"$",
+	"$<-",
+	"[",
+	"[<-",
+	"[[",
+	"[[<-",
+	"addProcessing",
+	"as.array",
+	"as.matrix",
+	"as.data.frame",
+	"bin",
+	"cbind",
+	"coef",
+	"coerce",
+	"colnames",
+	"colnames<-",
 	"colocalized",
-	"coregister")
+	"coregister",
+	"combine",
+	"coord",
+	"coord<-",
+	"coordNames",
+	"coordNames<-",
+	"dim",
+	"dim<-",
+	"dimnames",
+	"dimnames<-",
+	"domain",
+	"domain<-",
+	"experimentData",
+	"experimentData<-",
+	"features",
+	"findNeighbors",
+	"fitted",
+	"fData",
+	"fData<-",
+	"featureData",
+	"featureData<-",
+	"featureNames",
+	"featureNames<-",
+	"image",
+	"imageData",
+	"imageData<-",
+	"isCentroided",
+	"keys",
+	"keys<-",
+	"length",
+	"logLik",
+	"modelData",
+	"modelData<-",
+	"mz",
+	"mz<-",
+	"names",
+	"names<-",
+	"normalize",
+	"nrun",
+	"pData",
+	"pData<-",
+	"peakAlign",
+	"peakPick",
+	"peakProcess",
+	"pixels",
+	"pixelData",
+	"pixelData<-",
+	"pixelNames",
+	"pixelNames<-",
+	"plot",
+	"predict",
+	"process",
+	"rbind",
+	"recalibrate",
+	"reduceBaseline",
+	"rownames",
+	"rownames<-",
+	"run",
+	"run<-",
+	"runNames",
+	"runNames<-",
+	"selectROI",
+	"smooth",
+	"spatialWeights",
+	"spectra",
+	"spectra<-",
+	"spectrapply",
+	"subset")
 
-export("crossValidate")
+exportMethods(
+	"colMeans",
+	"colStats",
+	"colSums",
+	"rowMeans",
+	"rowStats",
+	"rowSums")
 
 exportMethods(
 	"NMF",
@@ -406,31 +339,39 @@ exportMethods(
 	"meansTest",
 	"topFeatures")
 
-export("segmentationTest")
-
-exportMethods(
-	"aggregate",
-	"sort")
-
 export(
-	"colSums",
-	"colMeans",
-	"colStats",
-	"rowSums",
-	"rowMeans",
-	"rowStats",
-	"spectrapply",
-	"subset",
+	"addShape",
+	"CardinalVersion",
+	"convertMSImagingArrays2Experiment",
+	"convertMSImagingExperiment2Arrays",
+	"crossValidate",
+	"estimateDomain",
+	"estimateReferencePeaks",
+	"makeFactor",
+	"readAnalyze",
+	"readImzML",
+	"readMSIData",
+	"presetImageDef",
+	"reset",
+	"segmentationTest",
+	"simulateImage",
+	"simulateSpectra",
+	"slice",
 	"subsetFeatures",
 	"subsetPixels",
 	"summarizeFeatures",
-	"summarizePixels")
+	"summarizePixels",
+	"writeAnalyze",
+	"writeImzML",
+	"writeMSIData")
 
 export(
-	"viridis",
-	"cividis",
-	"magma",
-	"inferno",
-	"plasma",
-	"cividis")
+	"getCardinalBPPARAM",
+	"setCardinalBPPARAM",
+	"getCardinalVerbose",
+	"setCardinalVerbose",
+	"getCardinalNChunks",
+	"setCardinalNChunks",
+	"getCardinalNumBlocks",
+	"setCardinalNumBlocks")
 

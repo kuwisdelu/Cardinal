@@ -13,12 +13,16 @@
 \alias{spectra,SpectralImagingData-method}
 \alias{spectra<-,SpectralImagingData-method}
 \alias{spectraVariables,SpectralImagingData-method}
+\alias{pData,SpectralImagingData-method}
+\alias{pData<-,SpectralImagingData,ANY-method}
+\alias{pixelData}
+\alias{pixelData<-}
 \alias{pixelData,SpectralImagingData-method}
 \alias{pixelData<-,SpectralImagingData-method}
+\alias{pixelNames}
+\alias{pixelNames<-}
 \alias{pixelNames,SpectralImagingData-method}
 \alias{pixelNames<-,SpectralImagingData-method}
-\alias{pData,SpectralImagingData-method}
-\alias{pData<-,SpectralImagingData-method}
 \alias{coord,SpectralImagingData-method}
 \alias{coord<-,SpectralImagingData-method}
 \alias{coordNames,SpectralImagingData-method}
@@ -30,6 +34,11 @@
 \alias{nrun,SpectralImagingData-method}
 \alias{processingData,SpectralImagingData-method}
 \alias{processingData<-,SpectralImagingData-method}
+
+\alias{$,SpectralImagingData-method}
+\alias{$<-,SpectralImagingData-method}
+\alias{[[,SpectralImagingData-method}
+\alias{[[<-,SpectralImagingData-method}
 
 \title{SpectralImagingData: Abstract class for spectral imaging data}
 

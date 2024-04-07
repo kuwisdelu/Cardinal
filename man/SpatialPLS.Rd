@@ -7,11 +7,11 @@
 \alias{PLS}
 \alias{PLS,ANY-method}
 \alias{PLS,SpectralImagingExperiment-method}
-\alias{fitted,SpatialOPLS-method}
-\alias{predict,SpatialOPLS-method}
-\alias{topFeatures,SpatialOPLS-method}
-\alias{plot,SpatialOPLS-method}
-\alias{image,SpatialOPLS-method}
+\alias{fitted,SpatialPLS-method}
+\alias{predict,SpatialPLS-method}
+\alias{topFeatures,SpatialPLS-method}
+\alias{plot,SpatialPLS,missing-method}
+\alias{image,SpatialPLS-method}
 
 \alias{SpatialOPLS}
 \alias{class:SpatialOPLS}
@@ -20,11 +20,11 @@
 \alias{OPLS}
 \alias{OPLS,ANY-method}
 \alias{OPLS,SpectralImagingExperiment-method}
-\alias{fitted,SpatialPLS-method}
-\alias{predict,SpatialPLS-method}
-\alias{topFeatures,SpatialPLS-method}
-\alias{plot,SpatialPLS-method}
-\alias{image,SpatialPLS-method}
+\alias{fitted,SpatialOPLS-method}
+\alias{predict,SpatialOPLS-method}
+\alias{topFeatures,SpatialOPLS-method}
+\alias{plot,SpatialOPLS,missing-method}
+\alias{image,SpatialOPLS-method}
 
 \title{Partial least squares (projection to latent structures)}
 
@@ -51,7 +51,7 @@
 
 \S4method{topFeatures}{SpatialPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
 
-\S4method{plot}{SpatialPLS}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+\S4method{plot}{SpatialPLS,missing}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
 
 \S4method{image}{SpatialPLS}(x, type = c("response", "class"), \dots)
 
@@ -71,7 +71,7 @@
 
 \S4method{topFeatures}{SpatialOPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
 
-\S4method{plot}{SpatialOPLS}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+\S4method{plot}{SpatialOPLS,missing}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
 
 \S4method{image}{SpatialOPLS}(x, type = c("response", "class"), \dots)
 }

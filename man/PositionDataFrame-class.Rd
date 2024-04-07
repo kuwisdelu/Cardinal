@@ -5,15 +5,25 @@
 \alias{PositionDataFrame}
 \alias{PositionDataFrame-class}
 
+\alias{coord}
+\alias{coord<-}
 \alias{coord,PositionDataFrame-method}
 \alias{coord<-,PositionDataFrame-method}
+\alias{coordNames}
+\alias{coordNames<-}
 \alias{coordNames,PositionDataFrame-method}
 \alias{coordNames<-,PositionDataFrame-method}
+\alias{run}
+\alias{run<-}
 \alias{run,PositionDataFrame-method}
 \alias{run<-,PositionDataFrame-method}
+\alias{runNames}
+\alias{runNames<-}
 \alias{runNames,PositionDataFrame-method}
 \alias{runNames<-,PositionDataFrame-method}
 \alias{nrun,PositionDataFrame-method}
+\alias{[,PositionDataFrame,ANY,ANY,ANY-method}
+\alias{coerce,DFrame,PositionDataFrame-method}
 
 \title{PositionDataFrame: Extended data frame with key columns}
 

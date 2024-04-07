@@ -21,14 +21,14 @@
 \S4method{spatialFastmap}{ANY}(x, coord, r = 1, ncomp = 3,
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r),
-    transpose = FALSE, niter = 3L,
+    transpose = TRUE, niter = 3L,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{SpectralImagingExperiment}{ANY}(x, r = 1, ncomp = 3,
+\S4method{spatialFastmap}{SpectralImagingExperiment}(x, r = 1, ncomp = 3,
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord, r=r), \dots)
+    neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{predict}{SpatialFastmap}(object, newdata,
     neighbors = findNeighbors(newdata, r=object$r),

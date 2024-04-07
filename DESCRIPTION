@@ -11,8 +11,8 @@ Description: Implements statistical & computational tools for analyzing
 License: Artistic-2.0
 Depends: R (>= 4.3), ProtGenerics, BiocGenerics, BiocParallel,
 	EBImage, methods, S4Vectors (>= 0.27.3), stats
-Imports: CardinalIO, Biobase, irlba, Matrix, matter,
-	mclust, nlme, parallel, stats4, viridisLite
+Imports: CardinalIO, Biobase, graphics, grDevices, irlba,
+	Matrix, matter, nlme, parallel, stats4, utils
 Suggests: BiocStyle, testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,

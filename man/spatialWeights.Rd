@@ -2,7 +2,7 @@
 
 \alias{spatialWeights}
 \alias{spatialWeights,ANY-method}
-\alias{spatialWeights,SpectralImagingData-method}
+\alias{spatialWeights,SpectralImagingExperiment-method}
 \alias{spatialWeights,PositionDataFrame-method}
 
 \title{Calculate spatial weights}
@@ -20,7 +20,7 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialWeights}{SpectralImagingData}(x, r = 1,
+\S4method{spatialWeights}{SpectralImagingExperiment}(x, r = 1,
         neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r = 1,

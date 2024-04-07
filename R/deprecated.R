@@ -25,16 +25,14 @@ setMethod("mzBin", c("MSImagingExperiment", "missing"),
 	})
 
 setMethod("mzAlign", c("MSImagingExperiment", "numeric"),
-	function(object, ref, tolerance = NA, units = c("ppm", "mz"),
-		span = 0.75, control = loess.control(), ...)
+	function(object, ref, tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		.Deprecated("recalibrate")
 		recalibrate(object, ref=ref, tolerance=tolerance, units=units, ...)
 	})
 
 setMethod("mzAlign", c("MSImagingExperiment", "missing"),
-	function(object, tolerance = NA, units = c("ppm", "mz"),
-		span = 0.75, control = loess.control(), quantile = 0.2, ...)
+	function(object, tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		.Deprecated("recalibrate")
 		ref <- rowStats(object, stat="mean")
@@ -338,24 +336,6 @@ color.map <- function(map = c("redblack", "greenblack", "blueblack",
 	"jet", "hot", "cool"), n = 100)
 {
 	.Defunct("matter::cpal")
-	map <- match.arg(map)
-	switch(map,
-		redblack = gradient.colors(n, end="#EE2200"),
-		greenblack = gradient.colors(n, end="#00FF44"),
-		blueblack = gradient.colors(n, end="#00AAFF"),
-		viridis = viridis(n),
-		cividis = cividis(n),
-		magma = magma(n),
-		inferno = inferno(n),
-		plasma = plasma(n),
-		darkrainbow = intensity.colors(n),
-		rainbow = intensity.colors2(n),
-		grayscale = bw.colors(n),
-		jet = jet.colors(n),
-		hot = c(
-			divergent.colors(ceiling(n/2), "black", "darkred", "red"),
-			divergent.colors(floor(n/2), "red", "orange", "yellow")),
-		cool = gradient.colors(n, "cyan", "magenta"))
 }
 
 col.map <- function(...) color.map(...)

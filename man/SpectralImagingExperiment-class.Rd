@@ -6,10 +6,19 @@
 \alias{SpectralImagingExperiment-class}
 
 \alias{show,SpectralImagingExperiment-method}
+\alias{fData,SpectralImagingExperiment-method}
+\alias{fData<-,SpectralImagingExperiment,ANY-method}
 \alias{featureData,SpectralImagingExperiment-method}
-\alias{featureData<-,SpectralImagingExperiment-method}
+\alias{featureData<-,SpectralImagingExperiment,ANY-method}
 \alias{featureNames,SpectralImagingExperiment-method}
 \alias{featureNames<-,SpectralImagingExperiment-method}
+\alias{colnames,SpectralImagingExperiment-method}
+\alias{colnames<-,SpectralImagingExperiment-method}
+\alias{rownames,SpectralImagingExperiment-method}
+\alias{rownames<-,SpectralImagingExperiment-method}
+\alias{names,SpectralImagingExperiment-method}
+\alias{names<-,SpectralImagingExperiment-method}
+\alias{length,SpectralImagingExperiment-method}
 \alias{[,SpectralImagingExperiment,ANY,ANY,ANY-method}
 \alias{[<-,SpectralImagingExperiment,ANY,ANY,ANY-method}
 \alias{dim,SpectralImagingExperiment-method}
