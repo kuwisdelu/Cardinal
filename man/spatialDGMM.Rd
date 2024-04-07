@@ -7,6 +7,7 @@
 \alias{spatialDGMM}
 \alias{spatialDGMM,ANY-method}
 \alias{spatialDGMM,SpectralImagingExperiment-method}
+\alias{logLik,SpatialDGMM-method}
 \alias{plot,SpatialDGMM,missing-method}
 \alias{image,SpatialDGMM-method}
 
@@ -29,11 +30,13 @@
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord(x), r=r, groups=groups), \dots)
 
+\S4method{logLik}{SpatialDGMM}(object, \dots)
+
 \S4method{plot}{SpatialDGMM,missing}(x, i = 1L, type = "density",
-        layout = NULL, free = "", \dots)
+    layout = NULL, free = "", \dots)
 
 \S4method{image}{SpatialDGMM}(x, i = 1L, type = "class",
-        layout = NULL, free = "", \dots)
+    layout = NULL, free = "", \dots)
 }
 \arguments{
     \item{x}{A spatial dataset in P x N matrix format.}
@@ -65,6 +68,8 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{object}{A \code{SpatialDGMM} object.}
 
     \item{type}{The type of plot to display.}
 

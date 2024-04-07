@@ -11,6 +11,7 @@
 \alias{spatialShrunkenCentroids,SpectralImagingExperiment,missing-method}
 \alias{fitted,SpatialShrunkenCentroids-method}
 \alias{predict,SpatialShrunkenCentroids-method}
+\alias{logLik,SpatialShrunkenCentroids-method}
 \alias{topFeatures}
 \alias{topFeatures,SpatialShrunkenCentroids-method}
 \alias{plot,SpatialShrunkenCentroids,missing-method}
@@ -55,6 +56,8 @@
         neighbors = findNeighbors(newdata, r=object$r),
         nchunks = getCardinalNChunks(),
         BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{logLik}{SpatialShrunkenCentroids}(object, \dots)
 
 \S4method{topFeatures}{SpatialShrunkenCentroids}(object, n = Inf, sort.by = c("statistic", "centers"), \dots)
 

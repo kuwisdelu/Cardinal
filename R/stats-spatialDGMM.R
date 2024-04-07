@@ -99,6 +99,9 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 	}
 })
 
+setMethod("logLik", "SpatialDGMM",
+	function(object, ...) logLik(object@model))
+
 setMethod("plot", c(x = "SpatialDGMM", y = "missing"),
 	function(x, i = 1L, type = "density",
 		layout = NULL, free = "", ...)

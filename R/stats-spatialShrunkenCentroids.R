@@ -139,6 +139,9 @@ setMethod("predict", "SpatialShrunkenCentroids",
 	}
 })
 
+setMethod("logLik", "SpatialShrunkenCentroids",
+	function(object, ...) logLik(object@model))
+
 setMethod("topFeatures", "SpatialShrunkenCentroids",
 	function(object, n = Inf, sort.by = c("statistic", "centers"), ...)
 {
