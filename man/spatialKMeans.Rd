@@ -7,9 +7,9 @@
 \alias{spatialKMeans}
 \alias{spatialKMeans,ANY-method}
 \alias{spatialKMeans,SpectralImagingExperiment-method}
-\alias{predict,SpatialKMeans-method}
+\alias{topFeatures,SpatialKMeans-method}
 \alias{plot,SpatialKMeans,missing-method}
-\alias{plot,image-method}
+\alias{image,SpatialKMeans-method}
 
 \title{Spatially-aware K-means clustering}
 
@@ -27,7 +27,7 @@
         verbose = getCardinalVerbose(),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{SpectralImagingExperiment}{ANY}(x, r = 1, k = 2, ncomp = max(k),
+\S4method{spatialKMeans}{SpectralImagingExperiment}(x, r = 1, k = 2, ncomp = max(k),
         weights = c("gaussian", "adaptive"),
         neighbors = findNeighbors(x, r=r), \dots)
 
@@ -67,6 +67,8 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{object}{A \code{SpatialKMeans} object.}
 
     \item{n, sort.by}{For \code{topFeatures}, the number of top features to return and how to sort them.}
 

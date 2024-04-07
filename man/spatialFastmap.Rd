@@ -9,7 +9,7 @@
 \alias{spatialFastmap,SpectralImagingExperiment-method}
 \alias{predict,SpatialFastmap-method}
 \alias{plot,SpatialFastmap,missing-method}
-\alias{plot,image-method}
+\alias{image,SpatialFastmap-method}
 
 \title{Spatially-aware FastMap projection}
 
@@ -63,6 +63,10 @@
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{\dots}{Additional arguments passed to the next method.}
+
+    \item{object}{A \code{SpatialFastmap} object.}
+
+    \item{newdata}{A new \code{SpectralImagingExperiment} for which to calculate the scores.}
 
     \item{type}{The type of plot to display.}
 

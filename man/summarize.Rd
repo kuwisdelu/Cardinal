@@ -2,6 +2,12 @@
 
 \alias{summarizeFeatures}
 \alias{summarizePixels}
+\alias{rowStats,SpectralImagingExperiment-method}
+\alias{colStats,SpectralImagingExperiment-method}
+\alias{rowSums,SpectralImagingExperiment-method}
+\alias{colSums,SpectralImagingExperiment-method}
+\alias{rowMeans,SpectralImagingExperiment-method}
+\alias{colMeans,SpectralImagingExperiment-method}
 
 \title{Summarize a spectral imaging dataset}
 
@@ -10,9 +16,15 @@
 }
 
 \usage{
-summarizeFeatures(x, \dots)
+summarizeFeatures(x, stat = "mean", groups = NULL,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
-summarizePixels(x, \dots)
+summarizePixels(x, stat = c(tic="sum"), groups = NULL,
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{rowStats}{SpectralImagingExperiment}(x, stat, \dots,
     nchunks = getCardinalNChunks(),
@@ -37,6 +49,8 @@ summarizePixels(x, \dots)
     \item{x}{A spectral imaging dataset.}
 
     \item{stat}{The name of summary statistics to compute over the rows or columns of a matrix. Allowable values include: "min", "max", "prod", "sum", "mean", "var", "sd", "any", "all", and "nnzero".}
+
+    \item{groups}{A vector coercible to a factor giving groups to summarize.}
 
     \item{na.rm}{If \code{TRUE}, remove \code{NA} values before summarizing.}
 

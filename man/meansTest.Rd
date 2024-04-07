@@ -27,10 +27,10 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{meansTest}{SpectralImagingExperiment}(x, data, fixed, random, samples = run(x),
+\S4method{meansTest}{SpectralImagingExperiment}(x, fixed, random, samples = run(x),
     response = "intensity", \dots)
 
-\S4method{meansTest}{SpatialDGMM}(x, data, fixed, random, class = 1L,
+\S4method{meansTest}{SpatialDGMM}(x, fixed, random, class = 1L,
     response = "intensity", reduced = ~ 1,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
@@ -47,6 +47,8 @@ segmentationTest(x, fixed, random, samples = run(x),
 
 \arguments{
     \item{x}{A dataset in P x N matrix format or a set of spatially segmented images.}
+
+    \item{data}{A data frame of additional variables parallel to \code{x}.}
     
     \item{fixed}{A one-sided formula giving the fixed effects of the model on the RHS. The response will added to the LHS, and the formula will be passed to the underlying modeling function.}
     

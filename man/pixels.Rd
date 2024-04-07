@@ -1,8 +1,9 @@
 \name{pixels}
 
 \alias{pixels}
-\alias{pixels,MSImagingExperiment-method}
 \alias{pixels,SpectralImagingExperiment-method}
+\alias{pixels,SpectralImagingArrays-method}
+\alias{pixels,SpectralImagingData-method}
 
 \title{Find pixel indices}
 
@@ -11,11 +12,13 @@
 }
 
 \usage{
-\S4method{pixels}{SpectralImagingExperiment}(object, \dots, coord, run, tolerance = NA)
+\S4method{pixels}{SpectralImagingExperiment}(object, \dots, coord, run, tolerance = NA,
+    env = NULL)
 
-\S4method{pixels}{SpectralImagingArrays}(object, \dots, coord, run, tolerance = NA)
+\S4method{pixels}{SpectralImagingArrays}(object, \dots, coord, run, tolerance = NA,
+    env = NULL)
 
-\S4method{pixels}{SpectralImagingData}(object, \dots, env = parent.frame(1L))
+\S4method{pixels}{SpectralImagingData}(object, \dots, env = NULL)
 }
 
 \arguments{

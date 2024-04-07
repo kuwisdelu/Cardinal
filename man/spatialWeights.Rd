@@ -20,7 +20,7 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialWeights}{SpectraImagingData}(x, r = 1,
+\S4method{spatialWeights}{SpectralImagingData}(x, r = 1,
         neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r = 1,

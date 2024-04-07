@@ -9,7 +9,7 @@
 }
 
 \usage{
-estimateDomain <- function(xlist,
+estimateDomain(xlist,
     units = c("relative", "absolute"),
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),

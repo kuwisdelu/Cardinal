@@ -5,6 +5,8 @@
 \alias{peakPick,MSImagingArrays-method}
 \alias{peakPick,SpectralImagingData-method}
 
+\alias{estimateReferencePeaks}
+
 \title{Peak pick spectra}
 
 \description{

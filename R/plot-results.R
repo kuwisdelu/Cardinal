@@ -51,7 +51,7 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- names(featureData(x))[1L]
 	} else {
-		index <- seq_len(nrow(importance))
+		index <- seq_len(nrow(y))
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- "Index"
 	}

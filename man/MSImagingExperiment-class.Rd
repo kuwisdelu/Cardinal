@@ -6,10 +6,10 @@
 \alias{MSImagingExperiment-class}
 
 \alias{show,MSImagingExperiment-method}
-\alias{mz,MSImagingArrays-method}
-\alias{mz<-,MSImagingArrays-method}
-\alias{intensity,MSImagingArrays-method}
-\alias{intensity<-,MSImagingArrays-method}
+\alias{mz,MSImagingExperiment-method}
+\alias{mz<-,MSImagingExperiment-method}
+\alias{intensity,MSImagingExperiment-method}
+\alias{intensity<-,MSImagingExperiment-method}
 \alias{centroided,MSImagingExperiment_OR_Arrays-method}
 \alias{centroided<-,MSImagingExperiment_OR_Arrays-method}
 \alias{isCentroided,MSImagingExperiment_OR_Arrays-method}
@@ -62,7 +62,7 @@ MSImagingExperiment(spectraData = SimpleList(),
 }
 
 \section{Methods}{
-    All methods for \code{\linkS4class{MSImagingData}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
+    All methods for \code{\linkS4class{SpectralImagingData}} and \code{\linkS4class{SpectralImagingExperiment}} also work on \code{MSImagingExperiment} objects. Additional methods are documented below:
 
     \describe{
         \item{\code{mz(object, ...)}, \code{mz(object, ...) <- value}:}{Get or set the m/z column in the \code{featureData} slot.}

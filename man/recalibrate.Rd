@@ -1,6 +1,7 @@
 \name{recalibrate}
 
 \alias{recalibrate}
+\alias{recalibrate,MSImagingExperiment_OR_Arrays-method}
 \alias{recalibrate,SpectralImagingData-method}
 
 \title{Recalibrate spectra}

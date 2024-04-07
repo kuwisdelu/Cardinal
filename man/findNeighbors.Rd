@@ -15,7 +15,7 @@
 \S4method{findNeighbors}{ANY}(x, r = 1, groups = NULL,
     metric = "maximum", p = 2, matrix = FALSE, \dots)
 
-\S4method{findNeighbors}{SpectraImagingData}(x, r = 1, groups = run(x), \dots)
+\S4method{findNeighbors}{SpectralImagingData}(x, r = 1, groups = run(x), \dots)
 
 \S4method{findNeighbors}{PositionDataFrame}(x, r = 1, groups = run(x), \dots)
 }

@@ -3,22 +3,23 @@
 ## ---------------------------------------
 
 setMethod("NMF", "ANY",
-	function(x, ncomp = 3, method = c("als", "mult"), ...)
+	function(x, ncomp = 3, method = c("als", "mult"),
+		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
 	msg <- "estimating nonnegative matrix factorization "
 	if ( method == "als" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using alternating least squares")
-		ans <- nnmf_als(x, k=max(ncomp), verbose=getCardinalVerbose(), ...)
+		ans <- nnmf_als(x, k=max(ncomp), verbose=verbose, ...)
 	} else if ( method == "mult" ) {
-		if ( getCardinalVerbose() )
+		if ( verbose )
 			message(msg, "using multiplicative updates")
-		ans <- nnmf_mult(x, k=max(ncomp), verbose=getCardinalVerbose(), ...)
+		ans <- nnmf_mult(x, k=max(ncomp), verbose=verbose, ...)
 	} else {
 		stop("unsupported method: ", method)
 	}
-	if ( getCardinalVerbose() )
+	if ( verbose )
 		message("returning nonnegative matrix factorization")
 	ans
 })

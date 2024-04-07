@@ -18,7 +18,8 @@
 }
 
 \usage{
-\S4method{NMF}{ANY}(x, ncomp = 3, method = c("als", "mult"), \dots)
+\S4method{NMF}{ANY}(x, ncomp = 3, method = c("als", "mult"),
+    verbose = getCardinalVerbose(), \dots)
 
 \S4method{NMF}{SpectralImagingExperiment}(x, ncomp = 3, method = c("als", "mult"), \dots)
 
@@ -35,11 +36,7 @@
 
     \item{method}{The method to use. Alternating least squares ("als") tends to be faster and potentially more accurate, but can be numerically unstable for data with high correlated features. Multiplicative updates ("mult") can be slower, but is more numerically stable.}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
-
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
     \item{\dots}{Options passed to \code{\link[irlba]{irlba}}.}
 

@@ -79,6 +79,8 @@
 \arguments{
     \item{x}{A dataset in P x N matrix format.}
 
+    \item{y}{The response variable.}
+
     \item{ncomp}{The number of principal components to calculate.}
 
     \item{method}{The method used for calculating the principal components. See \code{\link[matter]{pls}} for details.}

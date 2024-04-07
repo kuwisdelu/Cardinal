@@ -76,7 +76,6 @@ setMethod("featureApply", "SpectralImagingExperiment",
 		BPPARAM = getCardinalBPPARAM())
 	{
 		.Deprecated("chunkApply")
-		.checkForIncompleteProcessing(.object)
 		chunkApply(spectra(.object), FUN=.fun, MARGIN=1L, ...,
 			simplify=.simplify, nchunks=.blocks,
 			outpath=.outpath, verbose=.verbose,
@@ -113,98 +112,98 @@ setMethod("aggregate", "SpectralImagingExperiment",
 		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		.Defunct("summarizeFeatures")
-		.checkForIncompleteProcessing(x)
-		by <- match.arg(by)
-		if ( by == "feature" ) {
-			len <- ncol(x)
-			df <- fData(x)[,integer(),drop=FALSE]
-		} else if ( by == "pixel" ) {
-			len <- nrow(x)
-			df <- pData(x)[,integer(),drop=FALSE]
-		}
-		if ( !is.null(groups) ) {
-			groups <- rep_len(groups, len)
-			groups <- as.factor(groups)
-		}
-		as <- match.arg(as, c("ImagingExperiment", "DataFrame"))
-		groupnames <- levels(groups)
-		ngroups <- nlevels(groups)
-		statnames <- c(
-			"prod",
-			"mean", "sum",
-			"sd", "var",
-			"min", "max",
-			"all", "any",
-			"nnzero")
-		streamstats <- is.character(FUN) && all(FUN %in% statnames)
-		if ( streamstats ) {
-			fnames <- names(FUN)
-			if ( is.null(fnames) ) {
-				fnames <- FUN
-			} else {
-				ind <- which(!nzchar(fnames))
-				fnames[ind] <- FUN[ind]
-			}
-		} else if ( is.function(FUN) ) {
-			fnames <- deparse(substitute(FUN))
-			FUN <- list(FUN)
-		} else {
-			fnames <- names(FUN)
-			if ( is.null(fnames) ) {
-				fnames <- paste0("FUN.", seq_along(FUN))
-			} else {
-				ind <- which(!nzchar(fnames))
-				fnames[ind] <- paste0("FUN.", ind)
-			}
-			FUN <- lapply(FUN, match.fun)
-		}
-		FUNLIST <- setNames(FUN, fnames)
-		if ( is.null(groups) ) {
-			cnames <- fnames
-		} else {
-			cnames <- paste0(rep(fnames, each=ngroups), ".",
-				rep(unlist(groupnames), times=length(fnames)))
-		}
-		if ( streamstats ) {
-			y <- .aggregate_stats(x, by=by, STATS=FUNLIST, ...,
-				groups=groups, tform=tform, BPPARAM=BPPARAM)
-		} else {
-			y <- .aggregate_funs(x, by=by, FUNLIST=FUNLIST, ...,
-				groups=groups, tform=tform, BPPARAM=BPPARAM)
-		}
-		y <- do.call(cbind, y)
-		df[cnames] <- y
-		if ( as == "ImagingExperiment" ) {
-			if ( is.null(groups) ) {
-				mcols <- data.frame(FUN=fnames)
-			} else {
-				mcols <- expand.grid(group=groupnames, FUN=fnames)
-				mcols <- rev(mcols)
-			}
-			dimnames(y) <- NULL
-			if ( by == "pixel" ) {
-				fData <- DataFrame(mcols)
-				iData <- ImageArrayList(t(y))
-				names(iData) <- names(imageData(x))[1]
-				ans <- .SparseImagingSummary(
-					imageData=iData,
-					featureData=fData,
-					elementMetadata=df)
-			} else if ( by == "feature" ) {
-				pData <- PositionDataFrame(
-					coord=expand.grid(x=1:nrow(mcols), y=1),
-					run=factor(1), mcols)
-				iData <- ImageArrayList(y)
-				names(iData) <- names(imageData(x))[1]
-				ans <- .SparseImagingSummary(
-					imageData=iData,
-					featureData=df,
-					elementMetadata=pData)
-			}
-		} else {
-			ans <- df
-		}
-		ans
+		# .checkForIncompleteProcessing(x)
+		# by <- match.arg(by)
+		# if ( by == "feature" ) {
+		# 	len <- ncol(x)
+		# 	df <- fData(x)[,integer(),drop=FALSE]
+		# } else if ( by == "pixel" ) {
+		# 	len <- nrow(x)
+		# 	df <- pData(x)[,integer(),drop=FALSE]
+		# }
+		# if ( !is.null(groups) ) {
+		# 	groups <- rep_len(groups, len)
+		# 	groups <- as.factor(groups)
+		# }
+		# as <- match.arg(as, c("ImagingExperiment", "DataFrame"))
+		# groupnames <- levels(groups)
+		# ngroups <- nlevels(groups)
+		# statnames <- c(
+		# 	"prod",
+		# 	"mean", "sum",
+		# 	"sd", "var",
+		# 	"min", "max",
+		# 	"all", "any",
+		# 	"nnzero")
+		# streamstats <- is.character(FUN) && all(FUN %in% statnames)
+		# if ( streamstats ) {
+		# 	fnames <- names(FUN)
+		# 	if ( is.null(fnames) ) {
+		# 		fnames <- FUN
+		# 	} else {
+		# 		ind <- which(!nzchar(fnames))
+		# 		fnames[ind] <- FUN[ind]
+		# 	}
+		# } else if ( is.function(FUN) ) {
+		# 	fnames <- deparse(substitute(FUN))
+		# 	FUN <- list(FUN)
+		# } else {
+		# 	fnames <- names(FUN)
+		# 	if ( is.null(fnames) ) {
+		# 		fnames <- paste0("FUN.", seq_along(FUN))
+		# 	} else {
+		# 		ind <- which(!nzchar(fnames))
+		# 		fnames[ind] <- paste0("FUN.", ind)
+		# 	}
+		# 	FUN <- lapply(FUN, match.fun)
+		# }
+		# FUNLIST <- setNames(FUN, fnames)
+		# if ( is.null(groups) ) {
+		# 	cnames <- fnames
+		# } else {
+		# 	cnames <- paste0(rep(fnames, each=ngroups), ".",
+		# 		rep(unlist(groupnames), times=length(fnames)))
+		# }
+		# if ( streamstats ) {
+		# 	y <- .aggregate_stats(x, by=by, STATS=FUNLIST, ...,
+		# 		groups=groups, tform=tform, BPPARAM=BPPARAM)
+		# } else {
+		# 	y <- .aggregate_funs(x, by=by, FUNLIST=FUNLIST, ...,
+		# 		groups=groups, tform=tform, BPPARAM=BPPARAM)
+		# }
+		# y <- do.call(cbind, y)
+		# df[cnames] <- y
+		# if ( as == "ImagingExperiment" ) {
+		# 	if ( is.null(groups) ) {
+		# 		mcols <- data.frame(FUN=fnames)
+		# 	} else {
+		# 		mcols <- expand.grid(group=groupnames, FUN=fnames)
+		# 		mcols <- rev(mcols)
+		# 	}
+		# 	dimnames(y) <- NULL
+		# 	if ( by == "pixel" ) {
+		# 		fData <- DataFrame(mcols)
+		# 		iData <- ImageArrayList(t(y))
+		# 		names(iData) <- names(imageData(x))[1]
+		# 		ans <- .SparseImagingSummary(
+		# 			imageData=iData,
+		# 			featureData=fData,
+		# 			elementMetadata=df)
+		# 	} else if ( by == "feature" ) {
+		# 		pData <- PositionDataFrame(
+		# 			coord=expand.grid(x=1:nrow(mcols), y=1),
+		# 			run=factor(1), mcols)
+		# 		iData <- ImageArrayList(y)
+		# 		names(iData) <- names(imageData(x))[1]
+		# 		ans <- .SparseImagingSummary(
+		# 			imageData=iData,
+		# 			featureData=df,
+		# 			elementMetadata=pData)
+		# 	}
+		# } else {
+		# 	ans <- df
+		# }
+		# ans
 	})
 
 ## image

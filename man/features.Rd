@@ -1,9 +1,8 @@
 \name{features}
 
 \alias{features}
+\alias{features,MSImagingExperiment-method}
 \alias{features,SpectralImagingExperiment-method}
-\alias{features,SpectralImagingArrays-method}
-\alias{features,SpectralImagingData-method}
 
 \title{Find feature indices}
 
@@ -12,9 +11,10 @@
 }
 
 \usage{
-\S4method{features}{MSImagingExperiment}(object, \dots, mz, tolerance = NA, units = c("ppm", "mz"))
+\S4method{features}{MSImagingExperiment}(object, \dots, mz, tolerance = NA, units = c("ppm", "mz"),
+    env = NULL)
 
-\S4method{features}{SpectralImagingExperiment}(object, \dots, env = parent.frame(1L))
+\S4method{features}{SpectralImagingExperiment}(object, \dots, env = NULL)
 }
 
 \arguments{

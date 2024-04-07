@@ -1,7 +1,7 @@
 \name{selectROI}
 
 \alias{selectROI}
-\alias{selectROI,SparseImagingExperiment-method}
+\alias{selectROI,SpectralImagingExperiment-method}
 \alias{makeFactor}
 
 \title{Select regions-of-interest in an image}

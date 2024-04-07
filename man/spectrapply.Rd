@@ -74,7 +74,10 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 
 # find m/z locations of peaks in each spectrum
-peaks <- spectrapply(data, function(x, mz) mz[matter::findpeaks(x)])
+peaks <- spectrapply(mse, function(x, mz) mz[matter::findpeaks(x)])
+
+head(peaks[[1L]])
+head(peaks[[2L]])
 }
 
 \keyword{manip}

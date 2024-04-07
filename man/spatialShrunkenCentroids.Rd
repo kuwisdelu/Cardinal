@@ -30,7 +30,7 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,ANY}(x, y, coord, r = 1, s = 0,
+\S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,ANY}(x, y, r = 1, s = 0,
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r), \dots)
 
@@ -43,9 +43,9 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialShrunkenCentroids}{ANY,missing}(x, coord, r = 1, k = 2, s = 0,
+\S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,missing}(x, r = 1, k = 2, s = 0,
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord, r=r), \dots)
+    neighbors = findNeighbors(coord(x), r=r), \dots)
 
 \S4method{fitted}{SpatialShrunkenCentroids}(object, type = c("response", "class"), \dots)
 
@@ -55,11 +55,11 @@
         nchunks = getCardinalNChunks(),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{topFeatures}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
+\S4method{topFeatures}{SpatialShrunkenCentroids}(x, n = Inf, sort.by = c("statistic", "centers"), \dots)
 
-\S4method{image}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
+\S4method{plot}{SpatialShrunkenCentroids}(x, type = c("statistic", "centers"), \dots, xlab, ylab)
 
-\S4method{plot}{SpatialShrunkenCentroids}(x, type = c("probability", "class"), \dots)
+\S4method{image}{SpatialShrunkenCentroids}(x, type = c("probability", "class"), \dots)
 }
 \arguments{
     \item{x}{A spatial dataset in P x N matrix format.}

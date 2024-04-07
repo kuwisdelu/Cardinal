@@ -41,8 +41,6 @@ MSImagingArrays(spectraData = SimpleList(),
     \item{continuous}{A logical value indicated whether the spectra all have the same m/z values.}
 
     \item{metadata}{A list of arbitrary metadata.}
-
-    \item{object}{A \code{\linkS4class{MSImagingExperiment}} object.}
 }
 
 \section{Slots}{

@@ -253,26 +253,25 @@ setClass("CrossValidated2")
 setAs("MSImageSet", "MSImagingExperiment", .from_legacy_MSImagSet)
 
 
-# coerce from ResultSet
+# # coerce from ResultSet
 
-.from_legacy_ResultSet <- function(from, toclass)
-{
-	fData <- from@featureData
-	pData <- from@pixelData
-	coordLabelTypes <- "dim"
-	sampleLabelTypes <- "sample"
-	isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
-	isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
-	coordLabels <- names(pData@data)[isCoord]
-	new(toclass,
-		spectraData=.SimpleImageArrayList(),
-		featureData=XDataFrame(fData@data),
-		elementMetadata=PositionDataFrame(
-			coord=DataFrame(pData@data[coordLabels], row.names=NULL),
-			run=pData@data$sample),
-		resultData=as(from@resultData, "List"),
-		modelData=DataFrame(from@modelData@data))
-}
-
+# .from_legacy_ResultSet <- function(from, toclass)
+# {
+# 	fData <- from@featureData
+# 	pData <- from@pixelData
+# 	coordLabelTypes <- "dim"
+# 	sampleLabelTypes <- "sample"
+# 	isCoord <- pData@varMetadata[["labelType"]] %in% coordLabelTypes
+# 	isCoord[names(pData@data) %in% sampleLabelTypes] <- FALSE
+# 	coordLabels <- names(pData@data)[isCoord]
+# 	new(toclass,
+# 		spectraData=.SimpleImageArrayList(),
+# 		featureData=XDataFrame(fData@data),
+# 		elementMetadata=PositionDataFrame(
+# 			coord=DataFrame(pData@data[coordLabels], row.names=NULL),
+# 			run=pData@data$sample),
+# 		resultData=as(from@resultData, "List"),
+# 		modelData=DataFrame(from@modelData@data))
+# }
 
 

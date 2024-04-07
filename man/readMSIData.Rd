@@ -65,6 +65,8 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 
 	\item{\dots}{Additional arguments passed to \code{\link[CardinalIO]{parseImzML}} or \code{\link[CardinalIO]{parseAnalyze}}.}
 
+	\item{object}{A mass spectrometry imaging dataset to convert from one class to another.}
+
 	\item{mz}{A vector of shared m/z values for converting to \code{MSImagingExperiment}, if not to be determined automatically.}
 
 	\item{tolerance}{If the spectra have been centroided but the peaks are unaligned, then this is passed to \code{\link{peakAlign}}.}

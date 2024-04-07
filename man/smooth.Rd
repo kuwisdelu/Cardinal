@@ -10,13 +10,13 @@
 }
 
 \usage{
-\S4method{smooth}{SpectralImagingData}(object,
+\S4method{smooth}{SpectralImagingData}(x,
     method = c("gaussian", "bilateral", "adaptive",
         "diff", "guide", "pag", "sgolay", "ma"), \dots)
 }
 
 \arguments{
-    \item{object}{A spectral imaging dataset.}
+    \item{x}{A spectral imaging dataset.}
 
     \item{method}{The smoothing method to use. See \code{\link[matter]{filt1}} for details.}
 

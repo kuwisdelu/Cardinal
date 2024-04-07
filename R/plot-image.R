@@ -26,7 +26,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE])
 	if ( "plusminus" %in% ...names() ) {
 		.Deprecated(old="plusminus", new="tolerance")
-		tolerance <- plusminus
+		tolerance <- list(...)$plusminus
 	}
 	if ( is.finite(tolerance) ) {
 		if ( is.null(mz) )

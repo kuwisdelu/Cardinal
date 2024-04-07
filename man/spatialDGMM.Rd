@@ -7,7 +7,7 @@
 \alias{spatialDGMM}
 \alias{spatialDGMM,ANY-method}
 \alias{spatialDGMM,SpectralImagingExperiment-method}
-\alias{plot,SpatialDGMM-method}
+\alias{plot,SpatialDGMM,missing-method}
 \alias{image,SpatialDGMM-method}
 
 \title{Spatially-aware Dirichlet Gaussian mixture model}
@@ -25,9 +25,9 @@
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{spatialDGMM}{SpectralImagingExperiment}(x, i, r = 1, k = 2, groups = NULL,
+\S4method{spatialDGMM}{SpectralImagingExperiment}(x, i, r = 1, k = 2, groups = run(x),
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord, r=r, groups=groups), \dots)
+    neighbors = findNeighbors(coord(x), r=r, groups=groups), \dots)
 
 \S4method{plot}{SpatialDGMM,missing}(x, i = 1L, type = "density",
         layout = NULL, free = "", \dots)
