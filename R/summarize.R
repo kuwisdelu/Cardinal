@@ -26,7 +26,13 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
-		y <- matter:::drop_attr(ans[[i]])
+		y <- as.vector(ans[[i]])
+		if ( is.null(dim(ans[[i]])) ) {
+			names(y) <- names(ans[[i]])
+		} else {
+			dim(y) <- dim(ans[[i]])
+			dimnames(y) <- dimnames(ans[[i]])
+		}
 		if ( is.array(y) ) {
 			nm <- paste0(colnames(y), ".", labels[i])
 			featureData(x)[nm] <- y
@@ -65,7 +71,13 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
-		y <- matter:::drop_attr(ans[[i]])
+		y <- as.vector(ans[[i]])
+		if ( is.null(dim(ans[[i]])) ) {
+			names(y) <- names(ans[[i]])
+		} else {
+			dim(y) <- dim(ans[[i]])
+			dimnames(y) <- dimnames(ans[[i]])
+		}
 		if ( is.array(y) ) {
 			nm <- paste0(colnames(y), ".", labels[i])
 			pixelData(x)[nm] <- y

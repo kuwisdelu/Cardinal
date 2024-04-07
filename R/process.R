@@ -135,7 +135,7 @@ setMethod("process", "SpectralImagingExperiment",
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
-		put <- matter:::chunk_writer(pid, outfile)
+		put <- matter::chunk_writer(pid, outfile)
 		if ( verbose )
 			message("writing output to path = ", sQuote(outfile))
 	}
@@ -264,7 +264,7 @@ setMethod("process", "SpectralImagingArrays",
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
-		put <- matter:::chunk_writer(pid, outfile)
+		put <- matter::chunk_writer(pid, outfile)
 		if ( verbose )
 			message("writing output to path = ", sQuote(outfile))
 	}

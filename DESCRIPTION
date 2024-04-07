@@ -3,8 +3,9 @@ Type: Package
 Title: A mass spectrometry imaging toolbox for statistical analysis
 Version: 3.5.0
 Date: 2021-11-21
-Author: Kylie A. Bemis <k.bemis@northeastern.edu>
-Maintainer: Kylie A. Bemis <k.bemis@northeastern.edu>
+Authors@R: person("Kylie Ariel", "Bemis",
+	email = "k.bemis@northeastern.edu",
+	role = c("aut", "cre"))
 Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
@@ -19,3 +20,4 @@ biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 	MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,
 	Normalization, Clustering, Classification, Regression
 URL: http://www.cardinalmsi.org
+BugReports: https://github.com/kuwisdelu/Cardinal/issues

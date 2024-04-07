@@ -94,9 +94,9 @@ setMethod("vm_used", "SpectraArrays",
 		arrays <- as(x, "SimpleList", strict=FALSE)
 		vm <- vapply(arrays, function(y) vm_used(y), numeric(1L))
 		if ( all(is.na(vm)) ) {
-			matter:::size_bytes(NA_real_)
+			matter::size_bytes(NA_real_)
 		} else {
-			matter:::size_bytes(sum(vm, na.rm=TRUE))
+			matter::size_bytes(sum(vm, na.rm=TRUE))
 		}
 	})
 

@@ -1,4 +1,44 @@
 
+CHANGES IN VERSION 3.5.1 [2024-4-7]
+-----------------------------------
+
+NEW FEATURES
+
+    o Ground-up rewrite to take advantage of matter v2.5 features
+    o New class 'SpectraArrays' for arrays of spectra
+    o New class 'SpectralImagingData' for spectral imaging data
+    o New class 'SpectralImagingArrays' for raw spectra
+    o New class 'SpectralImagingExperiment' for centroided spectra
+    o New class 'MSImagingArrays' for raw mass spectra
+    o Updated class 'MSImagingExperiment'
+    o Updated class 'XDataFrame'
+    o Updated classes 'PositionDataFrame' and 'MassDataFrame'
+    o New apply method 'spectrapply()'
+    o New processing method 'recalibrate()'
+    o New processing method 'bin()'
+    o New processing method 'peakProcess()'
+    o New classes 'SpatialResults' and 'ResultsList'
+    o Updated spatial methods 'findNeighbors()' and 'spatialWeights()'
+    o Updated spatial methods 'colocalized()'
+    o Updated projection methods 'PCA()' and 'spatialFastmap()'
+    o New projection method 'NMF()'
+    o Updated stats methods 'PLS()' and 'OPLS()'
+    o Updated stats method 'spatialKMeans()'
+    o Updated stats method 'spatialShrunkenCentroids()'
+    o Updated stats method 'spatialDGMM()'
+    o Improved visualization methods 'plot()' and 'image()'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Deprecated 'smoothSignal()' -- use 'smooth()'
+    o Deprecated 'mzBin()' -- use 'bin()'
+    o Deprecated 'mzAlign()' -- use 'recalibrate()'
+    o Deprecated 'mzFilter()' -- use 'subsetFeatures()'
+    o Deprecated 'peakFilter()' -- use 'subsetFeatures()'
+    o Deprecated 'aggregate()' -- use 'summarizeFeatures()'
+    o Deprecated 'featureApply()' -- use 'summarizeFeatures()'
+    o Deprecated 'pixelApply()' -- use 'summarizePixels()'
+
 CHANGES IN VERSION 3.4.3 [2023-11-22]
 -----------------------------------
 
