@@ -1,4 +1,4 @@
-\name{summarize}
+\name{summarizeFeatures}
 
 \alias{summarizeFeatures}
 \alias{summarizePixels}

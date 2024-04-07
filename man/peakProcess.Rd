@@ -1,4 +1,4 @@
-\name{peakAlign}
+\name{peakProcess}
 
 \alias{peakProcess}
 \alias{peakProcess,MSImagingExperiment_OR_Arrays-method}

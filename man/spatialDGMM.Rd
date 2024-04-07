@@ -1,4 +1,4 @@
-\name{spatialDGMM}
+\name{SpatialDGMM}
 
 \alias{SpatialDGMM}
 \alias{class:SpatialDGMM}
@@ -7,8 +7,8 @@
 \alias{spatialDGMM}
 \alias{spatialDGMM,ANY-method}
 \alias{spatialDGMM,SpectralImagingExperiment-method}
-\alias{plot,SpatialOPLS-method}
-\alias{image,SpatialOPLS-method}
+\alias{plot,SpatialDGMM-method}
+\alias{image,SpatialDGMM-method}
 
 \title{Spatially-aware Dirichlet Gaussian mixture model}
 

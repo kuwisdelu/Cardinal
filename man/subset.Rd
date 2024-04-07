@@ -1,9 +1,8 @@
-\name{subset}
-
-\alias{subset,SpectralImagingExperiment-method}
+\name{subsetFeatures}
 
 \alias{subsetFeatures}
 \alias{subsetPixels}
+\alias{subset,SpectralImagingExperiment-method}
 
 \title{Subset a spectral imaging dataset}
 

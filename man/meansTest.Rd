@@ -1,9 +1,10 @@
-\name{meansTest-methods}
+\name{MeansTest}
 
-\alias{meansTest}
+\alias{MeansTest}
 \alias{class:MeansTest}
 \alias{MeansTest-class}
 
+\alias{meansTest}
 \alias{meansTest,ANY-method}
 \alias{meansTest,SpectralImagingExperiment-method}
 \alias{meansTest,SpatialDGMM-method}

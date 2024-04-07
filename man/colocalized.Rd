@@ -1,7 +1,6 @@
 \name{colocalized}
 
 \alias{colocalized}
-
 \alias{colocalized,SpectralImagingExperiment-method}
 \alias{colocalized,MSImagingExperiment-method}
 

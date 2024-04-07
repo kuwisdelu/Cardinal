@@ -1,11 +1,10 @@
-\name{PLS-methods}
-\docType{methods}
+\name{SpatialPLS}
 
 \alias{SpatialPLS}
 \alias{class:SpatialPLS}
 \alias{SpatialPLS-class}
 
-\alias{PLS-method}
+\alias{PLS}
 \alias{PLS,ANY-method}
 \alias{PLS,SpectralImagingExperiment-method}
 \alias{fitted,SpatialOPLS-method}
@@ -18,7 +17,7 @@
 \alias{class:SpatialOPLS}
 \alias{SpatialOPLS-class}
 
-\alias{OPLS-method}
+\alias{OPLS}
 \alias{OPLS,ANY-method}
 \alias{OPLS,SpectralImagingExperiment-method}
 \alias{fitted,SpatialPLS-method}

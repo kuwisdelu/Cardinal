@@ -1,8 +1,7 @@
-\name{image-methods}
+\name{plot-image}
+\alias{plot-image}
 
 \alias{image}
-\alias{image-methods}
-
 \alias{image,MSImagingExperiment-method}
 \alias{image,SpectralImagingExperiment-method}
 

@@ -1,7 +1,6 @@
 \name{spatialWeights}
 
 \alias{spatialWeights}
-
 \alias{spatialWeights,ANY-method}
 \alias{spatialWeights,SpectralImagingData-method}
 \alias{spatialWeights,PositionDataFrame-method}

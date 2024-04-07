@@ -1,8 +1,7 @@
-\name{plot-methods}
+\name{plot-spectra}
+\alias{plot-spectra}
 
 \alias{plot}
-\alias{plot-methods}
-
 \alias{plot,MSImagingExperiment,numeric-method}
 \alias{plot,MSImagingExperiment,character-method}
 \alias{plot,MSImagingExperiment,formula-method}

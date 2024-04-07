@@ -1,7 +1,6 @@
 \name{findNeighbors}
 
 \alias{findNeighbors}
-
 \alias{findNeighbors,ANY-method}
 \alias{findNeighbors,SpectralImagingData-method}
 \alias{findNeighbors,PositionDataFrame-method}

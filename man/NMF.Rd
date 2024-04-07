@@ -1,9 +1,10 @@
-\name{NMF}
+\name{SpatialNMF}
 
 \alias{SpatialNMF}
 \alias{class:SpatialNMF}
 \alias{SpatialNMF-class}
 
+\alias{NMF}
 \alias{NMF,ANY-method}
 \alias{NMF,SpectralImagingExperiment-method}
 \alias{predict,SpatialNMF-method}

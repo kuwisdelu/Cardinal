@@ -1,18 +1,17 @@
-\name{crossValidate}
+\name{SpatialCV}
 
-\alias{crossValidate}
-
-\alias{class:SpatialCV}
 \alias{SpatialCV}
+\alias{class:SpatialCV}
 \alias{SpatialCV-class}
 
+\alias{crossValidate}
 \alias{fitted,SpatialCV-method}
 \alias{image,SpatialCV-method}
 
-\title{Apply cross-validation to imaging analyses}
+\title{Cross-validation for spectral imaging data}
 
 \description{
-	Apply cross-validation with an existing or a user-specified modeling function over folds of an imaging datasets.
+	Apply cross-validation with an existing or a user-specified modeling function over folds of a spectral imaging dataset.
 }
 
 \usage{

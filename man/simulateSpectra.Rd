@@ -1,4 +1,4 @@
-\name{simulateSpectrum}
+\name{simulateSpectra}
 
 \alias{simulateSpectra}
 \alias{simulateImage}

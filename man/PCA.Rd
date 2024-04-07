@@ -1,9 +1,10 @@
-\name{PCA}
+\name{SpatialPCA}
 
 \alias{SpatialPCA}
 \alias{class:SpatialPCA}
 \alias{SpatialPCA-class}
 
+\alias{PCA}
 \alias{PCA,ANY-method}
 \alias{PCA,SpectralImagingExperiment-method}
 \alias{predict,SpatialPCA-method}

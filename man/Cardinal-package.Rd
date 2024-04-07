@@ -5,13 +5,10 @@
 \alias{Cardinal}
 
 \alias{CardinalVersion}
-
 \alias{getCardinalBPPARAM}
 \alias{setCardinalBPPARAM}
-
 \alias{getCardinalVerbose}
 \alias{setCardinalVerbose}
-
 \alias{getCardinalNChunks}
 \alias{setCardinalNChunks}
 

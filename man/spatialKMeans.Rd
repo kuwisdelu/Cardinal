@@ -1,9 +1,10 @@
-\name{spatialKMeans}
+\name{SpatialKMeans}
 
 \alias{SpatialKMeans}
 \alias{class:SpatialKMeans}
 \alias{SpatialKMeans-class}
 
+\alias{spatialKMeans}
 \alias{spatialKMeans,ANY-method}
 \alias{spatialKMeans,SpectralImagingExperiment-method}
 \alias{predict,SpatialKMeans-method}

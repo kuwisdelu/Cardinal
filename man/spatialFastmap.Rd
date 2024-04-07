@@ -1,9 +1,10 @@
-\name{spatialFastmap}
+\name{SpatialFastmap}
 
 \alias{SpatialFastmap}
 \alias{class:SpatialFastmap}
 \alias{SpatialFastmap-class}
 
+\alias{spatialFastmap}
 \alias{spatialFastmap,ANY-method}
 \alias{spatialFastmap,SpectralImagingExperiment-method}
 \alias{predict,SpatialFastmap-method}

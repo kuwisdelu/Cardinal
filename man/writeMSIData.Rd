@@ -1,10 +1,11 @@
 \name{writeMSIData}
 
 \alias{writeMSIData}
-\alias{writeImzML}
-\alias{writeAnalyze}
 
+\alias{writeImzML}
 \alias{writeImzML,MSImagingExperiment_OR_Arrays-method}
+
+\alias{writeAnalyze}
 \alias{writeAnalyze,MSImagingExperiment-method}
 \alias{writeAnalyze,SpectralImagingExperiment-method}
 

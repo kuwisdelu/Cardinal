@@ -1,4 +1,4 @@
-\name{spatialShrunkenCentroids}
+\name{SpatialShrunkenCentroids}
 
 \alias{SpatialShrunkenCentroids}
 \alias{class:SpatialShrunkenCentroids}
