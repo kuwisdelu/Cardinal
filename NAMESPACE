@@ -106,12 +106,6 @@ export(
 exportMethods(
 	"aggregate",
 	"annotatedDataFrameFrom",
-	"coerce",
-	"combine",
-	"coord",
-	"coord<-",
-	"coordNames",
-	"coordNames<-",
 	"dims",
 	"fvarLabels",
 	"fvarLabels<-",
@@ -247,11 +241,15 @@ exportMethods(
 	"cbind",
 	"coef",
 	"coerce",
+	"combine",
+	"coord",
+	"coord<-",
+	"coordNames",
+	"coordNames<-",
 	"colnames",
 	"colnames<-",
 	"colocalized",
 	"coregister",
-	"combine",
 	"coord",
 	"coord<-",
 	"coordNames",
@@ -328,6 +326,7 @@ exportMethods(
 	"rowSums")
 
 exportMethods(
+	"meansTest",
 	"NMF",
 	"PCA",
 	"PLS",
@@ -336,7 +335,6 @@ exportMethods(
 	"spatialKMeans",
 	"spatialShrunkenCentroids",
 	"spatialDGMM",
-	"meansTest",
 	"topFeatures")
 
 export(
