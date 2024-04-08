@@ -14,7 +14,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		...,
 		xlab, ylab)
 {
-	if ( is.null(mz) )
+	if ( missing(i) && is.null(mz) )
 		mz <- mz(x)[1L]
 	if ( any(mz < min(mz(x))) || any(mz > max(mz(x))) )
 		warning("m/z value(s) out of range")
@@ -154,11 +154,10 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		x=formula[[3L]][[2L]],
 		y=formula[[3L]][[3L]])
 	n <- length(vals)
-	runs <- factor(rep.int(levels(runs), n))
 	nms <- names(vals)
 	FUN <- function(zi, xi, yi, e) {
-		df <- setNames(list(zi, xi, yi), vars)
-		ans <- eval(e, envir=df)
+		data <- setNames(list(zi, xi, yi), vars)
+		ans <- eval(e, envir=data)
 		lapply(levels(runs), function(ri) ans[runs %in% ri])
 	}
 	X <- do.call(c, Map(FUN, vals, x, y, rep.int(list(fm$x), n)))
@@ -179,6 +178,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		if ( !is.factor(by) )
 			by <- factor(by, levels=unique(by))
 	}
+	runs <- factor(rep.int(levels(runs), n))
 	if ( nlevels(runs) > 1L ) {
 		if ( is.null(by) ) {
 			by <- runs

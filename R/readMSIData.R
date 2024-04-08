@@ -73,15 +73,14 @@ readImzML <- function(file, memory = FALSE,
 	{
 		if ( verbose )
 			message("creating MSImagingExperiment")
-		if ( as != "MSImagingArrays" )
-		{
-			ans <- convertMSImagingArrays2Experiment(ans,
-				mass.range=mass.range, resolution=resolution,
-				units=units, guess.max=guess.max,
-				nchunks=nchunks, verbose=verbose,
-				BPPARAM=BPPARAM)
-		}
+		ans <- convertMSImagingArrays2Experiment(ans,
+			mass.range=mass.range, resolution=resolution,
+			units=units, guess.max=guess.max,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM)
 	}
+	if ( as == "MSImagingArrays" )
+		ans <- convertMSImagingExperiment2Arrays(ans)
 	if ( memory ) {
 		if ( verbose )
 			message("loading spectra into memory")

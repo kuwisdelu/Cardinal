@@ -23,7 +23,7 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 		xlab, ylab,
 		isPeaks = isCentroided(x))
 {
-	if ( is.null(coord) )
+	if ( missing(i) && is.null(coord) )
 		coord <- coord(x)[1L,,drop=FALSE]
 	if ( is.null(run) )
 		run <- run(x)[1L]
@@ -243,8 +243,8 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	vars <- all.vars(formula)
 	fm <- list(x=formula[[3L]], y=formula[[2L]])
 	FUN <- function(yi, xi, e) {
-		df <- setNames(list(yi, xi), vars)
-		eval(e, envir=df)
+		data <- setNames(list(yi, xi), vars)
+		eval(e, envir=data)
 	}
 	X <- Map(FUN, y, x, rep.int(list(fm$x), length(x)))
 	Y <- Map(FUN, y, x, rep.int(list(fm$y), length(y)))
