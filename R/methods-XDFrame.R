@@ -264,12 +264,8 @@ PositionDataFrame <- function(coord, run, ..., row.names = FALSE)
 	coord <- DataFrame(coord)
 	if ( missing(run) || is.null(run) ) {
 		run <- rep.int(factor("run0"), nrow(coord))
-		if ( anyDuplicated(coord) )
-			warning("'coord' does not uniquely identify rows")
 	} else {
 		run <- as.factor(run)
-		if ( anyDuplicated(cbind(coord, DataFrame(run=run))) )
-			warning("'coord' x 'run' do not uniquely identify rows")
 	}
 	keys <- list(coord=names(coord), run="run")
 	ans <- cbind(coord, DataFrame(run=run, ...))

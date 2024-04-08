@@ -73,7 +73,7 @@ setMethod("featureApply", "SpectralImagingExperiment",
 		.blocks = getCardinalNumBlocks(), .verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM())
 	{
-		.Deprecated("chunkApply")
+		.Deprecated("rowStats")
 		chunkApply(spectra(.object), FUN=.fun, MARGIN=1L, ...,
 			simplify=.simplify, nchunks=.blocks,
 			outpath=.outpath, verbose=.verbose,
@@ -85,7 +85,7 @@ setMethod("pixelApply", "SpectralImagingExperiment",
 		.blocks = getCardinalNumBlocks(), .verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM())
 	{
-		.Deprecated("chunkApply")
+		.Deprecated("colStats")
 		chunkApply(spectra(.object), FUN=.fun, MARGIN=2L, ...,
 			simplify=.simplify, nchunks=.blocks,
 			outpath=.outpath, verbose=.verbose,

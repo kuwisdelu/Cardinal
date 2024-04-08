@@ -126,7 +126,7 @@ readImzML <- function(file, memory = FALSE,
 	spectraData <- SpectraArrays(list(mz=mz, intensity=intensity))
 	pixelData <- PositionDataFrame(coord=coord, run=run, row.names=ids)
 	fileContent <- parse[["fileDescription"]][["fileContent"]]
-	if ( "IMS:1000030" %in% names(fileContent)) {
+	if ( "IMS:1000030" %in% names(fileContent) ) {
 		continuous <- TRUE
 	} else if ( "IMS:1000031" %in% names(fileContent)) {
 		continuous <- FALSE

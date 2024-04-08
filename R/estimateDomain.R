@@ -13,7 +13,11 @@ estimateDomain <- function(xlist,
 	FUN <- function(x) {
 		x <- x[!is.na(x)]
 		res <- unname(estres(x, ref=ref))
-		c(min=min(x), max=max(x), res=res)
+		if ( length(x) > 0 && is.finite(res) ) {
+			c(min=min(x), max=max(x), res=res)
+		} else {
+			c(min=NA_real_, max=NA_real_, res=res)
+		}
 	}
 	ans <- chunkLapply(xlist, FUN,
 		nchunks=nchunks, verbose=verbose,

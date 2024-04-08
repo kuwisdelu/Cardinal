@@ -14,6 +14,10 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		...,
 		xlab, ylab)
 {
+	if ( "feature" %in% ...names() ) {
+		.Deprecated(old="feature", new="i")
+		i <- list(...)$feature
+	}
 	if ( missing(i) && is.null(mz) )
 		mz <- mz(x)[1L]
 	if ( any(mz < min(mz(x))) || any(mz > max(mz(x))) )
@@ -73,19 +77,21 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		rhs <- paste0(coordNames(x)[1:2], collapse="*")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
+		formula <- paste0(formula, collapse="+")
 		rhs <- paste0(coordNames(x)[1:2], collapse="*")
 		formula <- as.formula(paste0(formula, "~", rhs))
 		i <- NULL
 	}
 	vars <- all.vars(formula)
-	if ( length(formula) != 3L || length(vars) != 3L )
-		stop("formula must specify exactly 3 variables")
-	X <- pixelData(x)[[vars[2L]]]
-	Y <- pixelData(x)[[vars[3L]]]
+	vars_x <- vars[length(vars) - 1L]
+	vars_y <- vars[length(vars)]
+	vars_vals <- setdiff(vars, union(vars_x, vars_y))
+	X <- pixelData(x)[[vars_x]]
+	Y <- pixelData(x)[[vars_y]]
 	if ( is.null(i) ) {
-		vals <- as.data.frame(pixelData(x)[vars[1L]])
+		vals <- as.data.frame(pixelData(x)[vars_vals])
 	} else {
-		vals <- spectraData(x)[[vars[1L]]][i,,drop=FALSE]
+		vals <- spectraData(x)[[vars_vals]][i,,drop=FALSE]
 	}
 	if ( !is.null(names(i)) && anyDuplicated(names(i)) ) {
 		vals <- rowsum(vals, group=names(i), reorder=FALSE, na.rm=TRUE)
@@ -106,14 +112,18 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		subset <- rep_len(subset, ncol(x))
 		X <- X[subset]
 		Y <- Y[subset]
-		vals <- vals[,subset,drop=FALSE]
+		if ( is.data.frame(vals) ) {
+			vals <- vals[subset,,drop=FALSE]
+		} else {
+			vals <- vals[,subset,drop=FALSE]
+		}
 		runs <- droplevels(run(x)[subset])
 	} else {
 		runs <- run(x)
 	}
 	if ( is.data.frame(vals) ) {
-		X <- list(X)
-		Y <- list(Y)
+		X <- rep.int(list(X), ncol(vals))
+		Y <- rep.int(list(Y), ncol(vals))
 		vals <- as.list(vals)
 	} else {
 		X <- rep.int(list(X), nrow(vals))
@@ -150,24 +160,46 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	formula, by, groups, runs, xlab, ylab, ...)
 {
 	vars <- all.vars(formula)
-	fm <- list(vals=formula[[2L]],
-		x=formula[[3L]][[2L]],
-		y=formula[[3L]][[3L]])
-	n <- length(vals)
-	nms <- names(vals)
-	FUN <- function(zi, xi, yi, e) {
-		data <- setNames(list(zi, xi, yi), vars)
-		ans <- eval(e, envir=data)
-		lapply(levels(runs), function(ri) ans[runs %in% ri])
+	vars_x <- vars[length(vars) - 1L]
+	vars_y <- vars[length(vars)]
+	vars_vals <- setdiff(vars, union(vars_x, vars_y))
+	fm_x <- as.list(formula[[3L]][[2L]])
+	fm_y <- as.list(formula[[3L]][[3L]])
+	fm_vals <- as.list(formula[[2L]])
+	if ( length(fm_x) > 1L )
+		fm_x <- fm_x[-1L]
+	if ( length(fm_y) > 1L )
+		fm_y <- fm_y[-1L]
+	if ( length(fm_vals) > 1L )
+		fm_vals <- fm_vals[-1L]
+	len <- max(length(x), length(y), length(vals))
+	vars_x <- rep_len(vars_x, len)
+	vars_y <- rep_len(vars_y, len)
+	vars_vals <- rep_len(vars_vals, len)
+	fm_x <- rep_len(fm_x, len)
+	fm_y <- rep_len(fm_y, len)
+	fm_vals <- rep_len(fm_vals, len)
+	names(fm_x) <- vars_x
+	names(fm_y) <- vars_y
+	names(fm_vals) <- vars_vals
+	names(x) <- vars_x
+	names(y) <- vars_y
+	names(vals) <- vars_vals
+	EVAL <- function(expr, i) {
+		data <- c(vals[i], x[i], y[i])
+		ans <- eval(expr, envir=data)
+		lapply(levels(runs), function(irun) ans[runs %in% irun])
 	}
-	X <- do.call(c, Map(FUN, vals, x, y, rep.int(list(fm$x), n)))
-	Y <- do.call(c, Map(FUN, vals, x, y, rep.int(list(fm$y), n)))
-	vals <- do.call(c, Map(FUN, vals, x, y, rep.int(list(fm$vals), n)))
-	names(vals) <- rep(nms, each=nlevels(runs))
-	if ( missing(xlab) )
-		xlab <- as.character(fm$x)
-	if ( missing(ylab) )
-		ylab <- as.character(fm$y)
+	X <- do.call(c, Map(EVAL, fm_x, seq_len(len)))
+	Y <- do.call(c, Map(EVAL, fm_y, seq_len(len)))
+	VALS <- do.call(c, Map(EVAL, fm_vals, seq_len(len)))
+	names(X) <- rep(vars_x, each=nlevels(runs))
+	names(Y) <- rep(vars_y, each=nlevels(runs))
+	names(VALS) <- rep(vars_vals, each=nlevels(runs))
+	if ( missing(xlab) || is.null(xlab) )
+		xlab <- deparse1(fm_x[[1L]])
+	if ( missing(ylab) || is.null(ylab) )
+		ylab <- deparse1(fm_y[[1L]])
 	if ( !is.null(groups) ) {
 		groups <- rep(groups, each=nlevels(runs))
 		if ( !is.factor(groups) )
@@ -178,7 +210,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		if ( !is.factor(by) )
 			by <- factor(by, levels=unique(by))
 	}
-	runs <- factor(rep.int(levels(runs), n))
+	runs <- factor(rep.int(levels(runs), len))
 	if ( nlevels(runs) > 1L ) {
 		if ( is.null(by) ) {
 			by <- runs
@@ -186,7 +218,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 			by <- paste0(runs, "\n", by)
 		}
 	}
-	plot_image(X, Y, vals, by=by, group=groups,
+	plot_image(X, Y, VALS, by=by, group=groups,
 		xlab=xlab, ylab=ylab, ...)
 }
 

@@ -117,9 +117,9 @@ setMethod("recalibrate", "SpectralImagingData",
 
 .recalibrate_fun <- list(
 	locmax = function(x, t, ref, ...) 
-		matter::warp1_loc(x, tx=t, ty=ref, n=length(x), events="max", ...),
+		pmax(0, matter::warp1_loc(x, tx=t, ty=ref, n=length(x), events="max", ...)),
 	dtw = function(x, t, ref, ...) 
-		matter::warp1_dtw(x, tx=t, ty=ref, n=length(x), ...),
+		pmax(0, matter::warp1_dtw(x, tx=t, ty=ref, n=length(x), ...)),
 	cow = function(x, t, ref, ...) 
-		matter::warp1_cow(x, tx=t, ty=ref, n=length(x), ...))
+		pmax(0, matter::warp1_cow(x, tx=t, ty=ref, n=length(x), ...)))
 

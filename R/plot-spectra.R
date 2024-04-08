@@ -23,6 +23,10 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 		xlab, ylab,
 		isPeaks = isCentroided(x))
 {
+	if ( "pixel" %in% ...names() ) {
+		.Deprecated(old="pixel", new="i")
+		i <- list(...)$pixel
+	}
 	if ( missing(i) && is.null(coord) )
 		coord <- coord(x)[1L,,drop=FALSE]
 	if ( is.null(run) )
@@ -55,6 +59,10 @@ setMethod("plot", c(x = "MSImagingArrays", y = "missing"),
 		xlab, ylab,
 		isPeaks = isCentroided(x))
 {
+	if ( "pixel" %in% ...names() ) {
+		.Deprecated(old="pixel", new="i")
+		i <- list(...)$pixel
+	}
 	if ( is.null(coord) )
 		coord <- coord(x)[1L,,drop=FALSE]
 	if ( is.null(run) )
@@ -98,19 +106,19 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		rhs <- names(featureData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
+		formula <- paste0(formula, collapse="+")
 		rhs <- names(featureData(x))[1L]
 		formula <- as.formula(paste0(formula, "~", rhs))
 		i <- NULL
 	}
 	vars <- all.vars(formula)
-	if ( length(formula) != 3L || length(vars) != 2L )
-		stop("formula must specify exactly 2 variables")
+	vars_x <- vars[length(vars)]
+	vars_y <- vars[-length(vars)]
+	X <- featureData(x)[[vars_x]]
 	if ( is.null(i) ) {
-		X <- as.list(featureData(x)[vars[2L]])
-		Y <- as.list(featureData(x)[vars[1L]])
-	} else {
-		X <- featureData(x)[[vars[2L]]]
-		Y <- spectraData(x)[[vars[1L]]][,i,drop=FALSE]
+		Y <- as.data.frame(featureData(x)[vars_y])
+	} else {		
+		Y <- spectraData(x)[[vars_y]][,i,drop=FALSE]
 	}
 	if ( !is.list(X) )
 		X <- rep.int(list(X), ncol(Y))
@@ -140,16 +148,16 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		xi <- process(x[,i], spectra=vars[1L], index=vars[2L], BPPARAM=NULL)
-		plot1 <- .plot_spectra_formula(X, Y, formula,
+		xi <- process(x[,i], spectra=vars_y, index=vars_x, BPPARAM=NULL)
+		plot_pre <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot2 <- plot(xi, formula=formula, i=seq_along(i),
+		plot_post <- plot(xi, formula=formula, i=seq_along(i),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot1, plot2)
+		plot <- combine(plot_pre, plot_post)
 	} else
 	{
 		plot <- .plot_spectra_formula(X, Y, formula,
@@ -188,10 +196,10 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	}
 	vars <- all.vars(formula)
-	if ( length(formula) != 3L || length(vars) != 2L )
-		stop("formula must specify exactly 2 variables")
-	X <- spectraData(x)[[vars[2L]]][i]
-	Y <- spectraData(x)[[vars[1L]]][i]
+	vars_x <- vars[length(vars)]
+	vars_y <- vars[-length(vars)]
+	X <- spectraData(x)[[vars_x]][i]
+	Y <- spectraData(x)[[vars_y]][i]
 	if ( is.null(names(i)) ) {
 		if ( is.null(names(Y)) ) {
 			if ( is.null(pixelNames(x)) ) {
@@ -216,16 +224,16 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		xi <- process(x[i], spectra=vars[1L], index=vars[2L], BPPARAM=NULL)
-		plot1 <- .plot_spectra_formula(X, Y, formula,
+		xi <- process(x[i], spectra=vars_y, index=vars_x, BPPARAM=NULL)
+		plot_pre <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot2 <- plot(xi, formula=formula, i=seq_along(i),
+		plot_post <- plot(xi, formula=formula, i=seq_along(i),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot1, plot2)
+		plot <- combine(plot_pre, plot_post)
 	} else
 	{
 		plot <- .plot_spectra_formula(X, Y, formula,
@@ -241,17 +249,38 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	formula, by, groups, xlab, ylab, ...)
 {
 	vars <- all.vars(formula)
-	fm <- list(x=formula[[3L]], y=formula[[2L]])
-	FUN <- function(yi, xi, e) {
-		data <- setNames(list(yi, xi), vars)
-		eval(e, envir=data)
+	vars_x <- vars[length(vars)]
+	vars_y <- vars[-length(vars)]
+	fm_x <- as.list(formula[[3L]])
+	fm_y <- as.list(formula[[2L]])
+	if ( length(fm_x) > 1L )
+		fm_x <- fm_x[-1L]
+	if ( length(fm_y) > 1L )
+		fm_y <- fm_y[-1L]
+	len <- max(length(x), length(y))
+	vars_x <- rep_len(vars_x, len)
+	vars_y <- rep_len(vars_y, len)
+	fm_x <- rep_len(fm_x, len)
+	fm_y <- rep_len(fm_y, len)
+	names(fm_x) <- vars_x
+	names(fm_y) <- vars_y
+	names(x) <- vars_x
+	names(y) <- vars_y
+	EVAL <- function(expr, i) {
+		data <- c(x[i], y[i])
+		eval(expr, envir=data)
 	}
-	X <- Map(FUN, y, x, rep.int(list(fm$x), length(x)))
-	Y <- Map(FUN, y, x, rep.int(list(fm$y), length(y)))
-	if ( missing(xlab) )
-		xlab <- as.character(fm$x)
-	if ( missing(ylab) )
-		ylab <- as.character(fm$y)
+	X <- Map(EVAL, fm_x, seq_len(len))
+	Y <- Map(EVAL, fm_y, seq_len(len))
+	if ( missing(xlab) || is.null(xlab) )
+		xlab <- deparse1(fm_x[[1L]])
+	if ( missing(ylab) || is.null(ylab) ) {
+		if ( length(fm_y) > 1L ) {
+			ylab <- ""
+		} else {
+			ylab <- deparse1(fm_y[[1L]])
+		}
+	}
 	if ( !is.null(groups) && !is.factor(groups) )
 		groups <- factor(groups, levels=unique(groups))
 	if ( !is.null(by) && !is.factor(by) )
