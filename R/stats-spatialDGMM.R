@@ -156,6 +156,7 @@ setMethod("image", c(x = "SpatialDGMM"),
 	grid = TRUE, ...)
 {
 	plot <- vizi()
+	cls <- factor(colnames(mu))
 	for ( i in seq_len(nrow(mu)) )
 	{
 		for ( j in seq_len(ncol(mu)) )
@@ -165,13 +166,14 @@ setMethod("image", c(x = "SpatialDGMM"),
 			x <- seq(lower, upper, length.out=n)
 			px <- dnorm(x, mean=mu[i,j], sd=sigma[i,j])
 			plot <- add_mark(plot, "lines",
-				x=x, y=px, color=colnames(mu)[j])
+				x=x, y=px, color=cls[j])
 		}
 	}
 	plot <- set_coord(plot, xlim=xlim, ylim=ylim, grid=grid)
 	plot <- set_channel(plot, "x", label=xlab)
 	plot <- set_channel(plot, "y", label=ylab)
-	plot <- set_channel(plot, "color", label="\n", scheme=col, key=key)
+	plot <- set_channel(plot, "color", label="\n",
+		limits=levels(cls), scheme=col, key=key)
 	plot <- set_par(plot, ...)
 	plot
 }

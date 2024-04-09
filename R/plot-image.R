@@ -22,12 +22,14 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		mz <- mz(x)[1L]
 	if ( any(mz < min(mz(x))) || any(mz > max(mz(x))) )
 		warning("m/z value(s) out of range")
+	if ( !missing(mz) && !is.null(i) && length(i) < length(mz) )
+		warning("m/z value(s) could not be unambiguously matched")
 	if ( missing(xlab) && missing(formula) )
 		xlab <- expression(italic(x))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(y))
 	if ( is.null(names(i)) )
-		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE])
+		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE], mz(x)[i])
 	if ( "plusminus" %in% ...names() ) {
 		.Deprecated(old="plusminus", new="tolerance")
 		tolerance <- list(...)$plusminus

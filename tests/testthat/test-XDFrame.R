@@ -237,6 +237,16 @@ test_that("MassDataFrame", {
 
 	expect_error(mz(d0) <- mz3)
 
+	d1 <- d0[1:10,]
+
+	expect_is(d1, "MassDataFrame")
+	expect_true(validObject(d1))
+
+	d2 <- d0[10:1,]
+
+	expect_is(d2, "DataFrame")
+	expect_true(validObject(d2))
+
 	df <- DataFrame(mz=seq(500, 505, by=0.1))
 	expect_true(validObject(as(df, "MassDataFrame")))
 

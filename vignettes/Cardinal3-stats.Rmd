@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "Revised: May 16, 2019"
+date: "Revised: April 8, 2024"
 output:
   BiocStyle::html_document:
   toc: true
@@ -17,9 +17,7 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
-setCardinalBPPARAM(SerialParam())
 setCardinalVerbose(FALSE)
-RNGkind("Mersenne-Twister")
 ```
 
 # Introduction 
@@ -48,19 +46,19 @@ Before statistical analysis, it is important to identify the statistical goal of
 
 Suppose we are exploring an unlabeled dataset, and wish to understand the structure of the data.
 
-```{r eda-data, fig.height=3, fig.width=3, fig.align='center'}
+```{r eda-data, fig.height=4, fig.width=5, fig.align='center'}
 set.seed(2020)
-mse <- simulateImage(preset=2, npeaks=10, dim=c(20,20), sdnoise=0.5,
-					peakheight=c(2,4), representation="centroid")
+mse <- simulateImage(preset=2, dim=c(32,32), sdnoise=0.5,
+	peakheight=c(2,4), representation="centroid")
 
-design <- makeFactor(circle=mse$circle, square=mse$square,
-						bg=!(mse$circle | mse$square))
+mse$design <- makeFactor(circle=mse$circle,
+	square=mse$square, bg=!(mse$circle | mse$square))
 
-image(mse, design ~ x * y, key=TRUE)
+image(mse, "design")
 ```
 
-```{r eda-image, fig.height=2, fig.width=7}
-image(mse, feature=c(1,4,7), layout=c(1,3))
+```{r eda-image, fig.height=4, fig.width=9}
+image(mse, i=c(5, 13, 21), layout=c(1,3))
 ```
 
 ## Principal components analysis (PCA)
@@ -71,29 +69,56 @@ Use `PCA()` to perform PCA on a `MSImagingExperiment`.
 
 ```{r pca}
 pca <- PCA(mse, ncomp=3)
-
-summary(pca)
+pca
 ```
 
-We can see that the first two principal components explain most of the variation in the data.
+We can see that the first 2 principal components explain most of the variation in the data.
 
-```{r pca-image, fig.height=2, fig.width=7}
-image(pca, values="scores", superpose=FALSE, layout=c(1,3))
+```{r pca-image, fig.height=4, fig.width=9}
+image(pca, type="x", superpose=FALSE, layout=c(1,3), scale=TRUE)
 ```
 
-The loadings of the components show how each mass feature contributes to each component.
+The loadings of the components show how each feature contributes to each component.
 
-```{r pca-loadings, fig.height=2, fig.width=7}
-plot(pca, values="loadings", superpose=FALSE, layout=c(1,3), lwd=2)
+```{r pca-loadings, fig.height=3, fig.width=9}
+plot(pca, type="rotation", superpose=FALSE, layout=c(1,3), linewidth=2)
 ```
 
 Plotting the principal component scores against each other is a useful way of visualization the separation between data classes.
 
-```{r pca-scores, fig.height=2.5, fig.width=4, fig.align='center'}
-pca_scores <- DataFrame(resultData(pca, 1, "scores"))
-
-plot(pca_scores, PC1 ~ PC2, groups=design, pch=20)
+```{r pca-scores, fig.height=4, fig.width=9}
+plot(pca, type="x", groups=mse$design, linewidth=2)
 ```
+
+## Non-negative matrix factorization (NMF)
+
+Non-negative matrix factorization is a popular alternative to PCA when the data is naturally non-negative. The main difference between PCA and NMF is that, for NMF, all of the loadings are required to be non-negative.
+
+Use `NMF()` to perform NMF on a `MSImagingExperiment`.
+
+```{r nmf}
+nmf <- NMF(mse, ncomp=3)
+nmf
+```
+
+We can see that NMF can pick up the variation somewhat better when the data is non-negative, as is the case for mass spectra. As before, we still only need 2 components.
+
+```{r nmf-image, fig.height=4, fig.width=9}
+image(nmf, type="x", superpose=FALSE, layout=c(1,3), scale=TRUE)
+```
+
+As with PCA, the loadings of the NMF components show how each feature contributes to each component. The NMF components can be easier to interpret as they must be non-negative.
+
+```{r nmf-loadings, fig.height=3, fig.width=9}
+plot(nmf, type="activation", superpose=FALSE, layout=c(1,3), linewidth=2)
+```
+
+Plotting the principal component scores against each other is a useful way of visualization the separation between data classes.
+
+```{r nmf-scores, fig.height=4, fig.width=9}
+plot(nmf, type="x", groups=mse$design, linewidth=2)
+```
+
 
 ## Feature colocalization
 
@@ -102,13 +127,13 @@ Finding other mass features colocalized with a particular image is a common task
 Use `colocalize()` to find mass features that are colocalized with another image.
 
 ```{r colocalized}
-coloc <- colocalized(mse, mz=1023)
+coloc <- colocalized(mse, mz=1116)
 coloc
 ```
 
-By default, Pearson correlation is used to rank the colocalized features. Manders' colocalization coefficients (M1 and M2) are also provided.
+By default, Pearson correlation is used to rank the colocalized features. Manders overlap coefficient (MOC), colocalization coefficients (M1 and M2), and Dice scores are also provided.
 
-```{r colocalized-images, fig.height=2, fig.width=7}
+```{r colocalized-images, fig.height=4, fig.width=9}
 image(mse, mz=coloc$mz[1:3], layout=c(1,3))
 ```
 
@@ -134,22 +159,23 @@ The larger the sparsity parameter `s`, the fewer mass features will contribute t
 Spatial shrunken centroids may result in fewer clusters than the initial number of clusters `k`, so it is recommended to use a value for `k` that is larger than the expected number of clusters, and allow the method to automatically choose the number of clusters.
 
 ```{r ssc-clustering}
-ssc <- spatialShrunkenCentroids(mse, r=1, k=5, s=c(0,3,6,9))
-
-summary(ssc)
+set.seed(2020)
+ssc <- spatialShrunkenCentroids(mse, r=1, k=3, s=c(0,6,12,18))
+ssc
 ```
 
 Plotting the predicted cluster probabilities shows a clear segmentation into the ground truth image.
 
-```{r ssc-image, fig.height=3, fig.width=3}
-image(ssc, model=list(s=9), values="probability")
+```{r ssc-image, fig.height=4, fig.width=9}
+image(ssc, i=2:4, type="probability", layout=c(1,3))
 ```
 
 Spatial shrunken centroids calculates t-statistics for each segment and each mass feature. These t-statistics a measure of the difference between the cluster center and the global mean.
 
 
-```{r ssc-statistic, fig.height=2.5, fig.width=4, fig.align='center'}
-plot(ssc, model=list(s=9), values="statistic", lwd=2)
+```{r ssc-statistic, fig.height=3, fig.width=9}
+plot(ssc, i=2:4, type="statistic", layout=c(1,3),
+	linewidth=2, annPeaks="circle")
 ```
 
 Mass features with t-statistics of zero do not contribute to the segmentation. The sign of the t-statistic indicates whether the mass feature is over- or under-expressed in the given cluster relative to the global mean.
@@ -157,10 +183,14 @@ Mass features with t-statistics of zero do not contribute to the segmentation. T
 Use `topFeatures()` to rank mass features by t-statistic.
 
 
-```{r ssc-top}
-ssc_top <- topFeatures(ssc, model=list(s=9), class == 1)
+```{r ssc-top, fig.height=4, fig.width=9}
+ssc_top <- topFeatures(ssc[[4L]])
 ssc_top
+
+ssc_top_cl3 <- subset(ssc_top, class==3)
+image(mse, mz=ssc_top_cl3$mz[1:3], layout=c(1,3))
 ```
+
 
 
 ## Spatial Dirichlet Gaussian mixture modeling
@@ -170,33 +200,33 @@ Spatially-aware Dirichlet Gaussian mixture models (spatial-DGMM) is a method of 
 This is useful for summarizing molecular ion images, and for discovering structures that clustering using all mass features together may miss.
 
 ```{r dgmm}
-dgmm <- spatialDGMM(mse, r=1, k=5, method="adaptive")
-
-summary(dgmm)
+set.seed(2020)
+dgmm <- spatialDGMM(mse, r=1, k=3, weights="adaptive")
+dgmm
 ```
 
 A different segmentation is fit for each mass feature.
 
-```{r dgmm-image, fig.height=2, fig.width=7}
-image(dgmm, model=list(feature=c(1,4,7)), layout=c(1,3))
+```{r dgmm-image, fig.height=4, fig.width=9}
+image(dgmm, i=c(5, 13, 21), layout=c(1,3))
 ```
 
 Each image is modeled as a mixture of Gaussian distributions.
 
-```{r dgmm-plot, fig.height=2, fig.width=7}
-plot(dgmm, model=list(feature=c(1,4,7)), layout=c(1,3))
+```{r dgmm-plot, fig.height=3, fig.width=9}
+plot(dgmm, i=c(5, 13, 21), layout=c(1,3), linewidth=2)
 ```
 
 Spatial-DGMM segmentations can be especially useful for finding mass features colocalized with a region-of-interest.
 
 When applied to a `SpatialDGMM` object, `colocalize()` is able to use match scores that can have a higher specificity than using Pearson correlation on the raw ion images.
 
-```{r dgmm-colocalized}
+```{r dgmm-colocalized, fig.height=4, fig.width=9}
 coloc2 <- colocalized(dgmm, mse$square)
-subset(coloc2, select=c(-r, -k, -group))
+coloc2
+
+image(mse, mz=coloc2$mz[1:3], layout=c(1,3))
 ```
-
-
 
 
 
@@ -208,19 +238,19 @@ subset(coloc2, select=c(-r, -k, -group))
 
 Classification of pixels into different known classes (e.g., cancer vs normal) based on the mass spectra is a common application for MS imaging.
 
-```{r classification-data, fig.height=2, fig.width=7}
+```{r classification-data, fig.height=4, fig.width=9}
 set.seed(2020)
-mse2 <- simulateImage(preset=7, npeaks=10, dim=c(10,10), sdnoise=0.5,
-					nruns=3, peakdiff=2, representation="centroid")
+mse2 <- simulateImage(preset=7, dim=c(32,32), sdnoise=0.3,
+	nrun=3, peakdiff=2, representation="centroid")
 
-class <- makeFactor(A=mse2$circleA, B=mse2$circleB)
+mse2$class <- makeFactor(A=mse2$circleA, B=mse2$circleB)
 
-image(mse2, class ~ x * y, key=TRUE, layout=c(1,3))
+image(mse2, "class", layout=c(1,3))
 ```
 
 
-```{r classification-images, fig.height=2, fig.width=7}
-image(mse2, feature=1, layout=c(1,3))
+```{r classification-images, fig.height=4, fig.width=9}
+image(mse2, i=1, layout=c(1,3))
 ```
 
 When performing classification, it is important to use cross-validation so that reported accuracies are not overly optimistic.
@@ -234,37 +264,33 @@ We strongly recomend making sure that all spectra from the same experiment run b
 Projection to latent structures (PLS), also called partial least squares, is a supervised dimension reduction technique. It can be thought of as being similar to PCA, but for classification or regression.
 
 ```{r pls-cv}
-cv_pls <- crossValidate(mse2, .y=class, .fun=PLS, ncomp=1:5, .fold=run(mse2))
-
-summary(cv_pls)
+cv_pls <- crossValidate(PLS, x=mse2, y=mse2$class, ncomp=1:15, folds=run(mse2))
+cv_pls
 ```
 
-We can see that using 3 PLS components produces the best cross-validated accuracy.
+We can see that the accuracy maxes out after 11 PLS components.
 
 ```{r pls}
-pls <- PLS(mse2, y=class, ncomp=3)
-
-summary(pls)
+pls <- PLS(mse2, y=mse2$class, ncomp=11)
+pls
 ```
 
-We can plot the fitted values to visualize the prediction.
+We can plot the fitted response values to visualize the prediction.
 
-```{r pls-image, fig.height=2, fig.width=7}
-image(pls, values="fitted", layout=c(1,3))
+```{r pls-image, fig.height=4, fig.width=9}
+image(pls, type="response", layout=c(1,3), scale=TRUE)
 ```
 
-The PLS regression coefficients can be used to select influential features.
+The PLS regression coefficients can be used to find influential features.
 
-```{r pls-coefficients, fig.height=2.5, fig.width=4, fig.align='center'}
-plot(pls, values="coefficients", lwd=2)
+```{r pls-coefficients, fig.height=3, fig.width=9}
+plot(pls, type="coefficients", linewidth=2, annPeaks="circle")
 ```
 
-Like PCA, it can be useful to plot the PLS scores against each other to visualize the separation between classes.
+Like PCA or NMF, it can be useful to plot the PLS scores against each other to visualize the separation between classes.
 
-```{r pls-scores, fig.height=2.5, fig.width=4, fig.align='center'}
-pls_scores <- DataFrame(resultData(pls, 1, "scores"))
-
-plot(pls_scores, C1 ~ C2, groups=class, pch=20)
+```{r pls-scores, fig.height=4, fig.width=9}
+plot(pls, type="scores", groups=mse2$class, linewidth=2)
 ```
 
 Note that orthgonal PLS (O-PLS) is also available via `method="opls"` or by using the separate `OPLS()` method. Typically, both methods perform similarly, although O-PLS can sometimes produce more easily interpretable regression coefficients.
@@ -277,35 +303,35 @@ Spatially-aware nearest shrunken centroids classification is an extension of nea
 Like in the clustering case of spatial shrunken centroids, a smoothing radius `r` must be provided along with sparsity parameters `s`.
 
 ```{r ssc-cv}
-cv_ssc <- crossValidate(mse2, .y=class,
-						.fun=spatialShrunkenCentroids,
-						r=1, s=c(0,3,6,9), .fold=run(mse2))
-
-summary(cv_ssc)
+cv_ssc <- crossValidate(spatialShrunkenCentroids, x=mse2, y=mse2$class,
+	r=2, s=c(0,3,6,9,12,15,18), folds=run(mse2))
+cv_ssc
 ```
 
-We can see that in this case, the fully dense model (`s=0`) that uses all mass features has the best cross-validated accuracy for the data.
+We can see that in this case, the model with `s=9` has the best cross-validated accuracy for the data. However, it does not perform as well as the PLS model.
 
 ```{r ssc-classification}
-ssc2 <- spatialShrunkenCentroids(mse2, y=class, r=1, s=0)
-
-summary(ssc2)
+ssc2 <- spatialShrunkenCentroids(mse2, y=mse2$class, r=2, s=9)
+ssc2
 ```
 
-Plotting the predicted class probabilities produces a more easily interpretable visualization than PLS in this case.
+Again, we can plot the predicted class probabilities to visualize the prediction.
 
-```{r ssc-image-2, fig.height=2, fig.width=7}
-image(ssc2, layout=c(1,3))
+```{r ssc-image-2, fig.height=4, fig.width=9}
+image(ssc2, type="probability", layout=c(1,3),
+	subset=mse2$circleA | mse2$circleB)
 ```
 
-Plotting t-statistics shows the first three features have much higher abundance in condition "B".
+Plotting t-statistics shows the peaks with lower *m/z* values have a higher abundance in class "B".
 
-```{r ssc-statistic-2, fig.height=2.5, fig.width=4, fig.align='center'}
-plot(ssc2, values="statistic", lwd=2)
+```{r ssc-statistic-2, fig.height=4, fig.width=9}
+plot(ssc2, type="statistic", linewidth=2, annPeaks="circle")
 ```
 
 ```{r ssc-top-2}
-topFeatures(ssc2, class=="B") %>% subset(select=c(-diff, -r, -k, -s))
+ssc2_top <- topFeatures(ssc2)
+
+subset(ssc2_top, class == "B")
 ```
 
 
@@ -324,96 +350,94 @@ In order to account for additional factors like the effect of experimental runs,
 This example uses a simple experiment with two conditions "A" and "B", with three replicates in each condition.
 
 
-```{r test-data, fig.height=5, fig.width=7}
+```{r test-data, fig.height=7, fig.width=9}
 set.seed(2020)
-mse3 <- simulateImage(preset=4, npeaks=10, dim=c(10,10), sdnoise=0.3,
-					nruns=3, peakdiff=1, representation="centroid")
+mse3 <- simulateImage(preset=4, npeaks=10, dim=c(32,32), sdnoise=0.3,
+	nrun=3, peakdiff=1, representation="centroid")
 
-trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
+mse3$trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
 
-image(mse3, trt ~ x * y, key=TRUE, layout=c(2,3))
+image(mse3, "trt", layout=c(2,3))
 ```
 
-```{r test-image, fig.height=5, fig.width=7}
-image(mse3, feature=1, layout=c(2,3))
+```{r test-image, fig.height=7, fig.width=9}
+image(mse3, i=1, layout=c(2,3))
 ```
 
-We know from the design of the simulation that the first 5 (of 10) mass features differ between the conditions.
+We know from the design of the simulation that the first 5 (of 10) *m/z* values differ between the conditions.
 
 ```{r test-diff}
 featureData(mse3)
 ```
 
-## Group means-based testing
+## Sample-based means testing
 
-Use `meansTest()` to fit linear models with the most basic summarization. The `groups` indicating the observational units must be provided. Each group is summarized by its mean, and then a linear model is fit to the summaries. *The number of groups is the effective sample size.*
+Use `meansTest()` to fit linear models with the most basic summarization. The samples must be specified with `samples`. Each sample is summarized by its mean, and then a linear model is fit to the summaries. In this case, each sample is a separate run.
 
 Here, we specify `condition` as the sole fixed effect. Internally, the model will call either `lm()` or `lme()` depending on whether any random effects are provided.
 
 ```{r test-mean-test}
-mtest <- meansTest(mse3, ~ condition, groups=run(mse3))
-
-summary(mtest)
+mtest <- meansTest(mse3, ~ condition, samples=run(mse3))
+mtest
 ```
 
 By default, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
 
 Box-and-whisker plots can be used to visualize the differences (if any) between the conditions.
 
-```{r test-mean-plot, fig.height=3, fig.width=7}
-plot(mtest, layout=c(2,5), ylab="intensity")
+```{r test-mean-plot, fig.height=5, fig.width=9}
+plot(mtest, i=1:10, layout=c(2,5), ylab="Intensity", fill=TRUE)
 ```
 
-Use `topFeatures()` to extract the significant results.
+Use `topFeatures()` to rank the results.
 
 ```{r test-mean-top}
-topFeatures(mtest, p.adjust="fdr", AdjP < .05)
+mtest_top <- topFeatures(mtest)
+
+subset(mtest_top, fdr < 0.05)
 ```
 
+We find 4 significant features.
 
-## Segmentation-based testing
 
-Testing of `SpatialDGMM` objects is implemented by `segmentationTest()`. The key idea here is that spatial-DGMM segmentation captures within-sample heterogeneity, so testing between spatial-DGMM segments is more sensitive that simply summarizing a whole sample by its mean.
 
-First, we must segment the data with `spatialDGMM()`, while making sure that each observational unit is segmented within a different group (as specified by `groups`).
+## Segment-based means testing
 
-*The number of groups is the effective sample size.*
+Testing of `SpatialDGMM` objects is also supported by `meansTest()`. The key idea here is that spatial-DGMM segmentation captures within-sample heterogeneity, so testing between spatial-DGMM segments is more sensitive that simply summarizing a whole sample by its mean.
+
+First, we must segment the data with `spatialDGMM()`, while making sure that each sample is segmented independently (by specifying the samples as `groups`).
 
 ```{r test-segment-dgmm}
-dgmm2 <- spatialDGMM(mse3, r=1, k=5, groups=run(mse3))
+dgmm2 <- spatialDGMM(mse3, r=2, k=3, groups=run(mse3))
 ```
 
 Now use `segmentationTest()` to fit the models.
 
-In order to fit the models, a representative spatial-DGMM segment must be selected for each group. There are two automated ways to do this via `classControl`: `"Ymax"` means use the segment with the highest mean, and `"Mscore"` means use the segment with the highest match score with the fixed effects.
-
-(A list of character vectors giving the explicit mapping between group and representative spatial-DGMM segment can also be given to `classControl`.)
 
 ```{r test-segment-test}
-stest <- segmentationTest(dgmm2, ~ condition, classControl="Ymax")
+stest <- meansTest(dgmm2, ~ condition)
 
-summary(stest)
+stest
 ```
 
 As with `meansTest()`, the models are summarized by performing likelihood ratio tests against the null model (with no fixed effects, retaining any random effects).
 
 Box-and-whisker plots can be used to visually compare the conditions.
 
-```{r test-segment-plot, fig.height=3, fig.width=7}
-plot(stest, layout=c(2,5), ylab="intensity")
+```{r test-segment-plot, fig.height=5, fig.width=9}
+plot(stest, i=1:10, layout=c(2,5), ylab="Intensity", fill=TRUE)
 ```
 
-If an automated method for `classControl` was used, it can be helpful to plot the mapping to see what segments were used to represent each group.
-
-```{r test-segment-mapping}
-image(stest, model=list(feature=3), values="mapping")
-```
-
-In this case, `segmentationTest()` finds two more significant mass features compared to `meansTest()`.
+Use `topFeatures()` to rank the results.
 
 ```{r test-segment-top}
-topFeatures(stest, p.adjust="fdr", AdjP < .05) %>% subset(select=c(-diff, -r, -k))
+stest_top <- topFeatures(stest)
+
+subset(stest_top, fdr < 0.05)
 ```
+
+This example is simple enough so we still find the same 4 significant features.
+
 
 
 # Session information

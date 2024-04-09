@@ -66,6 +66,54 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	}
 })
 
+setMethod("colocalized", "SpatialDGMM",
+	function(object, ref,
+		threshold = median, n = Inf,
+		sort.by = c("MOC", "M1", "M2", "Dice", "none"),
+		nchunks = getCardinalNChunks(),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	sort.by <- match.arg(sort.by)
+	if ( is.factor(ref) || is.character(ref) ) {
+		ref <- as.factor(ref)
+		lvl <- setNames(levels(ref), levels(ref))
+		ref <- lapply(lvl, function(ci) ref %in% ci)
+	}
+	if ( !is.list(ref) && !is(ref, "List") )
+		ref <- list(ref)
+	if ( any(lengths(ref) != nrow(pixelData(object))) )
+		stop("length of reference [", length(ref[[1L]]), "] ",
+			"does not match length of object [", nrow(pixelData(object)), "]")
+	if ( verbose ) {
+		lab <- if (length(ref) != 1L) "images" else "image"
+		message("calculating colocalization with ", length(ref), " ", lab)
+	}
+	FUN <- function(x)
+	{
+		vapply(ref, function(y) {
+			scs <- lapply(levels(x),
+				function(lvl) coscore(y, as.factor(x) == lvl))
+			scs[[which.max(vapply(scs, max, numeric(1L), na.rm=TRUE))]]
+		}, numeric(4L))
+	}
+	scores <- chunkLapply(object$class, FUN,
+		nchunks=nchunks, verbose=verbose,
+		BPPARAM=BPPARAM, ...)
+	scores <- simplify2array(lapply(scores, t))
+	ans <- apply(scores, 1L, function(sc)
+		{
+			sc <- as.data.frame(t(sc))
+			data <- .rank_featureData(object, sc, sort.by)
+			head(data, n=n)
+		})
+	if ( length(ans) > 1L ) {
+		ans
+	} else {
+		ans[[1L]]
+	}
+})
+
 .rank_featureData <- function(object, importance, sort.by)
 {
 	data <- featureData(object)

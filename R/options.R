@@ -13,6 +13,14 @@ CardinalVersion <- function() {
 	setCardinalBPPARAM()
 }
 
+# set up Cardinal defaults
+.onAttach <- function(libname, pkgname) {
+	version <- utils::packageVersion("Cardinal")
+	if ( version >= "3.5.0" )
+		packageStartupMessage("Cardinal v3.6 is a major update.\n",
+			"Use vignette('Cardinal3-guide') to see what's new.")
+}
+
 # should progress messages be printed?
 getCardinalBPPARAM <- function() {
 	getOption("Cardinal.bpparam")

@@ -1225,7 +1225,7 @@ The default is `NULL`, which means no parallelization.
 
 A new default backend can be set for use with Cardinal by calling `setCardinalBPPARAM()`.
 
-```{r setCardinalBPPARAM}
+```{r setCardinalBPPARAM-snow}
 # register a SNOW backend
 setCardinalBPPARAM(SnowParam(workers=2, progressbar=TRUE))
 
@@ -1233,6 +1233,12 @@ getCardinalBPPARAM()
 ```
 
 See the *BiocParallel* package documentation for more details on available parallel backends.
+
+```{r setCardinalBPPARAM-null}
+# reset backend
+setCardinalBPPARAM(NULL)
+```
+
 
 ## RNG and reproducibility
 

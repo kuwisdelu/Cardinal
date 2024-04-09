@@ -177,28 +177,36 @@ setMethod("image", c(x = "ResultsList"),
 		groups <- NULL
 		by <- NULL
 	}
-	ny <- NCOL(y)
+	nval <- NCOL(y)
 	nrun <- nlevels(runs)
-	FUN <- function(irun)
+	FUN <- function(irun, z)
 	{
-		if ( is.matrix(y) ) {
-			if ( ncol(y) > 1L ) {
-				yi <- y[runs %in% irun,,drop=FALSE]
-				yi <- apply(yi, 2L, identity, simplify=FALSE)
-				names(yi) <- groups
+		if ( !is.null(dim(z)) ) {
+			if ( ncol(z) > 1L ) {
+				zi <- z[runs %in% irun,,drop=FALSE]
+				if ( is.matrix(zi) ) {
+					znames <- colnames(zi)
+					zi <- apply(zi, 2L, identity, simplify=FALSE)
+					names(zi) <- znames
+				}
 			} else {
-				yi <- y[runs %in% irun,,drop=TRUE]
+				zi <- z[runs %in% irun,,drop=TRUE]
 			}
 		} else {
-			yi <- y[runs %in% irun]
+			zi <- z[runs %in% irun]
 		}
-		yi
+		zi
 	}
-	y <- lapply(levels(runs), FUN)
-	if ( ny > 1L )
-		y <- unlist(y, recursive=FALSE)
+	X <- lapply(levels(runs), FUN, z=coord[[1L]])
+	Y <- lapply(levels(runs), FUN, z=coord[[2L]])
+	VALS <- lapply(levels(runs), FUN, z=y)
+	if ( nval > 1L ) {
+		X <- rep(X, each=nval)
+		Y <- rep(Y, each=nval)
+		VALS <- unlist(VALS, recursive=FALSE)
+	}
 	if ( nrun > 1L ) {
-		runs <- rep(levels(runs), each=ny)
+		runs <- rep(levels(runs), each=nval)
 		if ( is.null(by) ) {
 			by <- runs
 		} else {
@@ -211,7 +219,7 @@ setMethod("image", c(x = "ResultsList"),
 		xlab <- names(coord)[1L]
 	if ( missing(ylab) )
 		ylab <- names(coord)[2L]
-	plot <- plot_image(x=coord[[1L]], y=coord[[2L]], vals=y,
+	plot <- plot_image(x=X, y=Y, vals=VALS,
 		by=by, group=groups, xlab=xlab, ylab=ylab, ...)
 	if ( !is.null(ynames) )
 		plot <- set_channel(plot, "color", limits=ynames)

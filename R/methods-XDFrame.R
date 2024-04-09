@@ -280,13 +280,14 @@ PositionDataFrame <- function(coord, run, ..., row.names = FALSE)
 		ans
 }
 
-.make_pixelNames <- function(object)
+.make_pixelNames <- function(object,
+	coord. = coord(object), run. = run(object))
 {
 	FUN <- function(nm, vals) paste0(nm, " = ", vals)
-	nms <- Map(FUN, coordNames(object), coord(object))
+	nms <- Map(FUN, names(coord.), coord.)
 	nms <- as.data.frame(nms)
 	nms <- apply(nms, 1L, function(x) paste0(x, collapse=", "))
-	paste0(run(object), ": ", nms)
+	paste0(run., ": ", nms)
 }
 
 setMethod("coord", "PositionDataFrame",
@@ -419,9 +420,9 @@ MassDataFrame <- function(mz, ..., row.names = FALSE)
 		ans
 }
 
-.make_featureNames <- function(object)
+.make_featureNames <- function(object, mz. = mz(object))
 {
-	paste0("m/z = ", round(mz(object), digits=4L))
+	paste0("m/z = ", round(mz., digits=4L))
 }
 
 setMethod("mz", "MassDataFrame",
@@ -435,6 +436,17 @@ setReplaceMethod("mz", "MassDataFrame",
 
 setMethod("mass", "MassDataFrame",
 	function(object) keys(object, "mass", drop=TRUE))
+
+# cast to DataFrame if unsorted subset
+setMethod("[", "MassDataFrame",
+	function(x, i, j, ..., drop = TRUE) {
+		narg <- nargs() - !missing(drop)
+		if ( !missing(i) && narg > 2L && is.unsorted(mz(x)[i]) ) {
+			callNextMethod(as(x, "DFrame"), i=i, j=j, ..., drop=drop)
+		} else {
+			callNextMethod()
+		}
+	})
 
 setAs("DFrame", "MassDataFrame",
 	function(from) {
