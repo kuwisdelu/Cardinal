@@ -7,6 +7,7 @@
 
 \alias{mz,MassDataFrame-method}
 \alias{mz<-,MassDataFrame-method}
+\alias{[,MassDataFrame,ANY,ANY,ANY-method}
 \alias{coerce,DFrame,MassDataFrame-method}
 
 \title{MassDataFrame: Extended data frame with key columns}

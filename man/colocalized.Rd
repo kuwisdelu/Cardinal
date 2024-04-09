@@ -1,8 +1,9 @@
 \name{colocalized}
 
 \alias{colocalized}
-\alias{colocalized,SpectralImagingExperiment-method}
 \alias{colocalized,MSImagingExperiment-method}
+\alias{colocalized,SpectralImagingExperiment-method}
+\alias{colocalized,SpatialDGMM-method}
 \alias{coregister}
 
 \title{Colocalized features}
@@ -17,6 +18,13 @@
 \S4method{colocalized}{SpectralImagingExperiment}(object, i, ref,
     threshold = median, n = Inf,
     sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
+
+\S4method{colocalized}{SpatialDGMM}(object, ref,
+    threshold = median, n = Inf,
+    sort.by = c("MOC", "M1", "M2", "Dice", "none"),
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)

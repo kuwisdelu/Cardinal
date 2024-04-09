@@ -1174,8 +1174,6 @@ When reading the data back in with `readMSIData()`, the bundled imzML directory 
 
 
 
-
-
 # Parallel computing using *BiocParallel*
 
 All pre-processing methods and some statistical analysis methods in *Cardinal* can be executed in parallel using *BiocParallel*.
@@ -1248,6 +1246,26 @@ For methods that rely on random number generation to be reproducible when run in
 RNGkind("L'Ecuyer-CMRG")
 set.seed(1)
 ```
+
+
+
+# Statistical methods
+
+Statistical methods are documented in a separate vignette. See `vignette("Cardinal3-stats")` to read about statistical methods in *Cardinal*.
+
+More in-depth walkthroughs using real experimental data are available in the *CardinalWorkflows* package. You can install it using:
+
+```{r install-CardinalWorkflows, eval=FALSE}
+BiocManager::install("CardinalWorkflows")
+```
+
+Once installed, *CardinalWorkflows* can be loaded with `library()`:
+
+```{r library-CardinalWorkflows, eval=FALSE}
+library(CardinalWorkflows)
+```
+
+
 
 
 
