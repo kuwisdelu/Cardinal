@@ -45,8 +45,8 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	FUN <- function(x)
 	{
 		vapply(ref, function(y) {
-			cor <- cor(y, x, use="pairwise.complete.obs")
-			c(cor=cor, coscore(y, x, threshold=threshold))
+			cor <- cor(x, y, use="pairwise.complete.obs")
+			c(cor=cor, coscore(x, y, threshold=threshold))
 		}, numeric(5L))
 	}
 	scores <- chunkApply(spectra(object), 1L, FUN,
@@ -93,7 +93,7 @@ setMethod("colocalized", "SpatialDGMM",
 	{
 		vapply(ref, function(y) {
 			scs <- lapply(levels(x),
-				function(lvl) coscore(y, as.factor(x) == lvl))
+				function(lvl) coscore(as.factor(x) == lvl, y))
 			scs[[which.max(vapply(scs, max, numeric(1L), na.rm=TRUE))]]
 		}, numeric(4L))
 	}
