@@ -7,11 +7,11 @@ setMethod("selectROI", "SpectralImagingExperiment",
 {
 	mode <- match.arg(mode)
 	if ( ...length() > 0L ) {
-		plot(image(object, ...))
+		plot <- plot(image(object, ...))
 	} else {
-		plot(.lastplot$image)
+		plot <- plot(.lastplot$image)
 	}
-	.select_ROI(object, mode)
+	.select_ROI(object, plot, mode)
 })
 
 # combine logical ROIs into a factor
@@ -29,7 +29,7 @@ makeFactor <- function(..., ordered = FALSE)
 	factor(labs[inds], levels=labs, ordered=ordered)
 }
 
-.select_ROI <- function(object, mode)
+.select_ROI <- function(object, plot, mode)
 {
 	if ( length(dev.list()) == 0L )
 		stop("no plot available to use")
@@ -37,7 +37,7 @@ makeFactor <- function(..., ordered = FALSE)
 		warning("multiple runs plotted; results may be unexpected")
 	box(bty="o", col="red", lty="solid", lwd=2)
 	message("select pixels; press ESC or 2nd mouse button to stop")
-	loc <- .select_locator(mode == "region")
+	loc <- .select_locator(plot, mode == "region")
 	roi <- logical(ncol(object))
 	sub <- rep_len(.lastplot$subset, ncol(object))
 	pos <- coord(object)[sub,,drop=FALSE]
@@ -45,35 +45,44 @@ makeFactor <- function(..., ordered = FALSE)
 		selected <- inpoly(pos, cbind(loc$x, loc$y))
 	} else {
 		selected <- logical(nrow(pos))
-		ind <- kdsearch(pos, cbind(loc$x, loc$y), tol=0.5)
+		ind <- kdsearch(cbind(loc$x, loc$y), pos, tol=0.5)
 		selected[unlist(ind)] <- TRUE
 	}
 	roi[sub] <- selected
 	roi
 }
 
-.select_locator <- function(area = TRUE, fill = TRUE)
+.select_locator <- function(plot, region = TRUE)
 {
 	xs <- numeric()
 	ys <- numeric()
 	while ( TRUE ) {
 		loc <- locator(1)
 		if ( !is.null(loc) ) {
-			if ( area ) {
-				xi <- c(xs[length(xs)], loc$x)
-				yi <- c(ys[length(ys)], loc$y)
-				lines(xi, yi, type='b', pch=20, col="white")
-			} else {
-				points(loc$x, loc$y, pch=4, col="white")
-			}
 			xs <- c(xs, loc$x)
 			ys <- c(ys, loc$y)
+			if ( region ) {
+				p <- add_mark(plot, "points",
+					x=xs, y=ys, params=list(col="white"))
+				p <- add_mark(p, "lines",
+					x=xs, y=ys, params=list(col="white"))
+			} else {
+				p <- add_mark(plot, "points",
+					x=xs, y=ys, params=list(col="white", pch=4))
+			}
+			plot(p)
+			box(bty="o", col="red", lty="solid", lwd=2)
 		} else {
 			break
 		}
 	}
-	if ( area && fill )
-		polygon(xs, ys, col=rgb(1,1,1,0.5))
+	if ( region ) {
+		xsp <- c(xs, xs[1L])
+		ysp <- c(ys, ys[1L])
+		p <- add_mark(plot, "lines",
+			x=xsp, y=ysp, params=list(col="white"))
+		plot(p)
+	}
 	list(x=xs, y=ys)
 }
 
