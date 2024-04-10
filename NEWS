@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.5.2 [2024-4-9]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix passing 'tolerance' in 'peakProcess()' when not needed
+
 CHANGES IN VERSION 3.5.1 [2024-4-7]
 -----------------------------------
 
