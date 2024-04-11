@@ -99,7 +99,7 @@ setMethod("features", "MSImagingExperiment",
 		setNames(i, featureNames(object)[i])
 	})
 
-get_units_from_tolerance <- function(units, tolerance)
+get_units_from_tolerance <- function(tolerance, units)
 {
 	if ( !is.null(names(tolerance)) && names(tolerance) %in% units )
 		units <- names(tolerance)

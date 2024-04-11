@@ -68,10 +68,15 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			featureData(object) <- featureData(ref)
 	} else {
 		if ( isCentroided(object) ) {
-			if ( length(processingData(object)) == 0L ) {
+			if ( length(processingData(object)) == 0L &&
+				!is.sparse(spectra(object, spectra)) )
+			{
 				if ( verbose )
 					message("peaks are already processed")
 				return(object)
+			} else {
+				if ( verbose )
+					message("peaks are already detected")
 			}
 		} else {
 			# pick peaks on all spectra
@@ -253,12 +258,6 @@ setMethod("peakAlign", "SpectralImagingArrays",
 			message("generating reference peaks")
 		domain <- estimateDomain(index, units=units,
 			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
-		if ( !is.na(tolerance) ) {
-			resolution <- 2 * tolerance
-			domain <- switch(units,
-				relative=seq_rel(min(domain), max(domain), by=resolution),
-				absolute=seq.default(min(domain), max(domain), by=resolution))
-		}
 	} else {
 		domain <- ref
 	}
@@ -275,16 +274,22 @@ setMethod("peakAlign", "SpectralImagingArrays",
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(tolerance) ) {
-		tol <- 0.5 * estres(domain, ref=tol.ref)
+		# estimate tolerance as 2x resolution of domain
+		tol <- 2 * estres(domain, ref=tol.ref)
 		tol <- switch(units,
 			relative=round(2 * tol, digits=6L) * 0.5,
 			absolute=round(tol, digits=4L))
 	} else {
+		# re-estimate domain with 1/2 resolution as tolerance
 		tol <- setNames(unname(tolerance), units)
+		res <- 0.5 * tol
+		domain <- switch(units,
+			relative=seq_rel(min(domain), max(domain), by=res),
+			absolute=seq.default(min(domain), max(domain), by=res))
 	}
 	if ( missing(ref) || is.null(ref) ) {
 		if ( verbose )
-			message("binning peaks to reference")
+			message("binning peaks to create shared reference")
 		FUN <- function(x) {
 			matter::binpeaks(x, domain=domain, tol=tol, tol.ref=tol.ref,
 				merge=FALSE, na.drop=FALSE)

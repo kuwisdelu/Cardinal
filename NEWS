@@ -7,6 +7,8 @@ BUG FIXES
     o Fix passing 'tolerance' in 'peakProcess()' when not needed
     o Fix bugs in 'selectROI()' not updating the plot
     o Fix bugs in 'selectROI()' selecting wrong pixels
+    o Make sure 'peakAlign()' produces similar results when
+        re-aligning peaks with the same tolerance
 
 CHANGES IN VERSION 3.5.1 [2024-4-7]
 -----------------------------------

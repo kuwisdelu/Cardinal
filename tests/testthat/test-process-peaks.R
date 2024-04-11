@@ -1,6 +1,6 @@
 require(testthat)
 require(Cardinal)
-
+ 
 context("process-peaks")
 
 test_that("process peaks - SpectralImagingArrays", {
@@ -115,6 +115,11 @@ test_that("process peaks - MSImagingArrays", {
 	expect_is(spectra(ms11), "matrix")
 	expect_is(spectra(ms12), "matrix")
 
+	ms13 <- peakAlign(ms3, tolerance=0.1, units="mz")
+	ms14 <- peakAlign(ms13, tolerance=0.1, units="mz")
+
+	expect_equal(ms13, ms14)
+
 })
 
 test_that("process peaks - MSImagingExperiment", {
@@ -170,10 +175,15 @@ test_that("process peaks - MSImagingExperiment", {
 	expect_is(spectra(ms11), "matrix")
 	expect_is(spectra(ms12), "matrix")
 
-	ms13 <- peakProcess(ms10)
-	ms14 <- peakProcess(ms10, ms10)
+	ms13 <- peakAlign(ms3, tolerance=0.1, units="mz")
+	ms14 <- peakAlign(ms13, tolerance=0.1, units="mz")
 
-	expect_equal(ms10, ms13)
-	expect_equal(ms10, ms14)
+	expect_equal(ms13, ms14)
+
+	ms15 <- peakProcess(ms10, ms10)
+	ms16 <- peakProcess(ms11)
+
+	expect_equal(ms10, ms15)
+	expect_equal(ms11, ms16)
 
 })
