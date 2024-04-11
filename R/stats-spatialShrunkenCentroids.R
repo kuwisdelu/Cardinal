@@ -257,11 +257,26 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		y <- NULL
 		for ( si in s )
 		{
+			# initialize clusters
+			if ( is.null(y) )
+			{
+				if ( inherits(init[[j]], c("SpatialKMeans", "kmeans")) ) {
+					y <- factor(init[[j]]$cluster)
+					if ( is.null(init[[j]]$k) ) {
+						ki <- nlevels(y)
+					} else {
+						ki <- init[[j]]$k
+					}
+				} else {
+					y <- as.factor(init[[j]])
+					ki <- nlevels(y)
+				}
+			}
 			# perform segmentation
 			if ( verbose )
-				message("fitting k = ", init[[j]]$k, ", s = ", si)
-			if ( is.null(y) )
-				y <- factor(init[[j]]$cluster)
+				message("fitting k = ", ki, ", s = ", si)
+			if ( verbose && nlevels(y) < ki )
+				message("starting from ", nlevels(y), " clusters")
 			uprop <- 1
 			iter <- 1
 			while ( iter <= niter && uprop > threshold )
@@ -288,19 +303,25 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 				}
 				iter <- iter + 1L
 			}
-			fit$k <- init[[j]]$k
+			fit$k <- ki
 			ans[[i]] <- fit
 			i <- i + 1
 		}
 	}
+	# prepare results
 	k <- vapply(ans, function(a) a$k, numeric(1L))
 	s <- vapply(ans, function(a) a$s, numeric(1L))
 	names(ans) <- paste0("r=", r, ",k=", k, ",s=", s)
 	if ( verbose )
 		message("returning shrunken centroids clustering")
 	if ( length(ans) > 1L ) {
+		kout <- vapply(ans, function(a) length(unique(a$class)), numeric(1L))
+		nnz <- vapply(ans, function(a) sum(a$statistic != 0, na.rm=TRUE), numeric(1L))
+		aic <- vapply(ans, AIC, numeric(1L))
+		bic <- vapply(ans, BIC, numeric(1L))
 		ResultsList(ans,
-			mcols=DataFrame(r=r, k=k, s=s, weights=weights))
+			mcols=DataFrame(r=r, k=k, s=s, weights=weights,
+				clusters=kout, nnzero=nnz, AIC=aic, BIC=bic))
 	} else {
 		ans[[1L]]
 	}

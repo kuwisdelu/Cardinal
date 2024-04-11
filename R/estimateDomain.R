@@ -36,4 +36,3 @@ estimateDomain <- function(xlist,
 		resolution = setNames(by, units))
 }
 
-

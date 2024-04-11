@@ -5,6 +5,8 @@ CHANGES IN VERSION 3.5.2 [2024-4-9]
 BUG FIXES
 
     o Fix passing 'tolerance' in 'peakProcess()' when not needed
+    o Fix bugs in 'selectROI()' not updating the plot
+    o Fix bugs in 'selectROI()' selecting wrong pixels
 
 CHANGES IN VERSION 3.5.1 [2024-4-7]
 -----------------------------------

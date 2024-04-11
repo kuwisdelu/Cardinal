@@ -73,6 +73,8 @@ setMethod("features", "MSImagingExperiment",
 	{
 		if ( is.null(env) )
 			env <- parent.frame(2)
+		if ( missing(units) && !missing(tolerance) )
+			units <- get_units_from_tolerance(tolerance, units)
 		units <- match.arg(units)
 		i <- callNextMethod(object, ..., env=env)
 		if ( !missing(mz) ) {
@@ -83,10 +85,27 @@ setMethod("features", "MSImagingExperiment",
 				tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 			}
 			i_mz <- bsearch(mz, mz(object), tol=tol, tol.ref=ref)
+			if ( anyNA(i_mz) )
+			{
+				for ( j in which(is.na(i_mz)) )
+				{
+					k <- bsearch(mz[j], mz(object), nearest=TRUE)
+					warning("no match for mz ", round(mz[j], digits=4L), "; ",
+						"nearest is ", round(mz(object)[k], digits=4L))
+				}
+			}
 			i <- intersect(i_mz, i)
 		}
 		setNames(i, featureNames(object)[i])
 	})
+
+get_units_from_tolerance <- function(units, tolerance)
+{
+	if ( !is.null(names(tolerance)) && names(tolerance) %in% units )
+		units <- names(tolerance)
+	units
+}
+
 
 # mz
 
@@ -228,6 +247,8 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		return(object)
 	if ( !is(object, "MSImagingArrays") )
 		stop("object must be of class MSImagingArrays")
+	if ( missing(units) && !missing(tolerance) )
+		units <- get_units_from_tolerance(tolerance, units)
 	units <- match.arg(units)
 	guess.max <- min(guess.max, length(object))
 	if ( isTRUE(object@continuous) ) {

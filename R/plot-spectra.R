@@ -31,6 +31,8 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 		coord <- coord(x)[1L,,drop=FALSE]
 	if ( is.null(run) )
 		run <- run(x)[1L]
+	if ( !missing(coord) && !is.null(i) && length(i) < length(coord[[1L]]) )
+		stop("coord value(s) could not be unambiguously matched")
 	if ( missing(xlab) && missing(formula) )
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )

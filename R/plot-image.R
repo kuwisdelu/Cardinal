@@ -20,10 +20,8 @@ setMethod("image", c(x = "MSImagingExperiment"),
 	}
 	if ( missing(i) && is.null(mz) )
 		mz <- mz(x)[1L]
-	if ( any(mz < min(mz(x))) || any(mz > max(mz(x))) )
-		warning("m/z value(s) out of range")
 	if ( !missing(mz) && !is.null(i) && length(i) < length(mz) )
-		warning("m/z value(s) could not be unambiguously matched")
+		stop("m/z value(s) could not be unambiguously matched")
 	if ( missing(xlab) && missing(formula) )
 		xlab <- expression(italic(x))
 	if ( missing(ylab) && missing(formula) )
@@ -37,6 +35,8 @@ setMethod("image", c(x = "MSImagingExperiment"),
 	if ( is.finite(tolerance) ) {
 		if ( is.null(mz) )
 			mz <- mz(x)[i]
+		if ( missing(units) && !missing(tolerance) )
+			units <- get_units_from_tolerance(tolerance, units)
 		units <- match.arg(units)
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 		ref <- switch(units, ppm="x", mz="abs")

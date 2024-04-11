@@ -403,10 +403,37 @@ setMethod("pixels", "SpectralImagingArrays",
 {
 	index <- seq_len(nrow(pixelData(object)))
 	if ( !missing(coord) ) {
-		coord <- as.data.frame(as.list(coord))
+		coord <- as.list(coord)
+		if ( length(coord) != ncol(coord(object)) )
+			stop("length of coord [", length(coord), "] does not ",
+				"match object coord [", ncol(coord(object)), "]")
+		if ( is.null(names(coord)) ) {
+			names(coord) <- coordNames(object)
+		} else {
+			coord <- coord[coordNames(object)]
+		}
+		coord <- as.data.frame(coord)
 		if ( is.na(tol) )
 			tol <- vapply(coord(object), estres, numeric(1L))
 		i_coord <- kdsearch(coord, coord(object), tol=tol)
+		if ( any(lengths(i_coord) != 1L) )
+		{
+			for ( j in which(lengths(i_coord) != 1L) )
+			{
+				badmatch <- paste0(names(coord), " = ",
+					unlist(coord[j,]), collapse=", ")
+				if ( length(i_coord[[j]]) > 1L ) {
+					warning("multiple matches for coord ", badmatch)
+				} else {
+					k <- as.vector(knnsearch(coord[j,], coord(object), k=1L))
+					k_coord <- as.list(coord(object)[k,])
+					nearmatch <- paste0(coordNames(object), " = ",
+						unlist(k_coord), collapse=", ")
+					warning("no match for coord ", badmatch, "; ",
+						"nearest is ", nearmatch)
+				}
+			}
+		}
 		i_coord <- unique(unlist(i_coord))
 		index <- intersect(i_coord, index)
 	}

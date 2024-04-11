@@ -15,6 +15,8 @@ setMethod("bin", "MSImagingExperiment",
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
 	}
+	if ( missing(units) && !missing(tolerance) )
+		units <- get_units_from_tolerance(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,
@@ -44,6 +46,8 @@ setMethod("bin", "MSImagingArrays",
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
 	}
+	if ( missing(units) && !missing(tolerance) )
+		units <- get_units_from_tolerance(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,
@@ -71,6 +75,8 @@ setMethod("bin", "SpectralImagingExperiment",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
+	if ( missing(units) && !missing(tolerance) )
+		units <- get_units_from_tolerance(tolerance, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -144,6 +150,8 @@ setMethod("bin", "SpectralImagingArrays",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
+	if ( missing(units) && !missing(tolerance) )
+		units <- get_units_from_tolerance(tolerance, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
