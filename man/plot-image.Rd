@@ -5,6 +5,9 @@
 \alias{image,MSImagingExperiment-method}
 \alias{image,SpectralImagingExperiment-method}
 
+\alias{cpal}
+\alias{dpal}
+
 \title{Plot images from a spectral imaging dataset}
 
 \description{

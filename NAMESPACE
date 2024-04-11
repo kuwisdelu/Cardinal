@@ -364,6 +364,10 @@ export(
 	"writeMSIData")
 
 export(
+	"cpal",
+	"dpal")
+
+export(
 	"getCardinalBPPARAM",
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",

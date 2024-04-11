@@ -315,13 +315,13 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 	if ( verbose )
 		message("returning shrunken centroids clustering")
 	if ( length(ans) > 1L ) {
-		kout <- vapply(ans, function(a) length(unique(a$class)), numeric(1L))
-		nnz <- vapply(ans, function(a) sum(a$statistic != 0, na.rm=TRUE), numeric(1L))
+		kout <- vapply(ans, function(a) nlevels(a$class), numeric(1L))
+		pz <- vapply(ans, function(a) mean(a$statistic == 0), numeric(1L))
 		aic <- vapply(ans, AIC, numeric(1L))
 		bic <- vapply(ans, BIC, numeric(1L))
 		ResultsList(ans,
-			mcols=DataFrame(r=r, k=k, s=s, weights=weights,
-				clusters=kout, nnzero=nnz, AIC=aic, BIC=bic))
+			mcols=DataFrame(r=r, k=k, s=s, weights=weights, clusters=kout,
+				sparsity=round(pz, digits=2L), AIC=aic, BIC=bic))
 	} else {
 		ans[[1L]]
 	}
