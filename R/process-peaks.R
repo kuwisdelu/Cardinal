@@ -106,7 +106,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				n <- 1L
 			}
 			if ( verbose )
-				message("filtering to remove peaks with counts < ", n, " ",
+				message("filtering to keep only peaks with counts > ", n, " ",
 					"(", ceiling(n / length(object)), "% of considered spectra)")
 			object <- object[featureData(object)[["count"]] > n,]
 		}

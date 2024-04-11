@@ -10,7 +10,7 @@ setMethod("addProcessing", "SpectralImagingData",
 	processingData(object) <- c(processingData(object), ps)
 	if ( verbose ) {
 		labels <- names(processingData(object))
-		message("queued processing: ", paste0(labels, collapse=", "))
+		message("queued: ", paste0(labels, collapse=", "))
 	}
 	if ( validObject(object) )
 		object
