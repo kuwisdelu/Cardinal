@@ -15,7 +15,7 @@
     method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
     SNR = 2, type = c("height", "area"),
     tolerance = NA, units = c("ppm", "mz"),
-    sampleSize = Inf, filterFreq = TRUE, outfile = NULL,
+    sampleSize = NA, filterFreq = TRUE, outfile = NULL,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
@@ -40,7 +40,7 @@
     
     \item{units}{The units for the above tolerance.}
 
-    \item{sampleSize}{If finite, then the count or proportion of spectra to use to determine reference peaks.}
+    \item{sampleSize}{The count or proportion giving a subset of spectra to use to determine reference peaks.}
 
     \item{filterFreq}{Either a logical value indicating whether singleton peaks should be removed, or a count or frequency used as a threshold to filter the peaks.}
 

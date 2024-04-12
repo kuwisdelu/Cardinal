@@ -8,18 +8,19 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
 		SNR = 2, type = c("height", "area"),
 		tolerance = NA, units = c("ppm", "mz"),
-		sampleSize = Inf, filterFreq = TRUE, outfile = NULL,
+		sampleSize = NA, filterFreq = TRUE, outfile = NULL,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( (!missing(ref) && !is.null(ref)) || is.finite(sampleSize) )
+	if ( !is.na(sampleSize) ||
+		(!isCentroided(object) && !missing(ref) && !is.null(ref)) )
 	{
-		# extract peaks based on a reference
+		# need to do peak picking
 		if ( missing(ref) || is.null(ref) )
 		{
 			# create reference peaks from sample spectra
-			if ( sampleSize <= 1 ) {
+			if ( sampleSize < 1 ) {
 				# sample size is a proportion
 				n <- ceiling(sampleSize * length(object))
 				perc <- 100 * sampleSize
@@ -44,17 +45,11 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				BPPARAM=BPPARAM, ...)
 			domain <- mz(ref)
 		} else {
-			# check if peaks are already processed
 			if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 				ref <- mz(ref)
-			if ( isTRUE(all.equal(mz(object), ref)) ) {
-				if ( verbose )
-					message("peaks are already processed")
-				return(object)
-			}
 			domain <- as.numeric(ref)
 		}
-		# extract the peaks
+		# extract the peaks based on reference
 		if ( verbose )
 			message("extracting reference peaks from all spectra")
 		object <- peakPick(object, ref=ref,
@@ -67,6 +62,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		if ( is(ref, "MSImagingExperiment") )
 			featureData(object) <- featureData(ref)
 	} else {
+		# check for peak picking
 		if ( isCentroided(object) ) {
 			if ( length(processingData(object)) == 0L &&
 				!is.sparse(spectra(object, spectra)) )
@@ -84,13 +80,15 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				method=method, SNR=SNR, type=type)
 		}
 		# align peaks across all spectra
-		object <- peakAlign(object,
+		object <- peakAlign(object, ref=ref,
 			spectra=spectra, index=index, outfile=outfile,
 			tolerance=tolerance, units=units,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 		# filter peaks
-		if ( isTRUE(filterFreq) || filterFreq > 0 ) {
+		if ( !is.null(featureData(object)[["count"]]) &&
+			(isTRUE(filterFreq) || filterFreq > 0) )
+		{
 			if ( is.numeric(filterFreq) ) {
 				if ( filterFreq < 1 ) {
 					# filterFeq is a proportion
@@ -255,7 +253,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 			" peaks per spectrum")
 	if ( missing(ref) || is.null(ref) ) {
 		if ( verbose )
-			message("generating reference peaks")
+			message("estimating shared domain for alignment")
 		domain <- estimateDomain(index, units=units,
 			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
 	} else {
