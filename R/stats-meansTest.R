@@ -178,6 +178,15 @@ setMethod("plot", c(x = "MeansTest", y = "missing"),
 	type <- match.arg(type)
 	plots <- lapply(x[i], .plot_boxplots,
 		show.obs=show.obs, fill=fill, ...)
+	if ( is.null(rownames(mcols(x))) ) {
+		if ( is.null(names(i)) ) {
+			names(plots) <- paste0("i = ", i)
+		} else {
+			names(plots) <- names(i)
+		}
+	} else {
+		names(plots) <- rownames(mcols(x))[i]
+	}
 	if ( !is.null(layout) ) {
 		layout <- rep_len(layout, 2L)
 		nrow <- layout[1L]

@@ -114,7 +114,11 @@ setMethod("plot", c(x = "SpatialDGMM", y = "missing"),
 	sigma <- sigma[i]
 	plots <- Map(.plot_density, mu, sigma, MoreArgs=list(...))
 	if ( is.null(featureNames(x)) ) {
-		names(plots) <- paste0("i = ", i)
+		if ( is.null(names(i)) ) {
+			names(plots) <- paste0("i = ", i)
+		} else {
+			names(plots) <- names(i)
+		}
 	} else {
 		names(plots) <- featureNames(x)[i]
 	}
