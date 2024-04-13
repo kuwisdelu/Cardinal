@@ -422,10 +422,11 @@ setMethod("pixels", "SpectralImagingArrays",
 			{
 				badmatch <- paste0(names(coord), " = ",
 					unlist(coord[j,]), collapse=", ")
-				i_run <- run(object)[i_coord[[j]]]
-				dup <- !setequal(unique(i_run), i_run)
-				if ( dup && length(i_coord[[j]]) > 1L ) {
-					warning("multiple matches for coord ", badmatch)
+				if ( length(i_coord[[j]]) > 1L ) {
+					i_run <- run(object)[i_coord[[j]]]
+					dup <- !setequal(unique(i_run), i_run)
+					if ( dup )
+						warning("multiple matches for coord ", badmatch)
 				} else {
 					k <- as.vector(knnsearch(coord[j,], coord(object), k=1L))
 					k_coord <- as.list(coord(object)[k,])
