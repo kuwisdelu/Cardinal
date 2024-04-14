@@ -77,7 +77,7 @@ setMethod("features", "MSImagingExperiment",
 			units <- get_units_from_tolerance(tolerance, units)
 		units <- match.arg(units)
 		i <- callNextMethod(object, ..., env=env)
-		if ( !missing(mz) ) {
+		if ( !missing(mz) && !is.null(mz) ) {
 			ref <- switch(units, ppm="x", mz="abs")
 			if ( is.na(tolerance) ) {
 				tol <- estres(mz(object), ref=ref)

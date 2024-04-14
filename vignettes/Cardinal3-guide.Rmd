@@ -341,8 +341,8 @@ fdata <- MassDataFrame(mz=s$mz)
 pdata <- PositionDataFrame(run=run, coord=coord)
 
 out <- MSImagingExperiment(spectraData=s$intensity,
-    featureData=fdata,
-    pixelData=pdata)
+	featureData=fdata,
+	pixelData=pdata)
 out
 ```
 
@@ -393,7 +393,7 @@ We can use `superpose` to overlay the mass spectra and `xlim` to control the mas
 
 ```{r plot-superpose, fig.height=3, fig.width=9}
 plot(msa, i=c(496, 1520), xlim=c(1000, 1250),
-    superpose=TRUE)
+	superpose=TRUE)
 ```
 
 ## Visualizing images with `image()`
@@ -444,7 +444,7 @@ Multiple images can be superposed with `superpose=TRUE`. Use `scale=TRUE` to res
 
 ```{r image-superpose, fig.height=4, fig.width=9}
 image(mse, mz=c(474, 1619), superpose=TRUE,
-    enhance="adaptive", scale=TRUE)
+	enhance="adaptive", scale=TRUE)
 ```
 
 
@@ -662,7 +662,7 @@ Here, we use `makeFactor()` to create a new pixel metadata columns.
 
 ```{r pData-set}
 mse$region <- makeFactor(A=mse$circleA, B=mse$circleB,
-    other=mse$square1 | mse$square2)
+	other=mse$square1 | mse$square2)
 pData(mse)
 ```
 
@@ -670,8 +670,8 @@ Here, we create new feature metadata columns based on the design of the simulate
 
 ```{r fData-set}
 fData(mse)$region <- makeFactor(
-    circle=mz(mse) > 1070 & mz(mse) < 1420,
-    square=mz(mse) < 1070 | mz(mse) > 1420)
+	circle=mz(mse) > 1070 & mz(mse) < 1420,
+	square=mz(mse) < 1070 | mz(mse) > 1420)
 fData(mse)
 ```
 
@@ -825,25 +825,25 @@ In practice, it's rarely necessary to coerce between data representations. Inste
 
 - Spectral processing
 
-    + `normalize()` for normalizing mass spectra
+	+ `normalize()` for normalizing mass spectra
 
-    + `smooth()` for smoothing mass spectra
+	+ `smooth()` for smoothing mass spectra
 
-    + `reduceBaseline()` for baseline subtraction
+	+ `reduceBaseline()` for baseline subtraction
 
-    + `recalibrate()` for recalibration of *m/z* values
+	+ `recalibrate()` for recalibration of *m/z* values
 
-    + `peakPick()` for peak detection and summarization
+	+ `peakPick()` for peak detection and summarization
 
 - Peak processing
 
-    + `peakAlign()` for aligning detected peaks
+	+ `peakAlign()` for aligning detected peaks
 
-    + `peakProcess()` for streamlined peak detection and alignment
+	+ `peakProcess()` for streamlined peak detection and alignment
 
 - Other processing
 
-    + `bin()` for binning or resampling mass spectra
+	+ `bin()` for binning or resampling mass spectra
 
 We will demonstrate how to apply these pre-processing steps in the following sections.
 
@@ -877,14 +877,14 @@ Use `smooth()` to queue smoothing on `MSImagingArrays` or `MSImagingExperiment`.
 ```{r smoothSignal-plot, fig.height=7, fig.width=9}
 p1 <- smooth(msa, method="gaussian") |>
 	plot(coord=list(x=16, y=16),
-        xlim=c(1150, 1450), linewidth=2)
+		xlim=c(1150, 1450), linewidth=2)
 
 p2 <- smooth(msa, method="sgolay") |>
-    plot(coord=list(x=16, y=16),
-        xlim=c(1150, 1450), linewidth=2)
+	plot(coord=list(x=16, y=16),
+		xlim=c(1150, 1450), linewidth=2)
 
 matter::as_facets(list(p1, p2), nrow=2,
-    labels=c("Gaussian smoothing", "Savitsky-Golay smoothing"))
+	labels=c("Gaussian smoothing", "Savitsky-Golay smoothing"))
 ```
 
 Note above we use `|>` to chain together sequences of functions, and we can use `plot()` to preview the results of queued spectral processing before applying it.
@@ -918,13 +918,13 @@ Use `reduceBaseline()` to queue baseline subtraction on `MSImagingArrays` or `MS
 
 ```{r reduceBaseline-plot, fig.height=5, fig.width=9}
 p1 <- reduceBaseline(mse, method="locmin") |>
-    plot(coord=list(x=16, y=16), linewidth=2)
+	plot(coord=list(x=16, y=16), linewidth=2)
 
 p2 <- reduceBaseline(mse, method="median") |>
-    plot(coord=list(x=16, y=16), linewidth=2)
+	plot(coord=list(x=16, y=16), linewidth=2)
 
 matter::as_facets(list(p1, p2), nrow=2,
-    labels=c("Local minima interpolation", "Running medians"))
+	labels=c("Local minima interpolation", "Running medians"))
 ```
 
 The supported smoothing methods include:
@@ -953,10 +953,10 @@ First, we need to simulate spectra that are visibly in need of calibration.
 ```{r unaligned-spectra, fig.height=3, fig.width=9}
 set.seed(2020)
 mse_drift <- simulateImage(preset=1, npeaks=10,
-    from=500, to=600, sdmz=750, units="ppm")
+	from=500, to=600, sdmz=750, units="ppm")
 
 plot(mse_drift, i=186:195, xlim=c(535, 570),
-    superpose=TRUE, key=FALSE, linewidth=2)
+	superpose=TRUE, key=FALSE, linewidth=2)
 ```
 
 To align the spectra, we need to provide a vector of reference *m/z* values of expected peaks. Here, we will simply use the peaks of the mean spectrum from `estimateReferencePeaks()`.
@@ -965,11 +965,11 @@ To align the spectra, we need to provide a vector of reference *m/z* values of e
 peaks_drift <- estimateReferencePeaks(mse_drift)
 
 mse_nodift <- recalibrate(mse_drift, ref=peaks_drift,
-    method="locmax", tolerance=1500, units="ppm")
+	method="locmax", tolerance=1500, units="ppm")
 mse_nodift <- process(mse_nodift)
 
 plot(mse_nodift, i=186:195, xlim=c(535, 570),
-    superpose=TRUE, key=FALSE, linewidth=2)
+	superpose=TRUE, key=FALSE, linewidth=2)
 ```
 
 The supported recalibration methods include:
@@ -1001,13 +1001,13 @@ Use `peakPick()` to queue peak picking on `MSImagingArrays` or `MSImagingExperim
 
 ```{r peakPick-plot, fig.height=7, fig.width=9}
 p1 <- peakPick(msa_pre, method="diff", SNR=3) |>
-    plot(coord=list(x=16, y=16), linewidth=2)
+	plot(coord=list(x=16, y=16), linewidth=2)
 
 p2 <- peakPick(msa_pre, method="filter", SNR=3) |>
-    plot(coord=list(x=16, y=16), linewidth=2)
+	plot(coord=list(x=16, y=16), linewidth=2)
 
 matter::as_facets(list(p1, p2), nrow=2,
-    labels=c("Derivative-based SNR", "Dynamic filtering-based SNR"))
+	labels=c("Derivative-based SNR", "Dynamic filtering-based SNR"))
 ```
 
 We use `SNR` to designate the minimum signal-to-noise threshold for the detected peaks.
@@ -1067,7 +1067,7 @@ Here, we use `subsetFeatures()` to subset the data to include only peaks observe
 mse_filt <- summarizeFeatures(mse_filt)
 
 plot(mse_filt, "mean", xlab="m/z", ylab="Intensity",
-    linewidth=2, annPeaks=10)
+	linewidth=2, annPeaks=10)
 ```
 
 
@@ -1078,7 +1078,7 @@ We can also use `peakPick()` to queue peak summarization based on a set of refer
 
 ```{r peakPick-ref}
 msa_peaks2 <- peakPick(msa_pre, ref=mz(mse_filt), type="area",
-    tolerance=200, units="ppm")
+	tolerance=200, units="ppm")
 
 mse_peaks2 <- process(msa_peaks2)
 ```
@@ -1090,7 +1090,7 @@ In this case, local peaks are matched to the reference peaks within `tolerance`.
 mse_peaks2 <- summarizeFeatures(mse_peaks2)
 
 plot(mse_peaks2, "mean", xlab="m/z", ylab="Intensity",
-    linewidth=2, annPeaks=10)
+	linewidth=2, annPeaks=10)
 ```
 
 
@@ -1102,7 +1102,7 @@ Note that `peakProcess()` will automatically call `process()` if there are queue
 
 ```{r peakProcess}
 mse_peaks3 <- peakProcess(msa_pre, method="diff", SNR=6,
-    sampleSize=0.3, filterFreq=0.02)
+	sampleSize=0.3, filterFreq=0.02)
 
 mse_peaks3
 ```

@@ -402,7 +402,9 @@ setMethod("pixels", "SpectralImagingArrays",
 .find_positions <- function(object, coord, run, tol = NA)
 {
 	index <- seq_len(nrow(pixelData(object)))
-	if ( !missing(coord) ) {
+	if ( !missing(coord) && !is.null(coord) ) {
+		if ( missing(run) )
+			run <- NULL
 		coord <- as.list(coord)
 		if ( length(coord) != ncol(coord(object)) )
 			stop("length of coord [", length(coord), "] does not ",
@@ -440,7 +442,9 @@ setMethod("pixels", "SpectralImagingArrays",
 		i_coord <- unique(unlist(i_coord))
 		index <- intersect(i_coord, index)
 	}
-	if ( !missing(run) ) {
+	if ( !missing(run) && !is.null(run) ) {
+		if ( missing(coord) )
+			coord <- NULL
 		if ( !is.character(run) && !is.factor(run) )
 			run <- runNames(object)[run]
 		i_run <- which(run(object) %in% run)
