@@ -193,8 +193,13 @@ setMethod("show", "ResultsList",
 	function(object) {
 		callNextMethod()
 		cat("model:", object@elementType, "\n")
-		if ( !is.null(mcols(object)) )
-			print(as.data.frame(mcols(object)))
+		if ( !is.null(mcols(object)) ) {
+			n <- getOption("matter.show.head.n")
+			x <- as.data.frame(mcols(object))
+			print(head(x, n=n))
+			if ( nrow(x) > n )
+				cat("... and", nrow(x) - n, "more results\n")
+		}
 	})
 
 setMethod("predict", "ResultsList",
