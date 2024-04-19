@@ -5,7 +5,7 @@
 setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	function(x, y, coord, r = 1, s = 0,
 		weights = c("gaussian", "adaptive"),
-		neighbors = findNeighbors(coord, r=r),
+		neighbors = findNeighbors(coord, r=r), bags = NULL,
 		priors = table(y), center = NULL, transpose = TRUE,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
@@ -54,11 +54,25 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	} else {
 		distfun <- .spatialRowDistFun
 	}
-	ans <- nscentroids(x, y=y, s=s, distfun=distfun,
-		priors=priors, center=center, transpose=transpose,
-		neighbors=neighbors, neighbor.weights=wts,
-		nchunks=nchunks, verbose=verbose,
-		BPPARAM=BPPARAM, ...)
+	if ( is.null(bags) ) {
+		ans <- nscentroids(x, y=y, s=s, distfun=distfun,
+			priors=priors, center=center, transpose=transpose,
+			neighbors=neighbors, neighbor.weights=wts,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...)
+	} else {
+		ans <- lapply(s, function(si)
+			{
+				if ( verbose )
+					message("fitting values for s = ", si)
+				mi_learn(nscentroids, x=x, y=y,
+					s=si, distfun=distfun, bags=bags, score=fitted,
+					priors=priors, center=center, transpose=transpose,
+					neighbors=neighbors, neighbor.weights=wts,
+					nchunks=nchunks, verbose=verbose,
+					BPPARAM=BPPARAM, ...)
+			})
+	}
 	if ( is(ans, "nscentroids") )
 		ans <- list(ans)
 	ans <- lapply(ans,
@@ -100,14 +114,7 @@ setMethod("fitted", "SpatialShrunkenCentroids",
 	function(object, type = c("response", "class"), ...)
 {
 	type <- match.arg(type)
-	ans <- object$probability
-	if ( type == "class" ) {
-		cls <- apply(ans, 1L, which.max)
-		ans <- factor(cls,
-			levels=seq_len(ncol(ans)),
-			labels=colnames(ans))
-	}
-	ans
+	fitted(object@model, type=type)
 })
 
 setMethod("predict", "SpatialShrunkenCentroids",
@@ -117,6 +124,7 @@ setMethod("predict", "SpatialShrunkenCentroids",
 		nchunks = getCardinalNChunks(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
 		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( !missing(newdata) ) {

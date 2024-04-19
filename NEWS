@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 3.5.3 [2024-4-13]
+-----------------------------------
+
+NEW FEATURES
+
+    o Add support for multiple instance learning for 'PLS()'
+        and 'spatialShrunkenCentroids()' with 'bags' argument
+
+BUG FIXES
+
+    o Make sure 'bin()' still respects 'resolution' when 'ref' is
+        specified (in which case the range is taken from 'ref')
+
 CHANGES IN VERSION 3.5.2 [2024-4-13]
 -----------------------------------
 

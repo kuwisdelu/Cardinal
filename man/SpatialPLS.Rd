@@ -20,6 +20,8 @@
 \alias{OPLS}
 \alias{OPLS,ANY-method}
 \alias{OPLS,SpectralImagingExperiment-method}
+\alias{coef,SpatialOPLS-method}
+\alias{residuals,SpatialOPLS-method}
 \alias{fitted,SpatialOPLS-method}
 \alias{predict,SpatialOPLS-method}
 \alias{topFeatures,SpatialOPLS-method}
@@ -35,7 +37,7 @@
 \usage{
 \S4method{PLS}{ANY}(x, y, ncomp = 3,
     method = c("nipals", "simpls", "kernel1", "kernel2"),
-    center = TRUE, scale = FALSE,
+    center = TRUE, scale = FALSE, bags = NULL,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
@@ -51,18 +53,22 @@
 
 \S4method{topFeatures}{SpatialPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
 
-\S4method{plot}{SpatialPLS,missing}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+\S4method{plot}{SpatialPLS,missing}(x, type = c("coefficients", "vip", "scores"), \dots, xlab, ylab)
 
 \S4method{image}{SpatialPLS}(x, type = c("response", "class"), \dots)
 
-\S4method{OPLS}{ANY}(x, y, ncomp = 3,
-    center = TRUE, scale = FALSE, retx = TRUE,
+\S4method{OPLS}{ANY}(x, y, ncomp = 3, retx = TRUE,
+    center = TRUE, scale = FALSE, bags = NULL,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{OPLS}{SpectralImagingExperiment}(x, y, ncomp = 3,
-    center = TRUE, scale = FALSE, retx = FALSE, \dots)
+\S4method{OPLS}{SpectralImagingExperiment}(x, y, ncomp = 3, retx = FALSE,
+    center = TRUE, scale = FALSE, \dots)
+
+\S4method{coef}{SpatialOPLS}(object, \dots)
+
+\S4method{residuals}{SpatialOPLS}(object, \dots)
 
 \S4method{fitted}{SpatialOPLS}(object, type = c("response", "class"), \dots)
 
@@ -71,7 +77,7 @@
 
 \S4method{topFeatures}{SpatialOPLS}(object, n = Inf, sort.by = c("vip", "coefficients"), \dots)
 
-\S4method{plot}{SpatialOPLS,missing}(x, type = c("vip", "coefficients", "scores"), \dots, xlab, ylab)
+\S4method{plot}{SpatialOPLS,missing}(x, type = c("coefficients", "vip", "scores"), \dots, xlab, ylab)
 
 \S4method{image}{SpatialOPLS}(x, type = c("response", "class"), \dots)
 }
@@ -89,6 +95,8 @@
 
     \item{scale}{Shoud the data be scaled?}
 
+    \item{bags}{Bags for multiple instance learning. If provided, then it is assumed all observations within a bag have the same label, and if a single observation is "positive" then all observations in the bag are "positive". Multiple instance learning is performed using \code{\link[matter]{mi_learn}}.}
+
     \item{retx}{Should the (potentially large) processed data matrix be included in the result?}
 
     \item{nchunks}{The number of chunks to use for processing.}
@@ -99,7 +107,7 @@
 
     \item{\dots}{Options passed to \code{\link[irlba]{irlba}}.}
 
-    \item{object}{A \code{SpatialPCA} object.}
+    \item{object}{A \code{SpatialPLS} or \code{SpatialOPLS} object.}
 
     \item{newdata}{A new \code{SpectralImagingExperiment} for which to make predictions.}
 

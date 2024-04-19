@@ -36,7 +36,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		if ( is.null(mz) )
 			mz <- mz(x)[i]
 		if ( missing(units) && !missing(tolerance) )
-			units <- get_units_from_tolerance(tolerance, units)
+			units <- get_units_from_names(tolerance, units)
 		units <- match.arg(units)
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 		ref <- switch(units, ppm="x", mz="abs")

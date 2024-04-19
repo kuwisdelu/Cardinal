@@ -43,7 +43,7 @@
 \arguments{
     \item{x}{A spectral imaging dataset.}
     
-    \item{ref}{Optional. The bin centers. Created from \code{resolution} if not provided.}
+    \item{ref}{Optional. The bin centers, or their range if \code{resolution} is specified. Created from \code{resolution} if not provided.}
 
     \item{spectra}{The name of the array in \code{spectraData()} to bin.}
 
@@ -61,7 +61,7 @@
 }
 
 \details{
-    The binning is not processed immediately, but is applied on-the-fly whenever the spectra are accessed.
+    The binning is applied but not processed immediately. It is performed on-the-fly whenever the spectra are accessed.
 }
 
 \value{

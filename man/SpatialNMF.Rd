@@ -40,7 +40,7 @@
 
     \item{\dots}{Options passed to \code{\link[irlba]{irlba}}.}
 
-    \item{object}{A \code{SpatialPCA} object.}
+    \item{object}{A \code{SpatialNMF} object.}
 
     \item{newdata}{A new \code{SpectralImagingExperiment} for which to calculate the scores.}
 

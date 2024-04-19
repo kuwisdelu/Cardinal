@@ -202,6 +202,25 @@ setMethod("show", "ResultsList",
 		}
 	})
 
+setMethod("fitted", "ResultsList",
+	function(object, ..., simplify = TRUE)
+{
+	ans <- lapply(object, fitted, ...)
+	if ( simplify ) {
+		if ( length(ans) > 1L ) {
+			if ( is.factor(ans[[1L]]) ) {
+				as.data.frame(ans, check.names=FALSE)
+			} else {
+				simplify2array(ans)
+			}
+		} else {
+			ans[[1L]]
+		}
+	} else {
+		ans
+	}
+})
+
 setMethod("predict", "ResultsList",
 	function(object, ..., simplify = TRUE)
 {

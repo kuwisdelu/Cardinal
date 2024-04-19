@@ -71,6 +71,8 @@ readImzML <- function(file, memory = FALSE,
 		(as == "auto" && is_dense) ||
 		(!is.null(mass.range) || !is.na(resolution)) )
 	{
+		if ( missing(units) && !missing(resolution) )
+			units <- get_units_from_names(resolution, units)
 		if ( verbose )
 			message("creating MSImagingExperiment")
 		ans <- convertMSImagingArrays2Experiment(ans,
@@ -78,6 +80,11 @@ readImzML <- function(file, memory = FALSE,
 			units=units, guess.max=guess.max,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM)
+	}
+	if ( isCentroided(ans) && is(ans, "MSImagingArrays") )
+	{
+		if ( verbose )
+			message("NOTE: use peakAlign() to align centroided data")
 	}
 	if ( as == "MSImagingArrays" )
 		ans <- convertMSImagingExperiment2Arrays(ans)

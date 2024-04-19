@@ -74,7 +74,7 @@ setMethod("features", "MSImagingExperiment",
 		if ( is.null(env) )
 			env <- parent.frame(2)
 		if ( missing(units) && !missing(tolerance) )
-			units <- get_units_from_tolerance(tolerance, units)
+			units <- get_units_from_names(tolerance, units)
 		units <- match.arg(units)
 		i <- callNextMethod(object, ..., env=env)
 		if ( !missing(mz) && !is.null(mz) ) {
@@ -99,10 +99,10 @@ setMethod("features", "MSImagingExperiment",
 		setNames(i, featureNames(object)[i])
 	})
 
-get_units_from_tolerance <- function(tolerance, units)
+get_units_from_names <- function(x, units)
 {
-	if ( !is.null(names(tolerance)) && names(tolerance) %in% units )
-		units <- names(tolerance)
+	if ( !is.null(names(x)) && names(x) %in% units )
+		units <- names(x)
 	units
 }
 
@@ -247,8 +247,14 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		return(object)
 	if ( !is(object, "MSImagingArrays") )
 		stop("object must be of class MSImagingArrays")
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+	if ( missing(units) )
+	{
+		if ( !missing(resolution) ) {
+			units <- get_units_from_names(resolution, units)
+		} else if ( !missing(tolerance) ) {
+			units <- get_units_from_names(tolerance, units)
+		}
+	}
 	units <- match.arg(units)
 	guess.max <- min(guess.max, length(object))
 	if ( isTRUE(object@continuous) ) {
@@ -322,16 +328,15 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 				message("estimating profile m/z-axis from ",
 					guess.max, " sample spectra")
 			mz <- estimateDomain(mzlist,
-				units=switch(ppm="relative", mz="absolute"),
+				units=switch(units, ppm="relative", mz="absolute"),
 				BPPARAM=BPPARAM)
 			if ( is.null(mass.range) )
 				mass.range <- round(range(mz), digits=4L)
 			if ( is.na(resolution) )
 				resolution <- 1e6 * attr(mz, "resolution")
-		} else {
-			mz <- mz(from=min(mass.range), to=max(mass.range),
-				by=resolution, units=units)
 		}
+		mz <- mz(from=min(mass.range), to=max(mass.range),
+			by=resolution, units=units)
 		if ( verbose ) {
 			message("applying profile m/z-values to all spectra")
 			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])

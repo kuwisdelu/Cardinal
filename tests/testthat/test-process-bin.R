@@ -17,6 +17,13 @@ test_that("process bin - SpectralImagingArrays", {
 	expect_is(spectra(s3), "sparse_mat")
 	expect_equal(fData(s3)$index, seq_len(8399))
 
+	s4 <- bin(s, ref=fData(s3)$index, units="absolute")
+	s5 <- bin(s, ref=c(100, 500), resolution=1, units="absolute")
+
+	expect_equal(s4, s3)
+	expect_equal(range(fData(s5)$index), c(100, 500))
+	expect_equal(estres(fData(s5)$index), c(absolute=1))
+
 })
 
 test_that("process bin - SpectralImagingExperiment", {
@@ -32,6 +39,13 @@ test_that("process bin - SpectralImagingExperiment", {
 	expect_is(spectra(s2), "sparse_mat")
 	expect_is(spectra(s3), "sparse_mat")
 	expect_equal(fData(s3)$index, seq_len(8399))
+
+	s4 <- bin(s, ref=fData(s3)$index, units="absolute")
+	s5 <- bin(s, ref=c(100, 500), resolution=1, units="absolute")
+
+	expect_equal(s4, s3)
+	expect_equal(range(fData(s5)$index), c(100, 500))
+	expect_equal(estres(fData(s5)$index), c(absolute=1))
 	
 })
 

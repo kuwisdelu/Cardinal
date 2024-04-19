@@ -5,12 +5,20 @@
 setMethod("PLS", "ANY", 
 	function(x, y, ncomp = 3,
 		method = c("nipals", "simpls", "kernel1", "kernel2"),
-		center = TRUE, scale = FALSE,
+		center = TRUE, scale = FALSE, bags = NULL,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	method <- match.arg(method)
+	if ( !is.null(bags) )
+	{
+		return(mi_learn(PLS, x=x, y=y, ncomp=ncomp,
+			method=method, bags=bags, score=fitted,
+			center=center, scale=scale,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...))
+	}
 	msg <- "projecting to latent structures "
 	if ( method == "nipals" ) {
 		if ( verbose )
@@ -28,14 +36,14 @@ setMethod("PLS", "ANY",
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel1" ) {
 		if ( verbose )
-			message(msg, "using SIMPLS")
+			message(msg, "using kernel #1")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=1L,
 			center=center, scale.=scale,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel2" ) {
 		if ( verbose )
-			message(msg, "using SIMPLS")
+			message(msg, "using kernel #2")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=2L,
 			center=center, scale.=scale,
 			nchunks=nchunks, verbose=verbose,
@@ -64,23 +72,16 @@ setMethod("fitted", "SpatialPLS",
 	function(object, type = c("response", "class"), ...)
 {
 	type <- match.arg(type)
-	ans <- object$fitted.values
-	if ( type == "class" ) {
-		cls <- apply(ans, 1L, which.max)
-		ans <- factor(cls,
-			levels=seq_len(ncol(ans)),
-			labels=colnames(ans))
-	}
-	ans
+	fitted(object@model, type=type)
 })
 
 setMethod("predict", "SpatialPLS",
 	function(object, newdata, ncomp,
 		type = c("response", "class"), simplify = TRUE, ...)
 {
+	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
 		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
-	type <- match.arg(type)
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
 			warning("pending processing steps will be ignored")
@@ -120,19 +121,19 @@ setMethod("topFeatures", "SpatialPLS",
 })
 
 setMethod("plot", c(x = "SpatialPLS", y = "missing"),
-	function(x, type = c("vip", "coefficients", "scores"), ..., xlab, ylab)
+	function(x, type = c("coefficients", "vip", "scores"), ..., xlab, ylab)
 {
 	type <- match.arg(type)
 	if ( missing(xlab) )
 		xlab <- NULL
 	if ( type == "vip" ) {
 		if ( missing(ylab) )
-			ylab <- "Importance"
-		callNextMethod(x, y=vip(x), xlab=xlab, ylab=ylab, ...)
-	} else if ( type == "coefficients" ) {
-		if ( missing(ylab) )
 			ylab <- "Coefficients"
 		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
+	} else if ( type == "vip" ) {
+		if ( missing(ylab) )
+			ylab <- "Importance"
+		callNextMethod(x, y=vip(x), xlab=xlab, ylab=ylab, ...)
 	} else {
 		callNextMethod(x, y=x$scores, xlab=xlab, ylab=ylab,
 			reducedDims=TRUE, ...)
@@ -151,39 +152,26 @@ setMethod("image", c(x = "SpatialPLS"),
 ## -------------------------------------------------
 
 setMethod("OPLS", "ANY", 
-	function(x, y, ncomp = 3,
-		center = TRUE, scale = FALSE, retx = TRUE,
+	function(x, y, ncomp = 3, retx = TRUE,
+		center = TRUE, scale = FALSE, bags = NULL,
 		nchunks = getCardinalNChunks(),
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( !is.null(bags) )
+	{
+		return(mi_learn(OPLS, x=x, y=y, ncomp=ncomp,
+			retx=retx, bags=bags, score=fitted,
+			center=center, scale=scale,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM, ...))
+	}
 	if ( verbose )
 		message("preprocessing data to remove orthogonal variation")
 	ans <- opls_nipals(x, y=y, k=max(ncomp),
-		center=center, scale.=scale,
+		center=center, scale.=scale, regression=TRUE,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
-	fit <- lapply(setNames(ncomp, paste0("ncomp=", ncomp)),
-		function(k) {
-			if ( verbose ) {
-				label <- if (k != 1L) "components" else "component"
-				message("using data with ", k,
-					" orthogonal ", label, " removed")
-			}
-			if ( k != ncol(ans$loadings) ) {
-				xk <- predict(ans, newdata=x, k=k)
-			} else {
-				xk <- ans$x
-			}
-			pls_nipals(xk, y=y, k=1L,
-				center=FALSE, scale.=FALSE,
-				nchunks=nchunks, verbose=verbose,
-				BPPARAM=BPPARAM, ...)
-		})
-	nms <- c("coefficients", "residuals", "fitted.values")
-	ans$ncomp <- ncomp
-	ans$regressions <- fit
-	ans[nms] <- fit[[which.max(ncomp)]][nms]
 	if ( !retx )
 		ans$x <- NULL
 	if ( verbose )
@@ -192,8 +180,8 @@ setMethod("OPLS", "ANY",
 })
 
 setMethod("OPLS", "SpectralImagingExperiment", 
-	function(x, y, ncomp = 3,
-		center = TRUE, scale = FALSE, retx = FALSE, ...)
+	function(x, y, ncomp = 3, retx = FALSE,
+		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
 		warning("pending processing steps will be ignored")
@@ -202,57 +190,49 @@ setMethod("OPLS", "SpectralImagingExperiment",
 	as(SpatialResults(ans, x), "SpatialOPLS")
 })
 
+setMethod("coef", "SpatialOPLS",
+	function(object, ...) coef(object@model, ...))
+
+setMethod("residuals", "SpatialOPLS",
+	function(object, ...) residuals(object@model, ...))
+
 setMethod("fitted", "SpatialOPLS",
 	function(object, type = c("response", "class"), ...)
 {
 	type <- match.arg(type)
-	ans <- object$fitted.values
-	if ( type == "class" ) {
-		cls <- apply(ans, 1L, which.max)
-		ans <- factor(cls,
-			levels=seq_len(ncol(ans)),
-			labels=colnames(ans))
-	}
-	ans
+	fitted(object@model, type=type)
 })
 
 setMethod("predict", "SpatialOPLS",
 	function(object, newdata, ncomp,
 		type = c("response", "class"), simplify = TRUE, ...)
 {
+	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
 		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
-	if ( missing(ncomp) )
-		ncomp <- max(object$ncomp)
-	if ( !all(ncomp %in% object$ncomp) )
-		stop("can only predict for ncomp = ",
-			paste0(object$ncomp, collapse=", "))
-	type <- match.arg(type)
-	ans <- lapply(ncomp,
-		function(k, newdata) {
-			fit <- object$regressions[[which(object$ncomp %in% k)[1L]]]
-			if ( !missing(newdata) ) {
-				if ( length(processingData(newdata)) > 0L )
-					warning("pending processing steps will be ignored")
-				xk <- predict(object@model, newdata=spectra(newdata), k=k)
-				predict(fit, newdata=xk, type=type, simplify=TRUE, ...)
+	if ( !missing(newdata) ) {
+		if ( length(processingData(newdata)) > 0L )
+			warning("pending processing steps will be ignored")
+		if ( missing(ncomp) )
+			ncomp <- ncol(object$loadings)
+		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,
+			type=type, simplify=FALSE, ...)
+		names(ans) <- paste0("ncomp=", ncomp)
+		if ( simplify ) {
+			if ( length(ans) > 1L ) {
+				if ( type == "class" ) {
+					as.data.frame(ans, check.names=FALSE)
+				} else {
+					simplify2array(ans)
+				}
 			} else {
-				fitted(fit, type=type, ...)
-			}
-		}, newdata=newdata)
-	names(ans) <- paste0("ncomp=", ncomp)
-	if ( simplify ) {
-		if ( length(ans) > 1L ) {
-			if ( type == "class" ) {
-				as.data.frame(ans)
-			} else {
-				simplify2array(ans)
+				ans[[1L]]
 			}
 		} else {
-			ans[[1L]]
+			ans
 		}
 	} else {
-		ans
+		fitted(object@model, type=type, ...)
 	}
 })
 
@@ -260,7 +240,8 @@ setMethod("topFeatures", "SpatialOPLS",
 	function(object, n = Inf, sort.by = c("vip", "coefficients"), ...)
 {
 	sort.by <- match.arg(sort.by)
-	vips <- vip(object$regressions[[which.max(object$ncomp)]])
+	k <- length(object$regressions)
+	vips <- vip(object$regressions[[k]])
 	coefs <- coef(object@model)
 	resp <- rep(colnames(coefs), each=nrow(coefs))
 	topf <- DataFrame(response=resp, vip=vips, coefficients=as.vector(coefs))
@@ -269,20 +250,19 @@ setMethod("topFeatures", "SpatialOPLS",
 })
 
 setMethod("plot", c(x = "SpatialOPLS", y = "missing"),
-	function(x, type = c("vip", "coefficients", "scores"), ..., xlab, ylab)
+	function(x, type = c("coefficients", "vip", "scores"), ..., xlab, ylab)
 {
 	type <- match.arg(type)
 	if ( missing(xlab) )
 		xlab <- NULL
 	if ( type == "vip" ) {
 		if ( missing(ylab) )
-			ylab <- "Importance"
-		callNextMethod(x, y=vip(x$regressions[[which.max(x$ncomp)]]),
-			xlab=xlab, ylab=ylab, ...)
-	} else if ( type == "coefficients" ) {
-		if ( missing(ylab) )
 			ylab <- "Coefficients"
 		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
+	} else if ( type == "vip" ) {
+		if ( missing(ylab) )
+			ylab <- "Importance"
+		callNextMethod(x, y=vip(x), xlab=xlab, ylab=ylab, ...)
 	} else {
 		callNextMethod(x, y=x$scores, xlab=xlab, ylab=ylab,
 			reducedDims=TRUE, ...)

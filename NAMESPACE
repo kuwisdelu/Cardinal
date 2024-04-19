@@ -303,6 +303,7 @@ exportMethods(
 	"rbind",
 	"recalibrate",
 	"reduceBaseline",
+	"residuals",
 	"rownames",
 	"rownames<-",
 	"run",

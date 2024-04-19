@@ -13,7 +13,7 @@ crossValidate <- function(fit., x, y, folds = run(x), ...,
 	if ( !is.function(fit.) )
 		.Defunct(msg="crossValidate() signature has changed, see ?crossValidate")
 	ans <- cv_do(fit., x=x, y=y, folds=folds, transpose=TRUE,
-		predict.=predict., keep.models=keep.models,
+		predict.=predict., keep.models=keep.models, mi=FALSE,
 		trainProcess=trainProcess, trainArgs=trainArgs,
 		testProcess=testProcess, testArgs=testArgs,
 		nchunks=nchunks, verbose=verbose,

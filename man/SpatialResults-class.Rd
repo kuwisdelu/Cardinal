@@ -37,6 +37,7 @@
 \alias{$,SpatialResults-method}
 \alias{[[,SpatialResults-method}
 
+\alias{fitted,SpatialResults-method}
 \alias{plot,SpatialResults,ANY-method}
 \alias{image,SpatialResults-method}
 

@@ -6,6 +6,7 @@
 \alias{ResultsList-class}
 
 \alias{show,ResultsList-method}
+\alias{fitted,ResultsList-method}
 \alias{predict,ResultsList-method}
 \alias{topFeatures,ResultsList-method}
 \alias{plot,ResultsList,ANY-method}
@@ -35,6 +36,8 @@ ResultsList(\dots, mcols = NULL)
     All methods for \code{\linkS4class{SimpleList}} also work on \code{ResultsList} objects. Additional methods are documented below:
 
     \describe{
+        \item{\code{fitted(object, ...)}:}{Extract fitted values from each modeling results object in the list.}
+
         \item{\code{predict(object, ...)}:}{Predict on each modeling results object in the list.}
 
         \item{\code{topFeatures(object, ...)}:}{Rank top features for each modeling results object in the list.}

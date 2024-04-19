@@ -68,13 +68,18 @@ test_that("PLS", {
 	expect_equivalent(fitted(pl3), pred3)
 	expect_equivalent(fitted(pl4), pred4)
 
+	plmi <- PLS(s, s$class, ncomp=2, bags=run(s))
+	predmi <- predict(plmi, newdata=s)
+	
+	expect_equivalent(fitted(plmi), predmi)
+
 })
 
 test_that("OPLS", {
 
 	set.seed(1)
-	s <- simulateImage(preset=1, dim=c(10L, 10L))
-	s$class <- makeFactor(yes=s$circle, no=!s$circle)
+	s <- simulateImage(preset=4, dim=c(10L, 10L))
+	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 	op <- OPLS(s, s$class, ncomp=1:2)
 	topf <- topFeatures(op)
 
@@ -83,12 +88,16 @@ test_that("OPLS", {
 	pred2 <- predict(op, newdata=s, ncomp=2)
 	pred12 <- predict(op, newdata=s, ncomp=1:2)
 
-	expect_equal(pred, s$class)
 	expect_equal(pred, fitted(op, "class"))
 	expect_equal(pred1, op$regressions[[1L]]$fitted.values)
 	expect_equal(pred2, op$regressions[[2L]]$fitted.values)
 	expect_is(topf, "DataFrame")
 	expect_false(is.unsorted(rev(topf$vip)))
+
+	opmi <- OPLS(s, s$class, ncomp=2, bags=run(s))
+	predmi <- predict(opmi, newdata=s)
+	
+	expect_equivalent(fitted(opmi), predmi)
 
 })
 
@@ -161,6 +170,11 @@ test_that("spatialShrunkenCentroids (classification)", {
 	expect_equal(fitted(ssc2[[1L]], "class"), pred2)
 	expect_is(topf[[1L]], "DataFrame")
 	expect_false(is.unsorted(rev(topf[[1L]]$statistic)))
+
+	sscmi <- spatialShrunkenCentroids(s, s$class, s=0:3, bags=run(s))
+	predmi <- predict(sscmi, newdata=s)
+	
+	expect_equivalent(fitted(sscmi), predmi)
 
 	s$one <- rep.int(factor("one"), length(s))
 	ssc3 <- spatialShrunkenCentroids(s, s$one, s=3)

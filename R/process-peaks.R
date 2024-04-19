@@ -130,7 +130,7 @@ setMethod("peakAlign", "MSImagingExperiment",
 			ref <- mz(ref)
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -156,7 +156,7 @@ setMethod("peakAlign", "MSImagingArrays",
 			ref <- mz(ref)
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -185,7 +185,7 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -235,7 +235,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM, ...)
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -345,7 +345,7 @@ setMethod("peakPick", "MSImagingExperiment",
 		centroided(object) <- TRUE
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -371,7 +371,7 @@ setMethod("peakPick", "MSImagingArrays",
 		centroided(object) <- TRUE
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(tolerance) )
 		tolerance <- switch(units,
@@ -401,7 +401,7 @@ setMethod("peakPick", "SpectralImagingData",
 			method=method, SNR=SNR, type=type, ...)
 	} else {
 		if ( missing(units) && !missing(tolerance) )
-			units <- get_units_from_tolerance(tolerance, units)
+			units <- get_units_from_names(tolerance, units)
 		units <- match.arg(units)
 		if ( is.unsorted(ref) )
 			ref <- sort(ref)

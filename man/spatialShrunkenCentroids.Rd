@@ -26,7 +26,7 @@
 \usage{
 \S4method{spatialShrunkenCentroids}{ANY,ANY}(x, y, coord, r = 1, s = 0,
     weights = c("gaussian", "adaptive"),
-    neighbors = findNeighbors(coord, r=r),
+    neighbors = findNeighbors(coord, r=r), bags = NULL,
     priors = table(y), center = NULL, transpose = TRUE,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
@@ -82,6 +82,8 @@
 
     \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
 
+    \item{bags}{Bags for multiple instance learning. If provided, then it is assumed all observations within a bag have the same label, and if a single observation is "positive" then all observations in the bag are "positive". Multiple instance learning is performed using \code{\link[matter]{mi_learn}}.}
+
     \item{priors}{The (unnormalized) prior probabilities for each class.}
 
     \item{center}{The global centroid (if known).}
@@ -102,7 +104,7 @@
 
     \item{\dots}{Additional arguments passed to the next method.}
 
-    \item{object}{A \code{SpatialPCA} object.}
+    \item{object}{A \code{SpatialShrunkenCentroids} object.}
 
     \item{newdata}{A new \code{SpectralImagingExperiment} for which to make predictions.}
 

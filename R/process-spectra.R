@@ -83,7 +83,7 @@ setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
 			ref <- mz(ref)
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
 		tol <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
@@ -106,7 +106,7 @@ setMethod("recalibrate", "SpectralImagingData",
 			ref <- mz(ref)
 	}
 	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	if ( is.na(tolerance) ) {
 		tol <- estres(ref, ref=switch(units, relative="x", absolute="abs"))

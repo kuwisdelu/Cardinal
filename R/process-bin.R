@@ -15,8 +15,8 @@ setMethod("bin", "MSImagingExperiment",
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
 	}
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+	if ( missing(units) && !missing(resolution) )
+		units <- get_units_from_names(resolution, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,
@@ -46,8 +46,8 @@ setMethod("bin", "MSImagingArrays",
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
 	}
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+	if ( missing(units) && !missing(resolution) )
+		units <- get_units_from_names(resolution, units)
 	units <- switch(match.arg(units), ppm="relative", mz="absolute")
 	if ( !is.na(resolution) )
 		resolution <- switch(units,
@@ -75,8 +75,8 @@ setMethod("bin", "SpectralImagingExperiment",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+	if ( missing(units) && !missing(resolution) )
+		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -116,6 +116,12 @@ setMethod("bin", "SpectralImagingExperiment",
 		ref <- switch(units,
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
+	} else if ( !is.na(resolution) ) {
+		from <- floor(min(ref))
+		to <- ceiling(max(ref))
+		ref <- switch(units,
+			relative=seq_rel(from, to, by=res),
+			absolute=seq.default(from, to, by=res))
 	}
 	from <- round(min(ref), digits=4L)
 	to <- round(max(ref), digits=4L)
@@ -150,8 +156,8 @@ setMethod("bin", "SpectralImagingArrays",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_tolerance(tolerance, units)
+	if ( missing(units) && !missing(resolution) )
+		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
 	xnm <- spectra
 	tnm <- index
@@ -177,6 +183,12 @@ setMethod("bin", "SpectralImagingArrays",
 	if ( missing(ref) || is.null(ref) ) {
 		from <- floor(min(index[[1L]]))
 		to <- ceiling(max(index[[1L]]))
+		ref <- switch(units,
+			relative=seq_rel(from, to, by=res),
+			absolute=seq.default(from, to, by=res))
+	} else if ( !is.na(resolution) ) {
+		from <- floor(min(ref))
+		to <- ceiling(max(ref))
 		ref <- switch(units,
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
