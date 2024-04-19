@@ -1,6 +1,7 @@
 \name{estimateDomain}
 
 \alias{estimateDomain}
+\alias{estimateReferenceMz}
 
 \title{Estimate shared domain}
 
@@ -14,10 +15,18 @@ estimateDomain(xlist,
     nchunks = getCardinalNChunks(),
     verbose = getCardinalVerbose(),
     BPPARAM = getCardinalBPPARAM(), \dots)
+
+estimateReferenceMz(object,
+    units = c("ppm", "mz"),
+    nchunks = getCardinalNChunks(),
+    verbose = getCardinalVerbose(),
+    BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{
     \item{xlist}{A list of the domain values (e.g., m/z values) for each spectrum.}
+
+    \item{object}{A mass spectral imaging dataset.}
 
     \item{units}{Should the spacing between domain values use absolute or relative units?}
 

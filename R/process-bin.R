@@ -117,11 +117,9 @@ setMethod("bin", "SpectralImagingExperiment",
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
 	} else if ( !is.na(resolution) ) {
-		from <- floor(min(ref))
-		to <- ceiling(max(ref))
 		ref <- switch(units,
-			relative=seq_rel(from, to, by=res),
-			absolute=seq.default(from, to, by=res))
+			relative=seq_rel(min(ref), max(ref), by=res),
+			absolute=seq.default(min(ref), max(ref), by=res))
 	}
 	from <- round(min(ref), digits=4L)
 	to <- round(max(ref), digits=4L)
@@ -187,11 +185,9 @@ setMethod("bin", "SpectralImagingArrays",
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
 	} else if ( !is.na(resolution) ) {
-		from <- floor(min(ref))
-		to <- ceiling(max(ref))
 		ref <- switch(units,
-			relative=seq_rel(from, to, by=res),
-			absolute=seq.default(from, to, by=res))
+			relative=seq_rel(min(ref), max(ref), by=res),
+			absolute=seq.default(min(ref), max(ref), by=res))
 	}
 	from <- round(min(ref), digits=4L)
 	to <- round(max(ref), digits=4L)

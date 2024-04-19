@@ -73,15 +73,20 @@
 }
 
 \seealso{
-    \code{\link[matter]{approx1}}
+    \code{\link[matter]{approx1}},
+    \code{\link{estimateDomain}},
+    \code{\link{estimateReferenceMz}}
 }
 
 \examples{
 set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3))
 
-# bin to unit resolition
+# bin to unit resolution
 mse2 <- bin(mse, resolution=1, units="mz")
+
+# bin to a specific range and resolution
+mse3 <- bin(mse, ref=c(800, 1000), resolution=1, units="mz")
 }
 
 \keyword{ts}

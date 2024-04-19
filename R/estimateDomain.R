@@ -36,3 +36,23 @@ estimateDomain <- function(xlist,
 		resolution = setNames(by, units))
 }
 
+estimateReferenceMz <- function(object,
+	units = c("ppm", "mz"),
+	nchunks = getCardinalNChunks(),
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( length(processingData(object)) > 0L )
+		warning("processing steps will be ignored by estimateReferenceMz()")
+	if ( is(object, "MSImagingExperiment") || is(object, "MassDataFrame") ) {
+		mz(object)
+	} else if ( is(object, "MSImagingArrays") ) {
+		units <- match.arg(units)
+		units <- switch(units, ppm="relative", mz="absolute")
+		estimateDomain(mz(object), units=units,
+			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM, ...)
+	} else {
+		stop("can't estimate m/z values for class ", sQuote(class(object)))
+	}
+}
+

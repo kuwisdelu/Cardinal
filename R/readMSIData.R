@@ -79,7 +79,7 @@ readImzML <- function(file, memory = FALSE,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max,
 			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM, ...)
 	}
 	if ( isCentroided(ans) && is(ans, "MSImagingArrays") )
 	{

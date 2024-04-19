@@ -345,6 +345,7 @@ export(
 	"convertMSImagingExperiment2Arrays",
 	"crossValidate",
 	"estimateDomain",
+	"estimateReferenceMz",
 	"estimateReferencePeaks",
 	"makeFactor",
 	"readAnalyze",

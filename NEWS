@@ -6,11 +6,14 @@ NEW FEATURES
 
     o Add support for multiple instance learning for 'PLS()'
         and 'spatialShrunkenCentroids()' with 'bags' argument
+    o Add 'estimateReferenceMz()' for more easily estimating
+        profile m/z-values from 'MSImagingArrays'
 
 BUG FIXES
 
     o Make sure 'bin()' still respects 'resolution' when 'ref' is
         specified (in which case the range is taken from 'ref')
+    o Fix 'crossValidate()' for multiple instance learning
 
 CHANGES IN VERSION 3.5.2 [2024-4-13]
 -----------------------------------
