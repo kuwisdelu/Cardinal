@@ -21,7 +21,7 @@
 readMSIData(file, \dots)
 
 ## Read imzML file
-readImzML(file, memory = FALSE,
+readImzML(file, memory = FALSE, check = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, as = "auto", parse.only=FALSE,
 	nchunks = getCardinalNChunks(),
@@ -47,6 +47,8 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 	\item{file}{The absolute or relative file path. The file extension must be included for \code{readMSIData}.}
 
 	\item{memory}{Should the spectra be loaded into memory? If FALSE, the spectra are attached as an out-of-memory matrix.}
+
+	\item{check}{Should the UUID and checksum of the binary data file be checked against the corresponding imzML tags?}
 
 	\item{mass.range}{The mass range to use when converting the data to an \code{MSImagingExperiment}.}
 

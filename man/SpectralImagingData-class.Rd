@@ -32,6 +32,7 @@
 \alias{runNames,SpectralImagingData-method}
 \alias{runNames<-,SpectralImagingData-method}
 \alias{nrun,SpectralImagingData-method}
+\alias{is3D,SpectralImagingData-method}
 \alias{processingData,SpectralImagingData-method}
 \alias{processingData<-,SpectralImagingData-method}
 
@@ -85,6 +86,8 @@
         \item{\code{runNames(object)}, \code{runNames(object) <- value}:}{Get or set the experimental run levels from \code{pixelData}.}
 
         \item{\code{nrun(object)}:}{Get the number of experimental runs.}
+
+        \item{\code{is3D(object)}:}{Check if the number of spatial dimensions is greater than 2.}
 
         \item{\code{processingData(object, ...)}, \code{processingData(object, ...) <- value}:}{Get or set the \code{processing} slot.}
     }

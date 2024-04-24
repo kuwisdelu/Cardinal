@@ -349,6 +349,9 @@ setReplaceMethod("runNames", "PositionDataFrame",
 setMethod("nrun", "PositionDataFrame",
 	function(x) nlevels(run(x)))
 
+setMethod("is3D", "PositionDataFrame",
+	function(object) length(coord(object)) > 2L)
+
 # drop unused run levels when subsetting
 setMethod("[", "PositionDataFrame",
 	function(x, i, j, ..., drop = TRUE) {

@@ -22,6 +22,7 @@
 \alias{runNames,PositionDataFrame-method}
 \alias{runNames<-,PositionDataFrame-method}
 \alias{nrun,PositionDataFrame-method}
+\alias{is3D,PositionDataFrame-method}
 \alias{[,PositionDataFrame,ANY,ANY,ANY-method}
 \alias{coerce,DFrame,PositionDataFrame-method}
 
@@ -56,6 +57,8 @@ PositionDataFrame(coord, run, \dots, row.names = FALSE)
         \item{\code{runNames(object)}, \code{runNames(object) <- value}:}{Get or set the experimental run levels.}
 
         \item{\code{nrun(object)}:}{Get the number of experimental runs.}
+
+        \item{\code{is3D(object)}:}{Check if the number of spatial dimensions is greater than 2.}
 	}
 }
 

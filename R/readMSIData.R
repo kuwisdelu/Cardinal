@@ -18,9 +18,9 @@ readMSIData <- function(file, ...)
 #### Read imzML file(s) ####
 ## -------------------------
 
-readImzML <- function(file, memory = FALSE,
+readImzML <- function(file, memory = FALSE, check = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
-	guess.max = 1000L, as = "auto", parse.only=FALSE,
+	guess.max = 1000L, as = "auto", parse.only = FALSE,
 	nchunks = getCardinalNChunks(),
 	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), ...)
@@ -50,7 +50,7 @@ readImzML <- function(file, memory = FALSE,
 	}
 	if ( verbose )
 		message("parsing imzML file: ", sQuote(path))
-	ans <- .read_imzML(path, parse.only=parse.only)
+	ans <- .read_imzML(path, parse.only=parse.only, check=check, ...)
 	if ( verbose ) {
 		if ( isTRUE(ans@continuous) )
 			message("detected 'continuous' imzML")
@@ -79,7 +79,7 @@ readImzML <- function(file, memory = FALSE,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max,
 			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM, ...)
+			BPPARAM=BPPARAM)
 	}
 	if ( isCentroided(ans) && is(ans, "MSImagingArrays") )
 	{
@@ -88,12 +88,13 @@ readImzML <- function(file, memory = FALSE,
 	}
 	if ( as == "MSImagingArrays" )
 		ans <- convertMSImagingExperiment2Arrays(ans)
-	if ( memory ) {
+	if ( memory )
+	{
 		if ( verbose )
 			message("loading spectra into memory")
 		if ( is(ans, "MSImagingArrays") ) {
-			mz(ans) <- as.list(mz(ans))
-			intensity(ans) <- as.list(intensity(ans))
+			for ( i in spectraNames(ans) )
+				spectra(ans, i) <- as.list(spectra(ans, i))
 		} else {
 			if ( is.sparse(spectra(ans)) ) {
 				atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
@@ -110,14 +111,21 @@ readImzML <- function(file, memory = FALSE,
 	ans
 }
 
-.read_imzML <- function(path, parse.only = FALSE)
+.read_imzML <- function(path, parse.only = FALSE,
+	extra = NULL, extraArrays = NULL, check = FALSE)
 {
-	parse <- CardinalIO::parseImzML(path, ibd=TRUE)
+	if ( is.null(extra) )
+		extra <- c("3DPositionX", "3DPositionY", "3DPositionZ")
+	parse <- CardinalIO::parseImzML(path, check=check,
+		extra=extra, extraArrays=extraArrays, ibd=TRUE)
 	if ( parse.only )
 		return(parse)
 	mz <- parse[["ibd"]][["mz"]]
 	intensity <- parse[["ibd"]][["intensity"]]
 	positions <- parse[["run"]][["spectrumList"]][["positions"]]
+	extra <- parse[["run"]][["spectrumList"]][["extra"]]
+	extra <- extra[vapply(extra, function(x) !all(is.na(x)), logical(1L))]
+	extraArrays <- parse[["ibd"]][["extra"]]
 	ids <- names(intensity)
 	if ( length(unique(positions[["position z"]])) > 1L ) {
 		coord <- data.frame(
@@ -128,10 +136,23 @@ readImzML <- function(file, memory = FALSE,
 		coord <- data.frame(
 			x=as.numeric(positions[["position x"]]),
 			y=as.numeric(positions[["position y"]]))
+		if ( "3DPositionZ" %in% names(extra) ) {
+			coord$z <- as.numeric(extra[["3DPositionZ"]])
+			coord$z <- match(coord$z, sort(unique(coord$z)))
+		}
 	}
 	run <- basename(tools::file_path_sans_ext(path))
 	spectraData <- SpectraArrays(list(mz=mz, intensity=intensity))
 	pixelData <- PositionDataFrame(coord=coord, run=run, row.names=ids)
+	if ( length(extra) > 0L )
+		pixelData[names(extra)] <- extra
+	if ( length(extraArrays) > 0L )
+	{
+		for ( i in names(extraArrays) ) {
+			if ( !is.null(extraArrays[[i]]) )
+				spectraData[[i]] <- extraArrays[[i]]
+		}
+	}
 	fileContent <- parse[["fileDescription"]][["fileContent"]]
 	if ( "IMS:1000030" %in% names(fileContent) ) {
 		continuous <- TRUE

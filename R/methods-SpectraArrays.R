@@ -27,6 +27,12 @@
 
 setValidity("SpectraArrays", .valid_SpectraArrays)
 
+setAs("list", "SpectraArrays",
+    function(from) SpectraArrays(from))
+
+setAs("SpectraArrays", "list",
+    function(from) as.list(from@data))
+
 setAs("SimpleList", "SpectraArrays",
     function(from) new("SpectraArrays", data=from))
 

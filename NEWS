@@ -5,6 +5,7 @@ CHANGES IN VERSION 3.5.4 [2024-4-24]
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Export 'vizi_style()' and 'vizi_engine()' functions
+    o Add 'check' argument to 'readMSIData()' for uuid+checksum
 
 BUG FIXES
 

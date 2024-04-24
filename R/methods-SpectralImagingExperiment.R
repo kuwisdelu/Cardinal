@@ -685,6 +685,9 @@ setReplaceMethod("runNames", "SpectralImagingData",
 setMethod("nrun", "SpectralImagingData",
 	function(x) nrun(pixelData(x)))
 
+setMethod("is3D", "SpectralImagingData",
+	function(object) is3D(pixelData(object)))
+
 # processingData
 
 setMethod("processingData", "SpectralImagingData",
