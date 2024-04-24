@@ -189,6 +189,15 @@ test_that("PositionDataFrame", {
 	df <- DataFrame(expand.grid(x=1:3, y=1:3), A=1:9)
 	expect_true(validObject(as(df, "PositionDataFrame")))
 
+	d4 <- PositionDataFrame(coord=Coord)
+	coord(d4)$z <- 1
+
+	expect_equal(coordNames(d4), c("x", "y", "z"))
+
+	coord(d4)$z <- NULL
+
+	expect_equal(coordNames(d4), c("x", "y"))
+
 })
 
 test_that("PositionDataFrame rbind/cbind", {

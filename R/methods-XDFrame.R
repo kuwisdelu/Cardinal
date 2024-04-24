@@ -76,7 +76,15 @@ setReplaceMethod("keys", "XDataFrame",
 		}
 		if ( is(value, "list_OR_List") && !is.null(names(value)) ) {
 			if ( !setequal(names(value), object@keys[[i]]) )
-				object@keys[[i]] <- names(value)
+			{
+				if ( all(names(value) %in% object@keys[[i]]) ) {
+					del <- setdiff(object@keys[[i]], names(value))
+					object@keys[[i]] <- names(value)
+					object[del] <- NULL
+				} else {
+					object@keys[[i]] <- names(value)
+				}
+			}
 		}
 		nms <- object@keys[[i]]
 		if ( is.null(nms) )

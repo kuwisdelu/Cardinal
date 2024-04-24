@@ -9,6 +9,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES
 
     o Fix bug in plotting PLS/OPLS coefficients
+    o Fix removing position columns with 'coord()<-'
 
 CHANGES IN VERSION 3.5.3 [2024-4-13]
 -----------------------------------
