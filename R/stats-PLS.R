@@ -126,7 +126,7 @@ setMethod("plot", c(x = "SpatialPLS", y = "missing"),
 	type <- match.arg(type)
 	if ( missing(xlab) )
 		xlab <- NULL
-	if ( type == "vip" ) {
+	if ( type == "coefficients" ) {
 		if ( missing(ylab) )
 			ylab <- "Coefficients"
 		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
@@ -255,7 +255,7 @@ setMethod("plot", c(x = "SpatialOPLS", y = "missing"),
 	type <- match.arg(type)
 	if ( missing(xlab) )
 		xlab <- NULL
-	if ( type == "vip" ) {
+	if ( type == "coefficients" ) {
 		if ( missing(ylab) )
 			ylab <- "Coefficients"
 		callNextMethod(x, y=coef(x), xlab=xlab, ylab=ylab, ...)
