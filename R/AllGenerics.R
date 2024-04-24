@@ -79,10 +79,14 @@ setGeneric("is3D", function(object) standardGeneric("is3D"))
 setGeneric("iData", function(x, i, ...) standardGeneric("iData"))
 setGeneric("iData<-", function(x, i, ..., value) standardGeneric("iData<-"))
 setMethod("iData", "ANY", function(x, i, ...) {
+		if ( missing(i) )
+			i <- 1L
 		.Deprecated("spectra")
 		spectra(x, i, ...)
 	})
 setReplaceMethod("iData", "ANY", function(x, i, ..., value) {
+		if ( missing(i) )
+			i <- 1L
 		.Deprecated("spectra")
 		spectra(x, i, ...) <- values
 		x
