@@ -370,6 +370,11 @@ export(
 	"dpal")
 
 export(
+	"vizi_style",
+	"vizi_engine",
+	"vizi_par")
+
+export(
 	"getCardinalBPPARAM",
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",

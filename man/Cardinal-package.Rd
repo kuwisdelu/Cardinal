@@ -12,6 +12,10 @@
 \alias{getCardinalNChunks}
 \alias{setCardinalNChunks}
 
+\alias{vizi_style}
+\alias{vizi_engine}
+\alias{vizi_par}
+
 \title{Mass spectrometry imaging tools}
 
 \description{
@@ -29,7 +33,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 
 \section{Options}{
 
-	The following options can be set via \code{options()}.
+	The following options can be set:
 
 	\itemize{
 		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=NULL)}: The default backend to use for parallel processing. By default, this is initially set to \code{NULL} (no parallelization). Otherwise, it must be a \code{BiocParallelParam} instance. See documentation for \code{\link{bplapply}}.}
@@ -37,6 +41,16 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should progress messages be printed?}
 
 		\item{\code{getCardinalNChunks(), setCardinalNChunks(n=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
+	}
+
+	Additionally, graphical parameters can be set:
+
+	\itemize{
+		\item{\code{vizi_style()}: Set the default plotting style.}
+
+		\item{\code{vizi_engine()}: Set the default plotting engine.}
+
+		\item{\code{vizi_par()}: Set default graphical parameters.}
 	}
 }
 

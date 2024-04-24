@@ -457,25 +457,3 @@ setMethod("peakPick", "SpectralImagingData",
 	cbind(ref, values)
 }
 
-
-#### Estimate reference peaks ####
-## ------------------------------
-
-estimateReferencePeaks <- function(object, SNR = 2,
-	method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
-	BPPARAM = getCardinalBPPARAM(), ...)
-{
-	if ( length(processingData(object)) > 0L )
-		warning("processing steps will be ignored by estimateReferencePeaks()")
-	method <- match.arg(method)
-	object <- summarizeFeatures(object, stat="mean",
-		nchunks=nchunks, verbose=verbose,
-		BPPARAM=BPPARAM)
-	featureData <- featureData(object)
-	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)
-	featureData[peaks,,drop=FALSE]
-}
-
-
