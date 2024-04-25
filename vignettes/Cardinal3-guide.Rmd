@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 8, 2024"
+date: "Revised: April 24, 2024"
 output:
   BiocStyle::html_document:
   toc: true
@@ -964,11 +964,11 @@ To align the spectra, we need to provide a vector of reference *m/z* values of e
 ```{r recalibrate, fig.height=3, fig.width=9}
 peaks_drift <- estimateReferencePeaks(mse_drift)
 
-mse_nodift <- recalibrate(mse_drift, ref=peaks_drift,
+mse_nodrift <- recalibrate(mse_drift, ref=peaks_drift,
 	method="locmax", tolerance=1500, units="ppm")
-mse_nodift <- process(mse_nodift)
+mse_nodrift <- process(mse_nodrift)
 
-plot(mse_nodift, i=186:195, xlim=c(535, 570),
+plot(mse_nodrift, i=186:195, xlim=c(535, 570),
 	superpose=TRUE, key=FALSE, linewidth=2)
 ```
 

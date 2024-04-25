@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 8, 2024"
+date: "Revised: April 24, 2024"
 output:
   BiocStyle::html_document:
   toc: true

@@ -2,6 +2,10 @@
 CHANGES IN VERSION 3.5.4 [2024-4-24]
 -----------------------------------
 
+NEW FEATURES
+
+    o Re-add support for 3D coordinates and 'image3D()'
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Export 'vizi_style()' and 'vizi_engine()' functions
