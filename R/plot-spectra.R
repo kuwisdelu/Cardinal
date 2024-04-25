@@ -98,7 +98,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		superpose = FALSE,
 		key = TRUE,
 	    ...,
-		n = 2000L,
+		n = Inf,
 		downsampler = "lttb",
 		isPeaks = FALSE,
 		annPeaks = 0)
@@ -108,9 +108,9 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		rhs <- names(featureData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		formula <- paste0(formula, collapse="+")
+		lhs <- paste0(formula, collapse="+")
 		rhs <- names(featureData(x))[1L]
-		formula <- as.formula(paste0(formula, "~", rhs))
+		formula <- as.formula(paste0(lhs, "~", rhs))
 		i <- NULL
 	}
 	vars <- all.vars(formula)
@@ -187,7 +187,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		superpose = FALSE,
 		key = TRUE,
 	    ...,
-		n = 2000L,
+		n = Inf,
 		downsampler = "lttb",
 		isPeaks = FALSE,
 		annPeaks = 0)
@@ -250,24 +250,15 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 .plot_spectra_formula <- function(x, y,
 	formula, by, groups, xlab, ylab, ...)
 {
+	parse <- parse_formula(formula)
 	vars <- all.vars(formula)
 	vars_x <- vars[length(vars)]
 	vars_y <- vars[-length(vars)]
-	fm_x <- as.list(formula[[3L]])
-	fm_y <- as.list(formula[[2L]])
-	if ( length(fm_x) > 1L )
-		fm_x <- fm_x[-1L]
-	if ( length(fm_y) > 1L )
-		fm_y <- fm_y[-1L]
 	len <- max(length(x), length(y))
-	vars_x <- rep_len(vars_x, len)
-	vars_y <- rep_len(vars_y, len)
-	fm_x <- rep_len(fm_x, len)
-	fm_y <- rep_len(fm_y, len)
-	names(fm_x) <- vars_x
-	names(fm_y) <- vars_y
-	names(x) <- vars_x
-	names(y) <- vars_y
+	fm_x <- rep_len(parse$rhs, len)
+	fm_y <- rep_len(parse$lhs, len)
+	names(x) <- rep_len(vars_x, len)
+	names(y) <- rep_len(vars_y, len)
 	EVAL <- function(expr, i) {
 		data <- c(x[i], y[i])
 		eval(expr, envir=data)

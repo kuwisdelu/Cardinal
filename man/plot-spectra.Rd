@@ -52,7 +52,7 @@
     superpose = FALSE,
     key = TRUE,
     \dots,
-    n = 2000L,
+    n = Inf,
     downsampler = "lttb",
     isPeaks = FALSE,
     annPeaks = 0)
@@ -64,7 +64,7 @@
     superpose = FALSE,
     key = TRUE,
     \dots,
-    n = 2000L,
+    n = Inf,
     downsampler = "lttb",
     isPeaks = FALSE,
     annPeaks = 0)
@@ -95,7 +95,7 @@
 
     \item{key}{Should a legend or colorkey be plotted?}
 
-    \item{n, downsampler}{A spectrum can contain far more data points than are needed to visualize it, potentially making the plotting unnecessarily slow. Downsampling is performed to improve plotting speed while maintaining the visual integrity of the spectrum. See \code{\link{downsample}} for details.}
+    \item{n, downsampler}{A spectrum can contain far more data points than are needed to visualize it, potentially making the plotting unnecessarily slow. Downsampling can be performed to improve plotting speed while maintaining the visual integrity of the spectrum. See \code{\link{downsample}} for details.}
 }
 
 \author{
