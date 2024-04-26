@@ -199,8 +199,8 @@ setMethod("plot", c(x = "MeansTest", y = "missing"),
 
 .plot_boxplots <- function(model, select = 1L,
 	xlab = NULL, ylab = NULL, col = NULL, fill = FALSE,
-	xlim = NULL, ylim = NULL, key = TRUE,
-	grid = TRUE, show.obs = TRUE, ...)
+	xlim = NULL, ylim = NULL, key = TRUE, grid = TRUE,
+	show.obs = TRUE, engine = NULL, ...)
 {
 	data <- model$data
 	if ( is.numeric(select) )
@@ -225,6 +225,8 @@ setMethod("plot", c(x = "MeansTest", y = "missing"),
 	} else {
 		plot <- set_channel(plot, "color", label="\n", scheme=col, key=key)
 	}
+	if ( !is.null(engine) )
+		plot <- set_engine(plot, engine)
 	plot <- set_par(plot, ...)
 	plot
 }

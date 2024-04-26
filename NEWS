@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 3.5.6 [2024-4-26]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add optional 'run' argument to 'slice()'
+    o Add optional 'plotly' support for all plotting methods
+
 CHANGES IN VERSION 3.5.5 [2024-4-25]
 -----------------------------------
 

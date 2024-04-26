@@ -157,7 +157,7 @@ setMethod("image", c(x = "SpatialDGMM"),
 .plot_density <- function(mu, sigma, n = 256L,
 	xlab = "", ylab = "Density", col = NULL,
 	xlim = NULL, ylim = NULL, key = TRUE,
-	grid = TRUE, ...)
+	grid = TRUE, engine = NULL, ...)
 {
 	plot <- vizi()
 	cls <- factor(colnames(mu))
@@ -178,6 +178,8 @@ setMethod("image", c(x = "SpatialDGMM"),
 	plot <- set_channel(plot, "y", label=ylab)
 	plot <- set_channel(plot, "color", label="\n",
 		limits=levels(cls), scheme=col, key=key)
+	if ( !is.null(engine) )
+		plot <- set_engine(plot, engine)
 	plot <- set_par(plot, ...)
 	plot
 }

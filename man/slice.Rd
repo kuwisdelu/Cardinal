@@ -9,7 +9,7 @@
 }
 
 \usage{
-slice(x, i = features(x, ...), ...,
+slice(x, i = features(x, ...), ..., run = NULL,
     simplify = TRUE, drop = TRUE)
 }
 
@@ -20,13 +20,15 @@ slice(x, i = features(x, ...), ...,
 
     \item{\dots}{Conditions describing features to slice, passed to \code{features()}.}
 
+    \item{run}{The names of experimental runs to include, or the index of the levels of the runs to include.}
+
     \item{simplify}{The image slices be returned as a list, or simplified to an array?}
 
     \item{drop}{Should redundant array dimensions be dropped? If TRUE, dimensions with only one level are dropped using \code{drop}.}
 }
 
 \value{
-    A list or array of the sliced image(s). If multiple images are sliced, the first dimension will be the features.
+    A list or array of the sliced image(s). If multiple images are sliced and \code{simplify=TRUE}, then the \emph{last} dimension will be the features.
 }
 
 \author{

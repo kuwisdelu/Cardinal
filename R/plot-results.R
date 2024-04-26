@@ -72,7 +72,7 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 }
 
 .plot_reduced_dims <- function(x, y, ...,
-	select, groups, xlab, ylab)
+	select, groups, xlab, ylab, engine)
 {
 	if ( is.character(y) && length(y) == 1L )
 		y <- x[[y]]
@@ -100,6 +100,8 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 	}
 	plot <- set_channel(plot, "x", label=xlab)
 	plot <- set_channel(plot, "y", label=ylab)
+	if ( !missing(engine) && !is.null(engine) )
+		plot <- set_engine(plot, engine)
 	if ( ...length() > 0L )
 		plot <- set_par(plot, ...)
 	plot

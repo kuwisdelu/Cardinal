@@ -625,8 +625,8 @@ Note that when plotting images from raw arrays, the images are upside-down due t
 
 ```{r slice-image, fig.height=4, fig.width=9}
 par(mfcol=c(1,2), new=FALSE)
-image(a2[1,,,1], asp=1)
-image(a2[1,,,2], asp=1)
+image(a2[,,1,1], asp=1)
+image(a2[,,2,1], asp=1)
 ```
 
 ## Combining

@@ -3,39 +3,51 @@
 ## ------------------------------
 
 slice <- function(x, i = features(x, ...), ...,
-	simplify = TRUE, drop = TRUE)
+	run = NULL, simplify = TRUE, drop = TRUE)
 {
-	coord <- coord(x)
+	if ( is.null(run) ) {
+		coord <- coord(x)
+		runs <- run(x)
+		xi <- spectra(x)[i,,drop=FALSE]
+	} else {
+		if ( !is.character(run) && !is.factor(run) )
+			run <- runNames(x)[run]
+		j <- run(x) %in% run
+		coord <- coord(x)[j,,drop=FALSE]
+		runs <- droplevels(run(x)[j])
+		xi <- spectra(x)[i,j,drop=FALSE]
+	}
 	ndim <- length(coord)
 	FUN <- function(y)
 	{
-		rs <- lapply(levels(run(x)),
+		rs <- lapply(levels(runs),
 			function(irun)
 			{
-				vals <- y[run(x) %in% irun]
-				coord <- coord(x)[run(x) %in% irun,,drop=FALSE]
+				vals <- y[runs %in% irun]
+				co <- coord[runs %in% irun,,drop=FALSE]
 				if ( ndim == 2L ) {
-					to_raster(coord$x, coord$y, vals)
+					to_raster(co$x, co$y, vals)
 				} else if ( ndim == 3L ) {
-					to_raster3(coord$x, coord$y, coord$z, vals)
+					to_raster3(co$x, co$y, co$z, vals)
 				} else {
 					stop("number of coordinates must be 2 or 3")
 				}
 			})
-		names(rs) <- levels(run(x))
+		names(rs) <- levels(runs)
 		if ( simplify )
 			rs <- simplify2array(rs)
 		rs
 	}
-	xi <- spectra(x)[i,,drop=FALSE]
 	ans <- apply(xi, 1L, FUN, simplify=FALSE)
+	if ( is.null(run) ) {
+		names(ans) <- featureNames(x)
+	} else {
+		names(ans) <- featureNames(x)[j]
+	}
 	if ( simplify ) {
 		ans <- simplify2array(ans)
-		if ( is.array(ans) ) {
-			ndim <- length(dim(ans))
-			perm <- c(ndim, seq_len(ndim - 1L))
-			ans <- aperm(ans, perm=perm)
-		}
+		dnms <- c(coordNames(x), "run", "feature")
+		dim(ans) <- setNames(dim(ans), dnms)
 		if ( drop )
 			ans <- drop(ans)
 	}
