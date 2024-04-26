@@ -36,7 +36,7 @@ makeFactor <- function(..., ordered = FALSE)
 	if ( nrun(object) > 1L )
 		warning("multiple runs plotted; results may be unexpected")
 	box(bty="o", col="red", lty="solid", lwd=2)
-	message("select pixels; press ESC or 2nd mouse button to stop")
+	message("select ", mode, ": press ESC or 2nd mouse button to stop")
 	loc <- .select_locator(plot, mode == "region")
 	roi <- logical(ncol(object))
 	sub <- rep_len(.lastplot$subset, ncol(object))
@@ -56,21 +56,20 @@ makeFactor <- function(..., ordered = FALSE)
 {
 	xs <- numeric()
 	ys <- numeric()
+	shape <- if (region) 1L else 4L
 	while ( TRUE ) {
 		loc <- locator(1)
 		if ( !is.null(loc) ) {
 			xs <- c(xs, loc$x)
 			ys <- c(ys, loc$y)
 			if ( region ) {
-				p <- add_mark(plot, "points",
-					x=xs, y=ys, params=list(col="white"))
-				p <- add_mark(p, "lines",
-					x=xs, y=ys, params=list(col="white"))
-			} else {
-				p <- add_mark(plot, "points",
-					x=xs, y=ys, params=list(col="white", pch=4))
+				plot <- add_mark(plot, "lines", x=xs, y=ys,
+					params=list(col="white"),
+					trans=list(sort=FALSE))
 			}
-			plot(p)
+			plot <- add_mark(plot, "points", x=xs, y=ys,
+				params=list(col="white", pch=shape))
+			print(plot)
 			box(bty="o", col="red", lty="solid", lwd=2)
 		} else {
 			break
@@ -79,9 +78,10 @@ makeFactor <- function(..., ordered = FALSE)
 	if ( region ) {
 		xsp <- c(xs, xs[1L])
 		ysp <- c(ys, ys[1L])
-		p <- add_mark(plot, "lines",
-			x=xsp, y=ysp, params=list(col="white"))
-		plot(p)
+		plot <- add_mark(plot, "lines", x=xsp, y=ysp,
+			params=list(col="white"),
+			trans=list(sort=FALSE))
+		print(plot)
 	}
 	list(x=xs, y=ys)
 }

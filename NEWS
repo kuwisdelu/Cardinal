@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.5.5 [2024-4-25]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix bug in 'selectROI()' region plot updates
+
 CHANGES IN VERSION 3.5.4 [2024-4-24]
 -----------------------------------
 

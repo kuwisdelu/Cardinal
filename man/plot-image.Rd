@@ -2,10 +2,11 @@
 \alias{plot-image}
 
 \alias{image}
-\alias{image3D}
 \alias{image,MSImagingExperiment-method}
-\alias{image3D,MSImagingExperiment-method}
 \alias{image,SpectralImagingExperiment-method}
+
+\alias{image3D}
+\alias{image3D,MSImagingExperiment-method}
 
 \alias{cpal}
 \alias{dpal}
@@ -25,8 +26,6 @@
     units = c("ppm", "mz"),
     \dots,
     xlab, ylab)
-
-\S4method{image3D}{MSImagingExperiment}(x, formula = intensity ~ x * y * z, \dots)
 
 \S4method{image}{SpectralImagingExperiment}(x,
     formula,
