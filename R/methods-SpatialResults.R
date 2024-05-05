@@ -194,7 +194,7 @@ setMethod("show", "ResultsList",
 		callNextMethod()
 		cat("model:", object@elementType, "\n")
 		if ( !is.null(mcols(object)) ) {
-			n <- getOption("matter.show.head.n")
+			n <- 10L
 			x <- as.data.frame(mcols(object))
 			print(head(x, n=n))
 			if ( nrow(x) > n )
