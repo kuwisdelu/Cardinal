@@ -54,6 +54,8 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 
 	\item{resolution}{The mass resolution to use when converting the data to an \code{MSImagingExperiment}. This is the \emph{inverse} of the instrument resolution, if known. It is the width of the m/z bins when converting the data to an \code{MSImagingExperiment}.}
 
+	\item{tolerance}{If the spectra have been centroided but the peaks are unaligned, then this is passed to \code{\link{peakAlign}}.}
+
 	\item{units}{The units for the above resolution.}
 
 	\item{guess.max}{The number of spectra to use when guessing the mass range and resolution, if they are not provided.}
@@ -73,8 +75,6 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 	\item{object}{A mass spectrometry imaging dataset to convert from one class to another.}
 
 	\item{mz}{A vector of shared m/z values for converting to \code{MSImagingExperiment}, if not to be determined automatically.}
-
-	\item{tolerance}{If the spectra have been centroided but the peaks are unaligned, then this is passed to \code{\link{peakAlign}}.}
 }
 
 \details{

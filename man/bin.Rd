@@ -17,26 +17,28 @@
     spectra = "intensity", index = "mz",
     method = c("sum", "mean", "max", "min",
         "linear", "cubic", "gaussian", "lanczos"),
-    resolution = NA, units = c("ppm", "mz"), \dots)
+    resolution = NA, tolerance = NA, units = c("ppm", "mz"),
+    mass.range = NULL, \dots)
 
 \S4method{bin}{MSImagingArrays}(x, ref,
     spectra = "intensity", index = "mz",
     method = c("sum", "mean", "max", "min",
         "linear", "cubic", "gaussian", "lanczos"),
-    resolution = NA, units = c("ppm", "mz"), \dots)
+    resolution = NA, tolerance = NA, units = c("ppm", "mz"),
+    mass.range = NULL, \dots)
 
 \S4method{bin}{SpectralImagingExperiment}(x, ref,
     spectra = "intensity", index = NULL,
     method = c("sum", "mean", "max", "min",
         "linear", "cubic", "gaussian", "lanczos"),
-    resolution = NA, units = c("relative", "absolute"),
+    resolution = NA, tolerance = NA, units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), \dots)
 
 \S4method{bin}{SpectralImagingArrays}(x, ref,
     spectra = "intensity", index = NULL,
     method = c("sum", "mean", "max", "min",
         "linear", "cubic", "gaussian", "lanczos"),
-    resolution = NA, units = c("relative", "absolute"),
+    resolution = NA, tolerance = NA, units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), \dots)
 }
 
@@ -51,9 +53,13 @@
 
     \item{method}{The peak picking method to use. See \code{\link[matter]{approx1}} for details.}
     
-    \item{resolution}{The bin widths.}
+    \item{resolution}{The spacing between bin centers. If \code{tolerance} is not provided, then this is also used to calculate the bin width.}
+
+    \item{tolerance}{The half-bin width.}
     
     \item{units}{The units for the above resolution.}
+
+    \item{mass.range}{An alternative way of specifying the mass range (replaces the value of \code{ref}).}
 
     \item{verbose}{Should progress messages be printed?}
 
