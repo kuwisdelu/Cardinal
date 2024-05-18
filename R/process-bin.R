@@ -95,19 +95,21 @@ setMethod("bin", "SpectralImagingExperiment",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
+	if ( length(index) > 1L )
+		stop("more than 1 'index' array not allowed")
 	if ( missing(units) && !missing(resolution) )
 		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
-	xnm <- spectra
-	tnm <- index
-	spectra <- spectra(x, xnm)
-	if ( is.null(tnm) ) {
-		tnm <- "index"
+	snm <- spectra
+	inm <- index
+	spectra <- spectra(x, snm)
+	if ( is.null(inm) ) {
+		inm <- "index"
 		domain <- seq_len(nrow(x))
 	} else {
-		domain <- featureData(x)[[tnm]]
+		domain <- featureData(x)[[inm]]
 		if ( is.null(domain) )
-			stop("index ", sQuote(tnm), " not found")
+			stop("index ", sQuote(inm), " not found")
 	}
 	if ( is.sparse(spectra) ) {
 		index <- atomindex(spectra)
@@ -145,11 +147,11 @@ setMethod("bin", "SpectralImagingExperiment",
 		if ( is.na(tolerance) ) {
 			from <- round(min(ref), digits=4L)
 			to <- round(max(ref), digits=4L)
-			message("binning ", xnm, " from ", tnm, " ", from, " to ", to,
+			message("binning ", snm, " from ", inm, " ", from, " to ", to,
 				" with ", units, " resolution ", round(res, digits=6L))
 		} else {
 			label <- if (length(ref) != 1L) "references" else "reference"
-			message("binning ", xnm, " to ", length(ref), " ", tnm, " ", label,
+			message("binning ", snm, " to ", length(ref), " ", inm, " ", label,
 				" with ", units, " tolerance ", round(tolerance, digits=6L))
 		}
 	}
@@ -166,8 +168,8 @@ setMethod("bin", "SpectralImagingExperiment",
 		data=spectra, domain=ref,
 		nrow=length(ref), ncol=length(x),
 		tolerance=tol, sampler=method)
-	spectraData <- SpectraArrays(setNames(list(spectra), xnm))
-	featureData <- DataFrame(setNames(list(ref), tnm))
+	spectraData <- SpectraArrays(setNames(list(spectra), snm))
+	featureData <- DataFrame(setNames(list(ref), inm))
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
 		metadata=metadata(x), processing=processingData(x))
@@ -185,19 +187,21 @@ setMethod("bin", "SpectralImagingArrays",
 		verbose = getCardinalVerbose(), ...)
 {
 	method <- match.arg(method)
+	if ( length(index) > 1L )
+		stop("more than 1 'index' array not allowed")
 	if ( missing(units) && !missing(resolution) )
 		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
-	xnm <- spectra
-	tnm <- index
-	spectra <- spectra(x, xnm)
-	if ( is.null(tnm) ) {
-		tnm <- "index"
+	snm <- spectra
+	inm <- index
+	spectra <- spectra(x, snm)
+	if ( is.null(inm) ) {
+		inm <- "index"
 		index <- lapply(lengths(spectra), seq_len)
 	} else {
-		index <- spectra(x, tnm)
+		index <- spectra(x, inm)
 		if ( is.null(index) )
-			stop("index ", sQuote(tnm), " not found")
+			stop("index ", sQuote(inm), " not found")
 	}
 	res.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(resolution) ) {
@@ -224,11 +228,11 @@ setMethod("bin", "SpectralImagingArrays",
 		if ( is.na(tolerance) ) {
 			from <- round(min(ref), digits=4L)
 			to <- round(max(ref), digits=4L)
-			message("binning ", xnm, " from ", tnm, " ", from, " to ", to,
+			message("binning ", snm, " from ", inm, " ", from, " to ", to,
 				" with ", units, " resolution ", round(res, digits=6L))
 		} else {
 			label <- if (length(ref) != 1L) "references" else "reference"
-			message("binning ", xnm, " to ", length(ref), " ", tnm, " ", label,
+			message("binning ", snm, " to ", length(ref), " ", inm, " ", label,
 				" with ", units, " tolerance ", round(tolerance, digits=6L))
 		}
 	}
@@ -245,8 +249,8 @@ setMethod("bin", "SpectralImagingArrays",
 		data=spectra, domain=ref,
 		nrow=length(ref), ncol=length(x),
 		tolerance=tol, sampler=method)
-	spectraData <- SpectraArrays(setNames(list(spectra), xnm))
-	featureData <- DataFrame(setNames(list(ref), tnm))
+	spectraData <- SpectraArrays(setNames(list(spectra), snm))
+	featureData <- DataFrame(setNames(list(ref), inm))
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
 		metadata=metadata(x), processing=processingData(x))
