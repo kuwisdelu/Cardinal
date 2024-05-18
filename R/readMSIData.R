@@ -168,8 +168,14 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	} else {
 		centroided <- NA
 	}
+	experimentData <- try(as(parse, "ImzMeta"), silent=TRUE)
+	if ( inherits(experimentData, "try-error") ) {
+		warning("failed to convert experimental metadata:\n",
+			attr(experimentData, "condition")$message)
+		experimentData <- NULL
+	}
 	MSImagingArrays(spectraData, pixelData=pixelData,
-		experimentData=as(parse, "ImzMeta"),
+		experimentData=experimentData,
 		centroided=centroided,
 		continuous=continuous)
 }

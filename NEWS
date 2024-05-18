@@ -6,6 +6,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Add 'mass.range' and tolerance' arguments to 'bin()'
 
+BUG FIXES
+
+    o Fix 'readImzML' error if imzML fails conversion to 'ImzMeta'
+
 CHANGES IN VERSION 3.5.6 [2024-4-26]
 -----------------------------------
 
