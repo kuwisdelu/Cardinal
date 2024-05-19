@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.7.1 [2024-5-18]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Update 'spectrapply()' to support 2 index arrays
+
 CHANGES IN VERSION 3.6.1 [2024-5-17]
 -----------------------------------
 

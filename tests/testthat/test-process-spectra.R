@@ -5,9 +5,15 @@ context("process")
 
 test_that("process spectra - SpectralImagingArrays", {
 
-	path <- CardinalIO::exampleImzMLFile("processed")
-	s <- as(readImzML(path), "SpectralImagingArrays")
+	set.seed(1, kind="default")
+	x <- replicate(9, rlnorm(100), simplify=FALSE)
+	t1 <- replicate(9, sort(runif(100)), simplify=FALSE)
+	t2 <- replicate(9, sort(runif(100)), simplify=FALSE)
 	ones <- rep.int(1, length(s))
+
+	s <- SpectralImagingArrays(
+		spectraData=list(x=x, t1=t1, t2=t2),
+		pixelData=PositionDataFrame(expand.grid(x=1:3, y=1:3)))
 
 	s2 <- process(normalize(s, method="rms", scale=1))
 	rms1 <- vapply(spectra(s2, 2L), \(.) sqrt(mean(.^2)), numeric(1L))
