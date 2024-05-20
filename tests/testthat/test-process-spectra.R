@@ -9,14 +9,14 @@ test_that("process spectra - SpectralImagingArrays", {
 	x <- replicate(9, rlnorm(100), simplify=FALSE)
 	t1 <- replicate(9, sort(runif(100)), simplify=FALSE)
 	t2 <- replicate(9, sort(runif(100)), simplify=FALSE)
-	ones <- rep.int(1, length(s))
+	ones <- rep.int(1, length(x))
 
 	s <- SpectralImagingArrays(
-		spectraData=list(x=x, t1=t1, t2=t2),
+		spectraData=list(intensity=x, t1=t1, t2=t2),
 		pixelData=PositionDataFrame(expand.grid(x=1:3, y=1:3)))
 
 	s2 <- process(normalize(s, method="rms", scale=1))
-	rms1 <- vapply(spectra(s2, 2L), \(.) sqrt(mean(.^2)), numeric(1L))
+	rms1 <- vapply(spectra(s2), \(.) sqrt(mean(.^2)), numeric(1L))
 	
 	expect_is(s2, "SpectralImagingArrays")
 	expect_equal(rms1, ones)
@@ -25,11 +25,11 @@ test_that("process spectra - SpectralImagingArrays", {
 	file1 <- tempfile()
 	s3 <- normalize(s, method="rms", scale=1)
 	s3 <- process(s3, outfile=file1)
-	rms3 <- vapply(as.list(spectra(s3, 2L)), \(.) sqrt(mean(.^2)), numeric(1L))
-	fout1 <- path(spectra(s3, 2L))
+	rms3 <- vapply(as.list(spectra(s3)), \(.) sqrt(mean(.^2)), numeric(1L))
+	fout1 <- path(spectra(s3))
 
-	expect_is(spectra(s3, 1L), "matter_list")
-	expect_is(spectra(s3, 2L), "matter_list")
+	expect_is(spectra(s3, "intensity"), "matter_list")
+	expect_is(spectra(s3, "index"), "matter_list")
 	expect_equal(normalizePath(fout1), normalizePath(file1))
 	expect_equal(rms3, ones)
 
@@ -40,13 +40,34 @@ test_that("process spectra - SpectralImagingArrays", {
 
 	expect_is(s4, "SpectralImagingArrays")
 
+	fun <- function(x, t1, t2) x / (t1 + t2)
+	s5 <- addProcessing(s, fun, "custom function")
+	s5 <- process(s5, index=c("t1", "t2"))
+
+	expect_equal(spectra(s5), Map(fun, x, t1, t2))
+
+	fun2 <- function(x, t1, t2) cbind(t1[1:3], t2[1:3], x[1:3])
+	s6 <- addProcessing(s, fun2, "custom function 2")
+	s6 <- process(s6, index=c("t1", "t2"))
+
+	expect_equal(spectra(s6), Map(\(.) .[1:3], x))
+	expect_equal(spectra(s6, "t1"), Map(\(.) .[1:3], t1))
+	expect_equal(spectra(s6, "t2"), Map(\(.) .[1:3], t2))
+
 })
 
 test_that("process spectra - SpectralImagingExperiment", {
 
-	path <- CardinalIO::exampleImzMLFile("continuous")
-	s <- as(readImzML(path), "SpectralImagingExperiment")
-	ones <- rep.int(1, length(s))
+	set.seed(1, kind="default")
+	x <- replicate(9, rlnorm(100))
+	t1 <- sort(runif(100))
+	t2 <- sort(runif(100))
+	ones <- rep.int(1, ncol(x))
+
+	s <- SpectralImagingExperiment(
+		spectraData=list(intensity=x),
+		featureData=DataFrame(t1=t1, t2=t2),
+		pixelData=PositionDataFrame(expand.grid(x=1:3, y=1:3)))
 
 	s2 <- process(normalize(s, method="rms", scale=1))
 
@@ -69,6 +90,12 @@ test_that("process spectra - SpectralImagingExperiment", {
 	s4 <- process(s4)
 
 	expect_is(s4, "SpectralImagingExperiment")
+
+	fun <- function(x, t1, t2) x / (t1 + t2)
+	s5 <- addProcessing(s, fun, "custom function 1")
+	s5 <- process(s5, index=c("t1", "t2"))
+
+	expect_equal(spectra(s5), apply(x, 2L, fun, t1, t2))
 
 })
 

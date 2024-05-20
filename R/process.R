@@ -145,6 +145,8 @@ setMethod("process", "SpectralImagingExperiment",
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
+	if ( is.null(spectra) )
+		stop("spectra ", sQuote(snm), " not found")
 	if ( is.null(inm) ) {
 		inm <- "index"
 		index <- seq_len(nrow(object))
@@ -253,6 +255,8 @@ setMethod("process", "SpectralImagingArrays",
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
+	if ( is.null(spectra) )
+		stop("spectra ", sQuote(snm), " not found")
 	if ( is.null(inm) ) {
 		inm <- "index"
 		index <- lapply(lengths(spectra), seq_len)
@@ -337,7 +341,6 @@ setMethod("process", "SpectralImagingArrays",
 {
 	function(X, ..., MoreArgs)
 	{
-		browser()
 		nindex <- ...length()
 		index <- ..1
 		if ( nindex > 1L ) {
@@ -345,25 +348,30 @@ setMethod("process", "SpectralImagingArrays",
 		} else {
 			index2 <- NULL
 		}
+		if ( is.matrix(X) ) {
+			continuous <- TRUE
+			N <- ncol(X)
+		} else if ( is.list(X) ) {
+			continuous <- FALSE
+			N <- length(X)
+		} else {
+			stop("unexpected chunk class: ", sQuote(class(X)[1L]))
+		}
 		cid <- attr(X, "chunkid")
-		ans <- vector("list", length(X))
-		for ( i in seq_along(X) )
+		ans <- vector("list", N)
+		for ( i in seq_len(N) )
 		{
-			if ( is.matrix(X) ) {
-				continuous <- TRUE
+			if ( continuous ) {
 				xi <- xj <- X[,i]
 				t1 <- index
 				t2 <- index2
-			} else if ( is.list(X) ) {
-				continuous <- FALSE
+			} else {
 				xi <- xj <- X[[i]]
 				t1 <- index[[i]]
 				t2 <- index2[[i]]
-			} else {
-				stop("unexpected chunk class: ", sQuote(class(X)[1L]))
 			}
 			nxi <- length(xi)
-			ncout <- if (continuous) 2L else nindex + 1L
+			nci <- if (continuous) 2L else nindex + 1L
 			for ( j in seq_along(processingSteps) )
 			{
 				psj <- processingSteps[[j]]
@@ -377,7 +385,7 @@ setMethod("process", "SpectralImagingArrays",
 				if ( length(xj) == nxi ) {
 					xi <- xj
 				} else if ( is.matrix(xj) ) {
-					if ( ncol(xj) == ncout ) {
+					if ( ncol(xj) == nci ) {
 						if ( ncol(xj) == 2L ) {
 							t1 <- xj[,1L]
 							xi <- xj[,2L]
@@ -387,7 +395,7 @@ setMethod("process", "SpectralImagingArrays",
 							xi <- xj[,3L]
 						}
 					} else {
-						stop("expected ", ncout,
+						stop("expected ", nci,
 							" columns in output but received ", ncol(xj))
 					}
 				} else {
@@ -398,7 +406,7 @@ setMethod("process", "SpectralImagingArrays",
 			if ( isTRUE(all.equal(t1, domain, check.attributes=FALSE)) ) {
 				ans[[i]] <- xi
 			} else if ( is.matrix(xj) || (!is.null(put) && !continuous) ) {
-				ans[[i]] <- switch(ncout - 1L,
+				ans[[i]] <- switch(nci - 1L,
 					`1`=list(t1, xi),
 					`2`=list(t1, t2, xi))
 			} else if ( length(xi) == nxi ) {
