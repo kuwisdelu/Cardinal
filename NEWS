@@ -2,9 +2,14 @@
 CHANGES IN VERSION 3.7.1 [2024-5-18]
 -----------------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
+NEW FEATURES
 
     o Update 'spectrapply()' to support 2 index arrays
+    o Update 'plot()' to support 2 domains (e.g., for ion mobility)
+
+BUG FIXES
+
+    o Fix default 'tolerance' in 'pixels()'
 
 CHANGES IN VERSION 3.6.1 [2024-5-17]
 -----------------------------------

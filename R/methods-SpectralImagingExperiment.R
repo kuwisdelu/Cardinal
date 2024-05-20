@@ -416,7 +416,7 @@ setMethod("pixels", "SpectralImagingArrays",
 		}
 		coord <- as.data.frame(coord)
 		if ( is.na(tol) )
-			tol <- vapply(coord(object), estres, numeric(1L))
+			tol <- 0.5 * vapply(coord(object), estres, numeric(1L))
 		i_coord <- kdsearch(coord, coord(object), tol=tol)
 		if ( any(lengths(i_coord) != 1L) )
 		{
