@@ -105,12 +105,13 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	} else {
 		stop("must specify exactly 2 or 3 spatial dimensions")
 	}
+	is2d <- ndim < 3L
 	X <- pixelData(x)[[vars_x]]
 	Y <- pixelData(x)[[vars_y]]
-	if ( ndim > 2L ) {
-		Z <- pixelData(x)[[vars_z]]
-	} else {
+	if ( is2d ) {
 		Z <- NULL
+	} else {
+		Z <- pixelData(x)[[vars_z]]
 	}
 	if ( is.null(i) ) {
 		vals <- as.data.frame(pixelData(x)[vars_vals])
