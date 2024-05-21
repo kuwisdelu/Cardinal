@@ -80,6 +80,9 @@ setMethod("process", "MSImagingArrays",
 		domain = NULL, outfile = NULL, ...)
 {
 	if ( !is.null(outfile) ) {
+		if ( length(index) > 1L )
+			stop("file output with more than 1 'index' array not allowed ",
+				"for class ", sQuote(class(object)[1L]))
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		outfile <- paste0(tools::file_path_sans_ext(outfile), ".ibd")
 		uuid <- matter_vec(uuid(uppercase=FALSE)$bytes,
@@ -106,12 +109,12 @@ setMethod("process", "MSImagingArrays",
 {
 	if ( !is.null(outfile) )
 	{
-		mz <- spectra(object, indexname[1L])
+		mz <- spectra(object, indexname)
 		intensity <- spectra(object, spectraname)
 		outfile <- paste0(tools::file_path_sans_ext(outfile), ".imzML")
 		ok <- writeImzML(object, file=outfile, mz=mz, intensity=intensity, asis=TRUE)
 		newpath <- attr(ok, "outpath")[2L]
-		path(spectra(object, indexname[1L])) <- newpath
+		path(spectra(object, indexname)) <- newpath
 		path(spectra(object, spectraname)) <- newpath
 	}
 	object
@@ -141,7 +144,9 @@ setMethod("process", "SpectralImagingExperiment",
 	} else {
 		put <- NULL
 	}
-	nindex <- max(1L, length(index))
+	if ( length(index) > 1L )
+		stop("more than 1 'index' array not allowed ",
+			"for class ", sQuote(class(object)[1L]))
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
@@ -151,27 +156,14 @@ setMethod("process", "SpectralImagingExperiment",
 		inm <- "index"
 		index <- seq_len(nrow(object))
 	} else {
-		index <- featureData(object)[[inm[1L]]]
+		index <- featureData(object)[[inm]]
 		if ( is.null(index) )
-			stop("index ", sQuote(inm[1L]), " not found")
-		if ( nindex > 1L ) {
-			index2 <- featureData(object)[[inm[2L]]]
-			if ( is.null(index2) )
-				stop("index ", sQuote(inm[2L]), " not found")
-		}
+			stop("index ", sQuote(inm), " not found")
 	}
 	FUN <- .process_fun(ps, domain=domain, put=put)
-	if ( nindex == 1L ) {
-		ans <- chunk_colapply(spectra, FUN, index,
+	ans <- chunk_colapply(spectra, FUN, index,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM)
-	} else if ( nindex == 2L ) {
-		ans <- chunk_colapply(spectra, FUN, index, index2,
-			nchunks=nchunks, verbose=verbose,
-			BPPARAM=BPPARAM)
-	} else {
-		stop("more than 2 'index' arrays not allowed")
-	}
 	object <- .postprocess_SpectralImagingExperiment(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
 	metadata(object)[["processing"]] <- c(metadata(object)[["processing"]], ps)
@@ -194,11 +186,11 @@ setMethod("process", "SpectralImagingExperiment",
 		if ( is.null(domain) ) {
 			index <- NULL
 		} else {
-			index <- featureData(object)[[indexname[1L]]]
+			index <- featureData(object)[[indexname]]
 		}
 	} else {
 		if ( is.null(domain) )
-			domain <- featureData(object)[[indexname[1L]]]
+			domain <- featureData(object)[[indexname]]
 		if ( length(ans) == 2L * length(object) ) {
 			spectra <- ans[seq(2L, length(ans), by=2L),drop=drop]
 			index <- ans[seq(1L, length(ans) - 1L, by=2L),drop=drop]
@@ -218,7 +210,7 @@ setMethod("process", "SpectralImagingExperiment",
 		spectra(object, spectraname) <- spectra
 	} else {
 		spectraData <- SpectraArrays(setNames(list(spectra), spectraname))
-		featureData <- DataFrame(setNames(list(domain), indexname[1L]))
+		featureData <- DataFrame(setNames(list(domain), indexname))
 		featureData <- as(featureData, class(featureData(object)))
 		object <- new(class(object), object,
 			spectraData=spectraData, featureData=featureData)
@@ -251,6 +243,9 @@ setMethod("process", "SpectralImagingArrays",
 	} else {
 		put <- NULL
 	}
+	if ( length(index) > 3L )
+		stop("more than 3 'index' arrays not allowed ",
+			"for class ", sQuote(class(object)[1L]))
 	nindex <- max(1L, length(index))
 	snm <- spectra
 	inm <- index
@@ -264,10 +259,15 @@ setMethod("process", "SpectralImagingArrays",
 		index <- spectra(object, inm[1L])
 		if ( is.null(index) )
 			stop("index ", sQuote(inm[1L]), " not found")
-		if ( nindex > 1L ) {
+		if ( nindex >= 2L ) {
 			index2 <- spectra(object, inm[2L])
 			if ( is.null(index2) )
 				stop("index ", sQuote(inm[2L]), " not found")
+		}
+		if ( nindex >= 3L ) {
+			index3 <- spectra(object, inm[3L])
+			if ( is.null(index3) )
+				stop("index ", sQuote(inm[3L]), " not found")
 		}
 	}
 	FUN <- .process_fun(ps, domain=domain, put=put)
@@ -279,8 +279,12 @@ setMethod("process", "SpectralImagingArrays",
 		ans <- chunk_mapply(FUN, spectra, index, index2,
 			nchunks=nchunks, verbose=verbose,
 			BPPARAM=BPPARAM)
+	} else if ( nindex == 3L ) {
+		ans <- chunk_mapply(FUN, spectra, index, index2, index3,
+			nchunks=nchunks, verbose=verbose,
+			BPPARAM=BPPARAM)
 	} else {
-		stop("more than 2 'index' arrays not allowed")
+		stop("too many 'index' arrays")
 	}
 	object <- .postprocess_SpectralImagingArrays(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
@@ -305,14 +309,22 @@ setMethod("process", "SpectralImagingArrays",
 				object@continuous <- TRUE
 		}
 		index2 <- NULL
+		index3 <- NULL
 	} else if ( length(ans) == 2L * length(object) ) {
 		spectra <- ans[seq(2L, length(ans), by=2L),drop=drop]
 		index <- ans[seq(1L, length(ans) - 1L, by=2L),drop=drop]
 		index2 <- NULL
+		index3 <- NULL
 	} else if ( length(ans) == 3L * length(object) ) {
 		spectra <- ans[seq(3L, length(ans), by=3L),drop=drop]
 		index <- ans[seq(1L, length(ans) - 2L, by=3L),drop=drop]
 		index2 <- ans[seq(2L, length(ans) - 1L, by=3L),drop=drop]
+		index3 <- NULL
+	} else if ( length(ans) == 4L * length(object) ) {
+		spectra <- ans[seq(4L, length(ans), by=4L),drop=drop]
+		index <- ans[seq(1L, length(ans) - 3L, by=4L),drop=drop]
+		index2 <- ans[seq(2L, length(ans) - 2L, by=4L),drop=drop]
+		index3 <- ans[seq(3L, length(ans) - 1L, by=4L),drop=drop]
 	} else {
 		stop("processed length [", length(ans), "] ",
 			"does not match length of object [", length(object), "]")
@@ -326,6 +338,11 @@ setMethod("process", "SpectralImagingArrays",
 		if ( getCardinalVerbose() )
 			message("output index: ", indexname[2L])
 		spectra(object, indexname[2L]) <- index2
+	}
+	if ( !is.null(index3) ) {
+		if ( getCardinalVerbose() )
+			message("output index: ", indexname[3L])
+		spectra(object, indexname[3L]) <- index2
 	}
 	if ( getCardinalVerbose() )
 		message("output spectra: ", spectraname)
@@ -343,10 +360,15 @@ setMethod("process", "SpectralImagingArrays",
 	{
 		nindex <- ...length()
 		index <- ..1
-		if ( nindex > 1L ) {
+		if ( nindex >= 2L ) {
 			index2 <- ..2
 		} else {
 			index2 <- NULL
+		}
+		if ( nindex >= 3L ) {
+			index3 <- ..3
+		} else {
+			index3 <- NULL
 		}
 		if ( is.matrix(X) ) {
 			continuous <- TRUE
@@ -365,10 +387,12 @@ setMethod("process", "SpectralImagingArrays",
 				xi <- xj <- X[,i]
 				t1 <- index
 				t2 <- index2
+				t3 <- index3
 			} else {
 				xi <- xj <- X[[i]]
 				t1 <- index[[i]]
 				t2 <- index2[[i]]
+				t3 <- index3[[i]]
 			}
 			nxi <- length(xi)
 			nci <- if (continuous) 2L else nindex + 1L
@@ -379,8 +403,10 @@ setMethod("process", "SpectralImagingArrays",
 					xj <- executeProcessingStep(psj, xi, t1)
 				} else if ( nindex == 2L ) {
 					xj <- executeProcessingStep(psj, xi, t1, t2)
+				} else if ( nindex == 3L ) {
+					xj <- executeProcessingStep(psj, xi, t1, t2, t3)
 				} else {
-					stop("more than 2 'index' arrays not allowed")
+					stop("more than 3 'index' arrays not allowed")
 				}
 				if ( length(xj) == nxi ) {
 					xi <- xj
@@ -393,7 +419,12 @@ setMethod("process", "SpectralImagingArrays",
 							t1 <- xj[,1L]
 							t2 <- xj[,2L]
 							xi <- xj[,3L]
-						}
+						} else if ( ncol(xj) == 4L ) {
+							t1 <- xj[,1L]
+							t2 <- xj[,2L]
+							t3 <- xj[,3L]
+							xi <- xj[,4L]
+						}						
 					} else {
 						stop("expected ", nci,
 							" columns in output but received ", ncol(xj))
@@ -408,7 +439,8 @@ setMethod("process", "SpectralImagingArrays",
 			} else if ( is.matrix(xj) || (!is.null(put) && !continuous) ) {
 				ans[[i]] <- switch(nci - 1L,
 					`1`=list(t1, xi),
-					`2`=list(t1, t2, xi))
+					`2`=list(t1, t2, xi),
+					`3`=list(t1, t2, t3, xi))
 			} else if ( length(xi) == nxi ) {
 				ans[[i]] <- xi
 			} else {

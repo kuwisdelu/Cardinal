@@ -9,10 +9,11 @@ test_that("process spectra - SpectralImagingArrays", {
 	x <- replicate(9, rlnorm(100), simplify=FALSE)
 	t1 <- replicate(9, sort(runif(100)), simplify=FALSE)
 	t2 <- replicate(9, sort(runif(100)), simplify=FALSE)
+	t3 <- replicate(9, sort(runif(100)), simplify=FALSE)
 	ones <- rep.int(1, length(x))
 
 	s <- SpectralImagingArrays(
-		spectraData=list(intensity=x, t1=t1, t2=t2),
+		spectraData=list(intensity=x, t1=t1, t2=t2, t3=t3),
 		pixelData=PositionDataFrame(expand.grid(x=1:3, y=1:3)))
 
 	s2 <- process(normalize(s, method="rms", scale=1))
@@ -40,19 +41,38 @@ test_that("process spectra - SpectralImagingArrays", {
 
 	expect_is(s4, "SpectralImagingArrays")
 
-	fun <- function(x, t1, t2) x / (t1 + t2)
-	s5 <- addProcessing(s, fun, "custom function")
+	fun2 <- function(x, t1, t2) x / (t1 + t2)
+	s5 <- addProcessing(s, fun2, "custom function 2d")
 	s5 <- process(s5, index=c("t1", "t2"))
 
-	expect_equal(spectra(s5), Map(fun, x, t1, t2))
+	expect_equal(spectra(s5), Map(fun2, x, t1, t2))
 
-	fun2 <- function(x, t1, t2) cbind(t1[1:3], t2[1:3], x[1:3])
-	s6 <- addProcessing(s, fun2, "custom function 2")
-	s6 <- process(s6, index=c("t1", "t2"))
+	fun3 <- function(x, t1, t2, t3) x / (t1 + t2 + t3)
+	s6 <- addProcessing(s, fun3, "custom function 3d")
+	s6 <- process(s6, index=c("t1", "t2", "t3"))
 
-	expect_equal(spectra(s6), Map(\(.) .[1:3], x))
-	expect_equal(spectra(s6, "t1"), Map(\(.) .[1:3], t1))
-	expect_equal(spectra(s6, "t2"), Map(\(.) .[1:3], t2))
+	expect_equal(spectra(s6), Map(fun3, x, t1, t2, t3))
+
+	funout <- function(x, t1, t2) cbind(t1[1:3], t2[1:3], x[1:3])
+	s7 <- addProcessing(s, funout, "custom function index output")
+	s7 <- process(s7, index=c("t1", "t2"))
+
+	expect_equal(spectra(s7), Map(\(.) .[1:3], x))
+	expect_equal(spectra(s7, "t1"), Map(\(.) .[1:3], t1))
+	expect_equal(spectra(s7, "t2"), Map(\(.) .[1:3], t2))
+
+	file2 <- tempfile()
+	s8 <- addProcessing(s, funout, "custom function index file output")
+	s8 <- process(s8, index=c("t1", "t2"), outfile=file2)
+	fout2 <- path(spectra(s8))
+
+	expect_is(spectra(s8, "intensity"), "matter_list")
+	expect_is(spectra(s8, "t1"), "matter_list")
+	expect_is(spectra(s8, "t2"), "matter_list")
+	expect_equal(normalizePath(fout2), normalizePath(file2))
+	expect_equal(spectra(s8, "intensity")[[1L]], x[[1L]][1:3])
+	expect_equal(spectra(s8, "t1")[[1L]], t1[[1L]][1:3])
+	expect_equal(spectra(s8, "t2")[[1L]], t2[[1L]][1:3])
 
 })
 
@@ -90,12 +110,6 @@ test_that("process spectra - SpectralImagingExperiment", {
 	s4 <- process(s4)
 
 	expect_is(s4, "SpectralImagingExperiment")
-
-	fun <- function(x, t1, t2) x / (t1 + t2)
-	s5 <- addProcessing(s, fun, "custom function 1")
-	s5 <- process(s5, index=c("t1", "t2"))
-
-	expect_equal(spectra(s5), apply(x, 2L, fun, t1, t2))
 
 })
 
