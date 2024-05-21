@@ -78,7 +78,6 @@ simulateImage <- function(pixelData, featureData, preset,
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	domain <- mz(from=from, to=to, by=by, units=units)
-	seeds <- RNGStreams(nrun(pixelData))
 	FUN <- function(irun)
 	{
 		# extract run information
@@ -127,8 +126,8 @@ simulateImage <- function(pixelData, featureData, preset,
 		}
 	}
 	ans <- chunkMapply(FUN, runNames(pixelData),
-		nchunks=nchunks, verbose=verbose, seeds=seeds,
-		BPPARAM=BPPARAM)
+		nchunks=nchunks, verbose=verbose,
+		RNG=TRUE, BPPARAM=BPPARAM)
 	ans <- do.call("cbind", ans)
 	if ( representation == "centroid" )
 	{
