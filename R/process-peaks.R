@@ -187,16 +187,18 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 	if ( missing(units) && !missing(tolerance) )
 		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
-	xnm <- spectra
-	tnm <- index
-	spectra <- spectra(object, xnm)
-	if ( is.null(tnm) ) {
-		tnm <- "index"
+	if ( length(index) > 1L )
+		stop("more than 1 'index' array not supported")
+	snm <- spectra
+	inm <- index
+	spectra <- spectra(object, snm)
+	if ( is.null(inm) ) {
+		inm <- "index"
 		domain <- seq_len(nrow(object))
 	} else {
-		domain <- featureData(object)[[tnm]]
+		domain <- featureData(object)[[inm]]
 		if ( is.null(domain) )
-			stop("index ", sQuote(tnm), " not found")
+			stop("index ", sQuote(inm), " not found")
 	}
 	if ( !missing(ref) && !is.null(ref) ) {
 		if ( isTRUE(all.equal(domain, ref)) ) {
@@ -209,14 +211,14 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		index <- atomindex(spectra)
 		spectra <- atomdata(spectra)
 	} else {
-		stop("nothing to align for spectra ", sQuote(xnm), "; ",
+		stop("nothing to align for spectra ", sQuote(snm), "; ",
 			"has peakPick() been used?")
 	}
 	if ( verbose )
 		message("detected ~", round(mean(lengths(index)), digits=1L),
 			" peaks per spectrum")
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
-		domain=domain, xname=xnm, tname=tnm,
+		domain=domain, spectraname=snm, indexname=inm,
 		tolerance=tolerance, units=units,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
@@ -237,16 +239,18 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	if ( missing(units) && !missing(tolerance) )
 		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
-	xnm <- spectra
-	tnm <- index
-	spectra <- spectra(object, xnm)
-	if ( is.null(tnm) ) {
-		tnm <- "index"
+	if ( length(index) > 1L )
+		stop("more than 1 'index' array not supported")
+	snm <- spectra
+	inm <- index
+	spectra <- spectra(object, snm)
+	if ( is.null(inm) ) {
+		inm <- "index"
 		index <- lapply(lengths(spectra), seq_len)
 	} else {
-		index <- spectra(object, tnm)
+		index <- spectra(object, inm)
 		if ( is.null(index) )
-			stop("index ", sQuote(tnm), " not found")
+			stop("index ", sQuote(inm), " not found")
 	}
 	if ( verbose )
 		message("detected ~", round(mean(lengths(index)), digits=1L),
@@ -260,14 +264,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		domain <- ref
 	}
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
-		domain=domain, xname=xnm, tname=tnm,
+		domain=domain, spectraname=snm, indexname=inm,
 		tolerance=tolerance, units=units,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM)
 })
 
 .peakAlign <- function(object, ref, spectra, index,
-	domain, xname, tname, tolerance, units,
+	domain, spectraname, indexname, tolerance, units,
 	nchunks, verbose, BPPARAM)
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
@@ -314,8 +318,8 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		data=spectra, domain=ref,
 		nrow=length(ref), ncol=length(object),
 		tolerance=tol, sampler="none")
-	spectraData <- SpectraArrays(setNames(list(spectra), xname))
-	featureData <- DataFrame(setNames(list(ref), tname))
+	spectraData <- SpectraArrays(setNames(list(spectra), spectraname))
+	featureData <- DataFrame(setNames(list(ref), indexname))
 	if ( !is.null(n) ) {
 		featureData[["count"]] <- n
 		featureData[["freq"]] <- n / length(object)
