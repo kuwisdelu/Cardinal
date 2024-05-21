@@ -42,13 +42,7 @@ setMethod("colocalized", "SpectralImagingExperiment",
 		lab <- if (length(ref) != 1L) "images" else "image"
 		message("calculating colocalization with ", length(ref), " ", lab)
 	}
-	FUN <- function(x)
-	{
-		vapply(ref, function(y) {
-			cor <- cor(x, y, use="pairwise.complete.obs")
-			c(cor=cor, coscore(x, y, threshold=threshold))
-		}, numeric(5L))
-	}
+	FUN <- FUN <- .coscore_fun(ref, threshold, FALSE)
 	scores <- chunkApply(spectra(object), 1L, FUN,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
@@ -89,14 +83,7 @@ setMethod("colocalized", "SpatialDGMM",
 		lab <- if (length(ref) != 1L) "images" else "image"
 		message("calculating colocalization with ", length(ref), " ", lab)
 	}
-	FUN <- function(x)
-	{
-		vapply(ref, function(y) {
-			scs <- lapply(levels(x),
-				function(lvl) coscore(as.factor(x) == lvl, y))
-			scs[[which.max(vapply(scs, max, numeric(1L), na.rm=TRUE))]]
-		}, numeric(4L))
-	}
+	FUN <- .coscore_fun(ref, threshold, TRUE)
 	scores <- chunkLapply(object$class, FUN,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
@@ -113,6 +100,28 @@ setMethod("colocalized", "SpatialDGMM",
 		ans[[1L]]
 	}
 })
+
+.coscore_fun <- function(ref, threshold, categorical)
+{
+	if ( categorical ) {
+		function(x)
+		{
+			vapply(ref, function(y) {
+				sc <- lapply(levels(x),
+					function(lvl) coscore(as.factor(x) == lvl, y))
+				sc[[which.max(vapply(sc, max, numeric(1L), na.rm=TRUE))]]
+			}, numeric(4L))
+		}
+	} else {
+		function(x)
+		{
+			vapply(ref, function(y) {
+				cor <- cor(x, y, use="pairwise.complete.obs")
+				c(cor=cor, coscore(x, y, threshold=threshold))
+			}, numeric(5L))
+		}
+	}
+}
 
 .rank_featureData <- function(object, importance, sort.by)
 {
