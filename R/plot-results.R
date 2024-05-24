@@ -47,11 +47,11 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 	if ( missing(ylab) || is.null(ylab) )
 		ylab <- "Importance"
 	if ( ncol(featureData(x)) > 0L ) {
-		index <- featureData(x)[[1L]]
+		ix <- featureData(x)[[1L]]
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- names(featureData(x))[1L]
 	} else {
-		index <- seq_len(nrow(y))
+		ix <- seq_len(nrow(y))
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- "Index"
 	}
@@ -64,7 +64,7 @@ setMethod("plot", c(x = "ResultsList", y = "missing"),
 		by <- colnames(y)
 		groups <- by
 	}
-	plot <- plot_signal(index, y, by=by, group=groups,
+	plot <- plot_signal(ix, y, by=by, group=groups,
 		xlab=xlab, ylab=ylab, isPeaks=TRUE, ...)
 	if ( !is.null(ynames) )
 		plot <- set_channel(plot, "color", limits=ynames)
@@ -181,31 +181,32 @@ setMethod("image", c(x = "ResultsList"),
 	}
 	nval <- NCOL(y)
 	nrun <- nlevels(runs)
-	FUN <- function(irun, z)
+	FUN <- function(irun, v)
 	{
-		if ( !is.null(dim(z)) ) {
-			if ( ncol(z) > 1L ) {
-				zi <- z[runs %in% irun,,drop=FALSE]
-				if ( is.matrix(zi) ) {
-					znames <- colnames(zi)
-					zi <- apply(zi, 2L, identity, simplify=FALSE)
-					names(zi) <- znames
+		if ( is.null(dim(v)) ) {
+			vi <- v[runs %in% irun]
+		} else {
+			if ( ncol(v) > 1L ) {
+				vi <- v[runs %in% irun,,drop=FALSE]
+				if ( is.matrix(vi) )
+				{
+					vnames <- colnames(vi)
+					vi <- apply(vi, 2L, identity, simplify=FALSE)
+					names(vi) <- vnames
 				}
 			} else {
-				zi <- z[runs %in% irun,,drop=TRUE]
+				vi <- v[runs %in% irun,,drop=TRUE]
 			}
-		} else {
-			zi <- z[runs %in% irun]
 		}
-		zi
+		vi
 	}
-	X <- lapply(levels(runs), FUN, z=coord[[1L]])
-	Y <- lapply(levels(runs), FUN, z=coord[[2L]])
-	VALS <- lapply(levels(runs), FUN, z=y)
+	ix <- lapply(levels(runs), FUN, v=coord[[1L]])
+	iy <- lapply(levels(runs), FUN, v=coord[[2L]])
+	vals <- lapply(levels(runs), FUN, v=y)
 	if ( nval > 1L ) {
-		X <- rep(X, each=nval)
-		Y <- rep(Y, each=nval)
-		VALS <- unlist(VALS, recursive=FALSE)
+		ix <- rep(ix, each=nval)
+		iy <- rep(iy, each=nval)
+		vals <- unlist(vals, recursive=FALSE)
 	}
 	if ( nrun > 1L ) {
 		runs <- rep(levels(runs), each=nval)
@@ -221,8 +222,8 @@ setMethod("image", c(x = "ResultsList"),
 		xlab <- names(coord)[1L]
 	if ( missing(ylab) )
 		ylab <- names(coord)[2L]
-	plot <- plot_image(x=X, y=Y, vals=VALS,
-		by=by, group=groups, xlab=xlab, ylab=ylab, ...)
+	plot <- plot_image(ix, iy, vals, by=by, group=groups,
+		xlab=xlab, ylab=ylab, ...)
 	if ( !is.null(ynames) )
 		plot <- set_channel(plot, "color", limits=ynames)
 	plot

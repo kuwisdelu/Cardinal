@@ -91,39 +91,17 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		i <- NULL
 	}
 	parse <- parse_formula(formula)
-	ndim <- length(parse$rhs)
-	vars <- all.vars(formula)
-	if ( ndim == 2L ) {
-		vars_x <- vars[length(vars) - 1L]
-		vars_y <- vars[length(vars)]
-		vars_vals <- setdiff(vars, c(vars_x, vars_y))
-	} else if ( ndim == 3L ) {
-		vars_x <- vars[length(vars) - 2L]
-		vars_y <- vars[length(vars) - 1L]
-		vars_z <- vars[length(vars)]
-		vars_vals <- setdiff(vars, c(vars_x, vars_y, vars_z))
-	} else {
-		stop("must specify exactly 2 or 3 spatial dimensions")
+	if ( length(parse$rhs) != 2L && length(parse$rhs) != 3L )
+		stop("formula must specify exactly 2 or 3 spatial dimensions")
+	if ( is.null(names(i)) ) {
+		if ( is.null(featureNames(x)) ) {
+			nms <- paste0("i = ", i)
+		} else {
+			nms <- featureNames(x)[i]
+		}
+		names(i) <- make.unique(nms)
 	}
-	is2d <- ndim < 3L
-	X <- pixelData(x)[[vars_x]]
-	Y <- pixelData(x)[[vars_y]]
-	if ( is2d ) {
-		Z <- NULL
-	} else {
-		Z <- pixelData(x)[[vars_z]]
-	}
-	if ( is.null(i) ) {
-		vals <- as.data.frame(pixelData(x)[vars_vals])
-	} else {
-		vals <- spectraData(x)[[vars_vals]][i,,drop=FALSE]
-	}
-	if ( !is.null(names(i)) && anyDuplicated(names(i)) ) {
-		vals <- rowsum(vals, group=names(i), reorder=FALSE, na.rm=TRUE)
-		i <- setNames(rep.int(NA, nrow(vals)), unique(names(i)))
-	}
-	if ( !is.null(run) )
-	{
+	if ( !is.null(run) ) {
 		if ( !is.character(run) && !is.factor(run) )
 			run <- runNames(x)[run]
 		if ( !all(subset) ) {
@@ -133,112 +111,62 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 			subset <- run(x) %in% run
 		}
 	}
-	if ( !all(subset) ) {
-		subset <- rep_len(subset, ncol(x))
-		X <- X[subset]
-		Y <- Y[subset]
-		Z <- Z[subset]
-		if ( is.data.frame(vals) ) {
-			vals <- vals[subset,,drop=FALSE]
-		} else {
-			vals <- vals[,subset,drop=FALSE]
-		}
-		runs <- droplevels(run(x)[subset])
-	} else {
+	if ( all(subset) ) {
+		subset <- NULL
 		runs <- run(x)
-	}
-	if ( is.data.frame(vals) ) {
-		X <- rep.int(list(X), ncol(vals))
-		Y <- rep.int(list(Y), ncol(vals))
-		Z <- rep.int(list(Z), ncol(vals))
-		vals <- as.list(vals)
 	} else {
-		X <- rep.int(list(X), nrow(vals))
-		Y <- rep.int(list(Y), nrow(vals))
-		Z <- rep.int(list(Z), nrow(vals))
-		vals <- apply(vals, 1L, identity, simplify=FALSE)
+		subset <- rep_len(subset, ncol(x))
+		runs <- droplevels(run(x)[subset])
 	}
-	if ( is.null(names(i)) ) {
-		if ( is.null(names(vals)) ) {
-			if ( is.null(featureNames(x)) ) {
-				names(vals) <- paste0("i = ", i)
-			} else {
-				names(vals) <- featureNames(x)[i]
-			}
-		}
+	if ( is.null(i) ) {
+		lhs <- eval_exprs(parse$lhs, pixelData(x))
+		nms <- names(parse$lhs)
 	} else {
-		names(vals) <- names(i)
+		lhs <- eval_exprs(parse$lhs,
+			spectraData(x), i1=i, i2=subset, margin=1L)
+		nms <- names(lhs[[1L]])
 	}
+	rhs <- eval_exprs(parse$rhs, pixelData(x))
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
-			groups <- names(vals)
+			groups <- nms
 	} else {
-		by <- names(vals)
+		by <- nms
 	}
-	plot <- .plot_image_formula(X, Y, Z, vals, formula,
-		by=by, groups=groups, runs=runs, key=key,
+	plot <- .plot_pixel_data(lhs, rhs, by=by,
+		groups=groups, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
 	.lastplot$subset <- subset
 	.lastplot$image <- plot
 	plot
 })
 
-.plot_image_formula <- function(x, y, z, vals,
-	formula, by, groups, runs, xlab, ylab, zlab, ...)
+.plot_pixel_data <- function(lhs, rhs,
+	by, groups, runs, xlab, ylab, zlab, ...)
 {
-	parse <- parse_formula(formula)
-	ndim <- length(parse$rhs)
-	vars <- all.vars(formula)
-	if ( ndim == 2L ) {
-		vars_x <- vars[length(vars) - 1L]
-		vars_y <- vars[length(vars)]
-		vars_vals <- setdiff(vars, c(vars_x, vars_y))
-	} else if ( ndim == 3L ) {
-		vars_x <- vars[length(vars) - 2L]
-		vars_y <- vars[length(vars) - 1L]
-		vars_z <- vars[length(vars)]
-		vars_vals <- setdiff(vars, c(vars_x, vars_y, vars_z))
+	is2d <- length(rhs) < 3L
+	if ( attr(lhs, "recursive") ) {
+		vals <- do.call(c, unname(lhs))
 	} else {
-		stop("must specify exactly 2 or 3 spatial dimensions")
+		vals <- lhs
 	}
-	is2d <- ndim < 3L
-	len <- max(length(x), length(y), length(z), length(vals))
-	fm_vals <- rep_len(parse$lhs, len)
-	fm_x <- rep_len(parse$rhs[1L], len)
-	fm_y <- rep_len(parse$rhs[2L], len)
-	names(vals) <- rep_len(vars_vals, len)
-	names(x) <- rep_len(vars_x, len)
-	names(y) <- rep_len(vars_y, len)
-	if ( !is2d ) {
-		fm_z <- rep_len(parse$rhs[3L], len)
-		names(z) <- rep_len(vars_z, len)
-	}
-	EVAL <- function(expr, i) {
-		data <- c(vals[i], x[i], y[i], z[i])
-		ans <- eval(expr, envir=data)
-		if ( is2d )
-			ans <- lapply(levels(runs),
-				function(irun) ans[runs %in% irun])
-		ans
-	}
-	VALS <- do.call(c, Map(EVAL, fm_vals, seq_len(len)))
-	X <- do.call(c, Map(EVAL, fm_x, seq_len(len)))
-	Y <- do.call(c, Map(EVAL, fm_y, seq_len(len)))
+	x <- rhs[[1L]]
+	y <- rhs[[2L]]
 	if ( is2d ) {
-		Z <- NULL
+		z <- NULL
 	} else {
-		Z <- do.call(c, Map(EVAL, fm_z, seq_len(len)))
+		z <- rhs[[3L]]
 	}
 	if ( missing(xlab) || is.null(xlab) )
-		xlab <- deparse1(fm_x[[1L]])
+		xlab <- names(rhs)[1L]
 	if ( missing(ylab) || is.null(ylab) )
-		ylab <- deparse1(fm_y[[1L]])
+		ylab <- names(rhs)[2L]
 	if ( missing(zlab) || is.null(zlab) ) {
 		if ( is2d ) {
 			zlab <- NULL
 		} else {
-			zlab <- deparse1(fm_z[[1L]])
+			zlab <- names(rhs)[3L]
 		}
 	}
 	if ( !is.null(groups) ) {
@@ -255,7 +183,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	}
 	if ( is2d )
 	{
-		runs <- factor(rep.int(levels(runs), len))
+		runs <- factor(rep.int(levels(runs), length(vals)))
 		if ( nlevels(runs) > 1L ) {
 			if ( is.null(by) ) {
 				by <- runs
@@ -264,7 +192,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 			}
 		}
 	}
-	plot_image(X, Y, Z, VALS, by=by, group=groups,
+	plot_image(x, y, z, vals, by=by, group=groups,
 		xlab=xlab, ylab=ylab, zlab=zlab, ...)
 }
 

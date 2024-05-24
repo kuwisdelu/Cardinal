@@ -114,99 +114,54 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		i <- NULL
 	}
 	parse <- parse_formula(formula)
-	ndim <- length(parse$rhs)
-	vars <- all.vars(formula)
-	if ( ndim == 1L ) {
-		vars_x <- vars[length(vars)]
-		vars_y <- setdiff(vars, vars_x)
-	} else if ( ndim == 2L ) {
-		vars_x <- vars[length(vars) - 1L]
-		vars_y <- vars[length(vars)]
-		vars_z <- setdiff(vars, c(vars_x, vars_y))
-	} else {
-		stop("must specify exactly 1 or 2 domain dimensions")
-	}
-	is1d <- ndim < 2L
-	X <- featureData(x)[[vars_x]]
-	if ( is1d ) {
-		if ( is.null(i) ) {
-			Y <- as.data.frame(featureData(x)[vars_y])
-		} else {		
-			Y <- spectraData(x)[[vars_y]][,i,drop=FALSE]
-		}
-		Z <- NULL
-	} else {
-		Y <- featureData(x)[[vars_y]]
-		if ( is.null(i) ) {
-			Z <- as.data.frame(featureData(x)[vars_z])
-		} else {		
-			Z <- spectraData(x)[[vars_z]][,i,drop=FALSE]
-		}
-	}
-	if ( !is.list(X) ) {
-		if ( is1d ) {
-			X <- rep.int(list(X), ncol(Y))
-		} else {
-			X <- rep.int(list(X), ncol(Z))
-		}
-	}
-	if ( !is.list(Y) ) {
-		if ( is1d ) {
-			Y <- apply(Y, 2L, identity, simplify=FALSE)
-		} else {
-			Y <- rep.int(list(Y), ncol(Z))
-		}
-	}
-	if ( !is.list(Z) && !is1d )
-		Z <- apply(Z, 2L, identity, simplify=FALSE)
-	if ( is1d ) {
-		vals <- Y
-	} else {
-		vals <- Z
-	}
+	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
+		stop("formula must specify exactly 1 or 2 domain dimensions")
 	if ( is.null(names(i)) ) {
-		if ( is.null(names(vals)) ) {
-			if ( is.null(pixelNames(x)) ) {
-				names(vals) <- paste0("i = ", i)
-			} else {
-				names(vals) <- pixelNames(x)[i]
-			}
+		if ( is.null(pixelNames(x)) ) {
+			nms <- paste0("i = ", i)
+		} else {
+			nms <- pixelNames(x)[i]
 		}
-	} else {
-		names(vals) <- names(i)
+		names(i) <- make.unique(nms)
 	}
+	if ( is.null(i) ) {
+		lhs <- eval_exprs(parse$lhs, featureData(x))
+		nms <- names(parse$lhs)
+	} else {
+		lhs <- eval_exprs(parse$lhs,
+			spectraData(x), i1=i, i2=NULL, margin=2L)
+		nms <- names(lhs[[1L]])
+	}
+	rhs <- eval_exprs(parse$rhs, featureData(x))
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
-			groups <- names(vals)
+			groups <- nms
 	} else {
-		by <- names(vals)
+		by <- nms
 	}
 	if ( length(processingData(x)) > 0L )
 	{
+		snm <- unlist(lapply(parse$lhs, all.vars))
+		inm <- unlist(lapply(parse$rhs, all.vars))
 		if ( !is.null(groups) )
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		if ( is1d ) {
-			xi <- process(x[,i], spectra=vars_y,
-				index=vars_x, BPPARAM=NULL)
-		} else {
-			xi <- process(x[,i], spectra=vars_z,
-				index=c(vars_x, vars_y), BPPARAM=NULL)
-		}
-		plot_pre <- .plot_spectra_formula(X, Y, Z, formula,
+		xi <- process(x[,i], spectra=snm,
+			index=inm, BPPARAM=NULL)
+		plot_orig <- .plot_feature_data(lhs, rhs,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot_post <- plot(xi, formula=formula, i=seq_along(i),
+		plot_proc <- plot(xi, formula=formula, i=seq_along(i),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot_pre, plot_post)
+		plot <- combine(plot_orig, plot_proc)
 	} else
 	{
-		plot <- .plot_spectra_formula(X, Y, Z, formula,
+		plot <- .plot_feature_data(lhs, rhs,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
@@ -240,76 +195,52 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		lhs <- names(spectraData(x))[2L]
 		rhs <- names(spectraData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
+	} else if ( is.character(formula) ) {
+		stop("character 'formula' not allowed for ",
+			sQuote(class(x)[1L]))
 	}
 	parse <- parse_formula(formula)
-	ndim <- length(parse$rhs)
-	vars <- all.vars(formula)
-	if ( ndim == 1L ) {
-		vars_x <- vars[length(vars)]
-		vars_y <- setdiff(vars, vars_x)
-	} else if ( ndim == 2L ) {
-		vars_x <- vars[length(vars) - 1L]
-		vars_y <- vars[length(vars)]
-		vars_z <- setdiff(vars, c(vars_x, vars_y))
-	} else {
-		stop("must specify exactly 1 or 2 domain dimensions")
-	}
-	is1d <- ndim < 2L
-	X <- spectraData(x)[[vars_x]][i]
-	Y <- spectraData(x)[[vars_y]][i]
-	if ( is1d ) {
-		Z <- NULL
-	} else {
-		Z <- spectraData(x)[[vars_z]][i]
-	}
-	if ( is1d ) {
-		vals <- Y
-	} else {
-		vals <- Z
-	}
+	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
+		stop("formula must specify exactly 1 or 2 domain dimensions")
 	if ( is.null(names(i)) ) {
-		if ( is.null(names(vals)) ) {
-			if ( is.null(pixelNames(x)) ) {
-				names(vals) <- paste0("i = ", i)
-			} else {
-				names(vals) <- pixelNames(x)[i]
-			}
+		if ( is.null(pixelNames(x)) ) {
+			nms <- paste0("i = ", i)
+		} else {
+			nms <- pixelNames(x)[i]
 		}
-	} else {
-		names(vals) <- names(i)
+		names(i) <- make.unique(nms)
 	}
+	lhs <- eval_exprs(parse$lhs, spectraData(x), i1=i)
+	rhs <- eval_exprs(parse$rhs, spectraData(x), i1=i)
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
-			groups <- names(vals)
+			groups <- unique(names(i))
 	} else {
-		by <- names(vals)
+		by <- unique(names(i))
 	}
 	if ( length(processingData(x)) > 0L )
 	{
+		snm <- unlist(lapply(parse$lhs, all.vars))
+		inm <- unlist(lapply(parse$rhs, all.vars))
 		if ( !is.null(groups) )
 			warning("ignoring 'groups'")
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
-		if ( is1d ) {
-			xi <- process(x[i], spectra=vars_y,
-				index=vars_x, BPPARAM=NULL)
-		} else {
-			xi <- process(x[i], spectra=vars_z,
-				index=c(vars_x, vars_y), BPPARAM=NULL)
-		}
-		plot_pre <- .plot_spectra_formula(X, Y, Z, formula,
+		xi <- process(x[i], spectra=snm,
+			index=inm, BPPARAM=NULL)
+		plot_orig <- .plot_feature_data(lhs, rhs,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot_post <- plot(xi, formula=formula, i=seq_along(i),
+		plot_proc <- plot(xi, formula=formula, i=seq_along(i),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot_pre, plot_post)
+		plot <- combine(plot_orig, plot_proc)
 	} else
 	{
-		plot <- .plot_spectra_formula(X, Y, Z, formula,
+		plot <- .plot_feature_data(lhs, rhs,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
@@ -318,61 +249,41 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	plot
 })
 
-.plot_spectra_formula <- function(x, y, z,
-	formula, by, groups, xlab, ylab, ...)
+.plot_feature_data <- function(lhs, rhs,
+	by, groups, xlab, ylab, ...)
 {
-	parse <- parse_formula(formula)
-	ndim <- length(parse$rhs)
-	vars <- all.vars(formula)
-	if ( ndim == 1L ) {
-		vars_x <- vars[length(vars)]
-		vars_y <- setdiff(vars, vars_x)
-	} else if ( ndim == 2L ) {
-		vars_x <- vars[length(vars) - 1L]
-		vars_y <- vars[length(vars)]
-		vars_z <- setdiff(vars, c(vars_x, vars_y))
+	is1d <- length(rhs) < 2L
+	if ( attr(lhs, "recursive") ) {
+		vals <- do.call(c, unname(lhs))
 	} else {
-		stop("must specify exactly 1 or 2 domain dimensions")
+		vals <- lhs
 	}
-	is1d <- ndim < 2L
-	len <- max(length(x), length(y), length(z))
+	x <- rhs[[1L]]
 	if ( is1d ) {
-		fm_x <- rep_len(parse$rhs, len)
-		fm_y <- rep_len(parse$lhs, len)
+		y <- vals
+		z <- NULL
 	} else {
-		fm_x <- rep_len(parse$rhs[1L], len)
-		fm_y <- rep_len(parse$rhs[2L], len)
-		fm_z <- rep_len(parse$lhs, len)
-	}
-	names(x) <- rep_len(vars_x, len)
-	names(y) <- rep_len(vars_y, len)
-	if ( !is1d )
-		names(z) <- rep_len(vars_z, len)
-	EVAL <- function(expr, i) {
-		data <- c(x[i], y[i], z[i])
-		eval(expr, envir=data)
-	}
-	X <- Map(EVAL, fm_x, seq_len(len))
-	Y <- Map(EVAL, fm_y, seq_len(len))
-	if ( is1d ) {
-		Z <- NULL
-	} else {
-		Z <- do.call(c, Map(EVAL, fm_z, seq_len(len)))
+		y <- rhs[[2L]]
+		z <- vals
 	}
 	if ( missing(xlab) || is.null(xlab) )
-		xlab <- deparse1(fm_x[[1L]])
+		xlab <- names(rhs)[1L]
 	if ( missing(ylab) || is.null(ylab) ) {
-		if ( length(fm_y) > 1L ) {
-			ylab <- ""
+		if ( is1d ) {
+			if ( length(lhs) > 1L ) {
+				ylab <- ""
+			} else {
+				ylab <- names(lhs)
+			}
 		} else {
-			ylab <- deparse1(fm_y[[1L]])
+			ylab <- names(rhs)[2L]
 		}
 	}
 	if ( !is.null(groups) && !is.factor(groups) )
 		groups <- factor(groups, levels=unique(groups))
 	if ( !is.null(by) && !is.factor(by) )
 		by <- factor(by, levels=unique(by))
-	plot_signal(X, Y, Z, by=by, group=groups,
+	plot_signal(x, y, z, by=by, group=groups,
 		xlab=xlab, ylab=ylab, ...)
 }
 
