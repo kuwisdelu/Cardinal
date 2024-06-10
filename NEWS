@@ -11,6 +11,13 @@ BUG FIXES
 
     o Fix default 'tolerance' in 'pixels()'
 
+CHANGES IN VERSION 3.6.2 [2024-6-10]
+-----------------------------------
+
+BUG FIXES
+
+    o Version bump for 'matter' 2.6.2 bugfixes
+
 CHANGES IN VERSION 3.6.1 [2024-5-17]
 -----------------------------------
 
