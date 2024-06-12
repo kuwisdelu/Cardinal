@@ -4,8 +4,9 @@ CHANGES IN VERSION 3.7.1 [2024-5-18]
 
 NEW FEATURES
 
-    o Update 'spectrapply()' to support 2 index arrays
+    o Update 'spectrapply()' to support 3 index arrays
     o Update 'plot()' to support 2 domains (e.g., for ion mobility)
+    o Add plotting methods for 'XDataFrame' and 'PositionDataFrame'
 
 BUG FIXES
 
