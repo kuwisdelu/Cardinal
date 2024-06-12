@@ -56,6 +56,8 @@ setMethod("keys", "XDataFrame",
 	function(object, i = NULL, ..., drop = TRUE) {
 		if ( is.null(i) )
 			return(object@keys)
+		if ( is.numeric(i) && (i < 1L || i > length(object@keys)) )
+			stop("key [", i, "] does not exist")
 		nms <- object@keys[[i]]
 		if ( is.null(nms) )
 			return(NULL)
@@ -69,12 +71,19 @@ setMethod("keys", "XDataFrame",
 # set specific key cols or keys slot if i=NULL
 setReplaceMethod("keys", "XDataFrame",
 	function(object, i = NULL, ..., value) {
-		if ( is.null(i) ) {
+		if ( is.null(i) )
+		{
 			object@keys <- value
 			if ( validObject(object) )
 				return(object)
 		}
-		if ( is(value, "list_OR_List") && !is.null(names(value)) ) {
+		if ( is.numeric(i) && (i < 1L || i > length(object@keys)) || 
+			is.character(i) && !(i %in% names(object@keys)) )
+		{
+			stop("key [", i, "] does not exist")
+		}
+		if ( is(value, "list_OR_List") && !is.null(names(value)) )
+		{
 			if ( !setequal(names(value), object@keys[[i]]) )
 			{
 				if ( all(names(value) %in% object@keys[[i]]) ) {
@@ -87,8 +96,6 @@ setReplaceMethod("keys", "XDataFrame",
 			}
 		}
 		nms <- object@keys[[i]]
-		if ( is.null(nms) )
-			stop("key does not exist: ", sQuote(i))
 		object[nms] <- value
 		if ( validObject(object) )
 			object

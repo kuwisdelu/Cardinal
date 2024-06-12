@@ -81,12 +81,12 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	if ( missing(formula) || is.numeric(formula) ) {
 		if ( !missing(formula) )
 			i <- formula
-		lhs <- names(spectraData(x))[1L]
 		rhs <- paste0(coordNames(x), collapse="*")
+		lhs <- names(spectraData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		lhs <- paste0(formula, collapse="+")
 		rhs <- paste0(coordNames(x), collapse="*")
+		lhs <- paste0(formula, collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 		i <- NULL
 	}
@@ -134,8 +134,70 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	} else {
 		by <- nms
 	}
-	plot <- .plot_pixel_data(lhs, rhs, by=by,
-		groups=groups, runs=runs, key=key,
+	plot <- .plot_pixel_data(lhs, rhs,
+		by=by, groups=groups, runs=runs, key=key,
+		enhance=enhance, smooth=smooth, scale=scale, ...)
+	.lastplot$subset <- subset
+	.lastplot$image <- plot
+	plot
+})
+
+# PositionDataFrame
+
+setMethod("image", c(x = "PositionDataFrame"),
+	function(x,
+		formula,
+		run = NULL,
+		superpose = FALSE,
+		key = TRUE,
+	    ...,
+		enhance = NULL,
+		smooth = NULL,
+		scale = NULL,
+		subset = TRUE)
+{
+	if ( missing(formula) || is.numeric(formula) ) {
+		rhs <- paste0(coordNames(x), collapse="*")
+		lhs <- setdiff(names(x), coordNames(x))[1L]
+		formula <- as.formula(paste0(lhs, "~", rhs))
+	} else if ( is.character(formula) ) {
+		rhs <- paste0(coordNames(x), collapse="*")
+		lhs <- paste0(formula, collapse="+")
+		formula <- as.formula(paste0(lhs, "~", rhs))
+	}
+	parse <- parse_formula(formula, envir=x, eval=TRUE)
+	if ( length(parse$rhs) != 2L && length(parse$rhs) != 3L )
+		stop("formula must specify exactly 2 or 3 spatial dimensions")
+	if ( !is.null(run) ) {
+		if ( !is.character(run) && !is.factor(run) )
+			run <- runNames(x)[run]
+		if ( !all(subset) ) {
+			subset <- rep_len(subset, ncol(x))
+			subset <- subset & run(x) %in% run
+		} else {
+			subset <- run(x) %in% run
+		}
+	}
+	if ( all(subset) ) {
+		subset <- NULL
+		runs <- run(x)
+	} else {
+		subset <- rep_len(subset, ncol(x))
+		runs <- droplevels(run(x)[subset])
+		parse$lhs <- lapply(parse$lhs, function(lhs) lhs[subset])
+		parse$rhs <- lapply(parse$rhs, function(rhs) rhs[subset])
+	}
+	if ( superpose ) {
+		by <- NULL
+	} else {
+		if ( length(parse$lhs) > 1L ) {
+			by <- names(parse$lhs)
+		} else {
+			by <- NULL
+		}
+	}
+	plot <- .plot_pixel_data(parse$lhs, parse$rhs,
+		by=by, groups=NULL, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
 	.lastplot$subset <- subset
 	.lastplot$image <- plot
@@ -146,7 +208,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	by, groups, runs, xlab, ylab, zlab, ...)
 {
 	is2d <- length(rhs) < 3L
-	if ( attr(lhs, "recursive") ) {
+	if ( isTRUE(attr(lhs, "recursive")) ) {
 		vals <- do.call(c, unname(lhs))
 	} else {
 		vals <- lhs

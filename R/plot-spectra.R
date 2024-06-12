@@ -104,12 +104,12 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		annPeaks = 0)
 {
 	if ( missing(formula) ) {
-		lhs <- names(spectraData(x))[1L]
 		rhs <- names(featureData(x))[1L]
+		lhs <- names(spectraData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		lhs <- paste0(formula, collapse="+")
 		rhs <- names(featureData(x))[1L]
+		lhs <- paste0(formula, collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 		i <- NULL
 	}
@@ -192,8 +192,8 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		annPeaks = 0)
 {
 	if ( missing(formula) ) {
-		lhs <- names(spectraData(x))[2L]
 		rhs <- names(spectraData(x))[1L]
+		lhs <- names(spectraData(x))[2L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
 		stop("character 'formula' not allowed for ",
@@ -210,8 +210,8 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		}
 		names(i) <- make.unique(nms)
 	}
-	lhs <- eval_exprs(parse$lhs, spectraData(x), i1=i)
 	rhs <- eval_exprs(parse$rhs, spectraData(x), i1=i)
+	lhs <- eval_exprs(parse$lhs, spectraData(x), i1=i)
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
@@ -249,11 +249,64 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	plot
 })
 
+# XDataFrame
+
+setMethod("plot", c(x = "XDataFrame", y = "character"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
+setMethod("plot", c(x = "XDataFrame", y = "formula"),
+	function(x, y, ...) plot(x, formula = y, ...))
+
+setMethod("plot", c(x = "XDataFrame", y = "missing"),
+	function(x,
+		formula,
+		superpose = FALSE,
+		key = TRUE,
+	    ...,
+		n = Inf,
+		downsampler = "lttb",
+		isPeaks = FALSE,
+		annPeaks = 0)
+{
+	if ( missing(formula) ) {
+		if ( length(x) < 2L )
+			stop("data frame must have at least 2 columns")
+		if ( length(keys(x)) < 1L )
+			stop("need at least 1 key column if formula is missing")
+		rhs <- unlist(keys(x))[1L]
+		lhs <- setdiff(names(x), rhs)[1L]
+		formula <- as.formula(paste0(lhs, "~", rhs))
+	} else if ( is.character(formula) ) {
+		if ( length(keys(x)) < 1L )
+			stop("need at least 1 key column if formula is a string")
+		rhs <- unlist(keys(x))[1L]
+		lhs <- paste0(formula, collapse="+")
+		formula <- as.formula(paste0(lhs, "~", rhs))
+	}
+	parse <- parse_formula(formula, envir=x, eval=TRUE)
+	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
+		stop("formula must specify exactly 1 or 2 domain dimensions")
+	if ( superpose ) {
+		by <- NULL
+	} else {
+		if ( length(parse$lhs) > 1L ) {
+			by <- names(parse$lhs)
+		} else {
+			by <- NULL
+		}
+	}
+	plot <- .plot_feature_data(parse$lhs, parse$rhs,
+		by=by, groups=NULL, key=key,
+		n=n, downsampler=downsampler,
+		isPeaks=isPeaks, annPeaks=annPeaks, ...)
+	plot
+})
+
 .plot_feature_data <- function(lhs, rhs,
 	by, groups, xlab, ylab, ...)
 {
 	is1d <- length(rhs) < 2L
-	if ( attr(lhs, "recursive") ) {
+	if ( isTRUE(attr(lhs, "recursive")) ) {
 		vals <- do.call(c, unname(lhs))
 	} else {
 		vals <- lhs

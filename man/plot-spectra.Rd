@@ -20,10 +20,14 @@
 \alias{plot,SpectralImagingArrays,formula-method}
 \alias{plot,SpectralImagingArrays,missing-method}
 
+\alias{plot,XDataFrame,character-method}
+\alias{plot,XDataFrame,formula-method}
+\alias{plot,XDataFrame,missing-method}
+
 \title{Plot spectra from a spectral imaging dataset}
 
 \description{
-	Create and display sliced images from a spectral imaging dataset using a formula interface.
+	Create and display plots from the spectra or feature data of a spectral imaging dataset using a formula interface.
 }
 
 \usage{
@@ -61,6 +65,16 @@
     formula,
     i = 1L,
     groups = NULL,
+    superpose = FALSE,
+    key = TRUE,
+    \dots,
+    n = Inf,
+    downsampler = "lttb",
+    isPeaks = FALSE,
+    annPeaks = 0)
+
+\S4method{plot}{XDataFrame,missing}(x,
+    formula,
     superpose = FALSE,
     key = TRUE,
     \dots,

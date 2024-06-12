@@ -4,6 +4,7 @@
 \alias{image}
 \alias{image,MSImagingExperiment-method}
 \alias{image,SpectralImagingExperiment-method}
+\alias{image,PositionDataFrame-method}
 
 \alias{image3D}
 \alias{image3D,MSImagingExperiment-method}
@@ -14,7 +15,7 @@
 \title{Plot images from a spectral imaging dataset}
 
 \description{
-    Create and display images from the spectra or pixel data of a spectral imaging dataset using a formula interface.
+    Create and display sliced images from the spectra or pixel data of a spectral imaging dataset using a formula interface.
 }
 
 \usage{
@@ -32,6 +33,17 @@
     i = 1L,
     run = NULL,
     groups = NULL,
+    superpose = FALSE,
+    key = TRUE,
+    \dots,
+    enhance = NULL,
+    smooth = NULL,
+    scale = NULL,
+    subset = TRUE)
+
+\S4method{image}{PositionDataFrame}(x,
+    formula,
+    run = NULL,
     superpose = FALSE,
     key = TRUE,
     \dots,
