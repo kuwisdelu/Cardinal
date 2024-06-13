@@ -26,7 +26,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		xlab <- expression(italic(x))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(y))
-	if ( is.null(names(i)) )
+	if ( !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE], mz(x)[i])
 	if ( "plusminus" %in% ...names() ) {
 		.Deprecated(old="plusminus", new="tolerance")
@@ -93,7 +93,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 2L && length(parse$rhs) != 3L )
 		stop("formula must specify exactly 2 or 3 spatial dimensions")
-	if ( is.null(names(i)) ) {
+	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(featureNames(x)) ) {
 			nms <- paste0("i = ", i)
 		} else {

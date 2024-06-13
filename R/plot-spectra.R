@@ -37,7 +37,7 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(Intensity))
-	if ( is.null(names(i)) )
+	if ( !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_pixelNames(pixelData(x)[i,,drop=FALSE])
 	callNextMethod(x, formula=formula, i=i,
 		xlab=xlab, ylab=ylab, isPeaks=isPeaks, ...)
@@ -73,7 +73,7 @@ setMethod("plot", c(x = "MSImagingArrays", y = "missing"),
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(Intensity))
-	if ( is.null(names(i)) )
+	if ( !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_pixelNames(pixelData(x)[i,,drop=FALSE])
 	callNextMethod(x, formula=formula, i=i,
 		xlab=xlab, ylab=ylab, isPeaks=isPeaks, ...)
@@ -116,7 +116,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
 		stop("formula must specify exactly 1 or 2 domain dimensions")
-	if ( is.null(names(i)) ) {
+	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(pixelNames(x)) ) {
 			nms <- paste0("i = ", i)
 		} else {
@@ -201,7 +201,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
 		stop("formula must specify exactly 1 or 2 domain dimensions")
-	if ( is.null(names(i)) ) {
+	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(pixelNames(x)) ) {
 			nms <- paste0("i = ", i)
 		} else {
