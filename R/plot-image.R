@@ -243,13 +243,32 @@ setMethod("image", c(x = "PositionDataFrame"),
 	}
 	if ( is2d )
 	{
-		runs <- factor(rep.int(levels(runs), length(vals)))
-		if ( nlevels(runs) > 1L ) {
+		runids <- factor(rep.int(levels(runs), length(vals)))
+		if ( nlevels(runs) > 1L )
+		{
 			if ( is.null(by) ) {
-				by <- runs
+				by <- runids
 			} else {
-				by <- paste0(runs, "\n", by)
+				by <- paste0(runids, "\n", by)
 			}
+			if ( !is.list(x) )
+				x <- list(x)
+			if ( !is.list(y) )
+				y <- list(y)
+			if ( !is.list(z) && !is.null(z) )
+				z <- list(z)
+			if ( !is.list(vals) )
+				vals <- list(vals)
+			subset_runs <- function(a)
+			{
+				lapply(levels(runs),
+					function(irun) a[runs %in% irun])
+			}
+			x <- unlist(lapply(x, subset_runs), recursive=FALSE)
+			y <- unlist(lapply(y, subset_runs), recursive=FALSE)
+			if ( !is.null(z) )
+				z <- unlist(lapply(z, subset_runs), recursive=FALSE)
+			vals <- unlist(lapply(vals, subset_runs), recursive=FALSE)
 		}
 	}
 	.last$image <- plot_image(x, y, z, vals, by=by, group=groups,
