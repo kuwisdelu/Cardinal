@@ -119,14 +119,14 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 		runs <- droplevels(run(x)[subset])
 	}
 	if ( is.null(i) ) {
-		lhs <- eval_exprs(parse$lhs, pixelData(x))
+		lhs <- eval_exprs(parse$lhs, pixelData(x), i=subset)
 		nms <- names(parse$lhs)
 	} else {
-		lhs <- eval_exprs(parse$lhs,
-			spectraData(x), i1=i, i2=subset, margin=1L)
+		lhs <- eval_exprs(parse$lhs, spectraData(x),
+			i=i, j=subset, split_along=1L, group=names(i))
 		nms <- names(lhs[[1L]])
 	}
-	rhs <- eval_exprs(parse$rhs, pixelData(x))
+	rhs <- eval_exprs(parse$rhs, pixelData(x), i=subset)
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
@@ -183,6 +183,8 @@ setMethod("image", c(x = "PositionDataFrame"),
 	} else {
 		subset <- rep_len(subset, ncol(x))
 		runs <- droplevels(run(x)[subset])
+	}
+	if ( !is.null(subset) ) {
 		parse$lhs <- lapply(parse$lhs, function(lhs) lhs[subset])
 		parse$rhs <- lapply(parse$rhs, function(rhs) rhs[subset])
 	}
