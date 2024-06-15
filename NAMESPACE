@@ -274,6 +274,8 @@ exportMethods(
 	"image3D",
 	"imageData",
 	"imageData<-",
+	"intensity",
+	"intensity<-",
 	"is3D",
 	"isCentroided",
 	"keys",
