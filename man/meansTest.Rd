@@ -60,7 +60,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 
     \item{response}{The name of to assign the response variable in the fitted models.}
 
-    \item{reduced}{A one-sided formula specifying the reduced model for the null hypothesis. The default is an intercept-only model.}
+    \item{reduced}{A one-sided formula specifying the fixed effects in the reduced model for the null hypothesis. The default is an intercept-only model. Random effects are retained.}
 
     \item{byrow}{For the default method, are the rows or the columns the \code{x} .}
 
@@ -85,6 +85,10 @@ segmentationTest(x, fixed, random, samples = run(x),
     \item{fill}{Should the boxplots be filled?}
 
     \item{layout}{A vector of the form \code{c(nrow, ncol)} specifying the number of rows and columns in the facet grid.}
+}
+
+\details{
+    Likelihood ratio tests are used for the hypothesis testing for consistency between fixed-effects models and mixed-effects models.
 }
 
 \value{

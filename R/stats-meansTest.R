@@ -52,6 +52,11 @@ setMethod("meansTest", "ANY",
 	datalist <- apply(y, 1L, function(yi)
 		{
 			data[[response]] <- yi
+			ok <- vars %in% names(data)
+			if ( !all(ok) ) {
+				labs <- paste0(vars[!ok], collapse=", ")
+				stop("couldn't find variable: ", labs)
+			}
 			as.data.frame(data[vars])
 		})
 	# fit models
@@ -59,7 +64,7 @@ setMethod("meansTest", "ANY",
 		lab <- if (n != 1L) "models" else "model"
 		message("fitting ", n, " ", lab)
 	}
-	FIT <- .lm_fit_fun(fixed, random)
+	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
@@ -69,12 +74,14 @@ setMethod("meansTest", "ANY",
 		lab <- if (n != 1L) "models" else "model"
 		message("testing ", n, " ", lab)
 	}
-	TEST <- .lm_test_fun(reduced)
+	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results
+	if ( anyNA(tests$statistic) )
+		warning(sum(is.na(tests$statistic)), " tests could not be performed")
 	if ( is.null(random) ) {
 		mcols <- DataFrame(fixed=deparse1(fixed), tests)
 	} else {
@@ -84,21 +91,20 @@ setMethod("meansTest", "ANY",
 	as(ResultsList(models, mcols=mcols), "MeansTest")
 })
 
-.lm_fit_fun <- function(fixed, random)
+.lmFit_fun <- function(fixed, random)
 {
 	FIT <- function(data, ...)
 	{
 		model <- NULL
 		if ( is.null(random) ) {
-			try(fit <- lm(fixed, data=data, ...), silent=TRUE)
-			try(model <- update(fit, . ~ ., data=data), silent=TRUE)
+			model <- try(lm(fixed, data=data, ...), silent=TRUE)
 		} else {
-			try(fit <- lme(fixed, data=data, random=random, ...), silent=TRUE)
-			try(model <- update(fit, . ~ ., data=data, method="ML"), silent=TRUE)
+			model <- try(lme(fixed, data=data,
+				random=random, method="ML", ...), silent=TRUE)
 		}
-		if ( !is.null(model) )
+		if ( !inherits(model, "try-error") )
 		{
-			model$model <- NULL
+			model <- update(model, . ~ .)
 			model$data <- data
 		}
 		model
@@ -106,24 +112,24 @@ setMethod("meansTest", "ANY",
 	FIT
 }
 
-.lm_test_fun <- function(reduced)
+.lmTest_fun <- function(reduced, random)
 {
 	TEST <- function(model, data)
 	{
-		if ( is.null(model) ) {
-			return(c(LR=NA, PValue=NA))
+		if ( inherits(model, "try-error") ) {
+			return(c(statistic=NA, pvalue=NA))
 		} else {
 			full <- model
 		}
 		if ( inherits(model, "lm") ) {
-			null <- update(full, reduced, data=data)
+			null <- update(full, reduced)
 			num <- as.numeric(logLik(null))
 			den <- as.numeric(logLik(full))
 			df <- abs(null$df.residual - full$df.residual)
 			LR <- -2 * (num - den)
 			PValue <- pchisq(LR, df, lower.tail=FALSE)
 		} else if ( inherits(model, "lme") ) {
-			null <- update(full, reduced, data=data, method="ML")
+			null <- update(full, reduced)
 			aov <- anova(null, full)
 			df <- abs(diff(aov[,"df"]))
 			LR <- aov[2L,"L.Ratio"]
@@ -275,7 +281,7 @@ setMethod("meansTest", "SpatialDGMM",
 		lab <- if (n != 1L) "models" else "model"
 		message("fitting ", n, " ", lab)
 	}
-	FIT <- .lm_fit_fun(fixed, random)
+	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)
@@ -285,7 +291,7 @@ setMethod("meansTest", "SpatialDGMM",
 		lab <- if (n != 1L) "models" else "model"
 		message("testing ", n, " ", lab)
 	}
-	TEST <- .lm_test_fun(reduced)
+	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
 		nchunks=nchunks, verbose=verbose,
 		BPPARAM=BPPARAM, ...)

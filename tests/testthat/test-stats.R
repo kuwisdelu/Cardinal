@@ -279,7 +279,7 @@ test_that("spatialDGMM", {
 test_that("meansTest", {
 
 	set.seed(1)
-	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=3,
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=4,
 		representation="centroid")
 	s$truecondition <- ifelse(s$circleA | s$circleB, s$condition, NA)
 	s$truecondition <- factor(s$truecondition)
@@ -303,6 +303,18 @@ test_that("meansTest", {
 	expect_true(all(mcols(mt3)$pvalue > 0))
 	expect_is(topf, "DataFrame")
 	expect_false(is.unsorted(rev(topf$statistic)))
+
+	s$random <- rep.int(NA_character_, length(s))
+	s$random <- replace(s$random, run(s) %in% c("runA1", "runA2"), "X")
+	s$random <- replace(s$random, run(s) %in% c("runA3", "runA4"), "Y")
+	s$random <- replace(s$random, run(s) %in% c("runB1", "runB2"), "U")
+	s$random <- replace(s$random, run(s) %in% c("runB3", "runB4"), "V")
+
+	mtr <- meansTest(s, fixed=~condition, random=~1|random)
+
+	expect_true(validObject(mtr))
+	expect_true(all(mcols(mtr)$statistic > 0))
+	expect_true(all(mcols(mtr)$pvalue > 0))
 
 	set.seed(2)
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
