@@ -12,6 +12,13 @@ BUG FIXES
 
     o Fix default 'tolerance' in 'pixels()'
 
+CHANGES IN VERSION 3.6.3 [2024-6-26]
+-----------------------------------
+
+BUG FIXES
+
+    o Bug fixes for 'meansTest()' when random effects are specified
+
 CHANGES IN VERSION 3.6.2 [2024-6-10]
 -----------------------------------
 
