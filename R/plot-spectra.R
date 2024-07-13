@@ -151,11 +151,12 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
 		xi <- process(x[,i], spectra=vars_y, index=vars_x, BPPARAM=NULL)
+		ii <- setNames(seq_along(i), names(Y))
 		plot_pre <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot_post <- plot(xi, formula=formula, i=seq_along(i),
+		plot_post <- plot(xi, formula=formula, i=ii,
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
@@ -227,11 +228,12 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		if ( isTRUE(superpose) )
 			warning("ignoring 'superpose'")
 		xi <- process(x[i], spectra=vars_y, index=vars_x, BPPARAM=NULL)
+		ii <- setNames(seq_along(i), names(Y))
 		plot_pre <- .plot_spectra_formula(X, Y, formula,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
-		plot_post <- plot(xi, formula=formula, i=seq_along(i),
+		plot_post <- plot(xi, formula=formula, i=ii,
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
