@@ -159,7 +159,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot_orig, plot_proc)
+		plot <- as_layers(plot_orig, plot_proc)
 	} else
 	{
 		plot <- .plot_feature_data(lhs, rhs,
@@ -238,7 +238,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 			groups="processed", superpose=FALSE,
 			n=n, downsampler=downsampler,
 			annPeaks="circle", ...)
-		plot <- combine(plot_orig, plot_proc)
+		plot <- as_layers(plot_orig, plot_proc)
 	} else
 	{
 		plot <- .plot_feature_data(lhs, rhs,

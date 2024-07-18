@@ -23,8 +23,8 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
 	}
 	x <- as.vector(mz(from=from, to=to, by=by, units=units))
-	y <- simspec(n=n, x=mz, y=intensity,
-		domain=x, sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
+	y <- simspec(n=n, x=mz, y=intensity, domain=x,
+		sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
 		sdy=sdnoise, sdymult=sdpeaks, resolution=resolution,
 		fmax=fmax, baseline=baseline, decay=decay,
 		units=switch(units, ppm="relative", mz="absolute"))
@@ -33,8 +33,8 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 		y <- apply(as.matrix(y), 2L, FUN)
 		ans <- list(mz=mz, intensity=y)
 	} else {
-		peaks <- attr(y, "peaks")
-		attr(y, "peaks") <- NULL
+		peaks <- attr(y, "design")$x
+		attr(y, "design") <- NULL
 		attr(y, "domain") <- NULL
 		ans <- list(mz=x, intensity=y, peaks=peaks)
 	}
