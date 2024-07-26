@@ -26,7 +26,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		xlab <- expression(italic(x))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(y))
-	if ( !is.null(i) && is.null(names(i)) )
+	if ( is.null(featureNames(x)) && !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_featureNames(featureData(x)[i,,drop=FALSE], mz(x)[i])
 	if ( "plusminus" %in% ...names() ) {
 		.Deprecated(old="plusminus", new="tolerance")
@@ -134,7 +134,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	} else {
 		by <- nms
 	}
-	plot <- .plot_pixel_data(lhs, rhs,
+	plot <- .plot_pixels(lhs, rhs,
 		by=by, groups=groups, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
 	.last$subset <- subset
@@ -197,14 +197,14 @@ setMethod("image", c(x = "PositionDataFrame"),
 			by <- NULL
 		}
 	}
-	plot <- .plot_pixel_data(parse$lhs, parse$rhs,
+	plot <- .plot_pixels(parse$lhs, parse$rhs,
 		by=by, groups=NULL, runs=runs, key=key,
 		enhance=enhance, smooth=smooth, scale=scale, ...)
 	.last$subset <- subset
 	plot
 })
 
-.plot_pixel_data <- function(lhs, rhs,
+.plot_pixels <- function(lhs, rhs,
 	by, groups, runs, xlab, ylab, zlab, ...)
 {
 	is2d <- length(rhs) < 3L

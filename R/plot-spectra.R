@@ -37,7 +37,7 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(Intensity))
-	if ( !is.null(i) && is.null(names(i)) )
+	if ( is.null(pixelNames(x)) && !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_pixelNames(pixelData(x)[i,,drop=FALSE])
 	callNextMethod(x, formula=formula, i=i,
 		xlab=xlab, ylab=ylab, isPeaks=isPeaks, ...)
@@ -73,7 +73,7 @@ setMethod("plot", c(x = "MSImagingArrays", y = "missing"),
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )
 		ylab <- expression(italic(Intensity))
-	if ( !is.null(i) && is.null(names(i)) )
+	if ( is.null(pixelNames(x)) && !is.null(i) && is.null(names(i)) )
 		names(i) <- .make_pixelNames(pixelData(x)[i,,drop=FALSE])
 	callNextMethod(x, formula=formula, i=i,
 		xlab=xlab, ylab=ylab, isPeaks=isPeaks, ...)
@@ -151,7 +151,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		xi <- process(x[,i], spectra=snm,
 			index=inm, BPPARAM=NULL)
 		ii <- setNames(seq_along(i), names(i))
-		plot_orig <- .plot_feature_data(lhs, rhs,
+		plot_orig <- .plot_features(lhs, rhs,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
@@ -162,7 +162,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		plot <- as_layers(plot_orig, plot_proc)
 	} else
 	{
-		plot <- .plot_feature_data(lhs, rhs,
+		plot <- .plot_features(lhs, rhs,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
@@ -230,7 +230,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		xi <- process(x[i], spectra=snm,
 			index=inm, BPPARAM=NULL)
 		ii <- setNames(seq_along(i), names(i))
-		plot_orig <- .plot_feature_data(lhs, rhs,
+		plot_orig <- .plot_features(lhs, rhs,
 			by=by, groups="original", key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=FALSE, ...)
@@ -241,7 +241,7 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		plot <- as_layers(plot_orig, plot_proc)
 	} else
 	{
-		plot <- .plot_feature_data(lhs, rhs,
+		plot <- .plot_features(lhs, rhs,
 			by=by, groups=groups, key=key,
 			n=n, downsampler=downsampler,
 			isPeaks=isPeaks, annPeaks=annPeaks, ...)
@@ -295,14 +295,14 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 			by <- NULL
 		}
 	}
-	plot <- .plot_feature_data(parse$lhs, parse$rhs,
+	plot <- .plot_features(parse$lhs, parse$rhs,
 		by=by, groups=NULL, key=key,
 		n=n, downsampler=downsampler,
 		isPeaks=isPeaks, annPeaks=annPeaks, ...)
 	plot
 })
 
-.plot_feature_data <- function(lhs, rhs,
+.plot_features <- function(lhs, rhs,
 	by, groups, xlab, ylab, ...)
 {
 	is1d <- length(rhs) < 2L
