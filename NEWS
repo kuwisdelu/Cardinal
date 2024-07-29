@@ -5,6 +5,7 @@ CHANGES IN VERSION 3.7.3 [2024-7-29]
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Add 'setCardinalChunksize()' + 'getCardinalChunksize()'
+    o Update vignettes due to spectral processing updates
 
 BUG FIXES
 
