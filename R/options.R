@@ -3,14 +3,15 @@
 ## --------------
 
 CardinalVersion <- function() {
-	paste0(utils::packageVersion("Cardinal"), collapse=".")
+	.Defunct("packageVersion")
 }
 
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {
+	setCardinalBPPARAM()
 	setCardinalVerbose()
 	setCardinalNChunks()
-	setCardinalBPPARAM()
+	setCardinalChunksize()
 }
 
 # set up Cardinal defaults
@@ -23,33 +24,44 @@ CardinalVersion <- function() {
 
 # should progress messages be printed?
 getCardinalBPPARAM <- function() {
-	getOption("Cardinal.bpparam")
+	getOption("CardinalBPPARAM")
 }
 setCardinalBPPARAM <- function(BPPARAM = NULL) {
 	if ( !is.null(BPPARAM) && !is(BPPARAM, "BiocParallelParam") )
 		stop("BPPARAM must be a BiocParallelParam instance or NULL")
-	options("Cardinal.bpparam" = BPPARAM)
+	options("CardinalBPPARAM" = BPPARAM)
 }
 
 # should progress messages be printed?
 getCardinalVerbose <- function() {
-	getOption("Cardinal.verbose")
+	getOption("CardinalVerbose")
 }
 setCardinalVerbose <- function(verbose = interactive()) {
 	verbose <- as.logical(verbose)
 	if ( !isTRUE(verbose) && !isFALSE(verbose) )
 		stop("verbose must be a single logical value")
-	options("Cardinal.verbose" = verbose)
+	options("CardinalVerbose" = verbose)
 }
 
 # number of chunks to use for processing
 getCardinalNChunks <- function() {
-	getOption("Cardinal.nchunks")
+	getOption("matter.default.nchunks")
 }
 setCardinalNChunks <- function(nchunks = 20L) {
 	nchunks <- as.integer(nchunks)
 	if ( !isTRUE(nchunks > 0L) || length(nchunks) != 1L )
-		stop("nchunks must be a single positive integer")
-	options("Cardinal.nchunks" = nchunks)
+		stop("nchunks must be a single positive number")
+	options("matter.default.nchunks" = nchunks)
+}
+
+# size of chunks to use for processing (in bytes)
+getCardinalChunksize <- function() {
+	getOption("matter.default.chunksize")
+}
+setCardinalChunksize <- function(chunksize = NA_real_) {
+	chunksize <- as.numeric(chunksize)
+	if ( isTRUE(chunksize <= 0L) || length(chunksize) != 1L )
+		stop("nchunks must be a single positive number (or NA)")
+	options("matter.default.chunksize" = chunksize)
 }
 

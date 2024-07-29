@@ -1,10 +1,16 @@
 
-CHANGES IN VERSION 3.7.3 [2024-7-26]
+CHANGES IN VERSION 3.7.3 [2024-7-29]
 -----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add 'setCardinalChunksize()' + 'getCardinalChunksize()'
 
 BUG FIXES
 
     o Fix plot() and image() not always respecting dimnames
+    o Fix plot() and image() not plotting multiple columns
+    o Fix plot() and image() failing for non-syntactic names
 
 CHANGES IN VERSION 3.7.2 [2024-7-13]
 -----------------------------------

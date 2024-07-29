@@ -11,6 +11,8 @@
 \alias{setCardinalVerbose}
 \alias{getCardinalNChunks}
 \alias{setCardinalNChunks}
+\alias{getCardinalChunksize}
+\alias{setCardinalChunksize}
 
 \alias{vizi_style}
 \alias{vizi_engine}
@@ -41,6 +43,8 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should progress messages be printed?}
 
 		\item{\code{getCardinalNChunks(), setCardinalNChunks(n=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
+
+		\item{\code{getCardinalChunksize(), setCardinalChunksize(chunksize=NA_real_)}: The approximate size of data chunks in bytes. Can be used as an alternative to setting the number of chunks. The size is in bytes, so, for example, \code{chunksize=500e6} means 500 MB.}
 	}
 
 	Additionally, graphical parameters can be set:

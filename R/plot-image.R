@@ -81,12 +81,12 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	if ( missing(formula) || is.numeric(formula) ) {
 		if ( !missing(formula) )
 			i <- formula
-		rhs <- paste0(coordNames(x), collapse="*")
+		rhs <- paste0(varquote(coordNames(x)), collapse="*")
 		lhs <- names(spectraData(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		rhs <- paste0(coordNames(x), collapse="*")
-		lhs <- paste0(formula, collapse="+")
+		rhs <- paste0(varquote(coordNames(x)), collapse="*")
+		lhs <- paste0(varquote(formula), collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 		i <- NULL
 	}
@@ -156,12 +156,12 @@ setMethod("image", c(x = "PositionDataFrame"),
 		subset = TRUE)
 {
 	if ( missing(formula) || is.numeric(formula) ) {
-		rhs <- paste0(coordNames(x), collapse="*")
+		rhs <- paste0(varquote(coordNames(x)), collapse="*")
 		lhs <- setdiff(names(x), coordNames(x))[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		rhs <- paste0(coordNames(x), collapse="*")
-		lhs <- paste0(formula, collapse="+")
+		rhs <- paste0(varquote(coordNames(x)), collapse="*")
+		lhs <- paste0(varquote(formula), collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	}
 	parse <- parse_formula(formula, envir=x, eval=TRUE)
