@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 24, 2024"
+date: "Revised: July 29, 2024"
 output:
   BiocStyle::html_document:
   toc: true

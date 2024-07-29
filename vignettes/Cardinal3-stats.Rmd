@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "Revised: April 24, 2024"
+date: "Revised: July 29, 2024"
 output:
   BiocStyle::html_document:
   toc: true
@@ -264,14 +264,14 @@ We strongly recomend making sure that all spectra from the same experiment run b
 Projection to latent structures (PLS), also called partial least squares, is a supervised dimension reduction technique. It can be thought of as being similar to PCA, but for classification or regression.
 
 ```{r pls-cv}
-cv_pls <- crossValidate(PLS, x=mse2, y=mse2$class, ncomp=1:15, folds=run(mse2))
+cv_pls <- crossValidate(PLS, x=mse2, y=mse2$class, ncomp=1:5, folds=run(mse2))
 cv_pls
 ```
 
-We can see that the accuracy maxes out after 11 PLS components.
+We can see that we only need 3 components to get perfect accuracy in this toy example.
 
 ```{r pls}
-pls <- PLS(mse2, y=mse2$class, ncomp=11)
+pls <- PLS(mse2, y=mse2$class, ncomp=3)
 pls
 ```
 
@@ -308,10 +308,10 @@ cv_ssc <- crossValidate(spatialShrunkenCentroids, x=mse2, y=mse2$class,
 cv_ssc
 ```
 
-We can see that in this case, the model with `s=9` has the best cross-validated accuracy for the data. However, it does not perform as well as the PLS model.
+We can see that in this case, the model with `s=0` has the best cross-validated accuracy for the data. However, it does not perform as well as the PLS model.
 
 ```{r ssc-classification}
-ssc2 <- spatialShrunkenCentroids(mse2, y=mse2$class, r=2, s=9)
+ssc2 <- spatialShrunkenCentroids(mse2, y=mse2$class, r=2, s=0)
 ssc2
 ```
 
@@ -322,7 +322,7 @@ image(ssc2, type="probability", layout=c(1,3),
 	subset=mse2$circleA | mse2$circleB)
 ```
 
-Plotting t-statistics shows the peaks with lower *m/z* values have a higher abundance in class "B".
+Plotting t-statistics shows most relevant peaks have a higher abundance in class "B".
 
 ```{r ssc-statistic-2, fig.height=4, fig.width=9}
 plot(ssc2, type="statistic", linewidth=2, annPeaks="circle")
@@ -397,7 +397,7 @@ mtest_top <- topFeatures(mtest)
 subset(mtest_top, fdr < 0.05)
 ```
 
-We find 4 significant features.
+We find all 5 differentially abundant features.
 
 
 
@@ -408,7 +408,7 @@ Testing of `SpatialDGMM` objects is also supported by `meansTest()`. The key ide
 First, we must segment the data with `spatialDGMM()`, while making sure that each sample is segmented independently (by specifying the samples as `groups`).
 
 ```{r test-segment-dgmm}
-dgmm2 <- spatialDGMM(mse3, r=2, k=3, groups=run(mse3))
+dgmm2 <- spatialDGMM(mse3, r=2, k=2, groups=run(mse3))
 ```
 
 Now use `segmentationTest()` to fit the models.
@@ -436,7 +436,7 @@ stest_top <- topFeatures(stest)
 subset(stest_top, fdr < 0.05)
 ```
 
-This example is simple enough so we still find the same 4 significant features.
+This example is simple enough that we find the same 5 differentially abundant features.
 
 
 

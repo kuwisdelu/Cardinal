@@ -210,8 +210,10 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		}
 		names(i) <- make.unique(nms)
 	}
-	rhs <- eval_exprs(parse$rhs, spectraData(x), i=i, group=names(i))
-	lhs <- eval_exprs(parse$lhs, spectraData(x), i=i, group=names(i))
+	rhs <- eval_exprs(parse$rhs, spectraData(x),
+		i=i, group=names(i), recursive=TRUE)
+	lhs <- eval_exprs(parse$lhs, spectraData(x),
+		i=i, group=names(i), recursive=TRUE)
 	if ( superpose ) {
 		by <- NULL
 		if ( is.null(groups) )
