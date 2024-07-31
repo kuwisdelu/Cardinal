@@ -239,8 +239,7 @@ convertMSImagingExperiment2Arrays <- function(object)
 convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, tolerance = 0.5 * resolution,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is(object, "MSImagingExperiment") )
@@ -296,6 +295,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 				guess.max, " sample spectra")
 		ref <- peakAlign(ref, ref=NULL,
 			tolerance=tolerance, units=units,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 		if ( is.null(mass.range) )
 			mass.range <- round(range(mz(ref)), digits=4L)
@@ -314,6 +314,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		}
 		ans <- peakAlign(object, ref=mz(ref),
 			tolerance=tolerance, units=units,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
 		# profile m/z axis
@@ -329,6 +330,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 					guess.max, " sample spectra")
 			mz <- estimateDomain(mzlist,
 				units=switch(units, ppm="relative", mz="absolute"),
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 			if ( is.null(mass.range) )
 				mass.range <- round(range(mz), digits=4L)

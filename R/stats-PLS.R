@@ -6,8 +6,7 @@ setMethod("PLS", "ANY",
 	function(x, y, ncomp = 3,
 		method = c("nipals", "simpls", "kernel1", "kernel2"),
 		center = TRUE, scale = FALSE, bags = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	method <- match.arg(method)
@@ -16,7 +15,7 @@ setMethod("PLS", "ANY",
 		return(mi_learn(PLS, x=x, y=y, ncomp=ncomp,
 			method=method, bags=bags, score=fitted,
 			center=center, scale=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...))
 	}
 	msg <- "projecting to latent structures "
@@ -25,28 +24,28 @@ setMethod("PLS", "ANY",
 			message(msg, "using NIPALS")
 		ans <- pls_nipals(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "simpls" ) {
 		if ( verbose )
 			message(msg, "using SIMPLS")
 		ans <- pls_simpls(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel1" ) {
 		if ( verbose )
 			message(msg, "using kernel #1")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=1L,
 			center=center, scale.=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel2" ) {
 		if ( verbose )
 			message(msg, "using kernel #2")
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=2L,
 			center=center, scale.=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else {
 		stop("unsupported method: ", method)
@@ -154,8 +153,7 @@ setMethod("image", c(x = "SpatialPLS"),
 setMethod("OPLS", "ANY", 
 	function(x, y, ncomp = 3, retx = TRUE,
 		center = TRUE, scale = FALSE, bags = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is.null(bags) )
@@ -163,14 +161,14 @@ setMethod("OPLS", "ANY",
 		return(mi_learn(OPLS, x=x, y=y, ncomp=ncomp,
 			retx=retx, bags=bags, score=fitted,
 			center=center, scale=scale,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...))
 	}
 	if ( verbose )
 		message("preprocessing data to remove orthogonal variation")
 	ans <- opls_nipals(x, y=y, k=max(ncomp),
 		center=center, scale.=scale, regression=TRUE,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	if ( !retx )
 		ans$x <- NULL

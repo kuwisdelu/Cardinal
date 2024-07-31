@@ -3,8 +3,7 @@
 ## ---------------------------------
 
 summarizeFeatures <- function(x, stat = "mean", groups = NULL,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "FUN" %in% ...names() ) {
@@ -13,7 +12,7 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 	}
 	if ( is(x, "MSImagingArrays") ) {
 		x <- convertMSImagingArrays2Experiment(x,
-			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
+			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	} else {
 		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
 	}
@@ -23,7 +22,7 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 		labels <- ifelse(nchar(names(stat)), names(stat), stat)
 	}
 	ans <- rowStats(x, stat=stat, group=groups, simplify=FALSE,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
 		y <- as.vector(ans[[i]])
@@ -48,8 +47,7 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 ## --------------------------------
 
 summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "FUN" %in% ...names() ) {
@@ -58,7 +56,7 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 	}
 	if ( is(x, "MSImagingArrays") ) {
 		x <- convertMSImagingArrays2Experiment(x,
-			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
+			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	} else {
 		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
 	}
@@ -68,7 +66,7 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 		labels <- ifelse(nchar(names(stat)), names(stat), stat)
 	}
 	ans <- colStats(x, stat=stat, group=groups, simplify=FALSE,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	for ( i in seq_along(ans) ) {
 		y <- as.vector(ans[[i]])
@@ -94,23 +92,21 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 
 setMethod("rowStats", "SpectralImagingExperiment",
 	function(x, stat, ...,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM())
 	{
 		rowStats(spectra(x), stat=stat,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	})
 
 setMethod("colStats", "SpectralImagingExperiment",
 	function(x, stat, ...,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM())
 	{
 		colStats(spectra(x), stat=stat,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	})
 

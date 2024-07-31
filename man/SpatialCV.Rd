@@ -19,8 +19,7 @@ crossValidate(fit., x, y, folds = run(x), \dots,
     predict. = predict, keep.models = FALSE,
     trainProcess = peakProcess, trainArgs = list(),
     testProcess = peakProcess, testArgs = list(),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM())
 
 \S4method{fitted}{SpatialCV}(object, type = c("response", "class"), \dots)
@@ -47,8 +46,6 @@ crossValidate(fit., x, y, folds = run(x), \dots,
     \item{testProcess, testArgs}{A function and arguments used for processing the test sets. The test set is passed as the 1st argument to \code{trainProcess}, and the processed training set is passed as the 2nd argument.}
 
     \item{verbose}{Should progress be printed for each iteration?}
-
-    \item{nchunks}{The number of chunks to use. \emph{Passed} to \code{fit.}, \code{predict.}, \code{trainProcess} and \code{testProcess}.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. \emph{Passed} to \code{fit.}, \code{predict.}, \code{trainProcess} and \code{testProcess}.}
 

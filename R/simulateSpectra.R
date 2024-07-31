@@ -55,8 +55,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
 	representation = c("profile", "centroid"),
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !missing(preset) || !is.null(preset) ) {
@@ -126,7 +125,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		}
 	}
 	ans <- chunkMapply(FUN, runNames(pixelData),
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		RNG=TRUE, BPPARAM=BPPARAM)
 	ans <- do.call("cbind", ans)
 	if ( representation == "centroid" )

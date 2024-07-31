@@ -4,8 +4,7 @@
 
 estimateDomain <- function(xlist,
 	units = c("relative", "absolute"),
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	units <- match.arg(units)
@@ -20,7 +19,7 @@ estimateDomain <- function(xlist,
 		}
 	}
 	ans <- chunkLapply(xlist, FUN,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	ans <- do.call(rbind, ans)
 	from <- floor(min(ans[,1L], na.rm=TRUE))
@@ -38,8 +37,7 @@ estimateDomain <- function(xlist,
 
 estimateReferenceMz <- function(object,
 	units = c("ppm", "mz"),
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
@@ -50,7 +48,8 @@ estimateReferenceMz <- function(object,
 		units <- match.arg(units)
 		units <- switch(units, ppm="relative", mz="absolute")
 		estimateDomain(mz(object), units=units,
-			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM, ...)
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
 	} else {
 		stop("can't estimate m/z values for class ", sQuote(class(object)))
 	}
@@ -58,15 +57,14 @@ estimateReferenceMz <- function(object,
 
 estimateReferencePeaks <- function(object, SNR = 2,
 	method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
 		warning("processing steps will be ignored by estimateReferencePeaks()")
 	method <- match.arg(method)
 	object <- summarizeFeatures(object, stat="mean",
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 	featureData <- featureData(object)
 	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)

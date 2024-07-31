@@ -20,15 +20,13 @@
 \usage{
 \S4method{PCA}{ANY}(x, ncomp = 3,
     center = TRUE, scale = FALSE,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{PCA}{SpectralImagingExperiment}(x, ncomp = 3,
     center = TRUE, scale = FALSE, \dots)
 
 \S4method{predict}{SpatialPCA}(object, newdata,
-    nchunks = getCardinalNChunks(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{plot}{SpatialPCA,missing}(x, type = c("rotation", "scree", "x"), \dots, xlab, ylab)
@@ -44,9 +42,9 @@
 
     \item{scale}{Shoud the data be scaled?}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

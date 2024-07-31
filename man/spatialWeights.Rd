@@ -16,8 +16,7 @@
     neighbors = findNeighbors(coord, r=r),
     weights = c("gaussian", "adaptive"),
     sd = ((2 * r) + 1) / 4, matrix = FALSE,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialWeights}{SpectralImagingExperiment}(x, r = 1,
@@ -45,9 +44,9 @@
 
     \item{matrix}{Should the weights be returned as a sparse adjacency matrix instead of a list?}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

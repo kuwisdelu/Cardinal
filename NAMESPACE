@@ -374,9 +374,15 @@ export(
 	"dpal")
 
 export(
+	"as_facets",
+	"as_layers")
+
+export(
 	"vizi_style",
 	"vizi_engine",
 	"vizi_par")
+
+export("SnowfastParam")
 
 export(
 	"getCardinalBPPARAM",
@@ -385,6 +391,8 @@ export(
 	"setCardinalVerbose",
 	"getCardinalNChunks",
 	"setCardinalNChunks",
+	"getCardinalChunksize",
+	"setCardinalChunksize",
 	"getCardinalNumBlocks",
 	"setCardinalNumBlocks")
 

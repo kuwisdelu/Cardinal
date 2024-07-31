@@ -17,23 +17,19 @@
 
 \usage{
 summarizeFeatures(x, stat = "mean", groups = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 summarizePixels(x, stat = c(tic="sum"), groups = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{rowStats}{SpectralImagingExperiment}(x, stat, \dots,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM())
 
 \S4method{colStats}{SpectralImagingExperiment}(x, stat, \dots,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM())
 
 \S4method{rowSums}{SpectralImagingExperiment}(x, na.rm = FALSE, dims = 1, \dots)
@@ -56,9 +52,9 @@ summarizePixels(x, stat = c(tic="sum"), groups = NULL,
 
     \item{dims}{Ignored.}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

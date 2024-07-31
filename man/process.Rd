@@ -23,14 +23,12 @@
 
 \S4method{process}{SpectralImagingExperiment}(object, spectra = "intensity", index = NULL,
     domain = NULL, outfile = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{process}{SpectralImagingArrays}(object, spectra = "intensity", index = NULL,
     domain = NULL, outfile = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{addProcessing}{SpectralImagingData}(object, FUN, label, verbose = getCardinalVerbose(), \dots)
@@ -49,9 +47,9 @@ reset(object, \dots)
 
     \item{outfile}{Optional. The name of a file to write the resulting dataset. Creates an imzML file for \code{MSImagingExperiment} or \code{MSImagingArrays}. The "continuous" format will be written if \code{domain} is specified; otherwise the "processed" format will be used in most cases.}
     
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

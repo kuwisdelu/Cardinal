@@ -5,13 +5,12 @@
 setMethod("PCA", "ANY", 
 	function(x, ncomp = 3,
 		center = TRUE, scale = FALSE,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	ans <- prcomp_lanczos(x, k=max(ncomp),
 		center=center, scale.=scale,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	if ( getCardinalVerbose() )
 		message("returning principal components")
@@ -31,7 +30,6 @@ setMethod("PCA", "SpectralImagingExperiment",
 
 setMethod("predict", "SpatialPCA",
 	function(object, newdata,
-		nchunks = getCardinalNChunks(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
@@ -43,8 +41,7 @@ setMethod("predict", "SpatialPCA",
 	if ( (!isFALSE(object$center) || !isFALSE(object$scale)) ) {
 		x <- rowscale(spectra(newdata),
 			center=object$center, scale=object$scale,
-			nchunks=nchunks, verbose=FALSE,
-			BPPARAM=BPPARAM, ...)
+			verbose=FALSE, BPPARAM=BPPARAM, ...)
 	} else {
 		x <- spectra(newdata)
 	}

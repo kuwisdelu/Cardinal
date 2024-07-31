@@ -21,8 +21,7 @@ readMSIData <- function(file, ...)
 readImzML <- function(file, memory = FALSE, check = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, as = "auto", parse.only = FALSE,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "name" %in% ...names() )
@@ -78,7 +77,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		ans <- convertMSImagingArrays2Experiment(ans,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	}
 	if ( isCentroided(ans) && is(ans, "MSImagingArrays") )

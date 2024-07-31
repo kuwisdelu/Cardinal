@@ -22,8 +22,7 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 	function(object, FUN, ...,
 		spectra = "intensity", index = NULL,
 		simplify = TRUE, outpath = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
@@ -46,7 +45,7 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 			stop("spectrapply() arguments passed via ... must be named")
 		chunkApply(spectra, 2L, FUN, index, ...,
 			simplify=simplify, outpath=outpath,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	})
 
@@ -54,8 +53,7 @@ setMethod("spectrapply", "SpectralImagingArrays",
 	function(object, FUN, ...,
 		spectra = "intensity", index = NULL,
 		simplify = TRUE, outpath = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
@@ -91,17 +89,17 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		if ( nindex == 1L ) {
 			chunkMapply(FUN, spectra, index, MoreArgs=args,
 				simplify=simplify, outpath=outpath,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else if ( nindex == 2L ) {
 			chunkMapply(FUN, spectra, index, index2, MoreArgs=args,
 				simplify=simplify, outpath=outpath,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else if ( nindex == 3L ) {
 			chunkMapply(FUN, spectra, index, index2, index3, MoreArgs=args,
 				simplify=simplify, outpath=outpath,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else {
 			stop("too many 'index' arrays")

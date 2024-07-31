@@ -13,20 +13,17 @@
 \usage{
 estimateDomain(xlist,
     units = c("relative", "absolute"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 estimateReferenceMz(object,
     units = c("ppm", "mz"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 estimateReferencePeaks(object, SNR = 2,
     method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
@@ -41,9 +38,9 @@ estimateReferencePeaks(object, SNR = 2,
 
     \item{SNR}{The signal-to-noise threshold to use to determine a peak.}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

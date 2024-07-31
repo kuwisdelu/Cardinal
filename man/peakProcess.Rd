@@ -16,8 +16,7 @@
     SNR = 2, type = c("height", "area"),
     tolerance = NA, units = c("ppm", "mz"),
     sampleSize = NA, filterFreq = TRUE, outfile = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
@@ -46,9 +45,9 @@
 
     \item{outfile}{Optional. The name of a file to write the resulting dataset as imzML.}
     
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

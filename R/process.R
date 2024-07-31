@@ -126,8 +126,7 @@ setMethod("process", "MSImagingArrays",
 setMethod("process", "SpectralImagingExperiment",
 	function(object, spectra = "intensity", index = NULL,
 		domain = NULL, outfile = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) == 0L )
@@ -162,7 +161,7 @@ setMethod("process", "SpectralImagingExperiment",
 	}
 	FUN <- .process_fun(ps, domain=domain, put=put)
 	ans <- chunk_colapply(spectra, FUN, index,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	object <- .postprocess_SpectralImagingExperiment(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
@@ -225,8 +224,7 @@ setMethod("process", "SpectralImagingExperiment",
 setMethod("process", "SpectralImagingArrays",
 	function(object, spectra = "intensity", index = NULL,
 		domain = NULL, outfile = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) == 0L )
@@ -273,15 +271,15 @@ setMethod("process", "SpectralImagingArrays",
 	FUN <- .process_fun(ps, domain=domain, put=put)
 	if ( nindex == 1L ) {
 		ans <- chunk_mapply(FUN, spectra, index,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else if ( nindex == 2L ) {
 		ans <- chunk_mapply(FUN, spectra, index, index2,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else if ( nindex == 3L ) {
 		ans <- chunk_mapply(FUN, spectra, index, index2, index3,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
 		stop("too many 'index' arrays")

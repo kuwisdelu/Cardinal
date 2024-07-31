@@ -24,8 +24,7 @@ readMSIData(file, \dots)
 readImzML(file, memory = FALSE, check = FALSE,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, as = "auto", parse.only=FALSE,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), \dots)
 
 ## Read Analyze 7.5 file
@@ -39,8 +38,7 @@ convertMSImagingExperiment2Arrays(object)
 convertMSImagingArrays2Experiment(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, tolerance = 0.5 * resolution,
-	nchunks = getCardinalNChunks(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), \dots)
 }
 \arguments{
@@ -64,11 +62,11 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 
 	\item{parse.only}{If TRUE, return only the parsed imzML metadata without creating a new \code{MSImagingArrays} or \code{MSImagingExperiment} object.}
 
-	\item{nchunks}{The number of chunks to use for processing.}
+	\item{verbose}{Should progress messages be printed?}
 
-    \item{verbose}{Should progress messages be printed?}
+	\item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
-    \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
+	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
 	\item{\dots}{Additional arguments passed to \code{\link[CardinalIO]{parseImzML}} or \code{\link[CardinalIO]{parseAnalyze}}.}
 
@@ -100,7 +98,7 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 }
 
 \references{
-    Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
+	Schramm T, Hester A, Klinkert I, Both J-P, Heeren RMA, Brunelle A, Laprevote O, Desbenoit N, Robbe M-F, Stoeckli M, Spengler B, Rompp A (2012) imzML - A common data format for the flexible exchange and processing of mass spectrometry imaging data. Journal of Proteomics 75 (16):5106-5110. doi:10.1016/j.jprot.2012.07.026
 }
 
 \seealso{

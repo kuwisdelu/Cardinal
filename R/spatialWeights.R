@@ -7,13 +7,12 @@ setMethod("spatialWeights", "ANY",
 		neighbors = findNeighbors(coord, r=r),
 		weights = c("gaussian", "adaptive"),
 		sd = ((2 * r) + 1) / 4, matrix = FALSE,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	.spatialWeights(x, neighbors=neighbors,
 		weights=weights, sd=sd, byrow=byrow, matrix=matrix,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
@@ -36,7 +35,7 @@ setMethod("spatialWeights", "PositionDataFrame",
 
 .spatialWeights <- function(x,
 	neighbors, weights, sd, byrow, matrix,
-	nchunks, verbose, BPPARAM)
+	verbose, chunkopts, BPPARAM)
 {
 	weights <- match.arg(weights, c("gaussian", "adaptive"))
 	if ( byrow ) {
@@ -44,7 +43,7 @@ setMethod("spatialWeights", "PositionDataFrame",
 			ds <- rowdist_at(x, ix=seq_len(nrow(x)), iy=neighbors)
 		} else {
 			ds <- rowDists(x, at=neighbors,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		}
 	} else {
@@ -52,7 +51,7 @@ setMethod("spatialWeights", "PositionDataFrame",
 			ds <- coldist_at(x, ix=seq_len(ncol(x)), iy=neighbors)
 		} else {
 			ds <- colDists(x, at=neighbors,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		}
 	}

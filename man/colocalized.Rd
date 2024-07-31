@@ -18,15 +18,13 @@
 \S4method{colocalized}{SpectralImagingExperiment}(object, i, ref,
     threshold = median, n = Inf,
     sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{colocalized}{SpatialDGMM}(object, ref,
     threshold = median, n = Inf,
     sort.by = c("MOC", "M1", "M2", "Dice", "none"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
@@ -45,9 +43,9 @@
 
     \item{sort.by}{The colocalization measure used to rank colocalized features. Possible options include Pearson's correlation ("cor"), Manders overlap coefficient ("MOC"), Manders colocalization coefficients ("M1" and "M2"), and Dice similarity coefficient ("Dice".}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

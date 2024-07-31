@@ -5,8 +5,7 @@
 setMethod("meansTest", "ANY",
 	function(x, data, fixed, random, samples,
 		response = "y", reduced = ~ 1, byrow = FALSE,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "groups" %in% ...names() ) {
@@ -31,11 +30,11 @@ setMethod("meansTest", "ANY",
 		message("summarizing ", sQuote(response))
 	if ( byrow ) {
 		y <- rowStats(x, stat="mean", group=samples,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
 		y <- colStats(x, stat="mean", group=samples,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	}
 	if ( !is.matrix(y) )
@@ -66,7 +65,7 @@ setMethod("meansTest", "ANY",
 	}
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- if (byrow) rownames(x) else colnames(x)
 	# test models
@@ -76,7 +75,7 @@ setMethod("meansTest", "ANY",
 	}
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results
@@ -244,8 +243,7 @@ setMethod("plot", c(x = "MeansTest", y = "missing"),
 setMethod("meansTest", "SpatialDGMM",
 	function(x, fixed, random, class = 1L,
 		response = "intensity", reduced = ~ 1,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	data <- pixelData(x)
@@ -283,7 +281,7 @@ setMethod("meansTest", "SpatialDGMM",
 	}
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- rownames(featureData(x))
 	# test models
@@ -293,7 +291,7 @@ setMethod("meansTest", "SpatialDGMM",
 	}
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results

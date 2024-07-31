@@ -7,8 +7,7 @@ setMethod("spatialDGMM", "ANY",
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r, groups=groups),
 		annealing = TRUE, compress = TRUE, byrow = FALSE,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "method" %in% ...names() ) {
@@ -26,7 +25,7 @@ setMethod("spatialDGMM", "ANY",
 				message("calculating adaptive weights")
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!byrow,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM, ...)
 			wts <- Map("*", wts, awts)
 		}
@@ -56,7 +55,7 @@ setMethod("spatialDGMM", "ANY",
 		ans[[j]] <- sgmixn(NULL, NULL, x, r=r, k=k[j], group=groups,
 			weights=wts, neighbors=neighbors, byrow=byrow,
 			annealing=annealing, compress=compress,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 		ans[[j]]$weights <- weights
 		ans[[j]]$r <- r

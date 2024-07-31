@@ -38,8 +38,7 @@
 \S4method{PLS}{ANY}(x, y, ncomp = 3,
     method = c("nipals", "simpls", "kernel1", "kernel2"),
     center = TRUE, scale = FALSE, bags = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{PLS}{SpectralImagingExperiment}(x, y, ncomp = 3,
@@ -59,8 +58,7 @@
 
 \S4method{OPLS}{ANY}(x, y, ncomp = 3, retx = TRUE,
     center = TRUE, scale = FALSE, bags = NULL,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{OPLS}{SpectralImagingExperiment}(x, y, ncomp = 3, retx = FALSE,
@@ -99,9 +97,9 @@
 
     \item{retx}{Should the (potentially large) processed data matrix be included in the result?}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

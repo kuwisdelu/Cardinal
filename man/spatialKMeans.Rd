@@ -23,8 +23,7 @@
         neighbors = findNeighbors(coord, r=r),
         transpose = TRUE, niter = 2L,
         centers = TRUE, correlation = TRUE,
-        nchunks = getCardinalNChunks(),
-        verbose = getCardinalVerbose(),
+        verbose = getCardinalVerbose(), chunkopts = list(),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialKMeans}{SpectralImagingExperiment}(x, r = 1, k = 2, ncomp = max(k),
@@ -60,9 +59,9 @@
 
     \item{correlation}{Should the correlations between features and the clusters be calculated?}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

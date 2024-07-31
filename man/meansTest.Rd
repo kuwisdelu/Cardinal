@@ -23,8 +23,7 @@
 \usage{
 \S4method{meansTest}{ANY}(x, data, fixed, random, samples,
     response = "y", reduced = ~ 1, byrow = FALSE,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{meansTest}{SpectralImagingExperiment}(x, fixed, random, samples = run(x),
@@ -32,8 +31,7 @@
 
 \S4method{meansTest}{SpatialDGMM}(x, fixed, random, class = 1L,
     response = "intensity", reduced = ~ 1,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 segmentationTest(x, fixed, random, samples = run(x),
@@ -64,9 +62,9 @@ segmentationTest(x, fixed, random, samples = run(x),
 
     \item{byrow}{For the default method, are the rows or the columns the \code{x} .}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

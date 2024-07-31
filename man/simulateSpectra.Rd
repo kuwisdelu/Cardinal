@@ -29,8 +29,7 @@ simulateImage(pixelData, featureData, preset,
     from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
     sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
     representation = c("profile", "centroid"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
@@ -75,9 +74,9 @@ presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
 
     \item{representation}{Should a profile spectrum be returned or only the centroided peaks?}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

@@ -9,8 +9,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		SNR = 2, type = c("height", "area"),
 		tolerance = NA, units = c("ppm", "mz"),
 		sampleSize = NA, filterFreq = TRUE, outfile = NULL,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is.na(sampleSize) ||
@@ -41,7 +40,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				spectra=spectra, index=index,
 				method=method, SNR=SNR, type=type,
 				tolerance=tolerance, units=units, filterFreq=filterFreq,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM, ...)
 			domain <- mz(ref)
 		} else {
@@ -57,7 +56,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		object <- process(object,
 			spectra=spectra, index=index,
 			domain=domain, outfile=outfile,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 		if ( is(ref, "MSImagingExperiment") )
 			featureData(object) <- featureData(ref)
@@ -83,7 +82,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 		object <- peakAlign(object, ref=ref,
 			spectra=spectra, index=index, outfile=outfile,
 			tolerance=tolerance, units=units,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 		# filter peaks
 		if ( !is.null(featureData(object)[["count"]]) &&
@@ -176,13 +175,12 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 	function(object, ref,
 		spectra = "intensity", index = NULL,
 		tolerance = NA, units = c("relative", "absolute"),
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
 		object <- process(object, spectra=spectra, index=index,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	if ( missing(units) && !missing(tolerance) )
 		units <- get_units_from_names(tolerance, units)
@@ -220,7 +218,7 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, spectraname=snm, indexname=inm,
 		tolerance=tolerance, units=units,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
@@ -228,13 +226,12 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	function(object, ref,
 		spectra = "intensity", index = NULL,
 		tolerance = NA, units = c("relative", "absolute"),
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
 		object <- process(object, spectra=spectra, index=index,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	if ( missing(units) && !missing(tolerance) )
 		units <- get_units_from_names(tolerance, units)
@@ -259,20 +256,20 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		if ( verbose )
 			message("estimating shared domain for alignment")
 		domain <- estimateDomain(index, units=units,
-			nchunks=nchunks, verbose=verbose, BPPARAM=BPPARAM)
+			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	} else {
 		domain <- ref
 	}
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, spectraname=snm, indexname=inm,
 		tolerance=tolerance, units=units,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
 .peakAlign <- function(object, ref, spectra, index,
 	domain, spectraname, indexname, tolerance, units,
-	nchunks, verbose, BPPARAM)
+	verbose, chunkopts, BPPARAM)
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(tolerance) ) {
@@ -297,7 +294,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 				merge=FALSE, na.drop=FALSE)
 		}
 		peaks <- chunk_lapply(index, FUN, simplify=matter::stat_c,
-			nchunks=nchunks, verbose=verbose,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 		peaks <- peaks[!is.na(peaks)]
 		peaks <- mergepeaks(peaks, tol=tol, tol.ref=tol.ref)

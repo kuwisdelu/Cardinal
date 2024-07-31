@@ -8,8 +8,7 @@ setMethod("spatialKMeans", "ANY",
 		neighbors = findNeighbors(coord, r=r),
 		transpose = TRUE, niter = 2L,
 		centers = TRUE, correlation = TRUE,
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "method" %in% ...names() ) {
@@ -27,7 +26,7 @@ setMethod("spatialKMeans", "ANY",
 				message("calculating adaptive weights")
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM, ...)
 			wts <- Map("*", wts, awts)
 		}
@@ -43,7 +42,7 @@ setMethod("spatialKMeans", "ANY",
 	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=wts,
 		transpose=transpose, niter=niter,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	k <- rev(sort(k))
 	ans <- vector("list", length=length(k))
@@ -65,12 +64,12 @@ setMethod("spatialKMeans", "ANY",
 			if ( transpose ) {
 				truecenters[[i]] <- rowStats(x, "mean",
 					group=as.factor(ans[[i]]$cluster),
-					nchunks=nchunks, verbose=verbose,
+					verbose=verbose, chunkopts=chunkopts,
 					BPPARAM=BPPARAM)
 			} else {
 				truecenters[[i]] <- colStats(x, "mean",
 					group=as.factor(ans[[i]]$cluster),
-					nchunks=nchunks, verbose=verbose,
+					verbose=verbose, chunkopts=chunkopts,
 					BPPARAM=BPPARAM)
 			}
 		}
@@ -84,7 +83,7 @@ setMethod("spatialKMeans", "ANY",
 			margin <- if (transpose) 1L else 2L
 			FUN <- function(xi) vapply(cls, cor, numeric(1L), y=xi)
 			corr <- chunkApply(x, margin, FUN,
-				nchunks=nchunks, verbose=verbose,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 			corr <- do.call(rbind, corr)
 			rownames(corr) <- dimnames(x)[[margin]]

@@ -19,8 +19,7 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	function(object, i, ref,
 		threshold = median, n = Inf,
 		sort.by = c("cor", "MOC", "M1", "M2", "Dice", "none"),
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	sort.by <- match.arg(sort.by)
@@ -44,7 +43,7 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	}
 	FUN <- FUN <- .coscore_fun(ref, threshold, FALSE)
 	scores <- chunkApply(spectra(object), 1L, FUN,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	scores <- simplify2array(lapply(scores, t))
 	ans <- apply(scores, 1L, function(sc)
@@ -64,8 +63,7 @@ setMethod("colocalized", "SpatialDGMM",
 	function(object, ref,
 		threshold = median, n = Inf,
 		sort.by = c("MOC", "M1", "M2", "Dice", "none"),
-		nchunks = getCardinalNChunks(),
-		verbose = getCardinalVerbose(),
+		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	sort.by <- match.arg(sort.by)
@@ -85,7 +83,7 @@ setMethod("colocalized", "SpatialDGMM",
 	}
 	FUN <- .coscore_fun(ref, threshold, TRUE)
 	scores <- chunkLapply(object$class, FUN,
-		nchunks=nchunks, verbose=verbose,
+		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	scores <- simplify2array(lapply(scores, t))
 	ans <- apply(scores, 1L, function(sc)

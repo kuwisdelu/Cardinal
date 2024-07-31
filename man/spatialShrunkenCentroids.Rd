@@ -28,8 +28,7 @@
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r), bags = NULL,
     priors = table(y), center = NULL, transpose = TRUE,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,ANY}(x, y, r = 1, s = 0,
@@ -41,8 +40,7 @@
     neighbors = findNeighbors(coord, r=r),
     init = NULL, threshold = 0.01, niter = 10L,
     center = NULL, transpose = FALSE,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialShrunkenCentroids}{SpectralImagingExperiment,missing}(x, r = 1, k = 2, s = 0,
@@ -54,7 +52,6 @@
 \S4method{predict}{SpatialShrunkenCentroids}(object, newdata,
         type = c("response", "class"),
         neighbors = findNeighbors(newdata, r=object$r),
-        nchunks = getCardinalNChunks(),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{logLik}{SpatialShrunkenCentroids}(object, \dots)
@@ -96,9 +93,9 @@
     
     \item{niter}{The maximum number of iterations.}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

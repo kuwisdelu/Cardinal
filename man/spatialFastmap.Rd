@@ -22,8 +22,7 @@
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r),
     transpose = TRUE, niter = 3L,
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialFastmap}{SpectralImagingExperiment}(x, r = 1, ncomp = 3,
@@ -32,7 +31,6 @@
 
 \S4method{predict}{SpatialFastmap}(object, newdata,
     neighbors = findNeighbors(newdata, r=object$r),
-    nchunks = getCardinalNChunks(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{plot}{SpatialFastmap,missing}(x, type = c("scree", "x"), \dots, xlab, ylab)
@@ -56,9 +54,9 @@
     
     \item{niter}{The number of iterations used to calculate the pivots for each FastMap component.}
 
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
