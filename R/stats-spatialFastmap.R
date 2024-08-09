@@ -130,7 +130,7 @@ setMethod("image", c(x = "SpatialFastmap"),
 			verbose=isTRUE(verbose), chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 		if ( length(i) > 1L ) {
-			FUN <- function(nbi, wi) colSums(wi * d[nbi,]) / sum(wi)
+			FUN <- function(nbi, wi) colSums(wi * d[nbi,,drop=FALSE]) / sum(wi)
 			t(mapply(FUN, neighbors, wts))
 		} else {
 			FUN <- function(nbi, wi) sum(wi * d[nbi]) / sum(wi)
@@ -157,7 +157,7 @@ setMethod("image", c(x = "SpatialFastmap"),
 			verbose=isTRUE(verbose), chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 		if ( length(i) > 1L ) {
-			FUN <- function(nbi, wi) colSums(wi * d[nbi,]) / sum(wi)
+			FUN <- function(nbi, wi) colSums(wi * d[nbi,,drop=FALSE]) / sum(wi)
 			t(mapply(FUN, neighbors, wts))
 		} else {
 			FUN <- function(nbi, wi) sum(wi * d[nbi]) / sum(wi)

@@ -18,7 +18,7 @@ CHANGES IN VERSION 3.7.2 [2024-7-13]
 
 BUG FIXES
 
-    o Bug fixes for 'plot()' on spectra with queued processing
+    o Merge bug fix from 3.6.4.
 
 CHANGES IN VERSION 3.7.1 [2024-5-18]
 -----------------------------------
@@ -32,6 +32,21 @@ NEW FEATURES
 BUG FIXES
 
     o Fix default 'tolerance' in 'pixels()'
+
+CHANGES IN VERSION 3.6.5 [2024-8-9]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix 'spatialShrunkenCentroids()' failing when 'r=0'
+        or when a pixel has no neighboring pixels
+
+CHANGES IN VERSION 3.6.4 [2024-7-13]
+-----------------------------------
+
+BUG FIXES
+
+    o Bug fixes for 'plot()' on spectra with queued processing
 
 CHANGES IN VERSION 3.6.3 [2024-6-26]
 -----------------------------------
