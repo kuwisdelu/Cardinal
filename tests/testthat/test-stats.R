@@ -171,6 +171,10 @@ test_that("spatialShrunkenCentroids (classification)", {
 	expect_is(topf[[1L]], "DataFrame")
 	expect_false(is.unsorted(rev(topf[[1L]]$statistic)))
 
+	sscr0 <- spatialShrunkenCentroids(s, s$class, r=0, s=0)
+	
+	expect_true(validObject(sscr0))
+
 	sscmi <- spatialShrunkenCentroids(s, s$class, s=0:3, bags=run(s))
 	predmi <- predict(sscmi, newdata=s)
 	

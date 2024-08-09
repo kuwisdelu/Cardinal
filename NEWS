@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 3.6.5 [2024-8-9]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix 'spatialShrunkenCentroids()' failing when 'r=0'
+        or when a pixel has no neighboring pixels
+
 CHANGES IN VERSION 3.6.4 [2024-7-13]
 -----------------------------------
 
