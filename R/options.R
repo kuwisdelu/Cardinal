@@ -1,6 +1,6 @@
 
-#### Options ####
-## --------------
+#### Setup options ####
+## --------------------
 
 CardinalVersion <- function() {
 	.Defunct("packageVersion")
@@ -10,8 +10,6 @@ CardinalVersion <- function() {
 .onLoad <- function(libname, pkgname) {
 	setCardinalBPPARAM()
 	setCardinalVerbose()
-	setCardinalNChunks()
-	setCardinalChunksize()
 }
 
 # set up Cardinal defaults
@@ -21,6 +19,9 @@ CardinalVersion <- function() {
 		packageStartupMessage("Cardinal v3.6 is a major update.\n",
 			"Use vignette('Cardinal3-guide') to see what's new.")
 }
+
+#### Cardinal-specific options ####
+## --------------------------------
 
 # should progress messages be printed?
 getCardinalBPPARAM <- function() {
@@ -39,29 +40,49 @@ getCardinalVerbose <- function() {
 setCardinalVerbose <- function(verbose = interactive()) {
 	verbose <- as.logical(verbose)
 	if ( !isTRUE(verbose) && !isFALSE(verbose) )
-		stop("verbose must be a single logical value")
+		stop("verbose must be TRUE or FALSE")
 	options("CardinalVerbose" = verbose)
 }
 
+#### Cardinal-controlled matter options ####
+## -----------------------------------------
+
 # number of chunks to use for processing
 getCardinalNChunks <- function() {
-	getOption("matter.default.nchunks")
+	matter_defaults()[["nchunks"]]
 }
 setCardinalNChunks <- function(nchunks = 20L) {
-	nchunks <- as.integer(nchunks)
-	if ( !isTRUE(nchunks > 0L) || length(nchunks) != 1L )
-		stop("nchunks must be a single positive number")
-	options("matter.default.nchunks" = nchunks)
+	matter_defaults(nchunks=nchunks)
 }
 
-# size of chunks to use for processing (in bytes)
+# size of chunks to use for processing
 getCardinalChunksize <- function() {
-	getOption("matter.default.chunksize")
+	matter_defaults()[["chunksize"]]
 }
-setCardinalChunksize <- function(chunksize = NA_real_) {
-	chunksize <- as.numeric(chunksize)
-	if ( isTRUE(chunksize <= 0L) || length(chunksize) != 1L )
-		stop("nchunks must be a single positive number (or NA)")
-	options("matter.default.chunksize" = chunksize)
+setCardinalChunksize <- function(chunksize = NA, units = "MB") {
+	matter_defaults(chunksize=size_bytes(chunksize, units))
+}
+
+# whether to serialize external data
+getCardinalSerialize <- function() {
+	matter_defaults()[["serialize"]]
+}
+setCardinalSerialize <- function(serialize = NA) {
+	matter_defaults(serialize=serialize)
+}
+
+# history and log file location
+getCardinalLog <- function() {
+	if ( length(matter_logger()$logfile) ) {
+		matter_logger()$logfile
+	} else {
+		matter_logger()$history()
+	}
+}
+setCardinalLog <- function(file = NULL) {
+	matter_logger()$move(file)
+}
+saveCardinalLog <- function(file = "Cardinal.log") {
+	setCardinalLog(file)
 }
 

@@ -1,6 +1,9 @@
 # Mac directory
 *.DS_Store
 
+# Log files
+*.log
+
 # C files
 *.o
 *.so

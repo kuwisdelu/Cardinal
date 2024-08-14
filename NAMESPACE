@@ -102,7 +102,9 @@ export(
 	"jet.colors",
 	"lightmode",
 	"risk.colors",
-	"simulateSpectrum")
+	"simulateSpectrum",
+	"getCardinalNumBlocks",
+	"setCardinalNumBlocks")
 
 exportMethods(
 	"aggregate",
@@ -393,6 +395,7 @@ export(
 	"setCardinalNChunks",
 	"getCardinalChunksize",
 	"setCardinalChunksize",
-	"getCardinalNumBlocks",
-	"setCardinalNumBlocks")
+	"getCardinalLog",
+	"setCardinalLog",
+	"saveCardinalLog")
 
