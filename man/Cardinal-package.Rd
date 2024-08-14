@@ -5,14 +5,22 @@
 \alias{Cardinal}
 
 \alias{CardinalVersion}
+
 \alias{getCardinalBPPARAM}
 \alias{setCardinalBPPARAM}
 \alias{getCardinalVerbose}
 \alias{setCardinalVerbose}
+
 \alias{getCardinalNChunks}
 \alias{setCardinalNChunks}
 \alias{getCardinalChunksize}
 \alias{setCardinalChunksize}
+\alias{getCardinalSerialize}
+\alias{setCardinalSerialize}
+
+\alias{getCardinalLog}
+\alias{setCardinalLog}
+\alias{saveCardinalLog}
 
 \alias{vizi_style}
 \alias{vizi_engine}
@@ -35,22 +43,36 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 
 \section{Options}{
 
-	The following options can be set:
+	The following Cardinal-specific options are available:
 
 	\itemize{
-		\item{\code{getCardinalgetCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=NULL)}: The default backend to use for parallel processing. By default, this is initially set to \code{NULL} (no parallelization). Otherwise, it must be a \code{BiocParallelParam} instance. See documentation for \code{\link{bplapply}}.}
+		\item{\code{getCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=NULL)}: The default backend to use for parallel processing. By default, this is initially set to \code{NULL} (no parallelization). Otherwise, it must be a \code{BiocParallelParam} instance. See documentation for \code{\link{bplapply}}.}
 
 		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should progress messages be printed?}
-
-		\item{\code{getCardinalNChunks(), setCardinalNChunks(n=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
-
-		\item{\code{getCardinalChunksize(), setCardinalChunksize(chunksize=NA_real_)}: The approximate size of data chunks in bytes. Can be used as an alternative to setting the number of chunks. The size is in bytes, so, for example, \code{chunksize=500e6} means 500 MB.}
 	}
 
-	Additionally, graphical parameters can be set:
+	The following Cardinal-controlled \code{matter} chunk options are available:
 
 	\itemize{
-		\item{\code{vizi_style()}: Set the default plotting style.}
+		\item{\code{getCardinalNChunks(), setCardinalNChunks(nchunks=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
+
+		\item{\code{getCardinalChunksize(), setCardinalChunksize(chunksize=NA, units="MB")}: The approximate size of data chunks used when iterating over large datasets. Can be used as an alternative to setting the number of chunks. The default (\code{NA}) means to ignore this parameter and use the \code{getCardinalNChunks()}.}
+
+		\item{\code{getCardinalSerialize(), setCardinalSerialize(serialize=NA)}: Whether data chunks should be loaded on the manager and serialized to the workers (\code{TRUE}), or loaded on the workers (\code{FALSE}). The default (\code{NA}) means to choose automatically based on the type of data and the type of cluster.}
+	}
+
+	The following Cardinal-controlled \code{matter} logging options are available:
+
+	\itemize{
+		\item{\code{getCardinalLog(), setCardinalLog(file=NULL)}: The log file or its history. Setting the log file to \code{NULL} means the log is stored in memory. Providing a file path moves the log to the specified file. Accessing the log returns the complete history if the log is in memory, or the file path if it is stored in a log file.}
+
+		\item{\code{saveCardinalLog(file = "Cardinal.log"))}: This is the same as \code{setCardinalLog} but defaults to saving the log file in the current working directory.}
+	}
+
+	Additionally, visualization parameters are available:
+
+	\itemize{
+		\item{\code{vizi_style()}: Set the default plotting style and color palettes.}
 
 		\item{\code{vizi_engine()}: Set the default plotting engine.}
 
