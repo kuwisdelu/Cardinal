@@ -16,8 +16,8 @@
 \alias{getCardinalSerialize}
 \alias{setCardinalSerialize}
 
-\alias{getCardinalLog}
-\alias{setCardinalLog}
+\alias{getCardinalLogger}
+\alias{setCardinalLogger}
 \alias{saveCardinalLog}
 
 \alias{vizi_style}
@@ -62,9 +62,9 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	The following Cardinal-controlled \code{matter} logging options are available:
 
 	\itemize{
-		\item{\code{getCardinalLog(), setCardinalLog(file=NULL)}: The log file or its history. Setting the log file to \code{NULL} means the log is stored in memory. Providing a file path moves the log to the specified file. Accessing the log returns the complete history if the log is in memory, or the file path if it is stored in a log file.}
+		\item{\code{getCardinalLogger(), setCardinalLogger(logger=matter_logger())}: The logger used by Cardinal for messages, warnings, and errors. The logger must be of class \code{\link{simple_logger}}.}
 
-		\item{\code{saveCardinalLog(file = "Cardinal.log"))}: This is the same as \code{setCardinalLog} but defaults to saving the log file in the current working directory.}
+		\item{\code{saveCardinalLog(file = "Cardinal.log"))}: Save the log to a file. Note that Cardinal will continue to log to the specified file until the end of the R session or until saved to a new location.}
 	}
 
 	Additionally, visualization parameters are available:

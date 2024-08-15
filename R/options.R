@@ -59,20 +59,20 @@ saveCardinalLog <- function(file = "Cardinal.log") {
 	getCardinalLogger()$move(file)
 	if ( getCardinalVerbose() ) {
 		CardinalLog("saved log file to: ",
-			getCardinalLogger()$logfile, message=TRUE)
+			sQuote(getCardinalLogger()$logfile), message=TRUE)
 	}
 	invisible(getCardinalLogger())
 }
 
 # logging functions
-CardinalLog <- function(..., message = FALSE) {
+.Log <- function(..., message = FALSE) {
 	getCardinalLogger()$log(..., signal=message)
 }
-CardinalWarn <- function(...) {
+.Warn <- function(...) {
 	call <- sys.call(-1L)
 	getCardinalLogger()$warning(..., call=call)
 }
-CardinalError <- function(...) {
+.Error <- function(...) {
 	call <- sys.call(-1L)
 	getCardinalLogger()$stop(..., call=call)
 }
