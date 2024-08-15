@@ -85,10 +85,11 @@ setMethod("show", "SpectraArrays",
 		}
 		dms <- c(sprintf(dms_text, length(dms)), .select_head_tail(dms))
 		# matter::mem()
-		mem <- vapply(arrays, function(x) format(mem(x)), character(2L))
-		rmem <- c(sprintf("real mem(%d):", length(mem[1L,])), .select_head_tail(mem[1L,]))
-		vmem <- c(sprintf("virtual mem(%d):", length(mem[2L,])), .select_head_tail(mem[2L,]))
-		out <- rbind(cls, dms, rmem, vmem)
+		mem <- vapply(arrays, function(x) format(mem(x)), character(3L))
+		real <- c(sprintf("real mem(%d):", length(mem[1L,])), .select_head_tail(mem[1L,]))
+		shm <- c(sprintf("shared mem(%d):", length(mem[2L,])), .select_head_tail(mem[2L,]))
+		vm <- c(sprintf("virtual mem(%d):", length(mem[3L,])), .select_head_tail(mem[3L,]))
+		out <- rbind(cls, dms, real, shm, vm)
 		colnames(out) <- nms
 		rownames(out) <- character(nrow(out))
 		print(out, quote = FALSE, right = TRUE)

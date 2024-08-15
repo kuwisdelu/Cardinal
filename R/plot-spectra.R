@@ -109,7 +109,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
 		rhs <- names(featureData(x))[1L]
-		lhs <- paste0(varquote(formula), collapse="+")
+		lhs <- paste0(iQuote(formula), collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 		i <- NULL
 	}
@@ -282,7 +282,7 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 		if ( length(keys(x)) < 1L )
 			.Error("need at least 1 key column if formula is a string")
 		rhs <- unlist(keys(x))[1L]
-		lhs <- paste0(varquote(formula), collapse="+")
+		lhs <- paste0(iQuote(formula), collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	}
 	parse <- parse_formula(formula, envir=x, eval=TRUE)

@@ -24,15 +24,13 @@
 \S4method{peakAlign}{SpectralImagingExperiment}(object, ref,
     spectra = "intensity", index = NULL,
     tolerance = NA, units = c("relative", "absolute"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{peakAlign}{SpectralImagingArrays}(object, ref,
     spectra = "intensity", index = NULL,
     tolerance = NA, units = c("relative", "absolute"),
-    nchunks = getCardinalNChunks(),
-    verbose = getCardinalVerbose(),
+    verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
@@ -49,9 +47,9 @@
     
     \item{units}{The units for the above tolerance.}
     
-    \item{nchunks}{The number of chunks to use for processing.}
-
     \item{verbose}{Should progress messages be printed?}
+
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 

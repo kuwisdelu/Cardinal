@@ -6,7 +6,7 @@ crossValidate <- function(fit., x, y, folds = run(x), ...,
 	predict. = predict, keep.models = FALSE,
 	trainProcess = peakProcess, trainArgs = list(),
 	testProcess = peakProcess, testArgs = list(),
-	verbose = getCardinalVerbose(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM())
 {
 	if ( !is.function(fit.) )
@@ -15,7 +15,8 @@ crossValidate <- function(fit., x, y, folds = run(x), ...,
 		predict.=predict., keep.models=keep.models, mi=FALSE,
 		trainProcess=trainProcess, trainArgs=trainArgs,
 		testProcess=testProcess, testArgs=testArgs,
-		verbose=verbose, BPPARAM=BPPARAM, ...)
+		verbose=verbose, chunkopts=chunkopts,
+		BPPARAM=BPPARAM, ...)
 	as(SpatialResults(ans, x), "SpatialCV")
 }
 

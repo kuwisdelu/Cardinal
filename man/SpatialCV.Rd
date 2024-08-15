@@ -47,6 +47,8 @@ crossValidate(fit., x, y, folds = run(x), \dots,
 
     \item{verbose}{Should progress be printed for each iteration?}
 
+    \item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
+
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}. \emph{Passed} to \code{fit.}, \code{predict.}, \code{trainProcess} and \code{testProcess}.}
 
     \item{object}{An object inheriting from \code{SpatialCV}.}

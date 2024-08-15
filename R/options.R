@@ -62,7 +62,7 @@ saveCardinalLog <- function(file = "Cardinal.log") {
 	getCardinalLogger()$append_trace()
 	getCardinalLogger()$move(file)
 	if ( getCardinalVerbose() ) {
-		CardinalLog("saved log file to: ",
+		.Log("saved log file to: ",
 			sQuote(getCardinalLogger()$logfile), message=TRUE)
 	}
 	invisible(getCardinalLogger())

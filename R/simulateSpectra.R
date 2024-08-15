@@ -77,7 +77,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	domain <- mz(from=from, to=to, by=by, units=units)
-	FUN <- isoclos(function(irun)
+	FUN <- isoclos(function(irun, ...)
 	{
 		# extract run information
 		group <- as.matrix(pData[irun == run(pixelData),,drop=FALSE])
@@ -124,7 +124,7 @@ simulateImage <- function(pixelData, featureData, preset,
 				centroided=TRUE)
 		}
 	}, CardinalEnv())
-	ans <- chunkMapply(FUN, runNames(pixelData),
+	ans <- chunkLapply(runNames(pixelData), FUN,
 		verbose=verbose, chunkopts=chunkopts,
 		RNG=TRUE, BPPARAM=BPPARAM)
 	ans <- do.call("cbind", ans)
