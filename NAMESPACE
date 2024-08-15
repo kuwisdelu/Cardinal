@@ -346,7 +346,6 @@ exportMethods(
 
 export(
 	"addShape",
-	"CardinalVersion",
 	"convertMSImagingArrays2Experiment",
 	"convertMSImagingExperiment2Arrays",
 	"crossValidate",
@@ -391,11 +390,15 @@ export(
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",
 	"setCardinalVerbose",
+	"getCardinalLogger",
+	"setCardinalLogger",
+	"saveCardinalLog")
+
+export(
 	"getCardinalNChunks",
 	"setCardinalNChunks",
 	"getCardinalChunksize",
 	"setCardinalChunksize",
-	"getCardinalLog",
-	"setCardinalLog",
-	"saveCardinalLog")
+	"getCardinalSerialize",
+	"setCardinalSerialize")
 

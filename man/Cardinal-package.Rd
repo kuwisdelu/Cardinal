@@ -4,8 +4,6 @@
 
 \alias{Cardinal}
 
-\alias{CardinalVersion}
-
 \alias{getCardinalBPPARAM}
 \alias{setCardinalBPPARAM}
 \alias{getCardinalVerbose}

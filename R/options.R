@@ -1,18 +1,17 @@
 
-#### Setup options ####
-## --------------------
+#### Setup options and resources ####
+## ----------------------------------
 
-CardinalVersion <- function() {
-	.Defunct("packageVersion")
-}
+CardinalResources <- list2env(list(logger=simple_logger()))
 
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {
 	setCardinalBPPARAM()
 	setCardinalVerbose()
+	setCardinalLogger()
 }
 
-# set up Cardinal defaults
+# inform users on major updates
 .onAttach <- function(libname, pkgname) {
 	version <- utils::packageVersion("Cardinal")
 	if ( version >= "3.5.0" )
@@ -30,7 +29,7 @@ getCardinalBPPARAM <- function() {
 setCardinalBPPARAM <- function(BPPARAM = NULL) {
 	if ( !is.null(BPPARAM) && !is(BPPARAM, "BiocParallelParam") )
 		stop("BPPARAM must be a BiocParallelParam instance or NULL")
-	options("CardinalBPPARAM" = BPPARAM)
+	options(CardinalBPPARAM=BPPARAM)
 }
 
 # should progress messages be printed?
@@ -41,7 +40,41 @@ setCardinalVerbose <- function(verbose = interactive()) {
 	verbose <- as.logical(verbose)
 	if ( !isTRUE(verbose) && !isFALSE(verbose) )
 		stop("verbose must be TRUE or FALSE")
-	options("CardinalVerbose" = verbose)
+	options(CardinalVerbose=verbose)
+}
+
+# default logger
+getCardinalLogger <- function() {
+	CardinalResources[["logger"]]
+}
+setCardinalLogger <- function(logger = matter_logger()) {
+	if ( !inherits(logger, "simple_logger") )
+		stop("logger must inherit from class 'simple_logger'")
+	CardinalResources[["logger"]] <- logger
+}
+
+# save log file
+saveCardinalLog <- function(file = "Cardinal.log") {
+	getCardinalLogger()$append_trace()
+	getCardinalLogger()$move(file)
+	if ( getCardinalVerbose() ) {
+		CardinalLog("saved log file to: ",
+			getCardinalLogger()$logfile, message=TRUE)
+	}
+	invisible(getCardinalLogger())
+}
+
+# logging functions
+CardinalLog <- function(..., message = FALSE) {
+	getCardinalLogger()$log(..., signal=message)
+}
+CardinalWarn <- function(...) {
+	call <- sys.call(-1L)
+	getCardinalLogger()$warning(..., call=call)
+}
+CardinalError <- function(...) {
+	call <- sys.call(-1L)
+	getCardinalLogger()$stop(..., call=call)
 }
 
 #### Cardinal-controlled matter options ####
@@ -69,20 +102,5 @@ getCardinalSerialize <- function() {
 }
 setCardinalSerialize <- function(serialize = NA) {
 	matter_defaults(serialize=serialize)
-}
-
-# history and log file location
-getCardinalLog <- function() {
-	if ( length(matter_logger()$logfile) ) {
-		matter_logger()$logfile
-	} else {
-		matter_logger()$history()
-	}
-}
-setCardinalLog <- function(file = NULL) {
-	matter_logger()$move(file)
-}
-saveCardinalLog <- function(file = "Cardinal.log") {
-	setCardinalLog(file)
 }
 
