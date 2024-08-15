@@ -10,7 +10,7 @@ writeMSIData <- function(object, file, ...)
 	} else if ( tolower(ext) %in% c("img", "hdr", "t2m") ) {
 		writeAnalyze(object, file, ...)
 	} else {
-		stop("can't recognize file extension: ", ext)
+		.Error("can't recognize file extension: ", ext)
 	}
 }
 
@@ -25,14 +25,14 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		path <- normalizePath(file, mustWork=FALSE)
 		if ( bundle ) {
 			if ( ok <- dir.exists(path) ) {
-				if ( verbose )
-					message("using bundle directory: ", sQuote(path))
+				.Log("using bundle directory: ", sQuote(path),
+					message=verbose)
 			} else {
-				if ( verbose )
-					message("creating bundle directory: ", sQuote(path))
+				.Log("creating bundle directory: ", sQuote(path),
+					message=verbose)
 				ok <- dir.create(path)
 				if ( !ok )
-					stop("failed to create bundle directory")
+					.Error("failed to create bundle directory")
 			}
 			path <- file.path(path, basename(path))
 		}
@@ -50,11 +50,12 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		}
 		experimentData(object) <- e
 		ok <- .write_imzML(object, path=path, verbose=verbose, ...)
-		if ( verbose ) {
-			if ( bundle )
-				message("output bundle directory: ", sQuote(dirname(path)))
-			message("done.")
+		if ( bundle ) {
+			.Log("output bundle directory: ", sQuote(dirname(path)),
+				message=verbose)
 		}
+		.Log("done.",
+			message=verbose)
 		invisible(ok)
 	})
 
@@ -72,18 +73,18 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	} else {
 		format <- "processed"
 	}
-	if ( verbose )
-		message("writing ", sQuote(format), " imzML file: ", sQuote(path))
+	.Log("writing ", sQuote(format), " imzML file: ", sQuote(path),
+		message=verbose)
 	ok <- CardinalIO::writeImzML(experimentData(object), file=path,
 		positions=positions, mz=mz, intensity=intensity, ...)
 	if ( ok ) {
-		if ( verbose ) {
-			outpath <- attr(ok, "outpath")
-			message("wrote file: ", sQuote(basename(outpath[1L])))
-			message("wrote file: ", sQuote(basename(outpath[2L])))
-		}
+		outpath <- attr(ok, "outpath")
+		.Log("wrote file: ", sQuote(basename(outpath[1L])),
+			message=verbose)
+		.Log("wrote file: ", sQuote(basename(outpath[2L])),
+			message=verbose)
 	} else {
-		stop("failed to write imzML")
+		.Error("failed to write imzML")
 	}
 	.write_featureData(object, path, verbose)
 	.write_pixelData(object, path, verbose)
@@ -96,10 +97,10 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	vars <- setdiff(spectraVariables(object), coordNames(object))
 	if ( nrun(object) > 1L || length(vars) > 1L ) {
 		if ( file.exists(path) )
-			warning("file ", sQuote(path), " already exists and will be overwritten")
+			.Warn("file ", sQuote(path), " already exists and will be overwritten")
 		write.table(pixelData(object)[vars], file=path)
-		if ( verbose )
-			message("wrote file: ", sQuote(basename(path)))
+		.Log("wrote file: ", sQuote(basename(path)),
+			message=verbose)
 	}
 }
 
@@ -108,10 +109,10 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	path <- paste0(tools::file_path_sans_ext(path), ".fdata")
 	if ( is(object, "MSImagingExperiment") && length(featureData(object)) > 1L ) {
 		if ( file.exists(path) )
-			warning("file ", sQuote(path), " already exists and will be overwritten")
+			.Warn("file ", sQuote(path), " already exists and will be overwritten")
 		write.table(featureData(object), file=path)
-		if ( verbose )
-			message("wrote file: ", sQuote(basename(path)))
+		.Log("wrote file: ", sQuote(basename(path)),
+			message=verbose)
 	}
 }
 
@@ -136,19 +137,20 @@ setMethod("writeAnalyze", "SpectralImagingExperiment",
 .write_Analyze <- function(x, file, verbose, positions, domain, ...)
 {
 	path <- normalizePath(file, mustWork=FALSE)
-	if ( verbose )
-		message("writing Analyze 7.5 file: ", sQuote(file))
+	.Log("writing Analyze 7.5 file: ", sQuote(file),
+		message=verbose)
 	ok <- CardinalIO::writeAnalyze(x, file=file,
 		positions=positions, domain=domain, ...)
 	if ( ok ) {
-		if ( verbose ) {
-			outpath <- attr(ok, "outpath")
-			message("wrote file: ", sQuote(basename(outpath[1L])))
-			message("wrote file: ", sQuote(basename(outpath[2L])))
-			message("wrote file: ", sQuote(basename(outpath[3L])))
-		}
+		outpath <- attr(ok, "outpath")
+		.Log("wrote file: ", sQuote(basename(outpath[1L])),
+			message=verbose)
+		.Log("wrote file: ", sQuote(basename(outpath[2L])),
+			message=verbose)
+		.Log("wrote file: ", sQuote(basename(outpath[3L])),
+			message=verbose)
 	} else {
-		stop("failed to write Analyze 7.5")
+		.Error("failed to write Analyze 7.5")
 	}
 }
 

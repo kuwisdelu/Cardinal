@@ -16,13 +16,13 @@ setMethod("spatialDGMM", "ANY",
 	}
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
-		if ( verbose )
-			message("calculating gaussian weights")
+		.Log("calculating gaussian weights",
+			message=verbose)
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
 		if ( weights == "adaptive" )
 		{
-			if ( verbose )
-				message("calculating adaptive weights")
+			.Log("calculating adaptive weights",
+				message=verbose)
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!byrow,
 				verbose=verbose, chunkopts=chunkopts,
@@ -47,11 +47,10 @@ setMethod("spatialDGMM", "ANY",
 	ans <- vector("list", length=length(k))
 	for ( j in seq_along(k) )
 	{
-		if ( verbose ) {
-			lab <- if (length(i) != 1L) "models" else "model"
-			message("fitting spatial Gaussian mixture ",
-				lab, " for k = ", k[j])
-		}
+		lab <- if (length(i) != 1L) "models" else "model"
+		.Log("fitting spatial Gaussian mixture ",
+			lab, " for k = ", k[j],
+			message=verbose)
 		ans[[j]] <- sgmixn(NULL, NULL, x, r=r, k=k[j], group=groups,
 			weights=wts, neighbors=neighbors, byrow=byrow,
 			annealing=annealing, compress=compress,
@@ -62,10 +61,9 @@ setMethod("spatialDGMM", "ANY",
 		ans[[j]]$k <- k[j]
 	}
 	names(ans) <- paste0("k=", k)
-	if ( verbose ) {
-		lab <- if (length(k) != 1L || length(i) != 1L) "models" else "model"
-		message("returning spatial Gaussian mixture ", lab)
-	}
+	lab <- if (length(k) != 1L || length(i) != 1L) "models" else "model"
+	.Log("returning spatial Gaussian mixture ", lab,
+		message=verbose)
 	if ( length(ans) > 1L ) {
 		ResultsList(ans,
 			mcols=DataFrame(r=r, k=k, weights=weights))
@@ -80,7 +78,7 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 		neighbors = findNeighbors(coord(x), r=r, groups=groups), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- spatialDGMM(spectra(x),
 		coord=coord(x), i=i, r=r, k=k, groups=groups,
 		neighbors=neighbors, weights=weights, byrow=TRUE, ...)

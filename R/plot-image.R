@@ -21,7 +21,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 	if ( missing(i) && is.null(mz) )
 		mz <- mz(x)[1L]
 	if ( !missing(mz) && !is.null(i) && length(i) < length(mz) )
-		stop("m/z value(s) could not be unambiguously matched")
+		.Error("m/z value(s) could not be unambiguously matched")
 	if ( missing(xlab) && missing(formula) )
 		xlab <- expression(italic(x))
 	if ( missing(ylab) && missing(formula) )
@@ -43,7 +43,7 @@ setMethod("image", c(x = "MSImagingExperiment"),
 		i <- kdsearch(mz, mz(x), tol=tol, tol.ref=ref)
 		if ( any(lengths(i) == 0L) ) {
 			nomz <- paste0(mz[which(lengths(i) == 0L)], collapse=", ")
-			stop("no features within \u00b1", tol,
+			.Error("no features within \u00b1", tol,
 				switch(units, ppm=" ppm", mz=""),
 				" for m/z = ", nomz)
 		}
@@ -92,7 +92,7 @@ setMethod("image", c(x = "SpectralImagingExperiment"),
 	}
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 2L && length(parse$rhs) != 3L )
-		stop("formula must specify exactly 2 or 3 spatial dimensions")
+		.Error("formula must specify exactly 2 or 3 spatial dimensions")
 	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(featureNames(x)) ) {
 			nms <- paste0("i = ", i)
@@ -166,7 +166,7 @@ setMethod("image", c(x = "PositionDataFrame"),
 	}
 	parse <- parse_formula(formula, envir=x, eval=TRUE)
 	if ( length(parse$rhs) != 2L && length(parse$rhs) != 3L )
-		stop("formula must specify exactly 2 or 3 spatial dimensions")
+		.Error("formula must specify exactly 2 or 3 spatial dimensions")
 	if ( !is.null(run) ) {
 		if ( !is.character(run) && !is.factor(run) )
 			run <- runNames(x)[run]

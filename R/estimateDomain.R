@@ -9,7 +9,7 @@ estimateDomain <- function(xlist,
 {
 	units <- match.arg(units)
 	ref <- switch(units, relative="x", absolute="abs")
-	FUN <- function(x) {
+	FUN <- isofun(function(x, ref) {
 		x <- x[!is.na(x)]
 		res <- unname(estres(x, ref=ref))
 		if ( length(x) > 0 && is.finite(res) ) {
@@ -17,8 +17,8 @@ estimateDomain <- function(xlist,
 		} else {
 			c(min=NA_real_, max=NA_real_, res=res)
 		}
-	}
-	ans <- chunkLapply(xlist, FUN,
+	}, CardinalEnv())
+	ans <- chunkLapply(xlist, FUN, ref=ref,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	ans <- do.call(rbind, ans)
@@ -41,7 +41,7 @@ estimateReferenceMz <- function(object,
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
-		warning("processing steps will be ignored by estimateReferenceMz()")
+		.Warn("processing steps will be ignored by estimateReferenceMz()")
 	if ( is(object, "MSImagingExperiment") || is(object, "MassDataFrame") ) {
 		mz(object)
 	} else if ( is(object, "MSImagingArrays") ) {
@@ -51,7 +51,7 @@ estimateReferenceMz <- function(object,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else {
-		stop("can't estimate m/z values for class ", sQuote(class(object)))
+		.Error("can't estimate m/z values for class ", sQuote(class(object)))
 	}
 }
 
@@ -61,7 +61,7 @@ estimateReferencePeaks <- function(object, SNR = 2,
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
-		warning("processing steps will be ignored by estimateReferencePeaks()")
+		.Warn("processing steps will be ignored by estimateReferencePeaks()")
 	method <- match.arg(method)
 	object <- summarizeFeatures(object, stat="mean",
 		verbose=verbose, chunkopts=chunkopts,

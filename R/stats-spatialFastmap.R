@@ -15,13 +15,13 @@ setMethod("spatialFastmap", "ANY",
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
-		if ( verbose )
-			message("calculating gaussian weights")
+		.Log("calculating gaussian weights",
+			message=verbose)
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
 		if ( match.arg(weights) == "adaptive" )
 		{
-			if ( verbose )
-				message("calculating adaptive weights")
+			.Log("calculating adaptive weights",
+				message=verbose)
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
 				verbose=verbose, chunkopts=chunkopts,
@@ -45,8 +45,8 @@ setMethod("spatialFastmap", "ANY",
 		BPPARAM=BPPARAM, ...)
 	ans$weights <- weights
 	ans$r <- r
-	if ( verbose )
-		message("returning FastMap projection")
+	.Log("returning FastMap projection",
+		message=verbose)
 	ans
 })
 
@@ -56,7 +56,7 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- spatialFastmap(spectra(x),
 		coord=coord(x), r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
@@ -69,11 +69,11 @@ setMethod("predict", "SpatialFastmap",
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
-		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( length(processingData(newdata)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	if ( nrow(newdata) != nrow(object$pivot.array) )
-		stop("'newdata' does not have the correct number of dimensions")
+		.Error("'newdata' does not have the correct number of dimensions")
 	wts <- spatialWeights(as.matrix(coord(newdata)), neighbors=neighbors)
 	if ( object$weights == "adaptive" )
 	{
@@ -118,8 +118,8 @@ setMethod("image", c(x = "SpatialFastmap"),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	function(i) {
-		if ( isTRUE(verbose) )
-			message("calculating distances from index: ", paste0(i, collapse=" "))
+		.Log("calculating distances from index: ", paste0(i, collapse=" "),
+			message=isTRUE(verbose))
 		if ( is.null(neighbor.weights) ) {
 			wts <- rep.int(1, length(neighbors))
 		} else {
@@ -145,10 +145,10 @@ setMethod("image", c(x = "SpatialFastmap"),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	function(i) {
-		if ( isTRUE(verbose) )
-			message("calculating distances from index: ", paste0(i, collapse=" "))
+		.Log("calculating distances from index: ", paste0(i, collapse=" "),
+			message=isTRUE(verbose))
 		if ( is.null(neighbor.weights) ) {
-			stop("spatially-aware weights are NULL")
+			.Error("spatially-aware weights are NULL")
 		} else {
 			wts <- rep_len(neighbor.weights, length(neighbors))
 		}

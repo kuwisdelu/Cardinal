@@ -32,7 +32,7 @@ setMethod("plot", c(x = "MSImagingExperiment", y = "missing"),
 	if ( is.null(run) )
 		run <- run(x)[1L]
 	if ( !missing(coord) && !is.null(i) && length(i) < length(coord[[1L]]) )
-		stop("coord value(s) could not be unambiguously matched")
+		.Error("coord value(s) could not be unambiguously matched")
 	if ( missing(xlab) && missing(formula) )
 		xlab <- expression(italic(m/z))
 	if ( missing(ylab) && missing(formula) )
@@ -115,7 +115,7 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 	}
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
-		stop("formula must specify exactly 1 or 2 domain dimensions")
+		.Error("formula must specify exactly 1 or 2 domain dimensions")
 	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(pixelNames(x)) ) {
 			nms <- paste0("i = ", i)
@@ -145,9 +145,9 @@ setMethod("plot", c(x = "SpectralImagingExperiment", y = "missing"),
 		snm <- unlist(lapply(parse$lhs, all.vars))
 		inm <- unlist(lapply(parse$rhs, all.vars))
 		if ( !is.null(groups) )
-			warning("ignoring 'groups'")
+			.Warn("ignoring 'groups'")
 		if ( isTRUE(superpose) )
-			warning("ignoring 'superpose'")
+			.Warn("ignoring 'superpose'")
 		xi <- process(x[,i], spectra=snm,
 			index=inm, BPPARAM=NULL)
 		ii <- setNames(seq_along(i), names(i))
@@ -196,12 +196,12 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		lhs <- names(spectraData(x))[2L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
-		stop("character 'formula' not allowed for ",
+		.Error("character 'formula' not allowed for ",
 			sQuote(class(x)[1L]))
 	}
 	parse <- parse_formula(formula)
 	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
-		stop("formula must specify exactly 1 or 2 domain dimensions")
+		.Error("formula must specify exactly 1 or 2 domain dimensions")
 	if ( !is.null(i) && is.null(names(i)) ) {
 		if ( is.null(pixelNames(x)) ) {
 			nms <- paste0("i = ", i)
@@ -226,9 +226,9 @@ setMethod("plot", c(x = "SpectralImagingArrays", y = "missing"),
 		snm <- unlist(lapply(parse$lhs, all.vars))
 		inm <- unlist(lapply(parse$rhs, all.vars))
 		if ( !is.null(groups) )
-			warning("ignoring 'groups'")
+			.Warn("ignoring 'groups'")
 		if ( isTRUE(superpose) )
-			warning("ignoring 'superpose'")
+			.Warn("ignoring 'superpose'")
 		xi <- process(x[i], spectra=snm,
 			index=inm, BPPARAM=NULL)
 		ii <- setNames(seq_along(i), names(i))
@@ -272,22 +272,22 @@ setMethod("plot", c(x = "XDataFrame", y = "missing"),
 {
 	if ( missing(formula) ) {
 		if ( length(x) < 2L )
-			stop("data frame must have at least 2 columns")
+			.Error("data frame must have at least 2 columns")
 		if ( length(keys(x)) < 1L )
-			stop("need at least 1 key column if formula is missing")
+			.Error("need at least 1 key column if formula is missing")
 		rhs <- unlist(keys(x))[1L]
 		lhs <- setdiff(names(x), rhs)[1L]
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	} else if ( is.character(formula) ) {
 		if ( length(keys(x)) < 1L )
-			stop("need at least 1 key column if formula is a string")
+			.Error("need at least 1 key column if formula is a string")
 		rhs <- unlist(keys(x))[1L]
 		lhs <- paste0(varquote(formula), collapse="+")
 		formula <- as.formula(paste0(lhs, "~", rhs))
 	}
 	parse <- parse_formula(formula, envir=x, eval=TRUE)
 	if ( length(parse$rhs) != 1L && length(parse$rhs) != 2L )
-		stop("formula must specify exactly 1 or 2 domain dimensions")
+		.Error("formula must specify exactly 1 or 2 domain dimensions")
 	if ( superpose ) {
 		by <- NULL
 	} else {

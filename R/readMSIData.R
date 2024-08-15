@@ -43,22 +43,28 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		}
 	}
 	if ( isTRUE(file.info(path)$isdir) ) {
-		if ( verbose )
-			message("detected bundle directory: ", sQuote(path))
+		.Log("detected bundle directory: ", sQuote(path),
+			message=verbose)
 		path <- file.path(path, basename(path))
 	}
-	if ( verbose )
-		message("parsing imzML file: ", sQuote(path))
+	.Log("parsing imzML file: ", sQuote(path),
+		message=verbose)
 	ans <- .read_imzML(path, parse.only=parse.only, check=check, ...)
-	if ( verbose ) {
-		if ( isTRUE(ans@continuous) )
-			message("detected 'continuous' imzML")
-		if ( isFALSE(ans@continuous) )
-			message("detected 'processed' imzML")
-		if ( isTRUE(ans@centroided) )
-			message("detected 'centroided' spectra")
-		if ( isFALSE(ans@centroided) )
-			message("detected 'profile' spectra")
+	if ( isTRUE(ans@continuous) ) {
+		.Log("detected 'continuous' imzML",
+			message=verbose)
+	}
+	if ( isFALSE(ans@continuous) ) {
+		.Log("detected 'processed' imzML",
+			message=verbose)
+	}
+	if ( isTRUE(ans@centroided) ) {
+		.Log("detected 'centroided' spectra",
+			message=verbose)
+	}
+	if ( isFALSE(ans@centroided) ) {
+		.Log("detected 'profile' spectra",
+			message=verbose)
 	}
 	is_dense <- isTRUE(ans@continuous)
 	if ( parse.only )
@@ -72,8 +78,8 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	{
 		if ( missing(units) && !missing(resolution) )
 			units <- get_units_from_names(resolution, units)
-		if ( verbose )
-			message("creating MSImagingExperiment")
+		.Log("creating MSImagingExperiment",
+			message=verbose)
 		ans <- convertMSImagingArrays2Experiment(ans,
 			mass.range=mass.range, resolution=resolution,
 			units=units, guess.max=guess.max,
@@ -82,15 +88,15 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	}
 	if ( isCentroided(ans) && is(ans, "MSImagingArrays") )
 	{
-		if ( verbose )
-			message("NOTE: use peakAlign() to align centroided data")
+		.Log("NOTE: use peakAlign() to align centroided data",
+			message=verbose)
 	}
 	if ( as == "MSImagingArrays" )
 		ans <- convertMSImagingExperiment2Arrays(ans)
 	if ( memory )
 	{
-		if ( verbose )
-			message("loading spectra into memory")
+		.Log("loading spectra into memory",
+			message=verbose)
 		if ( is(ans, "MSImagingArrays") ) {
 			for ( i in spectraNames(ans) )
 				spectra(ans, i) <- as.list(spectra(ans, i))
@@ -103,10 +109,10 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 			}
 		}
 	}
-	if ( verbose ) {
-		message("returning ", class(ans))
-		message("done.")
-	}
+	.Log("returning ", class(ans),
+		message=verbose)
+	.Log("done.",
+		message=verbose)
 	ans
 }
 
@@ -183,8 +189,8 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".pdata")
 	if ( file.exists(path) ) {
-		if ( verbose )
-			message("detected file: ", sQuote(basename(path)))
+		.Log("detected file: ", sQuote(basename(path)),
+			message=verbose)
 		pdata <- read.table(path)
 		run <- pdata[["run"]]
 		if ( is.null(run) )
@@ -199,8 +205,8 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".fdata")
 	if ( file.exists(path) ) {
-		if ( verbose )
-			message("detected file: ", sQuote(basename(path)))
+		.Log("detected file: ", sQuote(basename(path)),
+			message=verbose)
 		fdata <- read.table(path)
 		if ( is(object, "MSImagingArrays") ) {
 			mz <- fdata[["mz"]]
@@ -249,19 +255,19 @@ readAnalyze <- function(file, memory = FALSE, as = "auto",
 			path <- normalizePath(paste0(file, ".imzML"))
 		}
 	}
-	if ( verbose )
-		message("parsing Analyze file: '", path, "'")
+	.Log("parsing Analyze file: '", path, "'",
+		message=verbose)
 	ans <- .read_Analyze(path)
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || as == "auto" )
 	{
-		if ( verbose )
-			message("creating MSImagingExperiment")
+		.Log("creating MSImagingExperiment",
+			message=verbose)
 		ans <- convertMSImagingArrays2Experiment(ans)
 	}
 	if ( memory ) {
-		if ( verbose )
-			message("loading spectra into memory")
+		.Log("loading spectra into memory",
+			message=verbose)
 		if ( is(ans, "MSImagingArrays") ) {
 			mz(ans) <- as.list(mz(ans))
 			intensity(ans) <- as.list(intensity(ans))
@@ -274,10 +280,10 @@ readAnalyze <- function(file, memory = FALSE, as = "auto",
 			}
 		}
 	}
-	if ( verbose ) {
-		message("returning ", class(ans))
-		message("done.")
-	}
+	.Log("returning ", class(ans),
+		message=verbose)
+	.Log("done.",
+		message=verbose)
 	ans
 }
 

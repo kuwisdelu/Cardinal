@@ -57,7 +57,7 @@ setMethod("keys", "XDataFrame",
 		if ( is.null(i) )
 			return(object@keys)
 		if ( is.numeric(i) && (i < 1L || i > length(object@keys)) )
-			stop("key [", i, "] does not exist")
+			.Error("key [", i, "] does not exist")
 		nms <- object@keys[[i]]
 		if ( is.null(nms) )
 			return(NULL)
@@ -80,7 +80,7 @@ setReplaceMethod("keys", "XDataFrame",
 		if ( is.numeric(i) && (i < 1L || i > length(object@keys)) || 
 			is.character(i) && !(i %in% names(object@keys)) )
 		{
-			stop("key [", i, "] does not exist")
+			.Error("key [", i, "] does not exist")
 		}
 		if ( is(value, "list_OR_List") && !is.null(names(value)) )
 		{
@@ -201,7 +201,7 @@ setReplaceMethod("[[", "XDataFrame",
 			badkeys <- !all(keys_ok)
 		}
 		badkeys <- paste0(sQuote(unlist(keys)[badkeys]), collapse=" ")
-		stop("can't cbind XDataFrames with non-matching key columns: ", badkeys)
+		.Error("can't cbind XDataFrames with non-matching key columns: ", badkeys)
 	}
 	nrows <- nrow(objects[[1L]])
 	all_keycols <- new("DFrame", nrows=nrows)
@@ -392,7 +392,7 @@ setMethod("updateObject", "PositionDataFrame",
 				PositionDataFrame(coord=object@coord, run=object@run)
 			}
 		} else {
-			stop("don't know how to update this PositionDataFrame instance")
+			.Error("don't know how to update this PositionDataFrame instance")
 		}
 	})
 
@@ -488,6 +488,6 @@ setMethod("updateObject", "MassDataFrame",
 				MassDataFrame(mz=object@mz)
 			}
 		} else {
-			stop("don't know how to update this MassDataFrame instance")
+			.Error("don't know how to update this MassDataFrame instance")
 		}
 	})

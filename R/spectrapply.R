@@ -26,9 +26,9 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
-			warning("processing steps will be ignored by spectrapply()")
+			.Warn("processing steps will be ignored by spectrapply()")
 		if ( length(index) > 1L )
-			stop("more than 1 'index' array not allowed ",
+			.Error("more than 1 'index' array not allowed ",
 				"for class ", sQuote(class(object)[1L]))
 		snm <- spectra
 		inm <- index
@@ -39,10 +39,10 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 		} else {
 			index <- featureData(object)[[inm]]
 			if ( is.null(index) )
-				stop("index ", sQuote(inm), " not found")
+				.Error("index ", sQuote(inm), " not found")
 		}
 		if ( ...length() > 0L && is.null(...names()) )
-			stop("spectrapply() arguments passed via ... must be named")
+			.Error("spectrapply() arguments passed via ... must be named")
 		chunkApply(spectra, 2L, FUN, index, ...,
 			simplify=simplify, outpath=outpath,
 			verbose=verbose, chunkopts=chunkopts,
@@ -57,9 +57,9 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
-			warning("processing steps will be ignored by spectrapply()")
+			.Warn("processing steps will be ignored by spectrapply()")
 		if ( length(index) > 3L )
-			stop("more than 3 'index' arrays not allowed ",
+			.Error("more than 3 'index' arrays not allowed ",
 				"for class ", sQuote(class(object)[1L]))
 		nindex <- max(1L, length(index))
 		snm <- spectra
@@ -71,20 +71,20 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		} else {
 			index <- spectra(object, inm[1L])
 			if ( is.null(index) )
-				stop("index ", sQuote(inm[1L]), " not found")
+				.Error("index ", sQuote(inm[1L]), " not found")
 			if ( nindex >= 2L ) {
 				index2 <- spectra(object, inm[2L])
 				if ( is.null(index2) )
-					stop("index ", sQuote(inm[2L]), " not found")
+					.Error("index ", sQuote(inm[2L]), " not found")
 			}
 			if ( nindex >= 3L ) {
 				index3 <- spectra(object, inm[3L])
 				if ( is.null(index2) )
-					stop("index ", sQuote(inm[3L]), " not found")
+					.Error("index ", sQuote(inm[3L]), " not found")
 			}
 		}
 		if ( ...length() > 0L && is.null(...names()) )
-			stop("spectrapply() arguments passed via ... must be named")
+			.Error("spectrapply() arguments passed via ... must be named")
 		args <- list(...)
 		if ( nindex == 1L ) {
 			chunkMapply(FUN, spectra, index, MoreArgs=args,
@@ -102,7 +102,7 @@ setMethod("spectrapply", "SpectralImagingArrays",
 				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else {
-			stop("too many 'index' arrays")
+			.Error("too many 'index' arrays")
 		}
 	})
 

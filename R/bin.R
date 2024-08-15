@@ -14,7 +14,7 @@ setMethod("bin", "MSImagingExperiment",
 {
 	if ( !is.null(mass.range) ) {
 		if ( is.na(resolution) )
-			stop("setting 'mass.range' requires setting 'resolution'")
+			.Error("setting 'mass.range' requires setting 'resolution'")
 		ref <- mass.range
 	}
 	if ( !missing(ref) ) {
@@ -55,7 +55,7 @@ setMethod("bin", "MSImagingArrays",
 {
 	if ( !is.null(mass.range) ) {
 		if ( is.na(resolution) )
-			stop("setting 'mass.range' requires setting 'resolution'")
+			.Error("setting 'mass.range' requires setting 'resolution'")
 		ref <- mass.range
 	}
 	if ( !missing(ref) ) {
@@ -96,7 +96,7 @@ setMethod("bin", "SpectralImagingExperiment",
 {
 	method <- match.arg(method)
 	if ( length(index) > 1L )
-		stop("more than 1 'index' array not allowed")
+		.Error("more than 1 'index' array not allowed")
 	if ( missing(units) && !missing(resolution) )
 		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
@@ -109,7 +109,7 @@ setMethod("bin", "SpectralImagingExperiment",
 	} else {
 		domain <- featureData(x)[[inm]]
 		if ( is.null(domain) )
-			stop("index ", sQuote(inm), " not found")
+			.Error("index ", sQuote(inm), " not found")
 	}
 	if ( is.sparse(spectra) ) {
 		index <- atomindex(spectra)
@@ -143,25 +143,22 @@ setMethod("bin", "SpectralImagingExperiment",
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
 	}
-	if ( verbose ) {
-		if ( is.na(tolerance) ) {
-			from <- round(min(ref), digits=4L)
-			to <- round(max(ref), digits=4L)
-			message("binning ", snm, " from ", inm, " ", from, " to ", to,
-				" with ", units, " resolution ", round(res, digits=6L))
-		} else {
-			label <- if (length(ref) != 1L) "references" else "reference"
-			message("binning ", snm, " to ", length(ref), " ", inm, " ", label,
-				" with ", units, " tolerance ", round(tolerance, digits=6L))
-		}
-	}
 	if ( is.na(tolerance) ) {
 		if ( method %in% c("sum", "mean", "max", "min") ) {
 			tol <- 0.5 * res
 		} else {
 			tol <- 2 * res
 		}
+		from <- round(min(ref), digits=4L)
+		to <- round(max(ref), digits=4L)
+		.Log("binning ", snm, " from ", inm, " ", from, " to ", to,
+			" with ", units, " resolution ", round(res, digits=6L),
+			message=verbose)
 	} else {
+		label <- if (length(ref) != 1L) "references" else "reference"
+		.Log("binning ", snm, " to ", length(ref), " ", inm, " ", label,
+			" with ", units, " tolerance ", round(tolerance, digits=6L),
+			message=verbose)
 		tol <- setNames(tolerance, units)
 	}
 	spectra <- sparse_mat(index=index,
@@ -188,7 +185,7 @@ setMethod("bin", "SpectralImagingArrays",
 {
 	method <- match.arg(method)
 	if ( length(index) > 1L )
-		stop("more than 1 'index' array not allowed")
+		.Error("more than 1 'index' array not allowed")
 	if ( missing(units) && !missing(resolution) )
 		units <- get_units_from_names(resolution, units)
 	units <- match.arg(units)
@@ -201,7 +198,7 @@ setMethod("bin", "SpectralImagingArrays",
 	} else {
 		index <- spectra(x, inm)
 		if ( is.null(index) )
-			stop("index ", sQuote(inm), " not found")
+			.Error("index ", sQuote(inm), " not found")
 	}
 	res.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.na(resolution) ) {
@@ -224,26 +221,23 @@ setMethod("bin", "SpectralImagingArrays",
 			relative=seq_rel(from, to, by=res),
 			absolute=seq.default(from, to, by=res))
 	}
-	if ( verbose ) {
-		if ( is.na(tolerance) ) {
-			from <- round(min(ref), digits=4L)
-			to <- round(max(ref), digits=4L)
-			message("binning ", snm, " from ", inm, " ", from, " to ", to,
-				" with ", units, " resolution ", round(res, digits=6L))
-		} else {
-			label <- if (length(ref) != 1L) "references" else "reference"
-			message("binning ", snm, " to ", length(ref), " ", inm, " ", label,
-				" with ", units, " tolerance ", round(tolerance, digits=6L))
-		}
-	}
 	if ( is.na(tolerance) ) {
 		if ( method %in% c("sum", "mean", "max", "min") ) {
 			tol <- 0.5 * res
 		} else {
 			tol <- 2 * res
 		}
+		from <- round(min(ref), digits=4L)
+		to <- round(max(ref), digits=4L)
+		.Log("binning ", snm, " from ", inm, " ", from, " to ", to,
+			" with ", units, " resolution ", round(res, digits=6L),
+			message=verbose)
 	} else {
 		tol <- setNames(tolerance, units)
+		label <- if (length(ref) != 1L) "references" else "reference"
+		.Log("binning ", snm, " to ", length(ref), " ", inm, " ", label,
+			" with ", units, " tolerance ", round(tolerance, digits=6L),
+			message=verbose)
 	}
 	spectra <- sparse_mat(index=index,
 		data=spectra, domain=ref,

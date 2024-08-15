@@ -10,7 +10,7 @@ setMethod("colocalized", "MSImagingExperiment",
 	} else {
 		i <- features(object, mz=mz)
 		if ( length(i) < length(mz) )
-			stop("no matching features for some m/z-values")
+			.Error("no matching features for some m/z-values")
 		callNextMethod(object, i=i, ...)
 	}
 })
@@ -35,13 +35,12 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	if ( !is.list(ref) && !is(ref, "List") )
 		ref <- list(ref)
 	if ( any(lengths(ref) != ncol(object)) )
-		stop("length of reference [", length(ref[[1L]]), "] ",
+		.Error("length of reference [", length(ref[[1L]]), "] ",
 			"does not match length of object [", length(object), "]")
-	if ( verbose ) {
-		lab <- if (length(ref) != 1L) "images" else "image"
-		message("calculating colocalization with ", length(ref), " ", lab)
-	}
-	FUN <- FUN <- .coscore_fun(ref, threshold, FALSE)
+	lab <- if (length(ref) != 1L) "images" else "image"
+	.Log("calculating colocalization with ", length(ref), " ", lab,
+		message=verbose)
+	FUN <- .coscore_fun(ref, threshold, FALSE)
 	scores <- chunkApply(spectra(object), 1L, FUN,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
@@ -75,12 +74,11 @@ setMethod("colocalized", "SpatialDGMM",
 	if ( !is.list(ref) && !is(ref, "List") )
 		ref <- list(ref)
 	if ( any(lengths(ref) != nrow(pixelData(object))) )
-		stop("length of reference [", length(ref[[1L]]), "] ",
+		.Error("length of reference [", length(ref[[1L]]), "] ",
 			"does not match length of object [", nrow(pixelData(object)), "]")
-	if ( verbose ) {
-		lab <- if (length(ref) != 1L) "images" else "image"
-		message("calculating colocalization with ", length(ref), " ", lab)
-	}
+	lab <- if (length(ref) != 1L) "images" else "image"
+	.Log("calculating colocalization with ", length(ref), " ", lab,
+		message=verbose)
 	FUN <- .coscore_fun(ref, threshold, TRUE)
 	scores <- chunkLapply(object$class, FUN,
 		verbose=verbose, chunkopts=chunkopts,
@@ -102,22 +100,22 @@ setMethod("colocalized", "SpatialDGMM",
 .coscore_fun <- function(ref, threshold, categorical)
 {
 	if ( categorical ) {
-		function(x)
+		isoclos(function(x)
 		{
 			vapply(ref, function(y) {
 				sc <- lapply(levels(x),
 					function(lvl) coscore(as.factor(x) == lvl, y))
 				sc[[which.max(vapply(sc, max, numeric(1L), na.rm=TRUE))]]
 			}, numeric(4L))
-		}
+		}, CardinalEnv())
 	} else {
-		function(x)
+		isoclos(function(x)
 		{
 			vapply(ref, function(y) {
 				cor <- cor(x, y, use="pairwise.complete.obs")
 				c(cor=cor, coscore(x, y, threshold=threshold))
 			}, numeric(5L))
-		}
+		}, CardinalEnv())
 	}
 }
 

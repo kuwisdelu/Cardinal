@@ -9,18 +9,18 @@ setMethod("NMF", "ANY",
 	method <- match.arg(method)
 	msg <- "estimating nonnegative matrix factorization "
 	if ( method == "als" ) {
-		if ( verbose )
-			message(msg, "using alternating least squares")
+		.Log(msg, "using alternating least squares",
+			message=verbose)
 		ans <- nnmf_als(x, k=max(ncomp), verbose=verbose, ...)
 	} else if ( method == "mult" ) {
-		if ( verbose )
-			message(msg, "using multiplicative updates")
+		.Log(msg, "using multiplicative updates",
+			message=verbose)
 		ans <- nnmf_mult(x, k=max(ncomp), verbose=verbose, ...)
 	} else {
-		stop("unsupported method: ", method)
+		.Error("unsupported method: ", method)
 	}
-	if ( verbose )
-		message("returning nonnegative matrix factorization")
+	.Log("returning nonnegative matrix factorization",
+		message=verbose)
 	ans
 })
 
@@ -28,7 +28,7 @@ setMethod("NMF", "SpectralImagingExperiment",
 	function(x, ncomp = 3, method = c("als", "mult"), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- NMF(spectra(x), ncomp=ncomp, method=method, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialNMF")
 })
@@ -37,9 +37,9 @@ setMethod("predict", "SpatialNMF",
 	function(object, newdata, ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
-		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( length(processingData(newdata)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	predict(object@model, newdata=spectra(newdata), ...)
 })
 

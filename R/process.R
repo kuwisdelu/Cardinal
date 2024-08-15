@@ -8,10 +8,9 @@ setMethod("addProcessing", "SpectralImagingData",
 	ps <- ProcessingStep(FUN, ARGS=list(...))
 	ps <- setNames(list(ps), label)
 	processingData(object) <- c(processingData(object), ps)
-	if ( verbose ) {
-		labels <- names(processingData(object))
-		message("queued: ", paste0(labels, collapse=", "))
-	}
+	labels <- names(processingData(object))
+	.Log("queued: ", paste0(labels, collapse=", "),
+		message=verbose)
 	if ( validObject(object) )
 		object
 })
@@ -81,7 +80,7 @@ setMethod("process", "MSImagingArrays",
 {
 	if ( !is.null(outfile) ) {
 		if ( length(index) > 1L )
-			stop("file output with more than 1 'index' array not allowed ",
+			.Error("file output with more than 1 'index' array not allowed ",
 				"for class ", sQuote(class(object)[1L]))
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		outfile <- paste0(tools::file_path_sans_ext(outfile), ".ibd")
@@ -132,32 +131,32 @@ setMethod("process", "SpectralImagingExperiment",
 	if ( length(processingData(object)) == 0L )
 		return(object)
 	ps <- processingData(object)
-	if ( verbose )
-		message("processing: ", paste0(names(ps), collapse=", "))
+	.Log("processing: ", paste0(names(ps), collapse=", "),
+		message=verbose)
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
 		put <- matter::chunk_writer(pid, outfile)
-		if ( verbose )
-			message("writing output to path = ", sQuote(outfile))
+		.Log("writing output to path = ", sQuote(outfile),
+			message=verbose)
 	} else {
 		put <- NULL
 	}
 	if ( length(index) > 1L )
-		stop("more than 1 'index' array not allowed ",
+		.Error("more than 1 'index' array not allowed ",
 			"for class ", sQuote(class(object)[1L]))
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
 	if ( is.null(spectra) )
-		stop("spectra ", sQuote(snm), " not found")
+		.Error("spectra ", sQuote(snm), " not found")
 	if ( is.null(inm) ) {
 		inm <- "index"
 		index <- seq_len(nrow(object))
 	} else {
 		index <- featureData(object)[[inm]]
 		if ( is.null(index) )
-			stop("index ", sQuote(inm), " not found")
+			.Error("index ", sQuote(inm), " not found")
 	}
 	FUN <- .process_fun(ps, domain=domain, put=put)
 	ans <- chunk_colapply(spectra, FUN, index,
@@ -194,7 +193,7 @@ setMethod("process", "SpectralImagingExperiment",
 			spectra <- ans[seq(2L, length(ans), by=2L),drop=drop]
 			index <- ans[seq(1L, length(ans) - 1L, by=2L),drop=drop]
 		} else {
-			stop("processed length [", length(ans), "] ",
+			.Error("processed length [", length(ans), "] ",
 				"does not match length of object [", length(object), "]")
 		}
 		spectra <- sparse_mat(index=index,
@@ -203,8 +202,8 @@ setMethod("process", "SpectralImagingExperiment",
 			tolerance=estres(domain),
 			sampler="none")
 	}
-	if ( getCardinalVerbose() )
-		message("output spectra: ", spectraname)
+	.Log("output spectra: ", spectraname,
+		message=getCardinalVerbose())
 	if ( is.null(domain) || identical(domain, index) ) {
 		spectra(object, spectraname) <- spectra
 	} else {
@@ -230,42 +229,42 @@ setMethod("process", "SpectralImagingArrays",
 	if ( length(processingData(object)) == 0L )
 		return(object)
 	ps <- processingData(object)
-	if ( verbose )
-		message("processing: ", paste0(names(ps), collapse=", "))
+	.Log("processing: ", paste0(names(ps), collapse=", "),
+		message=verbose)
 	if ( !is.null(outfile) ) {
 		outfile <- normalizePath(outfile, mustWork=FALSE)
 		pid <- ipcid()
 		put <- matter::chunk_writer(pid, outfile)
-		if ( verbose )
-			message("writing output to path = ", sQuote(outfile))
+		.Log("writing output to path = ", sQuote(outfile),
+			message=verbose)
 	} else {
 		put <- NULL
 	}
 	if ( length(index) > 3L )
-		stop("more than 3 'index' arrays not allowed ",
+		.Error("more than 3 'index' arrays not allowed ",
 			"for class ", sQuote(class(object)[1L]))
 	nindex <- max(1L, length(index))
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
 	if ( is.null(spectra) )
-		stop("spectra ", sQuote(snm), " not found")
+		.Error("spectra ", sQuote(snm), " not found")
 	if ( is.null(inm) ) {
 		inm <- "index"
 		index <- lapply(lengths(spectra), seq_len)
 	} else {
 		index <- spectra(object, inm[1L])
 		if ( is.null(index) )
-			stop("index ", sQuote(inm[1L]), " not found")
+			.Error("index ", sQuote(inm[1L]), " not found")
 		if ( nindex >= 2L ) {
 			index2 <- spectra(object, inm[2L])
 			if ( is.null(index2) )
-				stop("index ", sQuote(inm[2L]), " not found")
+				.Error("index ", sQuote(inm[2L]), " not found")
 		}
 		if ( nindex >= 3L ) {
 			index3 <- spectra(object, inm[3L])
 			if ( is.null(index3) )
-				stop("index ", sQuote(inm[3L]), " not found")
+				.Error("index ", sQuote(inm[3L]), " not found")
 		}
 	}
 	FUN <- .process_fun(ps, domain=domain, put=put)
@@ -282,7 +281,7 @@ setMethod("process", "SpectralImagingArrays",
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
-		stop("too many 'index' arrays")
+		.Error("too many 'index' arrays")
 	}
 	object <- .postprocess_SpectralImagingArrays(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
@@ -324,26 +323,26 @@ setMethod("process", "SpectralImagingArrays",
 		index2 <- ans[seq(2L, length(ans) - 2L, by=4L),drop=drop]
 		index3 <- ans[seq(3L, length(ans) - 1L, by=4L),drop=drop]
 	} else {
-		stop("processed length [", length(ans), "] ",
+		.Error("processed length [", length(ans), "] ",
 			"does not match length of object [", length(object), "]")
 	}
 	if ( !is.null(index) ) {
-		if ( getCardinalVerbose() )
-			message("output index: ", indexname[1L])
+		.Log("output index: ", indexname[1L],
+			message=getCardinalVerbose())
 		spectra(object, indexname[1L]) <- index
 	}
 	if ( !is.null(index2) ) {
-		if ( getCardinalVerbose() )
-			message("output index: ", indexname[2L])
+		.Log("output index: ", indexname[2L],
+			message=getCardinalVerbose())
 		spectra(object, indexname[2L]) <- index2
 	}
 	if ( !is.null(index3) ) {
-		if ( getCardinalVerbose() )
-			message("output index: ", indexname[3L])
+		.Log("output index: ", indexname[3L],
+			message=getCardinalVerbose())
 		spectra(object, indexname[3L]) <- index2
 	}
-	if ( getCardinalVerbose() )
-		message("output spectra: ", spectraname)
+	.Log("output spectra: ", spectraname,
+		message=getCardinalVerbose())
 	spectra(object, spectraname) <- spectra
 	if ( validObject(object) )
 		object
@@ -354,7 +353,7 @@ setMethod("process", "SpectralImagingArrays",
 .process_fun <- function(processingSteps,
 	domain = NULL, put = NULL)
 {
-	function(X, ..., MoreArgs)
+	isoclos(function(X, ..., MoreArgs)
 	{
 		nindex <- ...length()
 		index <- ..1
@@ -375,7 +374,7 @@ setMethod("process", "SpectralImagingArrays",
 			continuous <- FALSE
 			N <- length(X)
 		} else {
-			stop("unexpected chunk class: ", sQuote(class(X)[1L]))
+			.Error("unexpected chunk class: ", sQuote(class(X)[1L]))
 		}
 		cid <- attr(X, "chunkid")
 		ans <- vector("list", N)
@@ -404,7 +403,7 @@ setMethod("process", "SpectralImagingArrays",
 				} else if ( nindex == 3L ) {
 					xj <- executeProcessingStep(psj, xi, t1, t2, t3)
 				} else {
-					stop("more than 3 'index' arrays not allowed")
+					.Error("more than 3 'index' arrays not allowed")
 				}
 				if ( length(xj) == nxi ) {
 					xi <- xj
@@ -424,11 +423,11 @@ setMethod("process", "SpectralImagingArrays",
 							xi <- xj[,4L]
 						}						
 					} else {
-						stop("expected ", nci,
+						.Error("expected ", nci,
 							" columns in output but received ", ncol(xj))
 					}
 				} else {
-					stop("expected ", nxi,
+					.Error("expected ", nxi,
 						" elements in output but received ", length(xj))
 				}
 			}
@@ -442,7 +441,7 @@ setMethod("process", "SpectralImagingArrays",
 			} else if ( length(xi) == nxi ) {
 				ans[[i]] <- xi
 			} else {
-				stop("length of output [", length(xi), "] ",
+				.Error("length of output [", length(xi), "] ",
 					"does not match input [", nxi, "]")
 			}
 		}
@@ -461,6 +460,6 @@ setMethod("process", "SpectralImagingArrays",
 		} else {
 			put(ans, cid)
 		}
-	}
+	}, CardinalEnv())
 }
 

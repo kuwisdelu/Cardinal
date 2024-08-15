@@ -30,7 +30,7 @@ slice <- function(x, i = features(x, ...), ...,
 				} else if ( ndim == 3L ) {
 					to_raster3(co$x, co$y, co$z, vals)
 				} else {
-					stop("number of coordinates must be 2 or 3")
+					.Error("number of coordinates must be 2 or 3")
 				}
 			})
 		names(rs) <- levels(runs)

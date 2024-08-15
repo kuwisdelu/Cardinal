@@ -213,7 +213,7 @@ setMethod("[", "SpectralImagingExperiment",
 		if ( (nargs() - !missing(drop)) < 3L )
 			return(x[,i])
 		if ( !missing(drop) && isTRUE(drop) )
-			warning("'drop' ignored when subsetting ", class(x))
+			.Warn("'drop' ignored when subsetting ", class(x))
 		.subset_SpectralImagingExperiment(x, i, j)
 	})
 
@@ -225,12 +225,12 @@ setMethod("subset", "SpectralImagingExperiment",
 		if ( !missing(select) ) {
 			i <- eval(substitute(select), envir=fdata)
 			if ( !is.logical(i) && !is.numeric(i) )
-				stop("'select' must specify logical or numeric indices")
+				.Error("'select' must specify logical or numeric indices")
 		}
 		if ( !missing(subset) ) {
 			j <- eval(substitute(subset), envir=pdata)
 			if ( !is.logical(j) && !is.numeric(j) )
-				stop("'subset' must specify logical or numeric indices")
+				.Error("'subset' must specify logical or numeric indices")
 		}
 		if ( !missing(select) && !missing(subset) ) {
 			x[i,j]
@@ -407,7 +407,7 @@ setMethod("pixels", "SpectralImagingArrays",
 			run <- NULL
 		coord <- as.list(coord)
 		if ( length(coord) != ncol(coord(object)) )
-			stop("length of coord [", length(coord), "] does not ",
+			.Error("length of coord [", length(coord), "] does not ",
 				"match object coord [", ncol(coord(object)), "]")
 		if ( is.null(names(coord)) ) {
 			names(coord) <- coordNames(object)
@@ -428,13 +428,13 @@ setMethod("pixels", "SpectralImagingArrays",
 					i_run <- run(object)[i_coord[[j]]]
 					dup <- !setequal(unique(i_run), i_run)
 					if ( dup )
-						warning("multiple matches for coord ", badmatch)
+						.Warn("multiple matches for coord ", badmatch)
 				} else {
 					k <- as.vector(knnsearch(coord[j,], coord(object), k=1L))
 					k_coord <- as.list(coord(object)[k,])
 					nearmatch <- paste0(coordNames(object), " = ",
 						unlist(k_coord), collapse=", ")
-					warning("no match for coord ", badmatch, "; ",
+					.Warn("no match for coord ", badmatch, "; ",
 						"nearest is ", nearmatch)
 				}
 			}
@@ -481,7 +481,7 @@ setReplaceMethod("names", "SpectralImagingArrays",
 setMethod("[", "SpectralImagingArrays",
 	function(x, i, j, ..., drop = TRUE) {
 		if ( !missing(drop) && isTRUE(drop) )
-			warning("'drop' ignored when subsetting ", class(x))
+			.Warn("'drop' ignored when subsetting ", class(x))
 		.subset_SpectralImagingArrays(x, i)
 	})
 
@@ -492,7 +492,7 @@ setMethod("subset", "SpectralImagingArrays",
 		if ( !missing(subset) ) {
 			i <- eval(substitute(subset), envir=pdata)
 			if ( !is.logical(i) && !is.numeric(i) )
-				stop("'subset' must specify logical or numeric indices")
+				.Error("'subset' must specify logical or numeric indices")
 		}
 		if ( missing(subset) ) {
 			x
@@ -621,10 +621,10 @@ setMethod("pixels", "SpectralImagingData",
 	FUN <- function(cond) {
 		ci <- eval(cond, envir=env)
 		if ( is.logical(ci) && length(ci) != n )
-			stop("length of condition [", length(ci),
+			.Error("length of condition [", length(ci),
 				"] must match extent of object [", n, "]")
 		if ( is.numeric(ci) && any(ci < 1L | ci > n) )
-			stop("subscript out of bounds")
+			.Error("subscript out of bounds")
 		ci
 	}
 	ans <- lapply(expr, FUN)

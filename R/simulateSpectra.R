@@ -15,7 +15,7 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 		npeaks <- list(...)$peaks
 	}
 	if ( length(mz) != length(intensity) )
-		stop("length of mz and intensity must match")
+		.Error("length of mz and intensity must match")
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	if ( missing(mz) && (!missing(from) || !missing(to)) ) {
@@ -65,7 +65,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	}
 	nms <- intersect(names(pixelData), names(featureData))
 	if ( length(nms) == 0L )
-		stop("no shared column names between pixelData and featureData")
+		.Error("no shared column names between pixelData and featureData")
 	pData <- pixelData[nms]
 	fData <- featureData[nms]
 	mz <- mz(featureData)
@@ -77,7 +77,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	units <- match.arg(units)
 	representation <- match.arg(representation)
 	domain <- mz(from=from, to=to, by=by, units=units)
-	FUN <- function(irun)
+	FUN <- isoclos(function(irun)
 	{
 		# extract run information
 		group <- as.matrix(pData[irun == run(pixelData),,drop=FALSE])
@@ -123,7 +123,7 @@ simulateImage <- function(pixelData, featureData, preset,
 				pixelData=pixelData[irun == run(pixelData),,drop=FALSE],
 				centroided=TRUE)
 		}
-	}
+	}, CardinalEnv())
 	ans <- chunkMapply(FUN, runNames(pixelData),
 		verbose=verbose, chunkopts=chunkopts,
 		RNG=TRUE, BPPARAM=BPPARAM)
@@ -172,8 +172,8 @@ presetImageDef <- function(preset = 1L, nrun = 1, npeaks = 30L,
 	pdata <- PositionDataFrame(coord=coords, run="run0")
 	mzs <- sort(rlnorm(npeaks, 7, 0.3))
 	i <- (abs(preset) - 1L) %% numPresets + 1L
-	if ( getCardinalVerbose() )
-		message("using image preset = ", i)
+	.Log("using image preset = ", i,
+		message=getCardinalVerbose())
 	if ( i == 1L ) {
 		# centered circle
 		rx <- nx / 2

@@ -20,38 +20,38 @@ setMethod("PLS", "ANY",
 	}
 	msg <- "projecting to latent structures "
 	if ( method == "nipals" ) {
-		if ( verbose )
-			message(msg, "using NIPALS")
+		.Log(msg, "using NIPALS",
+			message=verbose)
 		ans <- pls_nipals(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "simpls" ) {
-		if ( verbose )
-			message(msg, "using SIMPLS")
+		.Log(msg, "using SIMPLS",
+			message=verbose)
 		ans <- pls_simpls(x, y=y, k=max(ncomp),
 			center=center, scale.=scale,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel1" ) {
-		if ( verbose )
-			message(msg, "using kernel #1")
+		.Log(msg, "using kernel #1",
+			message=verbose)
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=1L,
 			center=center, scale.=scale,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else if ( method == "kernel2" ) {
-		if ( verbose )
-			message(msg, "using kernel #2")
+		.Log(msg, "using kernel #2",
+			message=verbose)
 		ans <- pls_kernel(x, y=y, k=max(ncomp), method=2L,
 			center=center, scale.=scale,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else {
-		stop("unsupported method: ", method)
+		.Error("unsupported method: ", method)
 	}
-	if ( verbose )
-		message("returning projection to latent structures")
+	.Log("returning projection to latent structures",
+		message=verbose)
 	ans
 })
 
@@ -61,7 +61,7 @@ setMethod("PLS", "SpectralImagingExperiment",
 		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- PLS(spectra(x), y=y, ncomp=ncomp,
 		center=center, scale=scale, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialPLS")
@@ -80,10 +80,10 @@ setMethod("predict", "SpatialPLS",
 {
 	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
-		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
-			warning("pending processing steps will be ignored")
+			.Warn("pending processing steps will be ignored")
 		if ( missing(ncomp) )
 			ncomp <- ncol(object$loadings)
 		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,
@@ -164,16 +164,16 @@ setMethod("OPLS", "ANY",
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...))
 	}
-	if ( verbose )
-		message("preprocessing data to remove orthogonal variation")
+	.Log("preprocessing data to remove orthogonal variation",
+		message=verbose)
 	ans <- opls_nipals(x, y=y, k=max(ncomp),
 		center=center, scale.=scale, regression=TRUE,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	if ( !retx )
 		ans$x <- NULL
-	if ( verbose )
-		message("returning projection to latent structures")
+	.Log("returning projection to latent structures",
+		message=verbose)
 	ans
 })
 
@@ -182,7 +182,7 @@ setMethod("OPLS", "SpectralImagingExperiment",
 		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- OPLS(spectra(x), y=y, ncomp=ncomp,
 		center=center, scale=scale, retx=retx, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialOPLS")
@@ -207,10 +207,10 @@ setMethod("predict", "SpatialOPLS",
 {
 	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
-		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
-			warning("pending processing steps will be ignored")
+			.Warn("pending processing steps will be ignored")
 		if ( missing(ncomp) )
 			ncomp <- ncol(object$loadings)
 		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,

@@ -28,13 +28,12 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				n <- min(sampleSize, length(object))
 				perc <- round(100 * n / length(object))
 			} else {
-				stop("'sampleSize' must be positive")
+				.Error("'sampleSize' must be positive")
 			}
-			if ( verbose ) {
-				label <- if (n != 1L) "spectra" else "spectrum"
-				message("processing peaks for ", n, " ", label, " ",
-					"(~", perc, "% of data)")
-			}
+			label <- if (n != 1L) "spectra" else "spectrum"
+			.Log("processing peaks for ", n, " ", label, " ",
+				"(~", perc, "% of data)",
+				message=verbose)
 			i <- seq.default(1L, length(object), length.out=n)
 			ref <- peakProcess(object[i],
 				spectra=spectra, index=index,
@@ -49,8 +48,8 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			domain <- as.numeric(ref)
 		}
 		# extract the peaks based on reference
-		if ( verbose )
-			message("extracting reference peaks from all spectra")
+		.Log("extracting reference peaks from all spectra",
+			message=verbose)
 		object <- peakPick(object, ref=ref,
 			tolerance=tolerance, units=units, type=type)
 		object <- process(object,
@@ -66,12 +65,12 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 			if ( length(processingData(object)) == 0L &&
 				!is.sparse(spectra(object, spectra)) )
 			{
-				if ( verbose )
-					message("peaks are already processed")
+				.Log("peaks are already processed",
+					message=verbose)
 				return(object)
 			} else {
-				if ( verbose )
-					message("peaks are already detected")
+				.Log("peaks are already detected",
+					message=verbose)
 			}
 		} else {
 			# pick peaks on all spectra
@@ -96,21 +95,21 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 					# filterFeq is a count
 					n <- as.integer(filterFreq)
 				} else {
-					stop("'filterFreq' must be positive")
+					.Error("'filterFreq' must be positive")
 				}
 			} else {
 				# remove singleton peaks
 				n <- 1L
 			}
-			if ( verbose )
-				message("filtering to keep only peaks with counts > ", n, " ",
-					"(", ceiling(100 * n / length(object)), "% of considered spectra)")
+			.Log("filtering to keep only peaks with counts > ", n, " ",
+				"(", ceiling(100 * n / length(object)), "% of considered spectra)",
+				message=verbose)
 			object <- object[featureData(object)[["count"]] > n,]
 		}
 	}
 	# return object
-	if ( verbose )
-		message("processed to ", nrow(object), " peaks")
+	.Log("processed to ", nrow(object), " peaks",
+		message=verbose)
 	if ( validObject(object) )
 		object
 })
@@ -186,7 +185,7 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	if ( length(index) > 1L )
-		stop("more than 1 'index' array not supported")
+		.Error("more than 1 'index' array not supported")
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
@@ -196,12 +195,12 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 	} else {
 		domain <- featureData(object)[[inm]]
 		if ( is.null(domain) )
-			stop("index ", sQuote(inm), " not found")
+			.Error("index ", sQuote(inm), " not found")
 	}
 	if ( !missing(ref) && !is.null(ref) ) {
 		if ( isTRUE(all.equal(domain, ref)) ) {
-			if ( verbose )
-				message("peaks are already aligned")
+			.Log("peaks are already aligned",
+				message=verbose)
 			return(object)
 		}
 	}
@@ -209,12 +208,12 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		index <- atomindex(spectra)
 		spectra <- atomdata(spectra)
 	} else {
-		stop("nothing to align for spectra ", sQuote(snm), "; ",
+		.Error("nothing to align for spectra ", sQuote(snm), "; ",
 			"has peakPick() been used?")
 	}
-	if ( verbose )
-		message("detected ~", round(mean(lengths(index)), digits=1L),
-			" peaks per spectrum")
+	.Log("detected ~", round(mean(lengths(index)), digits=1L),
+		" peaks per spectrum",
+		message=verbose)
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, spectraname=snm, indexname=inm,
 		tolerance=tolerance, units=units,
@@ -237,7 +236,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		units <- get_units_from_names(tolerance, units)
 	units <- match.arg(units)
 	if ( length(index) > 1L )
-		stop("more than 1 'index' array not supported")
+		.Error("more than 1 'index' array not supported")
 	snm <- spectra
 	inm <- index
 	spectra <- spectra(object, snm)
@@ -247,14 +246,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	} else {
 		index <- spectra(object, inm)
 		if ( is.null(index) )
-			stop("index ", sQuote(inm), " not found")
+			.Error("index ", sQuote(inm), " not found")
 	}
-	if ( verbose )
-		message("detected ~", round(mean(lengths(index)), digits=1L),
-			" peaks per spectrum")
+	.Log("detected ~", round(mean(lengths(index)), digits=1L),
+		" peaks per spectrum",
+		message=verbose)
 	if ( missing(ref) || is.null(ref) ) {
-		if ( verbose )
-			message("estimating shared domain for alignment")
+		.Log("estimating shared domain for alignment",
+			message=verbose)
 		domain <- estimateDomain(index, units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	} else {
@@ -287,13 +286,15 @@ setMethod("peakAlign", "SpectralImagingArrays",
 			absolute=seq.default(min(domain), max(domain), by=res))
 	}
 	if ( missing(ref) || is.null(ref) ) {
-		if ( verbose )
-			message("binning peaks to create shared reference")
-		FUN <- function(x) {
+		.Log("binning peaks to create shared reference",
+			message=verbose)
+		FUN <- isofun(function(x, domain, tol, tol.ref) {
 			matter::binpeaks(x, domain=domain, tol=tol, tol.ref=tol.ref,
 				merge=FALSE, na.drop=FALSE)
-		}
-		peaks <- chunk_lapply(index, FUN, simplify=matter::stat_c,
+		}, CardinalEnv())
+		peaks <- chunk_lapply(index, FUN,
+			domain=domain, tol=tol, tol.ref=tol.ref,
+			simplify=matter::stat_c,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 		peaks <- peaks[!is.na(peaks)]
@@ -307,9 +308,10 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		ppm <- switch(units,
 			relative=paste0("(", 1e6 * tol, " ppm)"),
 			absolute="")
-		message("aligned to ", length(ref),
+		.Log("aligned to ", length(ref),
 			" reference peaks with ", units,
-				" tolerance ", tol, " ", ppm)
+			" tolerance ", tol, " ", ppm,
+			message=verbose)
 	}
 	spectra <- sparse_mat(index=index,
 		data=spectra, domain=ref,
@@ -341,7 +343,7 @@ setMethod("peakPick", "MSImagingExperiment",
 			ref <- mz(ref)
 	}
 	if ( isCentroided(object) ) {
-		stop("object is already centroided")
+		.Error("object is already centroided")
 	} else {
 		centroided(object) <- TRUE
 	}
@@ -367,7 +369,7 @@ setMethod("peakPick", "MSImagingArrays",
 			ref <- mz(ref)
 	}
 	if ( isCentroided(object) ) {
-		stop("object is already centroided")
+		.Error("object is already centroided")
 	} else {
 		centroided(object) <- TRUE
 	}
@@ -392,7 +394,7 @@ setMethod("peakPick", "SpectralImagingData",
 	type <- match.arg(type)
 	if ( missing(ref) || is.null(ref) ) {
 		if ( !is.na(tolerance) )
-			warning("no 'ref' given so 'tolerance' will be ignored")
+			.Warn("no 'ref' given so 'tolerance' will be ignored")
 		if ( method == "cwt" ) {
 			FUN <- .peakPick_cwt
 		} else {
@@ -426,7 +428,7 @@ setMethod("peakPick", "SpectralImagingData",
 	} else if ( type == "area" ) {
 		cbind(t[peaks], matter::peakareas(x, peaks, domain=t))
 	} else {
-		stop("invalid peak type: ", sQuote(type))
+		.Error("invalid peak type: ", sQuote(type))
 	}
 }
 
@@ -438,7 +440,7 @@ setMethod("peakPick", "SpectralImagingData",
 	} else if ( type == "area" ) {
 		cbind(t[peaks], matter::peakareas(x, peaks, domain=t))
 	} else {
-		stop("invalid peak type: ", sQuote(type))
+		.Error("invalid peak type: ", sQuote(type))
 	}
 }
 
@@ -453,7 +455,7 @@ setMethod("peakPick", "SpectralImagingData",
 	} else if ( type == "area" ) {
 		values[nz] <- matter::peakareas(x, peaks[hits[nz]], domain=t)
 	} else {
-		stop("invalid peak type: ", sQuote(type))
+		.Error("invalid peak type: ", sQuote(type))
 	}
 	cbind(ref, values)
 }

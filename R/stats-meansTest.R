@@ -14,10 +14,10 @@ setMethod("meansTest", "ANY",
 	}
 	samples <- as.factor(samples)
 	if ( response %in% names(data) )
-		warning("data already has column ", sQuote(response),
+		.Warn("data already has column ", sQuote(response),
 			" which will be ignored")
 	if ( missing(fixed) ) {
-		stop("missing fixed effects")
+		.Error("missing fixed effects")
 	} else {
 		to <- as.formula(paste0(response, " ~ ."))
 		fixed <- update(fixed, to)
@@ -26,8 +26,8 @@ setMethod("meansTest", "ANY",
 		random <- NULL
 	n <- if (byrow) nrow(x) else ncol(x)
 	# summarize response
-	if ( verbose )
-		message("summarizing ", sQuote(response))
+	.Log("summarizing ", sQuote(response),
+		message=verbose)
 	if ( byrow ) {
 		y <- rowStats(x, stat="mean", group=samples,
 			verbose=verbose, chunkopts=chunkopts,
@@ -40,8 +40,8 @@ setMethod("meansTest", "ANY",
 	if ( !is.matrix(y) )
 		y <- t(y)
 	# summarize data
-	if ( verbose )
-		message("preparing data")
+	.Log("preparing data",
+		message=verbose)
 	data <- lapply(data, function(v) 
 		{
 			unlist(unname(tapply(v, samples, avg, simplify=FALSE)))
@@ -54,25 +54,23 @@ setMethod("meansTest", "ANY",
 			ok <- vars %in% names(data)
 			if ( !all(ok) ) {
 				labs <- paste0(vars[!ok], collapse=", ")
-				stop("couldn't find variable: ", labs)
+				.Error("couldn't find variable: ", labs)
 			}
 			as.data.frame(data[vars])
 		})
 	# fit models
-	if ( verbose ) {
-		lab <- if (n != 1L) "models" else "model"
-		message("fitting ", n, " ", lab)
-	}
+	lab <- if (n != 1L) "models" else "model"
+	.Log("fitting ", n, " ", lab,
+		message=verbose)
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- if (byrow) rownames(x) else colnames(x)
 	# test models
-	if ( verbose ) {
-		lab <- if (n != 1L) "models" else "model"
-		message("testing ", n, " ", lab)
-	}
+	lab <- if (n != 1L) "models" else "model"
+	.Log("testing ", n, " ", lab,
+		message=verbose)
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
 		verbose=verbose, chunkopts=chunkopts,
@@ -80,7 +78,7 @@ setMethod("meansTest", "ANY",
 	tests <- DataFrame(do.call(rbind, tests))
 	# return results
 	if ( anyNA(tests$statistic) )
-		warning(sum(is.na(tests$statistic)), " tests could not be performed")
+		.Warn(sum(is.na(tests$statistic)), " tests could not be performed")
 	if ( is.null(random) ) {
 		mcols <- DataFrame(fixed=deparse1(fixed), tests)
 	} else {
@@ -134,7 +132,7 @@ setMethod("meansTest", "ANY",
 			LR <- aov[2L,"L.Ratio"]
 			PValue <- aov[2L,"p-value"]
 		} else {
-			stop("don't know how to test model of class ",
+			.Error("don't know how to test model of class ",
 				sQuote(class(model)))
 		}
 		c(statistic=LR, pvalue=PValue)
@@ -249,10 +247,10 @@ setMethod("meansTest", "SpatialDGMM",
 	data <- pixelData(x)
 	samples <- as.factor(x$group)
 	if ( response %in% names(data) )
-		warning("data already has column ", sQuote(response),
+		.Warn("data already has column ", sQuote(response),
 			" which will be ignored")
 	if ( missing(fixed) ) {
-		stop("missing fixed effects")
+		.Error("missing fixed effects")
 	} else {
 		to <- as.formula(paste0(response, " ~ ."))
 		fixed <- update(fixed, to)
@@ -261,8 +259,8 @@ setMethod("meansTest", "SpatialDGMM",
 		random <- NULL
 	n <- length(x$class)
 	# summarize data
-	if ( verbose )
-		message("preparing data")
+	.Log("preparing data",
+		message=verbose)
 	data <- lapply(data, function(v) 
 		{
 			unlist(unname(tapply(v, samples, avg, simplify=FALSE)))
@@ -275,20 +273,18 @@ setMethod("meansTest", "SpatialDGMM",
 			as.data.frame(data[vars])
 		})
 	# fit models
-	if ( verbose ) {
-		lab <- if (n != 1L) "models" else "model"
-		message("fitting ", n, " ", lab)
-	}
+	lab <- if (n != 1L) "models" else "model"
+	.Log("fitting ", n, " ", lab,
+		message=verbose)
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- rownames(featureData(x))
 	# test models
-	if ( verbose ) {
-		lab <- if (n != 1L) "models" else "model"
-		message("testing ", n, " ", lab)
-	}
+	lab <- if (n != 1L) "models" else "model"
+	.Log("testing ", n, " ", lab,
+		message=verbose)
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
 		verbose=verbose, chunkopts=chunkopts,
@@ -320,12 +316,12 @@ segmentationTest <- function(x, fixed, random, samples = run(x),
 		samples <- list(...)$groups
 	}
 	if ( missing(fixed) )
-		stop("missing fixed effects")
+		.Error("missing fixed effects")
 	if ( !is(x, "SpatialDGMM") ) {
 		if ( is(x, "SpectralImagingExperiment") ) {
 			spectra(x) <- spectra(x, response)
 		} else {
-			stop("'x' must be a SpectralImagingExperiment")
+			.Error("'x' must be a SpectralImagingExperiment")
 		}
 		x <- spatialDGMM(x, groups=samples, ...)
 	}

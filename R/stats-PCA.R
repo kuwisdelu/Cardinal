@@ -12,8 +12,8 @@ setMethod("PCA", "ANY",
 		center=center, scale.=scale,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
-	if ( getCardinalVerbose() )
-		message("returning principal components")
+	.Log("returning principal components",
+		message=verbose)
 	ans
 })
 
@@ -22,7 +22,7 @@ setMethod("PCA", "SpectralImagingExperiment",
 		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- PCA(spectra(x), ncomp=ncomp, transpose=TRUE,
 		center=center, scale=scale, ...)
 	as(SpatialResults(ans, x), "SpatialPCA")
@@ -33,11 +33,11 @@ setMethod("predict", "SpatialPCA",
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
-		stop("'newdata' must inherit from 'SpectralImagingExperiment'")
+		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( length(processingData(newdata)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	if ( nrow(newdata) != nrow(object$rotation) )
-		stop("'newdata' does not have the correct number of dimensions")
+		.Error("'newdata' does not have the correct number of dimensions")
 	if ( (!isFALSE(object$center) || !isFALSE(object$scale)) ) {
 		x <- rowscale(spectra(newdata),
 			center=object$center, scale=object$scale,

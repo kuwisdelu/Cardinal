@@ -17,13 +17,13 @@ setMethod("spatialKMeans", "ANY",
 	}
 	if ( is.character(weights) ) {
 		weights <- match.arg(weights)
-		if ( verbose )
-			message("calculating gaussian weights")
+		.Log("calculating gaussian weights",
+			message=verbose)
 		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
 		if ( weights == "adaptive" )
 		{
-			if ( verbose )
-				message("calculating adaptive weights")
+			.Log("calculating adaptive weights",
+				message=verbose)
 			awts <- spatialWeights(x, neighbors=neighbors,
 				weights="adaptive", byrow=!transpose,
 				verbose=verbose, chunkopts=chunkopts,
@@ -54,13 +54,13 @@ setMethod("spatialKMeans", "ANY",
 		} else {
 			icenters <- k[i]
 		}
-		if ( verbose )
-			message("fitting k-means for k = ", k[i])
+		.Log("fitting k-means for k = ", k[i],
+			message=verbose)
 		ans[[i]] <- kmeans(proj$x, centers=icenters, ...)
 		if ( centers )
 		{
-			if ( verbose )
-				message("calculating cluster centers")
+			.Log("calculating cluster centers",
+				message=verbose)
 			if ( transpose ) {
 				truecenters[[i]] <- rowStats(x, "mean",
 					group=as.factor(ans[[i]]$cluster),
@@ -75,14 +75,16 @@ setMethod("spatialKMeans", "ANY",
 		}
 		if ( correlation )
 		{
-			if ( verbose )
-				message("calculating spatial correlations with clusters")
+			.Log("calculating spatial correlations with clusters",
+				message=verbose)
 			cls <- as.factor(ans[[i]]$cluster)
 			lvl <- setNames(levels(cls), levels(cls))
-			cls <- lapply(lvl, function(ci) cls %in% ci)
+			mask <- lapply(lvl, function(ci) cls %in% ci)
 			margin <- if (transpose) 1L else 2L
-			FUN <- function(xi) vapply(cls, cor, numeric(1L), y=xi)
-			corr <- chunkApply(x, margin, FUN,
+			FUN <- isofun(function(xi, mask) {
+				vapply(mask, stats::cor, numeric(1L), y=xi)
+			}, CardinalEnv())
+			corr <- chunkApply(x, margin, FUN, mask=mask,
 				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 			corr <- do.call(rbind, corr)
@@ -103,8 +105,8 @@ setMethod("spatialKMeans", "ANY",
 		}
 	}
 	names(ans) <- paste0("k=", k)
-	if ( verbose )
-		message("returning spatial k-means")
+	.Log("returning spatial k-means",
+		message=verbose)
 	if ( length(ans) > 1L ) {
 		ResultsList(ans,
 			mcols=DataFrame(r=r, k=k, weights=weights, ncomp=ncomp))
@@ -119,7 +121,7 @@ setMethod("spatialKMeans", "SpectralImagingExperiment",
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		warning("pending processing steps will be ignored")
+		.Warn("pending processing steps will be ignored")
 	ans <- spatialKMeans(spectra(x),
 		coord=coord(x), r=r, k=k, ncomp=ncomp,
 		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
@@ -137,7 +139,7 @@ setMethod("topFeatures", "SpatialKMeans",
 	sort.by <- match.arg(sort.by)
 	corr <- object$correlation
 	if ( is.null(corr) )
-		stop("missing component: 'correlation'")
+		.Error("missing component: 'correlation'")
 	cluster <- rep(colnames(corr), each=nrow(corr))
 	topf <- DataFrame(cluster=cluster, correlation=as.vector(corr))
 	topf <- .rank_featureData(object, topf, sort.by)
@@ -152,13 +154,13 @@ setMethod("plot", c(x = "SpatialKMeans", y = "missing"),
 		xlab <- NULL
 	if ( type == "correlation" ) {
 		if ( is.null(x$correlation) )
-			stop("missing component: 'correlation'")
+			.Error("missing component: 'correlation'")
 		if ( missing(ylab) )
 			ylab <- "Correlation"
 		callNextMethod(x, y=x$correlation, xlab=xlab, ylab=ylab, ...)
 	} else {
 		if ( is.null(x$centers) )
-			stop("missing component: 'centers'")
+			.Error("missing component: 'centers'")
 		if ( missing(ylab) )
 			ylab <- "Centers"
 		callNextMethod(x, y=x$centers, xlab=xlab, ylab=ylab, ...)

@@ -239,7 +239,7 @@ setReplaceMethod("[", "SpectraArrays",
 		return(SpectraArrays())
 	lens <- vapply(objects, length, numeric(1L))
 	if ( !all(lens == lens[1L]) )
-		stop("objects to bind must have the same number of spectra arrays")
+		.Error("objects to bind must have the same number of spectra arrays")
 	if ( lens[1L] == 0L )
 		return(SpectraArrays())
 	lnms <- lapply(objects, names)
@@ -248,7 +248,7 @@ setReplaceMethod("[", "SpectraArrays",
 		# match by name
 		ok <- vapply(lnms, setequal, logical(1L), nms)
 		if ( !all(ok) )
-			stop("all spectra arrays must have the same set of names")
+			.Error("all spectra arrays must have the same set of names")
 		ans <- lapply(nms, function(nm) {
 			arrays <- lapply(objects, `[[`, nm)
 			switch(margin + 1L, do.call(c, arrays),

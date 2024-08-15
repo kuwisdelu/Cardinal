@@ -163,7 +163,7 @@ setMethod("plot", c(x = "SpatialResults", y = "ANY"),
 		superpose = TRUE, reducedDims = FALSE)
 {
 	if ( is.character(y) && length(y) == 1L )
-		stop("did you mean to specify 'type'?")
+		.Error("did you mean to specify 'type'?")
 	if ( reducedDims ) {
 		.plot_reduced_dims(x, y, select=select,
 			groups=groups, ...)
@@ -178,7 +178,7 @@ setMethod("image", c(x = "SpatialResults"),
 		superpose = TRUE)
 {
 	if ( is.character(y) && length(y) == 1L )
-		stop("did you mean to specify 'type'?")
+		.Error("did you mean to specify 'type'?")
 	.plot_image_results(x, y, select=select, subset=subset,
 		superpose=superpose, ...)
 })
@@ -191,7 +191,7 @@ setMethod("image", c(x = "SpatialResults"),
 	if ( missing(select) || is.null(select) )
 		select <- c(1L, 2L)
 	if ( length(select) != 2L )
-		stop("'select' must specify exactly 2 columns")
+		.Error("'select' must specify exactly 2 columns")
 	if ( is.numeric(select) ) {
 		if ( missing(xlab) || is.null(xlab) )
 			xlab <- colnames(y)[1L]

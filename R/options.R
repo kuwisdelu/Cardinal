@@ -4,6 +4,10 @@
 
 CardinalResources <- list2env(list(logger=simple_logger()))
 
+CardinalNamespace <- environment(NULL)
+
+CardinalEnv <- function() CardinalNamespace
+
 # set up Cardinal defaults
 .onLoad <- function(libname, pkgname) {
 	setCardinalBPPARAM()
@@ -67,6 +71,9 @@ saveCardinalLog <- function(file = "Cardinal.log") {
 # logging functions
 .Log <- function(..., message = FALSE) {
 	getCardinalLogger()$log(..., signal=message)
+}
+.Message <- function(...) {
+	getCardinalLogger()$message(...)
 }
 .Warn <- function(...) {
 	call <- sys.call(-1L)

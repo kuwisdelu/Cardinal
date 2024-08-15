@@ -90,7 +90,7 @@ setMethod("features", "MSImagingExperiment",
 				for ( j in which(is.na(i_mz)) )
 				{
 					k <- bsearch(mz[j], mz(object), nearest=TRUE)
-					warning("no match for mz ", round(mz[j], digits=4L), "; ",
+					.Warn("no match for mz ", round(mz[j], digits=4L), "; ",
 						"nearest is ", round(mz(object)[k], digits=4L))
 				}
 			}
@@ -212,7 +212,7 @@ convertMSImagingExperiment2Arrays <- function(object)
 	if ( is(object, "MSImagingArrays") )
 		return(object)
 	if ( !is(object, "MSImagingExperiment") )
-		stop("object must be of class MSImagingExperiment")
+		.Error("object must be of class MSImagingExperiment")
 	if ( is(spectra(object), "sparse_mat") ) {
 		mz <- atomindex(spectra(object))
 		intensity <- atomdata(spectra(object))
@@ -245,7 +245,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	if ( is(object, "MSImagingExperiment") )
 		return(object)
 	if ( !is(object, "MSImagingArrays") )
-		stop("object must be of class MSImagingArrays")
+		.Error("object must be of class MSImagingArrays")
 	if ( missing(units) )
 	{
 		if ( !missing(resolution) ) {
@@ -290,9 +290,9 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			i <- seq(1L, length(object), length.out=guess.max)
 			ref <- ref[i]
 		}
-		if ( verbose )
-			message("estimating centroid m/z-axis from ",
-				guess.max, " sample spectra")
+		.Log("estimating centroid m/z-axis from ",
+			guess.max, " sample spectra",
+			message=verbose)
 		ref <- peakAlign(ref, ref=NULL,
 			tolerance=tolerance, units=units,
 			verbose=verbose, chunkopts=chunkopts,
@@ -307,11 +307,12 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			ref <- ref[mz(ref) < min(mass.range),]
 		if ( any(mz(ref) > max(mass.range)) )
 			ref <- ref[mz(ref) > max(mass.range),]
-		if ( verbose ) {
-			message("applying centroid m/z-values to all spectra")
-			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
-			message("using tolerance ", tolerance, " ", units)
-		}
+		.Log("applying centroid m/z-values to all spectra",
+			message=verbose)
+		.Log("using mass.range ", mass.range[1L], " to ", mass.range [2L],
+			message=verbose)
+		.Log("using tolerance ", tolerance, " ", units,
+			message=verbose)
 		ans <- peakAlign(object, ref=mz(ref),
 			tolerance=tolerance, units=units,
 			verbose=verbose, chunkopts=chunkopts,
@@ -325,9 +326,9 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		}
 		if ( is.null(mass.range) || is.na(resolution) )
 		{
-			if ( verbose )
-				message("estimating profile m/z-axis from ",
-					guess.max, " sample spectra")
+			.Log("estimating profile m/z-axis from ",
+				guess.max, " sample spectra",
+				message=verbose)
 			mz <- estimateDomain(mzlist,
 				units=switch(units, ppm="relative", mz="absolute"),
 				verbose=verbose, chunkopts=chunkopts,
@@ -339,11 +340,12 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 		}
 		mz <- mz(from=min(mass.range), to=max(mass.range),
 			by=resolution, units=units)
-		if ( verbose ) {
-			message("applying profile m/z-values to all spectra")
-			message("using mass.range ", mass.range[1L], " to ", mass.range [2L])
-			message("using resolution ", resolution, " ", units)
-		}
+		.Log("applying profile m/z-values to all spectra",
+			message=verbose)
+		.Log("using mass.range ", mass.range[1L], " to ", mass.range [2L],
+			message=verbose)
+		.Log("using resolution ", resolution, " ", units,
+			message=verbose)
 		ans <- bin(object, ref=mz, method="linear",
 			resolution=resolution, units=units)
 	}
@@ -378,7 +380,7 @@ setMethod("updateObject", "MSImagingExperiment",
 				metadata=object@metadata,
 				centroided=object@centroided)
 		} else {
-			stop("don't know how to update this MSImagingExperiment instance")
+			.Error("don't know how to update this MSImagingExperiment instance")
 		}
 	})
 
