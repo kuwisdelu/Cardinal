@@ -59,7 +59,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( !missing(preset) || !is.null(preset) ) {
+	if ( !missing(preset) && !is.null(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
@@ -100,6 +100,8 @@ simulateImage <- function(pixelData, featureData, preset,
 		spectra <- lapply(seq_len(nrow(group)),
 			function(i)
 			{
+				if ( exists("debug0", envir=globalenv()) )
+					browser()
 				j <- group[i,]
 				if ( any(j) ) {
 					x <- rowSums(intensity[,j,drop=FALSE])
@@ -107,6 +109,7 @@ simulateImage <- function(pixelData, featureData, preset,
 					x <- rep(0, nrow(fData))
 				}
 				nz <- x != 0
+				x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
 				x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
 				simulateSpectra(1L, mz=mz, intensity=x,
 					from=from, to=to, by=by, units=units,
@@ -126,6 +129,9 @@ simulateImage <- function(pixelData, featureData, preset,
 				centroided=TRUE)
 		}
 	}
+	message("generating mass spectra from mz ",
+		round(from, digits=4L), " to ", round(to, digits=4L),
+		" with ", units, " resolution ", by)
 	ans <- chunkMapply(FUN, runNames(pixelData),
 		nchunks=nchunks, verbose=verbose, seeds=seeds,
 		BPPARAM=BPPARAM)

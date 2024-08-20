@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.6.6 [2024-8-19]
+-----------------------------------
+
+BUG FIXES
+
+    o Bug fixes for with 'simulateImage()'
+
 CHANGES IN VERSION 3.6.5 [2024-8-9]
 -----------------------------------
 

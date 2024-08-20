@@ -1,0 +1,37 @@
+[2024-08-14 22:53:56] matter 2.7.5
+[2024-08-14 22:54:11] Last traceback:
+No traceback available 
+[2024-08-14 22:54:11] moving logfile to: ‘Cardinal.log’
+[2024-08-14 22:54:11] Session info:
+R version 4.4.1 (2024-06-14)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.5
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Denver
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+[1] Cardinal_3.7.3      S4Vectors_0.42.1    BiocGenerics_0.50.0
+[4] ProtGenerics_1.36.0 matter_2.7.5        Matrix_1.7-0       
+[7] BiocParallel_1.38.0
+
+loaded via a namespace (and not attached):
+ [1] nlme_3.1-164       cli_3.6.3          rlang_1.1.4        tiff_0.1-12       
+ [5] png_0.1-8          RCurl_1.98-1.16    htmltools_0.5.8.1  ontologyIndex_2.12
+ [9] Biobase_2.64.0     locfit_1.5-9.10    grid_4.4.1         abind_1.4-5       
+[13] bitops_1.0-8       fastmap_1.2.0      compiler_4.4.1     codetools_0.2-20  
+[17] CardinalIO_1.3.3   irlba_2.3.5.1      htmlwidgets_1.6.4  fftwtools_0.9-11  
+[21] EBImage_4.46.0     lattice_0.22-6     digest_0.6.36      parallel_4.4.1    
+[25] tools_4.4.1        jpeg_0.1-10       
+[2024-08-14 22:54:11] saved log file to: /Users/kuwisdelu/Dropbox/Developer/Cardinal/Cardinal.log
