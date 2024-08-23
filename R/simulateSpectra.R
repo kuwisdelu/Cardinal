@@ -23,10 +23,10 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
 	}
 	x <- as.vector(mz(from=from, to=to, by=by, units=units))
-	y <- simspec(n=n, x=mz, y=intensity,
-		domain=x, sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
-		sdy=sdnoise, sdymult=sdpeaks, resolution=resolution,
-		fmax=fmax, baseline=baseline, decay=decay,
+	y <- simspec(n=n, x=mz, y=intensity, domain=x,
+		sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
+		sdy=sdpeaks, sdymult=sdpeakmult, sdnoise=sdnoise,
+		resolution=resolution, fmax=fmax, baseline=baseline, decay=decay,
 		units=switch(units, ppm="relative", mz="absolute"))
 	if ( representation == "centroid" ) {
 		FUN <- function(yi) approx(x, yi, mz)$y
@@ -129,7 +129,7 @@ simulateImage <- function(pixelData, featureData, preset,
 				centroided=TRUE)
 		}
 	}
-	message("generating mass spectra from mz ",
+	message("simulating mass spectra from mz ",
 		round(from, digits=4L), " to ", round(to, digits=4L),
 		" with ", units, " resolution ", by)
 	ans <- chunkMapply(FUN, runNames(pixelData),
