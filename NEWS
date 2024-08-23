@@ -33,6 +33,13 @@ BUG FIXES
 
     o Fix default 'tolerance' in 'pixels()'
 
+CHANGES IN VERSION 3.6.6 [2024-8-23]
+-----------------------------------
+
+BUG FIXES
+
+    o Fixes for 'simulateImage()' and 'simulateSpectra()'
+
 CHANGES IN VERSION 3.6.5 [2024-8-9]
 -----------------------------------
 
