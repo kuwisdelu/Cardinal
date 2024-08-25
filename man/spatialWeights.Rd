@@ -20,15 +20,18 @@
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{spatialWeights}{SpectralImagingExperiment}(x, r = 1,
-        neighbors = findNeighbors(x, r=r), \dots)
+        neighbors = findNeighbors(x, r=r),
+        weights = c("gaussian", "adaptive"),
+        matrix = FALSE, raw = FALSE, \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r = 1,
         neighbors = findNeighbors(x, r=r),
-        sd = ((2 * r) + 1) / 4, \dots)
+        weights = c("gaussian", "adaptive"),
+        matrix = FALSE, raw = FALSE, \dots)
 }
 
 \arguments{
-    \item{x}{Either  matrix or data frame of spatial coordinates, or a data matrix with rows or columns located at the coordinates given by \code{coord}.}
+    \item{x}{Either a matrix or data frame of spatial coordinates, or a data matrix with rows or columns located at the coordinates given by \code{coord}.}
 
     \item{coord}{The spatial coordinates of the rows/columns of \code{x}. Ignored if \code{neighbors} is provided.}
     
@@ -36,13 +39,15 @@
 
     \item{byrow}{If \code{x} is a data matrix, then are the weights calculated based on the dissimilarity between the rows (TRUE) or the columns (FALSE).}
     
-    \item{neighbors}{A \code{factor} giving which observations should be treated as spatially-independent. Observations in the same group are assumed to have a spatial relationship.}
+    \item{neighbors}{A list of numeric vectors giving the row or column indices of the spatial neighbors for the rows or columns of \code{x}.}
     
     \item{weights}{The type of weights to calculate. Either Gaussian weights with a constant standard deviation, or adaptive weights with a standard deviation based on the dissimilarity between the neighboring observations.}
 
     \item{sd}{The standard deviation for the Gaussian weights. Ignored with \code{weights="adaptive"}.}
 
     \item{matrix}{Should the weights be returned as a sparse adjacency matrix instead of a list?}
+
+    \item{raw}{Should the raw weights be returned? I.e., should adaptive weights \emph{not} be multiplied by the Gaussian weights?}
 
     \item{verbose}{Should progress messages be printed?}
 

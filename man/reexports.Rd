@@ -2,6 +2,12 @@
 \alias{reexports}
 
 \alias{SnowfastParam}
+
+\alias{cpal}
+\alias{cpals}
+\alias{dpal}
+\alias{dpals}
+
 \alias{as_facets}
 \alias{as_layers}
 

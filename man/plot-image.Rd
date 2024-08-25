@@ -9,9 +9,6 @@
 \alias{image3D}
 \alias{image3D,MSImagingExperiment-method}
 
-\alias{cpal}
-\alias{dpal}
-
 \title{Plot images from a spectral imaging dataset}
 
 \description{

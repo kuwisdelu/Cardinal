@@ -319,6 +319,7 @@ exportMethods(
 	"selectROI",
 	"smooth",
 	"spatialWeights",
+	"spatialDists",
 	"spectra",
 	"spectra<-",
 	"spectrapply",
@@ -372,7 +373,9 @@ export(
 
 export(
 	"cpal",
-	"dpal")
+	"cpals",
+	"dpal",
+	"dpals")
 
 export(
 	"as_facets",

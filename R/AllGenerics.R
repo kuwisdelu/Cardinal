@@ -52,6 +52,7 @@ setGeneric("slice", function(x, ...) standardGeneric("slice"))
 ## ---------------------
 setGeneric("findNeighbors", function(x, ...) standardGeneric("findNeighbors"))
 setGeneric("spatialWeights", function(x, ...) standardGeneric("spatialWeights"))
+setGeneric("spatialDists", function(x, y, ...) standardGeneric("spatialDists"))
 
 #### Statistical analysis and tools ####
 ## -------------------------------------

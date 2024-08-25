@@ -6,7 +6,7 @@ setMethod("spatialFastmap", "ANY",
 	function(x, coord, r = 1, ncomp = 3,
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		transpose = TRUE, niter = 3L,
+		transpose = TRUE, niter = 10L,
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {

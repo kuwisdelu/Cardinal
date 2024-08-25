@@ -10,27 +10,67 @@ setMethod("spatialWeights", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	.spatialWeights(x, neighbors=neighbors,
-		weights=weights, sd=sd, byrow=byrow, matrix=matrix,
+	.spatialWeights(x, byrow=byrow,
+		neighbors=neighbors, weights=weights, sd=sd, matrix=matrix,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
 setMethod("spatialWeights", "SpectralImagingExperiment",
 	function(x, r = 1,
-		neighbors = findNeighbors(x, r=r), ...)
+		neighbors = findNeighbors(x, r=r),
+		weights = c("gaussian", "adaptive"),
+		matrix = FALSE, raw = FALSE, ...)
 {
-	spatialWeights(spectra(x), neighbors=neighbors,
-		weights="adaptive", byrow=FALSE, ...)
+	wts <- spatialWeights(as.matrix(coord(x)), byrow=TRUE,
+		neighbors=neighbors, weights="gaussian", ...)
+	if ( match.arg(weights) == "adaptive" )
+	{
+		awts <- spatialWeights(spectra(x), byrow=FALSE,
+			neighbors=neighbors, weights="adaptive", ...)
+		if ( raw ) {
+			wts <- awts
+		} else {
+			wts <- Map("*", wts, awts)
+		}
+	}
+	if ( matrix ) {
+		sparse_mat(index=neighbors, data=wts,
+			nrow=length(neighbors), ncol=length(neighbors),
+			offset=1L)
+	} else {
+		wts
+	}
 })
 
 setMethod("spatialWeights", "PositionDataFrame",
 	function(x, r = 1,
 		neighbors = findNeighbors(x, r=r),
-		sd = ((2 * r) + 1) / 4, ...)
+		weights = c("gaussian", "adaptive"),
+		matrix = FALSE, raw = FALSE, ...)
 {
-	spatialWeights(as.matrix(coord(x)), neighbors=neighbors,
-		weights="gaussian", sd=sd, ...)
+	wts <- spatialWeights(as.matrix(coord(x)), byrow=TRUE,
+		neighbors=neighbors, weights="gaussian", ...)
+	if ( match.arg(weights) == "adaptive" )
+	{
+		xd <- .drop_key_cols(x)
+		if ( !all(vapply(xd, is.numeric, logical(1L))) )
+			.Error("non-key columns must be numeric to compute weights")
+		awts <- spatialWeights(xd, byrow=TRUE,
+			neighbors=neighbors, weights="adaptive", ...)
+		if ( raw ) {
+			wts <- awts
+		} else {
+			wts <- Map("*", wts, awts)
+		}
+	}
+	if ( matrix ) {
+		sparse_mat(index=neighbors, data=wts,
+			nrow=length(neighbors), ncol=length(neighbors),
+			offset=1L)
+	} else {
+		wts
+	}
 })
 
 .spatialWeights <- function(x,
