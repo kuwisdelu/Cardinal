@@ -101,6 +101,11 @@ setReplaceMethod("keys", "XDataFrame",
 			object
 	})
 
+.drop_key_cols <- function(x) as(x[!names(x) %in% unlist(x@keys)], "DFrame")
+
+setMethod("dropkeys", "XDataFrame",
+	function(object, ...) .drop_key_cols(object))
+
 # subsetting by cols will drop keys and class
 setMethod("[", "XDataFrame",
 	function(x, i, j, ..., drop = TRUE) {
@@ -154,8 +159,6 @@ setReplaceMethod("[[", "XDataFrame",
 	})
 
 .get_key_cols_as_df <- function(x) as(x[unlist(x@keys)], "DFrame")
-
-.drop_key_cols <- function(x) as(x[!names(x) %in% unlist(x@keys)], "DFrame")
 
 .compare_cols <- function(objects, cols, tol = 1e-5)
 {

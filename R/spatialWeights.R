@@ -10,74 +10,49 @@ setMethod("spatialWeights", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	.spatialWeights(x, byrow=byrow,
-		neighbors=neighbors, weights=weights, sd=sd, matrix=matrix,
+	wts <- .spatialWeights(coord, byrow=byrow || missing(coord),
+		neighbors=neighbors, weights="gaussian", sd=sd,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
+	if ( match.arg(weights) == "adaptive" )
+	{
+		awts <- .spatialWeights(x, byrow=byrow,
+			neighbors=neighbors, weights="adaptive", sd=sd,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
+		wts <- Map("*", wts, awts)
+	}
+	if ( matrix ) {
+		sparse_mat(index=neighbors, data=wts,
+			nrow=length(neighbors), ncol=length(neighbors),
+			offset=1L)
+	} else {
+		wts
+	}
 })
 
 setMethod("spatialWeights", "SpectralImagingExperiment",
 	function(x, r = 1,
 		neighbors = findNeighbors(x, r=r),
-		weights = c("gaussian", "adaptive"),
-		matrix = FALSE, raw = FALSE, ...)
+		weights = c("gaussian", "adaptive"), ...)
 {
-	wts <- spatialWeights(as.matrix(coord(x)), byrow=TRUE,
-		neighbors=neighbors, weights="gaussian", ...)
-	if ( match.arg(weights) == "adaptive" )
-	{
-		awts <- spatialWeights(spectra(x), byrow=FALSE,
-			neighbors=neighbors, weights="adaptive", ...)
-		if ( raw ) {
-			wts <- awts
-		} else {
-			wts <- Map("*", wts, awts)
-		}
-	}
-	if ( matrix ) {
-		sparse_mat(index=neighbors, data=wts,
-			nrow=length(neighbors), ncol=length(neighbors),
-			offset=1L)
-	} else {
-		wts
-	}
+	spatialWeights(spectra(x), coord=coord(x), r=r, byrow=FALSE,
+		neighbors=neighbors, weights=weights, ...)
 })
 
 setMethod("spatialWeights", "PositionDataFrame",
 	function(x, r = 1,
 		neighbors = findNeighbors(x, r=r),
-		weights = c("gaussian", "adaptive"),
-		matrix = FALSE, raw = FALSE, ...)
+		weights = c("gaussian", "adaptive"), ...)
 {
-	wts <- spatialWeights(as.matrix(coord(x)), byrow=TRUE,
-		neighbors=neighbors, weights="gaussian", ...)
-	if ( match.arg(weights) == "adaptive" )
-	{
-		xd <- .drop_key_cols(x)
-		if ( !all(vapply(xd, is.numeric, logical(1L))) )
-			.Error("non-key columns must be numeric to compute weights")
-		awts <- spatialWeights(xd, byrow=TRUE,
-			neighbors=neighbors, weights="adaptive", ...)
-		if ( raw ) {
-			wts <- awts
-		} else {
-			wts <- Map("*", wts, awts)
-		}
-	}
-	if ( matrix ) {
-		sparse_mat(index=neighbors, data=wts,
-			nrow=length(neighbors), ncol=length(neighbors),
-			offset=1L)
-	} else {
-		wts
-	}
+	spatialWeights(dropkeys(x), coord=coord(x), r=r, byrow=TRUE,
+		neighbors=neighbors, weights=weights, ...)
 })
 
 .spatialWeights <- function(x,
-	neighbors, weights, sd, byrow, matrix,
+	neighbors, weights, sd, byrow,
 	verbose, chunkopts, BPPARAM)
 {
-	weights <- match.arg(weights, c("gaussian", "adaptive"))
 	if ( byrow ) {
 		if ( is.matrix(x) || is.data.frame(x) ) {
 			ds <- rowdist_at(x, ix=seq_len(nrow(x)), iy=neighbors)
@@ -101,13 +76,6 @@ setMethod("spatialWeights", "PositionDataFrame",
 		sds <- rep_len(sd, nrow(x))
 	}
 	FUN <- function(d, sd) exp(-d^2 / (2 * sd^2))
-	wts <- Map(FUN, ds, sds)
-	if ( matrix ) {
-		sparse_mat(index=neighbors, data=wts,
-			nrow=length(neighbors), ncol=length(neighbors),
-			offset=1L)
-	} else {
-		wts
-	}
+	Map(FUN, ds, sds)
 }
 

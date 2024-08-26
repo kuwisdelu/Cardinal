@@ -1,9 +1,9 @@
 require(testthat)
 require(Cardinal)
 
-context("SpatialResults")
+context("results")
 
-test_that("SpatialResults and ResultsList", {
+test_that("SpatialResults + ResultsList", {
 
 	require(datasets)
 	fit1 <- lm(mpg ~ disp, data=mtcars)

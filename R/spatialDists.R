@@ -32,10 +32,7 @@ setMethod("spatialDists", "PositionDataFrame",
 		neighbors = findNeighbors(x, r=r),
 		neighbors.weights = spatialWeights(x, r=r), ...)
 {
-	xd <- as.matrix(.drop_key_cols(x))
-	if ( !all(vapply(xd, is.numeric, logical(1L))) )
-		.Error("non-key columns must be numeric to compute distances")
-	spatialDists(xd, y, byrow=TRUE,
+	spatialDists(dropkeys(x), y, byrow=TRUE,
 		neighbors=neighbors,
 		neighbors.weights=neighbors.weights, ...)
 })

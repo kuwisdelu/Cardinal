@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("colocalized")
 
-test_that("colocalized - SpectralImagingExperiment", {
+test_that("colocalized", {
 
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L),

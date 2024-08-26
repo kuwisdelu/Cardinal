@@ -262,6 +262,7 @@ exportMethods(
 	"dimnames<-",
 	"domain",
 	"domain<-",
+	"dropkeys",
 	"experimentData",
 	"experimentData<-",
 	"features",

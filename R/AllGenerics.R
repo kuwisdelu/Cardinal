@@ -8,6 +8,7 @@ setGeneric("fitted")
 ## ---------------------------------
 setGeneric("keys", function(object, ...) standardGeneric("keys"))
 setGeneric("keys<-", function(object, ..., value) standardGeneric("keys<-"))
+setGeneric("dropkeys", function(object, ...) standardGeneric("dropkeys"))
 setGeneric("features", function(object, ...) standardGeneric("features"))
 setGeneric("pixels", function(object, ...) standardGeneric("pixels"))
 setGeneric("pixelData", function(object) standardGeneric("pixelData"))

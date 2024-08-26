@@ -21,13 +21,11 @@
 
 \S4method{spatialWeights}{SpectralImagingExperiment}(x, r = 1,
         neighbors = findNeighbors(x, r=r),
-        weights = c("gaussian", "adaptive"),
-        matrix = FALSE, raw = FALSE, \dots)
+        weights = c("gaussian", "adaptive"), \dots)
 
 \S4method{spatialWeights}{PositionDataFrame}(x, r = 1,
         neighbors = findNeighbors(x, r=r),
-        weights = c("gaussian", "adaptive"),
-        matrix = FALSE, raw = FALSE, \dots)
+        weights = c("gaussian", "adaptive"), \dots)
 }
 
 \arguments{
@@ -46,8 +44,6 @@
     \item{sd}{The standard deviation for the Gaussian weights. Ignored with \code{weights="adaptive"}.}
 
     \item{matrix}{Should the weights be returned as a sparse adjacency matrix instead of a list?}
-
-    \item{raw}{Should the raw weights be returned? I.e., should adaptive weights \emph{not} be multiplied by the Gaussian weights?}
 
     \item{verbose}{Should progress messages be printed?}
 

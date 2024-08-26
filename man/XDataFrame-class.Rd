@@ -44,7 +44,9 @@ XDataFrame(\dots, keys = list())
 }
 
 \details{
-	For the most part, \code{XDataFrame} behaves identically to \code{DataFrame}, and key columns can be get or set as usual. The \code{XDataFrame} class is primarily intended as a way to enforce additional requirements or constraints on specific sets of columns in a structured way. It provides an abstracted way of manipulating sets of columns that are expected to follow certain rules. The keys remain consistent and accessible even if the columns of the data frame are renamed.
+	For the most part, \code{XDataFrame} behaves identically to \code{DataFrame}, and key columns can be get or set as usual.
+
+	The \code{XDataFrame} class is primarily intended as a way to enforce additional requirements or constraints on specific sets of columns in a structured way. It provides an abstracted way of manipulating sets of columns that are expected to follow certain rules. The keys remain consistent and accessible even if the columns of the data frame are renamed.
 
 	The base class currently has only minimal requirements for keys (i.e., that they are valid columns in the data frame). Additionally, keys are checked for compatibility when combining data frames. Uniqueness is \emph{not} checked.
 
@@ -54,6 +56,8 @@ XDataFrame(\dots, keys = list())
 \section{Methods}{
 	\describe{
 		\item{\code{keys(object, i = NULL, ..., drop = TRUE)}, \code{keys(object, i = NULL, ...) <- value}:}{Get or set the key columns. By default, this gets or sets the \code{keys} slot. Provide \code{i} to get or set specific keys.}
+
+		\item{\code{dropkeys(object, ...)}:}{Return a \code{\linkS4class{DataFrame}} copy of the object without the key columns.}
 	}
 }
 
