@@ -63,8 +63,8 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 
 setMethod("predict", "SpatialFastmap",
 	function(object, newdata,
-		weights = object$weights,
-		neighbors = findNeighbors(newdata, r=object$r),
+		weights = object$weights, r = object$r,
+		neighbors = findNeighbors(newdata, r=r),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
@@ -74,7 +74,7 @@ setMethod("predict", "SpatialFastmap",
 	if ( length(processingData(newdata)) > 0L )
 		.Warn("pending processing steps will be ignored")
 	if ( is.character(weights) ) {
-		nbwts <- spatialWeights(newdata, r=object$r,
+		nbwts <- spatialWeights(newdata, r=r,
 			neighbors=neighbors, weights=weights,
 			BPPARAM=BPPARAM, ...)
 	} else {

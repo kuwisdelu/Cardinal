@@ -51,7 +51,8 @@
 
 \S4method{predict}{SpatialShrunkenCentroids}(object, newdata,
         type = c("response", "class"),
-        neighbors = findNeighbors(newdata, r=object$r),
+        weights = object$weights, r = object$r,
+        neighbors = findNeighbors(newdata, r=r),
         BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{logLik}{SpatialShrunkenCentroids}(object, \dots)

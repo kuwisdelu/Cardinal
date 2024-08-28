@@ -30,8 +30,8 @@
     neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{predict}{SpatialFastmap}(object, newdata,
-    weights = object$weights,
-    neighbors = findNeighbors(newdata, r=object$r),
+    weights = object$weights, r = object$r,
+    neighbors = findNeighbors(newdata, r=r),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{plot}{SpatialFastmap,missing}(x, type = c("scree", "x"), \dots, xlab, ylab)

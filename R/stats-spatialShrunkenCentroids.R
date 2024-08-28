@@ -116,7 +116,8 @@ setMethod("fitted", "SpatialShrunkenCentroids",
 setMethod("predict", "SpatialShrunkenCentroids",
 	function(object, newdata,
 		type = c("response", "class"),
-		neighbors = findNeighbors(newdata, r=object$r),
+		weights = object$weights, r = object$r,
+		neighbors = findNeighbors(newdata, r=r),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	type <- match.arg(type)
@@ -127,12 +128,12 @@ setMethod("predict", "SpatialShrunkenCentroids",
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
 			.Warn("pending processing steps will be ignored")
-		if ( is.character(object$weights) ) {
-			nbwts <- spatialWeights(newdata, r=object$r,
-				neighbors=neighbors, weights=object$weights,
+		if ( is.character(weights) ) {
+			nbwts <- spatialWeights(newdata, r=r,
+				neighbors=neighbors, weights=weights,
 				BPPARAM=BPPARAM, ...)
 		} else {
-			nbwts <- rep_len(object$weights, length(neighbors))
+			nbwts <- rep_len(weights, length(neighbors))
 		}
 		predict(object@model, newdata=spectra(newdata), type=type,
 			neighbors=neighbors, neighbors.weights=nbwts,
