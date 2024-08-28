@@ -21,7 +21,7 @@
 \S4method{spatialFastmap}{ANY}(x, coord, r = 1, ncomp = 3,
     weights = c("gaussian", "adaptive"),
     neighbors = findNeighbors(coord, r=r),
-    transpose = TRUE, niter = 3L,
+    transpose = TRUE, niter = 10L,
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
@@ -30,6 +30,7 @@
     neighbors = findNeighbors(x, r=r), \dots)
 
 \S4method{predict}{SpatialFastmap}(object, newdata,
+    weights = object$weights,
     neighbors = findNeighbors(newdata, r=object$r),
     BPPARAM = getCardinalBPPARAM(), \dots)
 

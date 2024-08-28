@@ -16,6 +16,8 @@
 \alias{keys<-}
 \alias{keys,XDataFrame-method}
 \alias{keys<-,XDataFrame-method}
+\alias{dropkeys}
+\alias{dropkeys,XDataFrame-method}
 \alias{names<-,XDataFrame-method}
 \alias{cbind,XDataFrame-method}
 \alias{rbind,XDataFrame-method}
