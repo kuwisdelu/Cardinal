@@ -10,28 +10,24 @@ setMethod("spatialDGMM", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
+	weights <- match.arg(weights)
 	if ( "method" %in% ...names() ) {
 		.Deprecated(old="method", new="weights")
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
-		weights <- match.arg(weights)
-		.Log("calculating gaussian weights",
+		.Log("computing ", weights, " weights",
 			message=verbose)
-		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( weights == "adaptive" )
-		{
-			.Log("calculating adaptive weights",
-				message=verbose)
-			awts <- spatialWeights(x, neighbors=neighbors,
-				weights="adaptive", byrow=!byrow,
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
+		nbwts <- spatialWeights(x=x,
+			coord=coord, r=r, byrow=!byrow,
+			weights=weights, neighbors=neighbors,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
 	} else {
-		wts <- rep_len(weights, length(neighbors))
-		weights <- "user-provided weights"
+		.Log("using custom weights",
+			message=verbose)
+		nbwts <- rep_len(weights, length(neighbors))
+		weights <- "custom"
 	}
 	if ( !missing(i) && !is.null(i) ) {
 		drop <- if (is.matter(x) || is.sparse(x)) NULL else FALSE
@@ -52,7 +48,7 @@ setMethod("spatialDGMM", "ANY",
 			lab, " for k = ", k[j],
 			message=verbose)
 		ans[[j]] <- sgmixn(NULL, NULL, x, r=r, k=k[j], group=groups,
-			weights=wts, neighbors=neighbors, byrow=byrow,
+			weights=nbwts, neighbors=neighbors, byrow=byrow,
 			annealing=annealing, compress=compress,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
