@@ -16,23 +16,18 @@ setMethod("spatialKMeans", "ANY",
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
-		weights <- match.arg(weights)
-		.Log("calculating gaussian weights",
+		.Log("computing ", weights, " weights",
 			message=verbose)
-		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( weights == "adaptive" )
-		{
-			.Log("calculating adaptive weights",
-				message=verbose)
-			awts <- spatialWeights(x, neighbors=neighbors,
-				weights="adaptive", byrow=!transpose,
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
+		nbwts <- spatialWeights(x=x,
+			coord=coord, r=r, byrow=!transpose,
+			weights=weights, neighbors=neighbors,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
 	} else {
-		wts <- rep_len(weights, length(neighbors))
-		weights <- "user-provided weights"
+		.Log("using custom weights",
+			message=verbose)
+		nbwts <- rep_len(weights, length(neighbors))
+		weights <- "custom"
 	}
 	if ( transpose ) {
 		k <- pmin(k, nrow(x))
@@ -40,7 +35,7 @@ setMethod("spatialKMeans", "ANY",
 		k <- pmin(k, ncol(x))
 	}
 	proj <- spatialFastmap(x, r=r, ncomp=ncomp,
-		neighbors=neighbors, weights=wts,
+		neighbors=neighbors, weights=nbwts,
 		transpose=transpose, niter=niter,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
@@ -124,7 +119,8 @@ setMethod("spatialKMeans", "SpectralImagingExperiment",
 		.Warn("pending processing steps will be ignored")
 	ans <- spatialKMeans(spectra(x),
 		coord=coord(x), r=r, k=k, ncomp=ncomp,
-		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
+		neighbors=neighbors, weights=weights,
+		transpose=TRUE, ...)
 	f <- function(a) as(SpatialResults(a, x), "SpatialKMeans")
 	if ( is(ans, "ResultsList") ) {
 		ResultsList(lapply(ans, f), mcols=mcols(ans))

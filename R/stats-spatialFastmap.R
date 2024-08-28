@@ -17,8 +17,9 @@ setMethod("spatialFastmap", "ANY",
 	if ( is.character(weights) ) {
 		.Log("computing ", weights, " weights",
 			message=verbose)
-		nbwts <- spatialWeights(x=x, byrow=!transpose,
-			coord=coord, r=r, neighbors=neighbors,
+		nbwts <- spatialWeights(x=x,
+			coord=coord, r=r, byrow=!transpose,
+			weights=weights, neighbors=neighbors,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
@@ -54,7 +55,8 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 		.Warn("pending processing steps will be ignored")
 	ans <- spatialFastmap(spectra(x),
 		coord=coord(x), r=r, ncomp=ncomp,
-		neighbors=neighbors, weights=weights, transpose=TRUE, ...)
+		neighbors=neighbors, weights=weights,
+		transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialFastmap")
 })
 
@@ -71,8 +73,8 @@ setMethod("predict", "SpatialFastmap",
 	if ( length(processingData(newdata)) > 0L )
 		.Warn("pending processing steps will be ignored")
 	if ( is.character(weights) ) {
-		nbwts <- spatialWeights(spectra(newdata), byrow=FALSE,
-			coord=coord(newdata), r=object$r, neighbors=neighbors,
+		nbwts <- spatialWeights(newdata, r=object$r,
+			neighbors=neighbors, weights=weights,
 			BPPARAM=BPPARAM, ...)
 	} else {
 		nbwts <- rep_len(weights, length(neighbors))
