@@ -10,7 +10,7 @@ setMethod("spatialWeights", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	wts <- .spatialWeights(coord, byrow=byrow || missing(coord),
+	wts <- .spatialWeights(coord, byrow=byrow || !missing(coord),
 		neighbors=neighbors, weights="gaussian", sd=sd,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)

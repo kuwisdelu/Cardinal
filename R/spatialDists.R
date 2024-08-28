@@ -37,6 +37,14 @@ setMethod("spatialDists", "PositionDataFrame",
 		neighbors.weights=neighbors.weights, ...)
 })
 
+.spatialRowDists <- function(x, y, ...) {
+	spatialDists(x, y, byrow=TRUE, ...)
+}
+
+.spatialColDists <- function(x, y, ...) {
+	spatialDists(x, y, byrow=FALSE, ...)
+}
+
 .spatialDists <- function(x, y, metric, p, weights,
 	neighbors, neighbors.weights, byrow,
 	verbose, chunkopts, BPPARAM)

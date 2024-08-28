@@ -15,31 +15,26 @@ setMethod("spatialFastmap", "ANY",
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
-		.Log("calculating gaussian weights",
+		.Log("computing ", weights, " weights",
 			message=verbose)
-		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( match.arg(weights) == "adaptive" )
-		{
-			.Log("calculating adaptive weights",
-				message=verbose)
-			awts <- spatialWeights(x, neighbors=neighbors,
-				weights="adaptive", byrow=!transpose,
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
+		nbwts <- spatialWeights(x=x, byrow=!transpose,
+			coord=coord, r=r, neighbors=neighbors,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
 	} else {
-		wts <- rep_len(weights, length(neighbors))
-		weights <- "user-provided weights"
+		.Log("using custom weights",
+			message=verbose)
+		nbwts <- rep_len(weights, length(neighbors))
+		weights <- "custom"
 	}
 	if ( transpose ) {
-		distfun <- .spatialColDistFun
+		distfun <- .spatialColDists
 	} else {
-		distfun <- .spatialRowDistFun
+		distfun <- .spatialRowDists
 	}
 	ncomp <- min(ncomp, dim(x))
 	ans <- fastmap(x, k=ncomp, distfun=distfun,
-		neighbors=neighbors, neighbor.weights=wts,
+		neighbors=neighbors, neighbors.weights=nbwts,
 		transpose=transpose, niter=niter,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
@@ -65,24 +60,25 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 
 setMethod("predict", "SpatialFastmap",
 	function(object, newdata,
+		weights = object$weights,
 		neighbors = findNeighbors(newdata, r=object$r),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
-	if ( length(processingData(newdata)) > 0L )
-		.Warn("pending processing steps will be ignored")
 	if ( nrow(newdata) != nrow(object$pivot.array) )
 		.Error("'newdata' does not have the correct number of dimensions")
-	wts <- spatialWeights(as.matrix(coord(newdata)), neighbors=neighbors)
-	if ( object$weights == "adaptive" )
-	{
-		awts <- spatialWeights(newdata, neighbors=neighbors,
-			verbose=FALSE, BPPARAM=BPPARAM, ...)
-		wts <- Map("*", wts, awts)
+	if ( length(processingData(newdata)) > 0L )
+		.Warn("pending processing steps will be ignored")
+	if ( is.character(weights) ) {
+		nbwts <- spatialWeights(spectra(newdata), byrow=FALSE,
+			coord=coord(newdata), r=object$r, neighbors=neighbors,
+			BPPARAM=BPPARAM, ...)
+	} else {
+		nbwts <- rep_len(weights, length(neighbors))
 	}
 	predict(object@model, newdata=spectra(newdata),
-		neighbors=neighbors, neighbor.weights=wts,
+		neighbors=neighbors, neighbors.weights=nbwts,
 		verbose=FALSE, BPPARAM=BPPARAM, ...)
 })
 
