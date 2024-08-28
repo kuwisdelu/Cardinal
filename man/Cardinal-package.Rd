@@ -54,7 +54,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	\itemize{
 		\item{\code{getCardinalNChunks(), setCardinalNChunks(nchunks=20L)}: The default number of data chunks used when iterating over large datasets. Used by many methods internally.}
 
-		\item{\code{getCardinalChunksize(), setCardinalChunksize(chunksize=NA, units="MB")}: The approximate size of data chunks used when iterating over large datasets. Can be used as an alternative to setting the number of chunks. The default (\code{NA}) means to ignore this parameter and use the \code{getCardinalNChunks()}.}
+		\item{\code{getCardinalChunksize(), setCardinalChunksize(chunksize=NA, units=names(chunksize))}: The approximate size of data chunks used when iterating over large datasets. Can be used as an alternative to setting the number of chunks. The default (\code{NA}) means to ignore this parameter and use the \code{getCardinalNChunks()}.}
 
 		\item{\code{getCardinalSerialize(), setCardinalSerialize(serialize=NA)}: Whether data chunks should be loaded on the manager and serialized to the workers (\code{TRUE}), or loaded on the workers (\code{FALSE}). The default (\code{NA}) means to choose automatically based on the type of data and the type of cluster.}
 	}

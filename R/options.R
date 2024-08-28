@@ -99,8 +99,8 @@ setCardinalNChunks <- function(nchunks = 20L) {
 getCardinalChunksize <- function() {
 	matter_defaults()[["chunksize"]]
 }
-setCardinalChunksize <- function(chunksize = NA, units = "MB") {
-	matter_defaults(chunksize=size_bytes(chunksize, units))
+setCardinalChunksize <- function(chunksize = NA, units = names(chunksize)) {
+	matter_defaults(chunksize=setNames(chunksize, units))
 }
 
 # whether to serialize external data
