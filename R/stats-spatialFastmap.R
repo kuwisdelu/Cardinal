@@ -10,12 +10,12 @@ setMethod("spatialFastmap", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	weights <- match.arg(weights)
 	if ( "method" %in% ...names() ) {
 		.Deprecated(old="method", new="weights")
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
+		weights <- match.arg(weights)
 		.Log("computing ", weights, " weights",
 			message=verbose)
 		nbwts <- spatialWeights(x=x,
