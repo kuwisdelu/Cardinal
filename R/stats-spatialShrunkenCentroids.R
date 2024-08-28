@@ -16,23 +16,18 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 	}
 	y <- as.factor(y)
 	if ( is.character(weights) ) {
-		weights <- match.arg(weights)
-		.Log("calculating gaussian weights",
+		.Log("computing ", weights, " weights",
 			message=verbose)
-		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( weights == "adaptive" )
-		{
-			.Log("calculating adaptive weights",
-				message=verbose)
-			awts <- spatialWeights(x, neighbors=neighbors,
-				weights="adaptive", byrow=!transpose,
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
+		nbwts <- spatialWeights(x=x,
+			coord=coord, r=r, byrow=!transpose,
+			weights=weights, neighbors=neighbors,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
 	} else {
-		wts <- rep_len(weights, length(neighbors))
-		weights <- "user-provided weights"
+		.Log("using custom weights",
+			message=verbose)
+		nbwts <- rep_len(weights, length(neighbors))
+		weights <- "custom"
 	}
 	# calculate global centroid
 	if ( is.null(center) ) {
@@ -40,23 +35,23 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 			message=verbose)
 		if ( transpose ) {
 			center <- rowStats(x, stat="mean", na.rm=TRUE,
-				verbose=FALSE, chunkopts=chunkopts,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else {
 			center <- colStats(x, stat="mean", na.rm=TRUE,
-				verbose=FALSE, chunkopts=chunkopts,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		}
 	}
 	if ( transpose ) {
-		distfun <- .spatialColDistFun
+		distfun <- .spatialColDists
 	} else {
-		distfun <- .spatialRowDistFun
+		distfun <- .spatialRowDists
 	}
 	if ( is.null(bags) ) {
 		ans <- nscentroids(x, y=y, s=s, distfun=distfun,
 			priors=priors, center=center, transpose=transpose,
-			neighbors=neighbors, neighbor.weights=wts,
+			neighbors=neighbors, neighbors.weights=nbwts,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else {
@@ -67,7 +62,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "ANY"),
 				mi_learn(nscentroids, x=x, y=y,
 					s=si, distfun=distfun, bags=bags, score=fitted,
 					priors=priors, center=center, transpose=transpose,
-					neighbors=neighbors, neighbor.weights=wts,
+					neighbors=neighbors, neighbors.weights=nbwts,
 					verbose=verbose, chunkopts=chunkopts,
 					BPPARAM=BPPARAM, ...)
 			})
@@ -99,8 +94,9 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "AN
 	if ( length(processingData(x)) > 0L )
 		.Warn("pending processing steps will be ignored")
 	ans <- spatialShrunkenCentroids(spectra(x), y=y,
-		coord=coord(x), r=r, s=s, neighbors=neighbors,
-		weights=weights, transpose=TRUE, ...)
+		coord=coord(x), r=r, s=s,
+		neighbors=neighbors, weights=weights,
+		transpose=TRUE, ...)
 	if ( is(ans, "ResultsList") ) {
 		f <- function(a) as(SpatialResults(a, x), "SpatialShrunkenCentroids")
 		ResultsList(lapply(ans, f), mcols=mcols(ans))
@@ -125,18 +121,20 @@ setMethod("predict", "SpatialShrunkenCentroids",
 	type <- match.arg(type)
 	if ( !missing(newdata) && !is(newdata, "SpectralImagingExperiment") )
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
+	if ( nrow(newdata) != nrow(object$centers) )
+		.Error("'newdata' does not have the correct number of dimensions")
 	if ( !missing(newdata) ) {
-		wts <- spatialWeights(as.matrix(coord(newdata)), neighbors=neighbors)
-		if ( object$weights == "adaptive" )
-		{
-			awts <- spatialWeights(newdata, neighbors=neighbors,
-				verbose=FALSE, BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
 		if ( length(processingData(newdata)) > 0L )
 			.Warn("pending processing steps will be ignored")
+		if ( is.character(object$weights) ) {
+			nbwts <- spatialWeights(newdata, r=object$r,
+				neighbors=neighbors, weights=object$weights,
+				BPPARAM=BPPARAM, ...)
+		} else {
+			nbwts <- rep_len(object$weights, length(neighbors))
+		}
 		predict(object@model, newdata=spectra(newdata), type=type,
-			neighbors=neighbors, neighbor.weights=wts,
+			neighbors=neighbors, neighbors.weights=nbwts,
 			verbose=FALSE, BPPARAM=BPPARAM, ...)
 	} else {
 		fitted(object@model, type=type)
@@ -206,22 +204,17 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		weights <- list(...)$method
 	}
 	if ( is.character(weights) ) {
-		weights <- match.arg(weights)
-		.Log("calculating gaussian weights",
+		.Log("computing ", weights, " weights",
 			message=verbose)
-		wts <- spatialWeights(as.matrix(coord), neighbors=neighbors)
-		if ( weights == "adaptive" )
-		{
-			.Log("calculating adaptive weights",
-				message=verbose)
-			awts <- spatialWeights(x, neighbors=neighbors,
-				weights="adaptive", byrow=!transpose,
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM, ...)
-			wts <- Map("*", wts, awts)
-		}
+		nbwts <- spatialWeights(x=x,
+			coord=coord, r=r, byrow=!transpose,
+			weights=weights, neighbors=neighbors,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM)
 	} else {
-		wts <- rep_len(weights, length(neighbors))
+		.Log("using custom weights",
+			message=verbose)
+		nbwts <- rep_len(weights, length(neighbors))
 		weights <- "custom"
 	}
 	# calculate global centroid
@@ -230,11 +223,11 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 			message=verbose)
 		if ( transpose ) {
 			center <- rowStats(x, stat="mean", na.rm=TRUE,
-				verbose=FALSE, chunkopts=chunkopts,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		} else {
 			center <- colStats(x, stat="mean", na.rm=TRUE,
-				verbose=FALSE, chunkopts=chunkopts,
+				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
 		}
 	}
@@ -244,9 +237,9 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 		.Log("initializing clusters with spatial k-means",
 			message=verbose)
 		init <- spatialKMeans(x, k=k, transpose=transpose,
-			neighbors=neighbors, weights=wts,
+			neighbors=neighbors, weights=nbwts,
 			centers=FALSE, correlation=FALSE,
-			verbose=FALSE, chunkopts=chunkopts,
+			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	}
 	if ( length(k) == 1L )
@@ -288,8 +281,8 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 			{
 				fit <- spatialShrunkenCentroids(x, y=y, r=r, s=si,
 					priors=1, center=center, transpose=transpose,
-					neighbors=neighbors, weights=wts,
-					verbose=FALSE, chunkopts=chunkopts,
+					neighbors=neighbors, weights=nbwts,
+					verbose=verbose, chunkopts=chunkopts,
 					BPPARAM=BPPARAM, ...)
 				utot <- sum(fit$class != y)
 				uprop <- utot / length(y)
@@ -308,6 +301,7 @@ setMethod("spatialShrunkenCentroids", c(x = "ANY", y = "missing"),
 				}
 				iter <- iter + 1L
 			}
+			fit$weights <- weights
 			fit$k <- ki
 			ans[[i]] <- fit
 			i <- i + 1
@@ -340,8 +334,9 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "mi
 	if ( length(processingData(x)) > 0L )
 		.Warn("pending processing steps will be ignored")
 	ans <- spatialShrunkenCentroids(spectra(x),
-		coord=coord(x), r=r, k=k, s=s, neighbors=neighbors,
-		weights=weights, transpose=TRUE, ...)
+		coord=coord(x), r=r, k=k, s=s,
+		neighbors=neighbors, weights=weights,
+		transpose=TRUE, ...)
 	f <- function(a) as(SpatialResults(a, x), "SpatialShrunkenCentroids")
 	if ( is(ans, "ResultsList") ) {
 		ResultsList(lapply(ans, f), mcols=mcols(ans))

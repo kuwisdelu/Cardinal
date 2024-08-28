@@ -61,6 +61,13 @@ setMethod("spatialDists", "PositionDataFrame",
 			BPPARAM=BPPARAM)
 	}
 	FUN <- function(nb, w) colSums(w * ds[nb,,drop=FALSE]) / sum(w)
-	t(mapply(FUN, neighbors, neighbors.weights))
+	ans <- mapply(FUN, neighbors, neighbors.weights)
+	if ( is.matrix(ans) ) {
+		ans <- t(ans)
+	} else {
+		ans <- as.matrix(ans)
+	}
+	dimnames(ans) <- dimnames(y)
+	ans
 }
 
