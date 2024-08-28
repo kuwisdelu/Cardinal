@@ -1,4 +1,16 @@
 
+CHANGES IN VERSION 3.7.4 [2024-8-28]
+-----------------------------------
+
+NEW FEATURES
+
+    o Add 'saveCardinalLog()' for saving log file
+    o Add 'getCardinalLogger()' + 'setCardinalLogger()'
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Update compatibility with matter 2.7.6
+
 CHANGES IN VERSION 3.7.3 [2024-7-29]
 -----------------------------------
 

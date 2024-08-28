@@ -130,7 +130,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		message=verbose)
 	ans <- chunkLapply(runNames(pixelData), FUN,
 		verbose=verbose, chunkopts=chunkopts,
-		RNG=TRUE, BPPARAM=BPPARAM)
+		RNG=TRUE, BPPARAM=BPPARAM, ...)
 	ans <- do.call("cbind", ans)
 	if ( representation == "centroid" )
 	{
