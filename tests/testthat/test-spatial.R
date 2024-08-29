@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("spatialWeights")
+context("spatialWeights + spatialDists")
 
 test_that("spatialWeights", {
 

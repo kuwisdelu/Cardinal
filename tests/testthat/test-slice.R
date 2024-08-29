@@ -7,7 +7,7 @@ test_that("slice", {
 
 	set.seed(1)
 	s <- simulateImage(preset=1, dim=c(10L, 10L), nrun=2,
-		representation="centroid")
+		centroided=TRUE)
 
 	mz <- c(564.3, 603.7)
 	rs1 <- slice(s, i=1)

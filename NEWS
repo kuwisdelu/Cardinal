@@ -11,6 +11,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Update compatibility with matter 2.7.6
 
+BUG FIXES
+
+    o Fix calculation of "adaptive" spatial weights
+        in 'spatialWeights()' for accuracy and stability
+
 CHANGES IN VERSION 3.7.3 [2024-7-29]
 -----------------------------------
 

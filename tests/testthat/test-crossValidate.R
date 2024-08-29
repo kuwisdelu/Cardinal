@@ -7,7 +7,7 @@ test_that("crossValidate", {
 
 	set.seed(1)
 	ms <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2,
-		representation="centroid")
+		centroided=TRUE)
 	ms$class <- makeFactor(A=ms$circleA, B=ms$circleB)
 	ms$folds <- makeFactor(
 		fold1=run(ms) %in% c("runA1", "runB1"),

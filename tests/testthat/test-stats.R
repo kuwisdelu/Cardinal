@@ -120,7 +120,7 @@ test_that("spatialKMeans", {
 
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
-		representation="centroid")
+		centroided=TRUE)
 	km <- spatialKMeans(s, k=2:4, weights="gaussian")
 	km2 <- spatialKMeans(s, k=2:4, weights="adaptive")
 	topf <- topFeatures(km)
@@ -148,7 +148,7 @@ test_that("spatialShrunkenCentroids (classification)", {
 
 	set.seed(1)
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2L,
-		representation="centroid")
+		centroided=TRUE)
 	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 
 	ssc <- spatialShrunkenCentroids(s, s$class, s=0:3, weights="gaussian")
@@ -193,7 +193,7 @@ test_that("spatialShrunkenCentroids (clustering)", {
 
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
-		representation="centroid")
+		centroided=TRUE)
 
 	set.seed(2)
 	ssc <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="gaussian")
@@ -250,7 +250,7 @@ test_that("spatialDGMM", {
 
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2L,
-		representation="centroid")
+		centroided=TRUE)
 
 	set.seed(2)
 	gm <- spatialDGMM(s, k=4, weights="gaussian")
@@ -283,8 +283,8 @@ test_that("spatialDGMM", {
 test_that("meansTest", {
 
 	set.seed(1)
-	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=4,
-		representation="centroid")
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=6,
+		centroided=TRUE)
 	s$truecondition <- ifelse(s$circleA | s$circleB, s$condition, NA)
 	s$truecondition <- factor(s$truecondition)
 	levels(s$truecondition) <- levels(s$condition)
@@ -309,10 +309,10 @@ test_that("meansTest", {
 	expect_false(is.unsorted(rev(topf$statistic)))
 
 	s$random <- rep.int(NA_character_, length(s))
-	s$random <- replace(s$random, run(s) %in% c("runA1", "runA2"), "X")
-	s$random <- replace(s$random, run(s) %in% c("runA3", "runA4"), "Y")
-	s$random <- replace(s$random, run(s) %in% c("runB1", "runB2"), "U")
-	s$random <- replace(s$random, run(s) %in% c("runB3", "runB4"), "V")
+	s$random <- replace(s$random, run(s) %in% c("runA1", "runA2", "runA3"), "X")
+	s$random <- replace(s$random, run(s) %in% c("runA4", "runA5", "runA6"), "Y")
+	s$random <- replace(s$random, run(s) %in% c("runB1", "runB2", "runB3"), "U")
+	s$random <- replace(s$random, run(s) %in% c("runB4", "runB5", "runB6"), "V")
 
 	mtr <- meansTest(s, fixed=~condition, random=~1|random)
 
@@ -322,7 +322,7 @@ test_that("meansTest", {
 
 	set.seed(2)
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
-		representation="centroid")
+		centroided=TRUE)
 	featureNames(s2) <- paste0("Feature", seq_len(nrow(s2)))
 	
 	mt4 <- meansTest(s2, fixed=~condition)

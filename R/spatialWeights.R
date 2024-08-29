@@ -70,10 +70,11 @@ setMethod("spatialWeights", "PositionDataFrame",
 				BPPARAM=BPPARAM)
 		}
 	}
-	if ( weights == "adaptive" ) {
-		sds <- vapply(ds, function(d) (max(d) / 2)^2, numeric(1L))
-	} else {
+	if ( weights == "gaussian" ) {
 		sds <- rep_len(sd, nrow(x))
+	} else {
+		sds <- vapply(ds, function(d) max(d) / 2, numeric(1L))
+		sds <- sds + median(sds)
 	}
 	FUN <- function(d, sd) exp(-d^2 / (2 * sd^2))
 	Map(FUN, ds, sds)
