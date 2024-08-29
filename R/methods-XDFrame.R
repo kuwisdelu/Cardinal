@@ -194,6 +194,7 @@ setReplaceMethod("[[", "XDataFrame",
 
 .cbind_XDFrame <- function(objects)
 {
+	objects <- unname(objects)
 	keys <- lapply(objects, keys)
 	keys <- do.call(.merge_lists, keys)
 	keys_ok <- .compare_cols(objects, cols=unlist(keys))
@@ -229,6 +230,7 @@ setMethod("cbind", "XDataFrame",
 
 .rbind_XDFrame <- function(objects)
 {
+	objects <- unname(objects)
 	keys <- lapply(objects, keys)
 	keys <- do.call(.merge_lists, keys)
 	ans <- do.call(rbind, lapply(objects, as, "DFrame"))

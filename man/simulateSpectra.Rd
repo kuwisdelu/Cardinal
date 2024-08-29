@@ -2,6 +2,7 @@
 
 \alias{simulateSpectra}
 \alias{simulateImage}
+\alias{simulateImages}
 
 \alias{addShape}
 \alias{presetImageDef}
@@ -23,12 +24,12 @@ simulateSpectra(n = 1L, npeaks = 50L,
     sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
     sdnoise = 0.1, sdmz = 10, resolution = 1000, fmax = 0.5,
     baseline = 0, decay = 10, units=c("ppm", "mz"),
-    representation = c("profile", "centroid"), \dots)
+    centroided = FALSE, \dots)
 
 simulateImage(pixelData, featureData, preset,
     from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
     sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
-    representation = c("profile", "centroid"),
+    centroided = FALSE, continuous = TRUE,
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
@@ -72,7 +73,9 @@ presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
 
     \item{units}{The units for \code{by} and \code{sdmz}. Either parts-per-million or absolute m/z units.}
 
-    \item{representation}{Should a profile spectrum be returned or only the centroided peaks?}
+    \item{centroided}{Should the simulated spectrum representation be centroided (\code{TRUE}) or profile (\code{FALSE})?}
+
+    \item{continuous}{Should the simulated spectrum storage type be continuous (\code{TRUE}) or processed (\code{FALSE}), where "continuous" means a dense representation and "processed" means a sparse representation?}
 
     \item{verbose}{Should progress messages be printed?}
 
@@ -148,7 +151,7 @@ presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
 }
 
 \value{
-	For \code{simulateSpectra}, a \code{list} with elements:
+	For \code{simulateSpectra}, a \code{MassDataFrame} with elements:
 
 	\itemize{
         \item{\code{mz}: a numeric vector of the observed m/z values}

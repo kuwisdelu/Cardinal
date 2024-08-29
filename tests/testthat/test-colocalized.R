@@ -7,7 +7,7 @@ test_that("colocalized", {
 
 	set.seed(1)
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
-		representation="centroid")
+		centroided=TRUE)
 	s$class <- makeFactor(circle=s$circle, square=s$square,
 		bg=!s$circle & !s$square)
 

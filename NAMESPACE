@@ -362,6 +362,7 @@ export(
 	"reset",
 	"segmentationTest",
 	"simulateImage",
+	"simulateImages",
 	"simulateSpectra",
 	"slice",
 	"subsetFeatures",

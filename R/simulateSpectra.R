@@ -8,36 +8,46 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 	sdpeaks = sdpeakmult * log1p(intensity), sdpeakmult = 0.2,
 	sdnoise = 0.1, sdmz = 10, resolution = 1000, fmax = 0.5,
 	baseline = 0, decay = 10, units=c("ppm", "mz"),
-	representation = c("profile", "centroid"), ...)
+	centroided = FALSE, ...)
 {
 	if ( "peaks" %in% ...names() ) {
 		.Deprecated(old="peaks", new="npeaks")
 		npeaks <- list(...)$peaks
 	}
+	if ( "representation" %in% ...names() ) {
+		.Deprecated(old="representation", new="centroided")
+		centroided <- list(...)$representation == "centroided"
+	}
 	if ( length(mz) != length(intensity) )
 		.Error("length of mz and intensity must match")
 	units <- match.arg(units)
-	representation <- match.arg(representation)
 	if ( missing(mz) && (!missing(from) || !missing(to)) ) {
 		mz <- (mz - min(mz)) / max(mz - min(mz))
 		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
 	}
+	metadata <- list(centroided=centroided)
 	x <- as.vector(mz(from=from, to=to, by=by, units=units))
-	y <- simspec(n=n, x=mz, y=intensity, domain=x,
+	y <- simspec(n=n,
+		x=mz, y=intensity, domain=x,
 		sdx=switch(units, ppm=1e-6 * sdmz, mz=sdmz),
 		sdy=sdpeaks, sdymult=sdpeakmult, sdnoise=sdnoise,
-		resolution=resolution, fmax=fmax, baseline=baseline, decay=decay,
+		resolution=resolution, fmax=fmax,
+		baseline=baseline, decay=decay,
 		units=switch(units, ppm="relative", mz="absolute"))
-	if ( representation == "centroid" ) {
-		FUN <- function(yi) approx(x, yi, mz)$y
-		y <- apply(as.matrix(y), 2L, FUN)
-		ans <- list(mz=mz, intensity=y)
+	if ( centroided ) {
+		y <- apply(as.matrix(y), 2L,
+			function(yi) {
+				approx1(x, yi, mz, interp="max",
+					tol=0.5 * min(diff(mz)), tol.ref="abs")
+			})
 	} else {
-		peaks <- attr(y, "design")$x
-		attr(y, "design") <- NULL
-		attr(y, "domain") <- NULL
-		ans <- list(mz=x, intensity=y, peaks=peaks)
+		dm <- dim(y)
+		metadata$peaks <- attr(y, "design")$x
+		attributes(y) <- NULL
+		dim(y) <- dm
 	}
+	ans <- MassDataFrame(mz=x, intensity=I(y))
+	metadata(ans) <- metadata
 	ans
 }
 
@@ -48,103 +58,164 @@ simulateSpectrum <- function(...)
 }
 
 
-#### Simulate mass spectral image ####
-## -----------------------------------
+#### Simulate mass spectrometry image ####
+## ---------------------------------------
 
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
 	sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
-	representation = c("profile", "centroid"),
+	centroided = FALSE, continuous = TRUE,
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( !missing(preset) || !is.null(preset) ) {
+	if ( !missing(preset) && !is.null(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
 		pixelData <- preset$pixelData
+	} else {
+		if ( missing(pixelData) || missing(featureData) )
+			.Error("must provide either 'preset' or ",
+				"both of 'pixelData' and 'featureData'")
+		preset <- NULL
 	}
-	nms <- intersect(names(pixelData), names(featureData))
-	if ( length(nms) == 0L )
-		.Error("no shared column names between pixelData and featureData")
-	pData <- pixelData[nms]
-	fData <- featureData[nms]
+	if ( "representation" %in% ...names() ) {
+		.Deprecated(old="representation", new="centroided")
+		centroided <- list(...)$representation == "centroided"
+	}
 	mz <- mz(featureData)
-	if ( (!missing(from) || !missing(to)) && !missing(preset) ) {
-		mz <- (mz - min(mz)) / max(mz - min(mz))
-		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
-		mz(featureData) <- mz
+	if ( nrun(pixelData) > 1L ) {
+		return(simulateImages(pixelData=pixelData, featureData=featureData,
+			from=force(from), to=force(to), by=force(by),
+			sdrun=sdrun, sdpixel=sdpixel, spcorr=spcorr, units=units,
+			centroided=centroided, continuous=continuous,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...))
 	}
-	units <- match.arg(units)
-	representation <- match.arg(representation)
-	domain <- mz(from=from, to=to, by=by, units=units)
-	FUN <- isoclos(function(irun, ...)
-	{
-		# extract run information
-		group <- as.matrix(pData[irun == run(pixelData),,drop=FALSE])
-		intensity <- as.matrix(fData)
-		runerr <- rnorm(nrow(fData), sd=sdrun)
-		pixelerr <- rnorm(nrow(group), sd=sdpixel)
-		# calculate spatial autoregressive (SAR) covariance
-		if ( spcorr > 0 ) {
-			pDataRun <- pixelData[irun == run(pixelData),,drop=FALSE]
-			W <- as.matrix(spatialWeights(pDataRun, r=1, matrix=TRUE))
-			IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
-			SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
-			SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)
-			pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
-			pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
-		}
-		# simulate spectra
-		spectra <- lapply(seq_len(nrow(group)),
-			function(i)
-			{
-				j <- group[i,]
-				if ( any(j) ) {
-					x <- rowSums(intensity[,j,drop=FALSE])
-				} else {
-					x <- rep(0, nrow(fData))
-				}
-				nz <- x != 0
-				x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
-				simulateSpectra(1L, mz=mz, intensity=x,
-					from=from, to=to, by=by, units=units,
-					representation=representation, ...)$intensity
-			})
-		spectra <- do.call(cbind, spectra)
-		# return data
-		if ( representation == "profile" ) {
-			MSImagingExperiment(spectra,
-				featureData=MassDataFrame(mz=domain),
-				pixelData=pixelData[irun == run(pixelData),,drop=FALSE],
-				centroided=FALSE)
-		} else {
-			MSImagingExperiment(spectra,
-				featureData=MassDataFrame(mz=mz),
-				pixelData=pixelData[irun == run(pixelData),,drop=FALSE],
-				centroided=TRUE)
-		}
-	}, CardinalEnv())
-	.Log("simulating mass spectra from mz ",
-		round(from, digits=4L), " to ", round(to, digits=4L),
-		" with ", units, " resolution ", by,
-		message=verbose)
-	ans <- chunkLapply(runNames(pixelData), FUN,
-		verbose=verbose, chunkopts=chunkopts,
-		RNG=TRUE, BPPARAM=BPPARAM, ...)
-	ans <- do.call("cbind", ans)
-	if ( representation == "centroid" )
-	{
-		nms <- setdiff(names(featureData), names(featureData(ans)))
-		featureData(ans)[nms] <- featureData[nms]
-		centroided(ans) <- TRUE
-	}
+	# get shared design columns
 	design <- list(pixelData=pixelData, featureData=featureData)
-	metadata(ans)[["design"]] <- design
-	ans
+	scols <- intersect(names(pixelData), names(featureData))
+	if ( length(scols) == 0L )
+		.Error("no shared column names between pixelData and featureData")
+	pdata <- pixelData[scols]
+	fdata <- featureData[scols]
+	# compute domain
+	units <- match.arg(units)
+	domain <- mz(from=from, to=to, by=by, units=units)
+	# compute run information
+	intensity <- as.matrix(fdata)
+	runerr <- rnorm(nrow(fdata), sd=sdrun)
+	pixelerr <- rnorm(nrow(pdata), sd=sdpixel)
+	# calculate spatial autoregressive (SAR) covariance
+	if ( spcorr > 0 ) {
+		W <- as.matrix(spatialWeights(pixelData, r=1,
+			weights="gaussian", matrix=TRUE, verbose=FALSE))
+		IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
+		SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
+		SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)
+		pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
+		pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
+	}
+	# simulate run
+	group <- as.matrix(pdata)
+	SIMULATE <- isoclos(function(i, ...) {
+		present <- group[i,,drop=TRUE]
+		if ( any(present) ) {
+			x <- rowSums(intensity[,present,drop=FALSE])
+		} else {
+			x <- rep.int(0, nrow(fdata))
+		}
+		nz <- x != 0
+		x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
+		simulateSpectra(1L, mz=mz, intensity=x,
+			from=from, to=to, by=by, units=units,
+			centroided=FALSE, ...)$intensity
+	}, CardinalEnv())
+	spectra <- chunkLapply(seq_len(nrow(group)), SIMULATE,
+		verbose=verbose, chunkopts=chunkopts,
+		BPPARAM=BPPARAM, ...)
+	# process spectra
+	if ( continuous ) {
+		if ( centroided ) {
+			# continuous, centroided
+			spectra <- vapply(spectra,
+				function(s) {
+					approx1(domain, s, mz, interp="max",
+						tol=0.5 * min(diff(mz)), tol.ref="abs")
+				}, numeric(length(mz)))
+		} else {
+			# continuous, profile
+			mz <- domain
+			spectra <- do.call(cbind, spectra)
+		}
+		MSImagingExperiment(spectra,
+			featureData=MassDataFrame(mz=mz),
+			pixelData=pixelData,
+			centroided=centroided,
+			metadata=list(design=design))
+	} else {
+		if ( centroided ) {
+			# processed, centroided
+			peaks <- lapply(spectra, findpeaks)
+			mz <- lapply(peaks, function(p) domain[p])
+			spectra <- Map(`[`, spectra, peaks)
+		} else {
+			# processed, profile
+			mz <- rep.int(list(mz), length(spectra))
+		}
+		MSImagingArrays(list(mz=mz, intensity=spectra),
+			pixelData=pixelData,
+			centroided=centroided,
+			metadata=list(design=design))
+	}
 }
 
+
+#### Simulate mass spectrometry imaging experiment ####
+## ----------------------------------------------------
+
+simulateImages <- function(pixelData, featureData, preset,
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), ...)
+{
+	if ( !missing(preset) && !is.null(preset) ) {
+		preset <- presetImageDef(preset, ...)
+		featureData <- preset$featureData
+		pixelData <- preset$pixelData
+	} else {
+		if ( missing(pixelData) || missing(featureData) )
+			.Error("must provide either 'preset' or ",
+				"both of 'pixelData' and 'featureData'")
+		preset <- NULL
+	}
+	design <- list(pixelData=pixelData, featureData=featureData)
+	runs <- vector("list", length=nrun(pixelData))
+	runs <- setNames(runs, runNames(pixelData))
+	for ( irun in runNames(pixelData) )
+	{
+		pdata <- pixelData[run(pixelData) %in% irun,]
+		.Log("simulating ", nrow(pdata), " spectra for run ", sQuote(irun),
+			message=verbose)
+		runs[[irun]] <- simulateImage(pdata, featureData,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
+	}
+	runData <- lapply(runs, function(run) metadata(run)$pixelData)
+	design$pixelData <- do.call(rbind, runData)
+	if ( is(runs[[1L]], "MSImagingExperiment") ) {
+		runs <- do.call(cbind, runs)
+	} else {
+		runs <- do.call(c, runs)
+	}
+	metadata(runs)[["design"]] <- design
+	runs
+}
+
+
+#### Simulation presets ####
+## --------------------------
+
 addShape <- function(pixelData, center, size,
-	shape=c("circle", "square"), name = shape)
+	shape = c("circle", "square"), name = shape)
 {
 	shape <- match.arg(shape)
 	coord <- as.matrix(coord(pixelData))
