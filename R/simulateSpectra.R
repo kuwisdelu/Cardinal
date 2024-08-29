@@ -101,6 +101,10 @@ simulateImage <- function(pixelData, featureData, preset,
 	# compute domain
 	units <- match.arg(units)
 	domain <- mz(from=from, to=to, by=by, units=units)
+	.Log("simulating intensities from mz ",
+		round(from, digits=4L), " to ", round(to, digits=4L),
+		" with ", round(by, digits=6L), " ", units, " resolution",
+		message=verbose)
 	# compute run information
 	intensity <- as.matrix(fdata)
 	runerr <- rnorm(nrow(fdata), sd=sdrun)
@@ -193,7 +197,7 @@ simulateImages <- function(pixelData, featureData, preset,
 	for ( irun in runNames(pixelData) )
 	{
 		pdata <- pixelData[run(pixelData) %in% irun,]
-		.Log("simulating ", nrow(pdata), " spectra for run ", sQuote(irun),
+		.Log("simulating ", nrow(pdata), " spectra for ", sQuote(irun),
 			message=verbose)
 		runs[[irun]] <- simulateImage(pdata, featureData,
 			verbose=verbose, chunkopts=chunkopts,
