@@ -105,11 +105,9 @@ test_that("spectrapply - MSImagingArrays", {
 	path <- CardinalIO::exampleImzMLFile("processed")
 	msa <- readImzML(path, memory=TRUE)
 
-	xout <- spectrapply(msa, function(x, t, ...) x, simplify=FALSE)
-	mzout <- spectrapply(msa, function(x, t, ...) t, simplify=FALSE)
+	tic <- spectrapply(msa, sum)
 
-	expect_equal(intensity(msa), xout)
-	expect_equal(mz(msa), mzout)
+	expect_equal(tic, sapply(intensity(msa), sum))
 
 })
 
@@ -118,10 +116,8 @@ test_that("spectrapply - MSImagingExperiment", {
 	path <- CardinalIO::exampleImzMLFile("continuous")
 	mse <- readImzML(path, memory=TRUE)
 
-	xout <- spectrapply(mse, function(x, t, ...) x)
-	mzout <- spectrapply(mse, function(x, t, ...) t)
+	tic <- spectrapply(mse, sum)
 
-	expect_equal(spectra(mse), xout)
-	expect_equal(mz(mse), mzout[,1L])
+	expect_equal(tic, apply(spectra(mse), 2L, sum))
 
 })

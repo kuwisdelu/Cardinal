@@ -1,8 +1,6 @@
 \name{spectrapply}
 
 \alias{spectrapply}
-\alias{spectrapply,MSImagingExperiment-method}
-\alias{spectrapply,MSImagingArrays-method}
 \alias{spectrapply,SpectralImagingExperiment-method}
 \alias{spectrapply,SpectralImagingArrays-method}
 
@@ -13,12 +11,6 @@
 }
 
 \usage{
-\S4method{spectrapply}{MSImagingExperiment}(object, FUN, \dots,
-    spectra = "intensity", index = "mz")
-
-\S4method{spectrapply}{MSImagingArrays}(object, FUN, \dots,
-    spectra = "intensity", index = "mz")
-
 \S4method{spectrapply}{SpectralImagingExperiment}(object, FUN, \dots,
         spectra = "intensity", index = NULL,
         simplify = TRUE, outpath = NULL,
@@ -35,7 +27,7 @@
 \arguments{
     \item{object}{A spectral imaging dataset.}
 
-    \item{FUN}{A function to be applied. The function \emph{must} accept (1) a first argument giving the spectral intensities as a numeric vector and (2) a second argument giving the intensity locations (e.g., m/z values) as a numeric vector.}
+    \item{FUN}{A function to be applied. The first argument will be the \code{spectra} elements. Additional arguments are passed for each \code{index} component.}
 
     \item{\dots}{Options passed to \code{\link[matter]{chunkMapply}} or \code{\link[matter]{chunkApply}}.}
 
@@ -72,7 +64,8 @@ set.seed(1)
 mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 
 # find m/z locations of peaks in each spectrum
-peaks <- spectrapply(mse, function(x, mz) mz[matter::findpeaks(x)])
+peaks <- spectrapply(mse, index="mz",
+    function(x, mz) mz[matter::findpeaks(x)])
 
 head(peaks[[1L]])
 head(peaks[[2L]])

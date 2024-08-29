@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("results")
+context("SpatialResults")
 
 test_that("SpatialResults + ResultsList", {
 
