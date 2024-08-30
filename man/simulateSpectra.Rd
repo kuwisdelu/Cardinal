@@ -2,7 +2,6 @@
 
 \alias{simulateSpectra}
 \alias{simulateImage}
-\alias{simulateImages}
 
 \alias{addShape}
 \alias{presetImageDef}

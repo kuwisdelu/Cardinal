@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("read/write imzML and Analyze 7.5")
+context("read/write imzML + Analyze 7.5")
 
 test_that("read/write continuous", {
 

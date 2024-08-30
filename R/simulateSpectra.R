@@ -84,7 +84,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	}
 	mz <- mz(featureData)
 	if ( nrun(pixelData) > 1L ) {
-		return(simulateImages(pixelData=pixelData, featureData=featureData,
+		return(.simulateImages(pixelData=pixelData, featureData=featureData,
 			from=force(from), to=force(to), by=force(by),
 			sdrun=sdrun, sdpixel=sdpixel, spcorr=spcorr, units=units,
 			centroided=centroided, continuous=continuous,
@@ -173,11 +173,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	}
 }
 
-
-#### Simulate mass spectrometry imaging experiment ####
-## ----------------------------------------------------
-
-simulateImages <- function(pixelData, featureData, preset,
+.simulateImages <- function(pixelData, featureData, preset,
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {

@@ -47,7 +47,7 @@ setMethod("spatialDGMM", "ANY",
 		.Log("fitting spatial Gaussian mixture ",
 			lab, " for k = ", k[j],
 			message=verbose)
-		ans[[j]] <- sgmixn(NULL, NULL, x, r=r, k=k[j], group=groups,
+		ans[[j]] <- sgmix(NULL, NULL, x, r=r, k=k[j], group=groups,
 			weights=nbwts, neighbors=neighbors, byrow=byrow,
 			annealing=annealing, compress=compress,
 			verbose=verbose, chunkopts=chunkopts,
