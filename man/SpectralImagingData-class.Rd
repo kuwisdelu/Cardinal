@@ -6,6 +6,8 @@
 \alias{SpectralImagingData-class}
 
 \alias{show,SpectralImagingData-method}
+\alias{fetch,SpectralImagingData-method}
+\alias{flash,SpectralImagingData-method}
 \alias{spectraData,SpectralImagingData-method}
 \alias{spectraData<-,SpectralImagingData-method}
 \alias{spectraNames,SpectralImagingData-method}
@@ -90,6 +92,10 @@
         \item{\code{is3D(object)}:}{Check if the number of spatial dimensions is greater than 2.}
 
         \item{\code{processingData(object, ...)}, \code{processingData(object, ...) <- value}:}{Get or set the \code{processing} slot.}
+
+        \item{\code{fetch(object, \dots)}:}{Pull \code{spectraData} into shared memory.}
+
+        \item{\code{flash(object, \dots)}:}{Push \code{spectraData} to a temporary file.}
     }
 }
 

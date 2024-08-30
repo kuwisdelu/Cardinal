@@ -189,3 +189,39 @@ test_that("SpectraArrays 2-D", {
 	expect_equivalent(sr[[3L]], rbind(a2, a2))
 
 })
+
+test_that("SpectraArrays fetch/flash", {
+
+	s <- SpectraArrays(diag(5))
+	expect_true(validObject(s))
+	expect_equal(s[[1L]], diag(5))
+
+	a0 <- matrix(1:25, nrow=5, ncol=5)
+	a1 <- matrix(26:50, nrow=5, ncol=5)
+	a2 <- matrix(51:75, nrow=5, ncol=5)
+	al <- list(a0=a0, a1=a1, a2=a2)
+	s <- SpectraArrays(al)
+
+	s2 <- fetch(s)
+	s3 <- flash(s)
+
+	expect_true(matter::is.shared(s2[[1L]]))
+	expect_true(matter::is.shared(s2[[2L]]))
+	expect_true(matter::is.shared(s2[[3L]]))
+	
+	expect_true(matter::is.matter(s3[[1L]]))
+	expect_true(matter::is.matter(s3[[2L]]))
+	expect_true(matter::is.matter(s3[[3L]]))
+
+	s4 <- flash(s2)
+	s5 <- fetch(s3)
+
+	expect_true(matter::is.matter(s4[[1L]]))
+	expect_true(matter::is.matter(s4[[2L]]))
+	expect_true(matter::is.matter(s4[[3L]]))
+	
+	expect_true(matter::is.shared(s5[[1L]]))
+	expect_true(matter::is.shared(s5[[2L]]))
+	expect_true(matter::is.shared(s5[[3L]]))
+
+})

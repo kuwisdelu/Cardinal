@@ -7,6 +7,8 @@
 
 \alias{show,SpectraArrays-method}
 \alias{vm_used,SpectraArrays-method}
+\alias{fetch,SpectraArrays-method}
+\alias{flash,SpectraArrays-method}
 \alias{[,SpectraArrays,ANY,ANY,ANY-method}
 \alias{[<-,SpectraArrays,ANY,ANY,ANY-method}
 \alias{$,SpectraArrays-method}
@@ -50,8 +52,6 @@ SpectraArrays(arrays = SimpleList())
 }
 
 \section{Methods}{
-    All methods for \code{\linkS4class{SpectralImagingData}} also work on \code{SpectraArrays} objects. Additional methods are documented below:
-
     \describe{
         \item{\code{length(object)}:}{Get the number of spectra in the object.}
 
@@ -64,6 +64,10 @@ SpectraArrays(arrays = SimpleList())
         \item{\code{rbind(...)}, \code{cbind(...)}:}{Combine \code{SpectraArrays} objects by row or column.}
 
         \item{\code{c(...)}:}{Combine \code{SpectraArrays} objects as lists.}
+
+        \item{\code{fetch(object, \dots)}:}{Pull data arrays into shared memory.}
+
+        \item{\code{flash(object, \dots)}:}{Push data arrays to a temporary file.}
     }
 }
 

@@ -266,6 +266,8 @@ exportMethods(
 	"experimentData",
 	"experimentData<-",
 	"features",
+	"fetch",
+	"flash",
 	"findNeighbors",
 	"fitted",
 	"fData",

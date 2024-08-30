@@ -121,6 +121,38 @@ setMethod("vm_used", "SpectraArrays",
 	}
 }
 
+setMethod("fetch", "SpectraArrays",
+	function(object, ...,
+		verbose = getCardinalVerbose(),
+		BPPARAM = bpparam())
+	{
+		for ( i in seq_along(object) ) {
+			if ( is.matter(object[[i]]) ) {
+				object[[i]] <- fetch(object[[i]], ...,
+					verbose=verbose, BPPARAM=BPPARAM)
+			} else {
+				object[[i]] <- as.shared(object[[i]])
+			}
+		}
+		object
+	})
+
+setMethod("flash", "SpectraArrays",
+	function(object, ...,
+		verbose = getCardinalVerbose(),
+		BPPARAM = bpparam())
+	{
+		for ( i in seq_along(object) ) {
+			if ( is.matter(object[[i]]) ) {
+				object[[i]] <- flash(object[[i]], ...,
+					verbose=verbose, BPPARAM=BPPARAM)
+			} else {
+				object[[i]] <- as.matter(object[[i]])
+			}
+		}
+		object
+	})
+
 ## List-like getters and setters
 
 setMethod("length", "SpectraArrays",

@@ -6,6 +6,8 @@ NEW FEATURES
 
     o Add 'saveCardinalLog()' for saving log file
     o Add 'getCardinalLogger()' + 'setCardinalLogger()'
+    o Add 'fetch()' and 'flash()' methods for moving
+        spectra between shared memory and temporary files
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
