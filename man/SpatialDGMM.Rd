@@ -92,7 +92,7 @@
 \examples{
 set.seed(1)
 mse <- simulateImage(preset=3, dim=c(10,10), npeaks=9,
-    peakheight=c(3,6,9), representation="centroid")
+    peakheight=c(3,6,9), centroided=TRUE)
 
 gmm <- spatialDGMM(mse, r=1, k=4, weights="adaptive")
 

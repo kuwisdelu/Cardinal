@@ -78,7 +78,7 @@
 \examples{
 set.seed(1)
 mse <- simulateImage(preset=2, npeaks=20, dim=c(10,10),
-    representation="centroid")
+    centroided=TRUE)
 
 # project to principal components
 pc <- PCA(mse, ncomp=2)

@@ -137,7 +137,7 @@
 
 \examples{
 set.seed(1)
-mse <- simulateImage(preset=2, npeaks=20, dim=c(10,10), representation="centroid")
+mse <- simulateImage(preset=2, npeaks=20, dim=c(10,10), centroided=TRUE)
 cls <- makeFactor(circle=pData(mse)$circle, square=pData(mse)$square)
 
 # fit a PLS model with 3 components

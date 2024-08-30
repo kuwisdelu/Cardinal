@@ -6,7 +6,7 @@ setMethod("spatialKMeans", "ANY",
 	function(x, coord, r = 1, k = 2, ncomp = max(k),
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(coord, r=r),
-		transpose = TRUE, niter = 2L,
+		transpose = TRUE, niter = 10L,
 		centers = TRUE, correlation = TRUE,
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)

@@ -107,7 +107,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 set.seed(1)
 x <- simulateImage(preset=4, nrun=3, npeaks=10,
     dim=c(10,10), peakheight=5, peakdiff=2,
-    representation="centroid")
+    centroided=TRUE)
 
 samples <- replace(run(x), !(x$circleA | x$circleB), NA)
 

@@ -60,7 +60,7 @@
 
 \examples{
 set.seed(1)
-x <- simulateImage(preset=1, dim=c(10,10), representation="centroid")
+x <- simulateImage(preset=1, dim=c(10,10), centroided=TRUE)
 
 # find features colocalized with first feature
 colocalized(x, i=1)

@@ -37,7 +37,7 @@ slice(x, i = features(x, ...), ..., run = NULL,
 
 \examples{
 set.seed(1)
-mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10), representation="centroid")
+mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10), centroided=TRUE)
 peaks <- mz(metadata(mse)$design$featureData)
 
 # slice image for first feature
