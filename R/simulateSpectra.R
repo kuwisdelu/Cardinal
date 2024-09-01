@@ -86,7 +86,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		preset <- NULL
 	}
 	mz <- mz(featureData)
-	if ( !missing(from) || !missing(to) ) {
+	if ( !is.null(preset) && (!missing(from) || !missing(to)) ) {
 		mz <- (mz - min(mz)) / max(mz - min(mz))
 		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
 		mz(featureData) <- mz
@@ -109,7 +109,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	# compute domain
 	units <- match.arg(units)
 	domain <- mz(from=from, to=to, by=by, units=units)
-	.Log("simulating intensities from mz ",
+	.Log("simulating mass range ",
 		round(from, digits=4L), " to ", round(to, digits=4L),
 		" with ", round(by, digits=6L), " ", units, " resolution",
 		message=verbose)
@@ -157,9 +157,10 @@ simulateImage <- function(pixelData, featureData, preset,
 			# continuous, profile
 			mz <- domain
 			spectra <- do.call(cbind, spectra)
+			featureData <- MassDataFrame(mz=mz)
 		}
 		MSImagingExperiment(spectra,
-			featureData=MassDataFrame(mz=mz),
+			featureData=featureData,
 			pixelData=pixelData,
 			centroided=centroided,
 			metadata=list(design=design))
@@ -187,23 +188,27 @@ simulateImage <- function(pixelData, featureData, preset,
 	design <- list(pixelData=pixelData, featureData=featureData)
 	runs <- vector("list", length=nrun(pixelData))
 	runs <- setNames(runs, runNames(pixelData))
-	for ( irun in runNames(pixelData) )
+	for ( i in seq_len(nrun(pixelData)) )
 	{
+		irun <- runNames(pixelData)[i]
 		pdata <- pixelData[run(pixelData) %in% irun,]
-		.Log("simulating ", nrow(pdata), " spectra for ", sQuote(irun),
+		.Log("simulating run ", i, "/", nrun(pixelData),
+			" (", nrow(pdata), " spectra | ", sQuote(irun), ")",
 			message=verbose)
 		runs[[irun]] <- simulateImage(pdata, featureData,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	}
-	runData <- lapply(runs, function(run) metadata(run)$pixelData)
+	runData <- lapply(runs, function(run) metadata(run)$design$pixelData)
 	design$pixelData <- do.call(rbind, runData)
 	if ( is(runs[[1L]], "MSImagingExperiment") ) {
 		runs <- do.call(cbind, runs)
+		if ( centroided(runs) )
+			featureData(runs) <- featureData
 	} else {
 		runs <- do.call(c, runs)
 	}
-	metadata(runs)[["design"]] <- design
+	metadata(runs) <- list(design=design)
 	runs
 }
 
@@ -231,7 +236,7 @@ addShape <- function(pixelData, center, size,
 }
 
 presetImageDef <- function(preset = 1L, nrun = 1, npeaks = 30L,
-	dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
+	dim = c(20L, 20L), peakheight = exp(1), peakdiff = exp(1),
 	sdsample = 0.2, jitter = TRUE, ...)
 {
 	numPresets <- 9L

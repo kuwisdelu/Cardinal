@@ -35,7 +35,7 @@ simulateImage(pixelData, featureData, preset,
 addShape(pixelData, center, size, shape=c("circle", "square"), name=shape)
 
 presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
-    dim = c(20L, 20L), peakheight = 1, peakdiff = 1,
+    dim = c(20L, 20L), peakheight = exp(1), peakdiff = exp(1),
     sdsample = 0.2, jitter = TRUE, \dots)
 }
 

@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: Statistical methods for mass spectrometry imaging"
 author: "Kylie Ariel Bemis"
-date: "Revised: July 29, 2024"
+date: "Revised: 1 September 2024"
 output:
   BiocStyle::html_document:
   toc: true
@@ -17,7 +17,6 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
-setCardinalVerbose(FALSE)
 ```
 
 # Introduction 
@@ -47,7 +46,7 @@ Before statistical analysis, it is important to identify the statistical goal of
 Suppose we are exploring an unlabeled dataset, and wish to understand the structure of the data.
 
 ```{r eda-data, fig.height=4, fig.width=5, fig.align='center'}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=2, dim=c(32,32), sdnoise=0.5,
 	peakheight=c(2,4), centroided=TRUE)
 
@@ -127,7 +126,7 @@ Finding other mass features colocalized with a particular image is a common task
 Use `colocalize()` to find mass features that are colocalized with another image.
 
 ```{r colocalized}
-coloc <- colocalized(mse, mz=1116)
+coloc <- colocalized(mse, mz=1003.3)
 coloc
 ```
 
@@ -159,7 +158,7 @@ The larger the sparsity parameter `s`, the fewer mass features will contribute t
 Spatial shrunken centroids may result in fewer clusters than the initial number of clusters `k`, so it is recommended to use a value for `k` that is larger than the expected number of clusters, and allow the method to automatically choose the number of clusters.
 
 ```{r ssc-clustering}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 ssc <- spatialShrunkenCentroids(mse, r=1, k=3, s=c(0,6,12,18))
 ssc
 ```
@@ -167,14 +166,14 @@ ssc
 Plotting the predicted cluster probabilities shows a clear segmentation into the ground truth image.
 
 ```{r ssc-image, fig.height=4, fig.width=9}
-image(ssc, i=2:4, type="probability", layout=c(1,3))
+image(ssc, i=1:3, type="probability", layout=c(1,3))
 ```
 
 Spatial shrunken centroids calculates t-statistics for each segment and each mass feature. These t-statistics a measure of the difference between the cluster center and the global mean.
 
 
 ```{r ssc-statistic, fig.height=3, fig.width=9}
-plot(ssc, i=2:4, type="statistic", layout=c(1,3),
+plot(ssc, i=1:3, type="statistic", layout=c(1,3),
 	linewidth=2, annPeaks="circle")
 ```
 
@@ -184,10 +183,10 @@ Use `topFeatures()` to rank mass features by t-statistic.
 
 
 ```{r ssc-top, fig.height=4, fig.width=9}
-ssc_top <- topFeatures(ssc[[4L]])
+ssc_top <- topFeatures(ssc[[2L]])
 ssc_top
 
-ssc_top_cl3 <- subset(ssc_top, class==3)
+ssc_top_cl3 <- subset(ssc_top, class==1)
 image(mse, mz=ssc_top_cl3$mz[1:3], layout=c(1,3))
 ```
 
@@ -200,8 +199,8 @@ Spatially-aware Dirichlet Gaussian mixture models (spatial-DGMM) is a method of 
 This is useful for summarizing molecular ion images, and for discovering structures that clustering using all mass features together may miss.
 
 ```{r dgmm}
-set.seed(2020)
-dgmm <- spatialDGMM(mse, r=1, k=3, weights="adaptive")
+set.seed(2020, kind="L'Ecuyer-CMRG")
+dgmm <- spatialDGMM(mse, r=1, k=3, weights="gaussian")
 dgmm
 ```
 
@@ -239,7 +238,7 @@ image(mse, mz=coloc2$mz[1:3], layout=c(1,3))
 Classification of pixels into different known classes (e.g., cancer vs normal) based on the mass spectra is a common application for MS imaging.
 
 ```{r classification-data, fig.height=4, fig.width=9}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 mse2 <- simulateImage(preset=7, dim=c(32,32), sdnoise=0.3,
 	nrun=3, peakdiff=2, centroided=TRUE)
 
@@ -268,10 +267,10 @@ cv_pls <- crossValidate(PLS, x=mse2, y=mse2$class, ncomp=1:5, folds=run(mse2))
 cv_pls
 ```
 
-We can see that we only need 3 components to get perfect accuracy in this toy example.
+We can see that 4 components gives the best accuracy.
 
 ```{r pls}
-pls <- PLS(mse2, y=mse2$class, ncomp=3)
+pls <- PLS(mse2, y=mse2$class, ncomp=4)
 pls
 ```
 
@@ -308,10 +307,10 @@ cv_ssc <- crossValidate(spatialShrunkenCentroids, x=mse2, y=mse2$class,
 cv_ssc
 ```
 
-We can see that in this case, the model with `s=0` has the best cross-validated accuracy for the data. However, it does not perform as well as the PLS model.
+We can see that the model with `s=9` has the best cross-validated accuracy for the data. However, it does not perform as well as the PLS model.
 
 ```{r ssc-classification}
-ssc2 <- spatialShrunkenCentroids(mse2, y=mse2$class, r=2, s=0)
+ssc2 <- spatialShrunkenCentroids(mse2, y=mse2$class, r=2, s=9)
 ssc2
 ```
 
@@ -351,17 +350,17 @@ This example uses a simple experiment with two conditions "A" and "B", with thre
 
 
 ```{r test-data, fig.height=7, fig.width=9}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 mse3 <- simulateImage(preset=4, npeaks=10, dim=c(32,32), sdnoise=0.3,
-	nrun=3, peakdiff=1, centroided=TRUE)
+	nrun=4, peakdiff=2, centroided=TRUE)
 
 mse3$trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
 
-image(mse3, "trt", layout=c(2,3))
+image(mse3, "trt", layout=c(2,4))
 ```
 
 ```{r test-image, fig.height=7, fig.width=9}
-image(mse3, i=1, layout=c(2,3))
+image(mse3, i=1, layout=c(2,4))
 ```
 
 We know from the design of the simulation that the first 5 (of 10) *m/z* values differ between the conditions.
@@ -397,7 +396,7 @@ mtest_top <- topFeatures(mtest)
 subset(mtest_top, fdr < 0.05)
 ```
 
-We find all 5 differentially abundant features.
+We find 3 of the 5 differentially abundant features.
 
 
 
@@ -436,7 +435,7 @@ stest_top <- topFeatures(stest)
 subset(stest_top, fdr < 0.05)
 ```
 
-This example is simple enough that we find the same 5 differentially abundant features.
+We find 4 of the 5 differentially abundant features (and 1 false discovery).
 
 
 

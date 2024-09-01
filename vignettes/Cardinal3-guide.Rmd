@@ -1,7 +1,7 @@
 ---
 title: "_Cardinal 3_: User guide for mass spectrometry imaging analysis"
 author: "Kylie Ariel Bemis"
-date: "Revised: July 29, 2024"
+date: "Revised: 1 September 2024"
 output:
   BiocStyle::html_document:
   toc: true
@@ -330,7 +330,7 @@ This data frame is also used to store any other feature-level metadata or statis
 Typically data is read into R using `readMSIData()`, but sometimes it is necessary to build a `MSImagingExperiment` object from scratch. This may be necessary if trying to import data formats other than imzML or Analyze 7.5.
 
 ```{r constructor}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 s <- simulateSpectra(n=9, npeaks=10, from=500, to=600)
 
 coord <- expand.grid(x=1:3, y=1:3)
@@ -365,7 +365,7 @@ We will use simulated data for visualization. We will create versions of the dat
 
 ```{r simulate}
 # Simulate an MSImagingExperiment
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=6, dim=c(32,32), baseline=0.5)
 mse
 
@@ -400,31 +400,31 @@ plot(msa, i=c(496, 1520), xlim=c(1000, 1250),
 Use `image()` to plot ion images from `MSImagingExperiment`.  Below we plot the image for the 2,489th m/z value.
 
 ```{r image-i, fig.height=4, fig.width=9}
-image(mse, i=2769)
+image(mse, i=1938)
 ```
 
 Alternatively, we can specify the m/z value. The closest matching m/z value will be used.
 
 ```{r image-mz, fig.height=4, fig.width=9}
-image(mse, mz=1200)
+image(mse, mz=1003.3)
 ```
 
 Use `tolerance` to sum together the images for a all *m/z* values within a certain tolerance.
 
 ```{r image-plusminus, fig.height=4, fig.width=9}
-image(mse, mz=1200, tolerance=0.5, units="mz")
+image(mse, mz=1003.3, tolerance=0.5, units="mz")
 ```
 
 By default, images from all experimental runs are plotted. Use `run` to specify specific runs to plot by name or index.
 
 ```{r image-run, fig.height=4, fig.width=5}
-image(mse, mz=1200, run="runA1")
+image(mse, mz=1003.3, run="runA1")
 ```
 
 Alternatively, use `subset` to plot an arbitrary subset of pixels.
 
 ```{r image-subset, fig.height=4, fig.width=9}
-image(mse, mz=1200, subset=mse$circleA | mse$circleB)
+image(mse, mz=1003.3, subset=mse$circleA | mse$circleB)
 ```
 
 Multiplicative variance in spectral intensities can cause images to be noisy and dark due to hot spots.
@@ -432,17 +432,17 @@ Multiplicative variance in spectral intensities can cause images to be noisy and
 Often, images may require some type of processing and enhancement to improve interpretation.
 
 ```{r image-smooth, fig.height=4, fig.width=9}
-image(mse, mz=1200, smooth="gaussian")
+image(mse, mz=1003.3, smooth="gaussian")
 ```
 
 ```{r image-contrast, fig.height=4, fig.width=9}
-image(mse, mz=1200, enhance="histogram")
+image(mse, mz=1003.3, enhance="histogram")
 ```
 
 Multiple images can be superposed with `superpose=TRUE`. Use `scale=TRUE` to rescale all images to the same intensity range.
 
 ```{r image-superpose, fig.height=4, fig.width=9}
-image(mse, mz=c(474, 1619), superpose=TRUE,
+image(mse, mz=c(1003.3, 1663.6), superpose=TRUE,
 	enhance="adaptive", scale=TRUE)
 ```
 
@@ -452,8 +452,8 @@ image(mse, mz=c(474, 1619), superpose=TRUE,
 Use `selectROI()` to select regions-of-interest on an ion image. It is important to specify a subset so that selection is only made on a single experimental run, otherwise results may be unexpected. The form of `selectROI()` is the same as `image()`.
 
 ```{r select-ROI, eval=FALSE}
-sampleA <- selectROI(mse, mz=1200, subset=run(mse) == "run0")
-sampleB <- selectROI(mse, mz=1200, subset=run(mse) == "run1")
+sampleA <- selectROI(mse, mz=1003.3, subset=run(mse) == "run0")
+sampleB <- selectROI(mse, mz=1003.3, subset=run(mse) == "run1")
 ```
 `selectROI()` returns a logical vector specifying which pixels from the imaging experiment are contained in the selected region.
 
@@ -477,7 +477,7 @@ Any plots printed while the graphics device is active will be saved to the speci
 pdffile <- tempfile(fileext=".pdf")
 
 pdf(file=pdffile, width=9, height=4)
-image(mse, mz=1200)
+image(mse, mz=1003.3)
 dev.off()
 ```
 
@@ -489,7 +489,7 @@ Graphics devices for `png()`, `jpeg()`, `bmp()`, and `tiff()` are also available
 While many software for MS imaging data use a light-on-dark theme, *Cardinal* uses a dark-on-light theme by default. However, a dark theme is also provided with `style="dark`.
 
 ```{r style-dark, fig.height=4, fig.width=9}
-image(mse, mz=1200, style="dark")
+image(mse, mz=1003.3, style="dark")
 ```
 
 
@@ -506,7 +506,7 @@ For the fastest visualization of images, experiments should be coerced to an in-
 Also note that all *Cardinal* visualizations produce a `plot()`-able object that can be assigned to a variable and `plot()`-ed later without the need to read the data again. Some parameters can even be updated this way, such as smoothing, contrast enhancement, and scaling.
 
 ```{r print}
-p <- image(mse, mz=1200)
+p <- image(mse, mz=1003.3)
 plot(p, smooth="guide")
 ```
 
@@ -544,11 +544,11 @@ Subsetting the dataset this way requires knowing the desired row and column indi
 Use `features()` to find row indices of a `MSImagingExperiment` corresponding to specific *m/z* values or other feature metadata.
 
 ```{r features}
-# get row index corresponding to m/z 1200
-features(mse, mz=1200)
+# get row index corresponding to m/z 1003.3
+features(mse, mz=1003.3)
 
-# get row indices corresponding to m/z 1199 - 1201
-features(mse, 1199 < mz & mz < 1201)
+# get row indices corresponding to m/z 1002 - 1004
+features(mse, 1002 < mz & mz < 1004)
 ```
 
 Use `pixels()` to find indices of `MSImagingArrays` or column indices of `MSImagingExperiment` that correspond to specific mass spectra based on coordinates or other metadata.
@@ -564,7 +564,7 @@ pixels(mse, x <= 3, y <= 3, run == "runA1")
 These methods can be used to determine row/column indices of particular *m/z*-values or pixel coordinates to use for subsetting.
 
 ```{r subset-3}
-fid <- features(mse, 1199 < mz, mz < 1201)
+fid <- features(mse, 1002 < mz, mz < 1004)
 pid <- pixels(mse, x <= 3, y <= 3, run == "runA1")
 mse[fid, pid]
 ```
@@ -584,14 +584,14 @@ For `MSImagingExperiment`, `subset()` takes a two arguments specifying both the 
 
 ```{r subset-method-2}
 # subset MSImagingExperiment
-subset(mse, 1199 < mz & mz < 1201, x <= 3 & x <= 3)
+subset(mse, 1002 < mz & mz < 1004, x <= 3 & x <= 3)
 ```
 
 We can also use `subsetFeatures()` and `subsetPixels()` if subsetting an `MSImagingExperiment`.
 
 ```{r subsetFeatures}
 # subset features
-subsetFeatures(mse, 1199 < mz, mz < 1201)
+subsetFeatures(mse, 1002 < mz, mz < 1004)
 
 # subset pixels
 subsetPixels(mse, x <= 3, y <= 3)
@@ -616,8 +616,8 @@ dim(a)
 Because we only sliced a single image, the first 2 dimensions are the spatial dimensions and the 3rd dimension are the experimental runs. We can use `drop=FALSE` to indicate we want to preserve the feature dimension even for a single image.
 
 ```{r slice-mz}
-# slice image for m/z 1200
-a2 <- slice(mse, mz=1200, drop=FALSE)
+# slice image for m/z 1003.3
+a2 <- slice(mse, mz=1003.3, drop=FALSE)
 dim(a2)
 ```
 Note that when plotting images from raw arrays, the images are upside-down due to differing coordinate conventions used by `graphics::image()`.
@@ -669,8 +669,8 @@ Here, we create new feature metadata columns based on the design of the simulate
 
 ```{r fData-set}
 fData(mse)$region <- makeFactor(
-	circle=mz(mse) > 1070 & mz(mse) < 1420,
-	square=mz(mse) < 1070 | mz(mse) > 1420)
+	circle=mz(mse) > 1000 & mz(mse) < 1250,
+	square=mz(mse) < 1000 | mz(mse) > 1250)
 fData(mse)
 ```
 
@@ -950,7 +950,7 @@ Use `recalibrate()` to queue recalibration on `MSImagingArrays` or `MSImagingExp
 First, we need to simulate spectra that are visibly in need of calibration.
 
 ```{r unaligned-spectra, fig.height=3, fig.width=9}
-set.seed(2020)
+set.seed(2020, kind="L'Ecuyer-CMRG")
 mse_drift <- simulateImage(preset=1, npeaks=10,
 	from=500, to=600, sdmz=750, units="ppm")
 
@@ -1242,8 +1242,7 @@ setCardinalBPPARAM(NULL)
 For methods that rely on random number generation to be reproducible when run in parallel, the RNG should be set to "L'Ecuyer-CMRG" to guarantee parallel-safe RNG streams.
 
 ```{r RNGkind, eval=FALSE}
-RNGkind("L'Ecuyer-CMRG")
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 ```
 
 
