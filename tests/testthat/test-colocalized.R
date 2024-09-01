@@ -5,15 +5,15 @@ context("colocalized")
 
 test_that("colocalized", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
 		centroided=TRUE)
 	s$class <- makeFactor(circle=s$circle, square=s$square,
 		bg=!s$circle & !s$square)
 
 	co <- colocalized(s, i=1:2)
-	co1 <- colocalized(s, mz=564.3)
-	co2 <- colocalized(s, mz=603.7)
+	co1 <- colocalized(s, mz=412.42)
+	co2 <- colocalized(s, mz=589.53)
 	co3 <- colocalized(s, i=3, sort.by="MOC")
 	co4 <- colocalized(s, i=4, sort.by="Dice")
 	co5 <- colocalized(s, ref=s$class, sort.by="none")

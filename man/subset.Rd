@@ -40,7 +40,7 @@ subsetPixels(x, \dots)
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10))
 
 # subset features to mass range 1000 - 1500

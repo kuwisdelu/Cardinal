@@ -71,7 +71,7 @@ SpectralImagingArrays(spectraData = SimpleList(),
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- replicate(9, rlnorm(10), simplify=FALSE)
 t <- replicate(9, sort(runif(10)), simplify=FALSE)
 coord <- expand.grid(x=1:3, y=1:3)

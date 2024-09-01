@@ -89,7 +89,7 @@ reset(object, \dots)
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, dim=c(3,3), baseline=1)
 
 mse2 <- smooth(mse, width=11)

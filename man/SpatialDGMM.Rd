@@ -90,7 +90,7 @@
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=3, dim=c(10,10), npeaks=9,
     peakheight=c(3,6,9), centroided=TRUE)
 

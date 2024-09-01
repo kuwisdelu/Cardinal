@@ -17,7 +17,6 @@ BiocStyle::markdown()
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(Cardinal)
-setCardinalVerbose(FALSE)
 ```
 
 # Introduction 

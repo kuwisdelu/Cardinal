@@ -12,6 +12,10 @@ NEW FEATURES
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Update compatibility with matter 2.7.6
+    o Changes to 'simulateSpectra()' and 'simulateImage()'
+        in parallelization and spectral noise generation
+    o RNG in 'simulateSpectra()' and 'simulateImage()'
+        now warn if 'RNGkind()' is not "L'Ecuyer-CMRG"
 
 BUG FIXES
 

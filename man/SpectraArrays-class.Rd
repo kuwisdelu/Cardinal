@@ -79,7 +79,7 @@ SpectraArrays(arrays = SimpleList())
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- matrix(rlnorm(128), nrow=16, ncol=8)
 y <- matrix(rlnorm(128), nrow=16, ncol=8)
 

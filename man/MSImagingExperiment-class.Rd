@@ -91,7 +91,7 @@ MSImagingExperiment(spectraData = SimpleList(),
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- matrix(rlnorm(81), nrow=9, ncol=9)
 mz <- sort(runif(9))
 coord <- expand.grid(x=1:3, y=1:3)

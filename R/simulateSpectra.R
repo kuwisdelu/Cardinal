@@ -68,6 +68,13 @@ simulateImage <- function(pixelData, featureData, preset,
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( "representation" %in% ...names() ) {
+		.Deprecated(old="representation", new="centroided")
+		centroided <- list(...)$representation == "centroided"
+	}
+	if ( !"L'Ecuyer-CMRG" %in% RNGkind() )
+		.Warn("use RNGkind(\"L'Ecuyer-CMRG\")",
+			" for statistically safe RNG")
 	if ( !missing(preset) && !is.null(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
@@ -78,11 +85,12 @@ simulateImage <- function(pixelData, featureData, preset,
 				"both of 'pixelData' and 'featureData'")
 		preset <- NULL
 	}
-	if ( "representation" %in% ...names() ) {
-		.Deprecated(old="representation", new="centroided")
-		centroided <- list(...)$representation == "centroided"
-	}
 	mz <- mz(featureData)
+	if ( !missing(from) || !missing(to) ) {
+		mz <- (mz - min(mz)) / max(mz - min(mz))
+		mz <- (from + 0.1 * (to - from)) + (0.8 * (to - from)) * mz
+		mz(featureData) <- mz
+	}
 	if ( nrun(pixelData) > 1L ) {
 		return(.simulateImages(pixelData=pixelData, featureData=featureData,
 			from=force(from), to=force(to), by=force(by),
@@ -128,8 +136,7 @@ simulateImage <- function(pixelData, featureData, preset,
 		} else {
 			x <- rep.int(0, nrow(fdata))
 		}
-		nz <- x != 0
-		x[nz] <- pmax(0, x[nz] + runerr[nz] + pixelerr[i])
+		x <- pmax(0, x + runerr + pixelerr[i])
 		simulateSpectra(1L, mz=mz, intensity=x,
 			from=from, to=to, by=by, units=units,
 			centroided=FALSE, ...)$intensity
@@ -164,7 +171,7 @@ simulateImage <- function(pixelData, featureData, preset,
 			spectra <- Map(`[`, spectra, peaks)
 		} else {
 			# processed, profile
-			mz <- rep.int(list(mz), length(spectra))
+			mz <- rep.int(list(domain), length(spectra))
 		}
 		MSImagingArrays(list(mz=mz, intensity=spectra),
 			pixelData=pixelData,
@@ -173,20 +180,10 @@ simulateImage <- function(pixelData, featureData, preset,
 	}
 }
 
-.simulateImages <- function(pixelData, featureData, preset,
+.simulateImages <- function(pixelData, featureData,
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( !missing(preset) && !is.null(preset) ) {
-		preset <- presetImageDef(preset, ...)
-		featureData <- preset$featureData
-		pixelData <- preset$pixelData
-	} else {
-		if ( missing(pixelData) || missing(featureData) )
-			.Error("must provide either 'preset' or ",
-				"both of 'pixelData' and 'featureData'")
-		preset <- NULL
-	}
 	design <- list(pixelData=pixelData, featureData=featureData)
 	runs <- vector("list", length=nrun(pixelData))
 	runs <- setNames(runs, runNames(pixelData))

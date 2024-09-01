@@ -68,7 +68,7 @@
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, npeaks=10, dim=c(3,3), sdmz=250)
 plot(mse, i=c(2,4,5), superpose=TRUE, xlim=c(1260,1320))
 

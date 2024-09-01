@@ -49,7 +49,7 @@ Suppose we are exploring an unlabeled dataset, and wish to understand the struct
 ```{r eda-data, fig.height=4, fig.width=5, fig.align='center'}
 set.seed(2020)
 mse <- simulateImage(preset=2, dim=c(32,32), sdnoise=0.5,
-	peakheight=c(2,4), representation="centroid")
+	peakheight=c(2,4), centroided=TRUE)
 
 mse$design <- makeFactor(circle=mse$circle,
 	square=mse$square, bg=!(mse$circle | mse$square))
@@ -241,7 +241,7 @@ Classification of pixels into different known classes (e.g., cancer vs normal) b
 ```{r classification-data, fig.height=4, fig.width=9}
 set.seed(2020)
 mse2 <- simulateImage(preset=7, dim=c(32,32), sdnoise=0.3,
-	nrun=3, peakdiff=2, representation="centroid")
+	nrun=3, peakdiff=2, centroided=TRUE)
 
 mse2$class <- makeFactor(A=mse2$circleA, B=mse2$circleB)
 
@@ -353,7 +353,7 @@ This example uses a simple experiment with two conditions "A" and "B", with thre
 ```{r test-data, fig.height=7, fig.width=9}
 set.seed(2020)
 mse3 <- simulateImage(preset=4, npeaks=10, dim=c(32,32), sdnoise=0.3,
-	nrun=3, peakdiff=1, representation="centroid")
+	nrun=3, peakdiff=1, centroided=TRUE)
 
 mse3$trt <- makeFactor(A=mse3$circleA, B=mse3$circleB)
 

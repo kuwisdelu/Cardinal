@@ -59,7 +59,7 @@
 \author{Kylie A. Bemis}
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- simulateImage(preset=1, dim=c(10,10), centroided=TRUE)
 
 # find features colocalized with first feature

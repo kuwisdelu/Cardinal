@@ -72,7 +72,7 @@
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, dim=c(10,10))
 
 # calculate spatially-aware distances from first 5 spectra

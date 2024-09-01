@@ -5,7 +5,7 @@ context("stats")
 
 test_that("PCA", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=1, dim=c(10L, 10L))
 	pc <- PCA(s, ncomp=2)
 	pred <- predict(pc, newdata=s)
@@ -23,7 +23,7 @@ test_that("PCA", {
 
 test_that("NMF", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=1, dim=c(10L, 10L))
 	mf <- NMF(s, ncomp=2, method="als")
 	pred <- predict(mf, newdata=s)
@@ -38,7 +38,7 @@ test_that("NMF", {
 
 test_that("PLS", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2L)
 	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 	pl <- PLS(s, s$class, ncomp=2, method="nipals")
@@ -77,7 +77,7 @@ test_that("PLS", {
 
 test_that("OPLS", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L))
 	s$class <- makeFactor(A=s$circleA, B=s$circleB)
 	op <- OPLS(s, s$class, ncomp=1:2)
@@ -103,7 +103,7 @@ test_that("OPLS", {
 
 test_that("spatialFastmap", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=1, dim=c(10L, 10L))
 	fm <- spatialFastmap(s, ncomp=2, weights="gaussian")
 	pred <- predict(fm, newdata=s)
@@ -118,7 +118,7 @@ test_that("spatialFastmap", {
 
 test_that("spatialKMeans", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
 		centroided=TRUE)
 	km <- spatialKMeans(s, k=2:4, weights="gaussian")
@@ -146,7 +146,7 @@ test_that("spatialKMeans", {
 
 test_that("spatialShrunkenCentroids (classification)", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2L,
 		centroided=TRUE)
 	s$class <- makeFactor(A=s$circleA, B=s$circleB)
@@ -191,11 +191,11 @@ test_that("spatialShrunkenCentroids (classification)", {
 
 test_that("spatialShrunkenCentroids (clustering)", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=2, dim=c(10L, 10L),
 		centroided=TRUE)
 
-	set.seed(2)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	ssc <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="gaussian")
 	ssc2 <- spatialShrunkenCentroids(s, k=2:3, s=0:3, weights="adaptive")
 	pred <- predict(ssc[[1L]], newdata=s, type="class")
@@ -218,19 +218,19 @@ test_that("spatialShrunkenCentroids (clustering)", {
 	expect_is(topf[[1L]], "DataFrame")
 	expect_false(is.unsorted(rev(topf[[1L]]$statistic)))
 
-	set.seed(3)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	ssc3 <- spatialShrunkenCentroids(s, k=1, s=0)
 
 	expect_setequal(ssc3$class, factor(1L))
 	expect_true(all(ssc3$statistic == 0))
 	expect_equivalent(ssc3$centers, rowMeans(spectra(s)))
 
-	set.seed(4)
-	ssc4 <- spatialShrunkenCentroids(s, k=4, s=12)
+	set.seed(1, kind="L'Ecuyer-CMRG")
+	ssc4 <- spatialShrunkenCentroids(s, k=4, s=6)
 
 	expect_lte(nlevels(ssc3$class), 4)
 
-	set.seed(5)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	coord <- expand.grid(x=1:9, y=1:9)
 	n <- nrow(coord)
 	p <- 10
@@ -241,18 +241,18 @@ test_that("spatialShrunkenCentroids (clustering)", {
 
 	expect_lte(nlevels(ssc5$class), 5)
 
-	set.seed(6)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	expect_warning(spatialShrunkenCentroids(s2, k=6, s=12))
 
 })
 
 test_that("spatialDGMM", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=2, dim=c(10L, 10L), nrun=2L,
 		centroided=TRUE)
 
-	set.seed(2)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	gm <- spatialDGMM(s, k=4, weights="gaussian")
 	gm2 <- spatialDGMM(s, k=4, weights="adaptive")
 
@@ -267,7 +267,7 @@ test_that("spatialDGMM", {
 	expect_setequal(as.factor(gm$class[[1L]]), factor(1:4))
 	expect_setequal(as.factor(gm2$class[[1L]]), factor(1:4))
 
-	set.seed(3)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	i <- seq_len(15)
 	gm3 <- spatialDGMM(s, i=i, r=2, k=3:5, compress=FALSE)
 
@@ -282,7 +282,7 @@ test_that("spatialDGMM", {
 
 test_that("meansTest", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=6,
 		centroided=TRUE)
 	s$truecondition <- ifelse(s$circleA | s$circleB, s$condition, NA)
@@ -320,7 +320,7 @@ test_that("meansTest", {
 	expect_true(all(mcols(mtr)$statistic > 0))
 	expect_true(all(mcols(mtr)$pvalue > 0))
 
-	set.seed(2)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
 		centroided=TRUE)
 	featureNames(s2) <- paste0("Feature", seq_len(nrow(s2)))
@@ -331,7 +331,7 @@ test_that("meansTest", {
 	expect_true(all(is.infinite(mcols(mt4)$statistic)))
 	expect_true(all(mcols(mt4)$pvalue <= 0))
 
-	set.seed(3)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	gm <- spatialDGMM(s, r=1, k=2)
 	gm2 <- spatialDGMM(s2, r=1, k=2)
 

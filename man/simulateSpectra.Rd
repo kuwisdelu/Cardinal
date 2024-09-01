@@ -174,7 +174,7 @@ presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 
 # generate a spectrum
 s <- simulateSpectra(1)

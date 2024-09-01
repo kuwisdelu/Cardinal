@@ -36,7 +36,7 @@ slice(x, i = features(x, ...), ..., run = NULL,
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, npeaks=10, dim=c(10,10), centroided=TRUE)
 peaks <- mz(metadata(mse)$design$featureData)
 

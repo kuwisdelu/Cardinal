@@ -5,7 +5,7 @@ context("crossValidate")
 
 test_that("crossValidate", {
 
-	set.seed(1)
+	set.seed(1, kind="L'Ecuyer-CMRG")
 	ms <- simulateImage(preset=4, dim=c(10L, 10L), nrun=2,
 		centroided=TRUE)
 	ms$class <- makeFactor(A=ms$circleA, B=ms$circleB)

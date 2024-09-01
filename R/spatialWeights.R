@@ -74,9 +74,8 @@ setMethod("spatialWeights", "PositionDataFrame",
 		sds <- rep_len(sd, nrow(x))
 	} else {
 		sds <- vapply(ds, function(d) max(d) / 2, numeric(1L))
-		sds <- sds + median(sds)
+		sds <- sds + sqrt(.Machine$double.eps)
 	}
-	FUN <- function(d, sd) exp(-d^2 / (2 * sd^2))
-	Map(FUN, ds, sds)
+	Map(function(d, sd) exp(-d^2 / (2 * sd^2)), ds, sds)
 }
 

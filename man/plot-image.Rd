@@ -95,7 +95,7 @@
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- simulateImage(preset=2, npeaks=10, dim=c(16,16))
 peaks <- mz(metadata(x)$design$featureData)
 

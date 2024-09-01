@@ -67,7 +67,7 @@
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 mse <- simulateImage(preset=1, dim=c(10,10))
 
 # calculate weights based on distance

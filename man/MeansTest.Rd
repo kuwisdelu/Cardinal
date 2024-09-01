@@ -104,7 +104,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 }
 
 \examples{
-set.seed(1)
+set.seed(1, kind="L'Ecuyer-CMRG")
 x <- simulateImage(preset=4, nrun=3, npeaks=10,
     dim=c(10,10), peakheight=5, peakdiff=2,
     centroided=TRUE)
