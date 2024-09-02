@@ -35,8 +35,6 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 				simplify=simplify, outpath=outpath,
 				verbose=verbose, chunkopts=chunkopts,
 				BPPARAM=BPPARAM)
-		} else {
-			.Error("too many 'index' arrays")
 		}
 	})
 
