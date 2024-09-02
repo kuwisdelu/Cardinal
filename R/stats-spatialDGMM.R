@@ -43,9 +43,9 @@ setMethod("spatialDGMM", "ANY",
 	ans <- vector("list", length=length(k))
 	for ( j in seq_along(k) )
 	{
-		lab <- if (length(i) != 1L) "models" else "model"
+		label <- if (length(i) != 1L) "models" else "model"
 		.Log("fitting spatial Gaussian mixture ",
-			lab, " for k = ", k[j],
+			label, " for k = ", k[j],
 			message=verbose)
 		ans[[j]] <- sgmix(NULL, NULL, x, r=r, k=k[j], group=groups,
 			weights=nbwts, neighbors=neighbors, byrow=byrow,
@@ -57,8 +57,8 @@ setMethod("spatialDGMM", "ANY",
 		ans[[j]]$k <- k[j]
 	}
 	names(ans) <- paste0("k=", k)
-	lab <- if (length(k) != 1L || length(i) != 1L) "models" else "model"
-	.Log("returning spatial Gaussian mixture ", lab,
+	label <- if (length(k) != 1L || length(i) != 1L) "models" else "model"
+	.Log("returning spatial Gaussian mixture ", label,
 		message=verbose)
 	if ( length(ans) > 1L ) {
 		ResultsList(ans,

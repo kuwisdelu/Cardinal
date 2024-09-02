@@ -58,9 +58,9 @@ setMethod("meansTest", "ANY",
 			}
 			as.data.frame(data[vars])
 		})
+	label <- if (n != 1L) "models" else "model"
 	# fit models
-	lab <- if (n != 1L) "models" else "model"
-	.Log("fitting ", n, " ", lab,
+	.Log("fitting ", n, " ", label,
 		message=verbose)
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
@@ -68,8 +68,7 @@ setMethod("meansTest", "ANY",
 		BPPARAM=BPPARAM, ...)
 	names(models) <- if (byrow) rownames(x) else colnames(x)
 	# test models
-	lab <- if (n != 1L) "models" else "model"
-	.Log("testing ", n, " ", lab,
+	.Log("testing ", n, " ", label,
 		message=verbose)
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,
@@ -90,7 +89,7 @@ setMethod("meansTest", "ANY",
 
 .lmFit_fun <- function(fixed, random)
 {
-	FIT <- function(data, ...)
+	FIT <- isoclos(function(data, ...)
 	{
 		model <- NULL
 		if ( is.null(random) ) {
@@ -105,13 +104,13 @@ setMethod("meansTest", "ANY",
 			model$data <- data
 		}
 		model
-	}
+	}, CardinalEnv())
 	FIT
 }
 
 .lmTest_fun <- function(reduced, random)
 {
-	TEST <- function(model, data)
+	TEST <- isoclos(function(model, data)
 	{
 		if ( inherits(model, "try-error") ) {
 			return(c(statistic=NA, pvalue=NA))
@@ -136,7 +135,7 @@ setMethod("meansTest", "ANY",
 				sQuote(class(model)))
 		}
 		c(statistic=LR, pvalue=PValue)
-	}
+	}, CardinalEnv())
 	TEST
 }
 
@@ -272,9 +271,9 @@ setMethod("meansTest", "SpatialDGMM",
 			data[[response]] <- yi[,class,drop=TRUE]
 			as.data.frame(data[vars])
 		})
+	label <- if (n != 1L) "models" else "model"
 	# fit models
-	lab <- if (n != 1L) "models" else "model"
-	.Log("fitting ", n, " ", lab,
+	.Log("fitting ", n, " ", label,
 		message=verbose)
 	FIT <- .lmFit_fun(fixed, random)
 	models <- chunkLapply(datalist, FIT,
@@ -282,8 +281,7 @@ setMethod("meansTest", "SpatialDGMM",
 		BPPARAM=BPPARAM, ...)
 	names(models) <- rownames(featureData(x))
 	# test models
-	lab <- if (n != 1L) "models" else "model"
-	.Log("testing ", n, " ", lab,
+	.Log("testing ", n, " ", label,
 		message=verbose)
 	TEST <- .lmTest_fun(reduced, random)
 	tests <- chunkMapply(TEST, models, datalist,

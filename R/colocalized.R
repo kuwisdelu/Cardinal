@@ -37,8 +37,8 @@ setMethod("colocalized", "SpectralImagingExperiment",
 	if ( any(lengths(ref) != ncol(object)) )
 		.Error("length of reference [", length(ref[[1L]]), "] ",
 			"does not match length of object [", length(object), "]")
-	lab <- if (length(ref) != 1L) "images" else "image"
-	.Log("calculating colocalization with ", length(ref), " ", lab,
+	label <- if (length(ref) != 1L) "images" else "image"
+	.Log("calculating colocalization with ", length(ref), " ", label,
 		message=verbose)
 	FUN <- .coscore_fun(ref, threshold, FALSE)
 	scores <- chunkApply(spectra(object), 1L, FUN,
@@ -76,8 +76,8 @@ setMethod("colocalized", "SpatialDGMM",
 	if ( any(lengths(ref) != nrow(pixelData(object))) )
 		.Error("length of reference [", length(ref[[1L]]), "] ",
 			"does not match length of object [", nrow(pixelData(object)), "]")
-	lab <- if (length(ref) != 1L) "images" else "image"
-	.Log("calculating colocalization with ", length(ref), " ", lab,
+	label <- if (length(ref) != 1L) "images" else "image"
+	.Log("calculating colocalization with ", length(ref), " ", label,
 		message=verbose)
 	FUN <- .coscore_fun(ref, threshold, TRUE)
 	scores <- chunkLapply(object$class, FUN,
