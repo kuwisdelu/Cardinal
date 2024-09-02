@@ -3,22 +3,34 @@
 ## ------------------------------
 
 setMethod("addProcessing", "SpectralImagingData",
-	function(object, FUN, label, verbose = getCardinalVerbose(), ...)
+	function(object, FUN, label, metadata = list(),
+		verbose = getCardinalVerbose(), ...)
 {
-	ps <- ProcessingStep(FUN, ARGS=list(...))
-	ps <- setNames(list(ps), label)
-	processingData(object) <- c(processingData(object), ps)
-	labels <- names(processingData(object))
-	.Log("queued: ", paste0(labels, collapse=", "),
-		message=verbose)
+	args <- list(...)
+	step <- ProcessingStep(FUN, ARGS=args)
+	step <- setNames(list(step), label)
+	metadata <- setNames(list(c(metadata, args)), label)
+	ps <- processingData(object)
+	psnew <- c(ps, step)
+	psnew <- structure(psnew,
+		queued=c(attr(ps, "queued"), metadata),
+		processed=attr(ps, "processed"))
+	processingData(object) <- psnew
+	.Log("queued: ", label, message=verbose)
 	if ( validObject(object) )
 		object
 })
 
 reset <- function(object, ...)
 {
-	processingData(object) <- list()
+	ps <- processingData(object)
+	ps <- structure(list(), processed=attr(ps, "processed"))
+	processingData(object) <- ps
 	object
+}
+
+.processing_id <- function() {
+	paste0("processing_", format(Sys.time(), format="%Y%m%d%H%M%S"))
 }
 
 
@@ -164,8 +176,9 @@ setMethod("process", "SpectralImagingExperiment",
 			BPPARAM=BPPARAM)
 	object <- .postprocess_SpectralImagingExperiment(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
-	metadata(object)[["processing"]] <- c(metadata(object)[["processing"]], ps)
-	processingData(object) <- list()
+	metadata(object)[[.processing_id()]] <- attr(ps, "queued")
+	processingData(object) <- structure(list(),
+		processed=c(attr(ps, "processed"), attr(ps, "queued")))
 	if ( !is.null(outfile) )
 		ipcremove(pid)
 	object
@@ -285,8 +298,9 @@ setMethod("process", "SpectralImagingArrays",
 	}
 	object <- .postprocess_SpectralImagingArrays(ans,
 		object=object, domain=domain, spectraname=snm, indexname=inm)
-	metadata(object)[["processing"]] <- c(metadata(object)[["processing"]], ps)
-	processingData(object) <- list()
+	metadata(object)[[.processing_id()]] <- attr(ps, "queued")
+	processingData(object) <- structure(list(),
+		processed=c(attr(ps, "processed"), attr(ps, "queued")))
 	if ( !is.null(outfile) )
 		ipcremove(pid)
 	object
