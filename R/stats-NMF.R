@@ -28,7 +28,7 @@ setMethod("NMF", "SpectralImagingExperiment",
 	function(x, ncomp = 3, method = c("als", "mult"), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- NMF(spectra(x), ncomp=ncomp, method=method, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialNMF")
 })
@@ -39,7 +39,7 @@ setMethod("predict", "SpatialNMF",
 	if ( !is(newdata, "SpectralImagingExperiment") )
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( length(processingData(newdata)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	predict(object@model, newdata=spectra(newdata), ...)
 })
 

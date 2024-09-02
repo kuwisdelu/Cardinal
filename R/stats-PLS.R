@@ -61,7 +61,7 @@ setMethod("PLS", "SpectralImagingExperiment",
 		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- PLS(spectra(x), y=y, ncomp=ncomp,
 		center=center, scale=scale, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialPLS")
@@ -83,7 +83,7 @@ setMethod("predict", "SpatialPLS",
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
-			.Warn("pending processing steps will be ignored")
+			.Warn("queued processing steps will be ignored")
 		if ( missing(ncomp) )
 			ncomp <- ncol(object$loadings)
 		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,
@@ -182,7 +182,7 @@ setMethod("OPLS", "SpectralImagingExperiment",
 		center = TRUE, scale = FALSE, ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- OPLS(spectra(x), y=y, ncomp=ncomp,
 		center=center, scale=scale, retx=retx, transpose=TRUE, ...)
 	as(SpatialResults(ans, x), "SpatialOPLS")
@@ -210,7 +210,7 @@ setMethod("predict", "SpatialOPLS",
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
-			.Warn("pending processing steps will be ignored")
+			.Warn("queued processing steps will be ignored")
 		if ( missing(ncomp) )
 			ncomp <- ncol(object$loadings)
 		ans <- predict(object@model, newdata=spectra(newdata), k=ncomp,

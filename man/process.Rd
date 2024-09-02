@@ -31,7 +31,8 @@
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{addProcessing}{SpectralImagingData}(object, FUN, label, verbose = getCardinalVerbose(), \dots)
+\S4method{addProcessing}{SpectralImagingData}(object, FUN, label, metadata = list(),
+    verbose = getCardinalVerbose(), \dots)
 
 reset(object, \dots)
 }
@@ -53,11 +54,13 @@ reset(object, \dots)
 
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
-    \item{\dots}{Options passed to \code{\link[matter]{chunk_mapply}} or \code{\link[matter]{chunk_colapply}}.}
+    \item{\dots}{For \code{process}, options passed to \code{\link[matter]{chunk_mapply}} or \code{\link[matter]{chunk_colapply}}. For \code{addProcessing}, arguments to \code{FUN}.}
 
     \item{FUN}{A user-specified processing function.}
 
     \item{label}{The name of the processing step.}
+
+    \item{metadata}{A list of processing metadata to be added to the object's metadata after processing has been applied. Concatenated with any arguments passed to \code{FUN} via \code{dots}.}
 }
 
 \details{

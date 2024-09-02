@@ -93,7 +93,7 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "AN
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- spatialShrunkenCentroids(spectra(x), y=y,
 		coord=coord(x), r=r, s=s,
 		neighbors=neighbors, weights=weights,
@@ -127,7 +127,7 @@ setMethod("predict", "SpatialShrunkenCentroids",
 		.Error("'newdata' does not have the correct number of dimensions")
 	if ( !missing(newdata) ) {
 		if ( length(processingData(newdata)) > 0L )
-			.Warn("pending processing steps will be ignored")
+			.Warn("queued processing steps will be ignored")
 		if ( is.character(weights) ) {
 			nbwts <- spatialWeights(newdata, r=r,
 				neighbors=neighbors, weights=weights,
@@ -335,7 +335,7 @@ setMethod("spatialShrunkenCentroids", c(x = "SpectralImagingExperiment", y = "mi
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- spatialShrunkenCentroids(spectra(x),
 		coord=coord(x), r=r, k=k, s=s,
 		neighbors=neighbors, weights=weights,

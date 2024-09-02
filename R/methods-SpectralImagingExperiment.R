@@ -305,7 +305,7 @@ setMethod("show", "SpectralImagingExperiment",
 		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
 			.paste_head_tail(runNames(object))))
 		# processingData()
-		.print_pending_processing(object)
+		.print_queued_processing(object)
 		# metadata()
 		if ( length(metadata(object)) > 0L )
 		{
@@ -558,7 +558,7 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 	paste0(.select_head_tail(x, n), collapse=collapse)
 }
 
-.print_pending_processing <- function(object)
+.print_queued_processing <- function(object)
 {
 	if ( length(processingData(object)) > 0L )
 	{
@@ -593,7 +593,7 @@ setMethod("show", "SpectralImagingArrays",
 		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
 			.paste_head_tail(runNames(object))))
 		# processingData()
-		.print_pending_processing(object)
+		.print_queued_processing(object)
 		# metadata()
 		if ( length(metadata(object)) > 0L )
 		{

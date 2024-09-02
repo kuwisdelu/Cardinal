@@ -117,7 +117,7 @@ setMethod("spatialKMeans", "SpectralImagingExperiment",
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- spatialKMeans(spectra(x),
 		coord=coord(x), r=r, k=k, ncomp=ncomp,
 		neighbors=neighbors, weights=weights,

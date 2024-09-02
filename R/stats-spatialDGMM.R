@@ -74,7 +74,7 @@ setMethod("spatialDGMM", "SpectralImagingExperiment",
 		neighbors = findNeighbors(coord(x), r=r, groups=groups), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- spatialDGMM(spectra(x),
 		coord=coord(x), i=i, r=r, k=k, groups=groups,
 		neighbors=neighbors, weights=weights, byrow=TRUE, ...)

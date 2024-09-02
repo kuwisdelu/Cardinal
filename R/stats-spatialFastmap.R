@@ -53,7 +53,7 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 		neighbors = findNeighbors(x, r=r), ...)
 {
 	if ( length(processingData(x)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	ans <- spatialFastmap(spectra(x),
 		coord=coord(x), r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=weights,
@@ -72,7 +72,7 @@ setMethod("predict", "SpatialFastmap",
 	if ( nrow(newdata) != nrow(object$pivot.array) )
 		.Error("'newdata' does not have the correct number of dimensions")
 	if ( length(processingData(newdata)) > 0L )
-		.Warn("pending processing steps will be ignored")
+		.Warn("queued processing steps will be ignored")
 	if ( is.character(weights) ) {
 		nbwts <- spatialWeights(newdata, r=r,
 			neighbors=neighbors, weights=weights,
