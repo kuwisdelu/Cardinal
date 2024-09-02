@@ -119,8 +119,8 @@ simulateImage <- function(pixelData, featureData, preset,
 	pixelerr <- rnorm(nrow(pdata), sd=sdpixel)
 	# calculate spatial autoregressive (SAR) covariance
 	if ( spcorr > 0 ) {
-		W <- as.matrix(spatialWeights(pixelData, r=1,
-			weights="gaussian", matrix=TRUE, verbose=FALSE))
+		W <- as.matrix(spatialWeights(as.matrix(coord(pixelData)),
+			r=1, weights="gaussian", matrix=TRUE, verbose=FALSE))
 		IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
 		SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
 		SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)

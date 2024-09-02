@@ -32,7 +32,7 @@ setMethod("spatialDists", "PositionDataFrame",
 		neighbors = findNeighbors(x, r=r),
 		neighbors.weights = spatialWeights(x, r=r), ...)
 {
-	spatialDists(dropkeys(x), y, byrow=TRUE,
+	spatialDists(as.matrix(dropkeys(x)), y, byrow=TRUE,
 		neighbors=neighbors,
 		neighbors.weights=neighbors.weights, ...)
 })

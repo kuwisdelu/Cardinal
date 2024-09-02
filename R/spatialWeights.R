@@ -10,7 +10,7 @@ setMethod("spatialWeights", "ANY",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	wts <- .spatialWeights(coord, byrow=byrow || !missing(coord),
+	wts <- .spatialWeights(as.matrix(coord), byrow=byrow || !missing(coord),
 		neighbors=neighbors, weights="gaussian", sd=sd,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
@@ -36,7 +36,8 @@ setMethod("spatialWeights", "SpectralImagingExperiment",
 		neighbors = findNeighbors(x, r=r),
 		weights = c("gaussian", "adaptive"), ...)
 {
-	spatialWeights(spectra(x), coord=coord(x), r=r, byrow=FALSE,
+	spatialWeights(spectra(x),
+		coord=coord(x), r=r, byrow=FALSE,
 		neighbors=neighbors, weights=weights, ...)
 })
 
@@ -45,7 +46,8 @@ setMethod("spatialWeights", "PositionDataFrame",
 		neighbors = findNeighbors(x, r=r),
 		weights = c("gaussian", "adaptive"), ...)
 {
-	spatialWeights(dropkeys(x), coord=coord(x), r=r, byrow=TRUE,
+	spatialWeights(as.matrix(dropkeys(x)),
+		coord=coord(x), r=r, byrow=TRUE,
 		neighbors=neighbors, weights=weights, ...)
 })
 
