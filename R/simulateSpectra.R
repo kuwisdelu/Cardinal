@@ -72,9 +72,6 @@ simulateImage <- function(pixelData, featureData, preset,
 		.Deprecated(old="representation", new="centroided")
 		centroided <- list(...)$representation == "centroided"
 	}
-	if ( !"L'Ecuyer-CMRG" %in% RNGkind() )
-		.Warn("use RNGkind(\"L'Ecuyer-CMRG\")",
-			" for statistically safe RNG")
 	if ( !missing(preset) && !is.null(preset) ) {
 		preset <- presetImageDef(preset, ...)
 		featureData <- preset$featureData
@@ -145,8 +142,9 @@ simulateImage <- function(pixelData, featureData, preset,
 		pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
 	}
 	# simulate run
+	label <- if (length(mz) != 1L) "pixels" else "pixel"
 	.Log("simulating ", length(domain), " intensities ",
-		"and ", length(mz), " peaks per pixel",
+		"and ", length(mz), " peaks per ", label,
 		message=verbose)
 	group <- as.matrix(pdata)
 	SIMULATE <- isofun(function(i, group, mz, intensity,
@@ -166,7 +164,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	spectra <- chunkLapply(seq_len(nrow(group)), SIMULATE,
 		group=group, mz=mz, intensity=intensity, units=units,
 		from=from, to=to, by=by, runerr=runerr, pixelerr=pixelerr,
-		verbose=verbose, chunkopts=chunkopts,
+		verbose=verbose, chunkopts=chunkopts, RNG=TRUE,
 		BPPARAM=BPPARAM, ...)
 	# process spectra
 	if ( continuous ) {
@@ -174,9 +172,16 @@ simulateImage <- function(pixelData, featureData, preset,
 			# continuous, centroided
 			spectra <- vapply(spectra,
 				function(s) {
+					if ( length(mz) > 1L ) {
+						tol <- 0.5 * min(diff(mz))
+					} else {
+						tol <- Inf
+					}
 					approx1(domain, s, mz, interp="max",
-						tol=0.5 * min(diff(mz)), tol.ref="abs")
+						tol=tol, tol.ref="abs")
 				}, numeric(length(mz)))
+			if ( is.null(dim(spectra)) )
+				spectra <- t(spectra)
 		} else {
 			# continuous, profile
 			mz <- domain

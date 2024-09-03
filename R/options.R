@@ -47,6 +47,11 @@ setCardinalParallel <- function(workers = snowWorkers()) {
 	} else {
 		.Error("'workers' must be nodenames or the number of workers")
 	}
+	if ( !"L'Ecuyer-CMRG" %in% RNGkind() ) {
+		.Log("making RNG parallel-safe with \"L'Ecuyer-CMRG\"",
+			message=getCardinalVerbose())
+		RNGkind("L'Ecuyer-CMRG")
+	}
 	if ( nworkers <= 1L )
 		return(setCardinalBPPARAM(NULL))
 	nchunks <- seq_len(10) * nworkers
