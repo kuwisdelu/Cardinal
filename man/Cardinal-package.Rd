@@ -4,6 +4,8 @@
 
 \alias{Cardinal}
 
+\alias{getCardinalParallel}
+\alias{setCardinalParallel}
 \alias{getCardinalBPPARAM}
 \alias{setCardinalBPPARAM}
 \alias{getCardinalVerbose}
@@ -44,6 +46,8 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	The following Cardinal-specific options are available:
 
 	\itemize{
+		\item{\code{getCardinalParallel(), setCardinalParallel(workers=snowWorkers())}: Set up a default parallelization backend (if passed \code{TRUE}, a number of workers, or a vector of node names, or turn off parallelization (if \code{FALSE} or \code{NULL}.}
+
 		\item{\code{getCardinalBPPARAM(), setCardinalBPPARAM(BPPARAM=NULL)}: The default backend to use for parallel processing. By default, this is initially set to \code{NULL} (no parallelization). Otherwise, it must be a \code{BiocParallelParam} instance. See documentation for \code{\link{bplapply}}.}
 
 		\item{\code{getCardinalVerbose(), setCardinalVerbose(verbose=interactive())}: Should progress messages be printed?}
