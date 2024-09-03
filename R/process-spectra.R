@@ -4,12 +4,48 @@
 
 ## Normalization
 
+setMethod("normalize", "MSImagingExperiment_OR_Arrays",
+	function(object,
+		method = c("tic", "rms", "reference"),
+		scale = NA, ref = NULL, ...)
+{
+	method <- match.arg(method)
+	if ( is.na(scale) ) {
+		if ( method == "reference" ) {
+			if ( is.null(ref) )
+				.Error("must provide 'ref' for method='reference'")
+			scale <- 1
+		} else {
+			if ( is.null(dim(object)) ) {
+				scale <- max(lengths(mz(object)))
+			} else {
+				scale <- length(mz(object))
+			}
+		}
+	}
+	FUN <- .normalize_fun[[method, exact=FALSE]]
+	if ( method == "reference" ) {
+		addProcessing(object, FUN,
+			label="intensity normalization",
+			metadata=list(method=method),
+			scale=scale, ref=ref, ...)
+	} else {
+		addProcessing(object, FUN,
+			label="intensity normalization",
+			metadata=list(method=method),
+			scale=scale, ...)
+	}
+})
+
 setMethod("normalize", "SpectralImagingData",
 	function(object,
 		method = c("tic", "rms", "reference"), ...)
 {
-	FUN <- .normalize_fun[[match.arg(method), exact=FALSE]]
-	addProcessing(object, FUN, label="intensity normalization", ...)
+	method <- match.arg(method)
+	FUN <- .normalize_fun[[method, exact=FALSE]]
+	addProcessing(object, FUN,
+		label="intensity normalization",
+		metadata=list(method=method), ...)
 })
 
 .normalize_fun <- list(
@@ -28,8 +64,11 @@ setMethod("smooth", "SpectralImagingData",
 		method = c("gaussian", "bilateral", "adaptive",
 			"diff", "guide", "pag", "sgolay", "ma"), ...)
 {
-	FUN <- .smooth_fun[[match.arg(method), exact=FALSE]]
-	addProcessing(x, FUN, label="smoothing", ...)
+	method <- match.arg(method)
+	FUN <- .smooth_fun[[method, exact=FALSE]]
+	addProcessing(x, FUN,
+		label="smoothing",
+		metadata=list(method=method), ...)
 })
 
 .smooth_fun <- list(
@@ -56,8 +95,11 @@ setMethod("reduceBaseline", "SpectralImagingData",
 	function(object,
 		method = c("locmin", "hull", "snip", "median"), ...)
 {
-	FUN <- .reduceBaseline_fun[[match.arg(method), exact=FALSE]]
-	addProcessing(object, FUN, label="baseline reduction", ...)
+	method <- match.arg(method)
+	FUN <- .reduceBaseline_fun[[method, exact=FALSE]]
+	addProcessing(object, FUN,
+		label="baseline reduction",
+		metadata=list(method=method), ...)
 })
 
 .reduceBaseline_fun <- list(
@@ -78,6 +120,7 @@ setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
 		method = c("locmax", "dtw", "cow"),
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
+	method <- match.arg(method)
 	if ( !missing(ref) ) {
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
@@ -91,8 +134,10 @@ setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 	}
 	tol.ref <- switch(units, ppm="x", mz="abs")
-	FUN <- .recalibrate_fun[[match.arg(method), exact=FALSE]]
-	addProcessing(object, FUN, label="m/z calibration",
+	FUN <- .recalibrate_fun[[method, exact=FALSE]]
+	addProcessing(object, FUN,
+		label="m/z calibration",
+		metadata=list(method=method),
 		ref=ref, tol=tol, tol.ref=tol.ref, ...)
 })
 
@@ -101,6 +146,7 @@ setMethod("recalibrate", "SpectralImagingData",
 		method = c("locmax", "dtw", "cow"),
 		tolerance = NA, units = c("relative", "absolute"), ...)
 {
+	method <- match.arg(method)
 	if ( !missing(ref) ) {
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
@@ -114,8 +160,10 @@ setMethod("recalibrate", "SpectralImagingData",
 		tol <- tolerance
 	}
 	tol.ref <- switch(units, relative="x", absolute="abs")
-	FUN <- .recalibrate_fun[[match.arg(method), exact=FALSE]]
-	addProcessing(object, FUN, label="recalibration",
+	FUN <- .recalibrate_fun[[method, exact=FALSE]]
+	addProcessing(object, FUN,
+		label="recalibration",
+		metadata=list(method=method),
 		ref=ref, tol=tol, tol.ref=tol.ref, ...)
 })
 

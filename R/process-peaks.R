@@ -400,7 +400,8 @@ setMethod("peakPick", "SpectralImagingData",
 		} else {
 			FUN <- .peakPick
 		}
-		addProcessing(object, FUN, label=paste0(type, " peak picking"),
+		addProcessing(object, FUN,
+			label=paste0(type, " peak picking"),
 			method=method, SNR=SNR, type=type, ...)
 	} else {
 		if ( missing(units) && !missing(tolerance) )
@@ -415,7 +416,8 @@ setMethod("peakPick", "SpectralImagingData",
 			tol <- tolerance
 		}
 		FUN <- .peakPick_ref
-		addProcessing(object, FUN, label=paste0(type, " peak picking"),
+		addProcessing(object, FUN,
+			label=paste0(type, " peak picking"),
 			ref=ref, tol=tol, tol.ref=tol.ref, type=type, ...)
 	}
 })
