@@ -1,6 +1,7 @@
 \name{normalize}
 
 \alias{normalize}
+\alias{normalize,MSImagingExperiment_OR_Arrays-method}
 \alias{normalize,SpectralImagingData-method}
 
 \title{Normalize spectra}
@@ -10,6 +11,10 @@
 }
 
 \usage{
+\S4method{normalize}{MSImagingExperiment_OR_Arrays}(object,
+    method = c("tic", "rms", "reference"),
+    scale = NA, ref = NULL, \dots)
+
 \S4method{normalize}{SpectralImagingData}(object,
     method = c("tic", "rms", "reference"), \dots)
 }
@@ -18,6 +23,10 @@
     \item{object}{A spectral imaging dataset.}
 
     \item{method}{The normalization method to use. See \code{\link[matter]{rescale}} for details.}
+
+    \item{scale}{The scaling value to use for the normalized spectra.}
+
+    \item{ref}{The reference peaks to use for normalization.}
 
     \item{\dots}{Additional arguments passed to the normalization function.}
 }
