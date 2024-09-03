@@ -228,7 +228,7 @@ convertMSImagingExperiment2Arrays <- function(object)
 		}
 		continuous <- TRUE
 	}
-	MSImagingArrays(list(mz=mz, intensity=intensity),
+	MSImagingArrays(list(intensity=intensity, mz=mz),
 		pixelData=pixelData(object),
 		experimentData=experimentData(object),
 		metadata=metadata(object),

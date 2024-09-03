@@ -111,8 +111,6 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	}
 	.Log("returning ", class(ans),
 		message=verbose)
-	.Log("done.",
-		message=verbose)
 	ans
 }
 
@@ -147,7 +145,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		}
 	}
 	run <- basename(tools::file_path_sans_ext(path))
-	spectraData <- SpectraArrays(list(mz=mz, intensity=intensity))
+	spectraData <- SpectraArrays(list(intensity=intensity, mz=mz))
 	pixelData <- PositionDataFrame(coord=coord, run=run, row.names=ids)
 	if ( length(extra) > 0L )
 		pixelData[names(extra)] <- extra
@@ -281,8 +279,6 @@ readAnalyze <- function(file, memory = FALSE, as = "auto",
 		}
 	}
 	.Log("returning ", class(ans),
-		message=verbose)
-	.Log("done.",
 		message=verbose)
 	ans
 }

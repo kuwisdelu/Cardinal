@@ -54,8 +54,6 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 			.Log("output bundle directory: ", sQuote(dirname(path)),
 				message=verbose)
 		}
-		.Log("done.",
-			message=verbose)
 		invisible(ok)
 	})
 

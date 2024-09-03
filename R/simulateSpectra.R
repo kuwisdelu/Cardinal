@@ -174,7 +174,7 @@ simulateImage <- function(pixelData, featureData, preset,
 			# processed, profile
 			mz <- rep.int(list(domain), length(spectra))
 		}
-		MSImagingArrays(list(mz=mz, intensity=spectra),
+		MSImagingArrays(list(intensity=spectra, mz=mz),
 			pixelData=pixelData,
 			centroided=centroided,
 			metadata=list(design=design))

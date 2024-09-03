@@ -10,15 +10,15 @@ test_that("process peaks - SpectralImagingArrays", {
 
 	s2 <- peakPick(s, method="sd")
 	s2 <- process(s2)
-	n1 <- lengths(spectra(s, 2L))
-	n2 <- lengths(spectra(s2, 2L))
+	n1 <- lengths(spectra(s, "index"))
+	n2 <- lengths(spectra(s2, "index"))
 
 	expect_is(s2, "SpectralImagingArrays")
 	expect_true(all(n2 < n1))
 
 	s3 <- peakPick(s, method="cwt")
 	s3 <- process(s3)
-	n3 <- lengths(spectra(s3, 2L))
+	n3 <- lengths(spectra(s3, "index"))
 
 	expect_true(all(n3 < n1))
 	expect_is(s3, "SpectralImagingArrays")

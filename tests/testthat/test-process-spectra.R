@@ -1,7 +1,7 @@
 require(testthat)
 require(Cardinal)
 
-context("process")
+context("process-spectra")
 
 test_that("process spectra - SpectralImagingArrays", {
 
@@ -128,7 +128,7 @@ test_that("process spectra - MSImagingArrays", {
 	file2 <- paste0(tempfile(), ".imzML")
 	ms3 <- normalize(ms, method="rms", scale=1)
 	ms3 <- process(ms3, outfile=file2)
-	rms4 <- vapply(as.list(spectra(ms3, 2L)), \(.) sqrt(mean(.^2)), numeric(1L))
+	rms4 <- vapply(as.list(intensity(ms3)), \(.) sqrt(mean(.^2)), numeric(1L))
 	fout2 <- path(intensity(ms3))
 
 	expect_is(mz(ms3), "matter_list")
