@@ -63,8 +63,8 @@ simulateSpectrum <- function(...)
 
 simulateImage <- function(pixelData, featureData, preset,
 	from = 0.9 * min(mz), to = 1.1 * max(mz), by = 400,
-	sdrun = 1, sdpixel = 1, spcorr = 0.3, units=c("ppm", "mz"),
-	centroided = FALSE, continuous = TRUE,
+	sdrun = 1, sdpixel = 1, spcorr = 0.3, SAR = TRUE,
+	centroided = FALSE, continuous = TRUE, units=c("ppm", "mz"),
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -119,14 +119,29 @@ simulateImage <- function(pixelData, featureData, preset,
 	pixelerr <- rnorm(nrow(pdata), sd=sdpixel)
 	# calculate spatial autoregressive (SAR) covariance
 	if ( spcorr > 0 ) {
-		.Log("simulating spatial covariance for ", nrow(pixelData), " pixels",
-			message=verbose)
-		W <- as.matrix(spatialWeights(as.matrix(coord(pixelData)),
-			r=1, weights="gaussian", matrix=TRUE, verbose=FALSE))
-		IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
-		SARcov <- as(Matrix::solve(crossprod(IrW, IrW)), "denseMatrix")
-		SARcovL <- Matrix::chol((SARcov + t(SARcov)) / 2)
-		pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
+		if ( SAR ) {
+			.Log("simulating spatial autoregressive covariance ",
+				"for ", nrow(pixelData), " pixels",
+				message=verbose)
+			W <- as.matrix(spatialWeights(as.matrix(coord(pixelData)),
+				r=1, weights="gaussian", matrix=TRUE, verbose=FALSE))
+			IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
+			SARcov <- as(Matrix::solve(crossprod(IrW, IrW)), "denseMatrix")
+			SARcovL <- Matrix::chol((SARcov + t(SARcov)) / 2)
+			pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
+		} else {
+			.Log("simulating spatial random noise ",
+				"for ", nrow(pixelData), " pixels",
+				message=verbose)
+			r <- 0.5 * spcorr * sqrt(nrow(pixelData))
+			nb <- findNeighbors(pixelData, r=r)
+			wts <- spatialWeights(pixelData, r=r,
+				weights="gaussian", verbose=FALSE)
+			wts <- Map(function(w) w / sum(w), wts)
+			pixelerr <- convolve_at(pixelerr, index=nb, weights=wts)
+			pixelerr <- rnorm(nrow(pdata), mean=pixelerr,
+				sd=sdpixel / sqrt(nrow(pixelData)))
+		}
 		pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
 	}
 	# simulate run
@@ -150,7 +165,7 @@ simulateImage <- function(pixelData, featureData, preset,
 	}, CardinalEnv())
 	spectra <- chunkLapply(seq_len(nrow(group)), SIMULATE,
 		group=group, mz=mz, intensity=intensity, units=units,
-		from=from, to=to, by=by,, runerr=runerr, pixelerr=pixelerr,
+		from=from, to=to, by=by, runerr=runerr, pixelerr=pixelerr,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	# process spectra

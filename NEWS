@@ -1,4 +1,24 @@
 
+CHANGES IN VERSION 3.7.5 [2024-9-3]
+-----------------------------------
+
+NEW FEATURES
+
+    o Add 'setCardinalParallel()' for setting a parallelization
+        backend with reasonably-selected defaults
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add 'SAR=FALSE' option to 'simulateImage()' for faster
+        simulation if spatial autoregressive model is not needed
+    o Change default array order for 'MSImagingArrays' so that
+        'intensity' is first array and 'mz' is second array
+    o Improved logging with pre-processing functions
+
+BUG FIXES
+
+    o Fix leaky 'meansTest()' closures
+
 CHANGES IN VERSION 3.7.4 [2024-8-28]
 -----------------------------------
 
