@@ -96,7 +96,7 @@ presetImageDef(preset = 1L, nrun = 1, npeaks = 30L,
 
     \item{spcorr}{The spatial autocorrelation. Must be between 0 and 1, where \code{spcorr=0} indicates no spatial autocorrelation.}
 
-    \item{SAR}{Should a spatial autoregressive (SAR) model be used for simulating spatially-correlated noise (\code{TRUE}) versus a simpler model using spatially-smoothed Gaussian noise (\code{FALSE})? The calculation of the SAR matrix for large images can be very time-consuming, so if the simpler model is adequate, then setting this to \code{FALSE} can result in significantly faster simulation.}
+    \item{SAR}{Should a spatial autoregressive (SAR) model be used for simulating spatially-correlated noise (\code{TRUE}) versus a simpler model that uses spatially-smoothed Gaussian noise (\code{FALSE})? The calculation of the SAR matrix for large images can be very time-consuming, so if the simpler model is adequate, then setting this to \code{FALSE} can result in significantly faster simulation.}
 
     \item{\dots}{Additional arguments to pass to \code{\link{simulateSpectra}} or \code{\link{presetImageDef}}.}
 
