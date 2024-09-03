@@ -26,7 +26,38 @@ CardinalEnv <- function() CardinalNamespace
 #### Cardinal-specific options ####
 ## --------------------------------
 
-# should progress messages be printed?
+# parallel defaults
+getCardinalParallel <- function() {
+	BPPARAM <- getOption("CardinalBPPARAM")
+	if ( is.null(BPPARAM) ) {
+		FALSE
+	} else {
+		bpworkers()
+	}
+}
+setCardinalParallel <- function(workers = snowWorkers()) {
+	if ( isTRUE(workers) )
+		workers <- snowWorkers()
+	if ( isFALSE(workers) || is.null(workers) )
+		workers <- 1L
+	if ( is.numeric(workers) ) {
+		nworkers <- max(workers)
+	} else if ( is.character(workers) ) {
+		nworkers <- length(workers)
+	} else {
+		.Error("'workers' must be nodenames or the number of workers")
+	}
+	if ( nworkers <= 1L )
+		return(setCardinalBPPARAM(NULL))
+	nchunks <- seq_len(10) * nworkers
+	nchunks <- max(nchunks[nchunks <= getCardinalNChunks()])
+	.Log("making default cluster with ", nworkers, " workers",
+		message=getCardinalVerbose())
+	setCardinalNChunks(nchunks)
+	setCardinalBPPARAM(SnowfastParam(workers))
+}
+
+# parallel backend
 getCardinalBPPARAM <- function() {
 	getOption("CardinalBPPARAM")
 }

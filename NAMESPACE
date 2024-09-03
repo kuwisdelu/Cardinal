@@ -392,6 +392,8 @@ export(
 export("SnowfastParam")
 
 export(
+	"getCardinalParallel",
+	"setCardinalParallel",
 	"getCardinalBPPARAM",
 	"setCardinalBPPARAM",
 	"getCardinalVerbose",

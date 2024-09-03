@@ -119,22 +119,29 @@ simulateImage <- function(pixelData, featureData, preset,
 	pixelerr <- rnorm(nrow(pdata), sd=sdpixel)
 	# calculate spatial autoregressive (SAR) covariance
 	if ( spcorr > 0 ) {
+		.Log("simulating spatial covariance for ", nrow(pixelData), " pixels",
+			message=verbose)
 		W <- as.matrix(spatialWeights(as.matrix(coord(pixelData)),
 			r=1, weights="gaussian", matrix=TRUE, verbose=FALSE))
 		IrW <- as(diag(nrow(W)) - spcorr * W, "sparseMatrix")
-		SARcov <- as(Matrix::solve(t(IrW) %*% IrW), "denseMatrix")
-		SARcovL <- Matrix::chol((SARcov + t(SARcov))/2)
+		SARcov <- as(Matrix::solve(crossprod(IrW, IrW)), "denseMatrix")
+		SARcovL <- Matrix::chol((SARcov + t(SARcov)) / 2)
 		pixelerr <- as.numeric(t(SARcovL) %*% pixelerr)
 		pixelerr <- sdpixel * ((pixelerr - mean(pixelerr)) / sd(pixelerr))
 	}
 	# simulate run
+	.Log("simulating ", length(domain), " intensities ",
+		"and ", length(mz), " peaks per pixel",
+		message=verbose)
 	group <- as.matrix(pdata)
-	SIMULATE <- isoclos(function(i, ...) {
+	SIMULATE <- isofun(function(i, group, mz, intensity,
+		from, to, by, units, runerr, pixelerr, ...)
+	{
 		present <- group[i,,drop=TRUE]
 		if ( any(present) ) {
 			x <- rowSums(intensity[,present,drop=FALSE])
 		} else {
-			x <- rep.int(0, nrow(fdata))
+			x <- rep.int(0, length(mz))
 		}
 		x <- pmax(0, x + runerr + pixelerr[i])
 		simulateSpectra(1L, mz=mz, intensity=x,
@@ -142,6 +149,8 @@ simulateImage <- function(pixelData, featureData, preset,
 			centroided=FALSE, ...)$intensity
 	}, CardinalEnv())
 	spectra <- chunkLapply(seq_len(nrow(group)), SIMULATE,
+		group=group, mz=mz, intensity=intensity, units=units,
+		from=from, to=to, by=by,, runerr=runerr, pixelerr=pixelerr,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	# process spectra
