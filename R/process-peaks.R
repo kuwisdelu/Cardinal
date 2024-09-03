@@ -271,7 +271,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	if ( is.null(domain) ) {
 		.Log("estimating bins for peak alignment",
 			message=verbose)
-		domain <- estimateDomain(index, method="median", units=units,
+		domain <- estimateDomain(index, units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 		if ( is.na(tolerance) ) {
 			# estimate tolerance as 0.5x resolution of bins

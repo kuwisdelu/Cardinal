@@ -116,7 +116,7 @@ test_that("process peaks - MSImagingArrays", {
 	expect_is(spectra(ms12), "matrix")
 
 	ms13 <- peakAlign(ms3, tolerance=0.1, units="mz")
-	ms14 <- peakAlign(ms13, tolerance=0.1, units="mz")
+	ms14 <- peakAlign(ms13, ref=ms13, tolerance=0.1, units="mz")
 
 	expect_equal(ms13, ms14)
 
@@ -176,7 +176,7 @@ test_that("process peaks - MSImagingExperiment", {
 	expect_is(spectra(ms12), "matrix")
 
 	ms13 <- peakAlign(ms3, tolerance=0.1, units="mz")
-	ms14 <- peakAlign(ms13, tolerance=0.1, units="mz")
+	ms14 <- peakAlign(ms13, ref=ms13, tolerance=0.1, units="mz")
 
 	expect_equal(ms13, ms14)
 
