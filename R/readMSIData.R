@@ -49,6 +49,10 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	}
 	.Log("parsing imzML file: ", sQuote(path),
 		message=verbose)
+	if ( file.size(path) > 1e9 ) {
+		.Log("imzML file is large (>1GB) so this may take longer than usual",
+			message=verbose)
+	}
 	ans <- .read_imzML(path, parse.only=parse.only, check=check, ...)
 	if ( isTRUE(ans@continuous) ) {
 		.Log("detected 'continuous' imzML",
