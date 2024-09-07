@@ -38,8 +38,15 @@ getCardinalParallel <- function() {
 setCardinalParallel <- function(workers = snowWorkers()) {
 	if ( isTRUE(workers) )
 		workers <- snowWorkers()
-	if ( isFALSE(workers) || is.null(workers) )
+	if ( isFALSE(workers) || is.null(workers) ) {
 		workers <- 1L
+	} else {
+		if ( !"L'Ecuyer-CMRG" %in% RNGkind() ) {
+			.Log("making RNG parallel-safe with \"L'Ecuyer-CMRG\"",
+				message=getCardinalVerbose())
+			RNGkind("L'Ecuyer-CMRG")
+		}
+	}
 	if ( is.numeric(workers) ) {
 		nworkers <- max(workers)
 	} else if ( is.character(workers) ) {
@@ -47,16 +54,13 @@ setCardinalParallel <- function(workers = snowWorkers()) {
 	} else {
 		.Error("'workers' must be nodenames or the number of workers")
 	}
-	if ( !"L'Ecuyer-CMRG" %in% RNGkind() ) {
-		.Log("making RNG parallel-safe with \"L'Ecuyer-CMRG\"",
-			message=getCardinalVerbose())
-		RNGkind("L'Ecuyer-CMRG")
-	}
 	if ( nworkers <= 1L )
 		return(setCardinalBPPARAM(NULL))
 	nchunks <- seq_len(10) * nworkers
-	nchunks <- max(nchunks[nchunks <= getCardinalNChunks()])
-	.Log("making default cluster with ", nworkers, " workers",
+	nchunks <- nchunks[nchunks <= getCardinalNChunks()]
+	nchunks <- max(nchunks, nworkers)
+	.Log("making Snowfast cluster with ", nworkers, " workers ",
+		"and ", nchunks, " chunks",
 		message=getCardinalVerbose())
 	setCardinalNChunks(nchunks)
 	setCardinalBPPARAM(SnowfastParam(workers))
