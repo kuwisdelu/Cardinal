@@ -1,4 +1,14 @@
 
+CHANGES IN VERSION 3.7.6 [2024-9-7]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Update 'estimateDomain()' to select resolution
+        based on 'median', 'min', 'max', or 'mean'
+    o Update 'peakAlign()' to build domain bins based on
+        the minimum of peak gaps (instead of the median)
+
 CHANGES IN VERSION 3.7.5 [2024-9-3]
 -----------------------------------
 
