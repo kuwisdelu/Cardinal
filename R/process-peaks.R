@@ -273,37 +273,22 @@ setMethod("peakAlign", "SpectralImagingArrays",
 			message=verbose)
 		domain <- estimateDomain(index, method="min", units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
-		if ( is.na(tolerance) ) {
-			# estimate tolerance as 0.5x resolution of bins
-			# note: the bins are approximately _the same_
-			# resolution as the expected gap between peaks
-			tol <- 0.5 * estres(domain, ref=tol.ref)
-			tol <- switch(units,
-				relative=round(2 * tol, digits=6L) * 0.5,
-				absolute=round(tol, digits=4L))
-			.Log("estimated ", units, " tolerance of ", tol,
-				message=verbose)
-		} else {
-			tol <- setNames(unname(tolerance), units)
-			res <- 0.5 * tol
-			domain <- switch(units,
-				relative=seq_rel(min(domain), max(domain), by=res),
-				absolute=seq(min(domain), max(domain), by=res))
-		}
+	}
+	if ( is.na(tolerance) ) {
+		# estimate tolerance as 2x bin width
+		tol <- 2 * estres(domain, ref=tol.ref)
+		tol <- switch(units,
+			relative=round(2 * tol, digits=6L) * 0.5,
+			absolute=round(tol, digits=4L))
+		.Log("estimated ", units, " tolerance of ", tol,
+			message=verbose)
 	} else {
-		if ( is.na(tolerance) ) {
-			# estimate tolerance as 2x resolution of domain
-			# note: the domain must be significantly _higher_
-			# resolution than the expected gap between peaks
-			tol <- 2 * estres(domain, ref=tol.ref)
-			tol <- switch(units,
-				relative=round(2 * tol, digits=6L) * 0.5,
-				absolute=round(tol, digits=4L))
-			.Log("estimated ", units, " tolerance of ", tol,
-				message=verbose)
-		} else {
-			tol <- setNames(unname(tolerance), units)
-		}
+		# OR, set bin width to 0.5x tolerance (if set)
+		tol <- setNames(unname(tolerance), units)
+		res <- 0.5 * tol
+		domain <- switch(units,
+			relative=seq_rel(min(domain), max(domain), by=res),
+			absolute=seq(min(domain), max(domain), by=res))
 	}
 	if ( missing(ref) || is.null(ref) ) {
 		.Log("binning peaks to create shared reference",
