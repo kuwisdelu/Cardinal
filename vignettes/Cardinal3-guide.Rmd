@@ -1037,7 +1037,7 @@ Use `peakAlign()` to align the detected peaks.
 Note that `peakAlign()` will automatically call `process()` if there are queued spectral processing steps.
 
 ```{r peakAlign}
-mse_peaks <- peakAlign(msa_peaks, tolerance=200, units="ppm")
+mse_peaks <- peakAlign(msa_peaks, tolerance=600, units="ppm")
 mse_peaks
 ```
 
@@ -1056,11 +1056,11 @@ When peaks are aligned without a reference, `peakAlign()` will return the count 
 fData(mse_peaks)
 
 # filter to peaks with frequencies > 0.1
-mse_filt <- subsetFeatures(mse_peaks, freq > 0.1)
+mse_filt <- subsetFeatures(mse_peaks, freq > 0.2)
 fData(mse_filt)
 ```
 
-Here, we use `subsetFeatures()` to subset the data to include only peaks observed in more than 10% of the dataset. For this dataset, that results in 35 peaks. (Note that the dataset was simulated with 30 peaks.)
+Here, we use `subsetFeatures()` to subset the data to include only peaks observed in more than 20% of the dataset. For this dataset, that results in 29 peaks. (Note that the dataset was simulated with 30 peaks.)
 
 ```{r mean-peaks-1, fig.height=3, fig.width=9}
 mse_filt <- summarizeFeatures(mse_filt)
@@ -1077,7 +1077,7 @@ We can also use `peakPick()` to queue peak summarization based on a set of refer
 
 ```{r peakPick-ref}
 msa_peaks2 <- peakPick(msa_pre, ref=mz(mse_filt), type="area",
-	tolerance=200, units="ppm")
+	tolerance=600, units="ppm")
 
 mse_peaks2 <- process(msa_peaks2)
 ```
@@ -1086,6 +1086,7 @@ In this case, local peaks are matched to the reference peaks within `tolerance`.
 
 
 ```{r mean-peaks-2, fig.height=3, fig.width=9}
+mse_peaks2 <- as(mse_peaks2, "MSImagingExperiment")
 mse_peaks2 <- summarizeFeatures(mse_peaks2)
 
 plot(mse_peaks2, "mean", xlab="m/z", ylab="Intensity",

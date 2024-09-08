@@ -12,6 +12,7 @@
 
 \usage{
 estimateDomain(xlist,
+    method = c("median", "min", "max", "mean"),
     units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
@@ -34,7 +35,7 @@ estimateReferencePeaks(object, SNR = 2,
 
     \item{units}{Should the spacing between domain values use absolute or relative units?}
 
-    \item{method}{The peak picking method to use. See \code{\link[matter]{findpeaks}} for details.}
+    \item{method}{For \code{estimateDomain}, the method for selecting the domain resolution from their distribution. For \code{estimateReferenceMz}, the peak picking method to use. See \code{\link[matter]{findpeaks}} for details.}
 
     \item{SNR}{The signal-to-noise threshold to use to determine a peak.}
 
@@ -48,7 +49,7 @@ estimateReferencePeaks(object, SNR = 2,
 }
 
 \details{
-    For \code{estimateDomain}, the domain is estimated by first finding the resolution of each spectrum's individual domain values (e.g., the spacing between m/z values), and then creating a sequence of domain values using the median resolution of all spectra.
+    For \code{estimateDomain}, the domain is estimated by first finding the resolution of each spectrum's individual domain values (e.g., the spacing between m/z values), and then creating a sequence of domain values using (by default) the median resolution of all spectra.
 
     The \code{estimateReferenceMz} function simply calls \code{estimateDomain} on the appropriate components of a mass spectral imaging dataset to estimate profile m/z bins.
 
