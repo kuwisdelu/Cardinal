@@ -12,13 +12,13 @@
 
 \usage{
 estimateDomain(xlist,
-    method = c("median", "min", "max", "mean"),
+    width = c("median", "min", "max", "mean"),
     units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 estimateReferenceMz(object,
-    method = c("median", "min", "max", "mean"),
+    width = c("median", "min", "max", "mean"),
     units = c("ppm", "mz"),
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
@@ -36,7 +36,9 @@ estimateReferencePeaks(object, SNR = 2,
 
     \item{units}{Should the spacing between domain values use absolute or relative units?}
 
-    \item{method}{For \code{estimateDomain} and \code{estimateReferenceMz}, the method for selecting the domain resolution from their distribution. For \code{estimateReferenceMz}, the peak picking method to use. See \code{\link[matter]{findpeaks}} for details.}
+    \item{width}{How the domain spacing should be estimated from the distribution of resolutions across all spectra.}
+
+    \item{method}{The peak picking method to use. See \code{\link[matter]{findpeaks}} for details.}
 
     \item{SNR}{The signal-to-noise threshold to use to determine a peak.}
 
