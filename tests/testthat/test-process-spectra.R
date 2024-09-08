@@ -143,7 +143,7 @@ test_that("process spectra - MSImagingArrays", {
 
 	expect_is(ms4, "MSImagingArrays")
 
-	ref <- summarizeFeatures(ms)
+	ref <- summarizeFeatures(as(ms, "MSImagingExperiment"))
 	peaks <- matter::findpeaks(fData(ref)$mean, snr=3)
 	peaks <- mz(ref)[peaks]
 	ms5 <- recalibrate(ms, ref=peaks, tolerance=200)
