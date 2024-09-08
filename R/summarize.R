@@ -1,6 +1,6 @@
 
-#### Summarize features (masses) ####
-## ---------------------------------
+#### Summarize features ####
+## --------------------------
 
 summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 	verbose = getCardinalVerbose(), chunkopts = list(),
@@ -10,12 +10,8 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
-	if ( is(x, "MSImagingArrays") ) {
-		x <- convertMSImagingArrays2Experiment(x,
-			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
-	} else {
-		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
-	}
+	if ( !is(x, "SpectralImagingExperiment") )
+		.Error("object must inherit from SpectralImagingExperiment")
 	if ( is.null(names(stat)) ) {
 		labels <- stat
 	} else {
@@ -43,8 +39,8 @@ summarizeFeatures <- function(x, stat = "mean", groups = NULL,
 }
 
 
-#### Summarize pixels (spectra) ####
-## --------------------------------
+#### Summarize pixels ####
+## ------------------------
 
 summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 	verbose = getCardinalVerbose(), chunkopts = list(),
@@ -54,20 +50,32 @@ summarizePixels <- function(x, stat = c(tic="sum"), groups = NULL,
 		.Deprecated(old="FUN", new="stat")
 		stat <- list(...)$FUN
 	}
-	if ( is(x, "MSImagingArrays") ) {
-		x <- convertMSImagingArrays2Experiment(x,
-			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
-	} else {
-		x <- as(x, "SpectralImagingExperiment", strict=FALSE)
-	}
+	if ( !is(x, "SpectralImagingData") )
+		.Error("object must inherit from SpectralImagingData")
 	if ( is.null(names(stat)) ) {
 		labels <- stat
 	} else {
 		labels <- ifelse(nchar(names(stat)), names(stat), stat)
 	}
-	ans <- colStats(x, stat=stat, group=groups, simplify=FALSE,
-		verbose=verbose, chunkopts=chunkopts,
-		BPPARAM=BPPARAM, ...)
+	if ( is(x, "SpectralImagingExperiment") ) {
+		ans <- colStats(x, stat=stat, group=groups, simplify=FALSE,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
+	} else {
+		if ( !is.null(groups) )
+			.Error("'groups' not supported for class ", sQuote(class(x)[1L]))
+		FUN <- isofun(function(xi, stat, labels, ...) {
+			yi <- vector("list", length=length(stat))
+			yi <- setNames(yi, labels)
+			for ( i in seq_along(yi) )
+				yi[[i]] <- vapply(xi, match.fun(stat[i]), numeric(1L), ...)
+			list(yi)
+		}, CardinalEnv())
+		ans <- chunk_lapply(spectra(x), FUN, stat=stat, labels=labels,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
+		ans <- Reduce(function(e1, e2) Map(c, e1, e2), ans)
+	}
 	for ( i in seq_along(ans) ) {
 		y <- as.vector(ans[[i]])
 		if ( is.null(dim(ans[[i]])) ) {

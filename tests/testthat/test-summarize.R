@@ -20,13 +20,8 @@ test_that("summarizeFeatures", {
 	path2 <- CardinalIO::exampleImzMLFile("processed")
 	mse2 <- readImzML(path2, memory=TRUE)
 
-	mse2 <- summarizeFeatures(mse2)
-	mse2 <- summarizeFeatures(mse2, groups=g)
-
-	expect_equal(fData(mse2)$mean, rowMeans(mse2))
-	expect_equal(fData(mse2)$A.mean, rowMeans(mse2[,g=="A"]))
-	expect_equal(fData(mse2)$B.mean, rowMeans(mse2[,g=="B"]))
-	expect_equal(fData(mse2)$C.mean, rowMeans(mse2[,g=="C"]))
+	expect_error(mse2 <- summarizeFeatures(mse2))
+	expect_error(mse2 <- summarizeFeatures(mse2, groups=g))
 
 })
 
@@ -48,7 +43,8 @@ test_that("summarizePixels", {
 
 	mse2 <- summarizePixels(mse2)
 
-	expect_equal(pData(mse2)$tic, colSums(mse2))
+	expect_equal(pData(mse2)$tic, spectrapply(mse2, sum))
+	expect_error(mse2 <- summarizePixels(mse2, groups=g))
 
 })
 
