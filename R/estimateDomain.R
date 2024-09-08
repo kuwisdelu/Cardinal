@@ -38,18 +38,19 @@ estimateDomain <- function(xlist,
 }
 
 estimateReferenceMz <- function(object,
+	method = c("median", "min", "max", "mean"),
 	units = c("ppm", "mz"),
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
-		.Warn("processing steps will be ignored by estimateReferenceMz()")
+		.Warn("queued processing steps will be ignored")
 	if ( is(object, "MSImagingExperiment") || is(object, "MassDataFrame") ) {
 		mz(object)
 	} else if ( is(object, "MSImagingArrays") ) {
 		units <- match.arg(units)
 		units <- switch(units, ppm="relative", mz="absolute")
-		estimateDomain(mz(object), units=units,
+		estimateDomain(mz(object), method=method, units=units,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
 	} else {
@@ -63,7 +64,7 @@ estimateReferencePeaks <- function(object, SNR = 2,
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L )
-		.Warn("processing steps will be ignored by estimateReferencePeaks()")
+		.Warn("queued processing steps will be ignored")
 	method <- match.arg(method)
 	if ( is(object, "MSImagingArrays") ) {
 		object <- convertMSImagingArrays2Experiment(object,

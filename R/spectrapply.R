@@ -10,7 +10,7 @@ setMethod("spectrapply", "SpectralImagingExperiment",
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
-			.Warn("processing steps will be ignored by spectrapply()")
+			.Warn("queued processing steps will be ignored")
 		if ( length(index) > 1L )
 			.Error("more than 1 'index' array not allowed ",
 				"for class ", sQuote(class(object)[1L]))
@@ -46,7 +46,7 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		BPPARAM = getCardinalBPPARAM())
 	{
 		if ( length(processingData(object)) > 0L )
-			.Warn("processing steps will be ignored by spectrapply()")
+			.Warn("queued processing steps will be ignored")
 		if ( length(index) > 3L )
 			.Error("more than 3 'index' arrays not allowed ",
 				"for class ", sQuote(class(object)[1L]))
