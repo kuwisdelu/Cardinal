@@ -285,6 +285,10 @@ setMethod("peakAlign", "SpectralImagingArrays",
 				message=verbose)
 		} else {
 			tol <- setNames(unname(tolerance), units)
+			res <- 0.5 * tol
+			domain <- switch(units,
+				relative=seq_rel(min(domain), max(domain), by=res),
+				absolute=seq(min(domain), max(domain), by=res))
 		}
 	} else {
 		if ( is.na(tolerance) ) {

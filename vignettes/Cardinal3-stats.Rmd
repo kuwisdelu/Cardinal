@@ -396,7 +396,7 @@ mtest_top <- topFeatures(mtest)
 subset(mtest_top, fdr < 0.05)
 ```
 
-We find 3 of the 5 differentially abundant features.
+We find 3 of the 5 differentially abundant features (and 1 false discovery).
 
 
 
@@ -407,6 +407,7 @@ Testing of `SpatialDGMM` objects is also supported by `meansTest()`. The key ide
 First, we must segment the data with `spatialDGMM()`, while making sure that each sample is segmented independently (by specifying the samples as `groups`).
 
 ```{r test-segment-dgmm}
+set.seed(2020, kind="L'Ecuyer-CMRG")
 dgmm2 <- spatialDGMM(mse3, r=2, k=2, groups=run(mse3))
 ```
 
@@ -435,7 +436,7 @@ stest_top <- topFeatures(stest)
 subset(stest_top, fdr < 0.05)
 ```
 
-We find 4 of the 5 differentially abundant features (and 1 false discovery).
+We find 3 of the 5 differentially abundant features (and 1 false discovery).
 
 
 
