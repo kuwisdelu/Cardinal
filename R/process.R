@@ -419,9 +419,7 @@ setMethod("process", "SpectralImagingArrays",
 				} else {
 					.Error("more than 3 'index' arrays not allowed")
 				}
-				if ( length(xj) == nxi ) {
-					xi <- xj
-				} else if ( is.matrix(xj) ) {
+				if ( is.matrix(xj) ) {
 					if ( ncol(xj) == nci ) {
 						if ( ncol(xj) == 2L ) {
 							t1 <- xj[,1L]
@@ -440,6 +438,8 @@ setMethod("process", "SpectralImagingArrays",
 						.Error("expected ", nci,
 							" columns in output but received ", ncol(xj))
 					}
+				} else if ( length(xj) == nxi ) {
+					xi <- xj
 				} else {
 					.Error("expected ", nxi,
 						" elements in output but received ", length(xj))

@@ -9,6 +9,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o Update 'peakAlign()' to build domain bins based on
         the minimum of peak gaps (instead of the median)
 
+BUG FIXES
+
+    o Fix bug in 'process()' resulting in output matrix
+        with 'list' elements under certain conditions
+
 CHANGES IN VERSION 3.7.5 [2024-9-3]
 -----------------------------------
 
