@@ -435,7 +435,7 @@ setMethod("peakPick", "SpectralImagingData",
 
 .peakPick <- function(x, t, method, ..., SNR = 2, type = "height")
 {
-	peaks <- matter::findpeaks(x, noise=method, snr=SNR, relheight=0, ...)
+	peaks <- matter::findpeaks(x, noise=method, snr=SNR, relheight=NULL, ...)
 	if ( type == "height" ) {
 		cbind(t[peaks], x[peaks])
 	} else if ( type == "area" ) {
@@ -459,7 +459,7 @@ setMethod("peakPick", "SpectralImagingData",
 
 .peakPick_ref <- function(x, t, ref, tol, tol.ref,..., type = "height")
 {
-	peaks <- matter::findpeaks(x, relheight=0, ...)
+	peaks <- matter::findpeaks(x, relheight=NULL, bounds=FALSE, ...)
 	hits <- bsearch(ref, t[peaks], tol=tol, tol.ref=tol.ref)
 	nz <- !is.na(hits)
 	values <- numeric(length(ref))

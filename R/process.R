@@ -357,10 +357,6 @@ setMethod("process", "SpectralImagingArrays",
 	}
 	.Log("output spectra: ", spectraname,
 		message=getCardinalVerbose())
-	if ( length(indexname) ) {
-		.Log("output index: ", paste0(indexname, collapse=", "),
-			message=getCardinalVerbose())
-	}
 	spectra(object, spectraname) <- spectra
 	if ( validObject(object) )
 		object
