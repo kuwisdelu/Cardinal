@@ -86,6 +86,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	}
 	.write_featureData(object, path, verbose)
 	.write_pixelData(object, path, verbose)
+	.write_log(path, verbose)
 	invisible(ok)
 }
 
@@ -112,6 +113,14 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		.Log("wrote file: ", sQuote(basename(path)),
 			message=verbose)
 	}
+}
+
+.write_log <- function(path, verbose)
+{
+	path <- paste0(tools::file_path_sans_ext(path), ".log")
+	getCardinalLogger()$copy(path)
+	.Log("copied log file: ", sQuote(basename(path)),
+		message=verbose)
 }
 
 
@@ -147,6 +156,7 @@ setMethod("writeAnalyze", "SpectralImagingExperiment",
 			message=verbose)
 		.Log("wrote file: ", sQuote(basename(outpath[3L])),
 			message=verbose)
+		.write_log(outpath[1L], verbose)
 	} else {
 		.Error("failed to write Analyze 7.5")
 	}

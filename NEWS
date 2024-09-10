@@ -8,6 +8,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
         based on 'median', 'min', 'max', or 'mean'
     o Update 'peakAlign()' to build domain bins based on
         the minimum of peak gaps (instead of the median)
+    o Write log file when writing imzML/Analyze files
 
 BUG FIXES
 
