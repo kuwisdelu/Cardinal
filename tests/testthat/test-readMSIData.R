@@ -20,6 +20,7 @@ test_that("read/write continuous", {
 
 	pData(mse2)$test <- seq_len(ncol(mse2))
 	fData(mse2)$test <- seq_len(nrow(mse2))
+	metadata(mse2) <- list(processing1="normalization")
 
 	path3 <- paste0(tempfile(), ".imzML")
 	writeImzML(mse2, path3)
@@ -27,6 +28,7 @@ test_that("read/write continuous", {
 
 	expect_equal(pData(mse2), pData(mse3))
 	expect_equal(fData(mse2), fData(mse3))
+	expect_equal(metadata(mse2), metadata(mse3))
 
 	path4 <- paste0(tempfile(), ".img")
 	writeAnalyze(mse, path4)
@@ -54,11 +56,13 @@ test_that("read/write processed", {
 	expect_equivalent(intensity(msa)[[1L]], intensity(msa2)[[1L]])
 
 	pData(msa2)$test <- seq_len(length(msa2))
+	metadata(msa2) <- list(processing1="normalization")
 
 	path3 <- paste0(tempfile(), ".imzML")
 	writeImzML(msa2, path3)
 	msa3 <- readImzML(path3)
 
 	expect_equal(pData(msa2), pData(msa3))
+	expect_equal(metadata(msa2), metadata(msa3))
 
 })

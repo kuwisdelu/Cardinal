@@ -86,6 +86,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	}
 	.write_featureData(object, path, verbose)
 	.write_pixelData(object, path, verbose)
+	.write_metadata(object, path, verbose)
 	.write_log(path, verbose)
 	invisible(ok)
 }
@@ -112,6 +113,22 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 		write.table(featureData(object), file=path)
 		.Log("wrote file: ", sQuote(basename(path)),
 			message=verbose)
+	}
+}
+
+.write_metadata <- function(object, path, verbose)
+{
+	path <- paste0(tools::file_path_sans_ext(path), ".metadata")
+	if ( length(metadata(object)) > 0L ) {
+		if ( file.exists(path) )
+			.Warn("file ", sQuote(path), " already exists and will be overwritten")
+		ok <- try(dput(metadata(object), file=path))
+		if ( inherits(ok, "try-error") ) {
+			.Warn("failed to write metadata")
+		} else {
+			.Log("wrote file: ", sQuote(basename(path)),
+				message=verbose)
+		}
 	}
 }
 

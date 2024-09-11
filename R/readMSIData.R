@@ -75,6 +75,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		return(ans)
 	ans <- .read_featureData(ans, path, verbose)
 	ans <- .read_pixelData(ans, path, verbose)
+	ans <- .read_metadata(ans, path, verbose)
 	if ( "raw" %in% type(mz(ans)) || "raw" %in% type(intensity(ans)) )
 		.Warn("one or more spectra are compressed and unsupported")
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
@@ -179,7 +180,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	}
 	experimentData <- try(as(parse, "ImzMeta"), silent=TRUE)
 	if ( inherits(experimentData, "try-error") ) {
-		warning("failed to convert experimental metadata:\n",
+		.Warn("failed to convert experimental metadata:\n",
 			attr(experimentData, "condition")$message)
 		experimentData <- NULL
 	}
@@ -233,6 +234,21 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	object
 }
 
+.read_metadata <- function(object, path, verbose)
+{
+	path <- paste0(tools::file_path_sans_ext(path), ".metadata")
+	if ( file.exists(path) ) {
+		.Log("detected file: ", sQuote(basename(path)),
+			message=verbose)
+		metadata <- try(dget(path))
+		if ( inherits(metadata, "try-error") || !is.list(metadata) ) {
+			.Warn("failed to read metadata")
+		} else {
+			metadata(object) <- metadata
+		}
+	}
+	object
+}
 
 
 #### Read Analyze 7.5 file(s) ####
