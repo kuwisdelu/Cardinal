@@ -75,6 +75,8 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		return(ans)
 	ans <- .read_featureData(ans, path, verbose)
 	ans <- .read_pixelData(ans, path, verbose)
+	if ( "raw" %in% type(mz(ans)) || "raw" %in% type(intensity(ans)) )
+		.Warn("one or more spectra are compressed and unsupported")
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || 
 		(as == "auto" && is_dense) ||
