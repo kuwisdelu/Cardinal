@@ -268,15 +268,17 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	verbose, chunkopts, BPPARAM)
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
-	if ( is.null(domain) ) {
-		.Log("estimating bins for peak alignment",
+	if ( is.null(domain) || is.na(tolerance) ) {
+		.Log("summarizing peak gaps for alignment",
 			message=verbose)
-		domain <- estimateDomain(index, width="min", units=units,
+		domainref <- estimateDomain(index, width="min", units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	}
+	if ( is.null(domain) )
+		domain <- domainref
 	if ( is.na(tolerance) ) {
-		# estimate tolerance as 2x bin width
-		tol <- 2 * estres(domain, ref=tol.ref)
+		# estimate tolerance as 2x minimum peak gap
+		tol <- 2 * estres(domainref, ref=tol.ref)
 		tol <- switch(units,
 			relative=round(2 * tol, digits=6L) * 0.5,
 			absolute=round(tol, digits=4L))

@@ -63,7 +63,7 @@
 
     If \code{ref} is not provided, then the shared peaks must be determined automatically. This starts with creation of a shared domain giving a list of possible peak locations.
 
-    For \code{SpectralImagingArrays}, \code{estimateDomain()} is used to create the shared domain from the \code{index} array. For \code{SpectralImagingExperiment}, the \code{index} column of \code{featureData()} is used directly.
+    For \code{SpectralImagingArrays}, \code{estimateDomain()} with \code{width="min"} is used to create the shared domain from the \code{index} array. For \code{SpectralImagingExperiment}, the \code{index} column of \code{featureData()} is used directly.
 
     Next, \code{\link[matter]{binpeaks}} is used to bin the observed peaks to the shared domain. Then, \code{\link[matter]{mergepeaks}} is used to merge peaks that are separated by a distance less than the given \code{tolerance}.
 
