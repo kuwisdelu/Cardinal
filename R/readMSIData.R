@@ -76,8 +76,6 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	ans <- .read_featureData(ans, path, verbose)
 	ans <- .read_pixelData(ans, path, verbose)
 	ans <- .read_metadata(ans, path, verbose)
-	if ( "raw" %in% type(mz(ans)) || "raw" %in% type(intensity(ans)) )
-		.Warn("one or more spectra are compressed and unsupported")
 	as <- match.arg(as, c("auto", "MSImagingExperiment", "MSImagingArrays"))
 	if ( as == "MSImagingExperiment" || 
 		(as == "auto" && is_dense) ||
@@ -156,13 +154,16 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	pixelData <- PositionDataFrame(coord=coord, run=run, row.names=ids)
 	if ( length(extra) > 0L )
 		pixelData[names(extra)] <- extra
-	if ( length(extraArrays) > 0L )
-	{
+	if ( length(extraArrays) > 0L ) {
 		for ( i in names(extraArrays) ) {
 			if ( !is.null(extraArrays[[i]]) )
 				spectraData[[i]] <- extraArrays[[i]]
 		}
 	}
+	compression <- metadata(parse)[["compression"]]
+	if ( !all(compression %in% "no compression") )
+		.Warn("one or more binary data arrays use unsupported compression ",
+			"schemes: ", paste0(sQuote(compression), collapse=", "))
 	fileContent <- parse[["fileDescription"]][["fileContent"]]
 	if ( "IMS:1000030" %in% names(fileContent) ) {
 		continuous <- TRUE
