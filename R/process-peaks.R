@@ -272,14 +272,14 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	if ( is.null(domain) || is.na(tolerance) ) {
 		.Log("summarizing peak gaps for alignment",
 			message=verbose)
-		domainref <- estimateDomain(index, width="min", units=units,
+		indexdomain <- estimateDomain(index, width="min", units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	}
 	if ( is.null(domain) )
-		domain <- domainref
+		domain <- indexdomain
 	if ( is.na(tolerance) ) {
 		# estimate tolerance as 2x minimum peak gap
-		tol <- 2 * estres(domainref, ref=tol.ref)
+		tol <- 2 * estres(indexdomain, ref=tol.ref)
 		tol <- switch(units,
 			relative=round(2 * tol, digits=6L) * 0.5,
 			absolute=round(tol, digits=4L))
