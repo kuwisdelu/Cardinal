@@ -102,7 +102,8 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 				n <- 1L
 			}
 			.Log("filtering to keep only peaks with counts > ", n, " ",
-				"(", ceiling(100 * n / length(object)), "% of considered spectra)",
+				"(", round(100 * n / length(object), digits=2L),
+				"% of considered spectra)",
 				message=verbose)
 			object <- object[featureData(object)[["count"]] > n,]
 		}
