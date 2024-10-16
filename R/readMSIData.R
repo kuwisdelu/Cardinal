@@ -195,7 +195,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".pdata")
 	if ( file.exists(path) ) {
-		.Log("detected file: ", sQuote(basename(path)),
+		.Log("detected metadata file: ", sQuote(basename(path)),
 			message=verbose)
 		pdata <- read.table(path)
 		run <- pdata[["run"]]
@@ -211,7 +211,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".fdata")
 	if ( file.exists(path) ) {
-		.Log("detected file: ", sQuote(basename(path)),
+		.Log("detected metadata file: ", sQuote(basename(path)),
 			message=verbose)
 		fdata <- read.table(path)
 		if ( is(object, "MSImagingArrays") ) {
@@ -239,7 +239,7 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".metadata")
 	if ( file.exists(path) ) {
-		.Log("detected file: ", sQuote(basename(path)),
+		.Log("detected metadata file: ", sQuote(basename(path)),
 			message=verbose)
 		metadata <- try(dget(path))
 		if ( inherits(metadata, "try-error") || !is.list(metadata) ) {

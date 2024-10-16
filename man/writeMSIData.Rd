@@ -19,11 +19,16 @@
 writeMSIData(object, file, \dots)
 
 \S4method{writeImzML}{MSImagingExperiment_OR_Arrays}(object, file, bundle = TRUE,
-		verbose = getCardinalVerbose(), \dots)
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{writeAnalyze}{MSImagingExperiment}(object, file, verbose = getCardinalVerbose(), \dots)
+\S4method{writeAnalyze}{MSImagingExperiment}(object, file,
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), \dots)
 
-\S4method{writeAnalyze}{SpectralImagingExperiment}(object, file, verbose = getCardinalVerbose(), \dots)
+\S4method{writeAnalyze}{SpectralImagingExperiment}(object, file,
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), \dots)
 }
 
 \arguments{
@@ -34,6 +39,10 @@ writeMSIData(object, file, \dots)
 	\item{bundle}{Should the ".imzML" and ".ibd" files be bundled into a new directory of the same name?}
 
 	\item{verbose}{Should progress messages be printed?}
+
+	\item{chunkopts}{Chunk processing options. See \code{\link{chunkApply}} for details.}
+
+	\item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
 	\item{\dots}{Additional arguments passed to \code{\link[CardinalIO]{writeImzML}} or \code{\link[CardinalIO]{writeAnalyze}}.}
 }
@@ -48,7 +57,7 @@ writeMSIData(object, file, \dots)
 }
 
 \value{
-	\code{TRUE} if the file was written successfully, with the output file paths attached as an attribute.
+	\code{TRUE} if the file was written successfully, with the output file paths and data objects attached as attributes.
 }
 
 \author{

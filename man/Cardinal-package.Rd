@@ -68,7 +68,7 @@ Type \code{browseVignettes("Cardinal")} to view a user's guide and vignettes of 
 	\itemize{
 		\item{\code{getCardinalLogger(), setCardinalLogger(logger=matter_logger())}: The logger used by Cardinal for messages, warnings, and errors. The logger must be of class \code{\link{simple_logger}}.}
 
-		\item{\code{saveCardinalLog(file = "Cardinal.log"))}: Save the log to a file. Note that Cardinal will continue to log to the specified file until the end of the R session or until saved to a new location.}
+		\item{\code{saveCardinalLog(file="Cardinal.log"))}: Save the log to a file. Note that Cardinal will continue to log to the specified file until the end of the R session or until saved to a new location.}
 	}
 
 	Additionally, visualization parameters are available:

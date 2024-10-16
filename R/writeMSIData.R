@@ -20,7 +20,8 @@ writeMSIData <- function(object, file, ...)
 
 setMethod("writeImzML", "MSImagingExperiment_OR_Arrays", 
 	function(object, file, bundle = TRUE,
-		verbose = getCardinalVerbose(), ...)
+		verbose = getCardinalVerbose(), chunkopts = list(),
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
 		path <- normalizePath(file, mustWork=FALSE)
 		if ( bundle ) {
@@ -49,7 +50,9 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 			}
 		}
 		experimentData(object) <- e
-		ok <- .write_imzML(object, path=path, verbose=verbose, ...)
+		ok <- .write_imzML(object, path=path,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
 		if ( bundle ) {
 			.Log("output bundle directory: ", sQuote(dirname(path)),
 				message=verbose)
@@ -74,7 +77,8 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 	.Log("writing ", sQuote(format), " imzML file: ", sQuote(path),
 		message=verbose)
 	ok <- CardinalIO::writeImzML(experimentData(object), file=path,
-		positions=positions, mz=mz, intensity=intensity, ...)
+		positions=positions, mz=mz, intensity=intensity,
+		verbose=verbose, ...)
 	if ( ok ) {
 		outpath <- attr(ok, "outpath")
 		.Log("wrote file: ", sQuote(basename(outpath[1L])),
@@ -145,17 +149,25 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 ## --------------------------------
 
 setMethod("writeAnalyze", "MSImagingExperiment", 
-	function(object, file, verbose = getCardinalVerbose(), ...)
+	function(object, file,
+		verbose = getCardinalVerbose(), chunkopts = list(),
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
-		.write_Analyze(spectra(object), file=file, verbose=verbose,
-			positions=coord(object), domain=mz(object), ...)
+		.write_Analyze(spectra(object), file=file,
+			positions=coord(object), domain=mz(object),
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
 	})
 
 setMethod("writeAnalyze", "SpectralImagingExperiment", 
-	function(object, file, verbose = getCardinalVerbose(), ...)
+	function(object, file,
+		verbose = getCardinalVerbose(), chunkopts = list(),
+		BPPARAM = getCardinalBPPARAM(), ...)
 	{
-		.write_Analyze(spectra(object), file=file, verbose=verbose,
-			positions=coord(object), ...)
+		.write_Analyze(spectra(object), file=file,
+			positions=coord(object),
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
 	})
 
 .write_Analyze <- function(x, file, verbose, positions, domain, ...)
@@ -164,7 +176,8 @@ setMethod("writeAnalyze", "SpectralImagingExperiment",
 	.Log("writing Analyze 7.5 file: ", sQuote(file),
 		message=verbose)
 	ok <- CardinalIO::writeAnalyze(x, file=file,
-		positions=positions, domain=domain, ...)
+		positions=positions, domain=domain,
+		verbose=verbose, ...)
 	if ( ok ) {
 		outpath <- attr(ok, "outpath")
 		.Log("wrote file: ", sQuote(basename(outpath[1L])),
@@ -177,5 +190,6 @@ setMethod("writeAnalyze", "SpectralImagingExperiment",
 	} else {
 		.Error("failed to write Analyze 7.5")
 	}
+	invisible(ok)
 }
 
