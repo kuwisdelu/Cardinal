@@ -1,10 +1,11 @@
 
-CHANGES IN VERSION 3.7.6 [2024-9-10]
+CHANGES IN VERSION 3.7.6 [2024-10-16]
 -----------------------------------
 
 NEW FEATURES
 
     o Reading/writing imzML now preserves 'metadata' slot
+    o Reading/writing imzML now supports parallel processing
 
 SIGNIFICANT USER-VISIBLE CHANGES
 

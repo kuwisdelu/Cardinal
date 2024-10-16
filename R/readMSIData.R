@@ -98,19 +98,37 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 	}
 	if ( as == "MSImagingArrays" )
 		ans <- convertMSImagingExperiment2Arrays(ans)
-	if ( memory )
+	if ( !isFALSE(memory) )
 	{
-		.Log("loading spectra into memory",
-			message=verbose)
-		if ( is(ans, "MSImagingArrays") ) {
-			for ( i in spectraNames(ans) )
-				spectra(ans, i) <- as.list(spectra(ans, i))
+		if ( memory == "shared" ) {
+			.Log("fetching spectra into shared memory",
+				message=verbose)
 		} else {
-			if ( is.sparse(spectra(ans)) ) {
-				atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
-				atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+			.Log("loading spectra into memory",
+				message=verbose)
+		}
+		if ( is(ans, "MSImagingArrays") ) {
+			for ( i in spectraNames(ans) ) {
+				if ( memory == "shared" ) {
+					spectra(ans, i) <- fetch(spectra(ans, i),
+						verbose=verbose, chunkopts=chunkopts,
+						BPPARAM=BPPARAM)
+				} else {
+					spectra(ans, i) <- as.list(spectra(ans, i))
+				}
+			}
+		} else {
+			if ( memory == "shared" ) {
+				spectra(ans) <- fetch(spectra(ans),
+					verbose=verbose, chunkopts=chunkopts,
+					BPPARAM=BPPARAM)
 			} else {
-				spectra(ans) <- as.matrix(spectra(ans))
+				if ( is.sparse(spectra(ans)) ) {
+					atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
+					atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+				} else {
+					spectra(ans) <- as.matrix(spectra(ans))
+				}
 			}
 		}
 	}
@@ -256,7 +274,8 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 ## -------------------------------
 
 readAnalyze <- function(file, memory = FALSE, as = "auto",
-	verbose = getCardinalVerbose(), ...)
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( "name" %in% ...names() )
 		.Deprecated(old="name", new="file")
@@ -286,18 +305,39 @@ readAnalyze <- function(file, memory = FALSE, as = "auto",
 			message=verbose)
 		ans <- convertMSImagingArrays2Experiment(ans)
 	}
-	if ( memory ) {
-		.Log("loading spectra into memory",
-			message=verbose)
-		if ( is(ans, "MSImagingArrays") ) {
-			mz(ans) <- as.list(mz(ans))
-			intensity(ans) <- as.list(intensity(ans))
+	if ( !isFALSE(memory) )
+	{
+		if ( memory == "shared" ) {
+			.Log("fetching spectra into shared memory",
+				message=verbose)
 		} else {
-			if ( is.sparse(spectra(ans)) ) {
-				atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
-				atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+			.Log("loading spectra into memory",
+				message=verbose)
+		}
+		if ( is(ans, "MSImagingArrays") ) {
+			if ( memory == "shared" ) {
+				mz(ans) <- fetch(mz(ans),
+					verbose=verbose, chunkopts=chunkopts,
+					BPPARAM=BPPARAM)
+				intensity(ans) <- fetch(intensity(ans),
+					verbose=verbose, chunkopts=chunkopts,
+					BPPARAM=BPPARAM)
 			} else {
-				spectra(ans) <- as.matrix(spectra(ans))
+				mz(ans) <- as.list(mz(ans))
+				intensity(ans) <- as.list(intensity(ans))
+			}
+		} else {
+			if ( memory == "shared" ) {
+				spectra(ans) <- fetch(spectra(ans),
+					verbose=verbose, chunkopts=chunkopts,
+					BPPARAM=BPPARAM)
+			} else {
+				if ( is.sparse(spectra(ans)) ) {
+					atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
+					atomdata(spectra(ans)) <- as.list(atomdata(spectra(ans)))
+				} else {
+					spectra(ans) <- as.matrix(spectra(ans))
+				}
 			}
 		}
 	}

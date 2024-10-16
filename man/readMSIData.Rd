@@ -29,7 +29,8 @@ readImzML(file, memory = FALSE, check = FALSE,
 
 ## Read Analyze 7.5 file
 readAnalyze(file, memory = FALSE, as = "auto",
-	verbose = getCardinalVerbose(), \dots)
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), \dots)
 
 ## Convert from MSImagingExperiment to MSImagingArrays
 convertMSImagingExperiment2Arrays(object)
@@ -44,7 +45,7 @@ convertMSImagingArrays2Experiment(object, mz = NULL,
 \arguments{
 	\item{file}{The absolute or relative file path. The file extension must be included for \code{readMSIData}.}
 
-	\item{memory}{Should the spectra be loaded into memory? If FALSE, the spectra are attached as an out-of-memory matrix.}
+	\item{memory}{Should the spectra be loaded into memory? If \code{TRUE}, the spectra are loaded into in-memory R objects. If \code{FALSE}, the spectra are attached as file-backed \code{\link{matter}} objects. If \code{memory="shared"}, the spectra are attached as shared memory-backed \code{\link{matter}} objects.}
 
 	\item{check}{Should the UUID and checksum of the binary data file be checked against the corresponding imzML tags?}
 
