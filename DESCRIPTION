@@ -9,7 +9,7 @@ Authors@R: person("Kylie Ariel", "Bemis",
 Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
-License: Artistic-2.0
+License: Artistic-2.0 | file LICENSE
 Depends: R (>= 4.4), BiocParallel, BiocGenerics,
 	ProtGenerics, S4Vectors, methods, stats, stats4
 Imports: CardinalIO, Biobase, EBImage, graphics, grDevices,
