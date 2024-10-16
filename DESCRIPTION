@@ -10,10 +10,10 @@ Description: Implements statistical & computational tools for analyzing
 	mass spectrometry imaging datasets, including methods for efficient
 	pre-processing, spatial segmentation, and classification.
 License: Artistic-2.0
-Depends: R (>= 4.3), ProtGenerics, BiocGenerics, BiocParallel,
-	S4Vectors (>= 0.27.3), methods, stats, stats4
+Depends: R (>= 4.4), BiocParallel, BiocGenerics,
+	ProtGenerics, S4Vectors, methods, stats, stats4
 Imports: CardinalIO, Biobase, EBImage, graphics, grDevices,
-	irlba, Matrix, matter (>= 2.6.2), nlme, parallel, utils
+	irlba, Matrix, matter (>= 2.7.10), nlme, parallel, utils
 Suggests: BiocStyle, testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,

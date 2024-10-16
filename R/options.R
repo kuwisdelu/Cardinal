@@ -15,14 +15,6 @@ CardinalEnv <- function() CardinalNamespace
 	setCardinalLogger()
 }
 
-# inform users on major updates
-.onAttach <- function(libname, pkgname) {
-	version <- utils::packageVersion("Cardinal")
-	if ( version >= "3.5.0" )
-		packageStartupMessage("Cardinal v3.6 is a major update.\n",
-			"Use vignette('Cardinal3-guide') to see what's new.")
-}
-
 #### Cardinal-specific options ####
 ## --------------------------------
 
@@ -36,8 +28,9 @@ getCardinalParallel <- function() {
 	}
 }
 setCardinalParallel <- function(workers = snowWorkers()) {
+	maxcores <- snowWorkers()
 	if ( isTRUE(workers) )
-		workers <- snowWorkers()
+		workers <- maxcores
 	if ( isFALSE(workers) || is.null(workers) ) {
 		workers <- 1L
 	} else {
@@ -48,22 +41,23 @@ setCardinalParallel <- function(workers = snowWorkers()) {
 		}
 	}
 	if ( is.numeric(workers) ) {
-		nworkers <- max(workers)
+		nworkers <- min(workers, maxcores)
 	} else if ( is.character(workers) ) {
 		nworkers <- length(workers)
 	} else {
 		.Error("'workers' must be nodenames or the number of workers")
 	}
-	if ( nworkers <= 1L )
-		return(setCardinalBPPARAM(NULL))
-	nchunks <- seq_len(10) * nworkers
-	nchunks <- nchunks[nchunks <= getCardinalNChunks()]
-	nchunks <- max(nchunks, nworkers)
-	.Log("making Snowfast cluster with ", nworkers, " workers ",
-		"and ", nchunks, " chunks",
-		message=getCardinalVerbose())
-	setCardinalNChunks(nchunks)
-	setCardinalBPPARAM(SnowfastParam(workers))
+	if ( nworkers > 1L ) {
+		nchunks <- 4L * max(nworkers, 1L)
+		.Log("making Snowfast cluster with ", nworkers, " workers ",
+			"and ", nchunks, " chunks",
+			message=getCardinalVerbose())
+		setCardinalNChunks(nchunks)
+		setCardinalBPPARAM(SnowfastParam(workers))
+	} else {
+		setCardinalNChunks()
+		setCardinalBPPARAM(NULL)
+	}
 }
 
 # parallel backend
