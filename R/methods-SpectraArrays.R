@@ -127,12 +127,8 @@ setMethod("fetch", "SpectraArrays",
 		BPPARAM = bpparam())
 	{
 		for ( i in seq_along(object) ) {
-			if ( is.matter(object[[i]]) ) {
-				object[[i]] <- fetch(object[[i]], ...,
-					verbose=verbose, BPPARAM=BPPARAM)
-			} else {
-				object[[i]] <- as.shared(object[[i]])
-			}
+			object[[i]] <- fetch(object[[i]], ...,
+				verbose=verbose, BPPARAM=BPPARAM)
 		}
 		object
 	})
@@ -143,12 +139,8 @@ setMethod("flash", "SpectraArrays",
 		BPPARAM = bpparam())
 	{
 		for ( i in seq_along(object) ) {
-			if ( is.matter(object[[i]]) ) {
-				object[[i]] <- flash(object[[i]], ...,
-					verbose=verbose, BPPARAM=BPPARAM)
-			} else {
-				object[[i]] <- as.matter(object[[i]])
-			}
+			object[[i]] <- flash(object[[i]], ...,
+				verbose=verbose, BPPARAM=BPPARAM)
 		}
 		object
 	})

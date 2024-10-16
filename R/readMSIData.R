@@ -103,25 +103,15 @@ readImzML <- function(file, memory = FALSE, check = FALSE,
 		if ( memory == "shared" ) {
 			.Log("fetching spectra into shared memory",
 				message=verbose)
+			ans <- fetch(ans,
+				verbose=verbose, chunkopts=chunkopts,
+				BPPARAM=BPPARAM)
 		} else {
 			.Log("loading spectra into memory",
 				message=verbose)
-		}
-		if ( is(ans, "MSImagingArrays") ) {
-			for ( i in spectraNames(ans) ) {
-				if ( memory == "shared" ) {
-					spectra(ans, i) <- fetch(spectra(ans, i),
-						verbose=verbose, chunkopts=chunkopts,
-						BPPARAM=BPPARAM)
-				} else {
+			if ( is(ans, "MSImagingArrays") ) {
+				for ( i in spectraNames(ans) )
 					spectra(ans, i) <- as.list(spectra(ans, i))
-				}
-			}
-		} else {
-			if ( memory == "shared" ) {
-				spectra(ans) <- fetch(spectra(ans),
-					verbose=verbose, chunkopts=chunkopts,
-					BPPARAM=BPPARAM)
 			} else {
 				if ( is.sparse(spectra(ans)) ) {
 					atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
@@ -310,27 +300,15 @@ readAnalyze <- function(file, memory = FALSE, as = "auto",
 		if ( memory == "shared" ) {
 			.Log("fetching spectra into shared memory",
 				message=verbose)
+			ans <- fetch(ans,
+				verbose=verbose, chunkopts=chunkopts,
+				BPPARAM=BPPARAM)
 		} else {
 			.Log("loading spectra into memory",
 				message=verbose)
-		}
-		if ( is(ans, "MSImagingArrays") ) {
-			if ( memory == "shared" ) {
-				mz(ans) <- fetch(mz(ans),
-					verbose=verbose, chunkopts=chunkopts,
-					BPPARAM=BPPARAM)
-				intensity(ans) <- fetch(intensity(ans),
-					verbose=verbose, chunkopts=chunkopts,
-					BPPARAM=BPPARAM)
-			} else {
+			if ( is(ans, "MSImagingArrays") ) {
 				mz(ans) <- as.list(mz(ans))
 				intensity(ans) <- as.list(intensity(ans))
-			}
-		} else {
-			if ( memory == "shared" ) {
-				spectra(ans) <- fetch(spectra(ans),
-					verbose=verbose, chunkopts=chunkopts,
-					BPPARAM=BPPARAM)
 			} else {
 				if ( is.sparse(spectra(ans)) ) {
 					atomindex(spectra(ans)) <- as.list(atomindex(spectra(ans)))
