@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.7.7 [2024-10-24]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Update 'peakAlign()' with 'binratio' parameter
+
 CHANGES IN VERSION 3.7.6 [2024-10-16]
 -----------------------------------
 

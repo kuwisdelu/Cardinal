@@ -14,21 +14,21 @@
 
 \usage{
 \S4method{peakAlign}{MSImagingExperiment}(object, ref,
-    spectra = "intensity", index = "mz",
+    spectra = "intensity", index = "mz", binratio = 2,
     tolerance = NA, units = c("ppm", "mz"), \dots)
 
 \S4method{peakAlign}{MSImagingArrays}(object, ref,
-    spectra = "intensity", index = "mz",
+    spectra = "intensity", index = "mz", binratio = 2,
     tolerance = NA, units = c("ppm", "mz"), \dots)
 
 \S4method{peakAlign}{SpectralImagingExperiment}(object, ref,
-    spectra = "intensity", index = NULL,
+    spectra = "intensity", index = NULL, binratio = 2,
     tolerance = NA, units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
 \S4method{peakAlign}{SpectralImagingArrays}(object, ref,
-    spectra = "intensity", index = NULL,
+    spectra = "intensity", index = NULL, binratio = 2,
     tolerance = NA, units = c("relative", "absolute"),
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
@@ -43,7 +43,9 @@
 
     \item{index}{The name of the array in \code{spectraData()} (for \code{SpectralImagingArrays}) or column in \code{featureData()} (for \code{SpectralImagingExperiment}) to use for the peak locations.}
     
-    \item{tolerance}{The tolerance for matching a detected peak to the reference. If \code{NA}, then the tolerance is automatically determined as half the minimum distance between locations in the estimated spectral domain (see "Details").}
+    \item{binratio}{The ratio between the alignment tolerance and the peak bin widths. If \code{tolerance} is \code{NA}, then this is also used to estimate the tolerance from the shared domain (see "Details").}
+    
+    \item{tolerance}{The alignment tolerance for matching a detected peak to a reference. If \code{NA}, then the tolerance is automatically determined from \code{binratio} times the minimum distance between same-spectrum peaks (see "Details").}
     
     \item{units}{The units for the above tolerance.}
     
@@ -61,9 +63,7 @@
 
     If \code{ref} is provided, then the aligned peaks are returned immediately without additional processing. (Peaks are binned on-the-fly to the reference peak locations.)
 
-    If \code{ref} is not provided, then the shared peaks must be determined automatically. This starts with creation of a shared domain giving a list of possible peak locations.
-
-    For \code{SpectralImagingArrays}, \code{estimateDomain()} with \code{width="min"} is used to create the shared domain from the \code{index} array. For \code{SpectralImagingExperiment}, the \code{index} column of \code{featureData()} is used directly.
+    If \code{ref} is not provided, then the shared peaks must be determined automatically. This starts with creation of a shared domain giving a list of possible peak locations. The shared domain is estimated by \code{estimateDomain()} with \code{width="min"}.
 
     Next, \code{\link[matter]{binpeaks}} is used to bin the observed peaks to the shared domain. Then, \code{\link[matter]{mergepeaks}} is used to merge peaks that are separated by a distance less than the given \code{tolerance}.
 

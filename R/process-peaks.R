@@ -121,7 +121,7 @@ setMethod("peakProcess", "MSImagingExperiment_OR_Arrays",
 
 setMethod("peakAlign", "MSImagingExperiment",
 	function(object, ref,
-		spectra = "intensity", index = "mz",
+		spectra = "intensity", index = "mz", binratio = 2,
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	if ( !missing(ref) ) {
@@ -136,7 +136,7 @@ setMethod("peakAlign", "MSImagingExperiment",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(object, ref=ref, spectra=spectra, index=index,
-		tolerance=tolerance, units=units, ...)
+		binratio=binratio, tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -147,7 +147,7 @@ setMethod("peakAlign", "MSImagingExperiment",
 
 setMethod("peakAlign", "MSImagingArrays",
 	function(object, ref,
-		spectra = "intensity", index = "mz",
+		spectra = "intensity", index = "mz", binratio = 2,
 		tolerance = NA, units = c("ppm", "mz"), ...)
 {
 	if ( !missing(ref) ) {
@@ -162,7 +162,7 @@ setMethod("peakAlign", "MSImagingArrays",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(object, ref=ref, spectra=spectra, index=index,
-		tolerance=tolerance, units=units, ...)
+		binratio=binratio, tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -173,7 +173,7 @@ setMethod("peakAlign", "MSImagingArrays",
 
 setMethod("peakAlign", "SpectralImagingExperiment",
 	function(object, ref,
-		spectra = "intensity", index = NULL,
+		spectra = "intensity", index = NULL, binratio = 2,
 		tolerance = NA, units = c("relative", "absolute"),
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -217,14 +217,14 @@ setMethod("peakAlign", "SpectralImagingExperiment",
 		message=verbose)
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, spectraname=snm, indexname=inm,
-		tolerance=tolerance, units=units,
+		binratio=binratio, tolerance=tolerance, units=units,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
 setMethod("peakAlign", "SpectralImagingArrays",
 	function(object, ref,
-		spectra = "intensity", index = NULL,
+		spectra = "intensity", index = NULL, binratio = 2,
 		tolerance = NA, units = c("relative", "absolute"),
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -259,36 +259,40 @@ setMethod("peakAlign", "SpectralImagingArrays",
 	}
 	.peakAlign(object, ref=ref, spectra=spectra, index=index,
 		domain=domain, spectraname=snm, indexname=inm,
-		tolerance=tolerance, units=units,
+		binratio=binratio, tolerance=tolerance, units=units,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM)
 })
 
 .peakAlign <- function(object, ref, spectra, index,
-	domain, spectraname, indexname, tolerance, units,
+	domain, spectraname, indexname, binratio, tolerance, units,
 	verbose, chunkopts, BPPARAM)
 {
 	tol.ref <- switch(units, relative="x", absolute="abs")
 	if ( is.null(domain) || is.na(tolerance) ) {
 		.Log("summarizing peak gaps for alignment",
 			message=verbose)
-		indexdomain <- estimateDomain(index, width="min", units=units,
+		indexbins <- estimateDomain(index, width="min", units=units,
 			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
 	}
-	if ( is.null(domain) )
-		domain <- indexdomain
 	if ( is.na(tolerance) ) {
-		# estimate tolerance as 2x minimum peak gap
-		tol <- 2 * estres(indexdomain, ref=tol.ref)
+		# estimate tolerance as (binratio x min peak-to-peak gap)
+		tol <- binratio * estres(indexbins, ref=tol.ref)
 		tol <- switch(units,
 			relative=round(2 * tol, digits=6L) * 0.5,
 			absolute=round(tol, digits=4L))
 		.Log("estimated ", units, " tolerance of ", tol,
 			message=verbose)
 	} else {
-		# OR, set bin width to 0.5x tolerance (if set)
+		# validate user-specified tolerance
 		tol <- setNames(unname(tolerance), units)
-		res <- 0.5 * tol
+	}
+	if ( is.null(domain) ) {
+		# set peak bins estimated from index
+		domain <- indexbins
+	} else {
+		# set peak bins to (tolerance / binratio)
+		res <- tol / binratio
 		domain <- switch(units,
 			relative=seq_rel(min(domain), max(domain), by=res),
 			absolute=seq(min(domain), max(domain), by=res))
@@ -332,7 +336,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		featureData[["freq"]] <- n / length(object)
 	}
 	label <- "peak alignment"
-	metadata <- list(tolerance=unname(tol), units=units)
+	metadata <- list(binratio=binratio, tolerance=unname(tol), units=units)
 	metadata <- setNames(list(metadata), label)
 	metadata <- setNames(list(metadata), .processing_id())
 	metadata <- c(metadata(object), metadata)
