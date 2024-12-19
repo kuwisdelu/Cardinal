@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.8.3 [2024-12-18]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix error in 'selectROI()' for whole-experiment images
+
 CHANGES IN VERSION 3.8.2 [2024-12-11]
 -----------------------------------
 

@@ -39,7 +39,12 @@ makeFactor <- function(..., ordered = FALSE)
 	.Message("select ", mode, ": press ESC or 2nd mouse button to stop")
 	loc <- .select_locator(plot, mode == "region")
 	roi <- logical(ncol(object))
-	sub <- rep_len(.last$subset, ncol(object))
+	sub <- .last$subset
+	if ( is.null(sub) ) {
+		sub <- rep.int(TRUE, ncol(object))
+	} else {
+		sub <- rep_len(sub, ncol(object))
+	}
 	pos <- coord(object)[sub,,drop=FALSE]
 	if ( mode == "region" ) {
 		selected <- inpoly(pos, cbind(loc$x, loc$y))
