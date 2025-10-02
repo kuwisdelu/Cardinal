@@ -5,6 +5,7 @@
 setMethod("meansTest", "ANY",
 	function(x, data, fixed, random, samples,
 		response = "y", reduced = ~ 1, byrow = FALSE,
+		use_lmer = FALSE,
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -62,22 +63,34 @@ setMethod("meansTest", "ANY",
 	# fit models
 	.Log("fitting ", n, " ", label,
 		message=verbose)
-	FIT <- .lmFit_fun(fixed, random)
+	FIT <- .lmFit_fun(fixed, random, use_lmer)
 	models <- chunkLapply(datalist, FIT,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- if (byrow) rownames(x) else colnames(x)
-	# test models
-	.Log("testing ", n, " ", label,
-		message=verbose)
-	TEST <- .lmTest_fun(reduced, random)
-	tests <- chunkMapply(TEST, models, datalist,
-		verbose=verbose, chunkopts=chunkopts,
-		BPPARAM=BPPARAM, ...)
-	tests <- DataFrame(do.call(rbind, tests))
-	# return results
-	if ( anyNA(tests$statistic) )
-		.Warn(sum(is.na(tests$statistic)), " tests could not be performed")
+	# test models (skip for lmer models)
+	if ( !use_lmer ) {
+		.Log("testing ", n, " ", label,
+			message=verbose)
+		TEST <- .lmTest_fun(reduced, random, use_lmer)
+		tests <- chunkMapply(TEST, models, datalist,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
+		tests <- DataFrame(do.call(rbind, tests))
+		# return results
+		if ( anyNA(tests$statistic) )
+			.Warn(sum(is.na(tests$statistic)), " tests could not be performed")
+	} else {
+		# For lmer models, create empty test results and check for singular fits
+		singular <- sapply(models, function(m) {
+			if ( inherits(m, "lmerMod") ) {
+				lme4::isSingular(m)
+			} else {
+				NA
+			}
+		})
+		tests <- DataFrame(statistic=rep(NA_real_, n), pvalue=rep(NA_real_, n), singular=singular)
+	}
 	if ( is.null(random) ) {
 		mcols <- DataFrame(fixed=deparse1(fixed), tests)
 	} else {
@@ -87,7 +100,7 @@ setMethod("meansTest", "ANY",
 	as(ResultsList(models, mcols=mcols), "MeansTest")
 })
 
-.lmFit_fun <- function(fixed, random)
+.lmFit_fun <- function(fixed, random, use_lmer = FALSE)
 {
 	FIT <- isoclos(function(data, ...)
 	{
@@ -95,20 +108,40 @@ setMethod("meansTest", "ANY",
 		if ( is.null(random) ) {
 			model <- try(lm(fixed, data=data, ...), silent=TRUE)
 		} else {
-			model <- try(lme(fixed, data=data,
-				random=random, method="ML", ...), silent=TRUE)
+			if ( use_lmer ) {
+				fixed_terms <- as.character(fixed)[3]
+				random_formula_char <- as.character(random)
+				random_part <- trimws(random_formula_char[2])
+				# Check if random part already has parentheses (simple or multiple terms)
+				# If it starts with '(' assume it's already in lmer format
+				if ( !grepl("^\\(", random_part) ) {
+					random_part <- paste0("(", random_part, ")")
+				}
+				response <- as.character(fixed)[2]
+				lmer_formula <- as.formula(paste0(response, " ~ ", fixed_terms, " + ", random_part))
+				control <- lme4::lmerControl(check.conv.singular = lme4::.makeCC("ignore", tol = 1e-4))
+				model <- try(lme4::lmer(lmer_formula, data=data, REML=TRUE, control=control, ...), silent=TRUE)
+			} else {
+				model <- try(lme(fixed, data=data,
+					random=random, method="ML", ...), silent=TRUE)
+			}
 		}
 		if ( !inherits(model, "try-error") )
 		{
-			model <- update(model, . ~ .)
-			model$data <- data
+			if ( !inherits(model, "lmerMod") ) {
+				model <- update(model, . ~ .)
+				model$data <- data
+			} else {
+				# For lmer models, store data differently
+				attr(model, "data") <- data
+			}
 		}
 		model
 	}, CardinalEnv())
 	FIT
 }
 
-.lmTest_fun <- function(reduced, random)
+.lmTest_fun <- function(reduced, random, use_lmer = FALSE)
 {
 	TEST <- isoclos(function(model, data)
 	{
@@ -116,6 +149,9 @@ setMethod("meansTest", "ANY",
 			return(c(statistic=NA, pvalue=NA))
 		} else {
 			full <- model
+		}
+		if ( inherits(model, "lmerMod") ) {
+			.Error("likelihood ratio tests for lmer models are not supported")
 		}
 		if ( inherits(model, "lm") ) {
 			null <- update(full, reduced)
@@ -240,6 +276,7 @@ setMethod("plot", c(x = "MeansTest", y = "missing"),
 setMethod("meansTest", "SpatialDGMM",
 	function(x, fixed, random, class = 1L,
 		response = "intensity", reduced = ~ 1,
+		use_lmer = FALSE,
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -275,19 +312,31 @@ setMethod("meansTest", "SpatialDGMM",
 	# fit models
 	.Log("fitting ", n, " ", label,
 		message=verbose)
-	FIT <- .lmFit_fun(fixed, random)
+	FIT <- .lmFit_fun(fixed, random, use_lmer)
 	models <- chunkLapply(datalist, FIT,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 	names(models) <- rownames(featureData(x))
-	# test models
-	.Log("testing ", n, " ", label,
-		message=verbose)
-	TEST <- .lmTest_fun(reduced, random)
-	tests <- chunkMapply(TEST, models, datalist,
-		verbose=verbose, chunkopts=chunkopts,
-		BPPARAM=BPPARAM, ...)
-	tests <- DataFrame(do.call(rbind, tests))
+	# test models (skip for lmer models)
+	if ( !use_lmer ) {
+		.Log("testing ", n, " ", label,
+			message=verbose)
+		TEST <- .lmTest_fun(reduced, random, use_lmer)
+		tests <- chunkMapply(TEST, models, datalist,
+			verbose=verbose, chunkopts=chunkopts,
+			BPPARAM=BPPARAM, ...)
+		tests <- DataFrame(do.call(rbind, tests))
+	} else {
+		# For lmer models, create empty test results and check for singular fits
+		singular <- sapply(models, function(m) {
+			if ( inherits(m, "lmerMod") ) {
+				lme4::isSingular(m)
+			} else {
+				NA
+			}
+		})
+		tests <- DataFrame(statistic=rep(NA_real_, n), pvalue=rep(NA_real_, n), singular=singular)
+	}
 	# return results
 	if ( is.null(random) ) {
 		mcols <- DataFrame(fixed=deparse1(fixed), tests)
