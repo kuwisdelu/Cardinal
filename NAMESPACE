@@ -338,6 +338,7 @@ exportMethods(
 	"rowSums")
 
 exportMethods(
+	"contrast",
 	"meansTest",
 	"NMF",
 	"PCA",

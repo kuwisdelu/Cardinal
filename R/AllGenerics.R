@@ -67,6 +67,7 @@ setGeneric("spatialKMeans", function(x, ...) standardGeneric("spatialKMeans"))
 setGeneric("spatialShrunkenCentroids", function(x, y, ...) standardGeneric("spatialShrunkenCentroids"))
 setGeneric("spatialDGMM", function(x, ...) standardGeneric("spatialDGMM"))
 setGeneric("meansTest", function(x, ...) standardGeneric("meansTest"))
+setGeneric("contrast", function(object, ...) standardGeneric("contrast"))
 
 #### Plotting ####
 ## ---------------

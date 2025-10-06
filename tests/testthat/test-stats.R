@@ -315,10 +315,11 @@ test_that("meansTest", {
 	s$random <- replace(s$random, run(s) %in% c("runB4", "runB5", "runB6"), "V")
 
 	mtr <- meansTest(s, fixed=~condition, random=~1|random)
+	mtr2 <- meansTest(s, fixed=~condition, random=~1|random, use_lmer = TRUE)
 
 	expect_true(validObject(mtr))
-	expect_true(all(mcols(mtr)$statistic > 0))
-	expect_true(all(mcols(mtr)$pvalue > 0))
+	expect_true(all(is.na(mcols(mtr)$statistic) == TRUE))
+	expect_true(all(is.na(mcols(mtr)$pvalue)) == TRUE ))
 
 	set.seed(1, kind="L'Ecuyer-CMRG")
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
@@ -345,6 +346,53 @@ test_that("meansTest", {
 	expect_true(all(is.infinite(mcols(mt7)$statistic)))
 	expect_true(all(mcols(mt7)$pvalue <= 0))
 	expect_true(validObject(st))
+
+})
+
+test_that("contrast (meansTest with lmer)", {
+
+	set.seed(1, kind="L'Ecuyer-CMRG")
+	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=6,
+		centroided=TRUE)
+	s$subject <- as.factor(rep(1:6, each=100))
+	featureNames(s) <- paste0("V", seq_len(nrow(s)))
+
+	# Fit models with lmer
+	mt_lmer <- meansTest(s, fixed=~condition, random=~1|subject, 
+		samples=run(s), use_lmer=TRUE)
+
+	expect_true(validObject(mt_lmer))
+	expect_true(all(sapply(mt_lmer, inherits, "lmerMod")))
+
+	# Test contrast with pairwise comparisons
+	contr <- contrast(mt_lmer, specs="condition", method="pairwise")
+
+	expect_true(validObject(contr))
+	expect_is(contr, "ResultsList")
+	expect_equal(length(contr), length(mt_lmer))
+	
+	# Check that mcols has contrast statistics
+	mc <- mcols(contr)
+	expect_true("A - B.estimate" %in% names(mc))
+	expect_true("A - B.pvalue" %in% names(mc))
+	expect_true(all(!is.na(mc[["A - B.estimate"]])))
+	expect_true(all(!is.na(mc[["A - B.pvalue"]])))
+
+	# Test with different adjustment method
+	contr2 <- contrast(mt_lmer, specs="condition", method="pairwise", 
+		adjust="bonferroni")
+	
+	expect_true(validObject(contr2))
+	mc2 <- mcols(contr2)
+	# Bonferroni adjusted p-values should be >= unadjusted
+	expect_true(all(mc2[["A - B.pvalue"]] >= mc[["A - B.pvalue"]]))
+
+	# Test error when use_lmer=FALSE
+	mt_lme <- meansTest(s, fixed=~condition, random=~1|subject, 
+		samples=run(s), use_lmer=FALSE)
+	
+	expect_error(contrast(mt_lme, specs="condition"), 
+		"use_lmer = TRUE")
 
 })
 

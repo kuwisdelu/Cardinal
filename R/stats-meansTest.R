@@ -120,7 +120,8 @@ setMethod("meansTest", "ANY",
 				response <- as.character(fixed)[2]
 				lmer_formula <- as.formula(paste0(response, " ~ ", fixed_terms, " + ", random_part))
 				control <- lme4::lmerControl(check.conv.singular = lme4::.makeCC("ignore", tol = 1e-4))
-				model <- try(lme4::lmer(lmer_formula, data=data, REML=TRUE, control=control, ...), silent=TRUE)
+				# Use lmerTest::lmer for Satterthwaite df by default
+				model <- try(lmerTest::lmer(lmer_formula, data=data, REML=TRUE, control=control, ...), silent=TRUE)
 			} else {
 				model <- try(lme(fixed, data=data,
 					random=random, method="ML", ...), silent=TRUE)
@@ -374,5 +375,141 @@ segmentationTest <- function(x, fixed, random, samples = run(x),
 	}
 	meansTest(x, fixed=fixed, random=random, class=class,
 		response=response, reduced=reduced, ...)
+}
+
+
+#### Contrasts for mixed effects models ####
+## ------------------------------------------
+
+setMethod("contrast", "MeansTest",
+	function(object, specs, method = "pairwise", adjust = "none",
+		verbose = getCardinalVerbose(), chunkopts = list(),
+		BPPARAM = getCardinalBPPARAM(), ...)
+{
+	# Check if models were fit with lmer
+	if ( !any(sapply(object, inherits, "lmerMod")) ) {
+		.Error("contrast() requires models fit with use_lmer = TRUE")
+	}
+	# Check for specs
+	if ( missing(specs) )
+		.Error("missing 'specs' argument for emmeans")
+	
+	n <- length(object)
+	label <- if (n != 1L) "contrasts" else "contrast"
+	
+	# Compute contrasts
+	.Log("computing ", n, " ", label,
+		message=verbose)
+	# Use lapply instead of chunkLapply to avoid serialization issues with lmer models
+	# Capture emmeans::contrast to avoid namespace conflicts
+	emmeans_contrast <- emmeans::contrast
+	# Set default df method to satterthwaite to avoid pbkrtest warnings
+	old_emm_options <- emmeans::emm_options(lmer.df = "satterthwaite")
+	on.exit(emmeans::emm_options(old_emm_options), add = TRUE)
+	
+	contrasts <- lapply(object, function(model) {
+		if ( inherits(model, "try-error") ) {
+			return(NULL)
+		}
+		if ( !inherits(model, "lmerMod") ) {
+			return(NULL)
+		}
+		# Compute emmeans
+		emm <- try(emmeans::emmeans(model, specs=specs, ...), silent=TRUE)
+		if ( inherits(emm, "try-error") ) {
+			return(NULL)
+		}
+		# Compute contrasts
+		contr <- try(emmeans_contrast(emm, method=method, adjust=adjust), silent=TRUE)
+		if ( inherits(contr, "try-error") ) {
+			return(NULL)
+		}
+		contr
+	})
+	names(contrasts) <- names(object)
+	
+	# Extract statistics into wide DataFrame
+	.Log("extracting statistics",
+		message=verbose)
+	stats_list <- lapply(contrasts, .extract_contrast_stats)
+	
+	# Check if all have same structure
+	if ( length(stats_list) > 0L && !is.null(stats_list[[1L]]) ) {
+		# Get column names from first non-NULL result
+		first_valid <- stats_list[!sapply(stats_list, is.null)][[1L]]
+		col_names <- names(first_valid)
+		
+		# Create matrix with all results
+		stats_mat <- do.call(rbind, lapply(stats_list, function(x) {
+			if ( is.null(x) ) {
+				rep(NA_real_, length(col_names))
+			} else {
+				x
+			}
+		}))
+		colnames(stats_mat) <- col_names
+		stats_df <- DataFrame(stats_mat)
+	} else {
+		# All contrasts failed
+		stats_df <- DataFrame()
+	}
+	
+	# Combine with existing mcols
+	if ( ncol(stats_df) > 0L ) {
+		mcols_new <- cbind(mcols(object), stats_df)
+	} else {
+		mcols_new <- mcols(object)
+	}
+	
+	# Return ResultsList
+	ResultsList(contrasts, mcols=mcols_new)
+})
+
+.extract_contrast_stats <- function(contrast_obj)
+{
+	if ( is.null(contrast_obj) ) {
+		return(NULL)
+	}
+	# Convert to data frame
+	contr_df <- as.data.frame(contrast_obj)
+	
+	# Get contrast names
+	if ( "contrast" %in% names(contr_df) ) {
+		contr_names <- as.character(contr_df$contrast)
+	} else {
+		# Use row names if no contrast column
+		contr_names <- rownames(contr_df)
+		if ( is.null(contr_names) ) {
+			contr_names <- paste0("contrast", seq_len(nrow(contr_df)))
+		}
+	}
+	
+	# Extract estimate and p-value columns
+	estimate_col <- NULL
+	pvalue_col <- NULL
+	
+	if ( "estimate" %in% names(contr_df) ) {
+		estimate_col <- contr_df$estimate
+	}
+	if ( "p.value" %in% names(contr_df) ) {
+		pvalue_col <- contr_df$p.value
+	}
+	
+	# Create named vector with results
+	result <- numeric(0)
+	if ( !is.null(estimate_col) ) {
+		names_est <- paste0(contr_names, ".estimate")
+		result <- c(result, setNames(estimate_col, names_est))
+	}
+	if ( !is.null(pvalue_col) ) {
+		names_pval <- paste0(contr_names, ".pvalue")
+		result <- c(result, setNames(pvalue_col, names_pval))
+	}
+	
+	if ( length(result) == 0L ) {
+		return(NULL)
+	}
+	
+	result
 }
 
