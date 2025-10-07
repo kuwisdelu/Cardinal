@@ -386,9 +386,12 @@ setMethod("contrast", "MeansTest",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
-	# Check if models were fit with lmer
-	if ( !any(sapply(object, inherits, "lmerMod")) ) {
-		.Error("contrast() requires models fit with use_lmer = TRUE")
+	# Check if models were fit with lm or lmer
+	has_lm_or_lmer <- any(sapply(object, function(m) {
+		inherits(m, "lm") || inherits(m, "lmerMod")
+	}))
+	if ( !has_lm_or_lmer ) {
+		.Error("contrast() requires models fit with lm or use_lmer = TRUE")
 	}
 	# Check for specs
 	if ( missing(specs) )
@@ -411,7 +414,7 @@ setMethod("contrast", "MeansTest",
 		if ( inherits(model, "try-error") ) {
 			return(NULL)
 		}
-		if ( !inherits(model, "lmerMod") ) {
+		if ( !inherits(model, "lm") && !inherits(model, "lmerMod") ) {
 			return(NULL)
 		}
 		# Compute emmeans

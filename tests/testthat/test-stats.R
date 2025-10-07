@@ -318,8 +318,12 @@ test_that("meansTest", {
 	mtr2 <- meansTest(s, fixed=~condition, random=~1|random, use_lmer = TRUE)
 
 	expect_true(validObject(mtr))
-	expect_true(all(is.na(mcols(mtr)$statistic) == TRUE))
-	expect_true(all(is.na(mcols(mtr)$pvalue)) == TRUE ))
+	expect_true(all(is.na(mcols(mtr)$statistic)) == FALSE)
+	expect_true(all(is.na(mcols(mtr)$pvalue)) == FALSE )
+
+	expect_true(validObject(mtr2))
+	expect_true(all(is.na(mcols(mtr2)$statistic)) == TRUE)
+	expect_true(all(is.na(mcols(mtr2)$pvalue)) == TRUE )
 
 	set.seed(1, kind="L'Ecuyer-CMRG")
 	s2 <- simulateImage(preset=4, dim=c(10L, 10L), nrun=1,
@@ -349,7 +353,7 @@ test_that("meansTest", {
 
 })
 
-test_that("contrast (meansTest with lmer)", {
+test_that("contrast", {
 
 	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=6,
@@ -373,10 +377,10 @@ test_that("contrast (meansTest with lmer)", {
 	
 	# Check that mcols has contrast statistics
 	mc <- mcols(contr)
-	expect_true("A - B.estimate" %in% names(mc))
-	expect_true("A - B.pvalue" %in% names(mc))
-	expect_true(all(!is.na(mc[["A - B.estimate"]])))
-	expect_true(all(!is.na(mc[["A - B.pvalue"]])))
+	expect_true("A...B.estimate" %in% names(mc))
+	expect_true("A...B.pvalue" %in% names(mc))
+	expect_true(all(!is.na(mc[["A...B.estimate"]])))
+	expect_true(all(!is.na(mc[["A...B.pvalue"]])))
 
 	# Test with different adjustment method
 	contr2 <- contrast(mt_lmer, specs="condition", method="pairwise", 
@@ -385,14 +389,43 @@ test_that("contrast (meansTest with lmer)", {
 	expect_true(validObject(contr2))
 	mc2 <- mcols(contr2)
 	# Bonferroni adjusted p-values should be >= unadjusted
-	expect_true(all(mc2[["A - B.pvalue"]] >= mc[["A - B.pvalue"]]))
+	expect_true(all(mc2[["A...B.pvalue"]] >= mc[["A...B.pvalue"]]))
 
-	# Test error when use_lmer=FALSE
+	# Test error when use_lmer=FALSE with random effects
 	mt_lme <- meansTest(s, fixed=~condition, random=~1|subject, 
 		samples=run(s), use_lmer=FALSE)
 	
 	expect_error(contrast(mt_lme, specs="condition"), 
-		"use_lmer = TRUE")
+		"lm or use_lmer = TRUE")
+
+	# Test with lm models (no random effects) using same test image
+	mt_lm <- meansTest(s, fixed=~condition, samples=run(s))
+	
+	expect_true(validObject(mt_lm))
+	expect_true(all(sapply(mt_lm, inherits, "lm")))
+	
+	# Test contrast with lm models
+	contr_lm <- contrast(mt_lm, specs="condition", method="pairwise")
+	
+	expect_true(validObject(contr_lm))
+	expect_is(contr_lm, "ResultsList")
+	expect_equal(length(contr_lm), length(mt_lm))
+	
+	# Check that mcols has contrast statistics
+	mc_lm <- mcols(contr_lm)
+	expect_true("A...B.estimate" %in% names(mc_lm))
+	expect_true("A...B.pvalue" %in% names(mc_lm))
+	expect_true(all(!is.na(mc_lm[["A...B.estimate"]])))
+	expect_true(all(!is.na(mc_lm[["A...B.pvalue"]])))
+	
+	# Test with adjustment method
+	contr_lm2 <- contrast(mt_lm, specs="condition", method="pairwise", 
+		adjust="bonferroni")
+	
+	expect_true(validObject(contr_lm2))
+	mc_lm2 <- mcols(contr_lm2)
+	# Bonferroni adjusted p-values should be >= unadjusted
+	expect_true(all(mc_lm2[["A...B.pvalue"]] >= mc_lm[["A...B.pvalue"]]))
 
 })
 
