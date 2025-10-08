@@ -4,7 +4,9 @@
 # and demonstrates the new contrast() function
 
 # Load packages
-library(Cardinal)
+library(devtools)
+load_all("/Users/ethanrogers/OtherProjects/Cardinal")
+#library(Cardinal)
 library(lmerTest)  # Extends lme4 with Satterthwaite df
 library(emmeans)
 
@@ -133,6 +135,22 @@ top3 <- order(stats1[[pval_col]])[1:3]
 print(stats1[top3, grep("estimate|pvalue", names(stats1))])
 cat("\n\n")
 
+cat("Top 5 features using topFeatures() (default, first non-NA pvalue, ascending):\n")
+tf1 <- topFeatures(contr1, n = 5)
+print(tf1[, grep("estimate|pvalue|fdr", names(tf1)), drop=FALSE])
+cat("\nTop 5 features using topFeatures(sort.by = \"A - B.fdr\"):\n")
+tf1_named <- topFeatures(contr1, n = 5, sort.by = "A - B.fdr")
+print(tf1_named[, grep("estimate|pvalue|fdr", names(tf1_named)), drop=FALSE])
+cat("\nTop 5 features using topFeatures(sort.by = index of 'A - B.fdr'):\n")
+idx1 <- which(names(tf1) == "A - B.fdr")
+if (length(idx1) == 1) {
+  tf1_idx <- topFeatures(contr1, n = 5, sort.by = idx1)
+  print(tf1_idx[, grep("estimate|pvalue|fdr", names(tf1_idx)), drop=FALSE])
+} else {
+  cat("Could not locate column index for 'A - B.fdr' in topFeatures output.\n")
+}
+cat("\n\n")
+
 # Example 2: Contrasts by tissue (marginalizing over condition)
 cat("--- Example 2: Pairwise contrasts for tissue ---\n")
 contr2 <- Cardinal::contrast(
@@ -145,6 +163,12 @@ contr2 <- Cardinal::contrast(
 
 cat("Contrast object for feature 1:\n")
 print(contr2[[1]])
+cat("\n\n")
+
+cat("Top 5 features for tissue contrasts using topFeatures() (default):\n")
+tf2 <- topFeatures(contr2, n = 5)
+# Show only estimate/pvalue/fdr columns for brevity
+print(tf2[, grep("estimate|pvalue|fdr", names(tf2)), drop=FALSE])
 cat("\n\n")
 
 # Example 3: Condition contrasts within each tissue level
@@ -281,6 +305,11 @@ cat("Column names in mcols:\n")
 print(grep("estimate|pvalue", names(mcols(contr9)), value=TRUE))
 cat("\n\n")
 
+
+tf9 <- topFeatures(contr9, sort.by = 4)
+tf9
+
+
 # Example 10: Effect coding (deviation from grand mean)
 cat("--- Example 10: Effect coding (eff method) ---\n")
 cat("Compares each level to the grand mean\n")
@@ -350,6 +379,6 @@ cat("   - Example 11: Formula notation (~ condition * tissue)\n")
 cat("   - Example 12: Polynomial contrasts for ordered factors\n\n")
 
 cat("6. All contrast methods return:\n")
-cat("   - ResultsList with contrast objects per m/z\n")
-cat("   - Wide DataFrame with estimates and p-values in mcols\n")
+cat("   - ContrastResults (ResultsList subclass) with contrast objects per m/z\n")
+cat("   - Wide DataFrame with estimates and p-values in mcols; use topFeatures() to add .fdr columns and rank features\n")
 cat("   - Full emmeans contrast objects accessible via [[i]]\n")

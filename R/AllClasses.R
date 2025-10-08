@@ -86,4 +86,4 @@ setClass("SpatialShrunkenCentroids", contains="SpatialResults")
 setClass("SpatialDGMM", contains="SpatialResults")
 setClass("MeansTest", contains="ResultsList")
 setClass("SegmentationTest", contains="ResultsList")
-
+setClass("ContrastResults", contains="ResultsList")

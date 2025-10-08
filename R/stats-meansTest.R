@@ -458,14 +458,22 @@ setMethod("contrast", "MeansTest",
 	}
 	
 	# Combine with existing mcols
+	# Drop carryover 'statistic' and 'pvalue' columns from MeansTest
+	mcols_old <- mcols(object)
+	if ( "statistic" %in% names(mcols_old) )
+		mcols_old$statistic <- NULL
+	if ( "pvalue" %in% names(mcols_old) )
+		mcols_old$pvalue <- NULL
 	if ( ncol(stats_df) > 0L ) {
-		mcols_new <- cbind(mcols(object), stats_df)
+		mcols_new <- cbind(mcols_old, stats_df)
 	} else {
-		mcols_new <- mcols(object)
+		mcols_new <- mcols_old
 	}
 	
-	# Return ResultsList
-	ResultsList(contrasts, mcols=mcols_new)
+	# Return ContrastResults
+	x <- SimpleList(contrasts)
+	new("ContrastResults", x, elementMetadata=mcols_new,
+		elementType=class(x[[1L]])[1L])
 })
 
 .extract_contrast_stats <- function(contrast_obj)
@@ -515,4 +523,60 @@ setMethod("contrast", "MeansTest",
 	
 	result
 }
+
+
+setMethod("topFeatures", "ContrastResults",
+	function(object, n = Inf, sort.by = NULL, ...)
+{
+	# Start from mcols and drop design descriptors
+	topf <- mcols(object)
+	if ( "fixed" %in% names(topf) )
+		topf$fixed <- NULL
+	if ( "random" %in% names(topf) )
+		topf$random <- NULL
+
+	# Identify p-value columns of form "[contrast].pvalue"
+	pval_cols <- grep("\\.pvalue$", names(topf), value=TRUE)
+	if ( length(pval_cols) == 0L )
+		.Error("no pvalue columns found in contrast results")
+
+	# Add FDR-adjusted columns alongside each p-value column
+	for ( pv in pval_cols ) {
+		fdr_name <- sub("\\.pvalue$", ".fdr", pv)
+		# Ensure numeric for p.adjust
+		vals <- as.numeric(topf[[pv]])
+		topf[[fdr_name]] <- p.adjust(vals, method="fdr")
+	}
+
+	# Determine sort column after adding FDR columns
+	if ( is.null(sort.by) ) {
+		# Default: first pvalue column that is not all NA
+		non_na <- NULL
+		for ( pv in pval_cols ) {
+			if ( !all(is.na(topf[[pv]])) ) { non_na <- pv; break }
+		}
+		if ( is.null(non_na) )
+			.Error("all pvalue columns are NA; cannot determine default sort column")
+		sort.by <- non_na
+	} else if ( is.numeric(sort.by) ) {
+		if ( length(sort.by) != 1L )
+			.Error("'sort.by' must be a single column index")
+		i <- as.integer(sort.by)
+		if ( i < 1L || i > ncol(topf) )
+			.Error("'sort.by' index out of range")
+		sort.by <- names(topf)[i]
+	} else if ( is.character(sort.by) ) {
+		if ( length(sort.by) != 1L )
+			.Error("'sort.by' must be a single column name")
+		if ( !(sort.by %in% names(topf)) )
+			.Error("column ", sQuote(sort.by), " not found in results")
+	} else {
+		.Error("'sort.by' must be NULL, a column name, or a column index")
+	}
+
+	# Sort ascending with NA last
+	i <- order(topf[[sort.by]], na.last=TRUE)
+	topf <- topf[i,,drop=FALSE]
+	head(topf, n=n)
+})
 
