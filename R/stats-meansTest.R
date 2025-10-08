@@ -382,7 +382,7 @@ segmentationTest <- function(x, fixed, random, samples = run(x),
 ## ------------------------------------------
 
 setMethod("contrast", "MeansTest",
-	function(object, specs, method = "pairwise", adjust = "none",
+	function(object, specs, method = "pairwise", emm_adjust = "none",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -423,7 +423,7 @@ setMethod("contrast", "MeansTest",
 			return(NULL)
 		}
 		# Compute contrasts
-		contr <- try(emmeans_contrast(emm, method=method, adjust=adjust), silent=TRUE)
+		contr <- try(emmeans_contrast(emm, method=method, adjust=emm_adjust), silent=TRUE)
 		if ( inherits(contr, "try-error") ) {
 			return(NULL)
 		}

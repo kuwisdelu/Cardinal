@@ -384,7 +384,7 @@ test_that("contrast", {
 
 	# Test with different adjustment method
 	contr2 <- contrast(mt_lmer, specs="condition", method="pairwise", 
-		adjust="bonferroni")
+		emm_adjust="bonferroni")
 	
 	expect_true(validObject(contr2))
 	mc2 <- mcols(contr2)
@@ -420,7 +420,7 @@ test_that("contrast", {
 	
 	# Test with adjustment method
 	contr_lm2 <- contrast(mt_lm, specs="condition", method="pairwise", 
-		adjust="bonferroni")
+		emm_adjust="bonferroni")
 	
 	expect_true(validObject(contr_lm2))
 	mc_lm2 <- mcols(contr_lm2)

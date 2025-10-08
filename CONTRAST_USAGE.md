@@ -12,7 +12,7 @@ The `contrast()` function provides post-hoc contrast analysis for `MeansTest` ob
 ## Usage
 
 ```r
-contrast(object, specs, method = "pairwise", adjust = "none", 
+contrast(object, specs, method = "pairwise", emm_adjust = "none", 
          verbose = getCardinalVerbose(), chunkopts = list(),
          BPPARAM = getCardinalBPPARAM(), ...)
 ```
@@ -27,7 +27,7 @@ contrast(object, specs, method = "pairwise", adjust = "none",
   - `"poly"`: Polynomial contrasts
   - Custom contrast matrices (named list)
   - See `?emmeans::contrast` for all options
-- **adjust**: P-value adjustment method (default: `"none"`)
+- **emm_adjust**: P-value adjustment method (default: `"none"`)
   - `"none"`: No adjustment
   - `"bonferroni"`: Bonferroni correction
   - `"tukey"`: Tukey HSD
@@ -66,14 +66,22 @@ mcols(contr)$"A - B.pvalue"
 ### With multiple comparison adjustment
 
 ```r
-# Bonferroni adjustment
-contr_bonf <- contrast(mt, specs = "condition", method = "pairwise",
-                       adjust = "bonferroni")
+# Bonferroni adjustment (requires multiple contrasts to see effect)
+contr_bonf <- contrast(mt, specs = "tissue", method = "pairwise",
+                       emm_adjust = "bonferroni")
 
 # Tukey HSD adjustment
-contr_tukey <- contrast(mt, specs = "condition", method = "pairwise",
-                        adjust = "tukey")
+contr_tukey <- contrast(mt, specs = "tissue", method = "pairwise",
+                        emm_adjust = "tukey")
+
+# FDR adjustment
+contr_fdr <- contrast(mt, specs = "tissue", method = "pairwise",
+                      emm_adjust = "fdr")
 ```
+
+**Note**: P-value adjustment only differs from unadjusted values when testing **multiple contrasts**. For example:
+- 2-level factor → 1 contrast → No adjustment (p × 1 = p)
+- 3-level factor → 3 contrasts → Adjustment visible (e.g., Bonferroni: p × 3)
 
 ### Treatment vs control contrasts
 

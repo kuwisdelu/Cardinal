@@ -51,9 +51,12 @@
 .Rbuildignore
 .Rbuildignore
 .Rprofile
-demo_lmer_functionality.R
-test_contrast_debug.R
+#demo_lmer_functionality.R
+#test_contrast_debug.R
 renv/activate.R
 .gitignore
 renv/.gitignore
 renv/settings.json
+CONTRAST_USAGE.md
+demo_lmer_functionality.R
+CONTRAST_USAGE.md
