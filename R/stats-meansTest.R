@@ -443,15 +443,15 @@ setMethod("contrast", "MeansTest",
 		col_names <- names(first_valid)
 		
 		# Create matrix with all results
-		stats_mat <- do.call(rbind, lapply(stats_list, function(x) {
-			if ( is.null(x) ) {
-				rep(NA_real_, length(col_names))
-			} else {
-				x
+		# Use matrix() instead of rbind() to preserve non-syntactic column names
+		stats_mat <- matrix(NA_real_, nrow=length(stats_list), ncol=length(col_names))
+		for ( i in seq_along(stats_list) ) {
+			if ( !is.null(stats_list[[i]]) ) {
+				stats_mat[i, ] <- stats_list[[i]]
 			}
-		}))
+		}
 		colnames(stats_mat) <- col_names
-		stats_df <- DataFrame(stats_mat)
+		stats_df <- DataFrame(stats_mat, check.names=FALSE)
 	} else {
 		# All contrasts failed
 		stats_df <- DataFrame()

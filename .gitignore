@@ -57,6 +57,6 @@ renv/activate.R
 .gitignore
 renv/.gitignore
 renv/settings.json
-CONTRAST_USAGE.md
-demo_lmer_functionality.R
-CONTRAST_USAGE.md
+#CONTRAST_USAGE.md
+#demo_lmer_functionality.R
+#CONTRAST_USAGE.md
