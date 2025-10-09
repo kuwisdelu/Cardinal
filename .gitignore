@@ -50,8 +50,4 @@
 .Renviron
 .Rbuildignore
 .Rprofile
-renv/activate.R
-.gitignore
-renv/.gitignore
-renv/settings.json
-demo_lmer_functionality.R
+renv/
