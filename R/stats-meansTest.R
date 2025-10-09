@@ -381,7 +381,7 @@ segmentationTest <- function(x, fixed, random, samples = run(x),
 #### Contrasts for mixed effects models ####
 ## ------------------------------------------
 
-setMethod("contrast", "MeansTest",
+setMethod("contrastTest", "MeansTest",
 	function(object, specs, method = "pairwise", emm_adjust = "none",
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
@@ -391,7 +391,7 @@ setMethod("contrast", "MeansTest",
 		inherits(m, "lm") || inherits(m, "lmerMod")
 	}))
 	if ( !has_lm_or_lmer ) {
-		.Error("contrast() requires models fit with lm or use_lmer = TRUE")
+		.Error("contrastTest() requires models fit with lm or use_lmer = TRUE")
 	}
 	# Check for specs
 	if ( missing(specs) )

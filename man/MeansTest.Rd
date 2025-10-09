@@ -12,8 +12,8 @@
 \alias{topFeatures,MeansTest-method}
 \alias{plot,MeansTest,missing-method}
 
-\alias{contrast}
-\alias{contrast,MeansTest-method}
+\alias{contrastTest}
+\alias{contrastTest,MeansTest-method}
 
 \alias{segmentationTest}
 
@@ -47,7 +47,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 \S4method{plot}{MeansTest,missing}(x, i = 1L, type = "boxplot", show.obs = TRUE,
         fill = FALSE, layout = NULL, \dots)
 
-\S4method{contrast}{MeansTest}(object, specs, method = "pairwise", emm_adjust = "none",
+\S4method{contrastTest}{MeansTest}(object, specs, method = "pairwise", emm_adjust = "none",
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }
@@ -69,7 +69,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 
     \item{reduced}{A one-sided formula specifying the fixed effects in the reduced model for the null hypothesis. The default is an intercept-only model. Random effects are retained.}
 
-    \item{use_lmer}{Logical. If \code{TRUE}, use \code{lmerTest::lmer} instead of \code{nlme::lme} for fitting mixed effects models. This provides Satterthwaite degrees of freedom and is typically faster. When \code{TRUE}, likelihood ratio tests are not performed; use \code{contrast()} for post-hoc tests. Requires the \code{lmerTest} package.}
+    \item{use_lmer}{Logical. If \code{TRUE}, use \code{lmerTest::lmer} instead of \code{nlme::lme} for fitting mixed effects models. This provides Satterthwaite degrees of freedom and is typically faster. When \code{TRUE}, likelihood ratio tests are not performed; use \code{contrastTest()} for post-hoc tests. Requires the \code{lmerTest} package.}
 
     \item{byrow}{For the default method, are the rows or the columns the \code{x} .}
 
@@ -79,13 +79,13 @@ segmentationTest(x, fixed, random, samples = run(x),
     
     \item{BPPARAM}{An optional instance of \code{BiocParallelParam}. See documentation for \code{\link{bplapply}}.}
 
-    \item{\dots}{For \code{meansTest}, passed to internal linear modeling methods (\code{\link{lm}}, \code{\link{lme}}, or \code{lmerTest::lmer}). For \code{contrast}, passed to \code{emmeans::emmeans()} or \code{emmeans::contrast()}.}
+    \item{\dots}{For \code{meansTest}, passed to internal linear modeling methods (\code{\link{lm}}, \code{\link{lme}}, or \code{lmerTest::lmer}). For \code{contrastTest}, passed to \code{emmeans::emmeans()} or \code{emmeans::contrast()}.}
 
-    \item{specs}{For \code{contrast}, specification for estimated marginal means passed to \code{emmeans::emmeans()}. Can be a character vector of factor names (e.g., \code{"condition"}), a formula (e.g., \code{~ condition}), or more complex specifications. See \code{?emmeans::emmeans} for details.}
+    \item{specs}{For \code{contrastTest}, specification for estimated marginal means passed to \code{emmeans::emmeans()}. Can be a character vector of factor names (e.g., \code{"condition"}), a formula (e.g., \code{~ condition}), or more complex specifications. See \code{?emmeans::emmeans} for details.}
 
-    \item{method}{For \code{contrast}, the contrast method. Common options include \code{"pairwise"} (all pairwise comparisons), \code{"trt.vs.ctrl"} (treatment vs control), \code{"poly"} (polynomial contrasts), or a named list of custom contrasts. See \code{?emmeans::contrast} for all options.}
+    \item{method}{For \code{contrastTest}, the contrast method. Common options include \code{"pairwise"} (all pairwise comparisons), \code{"trt.vs.ctrl"} (treatment vs control), \code{"poly"} (polynomial contrasts), or a named list of custom contrasts. See \code{?emmeans::contrast} for all options.}
 
-    \item{emm_adjust}{For \code{contrast}, the p-value adjustment method passed to \code{emmeans::contrast()}. Options include \code{"none"}, \code{"bonferroni"}, \code{"tukey"}, \code{"fdr"}, etc. See \code{?emmeans::summary.emmGrid} for all options. Note: adjustment only affects results when testing multiple contrasts (e.g., 3-level factors produce 3 pairwise contrasts).}
+    \item{emm_adjust}{For \code{contrastTest}, the p-value adjustment method passed to \code{emmeans::contrast()}. Options include \code{"none"}, \code{"bonferroni"}, \code{"tukey"}, \code{"fdr"}, etc. See \code{?emmeans::summary.emmGrid} for all options. Note: adjustment only affects results when testing multiple contrasts (e.g., 3-level factors produce 3 pairwise contrasts).}
 
     \item{object}{A fitted model object to summarize.}
 
@@ -103,17 +103,17 @@ segmentationTest(x, fixed, random, samples = run(x),
 }
 
 \details{
-    Likelihood ratio tests are used for hypothesis testing when \code{use_lmer = FALSE} (the default). When \code{use_lmer = TRUE}, models are fit with \code{lmerTest::lmer} using REML, but no hypothesis tests are performed. Instead, use the \code{contrast()} function for post-hoc comparisons.
+    Likelihood ratio tests are used for hypothesis testing when \code{use_lmer = FALSE} (the default). When \code{use_lmer = TRUE}, models are fit with \code{lmerTest::lmer} using REML, but no hypothesis tests are performed. Instead, use the \code{contrastTest()} function for post-hoc comparisons.
     
-    The \code{contrast()} function provides flexible post-hoc testing for models fit with \code{use_lmer = TRUE}. It uses \code{emmeans::emmeans()} to compute estimated marginal means and \code{emmeans::contrast()} to perform comparisons. The function operates on all m/z features in parallel and returns a \code{ContrastResults} object with contrast statistics.
+    The \code{contrastTest()} function provides flexible post-hoc testing for models fit with \code{use_lmer = TRUE}. It uses \code{emmeans::emmeans()} to compute estimated marginal means and \code{emmeans::contrast()} to perform comparisons. The function operates on all m/z features in parallel and returns a \code{ContrastResults} object with contrast statistics.
     
-    When using \code{contrast()}, p-value adjustments (via the \code{adjust} parameter) only show differences from unadjusted values when testing multiple contrasts. For example, a 2-level factor produces only 1 contrast, so Bonferroni adjustment yields \code{p * 1 = p} (no change). A 3-level factor produces 3 pairwise contrasts, demonstrating visible adjustment effects.
+    When using \code{contrastTest()}, p-value adjustments (via the \code{adjust} parameter) only show differences from unadjusted values when testing multiple contrasts. For example, a 2-level factor produces only 1 contrast, so Bonferroni adjustment yields \code{p * 1 = p} (no change). A 3-level factor produces 3 pairwise contrasts, demonstrating visible adjustment effects.
 }
 
 \value{
     For \code{meansTest}: An object of class \code{MeansTest} derived from \code{ResultsList}, where each element contains a linear model (\code{lm}, \code{lme}, or \code{lmerMod} object).
     
-    For \code{contrast}: A \code{ContrastResults} object (extends \code{ResultsList}) where each element contains an \code{emmeans} contrast object. The \code{mcols} metadata includes contrast estimates and p-values with columns named as \code{"[contrast_name].estimate"} and \code{"[contrast_name].pvalue"}.
+    For \code{contrastTest}: A \code{ContrastResults} object (extends \code{ResultsList}) where each element contains an \code{emmeans} contrast object. The \code{mcols} metadata includes contrast estimates and p-values with columns named as \code{"[contrast_name].estimate"} and \code{"[contrast_name].pvalue"}.
 }
 
 \author{
@@ -141,13 +141,13 @@ samples <- replace(run(x), !(x$circleA | x$circleB), NA)
 fit <- meansTest(x, ~condition, samples=samples)
 print(fit)
 
-# Fit with lmerTest::lmer (no tests, use contrast() instead)
+# Fit with lmerTest::lmer (no tests, use contrastTest() instead)
 \dontrun{
 fit_lmer <- meansTest(x, ~condition, samples=samples, use_lmer=TRUE)
 
 # Post-hoc contrasts with p-value adjustment
-contr <- contrast(fit_lmer, specs="condition", 
-                  method="pairwise", emm_adjust="bonferroni")
+contr <- contrastTest(fit_lmer, specs="condition", 
+                      method="pairwise", emm_adjust="bonferroni")
 print(contr[[1]])  # First m/z feature
 mcols(contr)  # All contrast statistics
 }

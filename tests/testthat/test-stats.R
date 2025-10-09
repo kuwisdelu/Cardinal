@@ -353,7 +353,7 @@ test_that("meansTest", {
 
 })
 
-test_that("contrast", {
+test_that("contrastTest", {
 
 	set.seed(1, kind="L'Ecuyer-CMRG")
 	s <- simulateImage(preset=4, dim=c(10L, 10L), nrun=6,
@@ -368,8 +368,8 @@ test_that("contrast", {
 	expect_true(validObject(mt_lmer))
 	expect_true(all(sapply(mt_lmer, inherits, "lmerMod")))
 
-	# Test contrast with pairwise comparisons
-	contr <- contrast(mt_lmer, specs="condition", method="pairwise")
+	# Test contrastTest with pairwise comparisons
+	contr <- contrastTest(mt_lmer, specs="condition", method="pairwise")
 
 	expect_true(validObject(contr))
 	expect_is(contr, "ResultsList")
@@ -383,7 +383,7 @@ test_that("contrast", {
 	expect_true(all(!is.na(mc[["A - B.pvalue"]])))
 
 	# Test with different adjustment method
-	contr2 <- contrast(mt_lmer, specs="condition", method="pairwise", 
+	contr2 <- contrastTest(mt_lmer, specs="condition", method="pairwise", 
 		emm_adjust="bonferroni")
 	
 	expect_true(validObject(contr2))
@@ -395,7 +395,7 @@ test_that("contrast", {
 	mt_lme <- meansTest(s, fixed=~condition, random=~1|subject, 
 		samples=run(s), use_lmer=FALSE)
 	
-	expect_error(contrast(mt_lme, specs="condition"), 
+	expect_error(contrastTest(mt_lme, specs="condition"), 
 		"lm or use_lmer = TRUE")
 
 	# Test with lm models (no random effects) using same test image
@@ -404,8 +404,8 @@ test_that("contrast", {
 	expect_true(validObject(mt_lm))
 	expect_true(all(sapply(mt_lm, inherits, "lm")))
 	
-	# Test contrast with lm models
-	contr_lm <- contrast(mt_lm, specs="condition", method="pairwise")
+	# Test contrastTest with lm models
+	contr_lm <- contrastTest(mt_lm, specs="condition", method="pairwise")
 	
 	expect_true(validObject(contr_lm))
 	expect_is(contr_lm, "ResultsList")
@@ -419,7 +419,7 @@ test_that("contrast", {
 	expect_true(all(!is.na(mc_lm[["A - B.pvalue"]])))
 	
 	# Test with adjustment method
-	contr_lm2 <- contrast(mt_lm, specs="condition", method="pairwise", 
+	contr_lm2 <- contrastTest(mt_lm, specs="condition", method="pairwise", 
 		emm_adjust="bonferroni")
 	
 	expect_true(validObject(contr_lm2))
