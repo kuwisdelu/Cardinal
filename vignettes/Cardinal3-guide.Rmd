@@ -195,9 +195,9 @@ A "processed" imzML file contains mass spectra where each spectrum has its own *
 
 - `SpectralImagingData`: Virtual container for spectral imaging data, i.e., spectra with spatial metadata
 
-- `MSImagingArrays`: Specializes `SpectralImagingData` (via `SpectralImagingExperiment`)  for representing raw mass spectra where each spectrum has its own *m/z* values
+- `MSImagingArrays`: Specializes `SpectralImagingData` (via `SpectralImagingArrays`)  for representing raw mass spectra where each spectrum has its own *m/z* values
 
-- `MSImagingExperiment`: Specializes `SpectralImagingData` (via `SpectralImagingArrays`)  for representing mass spectra where all spectra have the same *m/z* values
+- `MSImagingExperiment`: Specializes `SpectralImagingData` (via `SpectralImagingExperiment`)  for representing mass spectra where all spectra have the same *m/z* values
 
 These are further explored in the next sections.
 
