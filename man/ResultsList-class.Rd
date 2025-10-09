@@ -11,8 +11,8 @@
 \alias{class:SegmentationTest}
 \alias{SegmentationTest-class}
 
-\alias{class:ContrastResults}
-\alias{ContrastResults-class}
+\alias{class:ContrastResultsList}
+\alias{ContrastResultsList-class}
 
 \alias{show,ResultsList-method}
 \alias{fitted,ResultsList-method}
@@ -25,7 +25,7 @@
 \title{ResultsList: List of modeling results}
 
 \description{
-   The \code{ResultsList} class provides a container for modeling results with spatial metadata. Specialized subclasses include \code{MeansTest} for linear model testing, \code{SegmentationTest} for segmentation-based testing, and \code{ContrastResults} for post-hoc contrast analysis.
+   The \code{ResultsList} class provides a container for modeling results with spatial metadata. Specialized subclasses include \code{MeansTest} for linear model testing, \code{SegmentationTest} for segmentation-based testing, and \code{ContrastResultsList} for post-hoc contrast analysis.
 }
 
 \usage{

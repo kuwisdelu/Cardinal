@@ -109,6 +109,10 @@ setMethod("meansTest", "ANY",
 			model <- try(lm(fixed, data=data, ...), silent=TRUE)
 		} else {
 			if ( use_lmer ) {
+				if ( !requireNamespace("lmerTest", quietly = TRUE) ) {
+					.Error("package 'lmerTest' is required for use_lmer = TRUE. ",
+						"Please install it with: install.packages('lmerTest')")
+				}
 				fixed_terms <- as.character(fixed)[3]
 				random_formula_char <- as.character(random)
 				random_part <- trimws(random_formula_char[2])
@@ -385,6 +389,10 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( !requireNamespace("emmeans", quietly = TRUE) ) {
+		.Error("package 'emmeans' is required for contrastTest(). ",
+			"Please install it with: install.packages('emmeans')")
+	}
 	if ( !is(object, "MeansTest") )
 		.Error("'object' must be a MeansTest object")
 	# Check if models were fit with lm or lmer
@@ -471,9 +479,9 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 		mcols_new <- mcols_old
 	}
 	
-	# Return ContrastResults
+	# Return ContrastResultsList
 	x <- SimpleList(contrasts)
-	new("ContrastResults", x, elementMetadata=mcols_new,
+	new("ContrastResultsList", x, elementMetadata=mcols_new,
 		elementType=class(x[[1L]])[1L])
 }
 
@@ -526,7 +534,7 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 }
 
 
-setMethod("topFeatures", "ContrastResults",
+setMethod("topFeatures", "ContrastResultsList",
 	function(object, n = Inf, sort.by = NULL, ...)
 {
 	# Start from mcols and drop design descriptors

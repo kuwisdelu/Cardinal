@@ -5,7 +5,7 @@ CHANGES IN VERSION 3.11.0 [TBD]
 NEW FEATURES
 
     o Added 'contrastTest()' method for post-hoc contrasts on 'MeansTest' objects
-    o New 'ContrastResults' class for storing contrast analysis results
+    o New 'ContrastResultsList' class for storing contrast analysis results
     o Added support for 'use_lmer=TRUE' in 'meansTest()' to use lmerTest::lmer
     o Integration with 'emmeans' package for estimated marginal means and contrasts
     o Support for various contrast methods: pairwise, trt.vs.ctrl, custom contrasts
