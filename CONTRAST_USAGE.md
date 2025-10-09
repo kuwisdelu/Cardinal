@@ -37,7 +37,7 @@ contrast(object, specs, method = "pairwise", emm_adjust = "none",
 
 ## Return Value
 
-A `ResultsList` object containing:
+A `ContrastResults` object (extends `ResultsList`) containing:
 - **Elements**: One emmeans contrast object per m/z feature
 - **mcols**: DataFrame with original metadata plus contrast statistics
   - Columns named as: `"[contrast_name].estimate"` and `"[contrast_name].pvalue"`
@@ -127,4 +127,3 @@ contr_custom <- contrast(mt, specs = "condition", method = my_contrasts)
 - `?meansTest` - Fit mixed effects models
 - `?emmeans::emmeans` - Estimated marginal means
 - `?emmeans::contrast` - Contrasts and comparisons
-- `demo_lmer_functionality.R` - Complete working example

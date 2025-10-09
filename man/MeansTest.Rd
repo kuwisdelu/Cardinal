@@ -105,7 +105,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 \details{
     Likelihood ratio tests are used for hypothesis testing when \code{use_lmer = FALSE} (the default). When \code{use_lmer = TRUE}, models are fit with \code{lmerTest::lmer} using REML, but no hypothesis tests are performed. Instead, use the \code{contrast()} function for post-hoc comparisons.
     
-    The \code{contrast()} function provides flexible post-hoc testing for models fit with \code{use_lmer = TRUE}. It uses \code{emmeans::emmeans()} to compute estimated marginal means and \code{emmeans::contrast()} to perform comparisons. The function operates on all m/z features in parallel and returns a \code{ResultsList} with contrast statistics.
+    The \code{contrast()} function provides flexible post-hoc testing for models fit with \code{use_lmer = TRUE}. It uses \code{emmeans::emmeans()} to compute estimated marginal means and \code{emmeans::contrast()} to perform comparisons. The function operates on all m/z features in parallel and returns a \code{ContrastResults} object with contrast statistics.
     
     When using \code{contrast()}, p-value adjustments (via the \code{adjust} parameter) only show differences from unadjusted values when testing multiple contrasts. For example, a 2-level factor produces only 1 contrast, so Bonferroni adjustment yields \code{p * 1 = p} (no change). A 3-level factor produces 3 pairwise contrasts, demonstrating visible adjustment effects.
 }
@@ -113,7 +113,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 \value{
     For \code{meansTest}: An object of class \code{MeansTest} derived from \code{ResultsList}, where each element contains a linear model (\code{lm}, \code{lme}, or \code{lmerMod} object).
     
-    For \code{contrast}: A \code{ResultsList} where each element contains an \code{emmeans} contrast object. The \code{mcols} metadata includes contrast estimates and p-values with columns named as \code{"[contrast_name].estimate"} and \code{"[contrast_name].pvalue"}.
+    For \code{contrast}: A \code{ContrastResults} object (extends \code{ResultsList}) where each element contains an \code{emmeans} contrast object. The \code{mcols} metadata includes contrast estimates and p-values with columns named as \code{"[contrast_name].estimate"} and \code{"[contrast_name].pvalue"}.
 }
 
 \author{

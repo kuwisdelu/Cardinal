@@ -15,11 +15,11 @@ Depends: R (>= 4.4), BiocParallel, BiocGenerics,
 	ProtGenerics, S4Vectors, methods, stats, stats4
 Imports: CardinalIO, Biobase, EBImage, graphics, grDevices,
 	irlba, Matrix, matter (>= 2.7.10), nlme, parallel, utils
-Suggests: BiocStyle, testthat, knitr, rmarkdown, lme4, lmerTest
+Suggests: BiocStyle, testthat, knitr, rmarkdown, emmeans, lme4, lmerTest
 VignetteBuilder: knitr
 biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 	MassSpectrometry, ImagingMassSpectrometry, ImmunoOncology,
 	Normalization, Clustering, Classification, Regression
 URL: http://www.cardinalmsi.org
 BugReports: https://github.com/kuwisdelu/Cardinal/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
