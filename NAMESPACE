@@ -339,7 +339,6 @@ exportMethods(
 	"rowSums")
 
 exportMethods(
-	"contrastTest",
 	"meansTest",
 	"NMF",
 	"PCA",
@@ -353,6 +352,7 @@ exportMethods(
 
 export(
 	"addShape",
+	"contrastTest",
 	"convertMSImagingArrays2Experiment",
 	"convertMSImagingExperiment2Arrays",
 	"crossValidate",

@@ -13,7 +13,6 @@
 \alias{plot,MeansTest,missing-method}
 
 \alias{contrastTest}
-\alias{contrastTest,MeansTest-method}
 
 \alias{segmentationTest}
 
@@ -47,7 +46,7 @@ segmentationTest(x, fixed, random, samples = run(x),
 \S4method{plot}{MeansTest,missing}(x, i = 1L, type = "boxplot", show.obs = TRUE,
         fill = FALSE, layout = NULL, \dots)
 
-\S4method{contrastTest}{MeansTest}(object, specs, method = "pairwise", emm_adjust = "none",
+contrastTest(object, specs, method = "pairwise", emm_adjust = "none",
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 }

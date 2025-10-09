@@ -381,11 +381,12 @@ segmentationTest <- function(x, fixed, random, samples = run(x),
 #### Contrasts for mixed effects models ####
 ## ------------------------------------------
 
-setMethod("contrastTest", "MeansTest",
-	function(object, specs, method = "pairwise", emm_adjust = "none",
-		verbose = getCardinalVerbose(), chunkopts = list(),
-		BPPARAM = getCardinalBPPARAM(), ...)
+contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none",
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), ...)
 {
+	if ( !is(object, "MeansTest") )
+		.Error("'object' must be a MeansTest object")
 	# Check if models were fit with lm or lmer
 	has_lm_or_lmer <- any(sapply(object, function(m) {
 		inherits(m, "lm") || inherits(m, "lmerMod")
@@ -474,7 +475,7 @@ setMethod("contrastTest", "MeansTest",
 	x <- SimpleList(contrasts)
 	new("ContrastResults", x, elementMetadata=mcols_new,
 		elementType=class(x[[1L]])[1L])
-})
+}
 
 .extract_contrast_stats <- function(contrast_obj)
 {
