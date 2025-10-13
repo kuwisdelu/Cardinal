@@ -21,4 +21,3 @@ biocViews: Software, Infrastructure, Proteomics, Lipidomics,
 	Normalization, Clustering, Classification, Regression
 URL: http://www.cardinalmsi.org
 BugReports: https://github.com/kuwisdelu/Cardinal/issues
-RoxygenNote: 7.3.3

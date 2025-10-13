@@ -216,7 +216,7 @@ exportClasses(
 	"MSImagingExperiment",
 	"SpatialResults",
 	"ResultsList",
-	"ContrastResultsList")
+	"ContrastTest")
 
 export(
 	"XDataFrame",

@@ -479,9 +479,9 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 		mcols_new <- mcols_old
 	}
 	
-	# Return ContrastResultsList
+	# Return ContrastTest
 	x <- SimpleList(contrasts)
-	new("ContrastResultsList", x, elementMetadata=mcols_new,
+	new("ContrastTest", x, elementMetadata=mcols_new,
 		elementType=class(x[[1L]])[1L])
 }
 
@@ -534,7 +534,7 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 }
 
 
-setMethod("topFeatures", "ContrastResultsList",
+setMethod("topFeatures", "ContrastTest",
 	function(object, n = Inf, sort.by = NULL, ...)
 {
 	# Start from mcols and drop design descriptors
