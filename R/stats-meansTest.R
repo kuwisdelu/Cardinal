@@ -25,6 +25,10 @@ setMethod("meansTest", "ANY",
 	}
 	if ( missing(random) )
 		random <- NULL
+	# Check package requirements early
+	if ( use_lmer && !is.null(random) ) {
+		.checkContrastRequirements()
+	}
 	n <- if (byrow) nrow(x) else ncol(x)
 	# summarize response
 	.Log("summarizing ", sQuote(response),
@@ -100,6 +104,24 @@ setMethod("meansTest", "ANY",
 	as(ResultsList(models, mcols=mcols), "MeansTest")
 })
 
+.checkContrastRequirements <- function()
+{
+	missing_pkgs <- character(0)
+	if ( !requireNamespace("lme4", quietly = TRUE) )
+		missing_pkgs <- c(missing_pkgs, "lme4")
+	if ( !requireNamespace("lmerTest", quietly = TRUE) )
+		missing_pkgs <- c(missing_pkgs, "lmerTest")
+	if ( !requireNamespace("emmeans", quietly = TRUE) )
+		missing_pkgs <- c(missing_pkgs, "emmeans")
+	
+	if ( length(missing_pkgs) > 0L ) {
+		pkg_list <- paste0("'", missing_pkgs, "'", collapse=", ")
+		.Error("Packages ", pkg_list, " are required for fitting with 'lmer' or testing contrasts. ",
+			"Please install them with: install.packages(c(", 
+			paste0('"', missing_pkgs, '"', collapse=", "), "))")
+	}
+}
+
 .lmFit_fun <- function(fixed, random, use_lmer = FALSE)
 {
 	FIT <- isoclos(function(data, ...)
@@ -109,10 +131,6 @@ setMethod("meansTest", "ANY",
 			model <- try(lm(fixed, data=data, ...), silent=TRUE)
 		} else {
 			if ( use_lmer ) {
-				if ( !requireNamespace("lmerTest", quietly = TRUE) ) {
-					.Error("package 'lmerTest' is required for use_lmer = TRUE. ",
-						"Please install it with: install.packages('lmerTest')")
-				}
 				fixed_terms <- as.character(fixed)[3]
 				random_formula_char <- as.character(random)
 				random_part <- trimws(random_formula_char[2])
@@ -298,6 +316,10 @@ setMethod("meansTest", "SpatialDGMM",
 	}
 	if ( missing(random) )
 		random <- NULL
+	# Check package requirements early
+	if ( use_lmer && !is.null(random) ) {
+		.checkContrastRequirements()
+	}
 	n <- length(x$class)
 	# summarize data
 	.Log("preparing data",
@@ -389,10 +411,7 @@ contrastTest <- function(object, specs, method = "pairwise", emm_adjust = "none"
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( !requireNamespace("emmeans", quietly = TRUE) ) {
-		.Error("package 'emmeans' is required for contrastTest(). ",
-			"Please install it with: install.packages('emmeans')")
-	}
+	.checkContrastRequirements()
 	if ( !is(object, "MeansTest") )
 		.Error("'object' must be a MeansTest object")
 	# Check if models were fit with lm or lmer
