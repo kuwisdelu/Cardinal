@@ -5,6 +5,15 @@
 \alias{ResultsList}
 \alias{ResultsList-class}
 
+\alias{class:MeansTest}
+\alias{MeansTest-class}
+
+\alias{class:SegmentationTest}
+\alias{SegmentationTest-class}
+
+\alias{class:ContrastTest}
+\alias{ContrastTest-class}
+
 \alias{show,ResultsList-method}
 \alias{fitted,ResultsList-method}
 \alias{predict,ResultsList-method}
@@ -16,7 +25,7 @@
 \title{ResultsList: List of modeling results}
 
 \description{
-   The \code{ResultsList} class provides a container for modeling results with spatial metadata.
+   The \code{ResultsList} class provides a container for modeling results with spatial metadata. Specialized subclasses include \code{MeansTest} for linear model testing, \code{SegmentationTest} for segmentation-based testing, and \code{ContrastTest} for post-hoc contrast analysis.
 }
 
 \usage{
@@ -51,7 +60,9 @@ ResultsList(\dots, mcols = NULL)
 \author{Kylie A. Bemis}
 
 \seealso{
-    \code{\linkS4class{SpatialResults}}
+    \code{\linkS4class{SpatialResults}},
+    \code{\link{meansTest}},
+    \code{\link{segmentationTest}}
 }
 
 \keyword{classes}

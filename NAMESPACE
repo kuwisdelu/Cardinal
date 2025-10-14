@@ -215,7 +215,8 @@ exportClasses(
 	"MSImagingArrays",
 	"MSImagingExperiment",
 	"SpatialResults",
-	"ResultsList")
+	"ResultsList",
+	"ContrastTest")
 
 export(
 	"XDataFrame",
@@ -351,6 +352,7 @@ exportMethods(
 
 export(
 	"addShape",
+	"contrastTest",
 	"convertMSImagingArrays2Experiment",
 	"convertMSImagingExperiment2Arrays",
 	"crossValidate",

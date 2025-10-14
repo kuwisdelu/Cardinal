@@ -388,7 +388,7 @@ setMethod("show", "ResultsList",
 		cat("model:", object@elementType, "\n")
 		if ( !is.null(mcols(object)) ) {
 			n <- 10L
-			x <- as.data.frame(mcols(object))
+			x <- mcols(object)
 			print(head(x, n=n))
 			if ( nrow(x) > n )
 				cat("... and", nrow(x) - n, "more results\n")

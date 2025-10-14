@@ -48,3 +48,6 @@
 
 # R Environment Variables
 .Renviron
+.Rbuildignore
+.Rprofile
+renv/
