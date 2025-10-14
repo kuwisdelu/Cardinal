@@ -4,11 +4,16 @@
 \alias{class:MeansTest}
 \alias{MeansTest-class}
 
+\alias{ContrastTest}
+\alias{class:ContrastTest}
+\alias{ContrastTest-class}
+
 \alias{meansTest}
 \alias{meansTest,ANY-method}
 \alias{meansTest,SpectralImagingExperiment-method}
 \alias{meansTest,SpatialDGMM-method}
 
+\alias{topFeatures,ContrastTest-method}
 \alias{topFeatures,MeansTest-method}
 \alias{plot,MeansTest,missing-method}
 

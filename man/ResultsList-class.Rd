@@ -5,15 +5,6 @@
 \alias{ResultsList}
 \alias{ResultsList-class}
 
-\alias{class:MeansTest}
-\alias{MeansTest-class}
-
-\alias{class:SegmentationTest}
-\alias{SegmentationTest-class}
-
-\alias{class:ContrastTest}
-\alias{ContrastTest-class}
-
 \alias{show,ResultsList-method}
 \alias{fitted,ResultsList-method}
 \alias{predict,ResultsList-method}
