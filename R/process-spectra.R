@@ -74,7 +74,7 @@ setMethod("smooth", "SpectralImagingData",
 .smooth_fun <- list(
 	gaussian = function(x, t, ...) 
 		matter::filt1_gauss(x, ...),
-	bi = function(x, t, ...) 
+	bilateral = function(x, t, ...) 
 		matter::filt1_bi(x, ...),
 	adaptive = function(x, t, ...) 
 		matter::filt1_adapt(x, ...),
