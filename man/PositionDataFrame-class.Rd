@@ -22,6 +22,7 @@
 \alias{runNames,PositionDataFrame-method}
 \alias{runNames<-,PositionDataFrame-method}
 \alias{nrun,PositionDataFrame-method}
+\alias{is3D}
 \alias{is3D,PositionDataFrame-method}
 \alias{[,PositionDataFrame,ANY,ANY,ANY-method}
 \alias{coerce,DFrame,PositionDataFrame-method}

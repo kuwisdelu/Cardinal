@@ -2,6 +2,7 @@
 
 \alias{smooth}
 \alias{smooth,SpectralImagingData-method}
+\alias{smoothSignal}
 
 \title{Smooth spectra}
 

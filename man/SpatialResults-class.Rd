@@ -31,6 +31,10 @@
 \alias{runNames,SpatialResults-method}
 \alias{runNames<-,SpatialResults-method}
 \alias{nrun,SpatialResults-method}
+\alias{resultData}
+\alias{resultData<-}
+\alias{resultNames}
+\alias{resultNames<-}
 
 \alias{names,SpatialResults-method}
 \alias{length,SpatialResults-method}
