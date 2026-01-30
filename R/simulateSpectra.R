@@ -59,7 +59,7 @@ simulateSpectra <- function(n = 1L, npeaks = 50L,
 
 simulateSpectrum <- function(...)
 {
-	.Deprecated("simulateSpectra")
+	.Defunct("simulateSpectra")
 	simulateSpectra(...)
 }
 

@@ -56,6 +56,5 @@ sliceImage <- function(x, i = features(x, ...), ...,
 
 slice <- function(x, ...)
 {
-	.Deprecated("sliceImage")
-	sliceImage(x, ...)
+	.Defunct("sliceImage")
 }
