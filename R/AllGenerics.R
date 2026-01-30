@@ -93,7 +93,7 @@ setMethod("mzAlign", c("ANY", "ANY"), function(object, ref, ...) {
 		.Defunct("bin")
 	})
 setGeneric("mzFilter", function(object, ...) standardGeneric("mzFilter"))
-setMethod("mzFilter", ANY, function(object, ref, ...) {
+setMethod("mzFilter", "ANY", function(object, ref, ...) {
 		.Defunct("subsetFeatures")
 	})
 setGeneric("peakBin", function(object, ref, ...) standardGeneric("peakBin"))

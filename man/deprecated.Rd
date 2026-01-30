@@ -52,25 +52,27 @@
 \alias{simulateSpectrum}
 \alias{aggregate,SpectralImagingExperiment-method}
 \alias{featureApply}
-\alias{featureApply,SpectralImagingExperiment-method}
+\alias{featureApply,ANY-method}
 \alias{iData}
 \alias{iData<-}
 \alias{iData,ANY-method}
 \alias{iData<-,ANY-method}
 \alias{mzAlign}
-\alias{mzAlign,MSImagingExperiment,missing-method}
-\alias{mzAlign,MSImagingExperiment,numeric-method}
+\alias{mzAlign,ANY-method}
+\alias{mzAlign,ANY-method}
 \alias{mzBin}
-\alias{mzBin,MSImagingExperiment,missing-method}
-\alias{mzBin,MSImagingExperiment,numeric-method}
+\alias{mzBin,ANY-method}
+\alias{mzBin,ANY-method}
 \alias{mzFilter}
-\alias{mzFilter,MSImagingExperiment-method}
+\alias{mzFilter,ANY-method}
+\alias{peakBin}
+\alias{peakBin,ANY-method}
 \alias{peakFilter}
-\alias{peakFilter,MSImagingExperiment-method}
+\alias{peakFilter,ANY-method}
 \alias{pixelApply}
-\alias{pixelApply,SpectralImagingExperiment-method}
+\alias{pixelApply,ANY-method}
 \alias{spatialApply}
-\alias{spatialApply,SpectralImagingExperiment-method}
+\alias{spatialApply,ANY-method}
 
 \alias{slice}
 
