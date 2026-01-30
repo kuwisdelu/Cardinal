@@ -47,64 +47,9 @@
 \alias{SImageSet}
 \alias{SImageSet-class}
 
-% deprecated and defunct
-
-\alias{alpha.colors}
-\alias{bw.colors}
-\alias{col.map}
-\alias{color.map}
-\alias{darkmode}
-\alias{discrete.colors}
-\alias{divergent.colors}
-\alias{gradient.colors}
-\alias{intensity.colors}
-\alias{jet.colors}
-\alias{lightmode}
-\alias{risk.colors}
-
-\alias{baselineReduction}
-\alias{baselineReduction<-}
-\alias{cvApply}
-\alias{gridded}
-\alias{gridded<-}
-\alias{height}
-\alias{height<-}
-\alias{instrumentVendor}
-\alias{intensityData}
-\alias{intensityData<-}
-\alias{ionizationType}
-\alias{is3D}
-\alias{lineScanDirection}
-\alias{massAnalyzerType}
-\alias{matrixApplication}
-\alias{msiInfo}
-\alias{mzData}
-\alias{mzData<-}
-\alias{normalization}
-\alias{normalization<-}
-\alias{peakBin}
-\alias{peakData}
-\alias{peakData<-}
-\alias{peakPicking}
-\alias{peakPicking<-}
-\alias{pixelSize}
-\alias{resolution}
-\alias{resolution<-}
-\alias{resultData}
-\alias{resultData<-}
-\alias{resultNames}
-\alias{resultNames<-}
-\alias{scanDirection}
-\alias{scanPattern}
-\alias{scanPolarity}
-\alias{scanType}
-\alias{smoothing}
-\alias{smoothing<-}
-\alias{spectrumRepresentation}
-\alias{spectrumRepresentation<-}
+% defunct
 
 \alias{simulateSpectrum}
-
 \alias{aggregate,SpectralImagingExperiment-method}
 \alias{featureApply}
 \alias{featureApply,SpectralImagingExperiment-method}
@@ -124,8 +69,6 @@
 \alias{peakFilter,MSImagingExperiment-method}
 \alias{pixelApply}
 \alias{pixelApply,SpectralImagingExperiment-method}
-\alias{smoothSignal}
-\alias{smoothSignal,SpectralImagingExperiment-method}
 \alias{spatialApply}
 \alias{spatialApply,SpectralImagingExperiment-method}
 
