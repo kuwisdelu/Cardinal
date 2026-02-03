@@ -4,7 +4,8 @@ CHANGES IN VERSION 3.13.1 [2026-1-30]
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
-    o Removed deprecated functions (color palettes, etc.)
+    o Removed defunct functions (color palettes, etc.)
+    o Deprecated 'fetch()' and 'flash()'
 
 CHANGES IN VERSION 3.11.1 [2025-10-14]
 -----------------------------------

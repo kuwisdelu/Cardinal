@@ -24,22 +24,6 @@ setValidity("SpectralImagingData", .valid_SpectralImagingData)
 setMethod("vm_used", "SpectralImagingData",
 	function(x) vm_used(spectraData(x)))
 
-setMethod("fetch", "SpectralImagingData",
-	function(object, ...)
-	{
-		spectraData(object) <- fetch(spectraData(object), ...)
-		if ( validObject(object) )
-			object
-	})
-
-setMethod("flash", "SpectralImagingData",
-	function(object, ...)
-	{
-		spectraData(object) <- flash(spectraData(object), ...)
-		if ( validObject(object) )
-			object
-	})
-
 ## Slot getters and setters
 
 # spectraData

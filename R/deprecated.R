@@ -2,6 +2,50 @@
 #### Deprecated and defunct ####
 ## -----------------------------
 
+setMethod("fetch", "SpectralImagingData",
+	function(object, ...)
+	{
+		.Deprecated()
+		spectraData(object) <- fetch(spectraData(object), ...)
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("flash", "SpectralImagingData",
+	function(object, ...)
+	{
+		.Deprecated()
+		spectraData(object) <- flash(spectraData(object), ...)
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("fetch", "SpectraArrays",
+	function(object, ...,
+		verbose = getCardinalVerbose(),
+		BPPARAM = bpparam())
+	{
+		.Deprecated()
+		for ( i in seq_along(object) ) {
+			object[[i]] <- fetch(object[[i]], ...,
+				verbose=verbose, BPPARAM=BPPARAM)
+		}
+		object
+	})
+
+setMethod("flash", "SpectraArrays",
+	function(object, ...,
+		verbose = getCardinalVerbose(),
+		BPPARAM = bpparam())
+	{
+		.Deprecated()
+		for ( i in seq_along(object) ) {
+			object[[i]] <- flash(object[[i]], ...,
+				verbose=verbose, BPPARAM=BPPARAM)
+		}
+		object
+	})
+
 getCardinalNumBlocks <- function() {
 	.Defunct("getCardinalNChunks")
 	getCardinalNChunks()
