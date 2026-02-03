@@ -13,6 +13,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Remove dependency on EBImage
     o Removed deprecated functions (color palettes, etc.)
+    o Removed defunct functions (color palettes, etc.)
+    o Deprecated 'fetch()' and 'flash()'
 
 CHANGES IN VERSION 3.12.1 [2025-2-12]
 -----------------------------------
