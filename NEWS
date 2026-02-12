@@ -1,4 +1,13 @@
 
+CHANGES IN VERSION 3.12.1 [2025-2-12]
+-----------------------------------
+
+BUG FIXES
+
+    o Add na.rm parameter to 'meansTest()'
+    o Fix spectrumRepresentation logic in 'writeImzML()'
+    o Rename 'bi' to 'bilateral' in smoothing functions
+
 CHANGES IN VERSION 3.11.1 [2025-10-14]
 -----------------------------------
 
