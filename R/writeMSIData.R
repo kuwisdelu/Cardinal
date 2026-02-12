@@ -42,12 +42,10 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 			e <- CardinalIO::ImzMeta()
 		if ( is.null(e$spectrumType) )
 			e$spectrumType <- "MS1 spectrum"
-		if ( is.null(e$spectrumRepresentation) ) {
-			if ( isCentroided(object) ) {
-				e$spectrumRepresentation <- "centroid spectrum"
-			} else {
-				e$spectrumRepresentation <- "profile spectrum"
-			}
+		if ( isCentroided(object) ) {
+			e$spectrumRepresentation <- "centroid spectrum"
+		} else {
+			e$spectrumRepresentation <- "profile spectrum"
 		}
 		experimentData(object) <- e
 		ok <- .write_imzML(object, path=path,
