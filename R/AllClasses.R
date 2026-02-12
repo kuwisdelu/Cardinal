@@ -29,21 +29,23 @@ setClass("SpectralImagingData",
 	slots = c(
 		spectraData = "SpectraArrays",
 		elementMetadata = "PositionDataFrame",
-		processing = "list"))
+		centroided = "logical"))
 
 #### Class for spectra-based imaging arrays ####
 ## ----------------------------------------------
 setClassUnion("ImzMeta_OR_NULL", c("ImzMeta", "NULL"))
 
 setClass("SpectralImagingArrays",
-	contains = "SpectralImagingData")
+	contains = "SpectralImagingData",
+	slots = c(
+		processing = "list",
+		processingVariables = "character",
+		processingChunkSize = "numeric",
+		continuous = "logical"))
 
 setClass("MSImagingArrays",
 	contains = "SpectralImagingArrays",
-	slots = c(
-		experimentData = "ImzMeta_OR_NULL",
-		centroided = "logical",
-		continuous = "logical"))
+	slots = c(experimentData = "ImzMeta_OR_NULL"))
 
 #### Class for spectra-based imaging experiments ####
 ## --------------------------------------------------
@@ -55,8 +57,7 @@ setClass("MSImagingExperiment",
 	contains = "SpectralImagingExperiment",
 	slots = c(
 		featureData = "MassDataFrame",
-		experimentData = "ImzMeta_OR_NULL",
-		centroided = "logical"))
+		experimentData = "ImzMeta_OR_NULL"))
 
 #### Class union for MS-based imaging experiments ####
 ## ----------------------------------------------------

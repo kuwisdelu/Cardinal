@@ -140,19 +140,6 @@ setReplaceMethod("intensity", "MSImagingExperiment",
 		object
 	})
 
-# centroided
-
-setMethod("centroided", "MSImagingExperiment_OR_Arrays",
-	function(object, ...) object@centroided)
-setReplaceMethod("centroided", "MSImagingExperiment_OR_Arrays",
-	function(object, ..., value) {
-		object@centroided <- value
-		object
-	})
-
-setMethod("isCentroided", "MSImagingExperiment_OR_Arrays",
-	function(object, ...) isTRUE(object@centroided))
-
 # experimentData
 
 setMethod("experimentData", "MSImagingExperiment_OR_Arrays",

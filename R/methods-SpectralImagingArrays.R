@@ -4,6 +4,7 @@
 
 # Class for a list of (unprocessed) spectra
 # _without_ any aligned feature information
+# following Vector semantics (length is # of elements/spectra)
 
 .valid_SpectralImagingArrays <- function(object)
 {
@@ -19,6 +20,33 @@
 			errors <- c(errors, paste0("number of rows in spectraData [",
 				nr_spectra, "] must match number of rows in pixelData [",
 				nr_pixelData, "]"))
+		if ( isTRUE(object@continuous) )
+		{
+			lens <- lapply(as.list(object@spectraData), lengths)
+			lens <- lapply(lens, unique)
+			if ( length(unlist(unique(len))) != 1L )
+				errors <- c(errors, paste0("all spectra arrays ",
+					"must have identical lengths when continuous=TRUE"))
+		}
+	}
+	if ( length(object@processing) > 0L )
+	{
+		is_ps <- vapply(object@processing, is, logical(1L), "ProcessingStep")
+		if ( !all(is_ps) )
+			errors <- c(errors, paste0("all processing elements ",
+				"must be ProcessingStep objects"))
+	}
+	if ( !all(object@processingVariables %in% names(object@elementMetadata)) )
+	{
+		errors <- c(errors, "processingVariables must be columns of pixelData")
+	}
+	if ( length(object@processingChunkSize) != 1L )
+	{
+		errors <- c(errors, "processingChunkSize must be numeric(1)")
+	}
+	if ( !(is.logical(object@continuous) && length(object@continuous) != 1L) )
+	{
+		errors <- c(errors, "continuous must be logical(1)")
 	}
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -164,15 +192,13 @@ setMethod("pixels", "SpectralImagingArrays",
 
 ## Basic getters and setters
 
-# note: we follow vector arrangement (length is # of elements/spectra)
-setMethod("length", "SpectralImagingArrays", function(x) nrow(pixelData(x)))
-
-setMethod("names", "SpectralImagingArrays",
-	function(x) rownames(pixelData(x)))
-setReplaceMethod("names", "SpectralImagingArrays",
-	function(x, value) {
-		rownames(pixelData(x)) <- value
-		x
+setMethod("processingData", "SpectralImagingArrays",
+	function(object, ...) object@processing)
+setReplaceMethod("processingData", "SpectralImagingArrays",
+	function(object, ..., value) {
+		object@processing <- value
+		if ( validObject(object) )
+			object
 	})
 
 ## Vector-like subsetting

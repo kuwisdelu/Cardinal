@@ -8,12 +8,21 @@
 .valid_SpectralImagingData <- function(object)
 {
 	errors <- NULL
-	if ( length(object@processing) > 0L )
+	if ( length(object@spectraData) > 0L )
 	{
-		is_ps <- vapply(object@processing, is, logical(1L), "ProcessingStep")
-		if ( !all(is_ps) )
-			errors <- c(errors, paste0("all processing elements ",
-				"must be ProcessingStep objects"))
+		if ( !identical(dim(object), dim(object@spectraData[[1L]])) )
+			errors <- c(errors, paste0("dimensions of object ",
+					"must match dimensions of spectra arrays"))
+	}
+	if ( !identical(length(object), nrow(object@elementMetadata)) )
+	{
+		errors <- c(errors, paste0("length of object [",
+				length(object), "] must match number of rows in pixelData [",
+				nrow(object@elementMetadata), "]"))
+	}
+	if ( !(is.logical(object@centroided) && length(object@centroided) != 1L) )
+	{
+		errors <- c(errors, "centroided must be logical(1)")
 	}
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -167,18 +176,30 @@ setMethod("nrun", "SpectralImagingData",
 setMethod("is3D", "SpectralImagingData",
 	function(object) is3D(pixelData(object)))
 
-# processingData
+# centroided
 
-setMethod("processingData", "SpectralImagingData",
-	function(object, ...) object@processing)
-setReplaceMethod("processingData", "SpectralImagingData",
+setMethod("centroided", "SpectralImagingData",
+	function(object, ...) object@centroided)
+setReplaceMethod("centroided", "SpectralImagingData",
 	function(object, ..., value) {
-		object@processing <- value
-		if ( validObject(object) )
-			object
+		object@centroided <- value
+		object
 	})
 
+setMethod("isCentroided", "SpectralImagingData",
+	function(object, ...) isTRUE(object@centroided))
+
 ## Basic getters and setters
+
+setMethod("length", "SpectralImagingData", function(x) nrow(pixelData(x)))
+
+setMethod("names", "SpectralImagingData",
+	function(x) rownames(pixelData(x)))
+setReplaceMethod("names", "SpectralImagingData",
+	function(x, value) {
+		rownames(pixelData(x)) <- value
+		x
+	})
 
 # access spectra variables
 setMethod("[[", "SpectralImagingData",

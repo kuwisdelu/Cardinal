@@ -2,8 +2,9 @@
 #### SpectralImagingExperiment ####
 ## --------------------------------
 
-# Class for a spectral imaging experiment
+# Class for spectral imaging experiment
 # _with_ aligned feature information
+# following DataFrame semantics (length is # of columns/spectra)
 
 .valid_SpectralImagingExperiment <- function(object)
 {
@@ -22,13 +23,6 @@
 			errors <- c(errors, paste0("number of columns in spectraData [",
 				nc_spectra, "] must match number of rows in pixelData [",
 				nr_pixelData, "]"))
-	}
-	if ( length(object@processing) > 0L )
-	{
-		ps_ok <- vapply(object@processing, is, logical(1L), class2="ProcessingStep")
-		if ( !all(ps_ok) )
-			errors <- c(errors, paste0("all elements of processing ",
-				"must be ProcessingStep objects"))
 	}
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -152,17 +146,6 @@ setMethod("features", "SpectralImagingExperiment",
 	})
 
 ## Basic getters and setters
-
-# note: we follow data frame arrangement (length is # of columns/spectra)
-setMethod("length", "SpectralImagingExperiment", function(x) nrow(pixelData(x)))
-
-setMethod("names", "SpectralImagingExperiment",
-	function(x) colnames(x))
-setReplaceMethod("names", "SpectralImagingExperiment",
-	function(x, value) {
-		colnames(x) <- value
-		x
-	})
 
 # note: we get dim() from RectangularData
 setMethod("nrow", "SpectralImagingExperiment", function(x) nrow(featureData(x)))
