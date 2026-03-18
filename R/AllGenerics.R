@@ -26,11 +26,6 @@ setGeneric("runNames<-", function(object, value) standardGeneric("runNames<-"))
 setGeneric("modelData", function(object, ...) standardGeneric("modelData"))
 setGeneric("modelData<-", function(object, ..., value) standardGeneric("modelData<-"))
 
-#### Generics from EBImage ####
-## ----------------------------
-setGeneric("imageData")
-setGeneric("imageData<-")
-
 #### Pre-processing ####
 ## ---------------------
 setGeneric("process", function(object, ...) standardGeneric("process"))

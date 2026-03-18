@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.13.1 [2025-3-18]
+-----------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Remove dependency on EBImage
+
 CHANGES IN VERSION 3.12.1 [2025-2-12]
 -----------------------------------
 
