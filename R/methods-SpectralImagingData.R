@@ -135,11 +135,6 @@ pixelVariables <- function(object, ...) {
 	names(pixelData(object))
 }
 
-# Variable names
-
-setMethod("spectraVariables", "SpectralImagingData",
-	function(object, ...) names(pixelData(object)))
-
 # Coord/Run access
 
 setMethod("coord", "SpectralImagingData",

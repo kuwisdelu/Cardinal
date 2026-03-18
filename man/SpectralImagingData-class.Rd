@@ -14,7 +14,6 @@
 \alias{spectraNames<-,SpectralImagingData-method}
 \alias{spectra,SpectralImagingData-method}
 \alias{spectra<-,SpectralImagingData-method}
-\alias{spectraVariables,SpectralImagingData-method}
 \alias{pData,SpectralImagingData-method}
 \alias{pData<-,SpectralImagingData,ANY-method}
 \alias{pixelData}
@@ -76,8 +75,6 @@
         \item{\code{pData(object)}, \code{pData(object) <- value}:}{Get or set the \code{elementMetadata} slot.}
 
         \item{\code{pixelNames(object)}, \code{pixelNames(object) <- value}:}{Get or set the pixel names (i.e., the row names of the \code{elementMetadata} slot).}
-
-        \item{\code{spectraVariables(object, ...)}:}{Get the names of the spectrum-level variables (i.e., the columns of the \code{elementMetadata} slot).}
 
         \item{\code{coord(object)}, \code{coord(object) <- value}:}{Get or set the pixel coordinate columns in \code{pixelData}.}
 

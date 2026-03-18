@@ -96,7 +96,7 @@ setMethod("writeImzML", "MSImagingExperiment_OR_Arrays",
 .write_pixelData <- function(object, path, verbose)
 {
 	path <- paste0(tools::file_path_sans_ext(path), ".pdata")
-	vars <- setdiff(spectraVariables(object), coordNames(object))
+	vars <- setdiff(pixelVariables(object), coordNames(object))
 	if ( nrun(object) > 1L || length(vars) > 1L ) {
 		if ( file.exists(path) )
 			.Warn("file ", sQuote(path), " already exists and will be overwritten")

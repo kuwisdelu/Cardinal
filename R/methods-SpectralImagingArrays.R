@@ -20,14 +20,6 @@
 			errors <- c(errors, paste0("number of rows in spectraData [",
 				nr_spectra, "] must match number of rows in pixelData [",
 				nr_pixelData, "]"))
-		if ( isTRUE(object@continuous) )
-		{
-			lens <- lapply(as.list(object@spectraData), lengths)
-			lens <- lapply(lens, unique)
-			if ( length(unlist(unique(len))) != 1L )
-				errors <- c(errors, paste0("all spectra arrays ",
-					"must have identical lengths when continuous=TRUE"))
-		}
 	}
 	if ( length(object@processing) > 0L )
 	{
@@ -44,9 +36,17 @@
 	{
 		errors <- c(errors, "processingChunkSize must be numeric(1)")
 	}
-	if ( !(is.logical(object@continuous) && length(object@continuous) != 1L) )
+	if ( !(is.logical(object@continuous) && length(object@continuous) == 1L) )
 	{
 		errors <- c(errors, "continuous must be logical(1)")
+	}
+	if ( isTRUE(object@continuous) && length(object@spectraData) > 0L )
+	{
+		lens <- lapply(as.list(object@spectraData), lengths)
+		lens <- lapply(lens, unique)
+		if ( length(unlist(unique(len))) != 1L )
+			errors <- c(errors, paste0("all spectra arrays ",
+				"must have identical lengths when continuous=TRUE"))
 	}
 	if ( is.null(errors) ) TRUE else errors
 }
