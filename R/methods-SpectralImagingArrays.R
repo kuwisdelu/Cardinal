@@ -54,7 +54,8 @@
 setValidity("SpectralImagingArrays", .valid_SpectralImagingArrays)
 
 SpectralImagingArrays <- function(spectraData = SimpleList(),
-	pixelData = PositionDataFrame(), metadata = list())
+	pixelData = PositionDataFrame(), metadata = list(),
+	centroided = NA, continuous = FALSE)
 {
 	spectraData <- SpectraArrays(spectraData)
 	if ( length(spectraData) != 0L )
@@ -68,8 +69,13 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 		}
 	}
 	new("SpectralImagingArrays", spectraData=spectraData,
-		elementMetadata=pixelData, metadata=metadata,
-		processing=list())
+		elementMetadata=pixelData,
+		metadata=metadata,
+		centroided=centroided,
+		continuous=continuous,
+		processing=list(),
+		processingVariables=character(),
+		processingChunkSize=NA_integer_)
 }
 
 .paste_head_tail <- function(x, n = 6L, collapse = ", ")

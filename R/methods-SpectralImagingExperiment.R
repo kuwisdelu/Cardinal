@@ -145,6 +145,10 @@ setMethod("features", "SpectralImagingExperiment",
 		setNames(i, featureNames(object)[i])
 	})
 
+featureVariables <- function(object, ...) {
+	names(featureData(object))
+}
+
 ## Basic getters and setters
 
 # note: we get dim() from RectangularData

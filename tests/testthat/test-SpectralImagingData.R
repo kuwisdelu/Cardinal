@@ -8,6 +8,7 @@ test_that("SpectralImagingData extension", {
 	setClass("TestSpectralImagingData",
 		contains="SpectralImagingData")
 
+	set.seed(1)
 	nx <- 5L
 	ny <- 2L
 	n <- nx * ny

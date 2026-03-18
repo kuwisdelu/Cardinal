@@ -5,26 +5,23 @@ context("SpectralImagingArrays")
 
 test_that("SpectralImagingArrays accessors", {
 
-	sa <- SpectralImagingArrays()
-
-	expect_true(validObject(sa))
-
-	sa <- SpectralImagingArrays(numeric(0))
-
-	expect_true(validObject(sa))
+	expect_true(validObject(SpectralImagingArrays()))
+	expect_true(validObject(SpectralImagingArrays(numeric(0))))
 
 	set.seed(1)
-	n <- 10
-	i <- rep(list(1:n), n)
-	a <- replicate(n, rlnorm(n), simplify=FALSE)
-	s <- SpectraArrays(list(index=i, intensity=a))
+	nx <- 5L
+	ny <- 2L
+	n <- nx * ny
+	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
+	sarrays <- SpectraArrays(list(intensity=arrays))
 	pdata <- PositionDataFrame(
-		coord=expand.grid(x=1:5, y=1:2),
-		diagnosis=rep(c("yes", "no"), each=5))
-	pdata2 <- PositionDataFrame(
-		coord=expand.grid(x=1:5, y=3:4),
-		diagnosis=rep(c("yes", "no"), each=5))
-	sa <- SpectralImagingArrays(s, pixelData=pdata)
+		coord=expand.grid(x=1:nx, y=1:ny),
+		trt=sample(c("A", "B"), n, replace=TRUE),
+		row.names=letters[seq_len(n)])
+
+	sa <- SpectralImagingArrays(
+		spectraData=sarrays,
+		pixelData=pdata)
 
 	expect_true(validObject(sa))
 	expect_length(sa, n)
