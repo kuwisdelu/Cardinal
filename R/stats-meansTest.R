@@ -5,7 +5,7 @@
 setMethod("meansTest", "ANY",
 	function(x, data, fixed, random, samples,
 		response = "y", reduced = ~ 1, byrow = FALSE,
-		use_lmer = FALSE,
+		use_lmer = FALSE, na.rm = TRUE,
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -35,11 +35,11 @@ setMethod("meansTest", "ANY",
 		message=verbose)
 	if ( byrow ) {
 		y <- rowStats(x, stat="mean", group=samples,
-			verbose=verbose, chunkopts=chunkopts,
+			na.rm = na.rm, verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	} else {
 		y <- colStats(x, stat="mean", group=samples,
-			verbose=verbose, chunkopts=chunkopts,
+			na.rm = na.rm, verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM)
 	}
 	if ( !is.matrix(y) )

@@ -30,7 +30,7 @@
 \usage{
 \S4method{meansTest}{ANY}(x, data, fixed, random, samples,
     response = "y", reduced = ~ 1, byrow = FALSE,
-    use_lmer = FALSE,
+    use_lmer = FALSE, na.rm = TRUE,
     verbose = getCardinalVerbose(), chunkopts = list(),
     BPPARAM = getCardinalBPPARAM(), \dots)
 
@@ -74,6 +74,8 @@ contrastTest(object, specs, method = "pairwise", emm_adjust = "none",
     \item{reduced}{A one-sided formula specifying the fixed effects in the reduced model for the null hypothesis. The default is an intercept-only model. Random effects are retained.}
 
     \item{use_lmer}{Logical. If \code{TRUE}, use \code{lmerTest::lmer} instead of \code{nlme::lme} for fitting mixed effects models. This provides Satterthwaite degrees of freedom and is typically faster. When \code{TRUE}, likelihood ratio tests are not performed; use \code{contrastTest()} for post-hoc tests. Requires the \code{lmerTest} package.}
+
+    \item{na.rm}{Should \code{NA}s be ignored when computing the means?}
 
     \item{byrow}{For the default method, are the rows or the columns the \code{x} .}
 

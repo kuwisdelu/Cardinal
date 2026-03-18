@@ -44,10 +44,6 @@ importFrom("Matrix",
 	"solve",
 	"chol")
 
-importFrom("EBImage",
-	"imageData",
-	"imageData<-")
-
 importFrom("irlba",
 	"irlba")
 
@@ -192,8 +188,6 @@ exportMethods(
 	"featureNames<-",
 	"image",
 	"image3D",
-	"imageData",
-	"imageData<-",
 	"intensity",
 	"intensity<-",
 	"is3D",
