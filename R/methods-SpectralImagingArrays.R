@@ -21,11 +21,11 @@
 				nr_spectra, "] must match number of rows in pixelData [",
 				nr_pixelData, "]"))
 	}
-	if ( length(object@processing) > 0L )
+	if ( length(object@processingQueue) > 0L )
 	{
-		is_ps <- vapply(object@processing, is, logical(1L), "ProcessingStep")
+		is_ps <- vapply(object@processingQueue, is, logical(1L), "ProcessingStep")
 		if ( !all(is_ps) )
-			errors <- c(errors, paste0("all processing elements ",
+			errors <- c(errors, paste0("all processingQueue elements ",
 				"must be ProcessingStep objects"))
 	}
 	if ( !all(object@processingVariables %in% names(object@elementMetadata)) )
@@ -68,12 +68,13 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 			pixelData <- PositionDataFrame(coord=coord, row.names=colnames)
 		}
 	}
-	new("SpectralImagingArrays", spectraData=spectraData,
+	new("SpectralImagingArrays",
+		spectraData=spectraData,
 		elementMetadata=pixelData,
 		metadata=metadata,
 		centroided=centroided,
 		continuous=continuous,
-		processing=list(),
+		processingQueue=list(),
 		processingVariables=character(),
 		processingChunkSize=NA_integer_)
 }
@@ -199,13 +200,42 @@ setMethod("pixels", "SpectralImagingArrays",
 ## Basic getters and setters
 
 setMethod("processingData", "SpectralImagingArrays",
-	function(object, ...) object@processing)
+	function(object, ...) object@processingQueue)
 setReplaceMethod("processingData", "SpectralImagingArrays",
 	function(object, ..., value) {
-		object@processing <- value
+		object@processingQueue <- value
 		if ( validObject(object) )
 			object
 	})
+
+setMethod("processingChunkSize", "SpectralImagingArrays",
+	function(object, ...) object@processingChunkSize)
+setReplaceMethod("processingChunkSize", "SpectralImagingArrays",
+	function(object, ..., value) {
+		object@processingChunkSize <- value
+		if ( validObject(object) )
+			object
+	})
+
+setMethod("processingChunkFactor", "SpectralImagingArrays",
+	function(object, ...)
+{
+	if ( is.na(processingChunkSize(object)) ) {
+		.processingChunkFactor(length(object), getCardinalChunksize())
+	} else {
+		.processingChunkFactor(length(object), processingChunkSize(object))
+	}
+})
+
+.processingChunkFactor <- function(length.out, chunkSize)
+{
+	if ( chunkSize > length.out ) {
+		as.factor(rep.int(1L, chunkSize))
+	} else {
+		chunkIds <- seq_len(ceiling(length.out / chunkSize))
+		as.factor(rep(chunkIds, each=chunkSize, length.out=length.out))
+	}
+}
 
 ## Vector-like subsetting
 
@@ -242,6 +272,54 @@ setMethod("subset", "SpectralImagingArrays",
 		}
 	})
 
+## Iteration
+
+.iter_SpectralImagingArrays <- function(x, f)
+{
+	if ( !is.factor(f) || length(f) != length(x) )
+		stop("'f' must be a factor along 'x'")
+	i <- 1L
+	function() {
+		if ( i > 0L && i <= nlevels(f) ) {
+			fi <- which(f == levels(f)[i])
+			chunk <- .subset_SpectralImagingArrays(x, fi)
+		} else {
+			chunk <- NULL
+		}
+		i <<- i + 1
+		chunk
+	}
+}
+
+.apply_SpectralImagingArrays <- function(x, FUN, ...)
+{
+	FUN <- match.fun(FUN)
+	# TODO
+}
+
+.zip_SpectralImagingArrays <- function(object, withProcessing = TRUE)
+{
+	out <- vector("list", length=length(object))
+	arrays <- spectraData(object)
+	pscols <- pixelData(object)[object@processingVariables]
+	for ( i in seq_along(object) ) {
+		x <- lapply(names(arrays), function(nm) arrays[[nm]][[i]])
+		names(x) <- names(arrays)
+		if ( withProcessing ) {
+			if ( length(pscols) > 0L ) {
+				psargs <- as.list(pscols[i,,drop=FALSE])
+			} else {
+				psargs <- list()
+			}
+			for ( ps in object@processingQueue ) {
+				ps <- updateProcessingStep(ps, psargs)
+				x <- executeProcessingStep(ps, x)
+			}
+		}
+		out[[i]] <- x
+	}
+	out
+}
 
 ## combine
 

@@ -38,7 +38,7 @@ setClassUnion("ImzMeta_OR_NULL", c("ImzMeta", "NULL"))
 setClass("SpectralImagingArrays",
 	contains = "SpectralImagingData",
 	slots = c(
-		processing = "list",
+		processingQueue = "list",
 		processingVariables = "character",
 		processingChunkSize = "numeric",
 		continuous = "logical"))

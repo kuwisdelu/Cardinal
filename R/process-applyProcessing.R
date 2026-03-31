@@ -2,15 +2,6 @@
 #### Spectral pre-processing execution ####
 ## ----------------------------------------
 
-.process_SpectralImagingArrays <- function(object,
-	f = processingChunkFactor(object),
-	ZIPFUN = relistFromTuples, ZIPARGS = list(),
-	verbose = getCardinalVerbose(), chunkopts = list(),
-	BPPARAM = getCardinalBPPARAM(), ...)
-{
-	stop("not implemented yet")
-}
-
 setMethod("applyProcessing", "SpectralImagingArrays",
 	function(object, f = processingChunkFactor(object),
 		ZIPFUN = relistFromTuples, ZIPARGS = list(),
@@ -23,3 +14,23 @@ setMethod("applyProcessing", "SpectralImagingArrays",
 		BPPARAM=BPPARAM, ...)
 })
 
+.process_SpectralImagingArrays <- function(object,
+	f = processingChunkFactor(object),
+	ZIPFUN = relistFromTuples, ZIPARGS = list(),
+	verbose = getCardinalVerbose(), chunkopts = list(),
+	BPPARAM = getCardinalBPPARAM(), ...)
+{
+	stop("not implemented yet")
+}
+
+.process_ITER <- function(object,
+	f = processingChunkFactor(object),
+	verbose = getCardinalVerbose())
+{
+
+}
+
+.process_FUN <- function(x, processingSteps, processingVariables)
+{
+
+}
