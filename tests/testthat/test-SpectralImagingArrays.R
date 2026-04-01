@@ -76,13 +76,14 @@ test_that("SpectralImagingArrays processing", {
 	set.seed(1)
 	n <- 999L
 	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
-	sarrays <- SpectraArrays(list(intensity=arrays))
+	index <- lapply(arrays, seq_along)
+	sarrays <- SpectraArrays(list(index=index, intensity=arrays))
 
 	sa <- SpectralImagingArrays(sarrays)
 
 	expect_equal(processingChunkSize(sa), NA_integer_)
 
-	chunksize <- 20L
+	chunksize <- 100L
 	processingChunkSize(sa) <- chunksize
 
 	expect_equal(processingChunkSize(sa), chunksize)

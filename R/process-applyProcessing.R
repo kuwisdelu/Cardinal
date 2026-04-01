@@ -4,19 +4,19 @@
 
 setMethod("applyProcessing", "SpectralImagingArrays",
 	function(object, f = processingChunkFactor(object),
-		ZIPFUN = relistFromTuples, ZIPARGS = list(),
+		POSTFUN = relistFromTuples, POSTARGS = list(),
 		verbose = getCardinalVerbose(), chunkopts = list(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	.process_SpectralImagingArrays(object, f=f,
-		ZIPFUN=ZIPFUN, ZIPARGS=ZIPARGS,
+		POSTFUN=POSTFUN, POSTARGS=POSTARGS,
 		verbose=verbose, chunkopts=chunkopts,
 		BPPARAM=BPPARAM, ...)
 })
 
 .process_SpectralImagingArrays <- function(object,
 	f = processingChunkFactor(object),
-	ZIPFUN = relistFromTuples, ZIPARGS = list(),
+	POSTFUN = relistFromTuples, POSTARGS = list(),
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {

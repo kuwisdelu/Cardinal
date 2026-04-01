@@ -24,15 +24,11 @@ dropProcessing <- function(object, ...)
 		object
 }
 
-updateProcessingStep <- function(object, ARGS, replace = FALSE)
+appendProcessingStepARGS <- function(object, ARGS)
 {
 	if ( !is(object, "ProcessingStep") )
 		stop("'object' must be a 'ProcessingStep' object")
-	if ( replace ) {
-		object@ARGS <- ARGS
-	} else {
-		object@ARGS <- c(object@ARGS, ARGS)
-	}
+	object@ARGS <- c(object@ARGS, ARGS)
 	if ( validObject(object) )
 		object
 }

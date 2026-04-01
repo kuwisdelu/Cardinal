@@ -197,6 +197,21 @@ setMethod("pixels", "SpectralImagingArrays",
 	index
 }
 
+# Spectra array access
+
+setMethod("spectra", "SpectralImagingArrays",
+	function(object, i = 1L, ...) {
+		if ( !is.null(processingData(object)) ) {
+
+		}
+	})
+
+setReplaceMethod("spectra", "SpectralImagingArrays",
+	function(object, i = 1L, ..., value) {
+		if ( !is.null(processingData(object)) )
+			.Error("can't replace spectra with queued processing steps")
+	})
+
 ## Basic getters and setters
 
 setMethod("processingData", "SpectralImagingArrays",
@@ -274,13 +289,40 @@ setMethod("subset", "SpectralImagingArrays",
 
 ## Iteration
 
-.iter_SpectralImagingArrays <- function(x, f)
+setMethod("spectrapply", "SpectralImagingArrays",
+	function(object, FUN, ...,
+		f = processingChunkFactor(object),
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM(),
+		BPOPTIONS = bpoptions())
+	{
+		ARGS <- list(...)
+		.bpiterate(
+			ITER=.iter_SpectralImagingArrays(object, f, verbose),
+			FUN=.iterfun_SpectralImagingArrays(FUN, ARGS),
+			REDUCE=c, init=NULL, reduce.in.order=TRUE,
+			BPPARAM=BPPARAM,
+			BPOPTIONS=BPOPTIONS)
+	})
+
+.iterfun_SpectralImagingArrays <- function(FUN, ARGS)
+{
+	DOFUN <- function(x) do.call(FUN, c(list(x), ARGS))
+	function(object) {
+		lapply(.zip_SpectralImagingArrays(object), DOFUN)
+	}
+}
+
+.iter_SpectralImagingArrays <- function(x, f, verbose = FALSE)
 {
 	if ( !is.factor(f) || length(f) != length(x) )
 		stop("'f' must be a factor along 'x'")
 	i <- 1L
 	function() {
-		if ( i > 0L && i <= nlevels(f) ) {
+		if ( i == 1L )
+			.Log("iterating over ", nlevels(f), " chunk(s)", message=verbose)
+		if ( i <= nlevels(f) ) {
+			.Log("processing chunk ", sQuote(levels(f)[i]), message=verbose)
 			fi <- which(f == levels(f)[i])
 			chunk <- .subset_SpectralImagingArrays(x, fi)
 		} else {
@@ -291,20 +333,14 @@ setMethod("subset", "SpectralImagingArrays",
 	}
 }
 
-.apply_SpectralImagingArrays <- function(x, FUN, ...)
-{
-	FUN <- match.fun(FUN)
-	# TODO
-}
-
 .zip_SpectralImagingArrays <- function(object, withProcessing = TRUE)
 {
 	out <- vector("list", length=length(object))
 	arrays <- spectraData(object)
 	pscols <- pixelData(object)[object@processingVariables]
 	for ( i in seq_along(object) ) {
-		x <- lapply(names(arrays), function(nm) arrays[[nm]][[i]])
-		names(x) <- names(arrays)
+		xi <- lapply(seq_along(arrays), function(j) arrays[[j]][[i]])
+		names(xi) <- names(arrays)
 		if ( withProcessing ) {
 			if ( length(pscols) > 0L ) {
 				psargs <- as.list(pscols[i,,drop=FALSE])
@@ -312,11 +348,11 @@ setMethod("subset", "SpectralImagingArrays",
 				psargs <- list()
 			}
 			for ( ps in object@processingQueue ) {
-				ps <- updateProcessingStep(ps, psargs)
-				x <- executeProcessingStep(ps, x)
+				ps <- appendProcessingStepARGS(ps, psargs)
+				xi <- executeProcessingStep(ps, xi)
 			}
 		}
-		out[[i]] <- x
+		out[[i]] <- xi
 	}
 	out
 }
