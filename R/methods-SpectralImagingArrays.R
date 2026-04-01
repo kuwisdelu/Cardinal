@@ -292,25 +292,33 @@ setMethod("subset", "SpectralImagingArrays",
 setMethod("spectrapply", "SpectralImagingArrays",
 	function(object, FUN, ...,
 		f = processingChunkFactor(object),
+		REDUCE = c, init = NULL, reduce.in.order=TRUE,
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(),
 		BPOPTIONS = bpoptions())
 	{
-		ARGS <- list(...)
-		.bpiterate(
-			ITER=.iter_SpectralImagingArrays(object, f, verbose),
-			FUN=.iterfun_SpectralImagingArrays(FUN, ARGS),
-			REDUCE=c, init=NULL, reduce.in.order=TRUE,
-			BPPARAM=BPPARAM,
-			BPOPTIONS=BPOPTIONS)
+		.chunkapply_SpectralImagingArrays(object, f=f,
+			CHUNKFUN=.spectrapply_SpectralImagingArrays, ITEMFUN=FUN, ...,
+			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
+			BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
 	})
 
-.iterfun_SpectralImagingArrays <- function(FUN, ARGS)
+.spectrapply_SpectralImagingArrays <- function(object, ITEMFUN, ...)
 {
-	DOFUN <- function(x) do.call(FUN, c(list(x), ARGS))
-	function(object) {
-		lapply(.zip_SpectralImagingArrays(object), DOFUN)
-	}
+	lapply(.zip_SpectralImagingArrays(object), ITEMFUN, ...)
+}
+
+.chunkapply_SpectralImagingArrays <- function(object, CHUNKFUN, ...,
+	f = processingChunkFactor(object),
+	REDUCE, init, reduce.in.order=TRUE,
+	verbose = getCardinalVerbose(),
+	BPPARAM = getCardinalBPPARAM(),
+	BPOPTIONS = bpoptions())
+{
+	ITER <- .iter_SpectralImagingArrays(object, f, verbose)
+	.bpiterate(ITER=ITER, FUN=CHUNKFUN, ...,
+		REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
+		BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
 }
 
 .iter_SpectralImagingArrays <- function(x, f, verbose = FALSE)
