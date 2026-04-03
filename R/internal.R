@@ -10,7 +10,7 @@
 		if ( missing(REDUCE) ) {
 			if ( !missing(init) )
 				stop("'REDUCE' must be provided when 'init' is used")
-			REDUCE <- function(e1, e2) c(e1, list(e2))
+			REDUCE <- function(result, item) c(result, list(item))
 			init <- NULL
 		}
 		ans <- init

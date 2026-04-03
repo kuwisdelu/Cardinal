@@ -3,10 +3,25 @@ require(Cardinal)
 
 context("SpectralImagingArrays")
 
-test_that("SpectralImagingArrays accessors", {
+test_that("SpectralImagingArrays validity", {
 
 	expect_true(validObject(SpectralImagingArrays()))
 	expect_true(validObject(SpectralImagingArrays(numeric(0))))
+
+	n <- 10L
+	arrays1 <- lapply(seq_len(n), seq_len)
+	arrays2 <- replicate(n, seq_len(n), simplify=FALSE)
+	sarrays1 <- SpectraArrays(list(intensity=arrays1))
+	sarrays2 <- SpectraArrays(list(intensity=arrays2))
+	pdata <- PositionDataFrame(coord=list(x=seq_len(n + 1L), y=1L))
+
+	expect_error(SpectralImagingArrays(sarrays1, pixelData=pdata))
+	expect_error(SpectralImagingArrays(sarrays1, continuous=TRUE))
+	expect_true(validObject(SpectralImagingArrays(sarrays2, continuous=TRUE)))
+
+})
+
+test_that("SpectralImagingArrays accessors", {
 
 	set.seed(1)
 	nx <- 5L
@@ -74,7 +89,7 @@ test_that("SpectralImagingArrays accessors", {
 test_that("SpectralImagingArrays processing", {
 
 	set.seed(1)
-	n <- 999L
+	n <- 99L
 	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
 	index <- lapply(arrays, seq_along)
 	sarrays <- SpectraArrays(list(index=index, intensity=arrays))
@@ -83,7 +98,7 @@ test_that("SpectralImagingArrays processing", {
 
 	expect_equal(processingChunkSize(sa), NA_integer_)
 
-	chunksize <- 100L
+	chunksize <- 10L
 	processingChunkSize(sa) <- chunksize
 
 	expect_equal(processingChunkSize(sa), chunksize)

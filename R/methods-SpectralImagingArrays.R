@@ -44,7 +44,7 @@
 	{
 		lens <- lapply(as.list(object@spectraData), lengths)
 		lens <- lapply(lens, unique)
-		if ( length(unlist(unique(len))) != 1L )
+		if ( length(unlist(unique(lens))) != 1L )
 			errors <- c(errors, paste0("all spectra arrays ",
 				"must have identical lengths when continuous=TRUE"))
 	}
@@ -297,10 +297,10 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		BPPARAM = getCardinalBPPARAM(),
 		BPOPTIONS = bpoptions())
 	{
-		.chunkapply_SpectralImagingArrays(object, f=f,
+		.chunkapply_SpectralImagingArrays(object,
 			CHUNKFUN=.spectrapply_SpectralImagingArrays, ITEMFUN=FUN, ...,
 			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
-			BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
+			f=f, verbose=verbose, BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
 	})
 
 .spectrapply_SpectralImagingArrays <- function(object, ITEMFUN, ...)
@@ -309,16 +309,10 @@ setMethod("spectrapply", "SpectralImagingArrays",
 }
 
 .chunkapply_SpectralImagingArrays <- function(object, CHUNKFUN, ...,
-	f = processingChunkFactor(object),
-	REDUCE, init, reduce.in.order=TRUE,
-	verbose = getCardinalVerbose(),
-	BPPARAM = getCardinalBPPARAM(),
-	BPOPTIONS = bpoptions())
+	f = processingChunkFactor(object), verbose = getCardinalVerbose())
 {
 	ITER <- .iter_SpectralImagingArrays(object, f, verbose)
-	.bpiterate(ITER=ITER, FUN=CHUNKFUN, ...,
-		REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
-		BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
+	.bpiterate(ITER=ITER, FUN=CHUNKFUN, ...)
 }
 
 .iter_SpectralImagingArrays <- function(x, f, verbose = FALSE)
