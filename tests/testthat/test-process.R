@@ -11,7 +11,9 @@ test_that("addProcessing", {
 	sarrays <- SpectraArrays(list(intensity=arrays))
 	sa <- SpectralImagingArrays(spectraData=sarrays)
 
-	FUN1 <- function(x) x / sum(x)
+	FUN1 <- function(x) {
+		list(intensity=x$intensity / sum(x$intensity))
+	}
 	LAB1 <- "normalization"
 	sa1 <- addProcessing(sa, FUN1, label=LAB1)
 

@@ -6,7 +6,7 @@
 # but allows 1-dimensional array and list elements
 # and requires spectra to have unique array names
 
-# NOTE: We should refactor SpectraArrays so that:
+# TODO: We should refactor SpectraArrays so that:
 # 1) always reports length(dim(x)) == 2
 # 2) length() is number of arrays
 # 3) all NROW() and NCOL() must conform always

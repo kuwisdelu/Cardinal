@@ -200,16 +200,22 @@ setMethod("pixels", "SpectralImagingArrays",
 # Spectra array access
 
 setMethod("spectra", "SpectralImagingArrays",
-	function(object, i = 1L, ...) {
-		if ( !is.null(processingData(object)) ) {
-
+	function(object, i = 1L, ..., BPPARAM = getCardinalBPPARAM())
+	{
+		if ( length(processingData(object)) > 0L ) {
+			spectrapply(object, `[[`, i, ..., BPPARAM=BPPARAM)
+		} else {
+			callNextMethod()
 		}
 	})
 
 setReplaceMethod("spectra", "SpectralImagingArrays",
 	function(object, i = 1L, ..., value) {
-		if ( !is.null(processingData(object)) )
+		if ( length(processingData(object)) > 0L ) {
 			.Error("can't replace spectra with queued processing steps")
+		} else {
+			callNextMethod()
+		}
 	})
 
 ## Basic getters and setters
@@ -244,12 +250,13 @@ setMethod("processingChunkFactor", "SpectralImagingArrays",
 
 .processingChunkFactor <- function(length.out, chunkSize)
 {
-	if ( chunkSize > length.out ) {
-		as.factor(rep.int(1L, chunkSize))
+	if ( is.na(chunkSize) || chunkSize > length.out ) {
+		f <- as.factor(rep.int(1L, length.out))
 	} else {
 		chunkIds <- seq_len(ceiling(length.out / chunkSize))
-		as.factor(rep(chunkIds, each=chunkSize, length.out=length.out))
+		f <- as.factor(rep(chunkIds, each=chunkSize, length.out=length.out))
 	}
+	f
 }
 
 ## Vector-like subsetting
@@ -289,33 +296,36 @@ setMethod("subset", "SpectralImagingArrays",
 
 ## Iteration
 
+.spectrapply_SpectralImagingArrays <- function(object, ITEMFUN, ...)
+{
+	X <- .list_SpectralImagingArrays(object, withProcessing=TRUE)
+	lapply(X, ITEMFUN, ...)
+}
+
+.chunkapply_SpectralImagingArrays <- function(object, CHUNKFUN, ..., f, verbose)
+{
+	ITER <- .iter_SpectralImagingArrays(object, f, verbose)
+	.bpiterate(ITER, CHUNKFUN, ...)
+}
+
 setMethod("spectrapply", "SpectralImagingArrays",
 	function(object, FUN, ...,
 		f = processingChunkFactor(object),
-		REDUCE = c, init = NULL, reduce.in.order=TRUE,
+		REDUCE, init, reduce.in.order = TRUE,
 		verbose = getCardinalVerbose(),
-		BPPARAM = getCardinalBPPARAM(),
-		BPOPTIONS = bpoptions())
+		BPPARAM = getCardinalBPPARAM())
 	{
-		.chunkapply_SpectralImagingArrays(object,
-			CHUNKFUN=.spectrapply_SpectralImagingArrays, ITEMFUN=FUN, ...,
+		if ( missing(REDUCE) )
+			REDUCE <- c
+		if ( missing(init) )
+			init <- NULL
+		.chunkapply_SpectralImagingArrays(object, ...,
+			CHUNKFUN=.spectrapply_SpectralImagingArrays, ITEMFUN=FUN,
 			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
-			f=f, verbose=verbose, BPPARAM=BPPARAM, BPOPTIONS=BPOPTIONS)
+			f=f, verbose=verbose, BPPARAM=BPPARAM)
 	})
 
-.spectrapply_SpectralImagingArrays <- function(object, ITEMFUN, ...)
-{
-	lapply(.zip_SpectralImagingArrays(object), ITEMFUN, ...)
-}
-
-.chunkapply_SpectralImagingArrays <- function(object, CHUNKFUN, ...,
-	f = processingChunkFactor(object), verbose = getCardinalVerbose())
-{
-	ITER <- .iter_SpectralImagingArrays(object, f, verbose)
-	.bpiterate(ITER=ITER, FUN=CHUNKFUN, ...)
-}
-
-.iter_SpectralImagingArrays <- function(x, f, verbose = FALSE)
+.iter_SpectralImagingArrays <- function(x, f, verbose)
 {
 	if ( !is.factor(f) || length(f) != length(x) )
 		stop("'f' must be a factor along 'x'")
@@ -335,44 +345,57 @@ setMethod("spectrapply", "SpectralImagingArrays",
 	}
 }
 
-.zip_SpectralImagingArrays <- function(object, withProcessing = TRUE)
+.list_SpectralImagingArrays <- function(object, withProcessing)
 {
-	out <- vector("list", length=length(object))
-	arrays <- spectraData(object)
-	pscols <- pixelData(object)[object@processingVariables]
-	for ( i in seq_along(object) ) {
-		xi <- lapply(seq_along(arrays), function(j) arrays[[j]][[i]])
-		names(xi) <- names(arrays)
-		if ( withProcessing ) {
-			if ( length(pscols) > 0L ) {
-				psargs <- as.list(pscols[i,,drop=FALSE])
-			} else {
-				psargs <- list()
-			}
-			for ( ps in object@processingQueue ) {
-				ps <- appendProcessingStepARGS(ps, psargs)
-				xi <- executeProcessingStep(ps, xi)
-			}
-		}
-		out[[i]] <- xi
+	X <- .zipup(spectraData(object))
+	if ( length(object@processingQueue) > 0L && withProcessing ) {
+		.process_spectra_list(X,
+			queue=object@processingQueue,
+			mcols=pixelData(object)[object@processingVariables])
+	} else {
+		X
 	}
-	out
 }
 
 ## combine
 
-.combine_SpectralImagingArrays <- function(objects)
+.bind_SpectralImagingArrays <- function(x, y)
 {
-	spectraData <- do.call(c, lapply(objects, spectraData))
-	pixelData <- do.call(rbind, lapply(objects, pixelData))
-	metadata <- do.call(c, lapply(objects, metadata))
-	new(class(objects[[1L]]),
-		spectraData=spectraData,
-		elementMetadata=pixelData,
-		metadata=metadata,
-		processing=list())
+	if ( !is.null(x) && !is.null(y) ) {
+		new(class(x),
+			spectraData=c(spectraData(x), spectraData(y)),
+			elementMetadata=rbind(pixelData(x), pixelData(y)),
+			metadata=c(metadata(x), metadata(y)),
+			centroided=centroided(x) && centroided(y),
+			continuous=FALSE,
+			processingQueue=list(),
+			processingVariables=character(),
+			processingChunkSize=NA_integer_)
+	} else if ( is.null(x) ) {
+		y
+	} else if ( is.null(y) ) {
+		x
+	} else {
+		NULL
+	}
 }
 
-setMethod("c", "SpectralImagingArrays",
-	function(x, ...) .combine_SpectralImagingArrays(list(x, ...)))
+setMethod("combine", c("SpectralImagingArrays", "SpectralImagingArrays"),
+	function(x, y, ...) .bind_SpectralImagingArrays(x, y))
 
+setMethod("combine", c("SpectralImagingArrays", "NULL"),
+	function(x, y, ...) x)
+
+setMethod("combine", c("NULL", "SpectralImagingArrays"),
+	function(x, y, ...) y)
+
+setMethod("c", "SpectralImagingArrays",
+	function(x, ...)
+	{
+		objects <- list(...)
+		if ( length(objects) > 0L ) {
+			for ( i in seq_along(objects) )
+				x <- combine(x, objects[[i]])
+		}
+		x
+	})

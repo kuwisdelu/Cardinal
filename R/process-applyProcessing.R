@@ -3,34 +3,49 @@
 ## ----------------------------------------
 
 setMethod("applyProcessing", "SpectralImagingArrays",
-	function(object, f = processingChunkFactor(object),
-		POSTFUN = relistFromTuples, POSTARGS = list(),
-		verbose = getCardinalVerbose(), chunkopts = list(),
-		BPPARAM = getCardinalBPPARAM(), ...)
+	function(object, ...,
+		f = processingChunkFactor(object),
+		REDUCE, init, reduce.in.order = TRUE,
+		verbose = getCardinalVerbose(),
+		BPPARAM = getCardinalBPPARAM())
 {
-	.process_SpectralImagingArrays(object, f=f,
-		POSTFUN=POSTFUN, POSTARGS=POSTARGS,
-		verbose=verbose, chunkopts=chunkopts,
-		BPPARAM=BPPARAM, ...)
+	if ( missing(REDUCE) )
+		REDUCE <- combine
+	if ( missing(init) )
+		init <- NULL
+	.chunkapply_SpectralImagingArrays(object, ...,
+		CHUNKFUN=.process_SpectralImagingArrays,
+		REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
+		f=f, verbose=verbose, BPPARAM=BPPARAM)
 })
 
-.process_SpectralImagingArrays <- function(object,
-	f = processingChunkFactor(object),
-	POSTFUN = relistFromTuples, POSTARGS = list(),
-	verbose = getCardinalVerbose(), chunkopts = list(),
-	BPPARAM = getCardinalBPPARAM(), ...)
+.process_SpectralImagingArrays <- function(object)
 {
-	stop("not implemented yet")
+	result <- dropProcessing(object)
+	X <- .list_SpectralImagingArrays(object, withProcessing=TRUE)
+	spectraData(result) <- as(.zipdown(X), "SpectraArrays")
+	result
 }
 
-.process_ITER <- function(object,
-	f = processingChunkFactor(object),
-	verbose = getCardinalVerbose())
+.process_spectra_list <- function(X, queue, mcols)
 {
-
+	result <- vector("list", length=length(X))
+	if ( length(mcols) > 0L ) {
+		margs <- as.list(mcols[i,,drop=FALSE])
+	} else {
+		margs <- list()
+	}
+	for ( i in seq_along(X) )
+	{
+		xi <- X[[i]]
+		for ( step in queue ) {
+			step <- updateProcessingStep(step, margs)
+			xi <- executeProcessingStep(step, xi)
+			if ( !is.list(xi) || is.null(names(xi)) )
+				stop("ProcessingStep FUN must return a named list")
+		}
+		result[[i]] <- xi
+	}
+	result
 }
 
-.process_FUN <- function(x, processingSteps, processingVariables)
-{
-
-}

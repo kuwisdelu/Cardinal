@@ -5,11 +5,11 @@
 setMethod("addProcessing", "SpectralImagingArrays",
 	function(object, FUN, ..., pixelVariables = character(), label = NULL)
 {
-	ps <- ProcessingStep(FUN, ARGS=list(...))
-	ps <- setNames(list(ps), label)
-	psvars <- union(object@processingVariables, pixelVariables)
-	object@processingQueue <- c(object@processingQueue, ps)
-	object@processingVariables <- psvars
+	step <- ProcessingStep(FUN, ARGS=list(...))
+	step <- setNames(list(step), label)
+	mvars <- union(object@processingVariables, pixelVariables)
+	object@processingQueue <- c(object@processingQueue, step)
+	object@processingVariables <- mvars
 	if ( validObject(object) )
 		object
 })
@@ -24,11 +24,15 @@ dropProcessing <- function(object, ...)
 		object
 }
 
-appendProcessingStepARGS <- function(object, ARGS)
+updateProcessingStep <- function(object, ARGS, replace = FALSE)
 {
 	if ( !is(object, "ProcessingStep") )
 		stop("'object' must be a 'ProcessingStep' object")
-	object@ARGS <- c(object@ARGS, ARGS)
+	if ( replace ) {
+		object@ARGS <- ARGS
+	} else {
+		object@ARGS <- c(object@ARGS, ARGS)
+	}
 	if ( validObject(object) )
 		object
 }

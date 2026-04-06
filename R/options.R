@@ -121,6 +121,8 @@ saveCardinalLog <- function(file = "Cardinal.log") {
 #### Cardinal-controlled matter options ####
 ## -----------------------------------------
 
+# NOTE: These will be deprecated in the near future
+
 # number of chunks to use for processing
 getCardinalNChunks <- function() {
 	matter_defaults()[["nchunks"]]
