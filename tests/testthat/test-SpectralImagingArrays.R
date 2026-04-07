@@ -3,77 +3,93 @@ require(Cardinal)
 
 context("SpectralImagingArrays")
 
-test_that("SpectralImagingArrays validity", {
+setup_SpectraArrays <- function(n = 10L, p = 20L)
+{
+	ns <- sample(p, n, replace=TRUE)
+	domain <- seq_len(p)
+	intensity <- lapply(ns, function(ni) rlnorm(ni))
+	index <- lapply(ns, function(ni) sort(sample(domain, ni)))
+	SpectraArrays(list(index=index, intensity=intensity))
+}
+
+test_that("SpectralImagingArrays validity ok", {
 
 	expect_true(validObject(SpectralImagingArrays()))
 	expect_true(validObject(SpectralImagingArrays(numeric(0))))
 
 	n <- 10L
-	arrays1 <- lapply(seq_len(n), seq_len)
-	arrays2 <- replicate(n, seq_len(n), simplify=FALSE)
-	sarrays1 <- SpectraArrays(list(intensity=arrays1))
-	sarrays2 <- SpectraArrays(list(intensity=arrays2))
-	pdata <- PositionDataFrame(coord=list(x=seq_len(n + 1L), y=1L))
+	a1 <- lapply(seq_len(n), seq_len)
+	sdata1 <- SpectraArrays(list(intensity=a1))
+	pdata1 <- PositionDataFrame(coord=list(x=seq_len(n + 1L), y=1L))
 
-	expect_error(SpectralImagingArrays(sarrays1, pixelData=pdata))
-	expect_error(SpectralImagingArrays(sarrays1, continuous=TRUE))
-	expect_true(validObject(SpectralImagingArrays(sarrays2, continuous=TRUE)))
+	expect_error(SpectralImagingArrays(sdata1, pixelData=pdata1))
+	expect_error(SpectralImagingArrays(sdata1, continuous=TRUE))
+
+	a2 <- replicate(n, seq_len(n), simplify=FALSE)
+	sdata2 <- SpectraArrays(list(intensity=a2))
+
+	expect_true(validObject(SpectralImagingArrays(sdata2, continuous=TRUE)))
 
 })
 
-test_that("SpectralImagingArrays accessors", {
-
-	set.seed(1)
-	nx <- 5L
-	ny <- 2L
-	n <- nx * ny
-	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
-	sarrays <- SpectraArrays(list(intensity=arrays))
-	pdata <- PositionDataFrame(
-		coord=expand.grid(x=1:nx, y=1:ny),
-		trt=sample(c("A", "B"), n, replace=TRUE),
-		row.names=letters[seq_len(n)])
+test_that("SpectralImagingArrays accessors ok", {
 
 	sa1 <- SpectralImagingArrays(
 		spectraData=SpectraArrays(),
 		pixelData=PositionDataFrame(),
 		centroided=NA)
+
+	set.seed(1)
+	nx <- 5L
+	ny <- 2L
+	n <- nx * ny
+	sdata2 <- setup_SpectraArrays(n)
+	pdata2 <- PositionDataFrame(
+		coord=expand.grid(x=1:nx, y=1:ny),
+		trt=sample(c("A", "B"), n, replace=TRUE),
+		row.names=letters[seq_len(n)])	
 	sa2 <- SpectralImagingArrays(
-		spectraData=sarrays,
-		pixelData=pdata,
+		spectraData=sdata2,
+		pixelData=pdata2,
 		centroided=NA)
 
 	expect_true(validObject(sa1))
 	expect_true(validObject(sa2))
 
 	expect_equal(spectraData(sa1), SpectraArrays())
-	expect_equal(spectraData(sa2), sarrays)
+	expect_equal(spectraData(sa2), sdata2)
 
 	expect_equal(spectraNames(sa1), character())
-	expect_equal(spectraNames(sa2), "intensity")
+	expect_equal(spectraNames(sa2), names(sdata2))
 
 	expect_error(spectra(sa1))
-	expect_equal(spectra(sa2), arrays)
+	expect_equal(spectra(sa2, 1L), sdata2[[1L]])
 
 	expect_error(spectra(sa1))
-	expect_equal(spectra(sa2), arrays)
+	expect_equal(spectra(sa2, 2L), sdata2[[2L]])
+
+	expect_error(spectra(sa1))
+	expect_equal(spectra(sa2, "index"), sdata2[["index"]])
+
+	expect_error(spectra(sa1))
+	expect_equal(spectra(sa2, "intensity"), sdata2[["intensity"]])
 
 	expect_equal(pixelData(sa1), PositionDataFrame())
-	expect_equal(pixelData(sa2), pdata)
+	expect_equal(pixelData(sa2), pdata2)
 
 	expect_equal(pixelNames(sa1), NULL)
-	expect_equal(pixelNames(sa2), row.names(pdata))
+	expect_equal(pixelNames(sa2), row.names(pdata2))
 
 	expect_equal(pixelVariables(sa1), names(PositionDataFrame()))
-	expect_equal(pixelVariables(sa2), names(pdata))
+	expect_equal(pixelVariables(sa2), names(pdata2))
 
-	expect_equal(coord(sa2), coord(pdata))
-	expect_equal(coordNames(sa2), coordNames(pdata))
+	expect_equal(coord(sa2), coord(pdata2))
+	expect_equal(coordNames(sa2), coordNames(pdata2))
 	
-	expect_equal(run(sa2), run(pdata))
-	expect_equal(runNames(sa2), runNames(pdata))
-	expect_equal(nrun(sa2), nrun(pdata))
-	expect_equal(is3D(sa2), is3D(pdata))
+	expect_equal(run(sa2), run(pdata2))
+	expect_equal(runNames(sa2), runNames(pdata2))
+	expect_equal(nrun(sa2), nrun(pdata2))
+	expect_equal(is3D(sa2), is3D(pdata2))
 
 	expect_equal(centroided(sa1), NA)
 	expect_equal(centroided(sa2), NA)
@@ -81,29 +97,50 @@ test_that("SpectralImagingArrays accessors", {
 	expect_length(sa1, 0L)
 	expect_length(sa2, n)
 
-	expect_equal(sa2$trt, pdata$trt)
-	expect_equal(sa2[["trt"]], pdata[["trt"]])
+	expect_equal(sa2$trt, pdata2$trt)
+	expect_equal(sa2[["trt"]], pdata2[["trt"]])
 
 })
 
-test_that("SpectralImagingArrays processing", {
+test_that("SpectralImagingArrays combine ok", {
 
 	set.seed(1)
-	n <- 99L
-	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
-	index <- lapply(arrays, seq_along)
-	sarrays <- SpectraArrays(list(index=index, intensity=arrays))
+	n <- 10L
+	
+	a1 <- setup_SpectraArrays(n)
+	a2 <- setup_SpectraArrays(n)
+	pdata1 <- PositionDataFrame(run=rep.int("runA", n))
+	pdata2 <- PositionDataFrame(run=rep.int("runB", n))
+	
+	sa1 <- SpectralImagingArrays(a1, pixelData=pdata1)
+	sa2 <- SpectralImagingArrays(a2, pixelData=pdata2)
 
-	sa <- SpectralImagingArrays(sarrays)
+	sa3 <- combine(sa1, sa2)
 
-	expect_equal(processingChunkSize(sa), NA_integer_)
+	expect_equal(spectra(sa3, 1L), c(spectra(sa1, 1L), spectra(sa2, 1L)))
+	expect_equal(spectra(sa3, 2L), c(spectra(sa1, 2L), spectra(sa2, 2L)))
+	expect_equal(pData(sa3), rbind(pData(sa1), pData(sa2)))
+	expect_equal(sa3, c(sa1, sa2))
+
+})
+
+
+test_that("SpectralImagingArrays processing ok", {
+
+	set.seed(1)
+	n <- 25L
+	a1 <- setup_SpectraArrays(n)
+
+	sa1 <- SpectralImagingArrays(a1)
+
+	expect_equal(processingChunkSize(sa1), NA_integer_)
 
 	chunksize <- 10L
-	processingChunkSize(sa) <- chunksize
+	processingChunkSize(sa1) <- chunksize
 
-	expect_equal(processingChunkSize(sa), chunksize)
-	expect_true(is.factor(processingChunkFactor(sa)))
-	expect_length(processingChunkFactor(sa), length(sa))
+	expect_equal(processingChunkSize(sa1), chunksize)
+	expect_length(processingChunkFactor(sa1), length(sa1))
+	expect_true(is.factor(processingChunkFactor(sa1)))
 
 })
 
@@ -164,26 +201,3 @@ test_that("SpectralImagingArrays pixels", {
 
 })
 
-test_that("SpectralImagingArrays combine", {
-
-	set.seed(1)
-	n <- 10
-	i <- rep(list(1:n), n)
-	a <- replicate(n, rlnorm(n), simplify=FALSE)
-	s <- SpectraArrays(list(index=i, intensity=a))
-	pdata <- PositionDataFrame(
-		coord=expand.grid(x=1:5, y=1:2),
-		trt=rep(c("A", "B"), each=5))
-	pdata2 <- PositionDataFrame(
-		coord=expand.grid(x=1:5, y=3:4),
-		trt=rep(c("A", "B"), each=5))
-	sa <- SpectralImagingArrays(s, pixelData=pdata)
-	sa2 <- SpectralImagingArrays(s, pixelData=pdata2)
-
-	sa3 <- c(sa, sa2)
-
-	expect_equal(spectra(sa3, 1L), c(spectra(sa, 1L), spectra(sa2, 1L)))
-	expect_equal(spectra(sa3, 2L), c(spectra(sa, 2L), spectra(sa2, 2L)))
-	expect_equal(pData(sa3), rbind(pData(sa), pData(sa2)))
-
-})

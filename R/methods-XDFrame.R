@@ -279,7 +279,7 @@ PositionDataFrame <- function(coord, run, ..., row.names = FALSE)
 		} else {
 			n <- 0L
 		}
-		coord <- expand.grid(x=seq_len(n), y=rep.int(1L, n))
+		coord <- expand.grid(x=seq_len(n), y=1L)
 	}
 	coord <- DataFrame(coord)
 	if ( missing(run) || is.null(run) ) {
