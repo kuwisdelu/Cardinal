@@ -30,14 +30,14 @@ setMethod("applyProcessing", "SpectralImagingArrays",
 .process_spectra_list <- function(X, queue, mcols)
 {
 	result <- vector("list", length=length(X))
-	if ( length(mcols) > 0L ) {
-		margs <- as.list(mcols[i,,drop=FALSE])
-	} else {
-		margs <- list()
-	}
 	for ( i in seq_along(X) )
 	{
 		xi <- X[[i]]
+		if ( length(mcols) > 0L ) {
+			margs <- as.list(mcols[i,,drop=FALSE])
+		} else {
+			margs <- list()
+		}
 		for ( step in queue ) {
 			step <- updateProcessingStep(step, margs)
 			xi <- executeProcessingStep(step, xi)

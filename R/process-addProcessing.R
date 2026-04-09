@@ -3,10 +3,12 @@
 ## ----------------------------------------
 
 setMethod("addProcessing", "SpectralImagingArrays",
-	function(object, FUN, ..., pixelVariables = character(), label = NULL)
+	function(object, FUN, ..., pixelVariables = character(), id = NULL)
 {
+	if ( is.null(id) )
+		id <- paste0("PS", length(object@processingQueue) + 1L)
 	step <- ProcessingStep(FUN, ARGS=list(...))
-	step <- setNames(list(step), label)
+	step <- setNames(list(step), id)
 	mvars <- union(object@processingVariables, pixelVariables)
 	object@processingQueue <- c(object@processingQueue, step)
 	object@processingVariables <- mvars

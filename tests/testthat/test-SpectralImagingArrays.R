@@ -3,7 +3,7 @@ require(Cardinal)
 
 context("SpectralImagingArrays")
 
-setup_SpectraArrays <- function(n = 10L, p = 20L)
+.setup_SpectraArrays <- function(n = 10L, p = 20L)
 {
 	ns <- sample(p, n, replace=TRUE)
 	domain <- seq_len(p)
@@ -43,7 +43,7 @@ test_that("SpectralImagingArrays accessors ok", {
 	nx <- 5L
 	ny <- 2L
 	n <- nx * ny
-	sdata2 <- setup_SpectraArrays(n)
+	sdata2 <- .setup_SpectraArrays(n)
 	pdata2 <- PositionDataFrame(
 		coord=expand.grid(x=1:nx, y=1:ny),
 		trt=sample(c("A", "B"), n, replace=TRUE),
@@ -107,8 +107,8 @@ test_that("SpectralImagingArrays combine ok", {
 	set.seed(1)
 	n <- 10L
 	
-	a1 <- setup_SpectraArrays(n)
-	a2 <- setup_SpectraArrays(n)
+	a1 <- .setup_SpectraArrays(n)
+	a2 <- .setup_SpectraArrays(n)
 	pdata1 <- PositionDataFrame(run=rep.int("runA", n))
 	pdata2 <- PositionDataFrame(run=rep.int("runB", n))
 	
@@ -124,13 +124,11 @@ test_that("SpectralImagingArrays combine ok", {
 
 })
 
-
 test_that("SpectralImagingArrays processing ok", {
 
 	set.seed(1)
 	n <- 25L
-	a1 <- setup_SpectraArrays(n)
-
+	a1 <- .setup_SpectraArrays(n)
 	sa1 <- SpectralImagingArrays(a1)
 
 	expect_equal(processingChunkSize(sa1), NA_integer_)
@@ -141,6 +139,58 @@ test_that("SpectralImagingArrays processing ok", {
 	expect_equal(processingChunkSize(sa1), chunksize)
 	expect_length(processingChunkFactor(sa1), length(sa1))
 	expect_true(is.factor(processingChunkFactor(sa1)))
+
+	NORM <- function(x, tic = 1, ...) {
+		x$intensity <- tic * x$intensity / sum(x$intensity)
+		x
+	}
+	LAB_NORM <- "intensity normalization"
+	
+	x1 <- spectrapply(sa1, identity)
+	x2 <- lapply(x1, NORM)
+	sa2 <- addProcessing(sa1, NORM, id=LAB_NORM)
+	sa2out <- applyProcessing(sa2)
+
+	expect_length(processingData(sa2), 1L)
+	expect_equal(names(processingData(sa2)), LAB_NORM)
+	expect_identical(pixelData(sa2), pixelData(sa1))
+	expect_identical(dropProcessing(sa2), sa1)
+	expect_identical(
+		spectra(sa2out, "intensity"),
+		lapply(x2, "[[", "intensity"))
+
+	LOG2P1 <- function(x, ..) {
+		x$log2intensity <- log2(x$intensity + 1)
+		x
+	}
+	LAB_LOG2P1 <- "log2 transformation"
+	
+	x3 <- lapply(lapply(x1, NORM), LOG2P1)
+	sa3 <- addProcessing(sa2, LOG2P1, id=LAB_LOG2P1)
+	sa3out <- applyProcessing(sa3)
+
+	expect_length(processingData(sa3), 2L)
+	expect_equal(names(processingData(sa3)), c(LAB_NORM, LAB_LOG2P1))
+	expect_identical(pixelData(sa3), pixelData(sa1))
+	expect_identical(dropProcessing(sa3), sa1)
+	expect_identical(
+		spectra(sa3out, "log2intensity"),
+		lapply(x3, "[[", "log2intensity"))
+
+	ADD <- function(x, b, ...) {
+		x$intensity <- x$intensity + b
+		x
+	}
+	LAB_ADD <- "add pixel variable"
+	
+	set.seed(1)
+	sa1$b <- runif(length(sa1))
+	sa4 <- addProcessing(sa1, ADD, pixelVariables="b", id=LAB_ADD)
+	sa4out <- applyProcessing(sa4)
+
+	expect_identical(
+		spectra(sa4out, "intensity"),
+		Map("+", spectra(sa1, "intensity"), sa1$b))
 
 })
 
