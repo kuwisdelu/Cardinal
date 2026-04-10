@@ -7,7 +7,7 @@
 
 MSImagingArrays <- function(spectraData = SimpleList(),
 	pixelData = PositionDataFrame(), metadata = list(),
-	centroided = NA, continuous = NA, experimentData = NULL)
+	centroided = NA, continuous = FALSE, experimentData = NULL)
 {
 	spectraData <- SpectraArrays(spectraData)
 	if ( length(spectraData) != 0L )

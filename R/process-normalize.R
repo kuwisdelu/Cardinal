@@ -29,16 +29,19 @@ setMethod("normalize", "MSImagingArrays",
 		}
 	})
 
-.normalize_FUN <- function(method,
-	input = "intensity", output = input)
+.normalize_FUN <- function(method)
 {
-	FUN <- switch(method,
-		tic = matter::rescale_sum,
-		rms = matter::rescale_rms,
-		reference = matter::rescale_ref)
-	function(x, ...) {
-		x[[output]] <- FUN(x[[input]], ...)
-		x
-	}
+	switch(method,
+		tic = function(x, ...) {
+			x$intensity <- matter::rescale_sum(x$intensity, ...)
+			x
+		},
+		rms = function(x, ...) {
+			x$intensity <- matter::rescale_rms(x$intensity, ...)
+			x
+		},
+		reference = function(x, ...) {
+			x$intensity <- matter::rescale_ref(x$intensity, ..., domain=x$mz)
+			x
+		})
 }
-
