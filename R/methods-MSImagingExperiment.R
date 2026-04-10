@@ -142,9 +142,9 @@ setReplaceMethod("intensity", "MSImagingExperiment",
 
 # experimentData
 
-setMethod("experimentData", "MSImagingExperiment_OR_Arrays",
+setMethod("experimentData", "MSImagingExperiment",
 	function(object) object@experimentData)
-setReplaceMethod("experimentData", "MSImagingExperiment_OR_Arrays",
+setReplaceMethod("experimentData", "MSImagingExperiment",
 	function(object, value) {
 		object@experimentData <- value
 		object

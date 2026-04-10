@@ -1,7 +1,7 @@
 
 ## Normalization
 
-setMethod("normalize", "SpectralImagingArrays",
+setMethod("normalize", "MSImagingArrays",
 	function(object,
 		method = c("tic", "rms", "reference"),
 		scale = NA, ref = NULL, ...)
@@ -13,7 +13,7 @@ setMethod("normalize", "SpectralImagingArrays",
 					.Error("must provide 'ref' for method='reference'")
 				scale <- 1
 			} else {
-				scale <- max(lengths(spectraData(object)[[1L]]))
+				scale <- max(lengths(object))
 			}
 		}
 		if ( method == "reference" ) {

@@ -40,11 +40,7 @@ test_that("MSImagingArrays accessors", {
 	expect_equal(pData(msa), pdata)
 
 	expect_equal(mz(msa), s[["mz"]])
-	expect_equal(mz(msa, 1L), s[["mz"]][[1L]])
-	expect_equal(mz(msa, 10L), s[["mz"]][[10L]])
 	expect_equal(intensity(msa), s[["intensity"]])
-	expect_equal(intensity(msa, 1L), s[["intensity"]][[1L]])
-	expect_equal(intensity(msa, 10L), s[["intensity"]][[10L]])
 	expect_equal(coord(msa), coord(pdata))
 	expect_equal(run(msa), run(pdata))
 	expect_equal(nrun(msa), nrun(pdata))
@@ -97,22 +93,3 @@ test_that("MSImagingArrays combine", {
 	expect_equal(pData(msa3), rbind(pData(msa), pData(msa2)))
 
 })
-
-test_that("MSImagingArrays/MSImagingExperiment conversion", {
-
-	path <- CardinalIO::exampleImzMLFile("processed")
-	msa <- readImzML(path)
-	msa2 <- msa
-	centroided(msa2) <- TRUE
-
-	mse <- convertMSImagingArrays2Experiment(msa)
-	mse2 <- convertMSImagingArrays2Experiment(msa2)
-	mse3 <- convertMSImagingArrays2Experiment(msa, mz=mz(mse))
-	msa3 <- convertMSImagingExperiment2Arrays(mse)
-	
-	expect_is(mse, "MSImagingExperiment")
-	expect_is(mse2, "MSImagingExperiment")
-	expect_is(msa3, "MSImagingArrays")
-
-})
-

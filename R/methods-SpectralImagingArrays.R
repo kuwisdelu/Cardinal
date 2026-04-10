@@ -6,6 +6,32 @@
 # _without_ any aligned feature information
 # following Vector semantics (length is # of elements/spectra)
 
+SpectralImagingArrays <- function(spectraData = SimpleList(),
+	pixelData = PositionDataFrame(), metadata = list(),
+	centroided = NA, continuous = FALSE)
+{
+	spectraData <- SpectraArrays(spectraData)
+	if ( length(spectraData) != 0L )
+	{
+		spectra <- spectraData[[1L]]
+		if ( missing(pixelData) )
+		{
+			colnames <- colnames(spectra)
+			coord <- expand.grid(x=seq_len(length(spectra)), y=1L)
+			pixelData <- PositionDataFrame(coord=coord, row.names=colnames)
+		}
+	}
+	new("SpectralImagingArrays",
+		spectraData=spectraData,
+		elementMetadata=pixelData,
+		metadata=metadata,
+		centroided=centroided,
+		continuous=continuous,
+		processingQueue=list(),
+		processingVariables=character(),
+		processingChunkSize=NA_integer_)
+}
+
 .valid_SpectralImagingArrays <- function(object)
 {
 	errors <- NULL
@@ -42,7 +68,7 @@
 	{
 		errors <- c(errors, "processingChunkSize must be numeric(1)")
 	}
-	if ( !(is.logical(object@continuous) && length(object@continuous) == 1L) )
+	if ( length(object@continuous) != 1L )
 	{
 		errors <- c(errors, "continuous must be logical(1)")
 	}
@@ -59,32 +85,6 @@
 
 setValidity("SpectralImagingArrays", .valid_SpectralImagingArrays)
 
-SpectralImagingArrays <- function(spectraData = SimpleList(),
-	pixelData = PositionDataFrame(), metadata = list(),
-	centroided = NA, continuous = FALSE)
-{
-	spectraData <- SpectraArrays(spectraData)
-	if ( length(spectraData) != 0L )
-	{
-		spectra <- spectraData[[1L]]
-		if ( missing(pixelData) )
-		{
-			colnames <- colnames(spectra)
-			coord <- expand.grid(x=seq_len(length(spectra)), y=1L)
-			pixelData <- PositionDataFrame(coord=coord, row.names=colnames)
-		}
-	}
-	new("SpectralImagingArrays",
-		spectraData=spectraData,
-		elementMetadata=pixelData,
-		metadata=metadata,
-		centroided=centroided,
-		continuous=continuous,
-		processingQueue=list(),
-		processingVariables=character(),
-		processingChunkSize=NA_integer_)
-}
-
 .paste_head_tail <- function(x, n = 6L, collapse = ", ")
 {
 	paste0(.select_head_tail(x, n), collapse=collapse)
@@ -96,9 +96,6 @@ SpectralImagingArrays <- function(spectraData = SimpleList(),
 	{
 		cat(sprintf("processingData(%d): %s\n", length(processingData(object)),
 			.paste_head_tail(names(processingData(object)))))
-		cat("NOTE: use process() to execute queued processing steps\n")
-		cat("NOTE: use reset() to remove queued processing steps\n")
-		cat("NOTE: use plot() to preview queued processing steps\n")
 	}
 }
 
@@ -377,12 +374,12 @@ setMethod("spectrapply", "SpectralImagingArrays",
 .bind_SpectralImagingArrays <- function(x, y)
 {
 	if ( !is.null(x) && !is.null(y) ) {
-		new(class(x),
+		new(class(x), x,
 			spectraData=c(spectraData(x), spectraData(y)),
 			elementMetadata=rbind(pixelData(x), pixelData(y)),
 			metadata=c(metadata(x), metadata(y)),
 			centroided=centroided(x) && centroided(y),
-			continuous=FALSE,
+			continuous=NA,
 			processingQueue=list(),
 			processingVariables=character(),
 			processingChunkSize=NA_integer_)

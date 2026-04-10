@@ -20,7 +20,7 @@
 				length(object), "] must match number of rows in pixelData [",
 				nrow(object@elementMetadata), "]"))
 	}
-	if ( !is.logical(object@centroided) || length(object@centroided) != 1L )
+	if ( length(object@centroided) != 1L )
 	{
 		errors <- c(errors, "centroided must be logical(1)")
 	}

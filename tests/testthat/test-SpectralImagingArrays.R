@@ -211,23 +211,21 @@ test_that("SpectralImagingArrays pixels", {
 	expect_true(validObject(SpectralImagingArrays(numeric(0))))
 
 	set.seed(1)
-	nx <- 5L
-	ny <- 2L
-	n <- nx * ny
-	arrays <- replicate(n, rlnorm(sample(n, 1L)), simplify=FALSE)
-	sarrays <- SpectraArrays(list(intensity=arrays))
+	n <- 10
+	i <- rep(list(1:n), n)
+	a <- replicate(n, rlnorm(n), simplify=FALSE)
+	s <- SpectraArrays(list(index=i, intensity=a))
 	pdata <- PositionDataFrame(
-		coord=expand.grid(x=1:nx, y=1:ny),
-		trt=sample(c("A", "B"), n, replace=TRUE),
-		row.names=letters[seq_len(n)])
-
-	sa <- SpectralImagingArrays(
-		spectraData=sarrays,
-		pixelData=pdata)
+		coord=expand.grid(x=1:5, y=1:2),
+		diagnosis=rep(c("yes", "no"), each=5))
+	pdata2 <- PositionDataFrame(
+		coord=expand.grid(x=1:5, y=3:4),
+		diagnosis=rep(c("yes", "no"), each=5))
+	sa <- SpectralImagingArrays(s, pixelData=pdata)
 
 	expect_setequal(pixels(sa, 1:10), 1:10)
-	expect_setequal(pixels(sa, trt == "A"), 1:5)
-	expect_setequal(pixels(sa, trt == "B"), 6:10)
+	expect_setequal(pixels(sa, diagnosis == "yes"), 1:5)
+	expect_setequal(pixels(sa, diagnosis == "no"), 6:10)
 	expect_setequal(pixels(sa, coord=c(x=3, y=1)), 3)
 	expect_setequal(pixels(sa, run="run0"), 1:10)
 

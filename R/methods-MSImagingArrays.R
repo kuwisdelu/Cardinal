@@ -6,8 +6,8 @@
 # _without_ any aligned feature information
 
 MSImagingArrays <- function(spectraData = SimpleList(),
-	pixelData = PositionDataFrame(), experimentData = NULL,
-	centroided = NA, continuous = NA, metadata = list())
+	pixelData = PositionDataFrame(), metadata = list(),
+	centroided = NA, continuous = NA, experimentData = NULL)
 {
 	spectraData <- SpectraArrays(spectraData)
 	if ( length(spectraData) != 0L )
@@ -19,19 +19,21 @@ MSImagingArrays <- function(spectraData = SimpleList(),
 			pixelData <- PositionDataFrame(coord=coord, row.names=names)
 		}
 	}
-	new("MSImagingArrays", spectraData=spectraData,
-		elementMetadata=pixelData, experimentData=experimentData,
-		centroided=centroided, continuous=continuous,
-		metadata=metadata, processing=list())
+	new("MSImagingArrays",
+		spectraData=spectraData,
+		elementMetadata=pixelData,
+		experimentData=experimentData,
+		centroided=centroided,
+		continuous=continuous,
+		metadata=metadata,
+		processingQueue=list(),
+		processingVariables=character(),
+		processingChunkSize=NA_integer_)
 }
 
 .valid_MSImagingArrays <- function(object)
 {
 	errors <- NULL
-	if ( length(object@centroided) != 1L )
-		errors <- c(errors, "centroided must be a scalar logical")
-	if ( length(object@continuous) != 1L )
-		errors <- c(errors, "continuous must be a scalar logical")
 	if ( length(object@spectraData) > 0L )
 	{
 		if ( !"mz" %in% names(object@spectraData) )
@@ -68,17 +70,19 @@ setMethod("show", "MSImagingArrays",
 setMethod("mz", "MSImagingArrays",
 	function(object, i = NULL, ...) {
 		if ( is.null(i) ) {
-			object@spectraData[["mz"]]
+			spectra(object, "mz")
 		} else {
-			object@spectraData[["mz"]][[i]]
+			.Deprecated(old="i")
+			spectra(object, "mz")[[i]]
 		}
 	})
 setReplaceMethod("mz", "MSImagingArrays",
 	function(object, i = NULL, ..., value) {
 		if ( is.null(i) ) {
-			object@spectraData[["mz"]] <- value
+			spectra(object, "mz") <- value
 		} else {
-			object@spectraData[["mz"]][[i]] <- value
+			.Deprecated(old="i")
+			spectra(object, "mz")[[i]] <- value
 		}
 		object
 	})
@@ -88,40 +92,31 @@ setReplaceMethod("mz", "MSImagingArrays",
 setMethod("intensity", "MSImagingArrays",
 	function(object, i = NULL, ...) {
 		if ( is.null(i) ) {
-			object@spectraData[["intensity"]]
+			spectra(object, "intensity")
 		} else {
-			object@spectraData[["intensity"]][[i]]
+			.Deprecated(old="i")
+			spectra(object, "intensity")[[i]]
 		}
 	})
 setReplaceMethod("intensity", "MSImagingArrays",
 	function(object, i = NULL, ..., value) {
 		if ( is.null(i) ) {
-			object@spectraData[["intensity"]] <- value
+			spectra(object, "intensity") <- value
 		} else {
-			object@spectraData[["intensity"]][[i]] <- value
+			.Deprecated(old="i")
+			spectra(object, "intensity")[[i]] <- value
 		}
 		object
 	})
 
-## combine
+# experimentData
 
-.combine_MSImagingArrays <- function(objects)
-{
-	spectraData <- do.call(c, lapply(objects, spectraData))
-	pixelData <- do.call(rbind, lapply(objects, pixelData))
-	centroided <- all(vapply(objects, slot, logical(1L), name="centroided"))
-	continuous <- all(vapply(objects, slot, logical(1L), name="continuous"))
-	metadata <- do.call(c, lapply(objects, metadata))
-	new(class(objects[[1L]]),
-		spectraData=spectraData,
-		elementMetadata=pixelData,
-		experimentData=experimentData(objects[[1L]]),
-		centroided=centroided,
-		continuous=continuous,
-		metadata=metadata,
-		processing=list())
-}
-
-setMethod("c", "MSImagingArrays",
-	function(x, ...) .combine_MSImagingArrays(list(x, ...)))
+setMethod("experimentData", "MSImagingArrays",
+	function(object) object@experimentData)
+setReplaceMethod("experimentData", "MSImagingArrays",
+	function(object, value) {
+		object@experimentData <- value
+		if ( validObject )
+			object
+	})
 
