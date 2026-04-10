@@ -70,19 +70,19 @@ setMethod("show", "MSImagingArrays",
 setMethod("mz", "MSImagingArrays",
 	function(object, i = NULL, ...) {
 		if ( is.null(i) ) {
-			spectra(object, "mz")
+			spectra(object, "mz", ...)
 		} else {
 			.Deprecated(old="i")
-			spectra(object, "mz")[[i]]
+			spectra(object, "mz", ...)[[i]]
 		}
 	})
 setReplaceMethod("mz", "MSImagingArrays",
 	function(object, i = NULL, ..., value) {
 		if ( is.null(i) ) {
-			spectra(object, "mz") <- value
+			spectra(object, "mz", ...) <- value
 		} else {
 			.Deprecated(old="i")
-			spectra(object, "mz")[[i]] <- value
+			spectra(object, "mz", ...)[[i]] <- value
 		}
 		object
 	})
@@ -92,19 +92,19 @@ setReplaceMethod("mz", "MSImagingArrays",
 setMethod("intensity", "MSImagingArrays",
 	function(object, i = NULL, ...) {
 		if ( is.null(i) ) {
-			spectra(object, "intensity")
+			spectra(object, "intensity", ...)
 		} else {
 			.Deprecated(old="i")
-			spectra(object, "intensity")[[i]]
+			spectra(object, "intensity", ...)[[i]]
 		}
 	})
 setReplaceMethod("intensity", "MSImagingArrays",
 	function(object, i = NULL, ..., value) {
 		if ( is.null(i) ) {
-			spectra(object, "intensity") <- value
+			spectra(object, "intensity", ...) <- value
 		} else {
 			.Deprecated(old="i")
-			spectra(object, "intensity")[[i]] <- value
+			spectra(object, "intensity", ...)[[i]] <- value
 		}
 		object
 	})
