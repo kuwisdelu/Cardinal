@@ -195,6 +195,7 @@ exportMethods(
 	"keys",
 	"keys<-",
 	"length",
+	"lengths",
 	"logLik",
 	"modelData",
 	"modelData<-",

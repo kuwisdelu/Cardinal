@@ -20,6 +20,12 @@
 			errors <- c(errors, paste0("number of rows in spectraData [",
 				nr_spectra, "] must match number of rows in pixelData [",
 				nr_pixelData, "]"))
+		lens <- lapply(as.list(object@spectraData), lengths)
+		lens <- lapply(lens, unname)
+		lens_ok <- vapply(lens, identical, logical(1L), lens[[1L]])
+		if ( !all(lens_ok) )
+			errors <- c(errors, paste0("all spectra arrays must have ",
+				"identical lengths for arrays belonging to the same pixels"))
 	}
 	if ( length(object@processingQueue) > 0L )
 	{
@@ -45,8 +51,8 @@
 		lens <- lapply(as.list(object@spectraData), lengths)
 		lens <- lapply(lens, unique)
 		if ( length(unlist(unique(lens))) != 1L )
-			errors <- c(errors, paste0("all spectra arrays ",
-				"must have identical lengths when continuous=TRUE"))
+			errors <- c(errors, paste0("all spectra arrays must have",
+				"identical lengths for all pixels when continuous=TRUE"))
 	}
 	if ( is.null(errors) ) TRUE else errors
 }
@@ -219,6 +225,15 @@ setReplaceMethod("spectra", "SpectralImagingArrays",
 	})
 
 ## Basic getters and setters
+
+setMethod("lengths", "SpectralImagingArrays",
+	function(x, use.names = TRUE) {
+		if ( length(spectraData(x)) > 0L ) {
+			lengths(spectraData(x)[[1L]], use.names=use.names)
+		} else {
+			integer(0L)
+		}
+	})
 
 setMethod("processingData", "SpectralImagingArrays",
 	function(object, ...) object@processingQueue)

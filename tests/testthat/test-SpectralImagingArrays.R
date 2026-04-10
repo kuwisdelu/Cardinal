@@ -27,8 +27,10 @@ test_that("SpectralImagingArrays validity ok", {
 
 	a2 <- replicate(n, seq_len(n), simplify=FALSE)
 	sdata2 <- SpectraArrays(list(intensity=a2))
+	sdata3 <- SpectraArrays(list(intensity=a1, mismatched_intensity=a2))
 
 	expect_true(validObject(SpectralImagingArrays(sdata2, continuous=TRUE)))
+	expect_error(SpectralImagingArrays(sdata3))
 
 })
 
@@ -55,6 +57,15 @@ test_that("SpectralImagingArrays accessors ok", {
 
 	expect_true(validObject(sa1))
 	expect_true(validObject(sa2))
+
+	expect_null(dim(sa1))
+	expect_null(dim(sa2))
+
+	expect_length(sa1, 0L)
+	expect_length(sa2, n)
+
+	expect_equal(lengths(sa1), integer(0L))
+	expect_equal(lengths(sa2), lengths(sdata2[[1L]]))
 
 	expect_equal(spectraData(sa1), SpectraArrays())
 	expect_equal(spectraData(sa2), sdata2)

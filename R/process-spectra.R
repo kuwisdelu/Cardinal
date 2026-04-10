@@ -4,57 +4,57 @@
 
 ## Normalization
 
-setMethod("normalize", "MSImagingExperiment_OR_Arrays",
-	function(object,
-		method = c("tic", "rms", "reference"),
-		scale = NA, ref = NULL, ...)
-{
-	method <- match.arg(method)
-	if ( is.na(scale) ) {
-		if ( method == "reference" ) {
-			if ( is.null(ref) )
-				.Error("must provide 'ref' for method='reference'")
-			scale <- 1
-		} else {
-			if ( is.null(dim(object)) ) {
-				scale <- max(lengths(mz(object)))
-			} else {
-				scale <- length(mz(object))
-			}
-		}
-	}
-	FUN <- .normalize_fun[[method, exact=FALSE]]
-	if ( method == "reference" ) {
-		addProcessing(object, FUN,
-			label="intensity normalization",
-			metadata=list(method=method),
-			scale=scale, ref=ref, ...)
-	} else {
-		addProcessing(object, FUN,
-			label="intensity normalization",
-			metadata=list(method=method),
-			scale=scale, ...)
-	}
-})
+# setMethod("normalize", "MSImagingExperiment_OR_Arrays",
+# 	function(object,
+# 		method = c("tic", "rms", "reference"),
+# 		scale = NA, ref = NULL, ...)
+# {
+# 	method <- match.arg(method)
+# 	if ( is.na(scale) ) {
+# 		if ( method == "reference" ) {
+# 			if ( is.null(ref) )
+# 				.Error("must provide 'ref' for method='reference'")
+# 			scale <- 1
+# 		} else {
+# 			if ( is.null(dim(object)) ) {
+# 				scale <- max(lengths(mz(object)))
+# 			} else {
+# 				scale <- length(mz(object))
+# 			}
+# 		}
+# 	}
+# 	FUN <- .normalize_fun[[method, exact=FALSE]]
+# 	if ( method == "reference" ) {
+# 		addProcessing(object, FUN,
+# 			label="intensity normalization",
+# 			metadata=list(method=method),
+# 			scale=scale, ref=ref, ...)
+# 	} else {
+# 		addProcessing(object, FUN,
+# 			label="intensity normalization",
+# 			metadata=list(method=method),
+# 			scale=scale, ...)
+# 	}
+# })
 
-setMethod("normalize", "SpectralImagingData",
-	function(object,
-		method = c("tic", "rms", "reference"), ...)
-{
-	method <- match.arg(method)
-	FUN <- .normalize_fun[[method, exact=FALSE]]
-	addProcessing(object, FUN,
-		label="intensity normalization",
-		metadata=list(method=method), ...)
-})
+# setMethod("normalize", "SpectralImagingData",
+# 	function(object,
+# 		method = c("tic", "rms", "reference"), ...)
+# {
+# 	method <- match.arg(method)
+# 	FUN <- .normalize_fun[[method, exact=FALSE]]
+# 	addProcessing(object, FUN,
+# 		label="intensity normalization",
+# 		metadata=list(method=method), ...)
+# })
 
-.normalize_fun <- list(
-	tic = function(x, t, ...)
-		matter::rescale_sum(x, ...),
-	rms = function(x, t, ...)
-		matter::rescale_rms(x, ...),
-	reference = function(x, t, ...)
-		matter::rescale_ref(x, ..., domain=t))
+# .normalize_fun <- list(
+# 	tic = function(x, t, ...)
+# 		matter::rescale_sum(x, ...),
+# 	rms = function(x, t, ...)
+# 		matter::rescale_rms(x, ...),
+# 	reference = function(x, t, ...)
+# 		matter::rescale_ref(x, ..., domain=t))
 
 
 ## Smoothing
