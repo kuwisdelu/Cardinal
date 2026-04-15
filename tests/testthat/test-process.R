@@ -82,7 +82,11 @@ test_that("recalibrate", {
 	mzref <- estimateReferencePeaks(msa)
 
 	msa_locmax <- recalibrate(msa, ref=mzref, method="locmax")
+	# msa_dtw <- recalibrate(msa, ref=mzref, method="dtw")
+	# msa_cow <- recalibrate(msa, ref=mzref, method="cow")
 
 	expect_true(validObject(applyProcessing(msa_locmax)))
+	# expect_true(validObject(applyProcessing(msa_dtw)))
+	# expect_true(validObject(applyProcessing(msa_cow)))
 
 })
