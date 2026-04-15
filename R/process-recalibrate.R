@@ -20,7 +20,8 @@ setMethod("recalibrate", "MSImagingArrays",
 			tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
 		}
 		tol.ref <- switch(units, ppm="x", mz="abs")
-		addProcessing(object, .recalibrate_FUN(method),
+		addProcessing(object,
+			FUN=.recalibrate_FUN(method),
 			id="m/z calibration", ...,
 			ref=ref, tol=tol, tol.ref=tol.ref)
 	})
