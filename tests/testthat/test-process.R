@@ -20,7 +20,7 @@ context("processing")
 test_that("normalize", {
 
 	set.seed(1)
-	msa <- .setup_MSImagingArrays()
+	msa <- .setup_MSImagingArrays(p=200)
 	mzref <- mz(msa)[[1L]][[1L]]
 
 	msa_tic <- normalize(msa, method="tic")
@@ -36,7 +36,7 @@ test_that("normalize", {
 test_that("smooth", {
 
 	set.seed(1)
-	msa <- .setup_MSImagingArrays()
+	msa <- .setup_MSImagingArrays(p=200)
 
 	msa_gauss <- smooth(msa, method="gaussian")
 	msa_bi <- smooth(msa, method="bilateral")
@@ -55,5 +55,22 @@ test_that("smooth", {
 	expect_true(validObject(applyProcessing(msa_pag)))
 	expect_true(validObject(applyProcessing(msa_sg)))
 	expect_true(validObject(applyProcessing(msa_ma)))
+
+})
+
+test_that("reduceBaseline", {
+
+	set.seed(1)
+	msa <- .setup_MSImagingArrays(p=200)
+
+	msa_locmin <- reduceBaseline(msa, method="locmin")
+	msa_hull <- reduceBaseline(msa, method="hull")
+	msa_snip <- reduceBaseline(msa, method="snip")
+	msa_median <- reduceBaseline(msa, method="median", width=11)
+
+	expect_true(validObject(applyProcessing(msa_locmin)))
+	expect_true(validObject(applyProcessing(msa_hull)))
+	expect_true(validObject(applyProcessing(msa_snip)))
+	expect_true(validObject(applyProcessing(msa_median)))
 
 })
