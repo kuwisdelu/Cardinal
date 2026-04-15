@@ -39,7 +39,7 @@ setMethod("bin", "MSImagingExperiment",
 	new("MSImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
 		experimentData=experimentData(x), centroided=centroided(x),
-		metadata=metadata(x), processing=processingData(x))
+		metadata=metadata(x))
 })
 
 
@@ -80,7 +80,7 @@ setMethod("bin", "MSImagingArrays",
 	new("MSImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
 		experimentData=experimentData(x), centroided=centroided(x),
-		metadata=metadata(x), processing=processingData(x))
+		metadata=metadata(x))
 })
 
 
@@ -169,7 +169,7 @@ setMethod("bin", "SpectralImagingExperiment",
 	featureData <- DataFrame(setNames(list(ref), inm))
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
-		metadata=metadata(x), processing=processingData(x))
+		metadata=metadata(x), centroided=centroided(x))
 })
 
 
@@ -247,6 +247,6 @@ setMethod("bin", "SpectralImagingArrays",
 	featureData <- DataFrame(setNames(list(ref), inm))
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData(x),
-		metadata=metadata(x), processing=processingData(x))
+		metadata=metadata(x), centroided=centroided(x))
 })
 

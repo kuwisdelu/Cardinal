@@ -19,8 +19,8 @@ context("processing")
 
 test_that("normalize", {
 
-	set.seed(1)
-	msa <- .setup_MSImagingArrays(p=200)
+	path <- CardinalIO::exampleImzMLFile("processed")
+	msa <- readImzML(path)
 	mzref <- mz(msa)[[1L]][[1L]]
 
 	msa_tic <- normalize(msa, method="tic")
@@ -35,8 +35,8 @@ test_that("normalize", {
 
 test_that("smooth", {
 
-	set.seed(1)
-	msa <- .setup_MSImagingArrays(p=200)
+	path <- CardinalIO::exampleImzMLFile("processed")
+	msa <- readImzML(path)
 
 	msa_gauss <- smooth(msa, method="gaussian")
 	msa_bi <- smooth(msa, method="bilateral")
@@ -60,17 +60,29 @@ test_that("smooth", {
 
 test_that("reduceBaseline", {
 
-	set.seed(1)
-	msa <- .setup_MSImagingArrays(p=200)
+	path <- CardinalIO::exampleImzMLFile("processed")
+	msa <- readImzML(path)
 
 	msa_locmin <- reduceBaseline(msa, method="locmin")
 	msa_hull <- reduceBaseline(msa, method="hull")
 	msa_snip <- reduceBaseline(msa, method="snip")
-	msa_median <- reduceBaseline(msa, method="median", width=11)
+	msa_median <- reduceBaseline(msa, method="median", width=15)
 
 	expect_true(validObject(applyProcessing(msa_locmin)))
 	expect_true(validObject(applyProcessing(msa_hull)))
 	expect_true(validObject(applyProcessing(msa_snip)))
 	expect_true(validObject(applyProcessing(msa_median)))
+
+})
+
+test_that("recalibrate", {
+
+	path <- CardinalIO::exampleImzMLFile("processed")
+	msa <- readImzML(path)
+	mzref <- estimateReferencePeaks(msa)
+
+	msa_locmax <- recalibrate(msa, ref=mzref, method="locmax")
+
+	expect_true(validObject(applyProcessing(msa_locmax)))
 
 })

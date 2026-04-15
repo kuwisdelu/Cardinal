@@ -51,7 +51,7 @@ SpectralImagingExperiment <- function(spectraData = SimpleList(),
 	}
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData,
-		metadata=metadata, processing=list())
+		metadata=metadata)
 }
 
 setMethod("show", "SpectralImagingExperiment",
@@ -251,8 +251,7 @@ subsetFeatures <- function(x, ...) {
 		spectraData=spectraData,
 		featureData=featureData,
 		elementMetadata=pixelData,
-		metadata=metadata,
-		processing=list())
+		metadata=metadata)
 }
 
 setMethod("cbind", "SpectralImagingExperiment",
@@ -268,8 +267,7 @@ setMethod("cbind", "SpectralImagingExperiment",
 		spectraData=spectraData,
 		featureData=featureData,
 		elementMetadata=pixelData,
-		metadata=metadata,
-		processing=list())
+		metadata=metadata)
 }
 
 setMethod("rbind", "SpectralImagingExperiment",

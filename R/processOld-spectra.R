@@ -114,63 +114,63 @@
 
 ## Recalibration
 
-setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
-	function(object, ref,
-		method = c("locmax", "dtw", "cow"),
-		tolerance = NA, units = c("ppm", "mz"), ...)
-{
-	method <- match.arg(method)
-	if ( !missing(ref) ) {
-		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
-			ref <- mz(ref)
-	}
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_names(tolerance, units)
-	units <- match.arg(units)
-	if ( is.na(tolerance) ) {
-		tol <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
-	} else {
-		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
-	}
-	tol.ref <- switch(units, ppm="x", mz="abs")
-	FUN <- .recalibrate_fun[[method, exact=FALSE]]
-	addProcessing(object, FUN,
-		label="m/z calibration",
-		metadata=list(method=method),
-		ref=ref, tol=tol, tol.ref=tol.ref, ...)
-})
+# setMethod("recalibrate", "MSImagingExperiment_OR_Arrays",
+# 	function(object, ref,
+# 		method = c("locmax", "dtw", "cow"),
+# 		tolerance = NA, units = c("ppm", "mz"), ...)
+# {
+# 	method <- match.arg(method)
+# 	if ( !missing(ref) ) {
+# 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+# 			ref <- mz(ref)
+# 	}
+# 	if ( missing(units) && !missing(tolerance) )
+# 		units <- get_units_from_names(tolerance, units)
+# 	units <- match.arg(units)
+# 	if ( is.na(tolerance) ) {
+# 		tol <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
+# 	} else {
+# 		tol <- switch(units, ppm=1e-6 * tolerance, mz=tolerance)
+# 	}
+# 	tol.ref <- switch(units, ppm="x", mz="abs")
+# 	FUN <- .recalibrate_fun[[method, exact=FALSE]]
+# 	addProcessing(object, FUN,
+# 		label="m/z calibration",
+# 		metadata=list(method=method),
+# 		ref=ref, tol=tol, tol.ref=tol.ref, ...)
+# })
 
-setMethod("recalibrate", "SpectralImagingData",
-	function(object, ref,
-		method = c("locmax", "dtw", "cow"),
-		tolerance = NA, units = c("relative", "absolute"), ...)
-{
-	method <- match.arg(method)
-	if ( !missing(ref) ) {
-		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
-			ref <- mz(ref)
-	}
-	if ( missing(units) && !missing(tolerance) )
-		units <- get_units_from_names(tolerance, units)
-	units <- match.arg(units)
-	if ( is.na(tolerance) ) {
-		tol <- estres(ref, ref=switch(units, relative="x", absolute="abs"))
-	} else {
-		tol <- tolerance
-	}
-	tol.ref <- switch(units, relative="x", absolute="abs")
-	FUN <- .recalibrate_fun[[method, exact=FALSE]]
-	addProcessing(object, FUN,
-		label="recalibration",
-		metadata=list(method=method),
-		ref=ref, tol=tol, tol.ref=tol.ref, ...)
-})
+# setMethod("recalibrate", "SpectralImagingData",
+# 	function(object, ref,
+# 		method = c("locmax", "dtw", "cow"),
+# 		tolerance = NA, units = c("relative", "absolute"), ...)
+# {
+# 	method <- match.arg(method)
+# 	if ( !missing(ref) ) {
+# 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
+# 			ref <- mz(ref)
+# 	}
+# 	if ( missing(units) && !missing(tolerance) )
+# 		units <- get_units_from_names(tolerance, units)
+# 	units <- match.arg(units)
+# 	if ( is.na(tolerance) ) {
+# 		tol <- estres(ref, ref=switch(units, relative="x", absolute="abs"))
+# 	} else {
+# 		tol <- tolerance
+# 	}
+# 	tol.ref <- switch(units, relative="x", absolute="abs")
+# 	FUN <- .recalibrate_fun[[method, exact=FALSE]]
+# 	addProcessing(object, FUN,
+# 		label="recalibration",
+# 		metadata=list(method=method),
+# 		ref=ref, tol=tol, tol.ref=tol.ref, ...)
+# })
 
-.recalibrate_fun <- list(
-	locmax = function(x, t, ref, ...) 
-		pmax(0, matter::warp1_loc(x, tx=t, ty=ref, n=length(x), events="max", ...)),
-	dtw = function(x, t, ref, ...) 
-		pmax(0, matter::warp1_dtw(x, tx=t, ty=ref, n=length(x), ...)),
-	cow = function(x, t, ref, ...) 
-		pmax(0, matter::warp1_cow(x, tx=t, ty=ref, n=length(x), ...)))
+# .recalibrate_fun <- list(
+# 	locmax = function(x, t, ref, ...) 
+# 		pmax(0, matter::warp1_loc(x, tx=t, ty=ref, n=length(x), events="max", ...)),
+# 	dtw = function(x, t, ref, ...) 
+# 		pmax(0, matter::warp1_dtw(x, tx=t, ty=ref, n=length(x), ...)),
+# 	cow = function(x, t, ref, ...) 
+# 		pmax(0, matter::warp1_cow(x, tx=t, ty=ref, n=length(x), ...)))
 

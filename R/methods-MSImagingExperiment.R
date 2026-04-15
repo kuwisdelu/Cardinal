@@ -29,7 +29,7 @@ MSImagingExperiment <- function(spectraData = SimpleList(),
 	new("MSImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData,
 		experimentData=experimentData, centroided=centroided,
-		metadata=metadata, processing=list())
+		metadata=metadata)
 }
 
 .valid_MSImagingExperiment <- function(object)
@@ -165,8 +165,7 @@ setReplaceMethod("experimentData", "MSImagingExperiment",
 		elementMetadata=pixelData,
 		experimentData=experimentData(objects[[1L]]),
 		centroided=centroided,
-		metadata=metadata,
-		processing=list())
+		metadata=metadata)
 }
 
 setMethod("cbind", "MSImagingExperiment",
@@ -185,8 +184,7 @@ setMethod("cbind", "MSImagingExperiment",
 		elementMetadata=pixelData,
 		experimentData=experimentData(objects[[1L]]),
 		centroided=centroided,
-		metadata=metadata,
-		processing=list())
+		metadata=metadata)
 }
 
 setMethod("rbind", "MSImagingExperiment",
