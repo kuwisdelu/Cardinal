@@ -1,32 +1,50 @@
 
 ## Smoothing
 
-setMethod("smooth", "SpectralImagingData",
+setMethod("smooth", "MSImagingArrays", 
 	function(x,
 		method = c("gaussian", "bilateral", "adaptive",
 			"diff", "guide", "pag", "sgolay", "ma"), ...)
-{
-	method <- match.arg(method)
-	FUN <- .smooth_fun[[method, exact=FALSE]]
-	addProcessing(x, FUN,
-		label="smoothing",
-		metadata=list(method=method), ...)
-})
+	{
+		method <- match.arg(method)
+		addProcessing(x,
+			FUN=.smooth_FUN(method),
+			id="smoothing", ...)
+	})
 
-.smooth_fun <- list(
-	gaussian = function(x, t, ...) 
-		matter::filt1_gauss(x, ...),
-	bilateral = function(x, t, ...) 
-		matter::filt1_bi(x, ...),
-	adaptive = function(x, t, ...) 
-		matter::filt1_adapt(x, ...),
-	diff = function(x, t, ...) 
-		matter::filt1_diff(x, ...),
-	guide = function(x, t, ...) 
-		matter::filt1_guide(x, ...),
-	pag = function(x, t, ...) 
-		matter::filt1_pag(x, ...),
-	sgolay = function(x, t, ...) 
-		matter::filt1_sg(x, ...),
-	ma = function(x, t, ...) 
-		matter::filt1_ma(x, ...))
+.smooth_FUN <- function(method)
+{
+	switch(method,
+		gaussian = function(x, ...) {
+			x$intensity <- matter::filt1_gauss(x$intensity, ...)
+			x
+		},
+		bilateral = function(x, ...) {
+			x$intensity <- matter::filt1_bi(x$intensity, ...)
+			x
+		},
+		adaptive = function(x, ...) {
+			x$intensity <- matter::filt1_adapt(x$intensity, ...)
+			x
+		},
+		diff = function(x, ...) {
+			x$intensity <- matter::filt1_diff(x$intensity, ...)
+			x
+		},
+		guide = function(x, ...) {
+			x$intensity <- matter::filt1_guide(x$intensity, ...)
+			x
+		},
+		pag = function(x, ...) {
+			x$intensity <- matter::filt1_pag(x$intensity, ...)
+			x
+		},
+		sgolay = function(x, ...) {
+			x$intensity <- matter::filt1_sg(x$intensity, ...)
+			x
+		},
+		ma = function(x, ...) {
+			x$intensity <- matter::filt1_bi(x$intensity, ...)
+			x
+		})
+}

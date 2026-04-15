@@ -32,3 +32,28 @@ test_that("normalize", {
 	expect_true(validObject(applyProcessing(msa_ref)))
 
 })
+
+test_that("smooth", {
+
+	set.seed(1)
+	msa <- .setup_MSImagingArrays()
+
+	msa_gauss <- smooth(msa, method="gaussian")
+	msa_bi <- smooth(msa, method="bilateral")
+	msa_adapt <- smooth(msa, method="adaptive")
+	msa_diff <- smooth(msa, method="diff")
+	msa_guide <- smooth(msa, method="guide")
+	msa_pag <- smooth(msa, method="pag")
+	msa_sg <- smooth(msa, method="sgolay")
+	msa_ma <- smooth(msa, method="ma")
+
+	expect_true(validObject(applyProcessing(msa_gauss)))
+	expect_true(validObject(applyProcessing(msa_bi)))
+	expect_true(validObject(applyProcessing(msa_adapt)))
+	expect_true(validObject(applyProcessing(msa_diff)))
+	expect_true(validObject(applyProcessing(msa_guide)))
+	expect_true(validObject(applyProcessing(msa_pag)))
+	expect_true(validObject(applyProcessing(msa_sg)))
+	expect_true(validObject(applyProcessing(msa_ma)))
+
+})
