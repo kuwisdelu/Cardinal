@@ -14,12 +14,12 @@ setMethod("applyProcessing", "SpectralImagingArrays",
 	if ( missing(init) )
 		init <- NULL
 	.chunkapply_SpectralImagingArrays(object, ...,
-		CHUNKFUN=.process_SpectralImagingArrays,
+		CHUNKFUN=.applyProcessing_SpectralImagingArrays,
 		REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
 		f=f, verbose=verbose, BPPARAM=BPPARAM)
 })
 
-.process_SpectralImagingArrays <- function(object)
+.applyProcessing_SpectralImagingArrays <- function(object)
 {
 	result <- dropProcessing(object)
 	X <- .list_SpectralImagingArrays(object, withProcessing=TRUE)
