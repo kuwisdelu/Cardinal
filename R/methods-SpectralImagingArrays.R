@@ -226,7 +226,11 @@ setReplaceMethod("spectra", "SpectralImagingArrays",
 setMethod("lengths", "SpectralImagingArrays",
 	function(x, use.names = TRUE) {
 		if ( length(spectraData(x)) > 0L ) {
-			lengths(spectraData(x)[[1L]], use.names=use.names)
+			if ( length(processingData(object)) > 0L ) {
+				rep.int(NA_integer_, length(spectraData(x)))
+			} else {
+				lengths(spectraData(x)[[1L]], use.names=use.names)
+			}
 		} else {
 			integer(0L)
 		}

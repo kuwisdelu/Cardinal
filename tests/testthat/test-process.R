@@ -9,8 +9,8 @@ context("processing")
 	mzrange <- runif(p, min=100, max=1000)
 	intensity <- lapply(ns, function(ni) rlnorm(ni))
 	mz <- lapply(ns, function(ni) sort(sample(mzrange, ni)))
-	a <- SpectraArrays(list(mz=mz, intensity=intensity))
-	MSImagingArrays(a, centroided=FALSE)
+	arrays <- SpectraArrays(list(mz=mz, intensity=intensity))
+	MSImagingArrays(arrays, centroided=FALSE)
 }
 
 # tests for workhorse functions are currently in pkg:matter
@@ -79,11 +79,11 @@ test_that("recalibrate", {
 
 	path <- CardinalIO::exampleImzMLFile("processed")
 	msa <- readImzML(path)
-	mzref <- estimateReferencePeaks(msa)
+	peaks <- estimateReferencePeaks(msa)
 
-	msa_locmax <- recalibrate(msa, ref=mzref, method="locmax")
-	# msa_dtw <- recalibrate(msa, ref=mzref, method="dtw")
-	# msa_cow <- recalibrate(msa, ref=mzref, method="cow")
+	msa_locmax <- recalibrate(msa, ref=peaks, method="locmax")
+	# msa_dtw <- recalibrate(msa, ref=peaks, method="dtw")
+	# msa_cow <- recalibrate(msa, ref=peaks, method="cow")
 
 	expect_true(validObject(applyProcessing(msa_locmax)))
 	# expect_true(validObject(applyProcessing(msa_dtw)))
@@ -95,11 +95,14 @@ test_that("peakPick", {
 
 	path <- CardinalIO::exampleImzMLFile("processed")
 	msa <- readImzML(path)
-	mzref <- estimateReferencePeaks(msa)
+
+	processingChunkSize(msa) <- 3L
+	mzref <- estimateReferenceMz(msa)
+	peaks <- estimateReferencePeaks(msa)
 
 	msa_peakpick <- peakPick(msa, method="diff")
 	msa_peakpick_cwt <- peakPick(msa, method="cwt")
-	msa_peakpick_ref <- peakPick(msa, ref=mzref)
+	msa_peakpick_ref <- peakPick(msa, ref=peaks)
 
 	expect_true(validObject(applyProcessing(msa_peakpick)))
 	expect_true(validObject(applyProcessing(msa_peakpick_cwt)))
