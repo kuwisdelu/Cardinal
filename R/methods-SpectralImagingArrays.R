@@ -347,11 +347,28 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		stop("'f' must be a factor along 'x'")
 	i <- 1L
 	function() {
-		if ( i == 1L )
-			.Log("iterating over ", nlevels(f), " chunk(s)", message=verbose)
+		if ( i == 1L ) {
+			if ( length(x) > 1L ) {
+				xmsg <- paste0(length(x), " spectra")
+			} else {
+				xmsg <- paste0("1 spectrum")
+			}
+			if ( nlevels(f) > 1L ) {
+				cmsg <- paste0(nlevels(f), " chunks")
+			} else {
+				cmsg <- paste0("1 chunk")
+			}
+			.Log("iterating over ", cmsg, " (", xmsg, ")", message=verbose)
+		}
 		if ( i <= nlevels(f) ) {
-			.Log("processing chunk ", sQuote(levels(f)[i]), message=verbose)
 			fi <- which(f == levels(f)[i])
+			if ( length(fi) > 1L ) {
+				imsg <- paste0(length(fi), " spectra")
+			} else {
+				imsg <- paste0("1 spectrum")
+			}
+			.Log("# processing chunk ",
+				sQuote(levels(f)[i]), " (", imsg, ")", message=verbose)
 			chunk <- .subset_SpectralImagingArrays(x, fi)
 		} else {
 			chunk <- NULL
