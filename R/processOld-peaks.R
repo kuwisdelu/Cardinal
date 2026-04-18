@@ -288,8 +288,7 @@ setMethod("peakAlign", "SpectralImagingArrays",
 		.Log("using bin function ", sQuote(width),
 			" to summarize peak gaps across spectra",
 			message=verbose)
-		indexbins <- estimateDomain(index, width=width, units=units,
-			verbose=verbose, chunkopts=chunkopts, BPPARAM=BPPARAM)
+		indexbins <- estimateDomain(index, width=width, units=units)
 	}
 	if ( is.na(tolerance) ) {
 		# estimate tolerance as (binratio x min peak-to-peak gap)

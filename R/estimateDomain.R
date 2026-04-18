@@ -4,7 +4,7 @@
 
 estimateDomain <- function(xlist,
 	width = c("median", "min", "max", "mean"),
-	units = c("relative", "absolute"), ...)
+	units = c("relative", "absolute"))
 {
 	width <- match.arg(width)
 	units <- match.arg(units)

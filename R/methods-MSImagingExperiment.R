@@ -304,10 +304,11 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			BPPARAM=BPPARAM)
 	} else {
 		# profile m/z axis
-		mzlist <- mz(object)
 		if ( is.finite(guess.max) ) {
 			i <- seq(1L, length(object), length.out=guess.max)
-			mzlist <- mzlist[i]
+			mzlist <- mz(object[i])
+		} else {
+			mzlist <- mz(object)
 		}
 		if ( is.null(mass.range) || is.na(resolution) )
 		{
@@ -315,9 +316,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 				guess.max, " sample spectra",
 				message=verbose)
 			mz <- estimateDomain(mzlist,
-				units=switch(units, ppm="relative", mz="absolute"),
-				verbose=verbose, chunkopts=chunkopts,
-				BPPARAM=BPPARAM)
+				units=switch(units, ppm="relative", mz="absolute"))
 			if ( is.null(mass.range) )
 				mass.range <- round(range(mz), digits=4L)
 			if ( is.na(resolution) )
