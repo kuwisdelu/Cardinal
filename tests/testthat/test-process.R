@@ -117,5 +117,10 @@ test_that("peakPick + peakAlign", {
 
 	mse_peakproc1 <- peakProcess(msa)
 	mse_peakproc2 <- peakProcess(msa, sampleSize=0.1, filterFreq=FALSE)
+	mse_peakproc3 <- peakProcess(msa, ref=peaks)
+
+	expect_is(mse_peakproc1, "MSImagingExperiment")
+	expect_is(mse_peakproc2, "MSImagingExperiment")
+	expect_is(mse_peakproc3, "MSImagingExperiment")
 
 })
