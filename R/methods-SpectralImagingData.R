@@ -10,11 +10,11 @@
 	errors <- NULL
 	if ( length(object@spectraData) > 0L )
 	{
-		if ( !identical(dim(object), dim(object@spectraData[[1L]])) )
+		if ( any(dim(object) != dim(object@spectraData[[1L]])) )
 			errors <- c(errors, paste0("dimensions of object ",
 					"must match dimensions of spectra arrays"))
 	}
-	if ( !identical(length(object), nrow(object@elementMetadata)) )
+	if ( length(object) != nrow(object@elementMetadata) )
 	{
 		errors <- c(errors, paste0("length of object [",
 				length(object), "] must match number of rows in pixelData [",

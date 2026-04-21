@@ -9,7 +9,6 @@ setMethod("peakProcess", "MSImagingArrays",
 		tolerance = NA, units = c("ppm", "mz"),
 		sampleSize = NA, filterFreq = TRUE, outfile = NULL,
 		f = processingChunkFactor(object),
-		REDUCE, init, reduce.in.order = TRUE,
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
@@ -42,7 +41,6 @@ setMethod("peakProcess", "MSImagingArrays",
 			ref <- peakProcess(object[i], f=droplevels(f[i]),
 				method=method, SNR=SNR, type=type,
 				tolerance=tolerance, units=units, filterFreq=filterFreq,
-				REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
 				verbose=verbose, BPPARAM=BPPARAM, ...)
 			domain <- mz(ref)
 		} else {
@@ -55,8 +53,10 @@ setMethod("peakProcess", "MSImagingArrays",
 			message=verbose)
 		object <- peakPick(object, ref=ref,
 			tolerance=tolerance, units=units, type=type)
+		object <- applyProcessing(object,
+			f=f, verbose=verbose, BPPARAM=BPPARAM, ...)
 		object <- bin(object, ref=ref,
-			tolerance=tolerance, units=units)
+			tolerance=tolerance, units=units, verbose=FALSE)
 		if ( is(ref, "MSImagingExperiment") )
 			featureData(object) <- featureData(ref)
 	} else {
@@ -85,7 +85,6 @@ setMethod("peakProcess", "MSImagingArrays",
 			message=verbose)
 		object <- peakAlign(object, ref=ref,
 			tolerance=tolerance, units=units,
-			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
 			f=f, verbose=verbose, BPPARAM=BPPARAM, ...)
 		# filter peaks
 		if ( !is.null(featureData(object)[["count"]]) &&

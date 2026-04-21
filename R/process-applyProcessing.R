@@ -13,10 +13,18 @@ setMethod("applyProcessing", "SpectralImagingArrays",
 		REDUCE <- combine
 	if ( missing(init) )
 		init <- NULL
-	.chunkapply_SpectralImagingArrays(object, ...,
-		CHUNKFUN=.applyProcessing_SpectralImagingArrays,
-		REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
-		f=f, verbose=verbose, BPPARAM=BPPARAM)
+	if ( length(processingData(object)) > 0L ) {
+		.Log("applying queued processing",
+			message=verbose)
+		.chunkapply_SpectralImagingArrays(object, ...,
+			CHUNKFUN=.applyProcessing_SpectralImagingArrays,
+			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
+			f=f, verbose=verbose, BPPARAM=BPPARAM)
+	} else {
+		.Log("no queued processing to apply",
+			message=verbose)
+		object
+	}
 })
 
 .applyProcessing_SpectralImagingArrays <- function(object)

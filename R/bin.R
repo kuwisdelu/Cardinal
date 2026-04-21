@@ -33,7 +33,8 @@ setMethod("bin", "MSImagingExperiment",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(x, ref=ref, spectra=spectra, index=index,
-		method=method, resolution=resolution, tolerance=tolerance, units=units)
+		method=method, resolution=resolution,
+		tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -74,7 +75,8 @@ setMethod("bin", "MSImagingArrays",
 			relative=1e-6 * tolerance,
 			absolute=tolerance)
 	ans <- callNextMethod(x, ref=ref, spectra=spectra, index=index,
-		method=method, resolution=resolution, tolerance=tolerance, units=units)
+		method=method, resolution=resolution,
+		tolerance=tolerance, units=units, ...)
 	spectraData <- spectraData(ans)
 	featureData <- as(featureData(ans), "MassDataFrame")
 	new("MSImagingExperiment", spectraData=spectraData,
@@ -191,6 +193,8 @@ setMethod("bin", "SpectralImagingArrays",
 	units <- match.arg(units)
 	snm <- spectra
 	inm <- index
+	if ( length(processingData(x)) > 0L )
+		x <- applyProcessing(x, verbose=verbose, ...)
 	spectra <- spectra(x, snm)
 	if ( is.null(inm) ) {
 		inm <- "index"

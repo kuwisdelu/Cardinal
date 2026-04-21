@@ -7,16 +7,12 @@ setMethod("peakAlign", "MSImagingArrays",
 		binfun = "min", binratio = 2,
 		tolerance = NA, units = c("ppm", "mz"),
 		f = processingChunkFactor(object),
-		REDUCE, init, reduce.in.order = TRUE,
 		verbose = getCardinalVerbose(),
 		BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( length(processingData(object)) > 0L ) {
-		.Log("applying queued processing",
-			message=verbose)
-		object <- applyProcessing(object, f=f, ...,
-			REDUCE=REDUCE, init=init, reduce.in.order=reduce.in.order,
-			verbose=verbose, BPPARAM=BPPARAM)
+		object <- applyProcessing(object, f=f,
+			verbose=verbose, BPPARAM=BPPARAM, ...)
 	}
 	if ( missing(units) && !missing(tolerance) )
 		units <- get_units_from_names(tolerance, units)
