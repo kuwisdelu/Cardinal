@@ -76,10 +76,10 @@ estimateReferencePeaks <- function(object, SNR = 2,
 	verbose = getCardinalVerbose(), chunkopts = list(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
-	if ( length(processingData(object)) > 0L )
-		.Warn("queued processing steps will be ignored")
 	method <- match.arg(method)
 	if ( is(object, "MSImagingArrays") ) {
+		if ( length(processingData(object)) > 0L )
+			.Warn("queued processing steps will be ignored")
 		object <- convertMSImagingArrays2Experiment(object,
 			verbose=verbose, chunkopts=chunkopts,
 			BPPARAM=BPPARAM, ...)
@@ -91,7 +91,4 @@ estimateReferencePeaks <- function(object, SNR = 2,
 	peaks <- findpeaks(featureData[["mean"]], noise=method, snr=SNR, ...)
 	featureData[peaks,,drop=FALSE]
 }
-
-
-
 

@@ -1,5 +1,6 @@
 
-## Baseline removal
+#### Baseline removal ####
+## -----------------------
 
 setMethod("reduceBaseline", "MSImagingArrays",
 	function(object,

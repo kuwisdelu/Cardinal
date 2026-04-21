@@ -1,5 +1,6 @@
 
-## Normalization
+#### Normalization ####
+## ---------------------
 
 setMethod("normalize", "MSImagingArrays",
 	function(object,

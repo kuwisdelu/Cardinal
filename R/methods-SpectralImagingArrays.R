@@ -348,12 +348,12 @@ setMethod("spectrapply", "SpectralImagingArrays",
 	i <- 1L
 	function() {
 		if ( i == 1L ) {
-			if ( length(x) > 1L ) {
+			if ( length(x) != 1L ) {
 				xmsg <- paste0(length(x), " spectra")
 			} else {
 				xmsg <- paste0("1 spectrum")
 			}
-			if ( nlevels(f) > 1L ) {
+			if ( nlevels(f) != 1L ) {
 				cmsg <- paste0(nlevels(f), " chunks")
 			} else {
 				cmsg <- paste0("1 chunk")
@@ -362,7 +362,7 @@ setMethod("spectrapply", "SpectralImagingArrays",
 		}
 		if ( i <= nlevels(f) ) {
 			fi <- which(f == levels(f)[i])
-			if ( length(fi) > 1L ) {
+			if ( length(fi) != 1L ) {
 				imsg <- paste0(length(fi), " spectra")
 			} else {
 				imsg <- paste0("1 spectrum")

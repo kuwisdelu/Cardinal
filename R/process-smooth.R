@@ -1,5 +1,6 @@
 
-## Smoothing
+#### Smoothing ####
+## ----------------
 
 setMethod("smooth", "MSImagingArrays", 
 	function(x,

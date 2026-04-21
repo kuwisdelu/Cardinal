@@ -14,12 +14,21 @@
 			REDUCE <- function(result, item) c(result, list(item))
 			init <- NULL
 		}
-		ans <- init
+		if ( missing(init) ) {
+			result <- structure(list(), class="void")
+		} else {
+			result <- init
+		}
 		while ( !is.null(X <- ITER()) ) {
-			ans <- REDUCE(ans, FUN(X, ...))
+			item <- FUN(X, ...)
+			if ( inherits(result, "void") ) {
+				result <- item
+			} else {
+				result <- REDUCE(result, item)
+			}
 		}
 	} else {
-		ans <- bpiterate(ITER, FUN, ...,
+		result <- bpiterate(ITER, FUN, ...,
 			REDUCE=REDUCE,
 			init=init,
 			reduce.in.order=reduce.in.order,
@@ -27,7 +36,7 @@
 			BPPARAM=BPPARAM,
 			BPOPTIONS=BPOPTIONS)
 	}
-	ans
+	result
 }
 
 # take list of parallel lists and return list of tuples

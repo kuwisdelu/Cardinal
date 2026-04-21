@@ -80,8 +80,6 @@ setMethod("show", "SpectralImagingExperiment",
 		# runNames()
 		cat(sprintf("runNames(%d): %s\n", length(runNames(object)),
 			.paste_head_tail(runNames(object))))
-		# processingData()
-		.print_queued_processing(object)
 		# metadata()
 		if ( length(metadata(object)) > 0L )
 		{

@@ -91,7 +91,7 @@ test_that("recalibrate", {
 
 })
 
-test_that("peakPick", {
+test_that("peakPick + peakAlign", {
 
 	path <- CardinalIO::exampleImzMLFile("processed")
 	msa <- readImzML(path)
@@ -107,5 +107,12 @@ test_that("peakPick", {
 	expect_true(validObject(applyProcessing(msa_peakpick)))
 	expect_true(validObject(applyProcessing(msa_peakpick_cwt)))
 	expect_true(validObject(applyProcessing(msa_peakpick_ref)))
+
+	mse_peakalign <- peakAlign(msa_peakpick)
+	mse_peakalign_ref <- peakAlign(msa_peakpick,
+		ref=peaks, tolerance=200, units="ppm")
+
+	expect_true(validObject(mse_peakalign))
+	expect_true(validObject(mse_peakalign_ref))
 
 })

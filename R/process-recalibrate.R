@@ -1,5 +1,6 @@
 
-## Mass recalibration
+#### Mass recalibration ####
+## -------------------------
 
 setMethod("recalibrate", "MSImagingArrays",
 	function(object, ref,

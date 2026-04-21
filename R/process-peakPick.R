@@ -1,5 +1,6 @@
 
-## Peak picking
+#### Peak picking ####
+## --------------------
 
 setMethod("peakPick", "MSImagingArrays",
 	function(object, ref,
