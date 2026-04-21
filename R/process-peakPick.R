@@ -6,7 +6,7 @@ setMethod("peakPick", "MSImagingArrays",
 	function(object, ref,
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
 		SNR = 2, type = c("height", "area"),
-		tolerance = NA, units = c("relative", "absolute"), ...)
+		tolerance = NA, units = c("ppm", "mz"), ...)
 	{
 		method <- match.arg(method)
 		type <- match.arg(type)
@@ -29,7 +29,7 @@ setMethod("peakPick", "MSImagingArrays",
 			units <- match.arg(units)
 			if ( is.unsorted(ref) )
 				ref <- sort(ref)
-			tol.ref <- switch(units, relative="x", absolute="abs")
+			tol.ref <- switch(units, ppm="x", mz="abs")
 			if ( is.na(tolerance) ) {
 				tol <- 0.5 * estres(ref, ref=tol.ref)
 			} else {

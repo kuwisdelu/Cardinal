@@ -31,23 +31,7 @@ setMethod("peakAlign", "MSImagingArrays",
 			message=verbose)
 		mzref <- estimateReferenceMz(object, width=width, units=units,
 			f=f, verbose=verbose, BPPARAM=BPPARAM)
-		# resolve peak bins and tolerance
-		if ( is.na(tolerance) ) {
-			# we don't have tolerance or peak bins
-			# estimate tolerance as (binratio x min peak-to-peak gap)
-			# NOTE: refactor later to avoid all these unit conversions
-			resolution <- estres(mzref, ref=switch(units, ppm="x", mz="abs"))
-			resolution <- resolution * switch(units, ppm=1e6, mz=1)
-			resolution <- switch(units,
-				ppm=round(2 * resolution, digits=6L) * 0.5,
-				mz=round(resolution, digits=4L))
-			tolerance <- binratio * resolution
-			.Log("using bin ratio ", binratio,
-				" to compute tolerance from estimated peak bins",
-				message=verbose)
-			# create peak bins from estimated reference m/z-values
-			ref <- mzref
-		} else {
+		if ( !is.na(tolerance) ) {
 			# we have tolerance but not peak bins
 			# set peak bins to (tolerance / binratio)
 			resolution <- tolerance / binratio
@@ -59,17 +43,32 @@ setMethod("peakAlign", "MSImagingArrays",
 			ref <- switch(units,
 				ppm=seq_rel(min(mzref), max(mzref), by=1e-6 * resolution),
 				mz=seq(min(mzref), max(mzref), by=resolution))
+			.Log("using peak bins with resolution ", resolution, " ", units,
+				message=verbose)
+		} else {
+			# we have neither tolerance nor peak bins
+			# create peak bins from estimated reference m/z-values
+			ref <- mzref
 		}
-		.Log("using peak bins with resolution ", resolution, " ", units,
-			message=verbose)
-		.Log("using peak matching tolerance ", tolerance, " ", units,
-			message=verbose)
 	} else {
 		if ( is(ref, "MSImagingExperiment") || is(ref, "MassDataFrame") )
 			ref <- mz(ref)
-		if ( is.na(tolerance) )
-			.Error("'tolerance' must be specified when 'ref' is provided")
 	}
+	if ( is.na(tolerance) ) {
+		# estimate tolerance as (binratio x min peak-to-peak gap)
+		# NOTE: refactor later to avoid all these unit conversions
+		resolution <- estres(ref, ref=switch(units, ppm="x", mz="abs"))
+		resolution <- switch(units,
+			ppm=round(2 * resolution, digits=6L) * 0.5,
+			mz=round(resolution, digits=4L))
+		resolution <- resolution * switch(units, ppm=1e6, mz=1)
+		tolerance <- binratio * resolution
+		.Log("using bin ratio ", binratio,
+			" to compute tolerance from peak bins",
+			message=verbose)
+	}
+	.Log("using peak matching tolerance ", tolerance, " ", units,
+		message=verbose)
 	# format tolerance and tolerance type for pkg:matter functions
 	# NOTE: refactor later to avoid all these unit conversions
 	tol <- unname(tolerance) * switch(units, ppm=1e-6, mz=1)

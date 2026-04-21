@@ -112,7 +112,10 @@ test_that("peakPick + peakAlign", {
 	mse_peakalign_ref <- peakAlign(msa_peakpick,
 		ref=peaks, tolerance=200, units="ppm")
 
-	expect_true(validObject(mse_peakalign))
-	expect_true(validObject(mse_peakalign_ref))
+	expect_is(mse_peakalign, "MSImagingExperiment")
+	expect_is(mse_peakalign_ref, "MSImagingExperiment")
+
+	mse_peakproc1 <- peakProcess(msa)
+	mse_peakproc2 <- peakProcess(msa, sampleSize=0.1, filterFreq=FALSE)
 
 })

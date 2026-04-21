@@ -358,7 +358,7 @@ setMethod("spectrapply", "SpectralImagingArrays",
 			} else {
 				cmsg <- paste0("1 chunk")
 			}
-			.Log("iterating over ", cmsg, " (", xmsg, ")", message=verbose)
+			.Log("# iterating over ", cmsg, " (", xmsg, ")", message=verbose)
 		}
 		if ( i <= nlevels(f) ) {
 			fi <- which(f == levels(f)[i])
