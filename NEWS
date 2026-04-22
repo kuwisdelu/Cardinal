@@ -1,4 +1,11 @@
 
+CHANGES IN VERSION 3.13.2 [2025-4-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix 'mass.range' bug in 'convertMSImagingExperiment2Arrays()'
+
 CHANGES IN VERSION 3.13.1 [2025-3-18]
 -----------------------------------
 
