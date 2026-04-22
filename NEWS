@@ -18,21 +18,21 @@ CHANGES IN VERSION 3.13.3 [2025-4-22]
     o Removed defunct functions (color palettes, etc.)
     o Deprecated 'fetch()' and 'flash()'
 
-CHANGES IN VERSION 3.13.2 [2025-4-22]
+CHANGES IN VERSION 3.13.2 [2026-4-22]
 -----------------------------------
 
 BUG FIXES
 
     o Fix 'mass.range' bug in 'convertMSImagingExperiment2Arrays()'
 
-CHANGES IN VERSION 3.13.1 [2025-3-18]
+CHANGES IN VERSION 3.13.1 [2026-3-18]
 -----------------------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o Remove dependency on EBImage
 
-CHANGES IN VERSION 3.12.1 [2025-2-12]
+CHANGES IN VERSION 3.12.1 [2026-2-12]
 -----------------------------------
 
 BUG FIXES
