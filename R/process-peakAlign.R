@@ -104,7 +104,7 @@ setMethod("peakAlign", "MSImagingArrays",
 		metadata=metadata(object))
 })
 
-.peakAlign_MSImagingArrays <- function(x, ref, tol, tol.ref)
+.peakAlign_MSImagingArrays <- function(x, ref, tol, tol.ref, ...)
 {
 	matter::binpeaks(mz(x), domain=ref,
 		tol=tol, tol.ref=tol.ref, merge=FALSE, na.drop=FALSE)

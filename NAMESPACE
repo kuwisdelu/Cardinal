@@ -146,6 +146,7 @@ exportMethods(
 	"[[",
 	"[[<-",
 	"addProcessing",
+	"applyProcessing",
 	"as.array",
 	"as.matrix",
 	"as.data.frame",

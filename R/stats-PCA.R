@@ -21,8 +21,6 @@ setMethod("PCA", "SpectralImagingExperiment",
 	function(x, ncomp = 3,
 		center = TRUE, scale = FALSE, ...)
 {
-	if ( length(processingData(x)) > 0L )
-		.Warn("queued processing steps will be ignored")
 	ans <- PCA(spectra(x), ncomp=ncomp, transpose=TRUE,
 		center=center, scale=scale, ...)
 	as(SpatialResults(ans, x), "SpatialPCA")
@@ -34,8 +32,6 @@ setMethod("predict", "SpatialPCA",
 {
 	if ( !is(newdata, "SpectralImagingExperiment") )
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
-	if ( length(processingData(newdata)) > 0L )
-		.Warn("queued processing steps will be ignored")
 	if ( nrow(newdata) != nrow(object$rotation) )
 		.Error("'newdata' does not have the correct number of dimensions")
 	if ( (!isFALSE(object$center) || !isFALSE(object$scale)) ) {

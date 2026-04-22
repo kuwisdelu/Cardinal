@@ -52,8 +52,6 @@ setMethod("spatialFastmap", "SpectralImagingExperiment",
 		weights = c("gaussian", "adaptive"),
 		neighbors = findNeighbors(x, r=r), ...)
 {
-	if ( length(processingData(x)) > 0L )
-		.Warn("queued processing steps will be ignored")
 	ans <- spatialFastmap(spectra(x),
 		coord=coord(x), r=r, ncomp=ncomp,
 		neighbors=neighbors, weights=weights,
@@ -71,8 +69,6 @@ setMethod("predict", "SpatialFastmap",
 		.Error("'newdata' must inherit from 'SpectralImagingExperiment'")
 	if ( nrow(newdata) != nrow(object$pivot.array) )
 		.Error("'newdata' does not have the correct number of dimensions")
-	if ( length(processingData(newdata)) > 0L )
-		.Warn("queued processing steps will be ignored")
 	if ( is.character(weights) ) {
 		nbwts <- spatialWeights(newdata, r=r,
 			neighbors=neighbors, weights=weights,

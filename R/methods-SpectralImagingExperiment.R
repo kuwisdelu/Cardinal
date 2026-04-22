@@ -31,7 +31,7 @@ setValidity("SpectralImagingExperiment", .valid_SpectralImagingExperiment)
 
 SpectralImagingExperiment <- function(spectraData = SimpleList(),
 	featureData = DataFrame(), pixelData = PositionDataFrame(),
-	metadata = list())
+	metadata = list(), centroided=NA)
 {
 	spectraData <- SpectraArrays(spectraData)
 	if ( length(spectraData) != 0L )
@@ -51,7 +51,7 @@ SpectralImagingExperiment <- function(spectraData = SimpleList(),
 	}
 	new("SpectralImagingExperiment", spectraData=spectraData,
 		featureData=featureData, elementMetadata=pixelData,
-		metadata=metadata)
+		metadata=metadata, centroided=centroided)
 }
 
 setMethod("show", "SpectralImagingExperiment",
@@ -146,6 +146,19 @@ setMethod("features", "SpectralImagingExperiment",
 featureVariables <- function(object, ...) {
 	names(featureData(object))
 }
+
+# processingData
+
+setMethod("processingData", "MSImagingExperiment",
+	function(object, ...) {
+		.Deprecated()
+		list()
+	})
+setReplaceMethod("processingData", "MSImagingExperiment",
+	function(object, ..., value) {
+		.Deprecated()
+		object
+	})
 
 ## Basic getters and setters
 
@@ -245,11 +258,13 @@ subsetFeatures <- function(x, ...) {
 	featureData <- do.call(cbind, lapply(objects, featureData))
 	pixelData <- do.call(rbind, lapply(objects, pixelData))
 	metadata <- do.call(c, lapply(objects, metadata))
+	centroided <- all(vapply(objects, centroided, logical(1L)))
 	new(class(objects[[1L]]),
 		spectraData=spectraData,
 		featureData=featureData,
 		elementMetadata=pixelData,
-		metadata=metadata)
+		metadata=metadata,
+		centroided=centroided)
 }
 
 setMethod("cbind", "SpectralImagingExperiment",
@@ -261,11 +276,13 @@ setMethod("cbind", "SpectralImagingExperiment",
 	featureData <- do.call(rbind, lapply(objects, featureData))
 	pixelData <- do.call(cbind, lapply(objects, pixelData))
 	metadata <- do.call(c, lapply(objects, metadata))
+	centroided <- all(vapply(objects, centroided, logical(1L)))
 	new(class(objects[[1L]]),
 		spectraData=spectraData,
 		featureData=featureData,
 		elementMetadata=pixelData,
-		metadata=metadata)
+		metadata=metadata,
+		centroided=centroided)
 }
 
 setMethod("rbind", "SpectralImagingExperiment",

@@ -43,7 +43,8 @@ test_that("summarizePixels", {
 
 	mse2 <- summarizePixels(mse2)
 
-	expect_equal(pData(mse2)$tic, spectrapply(mse2, sum))
+	expect_equivalent(pData(mse2)$tic,
+		unlist(spectrapply(mse2, \(x) sum(x$intensity))))
 	expect_error(mse2 <- summarizePixels(mse2, groups=g))
 
 })

@@ -2,6 +2,12 @@
 #### Peak processing ####
 ## ----------------------
 
+setMethod("peakProcess", "MSImagingExperiment",
+	function(object, ...)
+{
+	peakProcess(as(object, "MSImagingArrays"), ...)
+})
+
 setMethod("peakProcess", "MSImagingArrays",
 	function(object, ref,
 		method = c("diff", "sd", "mad", "quantile", "filter", "cwt"),
@@ -63,7 +69,7 @@ setMethod("peakProcess", "MSImagingArrays",
 		# check for peak picking
 		if ( isCentroided(object) ) {
 			if ( length(processingData(object)) == 0L &&
-				!is.sparse(spectra(object, spectra)) &&
+				!is.sparse(spectra(object, "intensity")) &&
 				!is(object, "MSImagingArrays") )
 			{
 				.Log("peaks are already processed",

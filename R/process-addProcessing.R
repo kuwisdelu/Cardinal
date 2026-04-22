@@ -26,6 +26,12 @@ dropProcessing <- function(object, ...)
 		object
 }
 
+reset <- function(object)
+{
+	.Deprecated("dropProcessing")
+	dropProcessing(object)
+}
+
 updateProcessingStep <- function(object, ARGS, replace = FALSE)
 {
 	if ( !is(object, "ProcessingStep") )

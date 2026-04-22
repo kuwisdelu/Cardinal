@@ -224,7 +224,8 @@ convertMSImagingExperiment2Arrays <- function(object)
 convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 	mass.range = NULL, resolution = NA, units = c("ppm", "mz"),
 	guess.max = 1000L, tolerance = 0.5 * resolution,
-	verbose = getCardinalVerbose(), chunkopts = list(),
+	f = processingChunkFactor(object),
+	verbose = getCardinalVerbose(),
 	BPPARAM = getCardinalBPPARAM(), ...)
 {
 	if ( is(object, "MSImagingExperiment") )
@@ -280,8 +281,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			message=verbose)
 		ref <- peakAlign(ref, ref=NULL,
 			tolerance=tolerance, units=units,
-			verbose=verbose, chunkopts=chunkopts,
-			BPPARAM=BPPARAM)
+			f=f, verbose=verbose, BPPARAM=BPPARAM)
 		if ( is.null(mass.range) )
 			mass.range <- round(range(mz(ref)), digits=4L)
 		if ( is.na(tolerance) ) {
@@ -300,8 +300,7 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			message=verbose)
 		ans <- peakAlign(object, ref=mz(ref),
 			tolerance=tolerance, units=units,
-			verbose=verbose, chunkopts=chunkopts,
-			BPPARAM=BPPARAM)
+			f=f, verbose=verbose, BPPARAM=BPPARAM)
 	} else {
 		# profile m/z axis
 		if ( is.finite(guess.max) ) {

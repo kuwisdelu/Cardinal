@@ -116,7 +116,7 @@ setMethod("experimentData", "MSImagingArrays",
 setReplaceMethod("experimentData", "MSImagingArrays",
 	function(object, value) {
 		object@experimentData <- value
-		if ( validObject )
+		if ( validObject(object) )
 			object
 	})
 
