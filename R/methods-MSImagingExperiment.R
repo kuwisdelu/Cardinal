@@ -288,10 +288,10 @@ convertMSImagingArrays2Experiment <- function(object, mz = NULL,
 			tolerance <- tolerance(spectra(ref))
 			tolerance <- switch(units, ppm=1e6 * tolerance, mz=tolerance)
 		}
-		if ( any(mz(ref) < min(mass.range)) )
-			ref <- ref[mz(ref) < min(mass.range),]
-		if ( any(mz(ref) > max(mass.range)) )
-			ref <- ref[mz(ref) > max(mass.range),]
+		if ( any(mz(ref) >= min(mass.range)) )
+			ref <- ref[mz(ref) >= min(mass.range),]
+		if ( any(mz(ref) <= max(mass.range)) )
+			ref <- ref[mz(ref) <= max(mass.range),]
 		.Log("applying centroid m/z-values to all spectra",
 			message=verbose)
 		.Log("using mass.range ", mass.range[1L], " to ", mass.range [2L],

@@ -1,5 +1,5 @@
 
-CHANGES IN VERSION 3.13.3 [2025-4-27]
+CHANGES IN VERSION 3.14.1 [2026-4-22]
 -----------------------------------
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -11,13 +11,19 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o Updated 'SpectralImagingArrays' with new slots and accessors to support new
         processing including 'processingChunkSize()' and 'processingChunkFactor()'
 
-CHANGES IN VERSION 3.13.2 [2025-3-18]
+CHANGES IN VERSION 3.13.3 [2025-4-22]
 -----------------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
+    o Removed deprecated functions (color palettes, etc.)
     o Removed defunct functions (color palettes, etc.)
     o Deprecated 'fetch()' and 'flash()'
+
+CHANGES IN VERSION 3.13.2 [2025-4-22]
+-----------------------------------
+
+BUG FIXES
+
+    o Fix 'mass.range' bug in 'convertMSImagingExperiment2Arrays()'
 
 CHANGES IN VERSION 3.13.1 [2025-3-18]
 -----------------------------------
